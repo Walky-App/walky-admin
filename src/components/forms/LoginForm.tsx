@@ -1,9 +1,12 @@
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/user.context'
+import * as React from 'react'
+
+import { UserContext } from '../../contexts/User.context'
 
 export default function LoginForm() {
-  const { setLogin } = useAuth()
   const navigate = useNavigate()
+
+  const { user, setUser } = React.useContext(UserContext)
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
@@ -26,7 +29,7 @@ export default function LoginForm() {
     console.log('results ->', results)
 
     if (results) {
-      await setLogin({ ...results.user, access_token: results.access_token })
+      await setUser({ ...results.user, access_token: results.access_token })
 
       switch (results.user.role) {
         case 'client':
