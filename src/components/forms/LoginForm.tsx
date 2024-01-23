@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom'
 
 import { IBody } from '../../interfaces/form.interfaces'
 
-import { UserContext } from '../../contexts/UserContext'
+import { useAuth } from '../../contexts/UserContext'
 import { RequestService } from '../../services/RequestService'
 
 export default function LoginForm() {
   const navigate = useNavigate()
 
-  const { setUser } = React.useContext(UserContext)
+  const { login } = useAuth()
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
@@ -23,7 +23,7 @@ export default function LoginForm() {
     const { user }: any = await RequestService('auth/login', 'POST', body)
 
     if (user) {
-      await setUser(user)
+      await login(user)
 
       switch (user.role) {
         case 'client':
