@@ -1,37 +1,31 @@
-import { useNavigate } from 'react-router-dom'
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { UserContext } from '../../contexts/User.context'
+import { IBody } from '../../interfaces/form.interfaces'
+
+import { UserContext } from '../../contexts/UserContext'
+import { RequestService } from '../../services/RequestService'
 
 export default function LoginForm() {
   const navigate = useNavigate()
 
-  const { user, setUser } = React.useContext(UserContext)
+  const { setUser } = React.useContext(UserContext)
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
     const form = event.target
-    const email = form.email.value
-    const password = form.password.value
 
-    const res = await fetch(`${process.env.REACT_APP_PUBLIC_API}/auth/login`, {
-      method: 'POST',
-      credentials: 'include',
-      // cors: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    })
+    const body: IBody = {
+      email: form?.email.value,
+      password: form?.password.value,
+    }
 
-    const results = await res.json()
+    const { user }: any = await RequestService('auth/login', 'POST', body)
 
-    console.log('results ->', results)
+    if (user) {
+      await setUser(user)
 
-    if (results) {
-      await setUser({ ...results.user, access_token: results.access_token })
-
-      switch (results.user.role) {
+      switch (user.role) {
         case 'client':
           navigate('/client/dashboard')
           break

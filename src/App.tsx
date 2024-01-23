@@ -1,33 +1,25 @@
 import * as React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
-import Layout from './layout'
-import Login from './pages/login'
+import { UserContextProvider } from './contexts/UserContext'
 
 import './App.css'
-import { UserContextProvider, UserContext } from './contexts/User.context'
 
-function App() {
-  const { user } = React.useContext(UserContext)
+import Layout from './components/layout'
+import Login from './pages/login'
 
+import EmployeeDashboard from './pages/employee/dashboard'
+
+export default function App() {
   return (
-    <BrowserRouter>
-      <UserContextProvider>
-        {user ? (
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/login" element={<Login />} />
-            </Routes>
-          </Layout>
-        ) : (
-          <Routes>
-            <Route path="/" element={<Login />} />
-          </Routes>
-        )}
-      </UserContextProvider>
-    </BrowserRouter>
+    <UserContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route element={<Layout />}>
+            <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </UserContextProvider>
   )
 }
-
-export default App
