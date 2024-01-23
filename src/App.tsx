@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import Layout from "./layout";
-import Login from "./pages/login";
+import Layout from './layout'
+import Login from './pages/login'
 
-import "./App.css";
+import './App.css'
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         </Routes>
       </Layout>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App

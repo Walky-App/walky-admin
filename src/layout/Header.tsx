@@ -1,23 +1,23 @@
-import * as React from "react";
+import * as React from 'react'
 
 // import { useAuth } from '@/context/AuthContext'
 
 // import { LogoutService } from '@/services/AuthService'
 
-import { Menu, Transition } from "@headlessui/react";
+import { Menu, Transition } from '@headlessui/react'
 
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ')
 }
 
 export default function Header() {
-  const [showMobileMenu, setShowMobileMenu] = React.useState(false);
+  const [showMobileMenu, setShowMobileMenu] = React.useState(false)
   // const { user } = useAuth()
 
-  let profilePath: string;
+  let profilePath: string
 
   // React.useEffect(() => {
   //   if (user?.role === 'employee') {
@@ -30,23 +30,19 @@ export default function Header() {
   // }, [user])
 
   const handleBurgerClick = () => {
-    setShowMobileMenu(true);
-  };
+    setShowMobileMenu(true)
+  }
 
   const closeBurgerModal = () => {
-    setShowMobileMenu(false);
-  };
+    setShowMobileMenu(false)
+  }
 
   return (
     <header className="fixed z-10 top-0 w-full py-4 bg-zinc-50 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-10">
           <a href="/">
-            <img
-              src="/assets/logos/logo-horizontal-cropped.png"
-              alt="Hemp-Temps"
-              className="h-12 w-auto mr-2"
-            />
+            <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp-Temps" className="h-12 w-auto mr-2" />
           </a>
         </div>
 
@@ -57,10 +53,7 @@ export default function Header() {
             </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </div>
               <input
                 id="search"
@@ -76,8 +69,7 @@ export default function Header() {
         <div className="hidden lg:ml-4 lg:flex lg:items-center">
           <button
             type="button"
-            className="relative flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
+            className="relative flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             <span className="absolute -inset-1.5" />
             <span className="sr-only">View notifications</span>
             <BellIcon className="h-6 w-6" aria-hidden="true" />
@@ -103,18 +95,13 @@ export default function Header() {
               enterTo="transform opacity-100 scale-100"
               leave="transition ease-in duration-75"
               leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
+              leaveTo="transform opacity-0 scale-95">
               <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <Menu.Item>
                   {({ active }) => (
                     <a
                       href={profilePath}
-                      className={classNames(
-                        active ? "bg-gray-100" : "",
-                        "block px-4 py-2 text-sm text-gray-700"
-                      )}
-                    >
+                      className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       My Profile
                     </a>
                   )}
@@ -123,11 +110,7 @@ export default function Header() {
                   {({ active }) => (
                     <a
                       href="#"
-                      className={classNames(
-                        active ? "bg-gray-100" : "",
-                        "block px-4 py-2 text-sm text-gray-700"
-                      )}
-                    >
+                      className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       Settings
                     </a>
                   )}
@@ -137,11 +120,7 @@ export default function Header() {
                     <a
                       href="#"
                       // onClick={() => LogoutService()}
-                      className={classNames(
-                        active ? "bg-gray-100" : "",
-                        "block px-4 py-2 text-sm text-gray-700"
-                      )}
-                    >
+                      className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       Sign out
                     </a>
                   )}
@@ -153,47 +132,26 @@ export default function Header() {
 
         <div className="lg:hidden" onClick={handleBurgerClick}>
           <button className="navbar-burger flex items-center text-zinc-950 p-3">
-            <svg
-              className="block h-4 w-4 fill-current"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg className="block h-4 w-4 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <title>Mobile menu</title>
               <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
             </svg>
           </button>
         </div>
       </div>
-      <div
-        className={`navbar-menu relative ${
-          showMobileMenu === true ? "block" : "hidden"
-        }`}
-      >
+      <div className={`navbar-menu relative ${showMobileMenu === true ? 'block' : 'hidden'}`}>
         <div className="navbar-backdrop fixed inset-0 bg-zinc-800 opacity-25"></div>
         <nav className="fixed top-0 left-0 bottom-0 flex flex-col w-5/6 max-w-sm py-6 px-6 bg-zinc-50 border-r overflow-y-auto">
           <div className="flex items-center mb-8">
-            <img
-              src="/assets/logos/logo-horizontal-cropped.png"
-              alt="Hemp-Temps"
-              className="h-12 w-auto mr-2"
-            />
-            <button
-              className="navbar-close mr-4 right-0 absolute"
-              onClick={closeBurgerModal}
-            >
+            <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp-Temps" className="h-12 w-auto mr-2" />
+            <button className="navbar-close mr-4 right-0 absolute" onClick={closeBurgerModal}>
               <svg
                 className="h-6 w-6 text-zinc-400 cursor-pointer hover:text-zinc-500"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
+                stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
@@ -201,58 +159,30 @@ export default function Header() {
             <a className="font-bold text-base" href="/">
               Services
             </a>
-            <a
-              className="font-bold text-base"
-              href="/"
-              onClick={closeBurgerModal}
-            >
+            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
               Apply/Jobs
             </a>
-            <a
-              className="font-bold text-base"
-              href="/"
-              onClick={closeBurgerModal}
-            >
+            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
               Employers
             </a>
-            <a
-              className="font-bold text-base"
-              href="/"
-              onClick={closeBurgerModal}
-            >
+            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
               Training
             </a>
-            <a
-              className="font-bold text-base"
-              href="/"
-              onClick={closeBurgerModal}
-            >
+            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
               News/Blog
             </a>
-            <a
-              className="font-bold text-base"
-              href="/"
-              onClick={closeBurgerModal}
-            >
+            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
               Contact
             </a>
-            <a
-              className="font-bold text-base"
-              href="/login"
-              onClick={closeBurgerModal}
-            >
+            <a className="font-bold text-base" href="/login" onClick={closeBurgerModal}>
               Log In
             </a>
-            <a
-              className="font-bold text-base"
-              href="/signup"
-              onClick={closeBurgerModal}
-            >
+            <a className="font-bold text-base" href="/signup" onClick={closeBurgerModal}>
               Register
             </a>
           </div>
         </nav>
       </div>
     </header>
-  );
+  )
 }

@@ -1,90 +1,86 @@
 // import { useAuth } from '@/context/AuthContext'
 
-import { BsFillFileEarmarkSpreadsheetFill } from "react-icons/bs";
-import {
-  FaBusinessTime,
-  FaFileContract,
-  FaFileInvoiceDollar,
-} from "react-icons/fa";
-import { HiSearchCircle, HiDocumentReport } from "react-icons/hi";
-import { IoMdMail } from "react-icons/io";
-import { MdSchool, MdLogout } from "react-icons/md";
+import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
+import { FaBusinessTime, FaFileContract, FaFileInvoiceDollar } from 'react-icons/fa'
+import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
+import { IoMdMail } from 'react-icons/io'
+import { MdSchool, MdLogout } from 'react-icons/md'
 
 const links: any = {
-  default: [{ id: 99, name: "Logout", href: "/logout", icon: <MdLogout /> }],
+  default: [{ id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> }],
   employee: [
-    { id: 1, name: "Jobs", href: "/employee/jobs", icon: <HiSearchCircle /> },
+    { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
     {
       id: 2,
-      name: "My Jobs",
-      href: "/employee/jobs/mine",
+      name: 'My Jobs',
+      href: '/employee/jobs/mine',
       icon: <FaBusinessTime />,
     },
-    { id: 3, name: "Learn", href: "/learn", icon: <MdSchool /> },
-    { id: 4, name: "Messages", href: "/employee/messages", icon: <IoMdMail /> },
-    { id: 99, name: "Logout", href: "/logout", icon: <MdLogout /> },
+    { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
+    { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+    { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
   ],
   client: [
     {
       id: 1,
-      name: "Post Job",
-      href: "/dashboard/jobs/new",
+      name: 'Post Job',
+      href: '/dashboard/jobs/new',
       icon: <HiSearchCircle />,
     },
     {
       id: 2,
-      name: "My Jobs",
-      href: "/dashboard/jobs",
+      name: 'My Jobs',
+      href: '/dashboard/jobs',
       icon: <FaBusinessTime />,
     },
     {
       id: 3,
-      name: "Contracts",
-      href: "/dashboard/contracts",
+      name: 'Contracts',
+      href: '/dashboard/contracts',
       icon: <FaFileContract />,
     },
     {
       id: 4,
-      name: "Invoices",
-      href: "/dashboard/invoices",
+      name: 'Invoices',
+      href: '/dashboard/invoices',
       icon: <FaFileInvoiceDollar />,
     },
     {
       id: 5,
-      name: "Timesheets",
-      href: "/dashboard/timesheets",
+      name: 'Timesheets',
+      href: '/dashboard/timesheets',
       icon: <BsFillFileEarmarkSpreadsheetFill />,
     },
     {
       id: 6,
-      name: "Reports",
-      href: "/dashboard/reports",
+      name: 'Reports',
+      href: '/dashboard/reports',
       icon: <HiDocumentReport />,
     },
     {
       id: 7,
-      name: "Messages",
-      href: "/dashboard/messages",
+      name: 'Messages',
+      href: '/dashboard/messages',
       icon: <IoMdMail />,
     },
-    { id: 99, name: "Logout", href: "/logout", icon: <MdLogout /> },
+    { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
   ],
   admin: [
-    { id: 1, name: "Users", href: "/admin/users", icon: <HiSearchCircle /> },
+    { id: 1, name: 'Users', href: '/admin/users', icon: <HiSearchCircle /> },
     {
       id: 2,
-      name: "Facilities",
-      href: "/admin/facilities",
+      name: 'Facilities',
+      href: '/admin/facilities',
       icon: <FaBusinessTime />,
     },
-    { id: 3, name: "Jobs", href: "/admin/jobs", icon: <MdSchool /> },
-    { id: 4, name: "Learn", href: "/admin/learn", icon: <IoMdMail /> },
-    { id: 5, name: "Messages", href: "/admin/messages", icon: <IoMdMail /> },
+    { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <MdSchool /> },
+    { id: 4, name: 'Learn', href: '/admin/learn', icon: <IoMdMail /> },
+    { id: 5, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
   ],
-};
+}
 
 export default function SideBar({ user }: any) {
-  const unread = 3; // TODO: get unread messages from API
+  const unread = 3 // TODO: get unread messages from API
   return (
     <aside className="w-64 h-screen transition-transform" aria-label="Sidebar">
       <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 dark:bg-zinc-800">
@@ -110,5 +106,5 @@ export default function SideBar({ user }: any) {
         </ul>
       </div>
     </aside>
-  );
+  )
 }

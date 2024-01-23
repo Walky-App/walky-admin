@@ -1,54 +1,51 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/user.context";
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/user.context'
 
 export default function LoginForm() {
-  const { setLogin } = useAuth();
-  const navigate = useNavigate();
+  const { setLogin } = useAuth()
+  const navigate = useNavigate()
 
-  const handleSubmit = async (event:any) => {
-    event.preventDefault();
-    const form = event.target;
-    const email = form.email.value;
-    const password = form.password.value;
+  const handleSubmit = async (event: any) => {
+    event.preventDefault()
+    const form = event.target
+    const email = form.email.value
+    const password = form.password.value
 
     const res = await fetch(`${process.env.REACT_APP_PUBLIC_API}/auth/login`, {
-      method: "POST",
-      credentials: "include",
+      method: 'POST',
+      credentials: 'include',
       // cors: true,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
-    });
+    })
 
-    const results = await res.json();
+    const results = await res.json()
 
     console.log('results ->', results)
 
     if (results) {
-      await setLogin({ ...results.user, access_token: results.access_token });
+      await setLogin({ ...results.user, access_token: results.access_token })
 
       switch (results.user.role) {
-        case "client":
-          navigate("/client/dashboard");
-          break;
-        case "admin":
-          navigate("/admin/dashboard");
-          break;
-        case "employee":
-          navigate("/employee/dashboard");
-          break;
+        case 'client':
+          navigate('/client/dashboard')
+          break
+        case 'admin':
+          navigate('/admin/dashboard')
+          break
+        case 'employee':
+          navigate('/employee/dashboard')
+          break
         default:
-          navigate("/login");
+          navigate('/login')
       }
     }
-  };
+  }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto mb-0 mt-8 max-w-md space-y-4"
-    >
+    <form onSubmit={handleSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
       <div>
         <label htmlFor="email" className="sr-only">
           Email
@@ -68,8 +65,7 @@ export default function LoginForm() {
               className="h-4 w-4 text-zinc-400"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+              stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -100,14 +96,8 @@ export default function LoginForm() {
               className="h-4 w-4 text-zinc-400"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
+              stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -122,11 +112,10 @@ export default function LoginForm() {
       <div className="flex items-center justify-center">
         <button
           type="submit"
-          className="inline-block rounded-lg bg-zinc-950 px-32 md:px-48 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700"
-        >
+          className="inline-block rounded-lg bg-zinc-950 px-32 md:px-48 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700">
           Continue
         </button>
       </div>
     </form>
-  );
+  )
 }
