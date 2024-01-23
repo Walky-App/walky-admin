@@ -1,13 +1,46 @@
-import * as React from 'react'
+import { createContext, useContext, useEffect, useState } from "react"
+import { AuthService } from "../services/AuthService";
 
-const UserContext = React.createContext('any' as any)
+interface AuthContextType {
+  user: any | null;
+  login: (user: any) => void;
+  logout: () => void;
+}
 
-const UserContextProvider = ({ children }: any) => {
-  const [user, setUser] = React.useState({})
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  login: () => { },
+  logout: () => { }
+});
+
+const AuthProvider = ({ children }: any) => {
+  const [user, setUser] = useState<any>(null)
+  const login = (user: any) => {
+    setUser(user)
+  }
+  const logout = () => {
+    setUser(null)
+  }
+
+  const isConected = async () => {
+    if (!user) {
+      const res = await AuthService('auth/user')
+      setUser(res)
+    }
+  }
+
+
+  useEffect(() => {
+    isConected()
+  }, [])
+
 
   console.log('user in context->', user)
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>
+  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
 }
 
-export { UserContext, UserContextProvider }
+
+
+const useAuth = () => useContext(AuthContext)
+export { AuthProvider, useAuth }
