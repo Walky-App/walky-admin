@@ -7,7 +7,7 @@ import './App.css'
 import Layout from './components/layout'
 import Login from './pages/login'
 
-import EmployeeDashboard from './pages/employee/dashboard'
+import EmployeeDashboard from './pages/employees/dashboard'
 
 export default function App() {
   return (
@@ -16,7 +16,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route element={<Layout />}>
-            <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+            <Route path="/employee" element={<h2>test</h2>} />
+            {/* <Route path="/employee/dashboard" element={<EmployeeDashboard />} /> */}
           </Route>
         </Routes>
       </BrowserRouter>
