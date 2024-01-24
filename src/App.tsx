@@ -11,10 +11,13 @@ import EmployeeJobs from './pages/employees/jobs'
 import ClientDashboard from './pages/client/dashboard'
 
 import Learn from './pages/learn'
-import AdminDashboard from './pages/admin/dashboard'
-import UsersPage from './pages/admin/users'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
+
+import AdminDashboard from './pages/admin/dashboard'
+import AdminUsers from './pages/admin/users'
+import AdminFacilities from './pages/admin/facilities'
+
 import NewFacility from './pages/client/facilities/NewFacility'
 import { AuthProvider } from './contexts/AuthContext'
 
@@ -41,7 +44,8 @@ export default function App() {
               </Route>
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/users" element={<UsersPage />} />
+                <Route path="/admin/users" element={<AdminUsers />} />
+                <Route path="/admin/facilities" element={<AdminFacilities />} />
               </Route>
             </Route>
           </Route>
