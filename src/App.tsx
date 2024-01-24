@@ -1,31 +1,36 @@
-import { useEffect, useState, createContext } from 'react'
-import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+
+import { AuthProvider } from './contexts/AuthContext'
+
+import './App.css'
+
 import Layout from './components/layout/'
+
+/** Auth Pages */
 import Login from './pages/login'
 
-import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+/** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
 
-import ClientDashboard from './pages/client/dashboard'
-
+/** Learn Pages */
 import Learn from './pages/learn'
+
+/** Client Pages */
+import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
+import NewFacility from './pages/client/facilities/NewFacility'
 import Jobs from './pages/client/jobs'
 import AddJob from './pages/client/jobs/AddJob'
 
+/** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
 import AdminUsers from './pages/admin/users'
 import AdminFacilities from './pages/admin/facilities'
 
-import NewFacility from './pages/client/facilities/NewFacility'
-import { AuthProvider } from './contexts/AuthContext'
-
-
 export default function App() {
-
   return (
     <AuthProvider>
       <BrowserRouter>
