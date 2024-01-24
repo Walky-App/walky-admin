@@ -2,29 +2,28 @@ import { Navigate, Outlet, RouteProps } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 type ProtectedRouteProps = RouteProps & {
-    redirectTo?: string;
-};
+  redirectTo?: string
+}
 
 export function ProtectedRouteAuth({ redirectTo = '/login' }: ProtectedRouteProps) {
-    const { user } = useAuth();
+  const { user } = useAuth()
 
-    if (!user) {
-        return <Navigate to={redirectTo} replace />;
-    }
-    return <Outlet />;
+  if (!user) {
+    return <Navigate to={redirectTo} replace />
+  }
+  return <Outlet />
 }
 
 type ProtectedRouteByRolProps = RouteProps & {
-    redirectTo: string;
-    canRolActived: string;
-};
+  redirectTo: string
+  roleAccess: string
+}
 
+export function ProtectedRouteRol({ redirectTo, roleAccess }: ProtectedRouteByRolProps) {
+  const { user } = useAuth()
 
-export function ProtectedRouteRol({ redirectTo, canRolActived }: ProtectedRouteByRolProps) {
-    const { user } = useAuth();
-
-    if (user.rol !== canRolActived) {
-        return <Navigate to={redirectTo} replace />;
-    }
-    return <Outlet />;
+  if (user.role !== roleAccess) {
+    return <Navigate to={redirectTo} replace />
+  }
+  return <Outlet />
 }
