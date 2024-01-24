@@ -18,6 +18,7 @@ export default function LoginForm() {
     }
 
     const data: any = await LoginService(body)
+    console.log('data in loginform', data)
 
     const { access_token, user }: any = data
 
