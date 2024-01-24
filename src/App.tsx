@@ -31,6 +31,8 @@ import AddJob from './pages/client/jobs/AddJob'
 import AdminDashboard from './pages/admin/dashboard'
 import AdminUsers from './pages/admin/users'
 import AdminFacilities from './pages/admin/facilities'
+import AdminJobs from './pages/admin/jobs'
+// import AdminJobDetail from './pages/admin/jobs/details/AdminJobDetail'
 
 export default function App() {
   return (
@@ -57,6 +59,8 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
+                <Route path="/admin/jobs" element={<AdminJobs />} />
+                {/* <Route path="/admin/jobs/details/:jobId" element={<AdminJobDetail />} /> */}
               </Route>
             </Route>
           </Route>
