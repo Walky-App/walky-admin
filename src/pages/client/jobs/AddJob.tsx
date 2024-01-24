@@ -1,31 +1,45 @@
-'use client'
-import { useAuth } from '@/context/AuthContext'
+import * as React from 'react'
 import { PhotoIcon } from '@heroicons/react/24/solid'
-import TitleComponent from '@/components/shared/general/TitleComponent'
+//import TitleComponent from '@/components/shared/general/TitleComponent'
 
 export default function NewJob() {
-  // const {user} = useAuth()
 
-  const handleForm = e => {
+
+  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    const target = e.target as typeof e.target & {
+      created_by: { value: string }
+      company_id: { value: string }
+      facility_id: { value: string }
+      title: { value: string }
+      salary: { value: string }
+      description: { value: string }
+      skills: { value: string }
+      employment_type: { value: string }
+      shift_days: { value: string }
+      shift_times: { value: string }
+      shift_dates: { value: string }
+    }
+
     const formData = {
-      created_by: e.target.created_by.value,
-      company_id: e.target.company_id.value,
-      facility_id: e.target.facility_id.value, 
-      title: e.target.title.value,
-      salary: e.target.salary.value,
-      description: e.target.description.value,
-      skills: e.target.skills.value.split(','),
-      employment_type: e.target.employment_type.value,
-      shift_days: e.target.shift_days.value.split(',').map(Number),
-      shift_times: e.target.shift_times.value.split(','),
-      shift_dates: e.target.shift_dates.value.split(','),
+      created_by: target.created_by.value,
+      company_id: target.company_id.value,
+      facility_id: target.facility_id.value, 
+      title: target.title.value,
+      salary: target.salary.value,
+      description: target.description.value,
+      skills: target.skills.value.split(','),
+      employment_type: target.employment_type.value,
+      shift_days: target.shift_days.value.split(',').map(Number),
+      shift_times: target.shift_times.value.split(','),
+      shift_dates: target.shift_dates.value.split(','),
       status: 'active',
     };
 
     console.log(formData)
   
-    fetch(`${process.env.NEXT_PUBLIC_API}/jobs`, {
+    fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +51,7 @@ export default function NewJob() {
 
   return (
     <>
-    <TitleComponent title={'Jobs'} />
+    {/* <TitleComponent title={'Jobs'} /> */}
     
     <form onSubmit={handleForm}>
 
