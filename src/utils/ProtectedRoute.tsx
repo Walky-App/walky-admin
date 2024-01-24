@@ -17,7 +17,7 @@ type ProtectedRouteByRolProps = RouteProps & {
 }
 
 export function ProtectedRouteRol({ redirectTo, roleAccess }: ProtectedRouteByRolProps) {
-  const { user } = GetTokenInfo()
+  // const { user } = GetTokenInfo()
 
   // if (user.role !== roleAccess) return <Navigate to={redirectTo} replace />
 
