@@ -1,54 +1,64 @@
-'use client'
-import * as React from 'react'
-import { useAuth } from '@/context/AuthContext'
-
+import { useState } from 'react'
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import { RequestService } from '../../../services/RequestService'
 
-export default function Profile({ role }) {
-  const { user, setLogin } = useAuth()
+export default function Profile(user: any) {
+  const [formUser, setFormUser] = useState(user)
 
-  const handleUpdate = async e => {
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+    const target = e.target as typeof e.target & {
+      first_name: { value: string }
+      last_name: { value: string }
+      email: { value: string }
+      gender: { value: string }
+      birthday: { value: string }
+      phone_number: { value: string }
+      address: { value: string }
+      city: { value: string }
+      state: { value: string }
+      zip: { value: string }
+      notification_email: { checked: boolean; name: string }
+      notification_sms: { checked: boolean; name: string }
+      bank_name: { value: string }
+      account_number: { value: string }
+      routing_number: { value: string }
+      bank_address: { value: string }
+      bank_city: { value: string }
+      bank_state: { value: string }
+      bank_zip: { value: string }
+    }
+
     const formData = {
-      first_name: e.target.first_name.value,
-      last_name: e.target.last_name.value,
-      email: e.target.email.value,
-      phone: e.target.phone_number.value,
-      gender: e.target.gender.value,
-      birthday: e.target.birthday.value,
-      phone_number: e.target.phone_number.value,
-      address: e.target.address.value,
-      city: e.target.city.value,
-      state: e.target.state.value,
-      zip: e.target.zip.value,
+      first_name: target.first_name.value,
+      last_name: target.last_name.value,
+      email: target.email.value,
+      phone: target.phone_number.value,
+      gender: target.gender.value,
+      birthday: target.birthday.value,
+      phone_number: target.phone_number.value,
+      address: target.address.value,
+      city: target.city.value,
+      state: target.state.value,
+      zip: target.zip.value,
       notifications: [
-        e.target.notification_email.checked ? e.target.notification_email.name : '',
-        e.target.notification_sms.checked ? e.target.notification_sms.name : '',
+        target.notification_email.checked ? target.notification_email.name : '',
+        target.notification_sms.checked ? target.notification_sms.name : '',
       ],
       direct_deposit: {
-        bank_name: e.target.bank_name.value,
-        account_number: e.target.account_number.value,
-        routing_number: e.target.routing_number.value,
-        bank_address: e.target.bank_address.value,
-        bank_city: e.target.bank_city.value,
-        bank_state: e.target.bank_state.value,
-        bank_zip: e.target.bank_zip.value,
+        bank_name: target.bank_name.value,
+        account_number: target.account_number.value,
+        routing_number: target.routing_number.value,
+        bank_address: target.bank_address.value,
+        bank_city: target.bank_city.value,
+        bank_state: target.bank_state.value,
+        bank_zip: target.bank_zip.value,
       },
     }
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API}/users/${user?._id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formData),
-    })
-
-    const result = await res.json()
-
-    setLogin(result)
+    const res = RequestService('/users', 'PATCH', formData)
+    setFormUser(res)
   }
 
   return (
@@ -69,9 +79,7 @@ export default function Profile({ role }) {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="col-span-full">
-                <label
-                  htmlFor="about"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
                   About
                 </label>
                 <div className="mt-2">
@@ -83,15 +91,11 @@ export default function Profile({ role }) {
                     defaultValue={''}
                   />
                 </div>
-                <p className="mt-3 text-sm leading-6 text-gray-600">
-                  Write a few sentences about yourself.
-                </p>
+                <p className="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>
               </div>
 
               <div className="col-span-full">
-                <label
-                  htmlFor="photo"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
                   Photo
                 </label>
                 <div className="mt-2 flex items-center gap-x-3">
@@ -105,9 +109,7 @@ export default function Profile({ role }) {
               </div>
 
               <div className="col-span-full">
-                <label
-                  htmlFor="cover-photo"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
                   Cover photo
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -118,12 +120,7 @@ export default function Profile({ role }) {
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                         <span>Upload a file</span>
-                        <input
-                          id="file-upload"
-                          name="file-upload"
-                          type="file"
-                          className="sr-only"
-                        />
+                        <input id="file-upload" name="file-upload" type="file" className="sr-only" />
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
@@ -135,9 +132,7 @@ export default function Profile({ role }) {
           </div>
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Personal Information
-              </h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Use a permanent address where you can receive mail.
               </p>
@@ -145,9 +140,7 @@ export default function Profile({ role }) {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="first_name"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
                   First name
                 </label>
                 <div className="mt-2">
@@ -164,9 +157,7 @@ export default function Profile({ role }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="last_name"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
                   Last name
                 </label>
                 <div className="mt-2">
@@ -183,9 +174,7 @@ export default function Profile({ role }) {
               </div>
 
               <div className="sm:col-span-4">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                   Email address
                 </label>
                 <div className="mt-2">
@@ -202,9 +191,7 @@ export default function Profile({ role }) {
               </div>
 
               <div className="sm:col-span-2 sm:col-start-1">
-                <label
-                  htmlFor="birthday"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
                   Birthday
                 </label>
                 <div className="mt-2">
@@ -221,9 +208,7 @@ export default function Profile({ role }) {
               </div>
 
               <div className="sm:col-span-2">
-                <label
-                  htmlFor="gender"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="gender" className="block text-sm font-medium leading-6 text-gray-900">
                   Gender
                 </label>
                 <div className="mt-2">
@@ -240,9 +225,7 @@ export default function Profile({ role }) {
               </div>
 
               <div className="sm:col-span-2">
-                <label
-                  htmlFor="phone_number"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
                   Cell Phone
                 </label>
                 <div className="mt-2">
@@ -270,9 +253,7 @@ export default function Profile({ role }) {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="col-span-full">
-                <label
-                  htmlFor="address"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
                   Street address
                 </label>
                 <div className="mt-2">
@@ -304,9 +285,7 @@ export default function Profile({ role }) {
               </div>
 
               <div className="sm:col-span-2">
-                <label
-                  htmlFor="state"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="state" className="block text-sm font-medium leading-6 text-gray-900">
                   State / Province
                 </label>
                 <div className="mt-2">
@@ -339,7 +318,7 @@ export default function Profile({ role }) {
             </div>
           </div>
 
-          {role === 'employee' && (
+          {user.role === 'employee' && (
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Direct Deposit</h2>
@@ -350,9 +329,7 @@ export default function Profile({ role }) {
 
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                 <div className="sm:col-span-2 sm:col-start-1">
-                  <label
-                    htmlFor="bank_name"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="bank_name" className="block text-sm font-medium leading-6 text-gray-900">
                     Bank Name
                   </label>
                   <div className="mt-2">
@@ -367,9 +344,7 @@ export default function Profile({ role }) {
                   </div>
                 </div>
                 <div className="sm:col-span-2 sm:col-start-1">
-                  <label
-                    htmlFor="account_number"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="account_number" className="block text-sm font-medium leading-6 text-gray-900">
                     Account #
                   </label>
                   <div className="mt-2">
@@ -385,9 +360,7 @@ export default function Profile({ role }) {
                 </div>
 
                 <div className="sm:col-span-2 sm:col-start-1">
-                  <label
-                    htmlFor="routing_number"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="routing_number" className="block text-sm font-medium leading-6 text-gray-900">
                     Routing #
                   </label>
                   <div className="mt-2">
@@ -403,9 +376,7 @@ export default function Profile({ role }) {
                 </div>
 
                 <div className="col-span-full">
-                  <label
-                    htmlFor="bank_address"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="bank_address" className="block text-sm font-medium leading-6 text-gray-900">
                     Bank address
                   </label>
                   <div className="mt-2">
@@ -421,9 +392,7 @@ export default function Profile({ role }) {
                 </div>
 
                 <div className="sm:col-span-2 sm:col-start-1">
-                  <label
-                    htmlFor="bank_city"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="bank_city" className="block text-sm font-medium leading-6 text-gray-900">
                     City
                   </label>
                   <div className="mt-2">
@@ -439,9 +408,7 @@ export default function Profile({ role }) {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label
-                    htmlFor="bank_state"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="bank_state" className="block text-sm font-medium leading-6 text-gray-900">
                     State / Province
                   </label>
                   <div className="mt-2">
@@ -457,9 +424,7 @@ export default function Profile({ role }) {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label
-                    htmlFor="bank_zip"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="bank_zip" className="block text-sm font-medium leading-6 text-gray-900">
                     ZIP / Postal code
                   </label>
                   <div className="mt-2">
@@ -481,16 +446,13 @@ export default function Profile({ role }) {
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                We'll always let you know about important changes, but you pick what else you want
-                to hear about.
+                We'll always let you know about important changes, but you pick what else you want to hear about.
               </p>
             </div>
 
             <div className="max-w-2xl space-y-10 md:col-span-2">
               <fieldset>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">
-                  By Email / SMS
-                </legend>
+                <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
                 <div className="mt-6 space-y-6">
                   <div className="relative flex gap-x-3">
                     <div className="flex h-6 items-center">
@@ -506,9 +468,7 @@ export default function Profile({ role }) {
                       <label htmlFor="notification_email" className="font-medium text-gray-900">
                         Email Notifications
                       </label>
-                      <p className="text-gray-500">
-                        Get notified when someones posts a comment on a posting.
-                      </p>
+                      <p className="text-gray-500">Get notified when someones posts a comment on a posting.</p>
                     </div>
                   </div>
                   <div className="relative flex gap-x-3">
@@ -525,9 +485,7 @@ export default function Profile({ role }) {
                       <label htmlFor="notification_sms" className="font-medium text-gray-900">
                         SMS Push Notifications
                       </label>
-                      <p className="text-gray-500">
-                        Get notified when a candidate applies for a job.
-                      </p>
+                      <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
                     </div>
                   </div>
                 </div>

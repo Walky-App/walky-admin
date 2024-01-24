@@ -1,25 +1,31 @@
-import { useEffect, useState, createContext } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+
 import Layout from './components/layout/'
+
+/** Auth Pages */
 import Login from './pages/login'
 
-import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+/** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
+import EmployeeProfile from './pages/employees/EmployeeProfile'
 
-import ClientDashboard from './pages/client/dashboard'
-
+/** Learn Pages */
 import Learn from './pages/learn'
+
+/** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
 import UsersPage from './pages/admin/users'
+
+/** Client Pages */
+import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
-import { AuthProvider } from './contexts/AuthContext'
-
 
 export default function App() {
-
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -30,6 +36,7 @@ export default function App() {
             <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
               <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
               <Route path="/employee/jobs" element={<EmployeeJobs />} />
+              <Route path="/employee/profile" element={<EmployeeProfile />} />
               {/* LMS Module */}
               <Route path="/learn" element={<Learn />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
