@@ -6,6 +6,7 @@ export const RequestService = async (
   method: string = 'GET',
   body: any = null,
 ): Promise<IRequestService> => {
+  
   const { access_token } = GetTokenInfo()
 
   const url = `${process.env.REACT_APP_PUBLIC_API}/${path}`

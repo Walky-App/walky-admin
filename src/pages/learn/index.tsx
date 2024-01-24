@@ -1,47 +1,37 @@
-import { RequestService } from '@/services/RequestService'
-import SelectedOption from '../../../components/shared/general/SelectedOption'
-import CategoryCards from '../_components/CategoryCards'
-import HeaderComponent from '@/components/shared/general/HeaderComponent'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import CategoryCards from './components/CategoryCards'
+import { Category } from '../../interfaces/Category'
+import { RequestService } from '../../services/RequestService'
+import { useSearchParams } from 'react-router-dom'
+import HeaderComponent from '../../components/shared/general/HeaderComponent'
 
-export default async function categoryPage({ searchParams }) {
+export default function Learn() {
   const categorysOptions = [
     { id: 1, name: 'All Skills' },
     { id: 2, name: 'Not Skills' },
   ]
 
-  const search = searchParams?.search || ''
+  const [searchParams] = useSearchParams()
+  const [search, setSearch] = useState('')
+  const [categories, setCategories] = useState<Category[]>([])
 
-  const categories = [
-    {
-      id: 1,
-      title: 'Harvesting',
-      description:
-        'This course will cover topics related to breeding, growing, and processing cannabis This course will cover topics related to breeding, growing, and processing cannabis This course will cover topics related to breeding, growing, and processing cannabis...',
-      progress: 50,
-    },
+  const fecthData = async () => {
+    const response = await RequestService('categories')
+    //@ts-ignore
+    setCategories(response as Category[])
+  }
 
-    {
-      id: 2,
-      title: 'WPS',
-      description:
-        'This course will cover topics related to breeding, growing, and processing cannabis...',
-      progress: 100,
-    },
-
-    {
-      id: 3,
-      title: 'Orientation',
-      description:
-        'This course will cover topics related to breeding, growing, and processing cannabis...',
-      progress: 70,
-    },
-  ]
+  useEffect(() => {
+    if (categories.length == 0) {
+      fecthData()
+    }
+    setSearch(searchParams.get('search') || '')
+  }, [searchParams])
 
   return (
     <>
       <div className="w-full sm:overflow-x-hidden">
-        <HeaderComponent title={'Learn'} selectedOptions={categorysOptions} />
+        <HeaderComponent title={'Learn'} search selectedOptions={categorysOptions} />
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
@@ -55,8 +45,8 @@ export default async function categoryPage({ searchParams }) {
             <div className=" h-auto rounded-2xl border border-zinc-100 bg-white">
               <div className="m-3 text-2xl text-left">Explore the courses</div>
               <div className="m-3 text-xs text-left pb-2">
-                Get content recommendations in a specialized course by taking a targeted skills
-                assessment & Increase your hourly rate by $2 on completion of the course.
+                Get content recommendations in a specialized course by taking a targeted skills assessment & Increase
+                your hourly rate by $2 on completion of the course.
               </div>
               <div className="grid grid-cols-2 gap-3 m-3 text-stone-500">
                 <div className="sm:h-32 h-auto rounded-2xl border border-zinc-100 bg-neutral-100 p-3 text-xs flex flex-col gap-3">
