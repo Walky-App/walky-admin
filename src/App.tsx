@@ -12,7 +12,7 @@ import ClientDashboard from './pages/client/dashboard'
 import AdminDashboard from './pages/admin/dashboard'
 import UsersPage from './pages/admin/users'
 import Facilities from './pages/client/facilities'
-import FacilityDetail from './pages/client/facilities/[id]/page'
+import FacilityDetail from './pages/client/facilities/DetailView'
 
 export default function App() {
   return (
