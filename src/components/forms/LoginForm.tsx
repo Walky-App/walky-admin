@@ -1,14 +1,15 @@
+import { useContext } from 'react'
+import { AuthContext } from '../../App'
 import { useNavigate } from 'react-router-dom'
 
 import { loginData } from '../../interfaces/Login'
 
-import { useAuth } from '../../contexts/AuthContext'
 import { LoginService } from '../../services/AuthService'
+import { SetToken } from '../../utils/TokenUtils'
 
 export default function LoginForm() {
+  const { setUser } = useContext(AuthContext)
   const navigate = useNavigate()
-  const { login } = useAuth()
-
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
@@ -19,10 +20,13 @@ export default function LoginForm() {
       password: form.password.value,
     }
 
-    const { user }: any = await LoginService(body)
+    const data: any = await LoginService(body)
 
-    if (user) {
-      await login(user)
+    const { access_token, user }: any = data
+
+    if (user && access_token) {
+      SetToken(user.role, access_token)
+      setUser({ ...user, access_token: access_token })
 
       switch (user.role) {
         case 'client':
