@@ -3,36 +3,21 @@ import { LoginData } from '../interfaces/Global'
 export const LoginService = async (body: LoginData) => {
   const url = `${process.env.REACT_APP_PUBLIC_API}/auth/login`
 
-  const headers = {
-    'Content-Type': 'application/json',
-  }
-
   const options: RequestInit = {
     method: 'POST',
     credentials: 'include',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   }
 
   const response = await fetch(url, options)
-  return response.json()
+  return await response.json()
 }
 
 export const LogoutService = async () => {
-  const url = `${process.env.REACT_APP_PUBLIC_API}/auth/logout`
+  localStorage.removeItem('ht_usr')
 
-  const headers = {
-    'Content-Type': 'application/json',
-  }
-
-  const options: RequestInit = {
-    method: 'GET',
-    credentials: 'include',
-    headers,
-  }
-
-  const response = await fetch(url, options)
-  return response.json()
+  return true
 }
 
 export const CheckSession = async () => {

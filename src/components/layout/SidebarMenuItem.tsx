@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from 'react-router-dom'
-import { SideBarData } from './SideBar'
+import { SideBarData } from './Sidebar'
 
 
 interface Props {

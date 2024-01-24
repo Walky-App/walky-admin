@@ -1,16 +1,13 @@
-import { Navigate, Outlet, RouteProps } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Navigate, Outlet, RouteProps } from 'react-router-dom'
+import { GetTokenInfo } from './TokenUtils'
 
-type ProtectedRouteProps = RouteProps & {
-  redirectTo?: string
-}
+type ProtectedRouteProps = RouteProps & { redirectTo?: string }
 
 export function ProtectedRouteAuth({ redirectTo = '/login' }: ProtectedRouteProps) {
-  const { user } = useAuth()
+  const { access_token } = GetTokenInfo()
 
-  if (!user) {
-    return <Navigate to={redirectTo} replace />
-  }
+  if (!access_token) return <Navigate to={redirectTo} replace />
+
   return <Outlet />
 }
 
@@ -20,10 +17,9 @@ type ProtectedRouteByRolProps = RouteProps & {
 }
 
 export function ProtectedRouteRol({ redirectTo, roleAccess }: ProtectedRouteByRolProps) {
-  const { user } = useAuth()
+  const { user } = GetTokenInfo()
 
-  if (user.role !== roleAccess) {
-    return <Navigate to={redirectTo} replace />
-  }
+  if (user.role !== roleAccess) return <Navigate to={redirectTo} replace />
+
   return <Outlet />
 }
