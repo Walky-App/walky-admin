@@ -61,6 +61,8 @@ export default function Profile(user: any) {
     setFormUser(res)
   }
 
+  console.log('formUser', formUser)
+
   return (
     <>
       <div className="border-b border-gray-200 pb-5 w-full mb-12 ">
@@ -145,7 +147,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    value={user?.first_name}
+                    value={formUser.first_name}
                     type="text"
                     disabled
                     name="first_name"
@@ -162,7 +164,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    value={user?.last_name}
+                    value={formUser.last_name}
                     type="text"
                     disabled
                     name="last_name"
@@ -180,7 +182,7 @@ export default function Profile(user: any) {
                 <div className="mt-2">
                   <input
                     disabled
-                    value={user?.email}
+                    value={formUser.email}
                     id="email"
                     name="email"
                     type="email"
@@ -197,7 +199,7 @@ export default function Profile(user: any) {
                 <div className="mt-2">
                   <input
                     type="date"
-                    defaultValue={user?.birthday}
+                    defaultValue={formUser.birthday}
                     // disabled
                     name="birthday"
                     id="birthday"
@@ -213,7 +215,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    defaultValue={user?.gender}
+                    defaultValue={formUser.gender}
                     type="text"
                     // disabled
                     name="gender"
@@ -230,7 +232,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    defaultValue={user?.phone_number}
+                    defaultValue={formUser.phone_number}
                     type="text"
                     // disabled
                     name="phone_number"
@@ -258,7 +260,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    value={user?.address}
+                    value={formUser.address}
                     type="text"
                     name="address"
                     id="address"
@@ -274,7 +276,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    defaultValue={user?.city}
+                    defaultValue={formUser.city}
                     type="text"
                     name="city"
                     id="city"
@@ -290,7 +292,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    defaultValue={user?.state}
+                    defaultValue={formUser.state}
                     type="text"
                     name="state"
                     id="state"
@@ -306,7 +308,7 @@ export default function Profile(user: any) {
                 </label>
                 <div className="mt-2">
                   <input
-                    defaultValue={user?.zip}
+                    defaultValue={formUser.zip}
                     type="text"
                     name="zip"
                     id="zip"
@@ -334,7 +336,7 @@ export default function Profile(user: any) {
                   </label>
                   <div className="mt-2">
                     <input
-                      defaultValue={user?.direct_deposit.bank_name}
+                      defaultValue={formUser.direct_deposit.bank_name}
                       type="text"
                       name="bank_name"
                       id="bank_name"
@@ -349,7 +351,7 @@ export default function Profile(user: any) {
                   </label>
                   <div className="mt-2">
                     <input
-                      defaultValue={user?.direct_deposit.account_number}
+                      defaultValue={formUser.direct_deposit.account_number}
                       type="text"
                       name="account_number"
                       id="account_number"
@@ -365,7 +367,7 @@ export default function Profile(user: any) {
                   </label>
                   <div className="mt-2">
                     <input
-                      defaultValue={user?.direct_deposit.routing_number}
+                      defaultValue={formUser.direct_deposit.routing_number}
                       type="text"
                       name="routing_number"
                       id="routing_number"
@@ -381,7 +383,7 @@ export default function Profile(user: any) {
                   </label>
                   <div className="mt-2">
                     <input
-                      defaultValue={user?.direct_deposit.bank_address}
+                      defaultValue={formUser.direct_deposit.bank_address}
                       type="text"
                       name="bank_address"
                       id="bank_address"
@@ -397,7 +399,7 @@ export default function Profile(user: any) {
                   </label>
                   <div className="mt-2">
                     <input
-                      defaultValue={user?.direct_deposit.bank_city}
+                      defaultValue={formUser.direct_deposit.bank_city}
                       type="text"
                       name="bank_city"
                       id="bank_city"
@@ -413,7 +415,7 @@ export default function Profile(user: any) {
                   </label>
                   <div className="mt-2">
                     <input
-                      defaultValue={user?.direct_deposit.bank_state}
+                      defaultValue={formUser.direct_deposit.bank_state}
                       type="text"
                       name="bank_state"
                       id="bank_state"
@@ -429,7 +431,7 @@ export default function Profile(user: any) {
                   </label>
                   <div className="mt-2">
                     <input
-                      defaultValue={user?.direct_deposit.bank_zip}
+                      defaultValue={formUser.direct_deposit.bank_zip}
                       type="text"
                       name="bank_zip"
                       id="bank_zip"
@@ -457,7 +459,7 @@ export default function Profile(user: any) {
                   <div className="relative flex gap-x-3">
                     <div className="flex h-6 items-center">
                       <input
-                        defaultChecked={user?.notifications?.includes('notification_email')}
+                        defaultChecked={formUser.notifications?.includes('notification_email')}
                         id="notification_email"
                         name="notification_email"
                         type="checkbox"
@@ -474,7 +476,7 @@ export default function Profile(user: any) {
                   <div className="relative flex gap-x-3">
                     <div className="flex h-6 items-center">
                       <input
-                        defaultChecked={user?.notifications?.includes('notification_sms')}
+                        defaultChecked={formUser.notifications?.includes('notification_sms')}
                         id="notification_sms"
                         name="notification_sms"
                         type="checkbox"
