@@ -5,7 +5,9 @@ import { AuthProvider } from './contexts/AuthContext'
 
 import './App.css'
 
+/** Utilities Pages */
 import Layout from './components/layout/'
+import Error404 from './pages/Error404'
 
 /** Auth Pages */
 import Login from './pages/login'
@@ -58,7 +60,7 @@ export default function App() {
               </Route>
             </Route>
           </Route>
-          <Route path="*" element={<h2>Page cannot be found </h2>} />
+          <Route path="*" element={<Error404 />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
