@@ -8,6 +8,8 @@ import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
 import ClientDashboard from './pages/client/dashboard'
+import AdminDashboard from './pages/admin/dashboard'
+import UsersPage from './pages/admin/users'
 
 export default function App() {
   return (
@@ -22,6 +24,10 @@ export default function App() {
               <Route path="/employee/jobs" element={<EmployeeJobs />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
+              </Route>
+              <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UsersPage />} />
               </Route>
             </Route>
           </Route>
