@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
+    "@types/react-table": "^7.7.19",
     "prettier": "3.2.4",
     "tailwindcss": "^3.4.1"
   }
