@@ -17,6 +17,8 @@ import FacilityDetail from './pages/client/facilities/DetailView'
 import AdminDashboard from './pages/admin/dashboard'
 import AdminUsers from './pages/admin/users'
 import AdminFacilities from './pages/admin/facilities'
+import AdminJobs from './pages/admin/jobs'
+// import AdminJobDetail from './pages/admin/jobs/details/AdminJobDetail'
 
 import NewFacility from './pages/client/facilities/NewFacility'
 import { AuthProvider } from './contexts/AuthContext'
@@ -46,6 +48,8 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
+                <Route path="/admin/jobs" element={<AdminJobs />} />
+                {/* <Route path="/admin/jobs/details/:jobId" element={<AdminJobDetail />} /> */}
               </Route>
             </Route>
           </Route>
