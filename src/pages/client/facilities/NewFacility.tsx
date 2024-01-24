@@ -1,22 +1,34 @@
-'use client'
-import { useAuth } from '@/context/AuthContext'
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import { PhotoIcon } from '@heroicons/react/24/solid'
+import * as React from 'react'
 
 export default function NewFacility() {
-  // const {user} = useAuth()
 
-  const handleForm = e => {
+  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    const target = e.target as typeof e.target & {
+      name: { value: string };
+      country: { value: string };
+      address: { value: string };
+      city: { value: string };
+      state: { value: string };
+      zip: { value: string };
+      tax_id: { value: string };
+      phone_number: { value: string };
+      notes: { value: string };
+      active: { value: string };
+    };
+
     const formData = {
-      name: e.target.name.value,
-      country: e.target.country.value,
-      address: e.target.address.value,
-      city: e.target.city.value,
-      state: e.target.state.value,
-      zip: e.target.zip.value,
-      // email: e.target.email.value,
-      tax_id: e.target.tax_id.value,
-      phone_number: e.target.phone_number.value,
+      name: target.name.value,
+      country: target.country.value,
+      address: target.address.value,
+      city: target.city.value,
+      state: target.state.value,
+      zip: target.zip.value,
+      // email: target.email.value,
+      tax_id: target.tax_id.value,
+      phone_number: target.phone_number.value,
       // company_dba: e.target.dba.value,
       //contacts: e.target.contacts.value,
       // role: e.target.contacts.value,
@@ -24,9 +36,9 @@ export default function NewFacility() {
      //state_license: e.target.state_license.value,
       // jobs: e.target.jobs.value, // array of job ids
       // city_license: e.target.city_license.value,
-      notes: e.target.notes.value,
+      notes: target.notes.value,
     }
-    fetch(`${process.env.NEXT_PUBLIC_API}/facilities`, {
+    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
