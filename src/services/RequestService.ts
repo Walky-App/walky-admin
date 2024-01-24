@@ -1,10 +1,4 @@
-import { IRequestService } from '../interfaces/services.interfaces'
-
-export const RequestService = async (
-  path: string,
-  method: string = 'GET',
-  body: any = null,
-): Promise<IRequestService> => {
+export const RequestService = async (path: string, method: string = 'GET', body: any = null): Promise<any> => {
   const url = `${process.env.REACT_APP_PUBLIC_API}/${path}`
   const headers = {
     'Content-Type': 'application/json',

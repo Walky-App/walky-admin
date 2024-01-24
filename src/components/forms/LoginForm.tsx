@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 
-import { loginData } from '../../interfaces/Login'
 
 import { useAuth } from '../../contexts/AuthContext'
 import { LoginService } from '../../services/AuthService'
+import { LoginData } from '../../interfaces/Global'
 
 export default function LoginForm() {
   const navigate = useNavigate()
@@ -14,7 +14,7 @@ export default function LoginForm() {
     event.preventDefault()
     const form = event.target
 
-    const body: loginData = {
+    const body: LoginData = {
       email: form.email.value,
       password: form.password.value,
     }
