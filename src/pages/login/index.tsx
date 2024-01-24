@@ -1,8 +1,9 @@
-import * as React from 'react'
+import { useState } from 'react'
+
 import LoginForm from '../../components/forms/LoginForm'
 
 export default function Home() {
-  const [userForm, setUserForm] = React.useState('login')
+  const [userForm, setUserForm] = useState('login')
 
   const handleUserForm = () => {
     if (userForm === 'login') {
