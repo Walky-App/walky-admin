@@ -15,7 +15,7 @@ import AdminDashboard from './pages/admin/dashboard'
 import UsersPage from './pages/admin/users'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
-import NewFacility from './pages/client/facilities/new/page'
+import NewFacility from './pages/client/facilities/NewFacility'
 
 export const AuthContext = createContext({} as any)
 
