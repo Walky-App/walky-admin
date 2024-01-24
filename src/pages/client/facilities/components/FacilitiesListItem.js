@@ -1,11 +1,10 @@
-'use client'
 import * as React from 'react'
 import {
-  BriefcaseIcon,
-  PhoneIcon,
-  MapPinIcon,
-  CreditCardIcon,
-  BookmarkIcon,
+  // BriefcaseIcon,
+  // PhoneIcon,
+  // MapPinIcon,
+  // CreditCardIcon,
+  // BookmarkIcon,
   ChevronRightIcon,
 } from '@heroicons/react/20/solid'
 
