@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
 
-export default function UsersPage() {
+export default function AdminUsers() {
   const [usersData, setUsersData] = React.useState<any>([])
 
   React.useEffect(() => {
