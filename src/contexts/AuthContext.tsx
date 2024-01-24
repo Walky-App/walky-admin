@@ -1,61 +1,26 @@
-import { CheckSession, LogoutService } from '../services/AuthService';
-import { createContext, useCallback, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 interface AuthContextType {
   user: any | null;
-  login: (user: any) => void;
-  logout: () => void;
+  setUser: (user: any) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  login: () => { },
-  logout: () => { }
+  setUser: () => { },
 });
 
 const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState<any>(null)
-  const [loading, setLoading] = useState(true);
-
-  const login = (user: any) => {
-    setUser(user)
-  }
-
-  const logout = useCallback(() => {
-    if (user !== null) {
-      LogoutService()
-      window.location.href = '/login'
-    }
-    setUser(null);
-  }, []);
+  const [user, setUser] = useState<any>({})
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await CheckSession();
-        if (response) {
-          if (response.status === 401) {
-            return logout();
-          }
-          login(response);
-        } else {
-          logout();
-        }
-      } catch (error) {
-        console.error('Error al verificar la sesión:', error);
-        logout();
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkSession();
-  }, [logout]);
+    const ls_data = JSON.parse(localStorage.getItem('ht_usr') as any)
+    if (ls_data && ls_data.role) {
+      setUser({ ...user, role: ls_data.role })
+    }
+  }, [])
 
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
-
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>
 }
 
 

@@ -6,7 +6,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import { LogoutService } from '../../services/AuthService'
-import { AuthContext } from '../../App'
+import { useAuth } from '../../contexts/AuthContext'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -14,7 +14,7 @@ function classNames(...classes: any) {
 
 export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const { user } = useContext(AuthContext)
+  const { user } = useAuth()
   const navigate = useNavigate()
 
   let profilePath: string
