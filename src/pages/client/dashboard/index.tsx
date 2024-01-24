@@ -1,7 +1,7 @@
-import { useAuth } from '../../../contexts/UserContext'
+import { useAuth } from "../../../contexts/AuthContext"
 import { TaskList, ClassList, CalendarWidget, MessagesWidget } from './widgets'
 
-export default function Dashboard() {
+export default function ClientDashboard() {
   const { user } = useAuth()
 
   console.log('employee user->', user)
