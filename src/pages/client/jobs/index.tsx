@@ -1,11 +1,24 @@
-import Link from 'next/link'
-import { RequestService } from '@/services/RequestService'
-import { PlusIcon } from '@heroicons/react/20/solid'
-import JobListItem from '@/app/employee/jobs/components/JobListItem'
-import HeaderComponent from '@/components/shared/general/HeaderComponent'
+import * as React from 'react'
 
-export default async function Jobs() {
-  const jobs = await RequestService('jobs/')
+
+import { Link } from 'react-router-dom'
+import { RequestService } from '../../../services/RequestService'
+import { PlusIcon } from '@heroicons/react/20/solid'
+import JobListItem from '../../employees/jobs/components/JobListItem'
+import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+
+export default function Jobs() {
+  const [jobs, setJobs] = React.useState<any>([])
+
+  React.useEffect(() => {
+    const getJobs = async () => {
+      const allJobs = await RequestService('jobs')
+      setJobs(allJobs)
+    }
+
+    getJobs()
+  }, []) 
+
 
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
@@ -21,8 +34,8 @@ export default async function Jobs() {
           <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
 
       <ul role="list" className="grid mt-10 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
-        {jobs?.map(job => (
-          <Link href={`/employee/jobs/${job._id}`} key={job._id}>
+        {jobs?.map((job: any) => (
+          <Link key={job._id} to={`/employee/jobs/${job._id}`} >
             <JobListItem key={job._id} job={job} />
           </Link>
         ))}

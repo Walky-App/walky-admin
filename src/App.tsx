@@ -15,6 +15,7 @@ import AdminDashboard from './pages/admin/dashboard'
 import UsersPage from './pages/admin/users'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
+import Jobs from './pages/client/jobs'
 
 export const AuthContext = createContext({} as any)
 
@@ -44,6 +45,7 @@ export default function App() {
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
                 <Route path="/client/facilities" element={<Facilities />} />
                 <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
+                <Route path="/client/jobs" element={<Jobs />} />
               </Route>
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
