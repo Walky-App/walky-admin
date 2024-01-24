@@ -10,7 +10,7 @@ import EmployeeJobs from './pages/employees/jobs'
 
 import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
-import FacilityDetail from './pages/client/facilities/[id]/page'
+import FacilityDetail from './pages/client/facilities/DetailView'
 
 export default function App() {
   return (
