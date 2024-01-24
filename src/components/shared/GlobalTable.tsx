@@ -1,4 +1,3 @@
-'use client'
 import { useEffect, useState } from 'react'
 import {
   useTable,
@@ -17,9 +16,8 @@ import {
   FaSortDown,
 } from "react-icons/fa";
 import { Listbox, Transition } from "@headlessui/react";
-import { async } from '@firebase/util';
 
-function Avatar({ src, alt = "avatar" }) {
+function Avatar({ src, alt = "avatar" }: { src: any; alt?: any }) {
   return (
     <img src={src} alt={alt} className="w-8 h-8 rounded-full object-cover" />
   );
@@ -36,6 +34,18 @@ function InputGroup7({
   inputClassName = "",
   decorationClassName = "",
   disabled,
+}: {
+  label: any;
+  name: any;
+  value: any;
+  onChange: any;
+  type?: any;
+  decoration?: any;
+  className?: any;
+  inputClassName?: any;
+  decorationClassName?: any;
+  disabled?: any;
+
 }) {
   return (
     <div
@@ -49,15 +59,13 @@ function InputGroup7({
         placeholder={label}
         aria-label={label}
         onChange={onChange}
-        className={`peer block w-full p-3 text-gray-600 focus:outline-none focus:ring-0 appearance-none ${
-          disabled ? "bg-gray-200" : ""
-        } ${inputClassName}`}
+        className={`peer block w-full p-3 text-gray-600 focus:outline-none focus:ring-0 appearance-none ${disabled ? "bg-gray-200" : ""
+          } ${inputClassName}`}
         disabled={disabled}
       />
       <div
-        className={`flex items-center pl-3 py-3 text-gray-600 ${
-          disabled ? "bg-gray-200" : ""
-        } ${decorationClassName}`}
+        className={`flex items-center pl-3 py-3 text-gray-600 ${disabled ? "bg-gray-200" : ""
+          } ${decorationClassName}`}
       >
         {decoration}
       </div>
@@ -69,12 +77,17 @@ function GlobalSearchFilter1({
   globalFilter,
   setGlobalFilter,
   className = "",
+}: {
+  globalFilter: any;
+  setGlobalFilter: any;
+  className?: any;
+
 }) {
   return (
     <InputGroup7
       name="search"
       value={globalFilter || ""}
-      onChange={(e) => setGlobalFilter(e.target.value)}
+      onChange={(e: any) => setGlobalFilter(e.target.value)}
       label="Search"
       decoration={<FaSearch size="1rem" className="text-gray-400" />}
       className={className}
@@ -82,9 +95,9 @@ function GlobalSearchFilter1({
   );
 }
 
-function SelectMenu1({ value, setValue, options, className = "", disabled }) {
+function SelectMenu1({ value, setValue, options, className = "", disabled }: { value: any; setValue: any; options: any; className?: any; disabled?: any; }) {
   const selectedOption = useMemo(
-    () => options.find((o) => o.id === value),
+    () => options.find((o: any) => o.id === value),
     [options, value]
   );
   return (
@@ -92,11 +105,10 @@ function SelectMenu1({ value, setValue, options, className = "", disabled }) {
       <div className={`relative w-full ${className}`}>
         <Listbox.Button
           className={`relative w-full  rounded-xl py-3 pl-3 pr-10 text-base text-gray-700 text-left shadow-[0_4px_10px_rgba(0,0,0,0.03)] focus:outline-none
-          ${
-            disabled
+          ${disabled
               ? "bg-gray-200 cursor-not-allowed"
               : "bg-white cursor-default"
-          }
+            }
         
         `}
         >
@@ -116,12 +128,11 @@ function SelectMenu1({ value, setValue, options, className = "", disabled }) {
           leaveTo="opacity-0"
         >
           <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white text-base shadow-[0_4px_10px_rgba(0,0,0,0.03)] focus:outline-none">
-            {options.map((option) => (
+            {options.map((option: any) => (
               <Listbox.Option
                 key={option.id}
                 className={({ active }) =>
-                  `relative cursor-default select-none py-3 pl-10 pr-4 ${
-                    active ? "bg-red-100" : ""
+                  `relative cursor-default select-none py-3 pl-10 pr-4 ${active ? "bg-red-100" : ""
                   }`
                 }
                 value={option.id}
@@ -129,9 +140,8 @@ function SelectMenu1({ value, setValue, options, className = "", disabled }) {
                 {({ selected }) => (
                   <>
                     <span
-                      className={`block truncate ${
-                        selected ? "font-medium" : "font-normal"
-                      }`}
+                      className={`block truncate ${selected ? "font-medium" : "font-normal"
+                        }`}
                     >
                       {option.caption}
                     </span>
@@ -151,16 +161,15 @@ function SelectMenu1({ value, setValue, options, className = "", disabled }) {
   );
 }
 
-function Button2({ content, onClick, active, disabled }) {
+function Button2({ content, onClick, active, disabled }: any) {
   return (
     <button
       className={`flex flex-col cursor-pointer items-center justify-center w-9 h-9 shadow-[0_4px_10px_rgba(0,0,0,0.03)] text-sm font-normal transition-colors rounded-lg
       ${active ? "bg-red-500 text-white" : "text-red-500"}
-      ${
-        !disabled
+      ${!disabled
           ? "bg-white hover:bg-red-500 hover:text-white"
           : "text-red-300 bg-white cursor-not-allowed"
-      }
+        }
       `}
       onClick={onClick}
       disabled={disabled}
@@ -176,6 +185,12 @@ function PaginationNav1({
   canNextPage,
   pageCount,
   pageIndex,
+}: {
+  gotoPage: any;
+  canPreviousPage: any;
+  canNextPage: any;
+  pageCount: any;
+  pageIndex: any;
 }) {
   const renderPageLinks = useCallback(() => {
     if (pageCount === 0) return null;
@@ -243,14 +258,21 @@ function TableComponent({
   getTableBodyProps,
   rows,
   prepareRow,
+}: {
+  getTableProps: any;
+  headerGroups: any;
+  getTableBodyProps: any;
+  rows: any;
+  prepareRow: any;
+
 }) {
   return (
     <div className="w-full min-w-[30rem] p-4 bg-white rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)]">
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup) => (
+          {headerGroups.map((headerGroup: any) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
+              {headerGroup.headers.map((column: any) => (
                 <th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                   className="px-3 text-start text-xs font-light uppercase cursor-pointer"
@@ -262,16 +284,14 @@ function TableComponent({
                     </div>
                     <div className="flex flex-col">
                       <FaSortUp
-                        className={`text-sm translate-y-1/2 ${
-                          column.isSorted && !column.isSortedDesc
+                        className={`text-sm translate-y-1/2 ${column.isSorted && !column.isSortedDesc
                             ? "text-red-400"
                             : "text-gray-300"
-                        }`}
+                          }`}
                       />
                       <FaSortDown
-                        className={`text-sm -translate-y-1/2 ${
-                          column.isSortedDesc ? "text-red-400" : "text-gray-300"
-                        }`}
+                        className={`text-sm -translate-y-1/2 ${column.isSortedDesc ? "text-red-400" : "text-gray-300"
+                          }`}
                       />
                     </div>
                   </div>
@@ -281,11 +301,11 @@ function TableComponent({
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
+          {rows.map((row: any, i: any) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()} className="hover:bg-gray-100">
-                {row.cells.map((cell) => {
+                {row.cells.map((cell: any) => {
                   return (
                     <td
                       {...cell.getCellProps()}
@@ -303,10 +323,10 @@ function TableComponent({
     </div>
   );
 }
-function GlobalTable( {data, columns}) {
-  
+function GlobalTable({ data, columns }: { data: any, columns: any }) {
+
   const {
-    getTableProps,  
+    getTableProps,
     getTableBodyProps,
     headerGroups,
     prepareRow,
@@ -319,10 +339,11 @@ function GlobalTable( {data, columns}) {
     gotoPage,
     setPageSize,
     state: { pageIndex, pageSize },
-  } = useTable(
+  }: any = useTable(
     {
       columns,
       data,
+      //@ts-ignore
       initialState: { pageSize: 5 },
     },
     useGlobalFilter,

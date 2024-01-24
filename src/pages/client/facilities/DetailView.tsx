@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { RequestService } from '../../../../services/RequestService';
+import { RequestService } from '../../../services/RequestService';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 
 export default function FacilityDetail() {
   const { facilityId } = useParams();
-  const [facility, setFacility] = useState(null);
+  const [facility, setFacility] = React.useState<any>([])
 
   useEffect(() => {
     const fetchFacility = async () => {
@@ -15,27 +16,41 @@ export default function FacilityDetail() {
     fetchFacility();
   }, [facilityId]);
 
+  
 
-  const handleForm = e => {
+  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    const target = e.target as typeof e.target & {
+      name: { value: string };
+      country: { value: string };
+      address: { value: string };
+      city: { value: string };
+      state: { value: string };
+      zip: { value: string };
+      tax_id: { value: string };
+      phone_number: { value: string };
+      notes: { value: string };
+    };
+
     const formValues = {
-      name: e.target.name.value,
-      country: e.target.country.value,
-      address: e.target.address.value,
-      city: e.target.city.value,
-      state: e.target.state.value,
-      zip: e.target.zip.value,
-      // email: e.target.email.value,
-      tax_id: e.target.tax_id.value,
-      phone_number: e.target.phone_number.value,
-      // company_dba: e.target.dba.value,
-      //contacts: e.target.contacts.value,
-      // role: e.target.contacts.value,
+      name: target.name.value,
+      country: target.country.value,
+      address: target.address.value,
+      city: target.city.value,
+      state: target.state.value,
+      zip: target.zip.value,
+      // email: target.email.value,
+      tax_id: target.tax_id.value,
+      phone_number: target.phone_number.value,
+      // company_dba: target.dba.value,
+      //contacts: target.contacts.value,
+      // role: target.contacts.value,
       // active: "true",
-     //state_license: e.target.state_license.value,
-      // jobs: e.target.jobs.value, // array of job ids
-      // city_license: e.target.city_license.value,
-      notes: e.target.notes.value,
+     //state_license: target.state_license.value,
+      // jobs: target.jobs.value, // array of job ids
+      // city_license: target.city_license.value,
+      notes: target.notes.value,
     }
     fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`, {
       method: 'PATCH',
