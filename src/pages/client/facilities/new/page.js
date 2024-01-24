@@ -1,9 +1,6 @@
-'use client'
-import { useAuth } from '@/context/AuthContext'
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import { PhotoIcon } from '@heroicons/react/24/solid'
 
 export default function NewFacility() {
-  // const {user} = useAuth()
 
   const handleForm = e => {
     e.preventDefault()
@@ -26,7 +23,7 @@ export default function NewFacility() {
       // city_license: e.target.city_license.value,
       notes: e.target.notes.value,
     }
-    fetch(`${process.env.NEXT_PUBLIC_API}/facilities`, {
+    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
