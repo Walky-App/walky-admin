@@ -15,6 +15,7 @@ import AdminDashboard from './pages/admin/dashboard'
 import UsersPage from './pages/admin/users'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
+import NewFacility from './pages/client/facilities/NewFacility'
 import { AuthProvider } from './contexts/AuthContext'
 
 
@@ -35,6 +36,7 @@ export default function App() {
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
                 <Route path="/client/facilities" element={<Facilities />} />
+                <Route path="/client/facilities/new" element={<NewFacility />} />
                 <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
               </Route>
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
