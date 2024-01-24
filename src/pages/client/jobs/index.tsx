@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { PlusIcon } from '@heroicons/react/20/solid'
-import JobListItem from '../../employees/jobs/components/JobListItem'
+import JobListItem from '../../client/jobs/components/JobListItem'
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 
 export default function Jobs() {
