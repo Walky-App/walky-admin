@@ -4,12 +4,12 @@ export default function EmployeeDashboard() {
   return (
     <>
       <div className="w-full sm:w-1/2">
-        {/* <TaskList /> */}
-        {/* <ClassList /> */}
+        <TaskList />
+        <ClassList />
       </div>
       <div className="w-full sm:w-1/2">
-        {/* <CalendarWidget /> */}
-        {/* <MessagesWidget /> */}
+        <CalendarWidget />
+        <MessagesWidget />
       </div>
     </>
   )
