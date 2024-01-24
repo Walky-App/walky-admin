@@ -48,9 +48,6 @@ export default function FacilityDetail() {
   }
 
   if (!facility) return <div>Loading...</div>;
-  
-  console.log(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`)
-
   return (
     <>
       <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
