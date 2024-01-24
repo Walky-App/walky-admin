@@ -1,31 +1,40 @@
-import { useEffect, useState, createContext } from 'react'
-import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+
+import { AuthProvider } from './contexts/AuthContext'
+
+import './App.css'
+
+/** Utilities Pages */
 import Layout from './components/layout/'
+import Error404 from './pages/Error404'
+
+/** Auth Pages */
 import Login from './pages/login'
 
-import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+/** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
 
-import ClientDashboard from './pages/client/dashboard'
-
+/** Learn Pages */
 import Learn from './pages/learn'
+
+/** Client Pages */
+import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
+import NewFacility from './pages/client/facilities/NewFacility'
 import Jobs from './pages/client/jobs'
 import AddJob from './pages/client/jobs/AddJob'
 
+/** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
 import AdminUsers from './pages/admin/users'
 import AdminFacilities from './pages/admin/facilities'
-
-import NewFacility from './pages/client/facilities/NewFacility'
-import { AuthProvider } from './contexts/AuthContext'
-
+import AdminJobs from './pages/admin/jobs'
+// import AdminJobDetail from './pages/admin/jobs/details/AdminJobDetail'
 
 export default function App() {
-
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -50,10 +59,12 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
+                <Route path="/admin/jobs" element={<AdminJobs />} />
+                {/* <Route path="/admin/jobs/details/:jobId" element={<AdminJobDetail />} /> */}
               </Route>
             </Route>
           </Route>
-          <Route path="*" element={<h2>Page cannot be found </h2>} />
+          <Route path="*" element={<Error404 />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
