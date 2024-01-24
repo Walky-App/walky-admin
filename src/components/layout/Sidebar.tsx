@@ -1,13 +1,10 @@
-import { useContext } from 'react'
-
-import { AuthContext } from '../../App'
-
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
 import { FaBusinessTime, FaFileContract, FaFileInvoiceDollar } from 'react-icons/fa'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
 import { MdSchool, MdLogout } from 'react-icons/md'
 import SidebarMenuItem from './SidebarMenuItem'
+import { useAuth } from '../../contexts/AuthContext'
 
 export interface SideBarData {
   id: number
@@ -17,7 +14,7 @@ export interface SideBarData {
 }
 
 export default function SideBar() {
-  const { user } = useContext(AuthContext)
+  const { user } = useAuth()
 
   const unread = 3 // TODO: get unread messages from API
   interface SideBarOptions {
