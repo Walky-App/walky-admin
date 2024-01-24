@@ -3,6 +3,7 @@ import * as React from 'react'
 import FacilitiesHeader from './components/FacilitiesHeader'
 import FacilitiesListItem from './components/FacilitiesListItem'
 import { RequestService } from '../../../services/RequestService'
+import { Link } from 'react-router-dom'
 
 export default function Facilities() {
   const [facilities, setFacilities] = React.useState<any>([])
@@ -22,9 +23,9 @@ export default function Facilities() {
 
       <ul role="list" className="grid mt-10 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
         {facilities?.map((facility: any) => (
-          <a key={facility._id} href={`/client/facilities/${facility._id}`}>
+          <Link key={facility._id} to={`/client/facilities/${facility._id}`}>
             <FacilitiesListItem facility={facility} />
-          </a>
+          </Link>
         ))}
       </ul>
     </div>
