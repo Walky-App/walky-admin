@@ -9,6 +9,8 @@ import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
 
 import ClientDashboard from './pages/client/dashboard'
+import AdminDashboard from './pages/admin/dashboard'
+import UsersPage from './pages/admin/users'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
 
@@ -27,6 +29,10 @@ export default function App() {
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
                 <Route path="/client/facilities" element={<Facilities />} />
                 <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
+              </Route>
+              <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UsersPage />} />
               </Route>
             </Route>
           </Route>
