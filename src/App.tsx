@@ -9,6 +9,8 @@ import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
 
 import ClientDashboard from './pages/client/dashboard'
+
+import Learn from './pages/learn'
 import AdminDashboard from './pages/admin/dashboard'
 import UsersPage from './pages/admin/users'
 import Facilities from './pages/client/facilities'
@@ -25,6 +27,8 @@ export default function App() {
             <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
               <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
               <Route path="/employee/jobs" element={<EmployeeJobs />} />
+              {/* LMS Module */}
+              <Route path="/learn" element={<Learn />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
                 <Route path="/client/facilities" element={<Facilities />} />
