@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { RequestService } from '../../../../services/RequestService';
+import { RequestService } from '../../../services/RequestService';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 
 export default function FacilityDetail() {
@@ -15,6 +15,7 @@ export default function FacilityDetail() {
     fetchFacility();
   }, [facilityId]);
 
+  
 
   const handleForm = e => {
     e.preventDefault()
