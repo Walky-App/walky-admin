@@ -1,4 +1,3 @@
-'use client'
 import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import {
@@ -7,8 +6,17 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from '@heroicons/react/20/solid'
+import { SelectedOptionInterface } from '../../../interfaces/Global'
 
-function classNames(...classes) {
+interface Props {
+  selectedOptions: SelectedOptionInterface[]
+  defaultOption?: number
+  showInputIcon?: boolean
+  classStyle?: string
+  roundedOrientation: string
+}
+
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
@@ -18,7 +26,7 @@ export default function SelectedOption({
   showInputIcon = true,
   classStyle = '',
   roundedOrientation,
-}) {
+}: Props) {
   const [selected, setSelected] = useState(selectedOptions[defaultOption])
 
   return (
@@ -28,9 +36,8 @@ export default function SelectedOption({
           <>
             <div className="relative">
               <Listbox.Button
-                className={`relative h-9 w-full ${
-                  roundedOrientation ? roundedOrientation : 'rounded-md'
-                } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
+                className={`relative h-9 w-full ${roundedOrientation ? roundedOrientation : 'rounded-md'
+                  } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
                 <div className="flex gap-1 items-center justify-start">
                   {showInputIcon ? (
                     <span className="block truncate">

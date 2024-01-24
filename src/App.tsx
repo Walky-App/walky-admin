@@ -8,6 +8,7 @@ import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
 import ClientDashboard from './pages/client/dashboard'
+import Learn from './pages/learn'
 
 export default function App() {
   return (
@@ -20,6 +21,8 @@ export default function App() {
             <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
               <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
               <Route path="/employee/jobs" element={<EmployeeJobs />} />
+              {/* LMS Module */}
+              <Route path="/learn" element={<Learn />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
               </Route>

@@ -1,6 +1,6 @@
-import { loginData } from '@/interfaces/Login'
+import { LoginData } from '../interfaces/Global'
 
-export const LoginService = async (body: loginData) => {
+export const LoginService = async (body: LoginData) => {
   const url = `${process.env.REACT_APP_PUBLIC_API}/auth/login`
 
   const headers = {
