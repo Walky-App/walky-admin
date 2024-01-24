@@ -1,12 +1,13 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import EmployeeDashboard from './pages/employee/dashboard'
-import { AuthProvider } from './contexts/UserContext'
+import { AuthProvider } from './contexts/AuthContext'
 import Layout from './components/layout/Layout'
 import Login from './pages/login'
 import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+import EmployeeDashboard from './pages/employees/dashboard'
 
 export default function App() {
+
   return (
     <AuthProvider>
       <BrowserRouter>
