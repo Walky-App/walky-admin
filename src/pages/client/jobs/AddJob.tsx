@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { PhotoIcon } from '@heroicons/react/24/solid'
-//import TitleComponent from '@/components/shared/general/TitleComponent'
+import TitleComponent from '../../../components/shared/general/TitleComponent'
 
 export default function NewJob() {
 
@@ -51,7 +51,7 @@ export default function NewJob() {
 
   return (
     <>
-    {/* <TitleComponent title={'Jobs'} /> */}
+    <TitleComponent title={'Jobs'} />
     
     <form onSubmit={handleForm}>
 
