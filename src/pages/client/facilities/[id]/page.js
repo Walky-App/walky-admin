@@ -1,8 +1,20 @@
-import { RequestService } from '@/services/RequestService'
-import { PhotoIcon } from '@heroicons/react/24/solid'
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { RequestService } from '../../../../services/RequestService';
+import { PhotoIcon } from '@heroicons/react/24/solid';
 
-export default async function facilityDetail({ params }) {
-  const facility = await RequestService(`facilities/${params.id}`)
+export default function FacilityDetail() {
+  const { facilityId } = useParams();
+  const [facility, setFacility] = useState(null);
+
+  useEffect(() => {
+    const fetchFacility = async () => {
+      const data = await RequestService(`facilities/${facilityId}`);
+      setFacility(data);
+    };
+    fetchFacility();
+  }, [facilityId]);
+
 
   const handleForm = e => {
     e.preventDefault()
@@ -25,7 +37,7 @@ export default async function facilityDetail({ params }) {
       // city_license: e.target.city_license.value,
       notes: e.target.notes.value,
     }
-    fetch(`${process.env.NEXT_PUBLIC_API}/facilities/${params.id}`, {
+    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -35,6 +47,7 @@ export default async function facilityDetail({ params }) {
     })
   }
 
+  if (!facility) return <div>Loading...</div>;
   return (
     <>
       <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">

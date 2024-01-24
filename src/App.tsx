@@ -10,6 +10,7 @@ import EmployeeJobs from './pages/employees/jobs'
 
 import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
+import FacilityDetail from './pages/client/facilities/[id]/page'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
                 <Route path="/client/facilities" element={<Facilities />} />
+                <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
               </Route>
             </Route>
           </Route>
