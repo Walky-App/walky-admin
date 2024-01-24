@@ -1,26 +1,25 @@
-import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { IBody } from '../../interfaces/form.interfaces'
+import { loginData } from '../../interfaces/Login'
 
-import { useAuth } from '../../contexts/UserContext'
-import { RequestService } from '../../services/RequestService'
+import { useAuth } from '../../contexts/AuthContext'
+import { LoginService } from '../../services/AuthService'
 
 export default function LoginForm() {
   const navigate = useNavigate()
-
   const { login } = useAuth()
+
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
     const form = event.target
 
-    const body: IBody = {
-      email: form?.email.value,
-      password: form?.password.value,
+    const body: loginData = {
+      email: form.email.value,
+      password: form.password.value,
     }
 
-    const { user }: any = await RequestService('auth/login', 'POST', body)
+    const { user }: any = await LoginService(body)
 
     if (user) {
       await login(user)
@@ -50,6 +49,7 @@ export default function LoginForm() {
 
         <div className="relative">
           <input
+            required
             type="email"
             name="email"
             className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
@@ -81,6 +81,7 @@ export default function LoginForm() {
 
         <div className="relative">
           <input
+            required
             type="password"
             name="password"
             className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
