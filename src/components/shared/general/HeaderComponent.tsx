@@ -1,7 +1,14 @@
 import SelectedOption from './SelectedOption'
 import Search from './Search'
+import { SelectedOptionInterface } from '../../../interfaces/Global'
 
-export default function HeaderComponent({ title, selectedOptions }) {
+interface Props {
+  title: string
+  search?: boolean
+  selectedOptions?: SelectedOptionInterface[]
+}
+
+export default function HeaderComponent({ title, selectedOptions, search = false }: Props) {
   return (
     <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between mb-10">
       <h3 className="text-base font-semibold leading-6 text-gray-900">{title}</h3>
@@ -16,7 +23,7 @@ export default function HeaderComponent({ title, selectedOptions }) {
               <SelectedOption selectedOptions={selectedOptions} roundedOrientation="rounded-r-md" />
             </>
           ) : (
-            <Search searchQuery="search" />
+            search && <Search searchQuery="search" roundedOrientation="rounded-l-md" />
           )}
         </div>
       </div>
