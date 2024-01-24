@@ -1,7 +1,7 @@
+import { useEffect, useState, createContext } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './contexts/AuthContext'
-import Layout from './components/layout/Layout'
+import Layout from './components/layout/'
 import Login from './pages/login'
 
 import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
@@ -17,9 +17,20 @@ import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
 import NewFacility from './pages/client/facilities/new/page'
 
+export const AuthContext = createContext({} as any)
+
 export default function App() {
+  const [user, setUser] = useState<any>({})
+
+  useEffect(() => {
+    const ls_data = JSON.parse(localStorage.getItem('ht_usr') as any)
+    if (ls_data && ls_data.role) {
+      setUser({ ...user, role: ls_data.role })
+    }
+  }, [])
+
   return (
-    <AuthProvider>
+    <AuthContext.Provider value={{ user, setUser }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -42,8 +53,9 @@ export default function App() {
               </Route>
             </Route>
           </Route>
+          <Route path="*" element={<h2>Page cannot be found </h2>} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+    </AuthContext.Provider>
   )
 }

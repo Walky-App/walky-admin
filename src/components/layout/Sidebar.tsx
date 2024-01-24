@@ -1,10 +1,13 @@
+import { useContext } from 'react'
+
+import { AuthContext } from '../../App'
+
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
 import { FaBusinessTime, FaFileContract, FaFileInvoiceDollar } from 'react-icons/fa'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
 import { MdSchool, MdLogout } from 'react-icons/md'
 import SidebarMenuItem from './SidebarMenuItem'
-import { useAuth } from '../../contexts/AuthContext'
 
 export interface SideBarData {
   id: number
@@ -13,13 +16,13 @@ export interface SideBarData {
   icon: React.ReactNode
 }
 
-interface SideBarOptions {
-  [key: string]: SideBarData[]
-}
-
-
 export default function SideBar() {
-  const { user } = useAuth()
+  const { user } = useContext(AuthContext)
+
+  const unread = 3 // TODO: get unread messages from API
+  interface SideBarOptions {
+    [key: string]: SideBarData[]
+  }
 
   const links: SideBarOptions = {
     employee: [
@@ -92,15 +95,18 @@ export default function SideBar() {
       { id: 5, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
     ],
   }
+
   return (
     <aside className="w-64 h-screen transition-transform" aria-label="Sidebar">
       <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 dark:bg-zinc-800">
         <ul className="space-y-2 font-medium">
-          {links[user.role].map(link => (
-            <li key={link.id}>
-              <SidebarMenuItem link={link} />
-            </li>
-          ))}
+          {user &&
+            user.role &&
+            links[user.role].map(link => (
+              <li key={link.id}>
+                <SidebarMenuItem link={link} />
+              </li>
+            ))}
         </ul>
       </div>
     </aside>

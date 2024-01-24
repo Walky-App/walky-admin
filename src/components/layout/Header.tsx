@@ -1,33 +1,33 @@
-import * as React from 'react'
-
-// import { useAuth } from '@/context/AuthContext'
-
-// import { LogoutService } from '@/services/AuthService'
+import { useState, useContext, Fragment, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Menu, Transition } from '@headlessui/react'
-
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+
+import { LogoutService } from '../../services/AuthService'
+import { AuthContext } from '../../App'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Header() {
-  const [showMobileMenu, setShowMobileMenu] = React.useState(false)
-  // const { user } = useAuth()
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const { user } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   let profilePath: string
 
-  // React.useEffect(() => {
-  //   if (user?.role === 'employee') {
-  //     profilePath = '/employee/profile'
-  //   } else if (user?.role === 'client') {
-  //     profilePath = '/client/profile'
-  //   } else if (user?.role === 'admin') {
-  //     profilePath = '/admin/profile'
-  //   }
-  // }, [user])
+  useEffect(() => {
+    if (user.role === 'employee') {
+      profilePath = '/employee/profile'
+    } else if (user.role === 'client') {
+      profilePath = '/client/profile'
+    } else if (user.role === 'admin') {
+      profilePath = '/admin/profile'
+    }
+  }, [user.role])
 
   const handleBurgerClick = () => {
     setShowMobileMenu(true)
@@ -37,11 +37,16 @@ export default function Header() {
     setShowMobileMenu(false)
   }
 
+  const handleLogout = () => {
+    LogoutService()
+    navigate('/login')
+  }
+
   return (
     <header className="fixed z-10 top-0 w-full py-4 bg-zinc-50 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-10">
-          <a href="/">
+          <a href={user ? `/${user.role}/dashboard` : '/'}>
             <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp-Temps" className="h-12 w-auto mr-2" />
           </a>
         </div>
@@ -89,7 +94,7 @@ export default function Header() {
               </Menu.Button>
             </div>
             <Transition
-              as={React.Fragment}
+              as={Fragment}
               enter="transition ease-out duration-100"
               enterFrom="transform opacity-0 scale-95"
               enterTo="transform opacity-100 scale-100"
@@ -119,7 +124,7 @@ export default function Header() {
                   {({ active }) => (
                     <a
                       href="#"
-                      // onClick={() => LogoutService()}
+                      onClick={handleLogout}
                       className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       Sign out
                     </a>
