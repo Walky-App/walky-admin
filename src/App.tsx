@@ -11,26 +11,21 @@ import EmployeeJobs from './pages/employees/jobs'
 import ClientDashboard from './pages/client/dashboard'
 
 import Learn from './pages/learn'
-import AdminUsers from './pages/admin/users'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
+
 import AdminDashboard from './pages/admin/dashboard'
+import AdminUsers from './pages/admin/users'
 import AdminFacilities from './pages/admin/facilities'
 
-export const AuthContext = createContext({} as any)
+
+import { AuthProvider } from './contexts/AuthContext'
+
 
 export default function App() {
-  const [user, setUser] = useState<any>({})
-
-  useEffect(() => {
-    const ls_data = JSON.parse(localStorage.getItem('ht_usr') as any)
-    if (ls_data && ls_data.role) {
-      setUser({ ...user, role: ls_data.role })
-    }
-  }, [])
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -56,6 +51,6 @@ export default function App() {
           <Route path="*" element={<h2>Page cannot be found </h2>} />
         </Routes>
       </BrowserRouter>
-    </AuthContext.Provider>
+    </AuthProvider>
   )
 }
