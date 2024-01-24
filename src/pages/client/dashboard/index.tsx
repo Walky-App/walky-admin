@@ -1,7 +1,6 @@
 import { TaskList, ClassList, CalendarWidget, MessagesWidget } from './widgets'
 
 export default function ClientDashboard() {
-
   return (
     <>
       <div className="w-full sm:w-1/2">

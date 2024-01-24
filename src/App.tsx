@@ -7,8 +7,14 @@ import Login from './pages/login'
 import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
+
 import ClientDashboard from './pages/client/dashboard'
+
 import Learn from './pages/learn'
+import AdminDashboard from './pages/admin/dashboard'
+import UsersPage from './pages/admin/users'
+import Facilities from './pages/client/facilities'
+import FacilityDetail from './pages/client/facilities/[id]/page'
 
 export default function App() {
   return (
@@ -25,6 +31,12 @@ export default function App() {
               <Route path="/learn" element={<Learn />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
+                <Route path="/client/facilities" element={<Facilities />} />
+                <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
+              </Route>
+              <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UsersPage />} />
               </Route>
             </Route>
           </Route>
