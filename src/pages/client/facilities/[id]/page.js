@@ -1,6 +1,3 @@
-'use client'
-
-
 import { RequestService } from '@/services/RequestService'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 
