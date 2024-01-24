@@ -1,14 +1,11 @@
-import { useContext } from 'react'
-import { AuthContext } from '../../App'
 import { useNavigate } from 'react-router-dom'
-
-
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
 import { LoginData } from '../../interfaces/Global'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function LoginForm() {
-  const { setUser } = useContext(AuthContext)
+  const { setUser } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (event: any) => {
