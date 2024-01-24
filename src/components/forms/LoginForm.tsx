@@ -2,10 +2,10 @@ import { useContext } from 'react'
 import { AuthContext } from '../../App'
 import { useNavigate } from 'react-router-dom'
 
-import { loginData } from '../../interfaces/Login'
 
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
+import { LoginData } from '../../interfaces/Global'
 
 export default function LoginForm() {
   const { setUser } = useContext(AuthContext)
@@ -15,7 +15,7 @@ export default function LoginForm() {
     event.preventDefault()
     const form = event.target
 
-    const body: loginData = {
+    const body: LoginData = {
       email: form.email.value,
       password: form.password.value,
     }
