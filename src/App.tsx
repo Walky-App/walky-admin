@@ -7,9 +7,9 @@ import Login from './pages/login'
 import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
+import ClientDashboard from './pages/client/dashboard'
 
 export default function App() {
-
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -21,7 +21,7 @@ export default function App() {
               <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
               <Route path="/employee/jobs" element={<EmployeeJobs />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
-                <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+                <Route path="/client/dashboard" element={<ClientDashboard />} />
               </Route>
             </Route>
           </Route>
