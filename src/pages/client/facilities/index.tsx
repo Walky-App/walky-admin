@@ -37,15 +37,6 @@ export default function Facilities() {
       <div className="flex flex-col gap-4">
       <GlobalTable data={facilities} columns={facilitiesColumns} />
     </div>
-
-
-      {/* <ul className="grid mt-10 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
-        {facilities?.map((facility: any) => (
-          <Link key={facility._id} to={`/client/facilities/${facility._id}`}>
-            <FacilitiesListItem facility={facility} />
-          </Link>
-        ))}
-      </ul> */}
     </div>
   )
 }
