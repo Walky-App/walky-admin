@@ -109,7 +109,7 @@ function SelectMenu1({
               <Listbox.Option
                 key={option.id}
                 className={({ active }) =>
-                  `relative cursor-default select-none py-3 pl-10 pr-4 ${active ? 'bg-red-100' : ''}`
+                  `relative cursor-default select-none py-3 pl-10 pr-4 ${active ? 'bg-green-100' : ''}`
                 }
                 value={option.id}>
                 {({ selected }) => (
@@ -118,7 +118,7 @@ function SelectMenu1({
                       {option.caption}
                     </span>
                     {selected ? (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-red-400">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-green-500">
                         <FaCheck size="0.5rem" aria-hidden="true" />
                       </span>
                     ) : null}
@@ -249,11 +249,11 @@ function TableComponent({
                     <div className="flex flex-col">
                       <FaSortUp
                         className={`text-sm translate-y-1/2 ${
-                          column.isSorted && !column.isSortedDesc ? 'text-red-400' : 'text-gray-300'
+                          column.isSorted && !column.isSortedDesc ? 'text-green-500' : 'text-gray-300'
                         }`}
                       />
                       <FaSortDown
-                        className={`text-sm -translate-y-1/2 ${column.isSortedDesc ? 'text-red-400' : 'text-gray-300'}`}
+                        className={`text-sm -translate-y-1/2 ${column.isSortedDesc ? 'text-green-500' : 'text-gray-300'}`}
                       />
                     </div>
                   </div>
