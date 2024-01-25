@@ -5,7 +5,6 @@ export const LoginService = async (body: LoginData) => {
 
   const options: RequestInit = {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   }

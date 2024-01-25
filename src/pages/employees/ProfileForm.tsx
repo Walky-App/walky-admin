@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
-import { RequestService } from '../../../services/RequestService'
+import { RequestService } from '../../services/RequestService'
 
 export default function Profile({ userId }: { userId: string }) {
   const [formUser, setFormUser] = useState<any>()
