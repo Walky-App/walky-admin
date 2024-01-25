@@ -22,7 +22,7 @@ export default function LoginForm() {
     const { access_token, user }: any = data
 
     if (user && access_token) {
-      SetToken(user.role, access_token)
+      SetToken(user.role, user._id, access_token)
       setUser({ ...user, access_token: access_token })
 
       switch (user.role) {
