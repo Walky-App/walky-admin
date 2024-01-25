@@ -168,7 +168,7 @@ export default function AddEmployee() {
           </div>
           {error && (
             <div className="flex items-center justify-center">
-              <p className="text-sm text-red-500">{error}</p>
+              <p className="text-sm text-green-500">{error}</p>
             </div>
           )}
           <div className="flex items-center justify-center">
