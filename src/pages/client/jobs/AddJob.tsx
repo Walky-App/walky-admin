@@ -1,7 +1,11 @@
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export default function NewJob() {
+
+  const { user } = useAuth()
+  console.log(user._id)
 
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
