@@ -3,8 +3,6 @@ import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 
 import { AuthProvider } from './contexts/AuthContext'
 
-import './App.css'
-
 /** Utilities Pages */
 import Layout from './components/layout/'
 import Error404 from './pages/Error404'
@@ -15,6 +13,7 @@ import Login from './pages/login'
 /** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
+import EmployeeProfile from './pages/employees'
 
 /** Learn Pages */
 import Learn from './pages/learn'
@@ -46,6 +45,7 @@ export default function App() {
             <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
               <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
               <Route path="/employee/jobs" element={<EmployeeJobs />} />
+              <Route path="/employee/profile" element={<EmployeeProfile />} />
               {/* LMS Module */}
               <Route path="/learn" element={<Learn />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
