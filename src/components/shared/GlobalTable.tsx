@@ -311,7 +311,7 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
       columns,
       data,
       //@ts-ignore
-      initialState: { pageSize: 5 },
+      initialState: { pageSize: 10 },
     },
     useGlobalFilter,
     useSortBy,
@@ -327,7 +327,6 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
           value={pageSize}
           setValue={setPageSize}
           options={[
-            { id: 5, caption: '5 items per page' },
             { id: 10, caption: '10 items per page' },
             { id: 20, caption: '20 items per page' },
           ]}
