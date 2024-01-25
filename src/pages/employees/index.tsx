@@ -1,4 +1,4 @@
-import ProfileForm from '../../components/shared/forms/ProfileForm'
+import ProfileForm from './ProfileForm'
 import { GetTokenInfo } from '../../utils/TokenUtils'
 
 export default function EmployeeProfile() {

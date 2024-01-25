@@ -13,7 +13,7 @@ import Login from './pages/login'
 /** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
-import EmployeeProfile from './pages/employees/EmployeeProfile'
+import EmployeeProfile from './pages/employees'
 
 /** Learn Pages */
 import Learn from './pages/learn'

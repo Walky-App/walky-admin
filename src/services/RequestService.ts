@@ -17,7 +17,6 @@ export const RequestService = async (
 
   const options: RequestInit = {
     method,
-    credentials: 'include' as RequestCredentials,
     headers,
     body: body ? JSON.stringify(body) : undefined,
   }
