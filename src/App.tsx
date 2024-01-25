@@ -3,8 +3,6 @@ import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 
 import { AuthProvider } from './contexts/AuthContext'
 
-import './App.css'
-
 /** Utilities Pages */
 import Layout from './components/layout/'
 import Error404 from './pages/Error404'
