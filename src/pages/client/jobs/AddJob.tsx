@@ -49,7 +49,7 @@ export default function NewJob() {
 
   return (
     <>
-    <TitleComponent title={'Jobs'} />
+    <TitleComponent title={'Add Job'} />
     
     <form onSubmit={handleForm}>
 
