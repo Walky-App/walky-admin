@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { PhotoIcon } from '@heroicons/react/24/solid'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 
 export default function NewJob() {

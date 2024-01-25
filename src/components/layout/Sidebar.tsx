@@ -11,6 +11,7 @@ export interface SideBarData {
   name: string
   href: string
   icon: React.ReactNode
+  disabled?: boolean
 }
 
 export default function SideBar() {
@@ -40,42 +41,61 @@ export default function SideBar() {
         name: 'Post Job',
         href: '/dashboard/jobs/new',
         icon: <HiSearchCircle />,
+        disabled: true,
+
       },
       {
         id: 2,
         name: 'My Jobs',
         href: '/dashboard/jobs',
         icon: <FaBusinessTime />,
+        disabled: true,
+
       },
       {
         id: 3,
         name: 'Contracts',
         href: '/dashboard/contracts',
         icon: <FaFileContract />,
+        disabled: true,
       },
       {
         id: 4,
         name: 'Invoices',
         href: '/dashboard/invoices',
         icon: <FaFileInvoiceDollar />,
+        disabled: true,
+
       },
       {
         id: 5,
         name: 'Timesheets',
         href: '/dashboard/timesheets',
         icon: <BsFillFileEarmarkSpreadsheetFill />,
+        disabled: true,
+
       },
       {
         id: 6,
         name: 'Reports',
         href: '/dashboard/reports',
         icon: <HiDocumentReport />,
+        disabled: true,
+
       },
       {
         id: 7,
         name: 'Messages',
         href: '/dashboard/messages',
         icon: <IoMdMail />,
+        disabled: true,
+
+      },
+      {
+        id: 8,
+        name: 'Facilities',
+        href: `/client/facilities/`,
+        icon: <FaBusinessTime />,
       },
       { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
     ],
@@ -92,7 +112,6 @@ export default function SideBar() {
       { id: 5, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
     ],
   }
-
   return (
     <aside className="w-64 h-screen transition-transform" aria-label="Sidebar">
       <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 dark:bg-zinc-800">
