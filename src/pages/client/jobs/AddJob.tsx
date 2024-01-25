@@ -4,10 +4,6 @@ import { useAuth } from '../../../contexts/AuthContext'
 
 export default function NewJob() {
 
-  const { user } = useAuth()
-  console.log(user._id)
-
-
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -40,7 +36,6 @@ export default function NewJob() {
       status: 'active',
     };
 
-    console.log(formData)
   
     fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs`, {
       method: 'POST',
