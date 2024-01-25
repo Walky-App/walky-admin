@@ -1,8 +1,8 @@
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export default function NewJob() {
-
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -36,7 +36,6 @@ export default function NewJob() {
       status: 'active',
     };
 
-    console.log(formData)
   
     fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs`, {
       method: 'POST',
@@ -50,7 +49,7 @@ export default function NewJob() {
 
   return (
     <>
-    <TitleComponent title={'Jobs'} />
+    <TitleComponent title={'Add Job'} />
     
     <form onSubmit={handleForm}>
 

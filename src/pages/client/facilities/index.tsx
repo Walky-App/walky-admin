@@ -1,10 +1,11 @@
 import * as React from 'react'
-
-import TitleComponent from '../../../components/shared/general/TitleComponent'
-import FacilitiesListItem from './components/FacilitiesListItem'
-import GlobalTable from '../../../components/shared/GlobalTable'
-import { RequestService } from '../../../services/RequestService'
 import { Link } from 'react-router-dom'
+
+import { PlusIcon } from '@heroicons/react/20/solid'
+
+import { RequestService } from '../../../services/RequestService'
+import TitleComponent from '../../../components/shared/general/TitleComponent'
+import GlobalTable from '../../../components/shared/GlobalTable'
 
 export default function Facilities() {
   const [facilities, setFacilities] = React.useState<any>([])

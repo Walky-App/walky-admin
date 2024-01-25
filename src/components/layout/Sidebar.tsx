@@ -39,17 +39,15 @@ export default function SideBar() {
       {
         id: 1,
         name: 'Post Job',
-        href: '/dashboard/jobs/new',
+        href: '/client/jobs/new',
         icon: <HiSearchCircle />,
-        disabled: true,
 
       },
       {
         id: 2,
         name: 'My Jobs',
-        href: '/dashboard/jobs',
+        href: '/client/jobs',
         icon: <FaBusinessTime />,
-        disabled: true,
 
       },
       {
