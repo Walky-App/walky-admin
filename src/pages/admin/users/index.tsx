@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
+import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 
 export default function AdminUsers() {
   const [usersData, setUsersData] = useState<any>([])
@@ -28,6 +29,7 @@ export default function AdminUsers() {
 
   return (
     <div className="flex flex-col gap-4">
+      <HeaderComponent title={'Users'} />
       <GlobalTable data={usersData} columns={usersColumns} />
     </div>
   )
