@@ -45,6 +45,9 @@ export default function Home() {
             </a>
           </p>
         </div>
+        <small className="absolute bottom-2 text-xs text-gray-400 left-1/4 transform -translate-x-1/2">
+          v.1.0.0{process.env.NODE_ENV === 'development' ? 'd' : 'p'}
+        </small>
       </div>
 
       <div className="relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
