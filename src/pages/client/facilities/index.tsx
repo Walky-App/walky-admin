@@ -1,6 +1,5 @@
 import * as React from 'react'
 
-import FacilitiesHeader from './components/FacilitiesHeader'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 import FacilitiesListItem from './components/FacilitiesListItem'
 import { RequestService } from '../../../services/RequestService'
@@ -22,7 +21,7 @@ export default function Facilities() {
     <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
       <TitleComponent title={'Facilities'} />
 
-      <ul role="list" className="grid mt-10 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
+      <ul className="grid mt-10 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
         {facilities?.map((facility: any) => (
           <Link key={facility._id} to={`/client/facilities/${facility._id}`}>
             <FacilitiesListItem facility={facility} />
