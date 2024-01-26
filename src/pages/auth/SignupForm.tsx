@@ -54,19 +54,6 @@ export default function Signup() {
       setError(data.message)
       setLoading(false)
     }
-
-    // if (res.status === 'success') {
-    //   // setError(null)
-    //   setLoading(false)
-    //   setUser(result.user)
-
-    //   navigate('/dashboard')
-    // }
-
-    // if (result.message) {
-    //   setError(result.message)
-    //   setLoading(false)
-    // }
   }
 
   return (
