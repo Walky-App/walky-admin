@@ -1,5 +1,5 @@
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
-import { FaBriefcase, FaBuilding, FaBusinessTime, FaFileContract, FaFileInvoiceDollar, FaUserGraduate } from 'react-icons/fa'
+import { FaBriefcase, FaBuilding, FaBusinessTime, FaFileContract, FaFileInvoiceDollar, FaPlus, FaRegPlusSquare, FaUserGraduate } from 'react-icons/fa'
 import { IoMdMail } from 'react-icons/io'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { MdSchool, MdLogout } from 'react-icons/md'
@@ -44,13 +44,13 @@ export default function SideBar() {
         id: 1,
         name: 'Post Job',
         href: '/client/jobs/new',
-        icon: <HiSearchCircle />,
+        icon: <FaPlus />,
       },
       {
         id: 2,
         name: 'My Jobs',
         href: '/client/jobs',
-        icon: <FaBusinessTime />,
+        icon: <FaBriefcase />,
       },
       {
         id: 3,
@@ -91,13 +91,13 @@ export default function SideBar() {
         id: 8,
         name: 'Facilities',
         href: `/client/facilities/`,
-        icon: <FaBusinessTime />,
+        icon: <FaBuilding />,
       },
       {
         id: 9,
         name: 'Add Facility',
-        href: '/client/facilities/new',
-        icon: <FaBusinessTime />,
+        href: '/learn',
+        icon: <FaRegPlusSquare />,
       },
       {
         id: 10,
