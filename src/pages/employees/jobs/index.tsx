@@ -1,24 +1,35 @@
 import { useState, useEffect } from 'react'
 
-import JobListItem from './components/JobListItem'
-import JobsHeader from './components/JobsHeader'
 import { RequestService } from '../../../services/RequestService'
+
+import JobListItem from './JobListItem'
+import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+
+const categorysOptions = [
+  { id: 1, name: 'All Skills' },
+  { id: 2, name: 'Trimming' },
+  { id: 3, name: 'Packaging' },
+]
 
 export default function Jobs() {
   const [jobs, setJobs] = useState<any>([])
 
-  const getJobs = async () => {
-    const allJobs = await RequestService('jobs')
-    setJobs(allJobs)
-  }
-
   useEffect(() => {
+    const getJobs = async () => {
+      const allJobs = await RequestService('jobs')
+
+      if (allJobs) {
+        setJobs(allJobs)
+      } else {
+        console.log('No jobs')
+      }
+    }
     getJobs()
   }, [])
 
   return (
     <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
-      <JobsHeader title={'Find Jobs'} />
+      <HeaderComponent title="Jobs" search selectedOptions={categorysOptions} />
 
       <ul role="list" className="grid mt-10 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
         {jobs?.map((job: any) => (

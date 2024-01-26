@@ -14,6 +14,8 @@ function classNames(...classes: any) {
 
 export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [profilePath, setProfilePath] = useState<string>('')
+
   const { user } = useAuth()
   const navigate = useNavigate()
   const [profilePath, setProfilePath] = useState<string>('')

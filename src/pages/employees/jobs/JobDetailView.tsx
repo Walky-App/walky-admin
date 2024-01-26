@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   BriefcaseIcon,
   StarIcon,
@@ -8,32 +10,32 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/20/solid'
 
-import JobsHeader from '../components/JobsHeader'
+import { RequestService } from '../../../services/RequestService'
+import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 
-import BreadCrumbs from '@/components/shared/BreadCrumbs'
+export default function JobDetailView() {
+  const [job, setJob] = useState<any>({})
+  const params = useParams()
 
-const getJob = async id => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API}/jobs/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      // Authorization: `Bearer ${user?.access_token}`,
-    },
-  })
-  return await res.json()
-}
+  useEffect(() => {
+    const getJob = async () => {
+      const job = await RequestService(`jobs/${params.id}`)
 
-export default async function jobDetail({ params }) {
-  const job = await getJob(params.id)
-
-  console.log('job', job)
+      if (job) {
+        setJob(job)
+      } else {
+        console.log(job)
+      }
+    }
+    getJob()
+  }, [])
 
   return (
-    <div className="mx-auto  px-2 py-4 sm:px-6 lg:px-2">
+    <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
-      <JobsHeader title={'Job details'} />
+      <HeaderComponent title="Job Detail" />
       <div className="flex align-bottom">
-        <div className="bg-white w-2/3 mt-10 rounded-2xl border border-zinc-100">
+        <div className="bg-white w-2/3  rounded-2xl border border-zinc-100">
           <div className="flex-col justify-start items-start gap-6 inline-flex p-20">
             <div className="self-stretch flex-col justify-start items-start gap-4 flex">
               <div className="self-stretch justify-between items-start inline-flex">
@@ -50,7 +52,7 @@ export default async function jobDetail({ params }) {
                   <div className="text-stone-500 text-sm font-normal leading-tight">Save Job</div>
                 </div>
               </div>
-              <div className="text-black text-2xl font-bold">{job.title}</div>
+              <div className="text-black text-2xl font-bold">{job?.title}</div>
               <div className="justify-start items-center gap-3 inline-flex">
                 <div className="justify-start items-center gap-1 flex">
                   <div className="w-6 h-6 relative">
@@ -59,9 +61,7 @@ export default async function jobDetail({ params }) {
                   <div>
                     <span className="text-black text-sm font-medium">Anchorage</span>
                     <span className="text-black text-sm font-normal leading-tight"> </span>
-                    <span className="text-stone-500 text-sm font-normal leading-tight">
-                      (4.2 mi)
-                    </span>
+                    <span className="text-stone-500 text-sm font-normal leading-tight">(4.2 mi)</span>
                   </div>
                 </div>
                 <div className="w-1 h-1 bg-stone-500 rounded-full" />
@@ -70,11 +70,9 @@ export default async function jobDetail({ params }) {
                     <CreditCardIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                   </div>
                   <div>
-                    <span className="text-black text-sm font-medium">Est. $ {job.salary}</span>
+                    <span className="text-black text-sm font-medium">Est. $ {job?.salary}</span>
                     <span className="text-black text-sm font-normal leading-tight"> </span>
-                    <span className="text-stone-500 text-sm font-normal leading-tight">
-                      ($ 40/hr)
-                    </span>
+                    <span className="text-stone-500 text-sm font-normal leading-tight">($ 40/hr)</span>
                   </div>
                   <div className=" relative">
                     <div className=" left-0 top-0 absolute bg-zinc-300" />
@@ -108,16 +106,16 @@ export default async function jobDetail({ params }) {
             </div>
             <div className="flex-col justify-start items-start gap-4 flex">
               <div className="text-stone-500 text-xs font-normal">Description</div>
-              <div className="text-black text-sm font-normal leading-tight">{job.description}</div>
+              <div className="text-black text-sm font-normal leading-tight">{job?.description}</div>
             </div>
             <div className="w-[520px] h-px bg-zinc-100" />
             <div className="flex-col justify-start items-start gap-4 flex">
               <div>
                 <span className="text-stone-500 text-xs font-normal">Type of Job : </span>
-                <span className="text-black text-sm font-medium">{job.employment_type}</span>
+                <span className="text-black text-sm font-medium">{job?.employment_type}</span>
               </div>
               <div className=" justify-start items-start gap-2 inline-flex">
-                {job.skills.map(skill => (
+                {job?.skills.map((skill: string) => (
                   <div className="p-2 bg-neutral-100 rounded justify-center items-center gap-2 flex">
                     <div className="text-center text-stone-500 text-xs font-normal">{skill}</div>
                   </div>
@@ -148,7 +146,7 @@ export default async function jobDetail({ params }) {
         </div>
 
         {/* rightside */}
-        <div className="w-[362px] h-[308px] flex flex-col justify-evenly text-center items-center ml-10 mt-10 bg-white rounded-2xl border border-zinc-100">
+        <div className="w-[362px] h-[308px] flex flex-col justify-evenly text-center items-center ml-10 bg-white rounded-2xl border border-zinc-100">
           <div className="w-[298px] h-12 flex items-center justify-center bg-neutral-900 rounded-lg">
             <StarIcon className="h-4 w-4 mr-1 text-gray-100" aria-hidden="true" />
             <div className=" text-white text-sm font-normal leading-tight">Accept Now</div>
@@ -163,17 +161,13 @@ export default async function jobDetail({ params }) {
             Know someone who would be great fit?
           </div>
           <div className="w-[298px] h-12 px-4 py-3.5 left-[32px] top-[180px] rounded-lg border border-neutral-900 justify-center items-center gap-2 inline-flex">
-            <div className="text-center text-neutral-900 text-sm font-normal leading-tight">
-              Share Opportunity
-            </div>
+            <div className="text-center text-neutral-900 text-sm font-normal leading-tight">Share Opportunity</div>
           </div>
           <div className="mt-3 items-center gap-2 inline-flex">
             <div className="w-6 h-6 relative">
               <CheckCircleIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
             </div>
-            <div className="text-black text-sm font-normal leading-tight">
-              Hurray! You got tip on this job.
-            </div>
+            <div className="text-black text-sm font-normal leading-tight">Hurray! You got tip on this job.</div>
           </div>
         </div>
       </div>
