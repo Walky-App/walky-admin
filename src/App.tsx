@@ -32,8 +32,9 @@ import AdminProfile from './pages/admin/profile'
 import AdminUsers from './pages/admin/users'
 import AdminUserDetail from './pages/admin/users/AdminUserDetail'
 import AdminFacilities from './pages/admin/facilities'
+import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
 import AdminJobs from './pages/admin/jobs'
-// import AdminJobDetail from './pages/admin/jobs/details/AdminJobDetail'
+import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 
 export default function App() {
   return (
@@ -62,10 +63,10 @@ export default function App() {
                 <Route path="/admin/profile" element={<AdminProfile />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/users/:id" element={<AdminUserDetail />} />
-                <Route path="/admin/facilities/:id" element={<AdminUserDetail />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
+                <Route path="/admin/facilities/:id" element={<AdminFacilityDetails />} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
-                {/* <Route path="/admin/jobs/details/:jobId" element={<AdminJobDetail />} /> */}
+                <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
               </Route>
             </Route>
           </Route>
