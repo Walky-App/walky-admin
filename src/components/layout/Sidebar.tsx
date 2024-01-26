@@ -7,6 +7,7 @@ import { MdSchool, MdLogout } from 'react-icons/md'
 import { useAuth } from '../../contexts/AuthContext'
 import SidebarMenuItem from './SidebarMenuItem'
 import SideBarMenuItemDisabled from './SidebarMenuItemDisabled'
+import { FaUserGroup } from 'react-icons/fa6'
 
 export interface SideBarData {
   id: number
@@ -99,7 +100,7 @@ export default function SideBar() {
         id: 1,
         name: 'Users',
         href: '/admin/users',
-        icon: <HiSearchCircle />
+        icon: <FaUserGroup />
       },
       {
         id: 2,
