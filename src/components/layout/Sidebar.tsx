@@ -96,7 +96,7 @@ export default function SideBar() {
       {
         id: 9,
         name: 'Add Facility',
-        href: '/learn',
+        href: '/client/facilities/new',
         icon: <FaRegPlusSquare />,
       },
       {
