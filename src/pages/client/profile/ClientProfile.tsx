@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { RequestService } from '../../../services/RequestService'
-import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon } from '@heroicons/react/20/solid';
 
 export default function ClientProfile({ userId }: { userId: string }) {
   const [formClient, setFormClient] = useState<any>()
