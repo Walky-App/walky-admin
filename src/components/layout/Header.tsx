@@ -18,7 +18,6 @@ export default function Header() {
 
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [profilePath, setProfilePath] = useState<string>('')
 
 
   useEffect(() => {
