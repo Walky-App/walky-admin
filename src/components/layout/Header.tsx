@@ -16,16 +16,16 @@ export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [profilePath, setProfilePath] = useState<string>('')
 
-  let profilePath: string
 
   useEffect(() => {
     if (user.role === 'employee') {
-      profilePath = '/employee/profile'
+      setProfilePath('/employee/profile')
     } else if (user.role === 'client') {
-      profilePath = '/client/profile'
+      setProfilePath('/client/profile')
     } else if (user.role === 'admin') {
-      profilePath = '/admin/profile'
+      setProfilePath('/admin/profile')
     }
   }, [user.role])
 
@@ -105,11 +105,12 @@ export default function Header() {
               <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <Menu.Item>
                   {({ active }) => (
-                    <a
-                      href={profilePath}
+                    <button
+                    onClick={() => navigate(profilePath)}
+
                       className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       My Profile
-                    </a>
+                    </button>
                   )}
                 </Menu.Item>
                 {/* <Menu.Item>
