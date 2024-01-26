@@ -64,7 +64,7 @@ export default function App() {
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/users/:id" element={<AdminUserDetail />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
-                <Route path="/admin/facilities/:id" element={<AdminFacilityDetails />} />
+                <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
               </Route>
