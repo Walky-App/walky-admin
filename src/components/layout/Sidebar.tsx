@@ -93,6 +93,18 @@ export default function SideBar() {
         href: `/client/facilities/`,
         icon: <FaBusinessTime />,
       },
+      {
+        id: 9,
+        name: 'Add Facility',
+        href: '/client/facilities/new',
+        icon: <FaBusinessTime />,
+      },
+      {
+        id: 10,
+        name: 'HTU',
+        href: '/learn',
+        icon: <MdSchool />,
+      },
       // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
     ],
     admin: [
