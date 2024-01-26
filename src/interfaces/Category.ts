@@ -7,4 +7,5 @@ export interface Category extends Documents {
   title: string
   createdAt: Date
   updatedAt: Date
+  progress: number
 }
