@@ -13,7 +13,8 @@ import Auth from './pages/auth'
 /** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
-import EmployeeProfile from './pages/employees'
+import JobDetailView from './pages/employees/jobs/JobDetailView'
+import EmployeeProfile from './pages/employees/EmployeeProfile'
 
 /** Learn Pages */
 import Learn from './pages/learn'
@@ -47,6 +48,7 @@ export default function App() {
             <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
               <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
               <Route path="/employee/jobs" element={<EmployeeJobs />} />
+              <Route path="/employee/jobs/:id" element={<JobDetailView />} />
               <Route path="/employee/profile" element={<EmployeeProfile />} />
               {/* LMS Module */}
               <Route path="/learn" element={<Learn />} />
