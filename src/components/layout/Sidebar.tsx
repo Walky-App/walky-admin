@@ -1,5 +1,5 @@
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
-import { FaBusinessTime, FaFileContract, FaFileInvoiceDollar } from 'react-icons/fa'
+import { FaBriefcase, FaBuilding, FaBusinessTime, FaFileContract, FaFileInvoiceDollar, FaUserGraduate } from 'react-icons/fa'
 import { IoMdMail } from 'react-icons/io'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { MdSchool, MdLogout } from 'react-icons/md'
@@ -7,6 +7,7 @@ import { MdSchool, MdLogout } from 'react-icons/md'
 import { useAuth } from '../../contexts/AuthContext'
 import SidebarMenuItem from './SidebarMenuItem'
 import SideBarMenuItemDisabled from './SidebarMenuItemDisabled'
+import { FaUserGroup } from 'react-icons/fa6'
 
 export interface SideBarData {
   id: number
@@ -95,16 +96,40 @@ export default function SideBar() {
       // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
     ],
     admin: [
-      { id: 1, name: 'Users', href: '/admin/users', icon: <HiSearchCircle /> },
+      {
+        id: 1,
+        name: 'Users',
+        href: '/admin/users',
+        icon: <FaUserGroup />
+      },
       {
         id: 2,
         name: 'Facilities',
         href: '/admin/facilities',
-        icon: <FaBusinessTime />,
+        icon: <FaBuilding />,
       },
-      { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <MdSchool /> },
-      { id: 4, name: 'Learn', href: '/admin/learn', icon: <IoMdMail /> },
-      { id: 5, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
+      {
+        id: 3,
+        name: 'Jobs',
+        href: '/admin/jobs',
+        icon: <FaBriefcase />
+      },
+      {
+        id: 4,
+        name: 'HTU',
+        href: '/admin/learn',
+        icon: <FaUserGraduate />,
+        disabled: true,
+      },
+
+      {
+        id: 5,
+        name: 'Messages',
+        href: '/admin/messages',
+        icon: <IoMdMail />,
+        disabled: true,
+      },
+
     ],
   }
   return (
