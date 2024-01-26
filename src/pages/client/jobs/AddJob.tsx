@@ -1,6 +1,5 @@
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
-import { useAuth } from '../../../contexts/AuthContext'
 
 export default function NewJob() {
 
