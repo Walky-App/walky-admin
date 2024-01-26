@@ -201,7 +201,7 @@ export default function AdminProfile({ userId }: { userId: string }) {
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                We'll always let you know about important changes, but you pick what else you want to hear about.
+                Choose how you want to be notified about recent changes or messages.
               </p>
             </div>
 
