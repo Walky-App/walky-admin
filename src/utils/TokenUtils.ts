@@ -1,6 +1,7 @@
 export const GetTokenInfo = () => {
-  const { _id, access_token, role } = JSON.parse(localStorage.getItem('ht_usr') as any)
+  const ls_data = JSON.parse(localStorage.getItem('ht_usr') as any)
 
+  const { _id, access_token, role } = ls_data ? ls_data : { _id: '', access_token: '', role: '' }
   return { _id, access_token, role }
 }
 

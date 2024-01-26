@@ -8,7 +8,7 @@ import Layout from './components/layout/'
 import Error404 from './pages/Error404'
 
 /** Auth Pages */
-import Login from './pages/login'
+import Auth from './pages/auth'
 
 /** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
@@ -39,8 +39,8 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Auth />} />
+          <Route path="/login" element={<Auth />} />
           <Route element={<Layout />}>
             <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
               <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
