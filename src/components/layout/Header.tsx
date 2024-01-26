@@ -14,18 +14,18 @@ function classNames(...classes: any) {
 
 export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [profilePath, setProfilePath] = useState<string>('')
+
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  let profilePath: string
-
   useEffect(() => {
     if (user.role === 'employee') {
-      profilePath = '/employee/profile'
+      setProfilePath('/employee/profile')
     } else if (user.role === 'client') {
-      profilePath = '/client/profile'
+      setProfilePath('/client/profile')
     } else if (user.role === 'admin') {
-      profilePath = '/admin/profile'
+      setProfilePath('/admin/profile')
     }
   }, [user.role])
 
