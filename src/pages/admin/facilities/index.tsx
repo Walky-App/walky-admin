@@ -26,7 +26,7 @@ export default function AdminFacilities() {
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="px-20">
         <HeaderComponent title={'Facilities'} />
         <GlobalTable data={facilitiesData} columns={facilitiesColumns} />
     </div>

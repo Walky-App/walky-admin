@@ -28,7 +28,7 @@ export default function AdminUsers() {
   ]
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="">
       <HeaderComponent title={'Users'} />
       <GlobalTable data={usersData} columns={usersColumns} />
     </div>
