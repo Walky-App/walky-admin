@@ -7,7 +7,7 @@ export default function AdminFacilityDetails() {
   const { id } = useParams()
 
   const fetchFacility = async () => {
-    const facilityData = await RequestService(`facility/${id}`)
+    const facilityData = await RequestService(`facilities/${id}`)
     setFacilityState(facilityData)
     console.log(facilityData)
   }
@@ -18,7 +18,7 @@ export default function AdminFacilityDetails() {
 
   return (
     <h2>
-      Facility detail view {id} {facilityData.email}
+      Facility detail view {id} {facilityData.name}
     </h2>
   )
 }
