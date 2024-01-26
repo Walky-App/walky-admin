@@ -31,7 +31,7 @@ export default function Learn() {
   return (
     <>
       <div className="w-full sm:overflow-x-hidden">
-        <HeaderComponent title={'Learn'} search selectedOptions={categorysOptions} />
+        <HeaderComponent title={'Learn'} search />
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
