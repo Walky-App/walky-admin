@@ -1,4 +1,3 @@
-import { Link, useLocation } from 'react-router-dom'
 import { SideBarData } from './Sidebar'
 
 interface Props {
@@ -6,13 +5,9 @@ interface Props {
 }
 
 export default function SidebarMenuItem({ link }: Props) {
-  const { pathname } = useLocation()
   const unread = 3
   return (
-    <Link
-      to={link.href}
-      className={`flex items-center p-2 text-zinc-900 rounded-lg dark:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-700 group 
-      ${pathname === link.href ? 'bg-green-800' : ''}`}>
+    <div className="flex items-center p-2 text-zinc-800 rounded-lg bg-zinc-600">
       <span className="text-2xl w-5 h-5 text-zinc-500 transition duration-75 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-50">
         {link.icon}
       </span>
@@ -22,6 +17,6 @@ export default function SidebarMenuItem({ link }: Props) {
           {unread}
         </span>
       )}
-    </Link>
+    </div>
   )
 }

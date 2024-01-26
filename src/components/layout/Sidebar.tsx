@@ -1,10 +1,12 @@
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
 import { FaBusinessTime, FaFileContract, FaFileInvoiceDollar } from 'react-icons/fa'
-import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
+import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { MdSchool, MdLogout } from 'react-icons/md'
-import SidebarMenuItem from './SidebarMenuItem'
+
 import { useAuth } from '../../contexts/AuthContext'
+import SidebarMenuItem from './SidebarMenuItem'
+import SideBarMenuItemDisabled from './SidebarMenuItemDisabled'
 
 export interface SideBarData {
   id: number
@@ -25,15 +27,16 @@ export default function SideBar() {
   const links: SideBarOptions = {
     employee: [
       { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+      { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
       {
         id: 2,
+        disabled: true,
         name: 'My Jobs',
         href: '/employee/jobs/mine',
         icon: <FaBusinessTime />,
       },
-      { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-      { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-      { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
+      { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+      // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
     ],
     client: [
       {
@@ -41,14 +44,12 @@ export default function SideBar() {
         name: 'Post Job',
         href: '/client/jobs/new',
         icon: <HiSearchCircle />,
-
       },
       {
         id: 2,
         name: 'My Jobs',
         href: '/client/jobs',
         icon: <FaBusinessTime />,
-
       },
       {
         id: 3,
@@ -63,7 +64,6 @@ export default function SideBar() {
         href: '/dashboard/invoices',
         icon: <FaFileInvoiceDollar />,
         disabled: true,
-
       },
       {
         id: 5,
@@ -71,7 +71,6 @@ export default function SideBar() {
         href: '/dashboard/timesheets',
         icon: <BsFillFileEarmarkSpreadsheetFill />,
         disabled: true,
-
       },
       {
         id: 6,
@@ -79,7 +78,6 @@ export default function SideBar() {
         href: '/dashboard/reports',
         icon: <HiDocumentReport />,
         disabled: true,
-
       },
       {
         id: 7,
@@ -87,7 +85,6 @@ export default function SideBar() {
         href: '/dashboard/messages',
         icon: <IoMdMail />,
         disabled: true,
-
       },
       {
         id: 8,
@@ -95,7 +92,7 @@ export default function SideBar() {
         href: `/client/facilities/`,
         icon: <FaBusinessTime />,
       },
-      { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
+      // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
     ],
     admin: [
       { id: 1, name: 'Users', href: '/admin/users', icon: <HiSearchCircle /> },
@@ -114,12 +111,14 @@ export default function SideBar() {
     <aside className="w-64 h-screen transition-transform" aria-label="Sidebar">
       <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 dark:bg-zinc-800">
         <ul className="space-y-2 font-medium">
-          {user &&
-            user.role &&
+          {user?.role &&
+            links[user.role].map(link => <li key={link.id}>{!link.disabled && <SidebarMenuItem link={link} />}</li>)}
+        </ul>
+        <h4 className="text-zinc-400 my-3">Coming soon </h4>
+        <ul className="space-y-2 font-medium">
+          {user?.role &&
             links[user.role].map(link => (
-              <li key={link.id}>
-                <SidebarMenuItem link={link} />
-              </li>
+              <li key={link.id}>{link.disabled && <SideBarMenuItemDisabled link={link} />}</li>
             ))}
         </ul>
       </div>
