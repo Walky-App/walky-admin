@@ -1,4 +1,3 @@
-'use client'
 import { useState, Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
@@ -8,7 +7,7 @@ export default function ForgotPassword() {
   const closeModal = () => setIsOpen(false)
   const openModal = () => setIsOpen(true)
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
   }
 
@@ -75,7 +74,7 @@ export default function ForgotPassword() {
   )
 }
 
-const MyModal = ({ closeModal, isOpen, error }) => {
+const MyModal = ({ closeModal, isOpen, error }: any) => {
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>

@@ -1,4 +1,3 @@
-'use client'
 import { useState } from 'react'
 import BasicInfo from './formSections/BasicInfo'
 import EmploymentType from './formSections/EmploymentType'
@@ -8,11 +7,13 @@ export default function NewJob() {
   const [location, setLocation] = useState()
   const [selectedJob, setSelectedJob] = useState()
 
-  const handleForm = e => {
+  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const target = e.target as any
+
     const formData = {
-      title: e.target.title.value,
-      description: e.target.description.value,
+      title: target.title.value,
+      description: target.description.value,
       position: selectedJob,
       location: location,
     }
@@ -24,8 +25,8 @@ export default function NewJob() {
       <div className="mx-auto max-w-lg text-center">
         <h1 className="text-2xl font-bold sm:text-3xl">Create Job</h1>
         <p className="mt-4 text-zinc-500 mb-8">
-          Effortlessly post job openings, attract top talent, and streamline your hiring process
-          with our user-friendly platform.
+          Effortlessly post job openings, attract top talent, and streamline your hiring process with our user-friendly
+          platform.
         </p>
       </div>
 
