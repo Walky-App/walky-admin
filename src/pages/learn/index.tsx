@@ -16,22 +16,21 @@ export default function Learn() {
   const [categories, setCategories] = useState<Category[]>([])
 
   const fecthData = async () => {
-    const response = await RequestService('categories')
-    //@ts-ignore
-    setCategories(response as Category[])
+    const response: Category[] = await RequestService('categories')
+    setCategories(response)
   }
 
   useEffect(() => {
-    if (categories.length == 0) {
+    if (categories.length === 0) {
       fecthData()
     }
     setSearch(searchParams.get('search') || '')
-  }, [searchParams])
+  }, [searchParams, categories])
 
   return (
     <>
       <div className="w-full sm:overflow-x-hidden">
-        <HeaderComponent title={'Learn'} search selectedOptions={categorysOptions} />
+        <HeaderComponent title={'Learn'} search />
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">

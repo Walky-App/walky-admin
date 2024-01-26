@@ -1,12 +1,7 @@
 import { IRequestService } from '../interfaces/services.interfaces'
 import { GetTokenInfo } from '../utils/TokenUtils'
 
-export const RequestService = async (
-  path: string,
-  method: string = 'GET',
-  body: any = null,
-): Promise<IRequestService> => {
-  
+export const RequestService = async (path: string, method: string = 'GET', body: any = null): Promise<any> => {
   const { access_token } = GetTokenInfo()
 
   const url = `${process.env.REACT_APP_PUBLIC_API}/${path}`

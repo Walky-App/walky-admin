@@ -23,7 +23,7 @@ export default function HeaderComponent({ title, selectedOptions, search = false
               <SelectedOption selectedOptions={selectedOptions} roundedOrientation="rounded-r-md" />
             </>
           ) : (
-            search && <Search searchQuery="search" roundedOrientation="rounded-l-md" />
+            search && <Search searchQuery="search" />
           )}
         </div>
       </div>

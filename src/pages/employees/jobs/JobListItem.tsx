@@ -1,14 +1,6 @@
-'use client'
-import * as React from 'react'
-import {
-  BriefcaseIcon,
-  PhoneIcon,
-  MapPinIcon,
-  CreditCardIcon,
-  BookmarkIcon,
-} from '@heroicons/react/20/solid'
+import { BriefcaseIcon, PhoneIcon, MapPinIcon, CreditCardIcon, BookmarkIcon } from '@heroicons/react/20/solid'
 
-export default function JobListItem({ job }) {
+export default function JobListItem({ job }: any) {
   const days = () => {
     const daysArray = []
 
@@ -16,7 +8,7 @@ export default function JobListItem({ job }) {
       daysArray.push([i])
     }
 
-    console.log('daysArray', daysArray)
+    // console.log('daysArray', daysArray)
 
     // switch (job.days) {
     //   case 1:
@@ -49,7 +41,7 @@ export default function JobListItem({ job }) {
           <div className="self-stretch flex-col justify-start items-start gap-4 flex">
             <div className="self-stretch flex-col justify-start items-start gap-4 flex">
               <div className=" justify-start items-start gap-2 inline-flex">
-                {job.skills.map(skill => (
+                {job.skills.map((skill: string) => (
                   <div className="p-2 bg-neutral-100 rounded justify-center items-center gap-2 flex">
                     <div className="text-center text-stone-500 text-xs font-normal">{skill}</div>
                   </div>

@@ -1,10 +1,11 @@
 import { Documents } from './Global'
 
 export interface Category extends Documents {
-  description: String
-  image: String
-  is_disabled?: Boolean
-  title: String
+  description: string
+  image: string
+  is_disabled?: boolean
+  title: string
   createdAt: Date
   updatedAt: Date
+  progress: number
 }
