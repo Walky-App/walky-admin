@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { RequestService } from '../../services/RequestService'
+
 import { GetTokenInfo } from '../../utils/TokenUtils'
+import UploadArea from '../../components/shared/forms/UploadArea'
 
 export default function EmployeeProfile() {
   const [formUser, setFormUser] = useState<any>({})
@@ -90,6 +92,9 @@ export default function EmployeeProfile() {
                   </div>
                   <p className="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>
                 </div>
+
+
+                <UploadArea label="Photo" name="photo" path={`users/${formUser._id}/photo`} required={false} />
 
                 <div className="col-span-full">
                   <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
