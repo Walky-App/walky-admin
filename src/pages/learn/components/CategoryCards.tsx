@@ -19,7 +19,12 @@ export default function CategoryCards({ category, filter = '' }: CategoryCardsPr
         <Link key={category._id} to={`/learn/categories/${category._id}`}>
           <div className="mb-4 flex sm:h-32 h-auto rounded-2xl border border-zinc-100 bg-white">
             <div className="m-3">
-              <div className="h-24 w-24 rounded-xl bg-neutral-200"></div>
+              {
+                category.image ?
+                  <img alt={`Hemp Temp ${category.title} category`} src={category.image} className="h-24 w-24 rounded-xl" />
+                  :
+                  <div className="h-24 w-24 rounded-xl bg-neutral-200" />
+              }
             </div>
             <div className="m-3 flex flex-1 flex-col justify-center gap-3">
               <div className="text-black text-xl font-semibold">{category.title}</div>
