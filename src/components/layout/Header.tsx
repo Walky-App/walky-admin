@@ -51,7 +51,7 @@ export default function Header() {
           </a>
         </div>
 
-        <div className="flex flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-end">
+        {/* <div className="flex flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-end">
           <div className="w-full max-w-lg lg:max-w-xs">
             <label htmlFor="search" className="sr-only">
               Search
@@ -69,11 +69,12 @@ export default function Header() {
               />
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="hidden lg:ml-4 lg:flex lg:items-center">
           <button
             type="button"
+            disabled
             className="relative flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             <span className="absolute -inset-1.5" />
             <span className="sr-only">View notifications</span>
@@ -111,7 +112,7 @@ export default function Header() {
                     </a>
                   )}
                 </Menu.Item>
-                <Menu.Item>
+                {/* <Menu.Item>
                   {({ active }) => (
                     <a
                       href="#"
@@ -119,7 +120,7 @@ export default function Header() {
                       Settings
                     </a>
                   )}
-                </Menu.Item>
+                </Menu.Item> */}
                 <Menu.Item>
                   {({ active }) => (
                     <a
