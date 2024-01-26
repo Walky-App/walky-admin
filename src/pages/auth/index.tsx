@@ -1,23 +1,12 @@
 import { useState } from 'react'
 
-import LoginForm from '../../components/forms/LoginForm'
+import LoginForm from './LoginForm'
+import SignupForm from './SignupForm'
+import ForgotPasswordForm from './ForgotPasswordForm'
+// import ResetPasswordForm from './ResetPasswordForm'
 
-export default function Home() {
+export default function Auth() {
   const [userForm, setUserForm] = useState('login')
-
-  const handleUserForm = () => {
-    if (userForm === 'login') {
-      return <LoginForm />
-    } else if (userForm === 'signup') {
-      // return <SignupForm />
-    } else if (userForm === 'forgotPassword') {
-      // return <ForgotPasswordForm />
-    } else if (userForm === 'resetPassword') {
-      // return <ResetPasswordForm />
-    } else {
-      return <LoginForm />
-    }
-  }
 
   return (
     <section className="relative flex flex-wrap sm:mb-8 md:mb-0 h-screen lg:items-center">
@@ -29,20 +18,36 @@ export default function Home() {
           <h1 className="text-2xl font-bold sm:text-3xl">Login</h1>
         </div>
 
-        {handleUserForm()}
+        {userForm === 'login' && <LoginForm />}
+        {userForm === 'signup' && <SignupForm />}
+        {userForm === 'forgotPassword' && <ForgotPasswordForm />}
+        {/* {userForm === 'resetPassword' && <ResetPasswordForm />} */}
 
         <hr className="my-10 w-1/2 mx-auto border-t border-green-600" />
         <div className="flex justify-center">
-          <a className="underline font-medium hover:text-green-700" href="/forgot-password">
+          <a className="underline font-medium hover:text-green-700" href="#">
             Forgot your password?
           </a>
         </div>
         <div className="flex justify-center">
           <p className="text-sm text-zinc-500">
-            No account? &nbsp;
-            <a className="underline hover:text-green-700" href="/signup">
-              Sign up
-            </a>
+            {userForm === 'login' && (
+              <section>
+                No account? &nbsp;
+                <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('signup')}>
+                  Sign up
+                </a>
+              </section>
+            )}
+
+            {userForm === 'signup' && (
+              <div>
+                Already have an account? &nbsp;
+                <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('login')}>
+                  Login
+                </a>
+              </div>
+            )}
           </p>
         </div>
         <small className="absolute bottom-2 text-xs text-gray-400 left-1/4 transform -translate-x-1/2">

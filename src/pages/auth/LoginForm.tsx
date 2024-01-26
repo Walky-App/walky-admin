@@ -1,16 +1,22 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
 import { LoginData } from '../../interfaces/Global'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function LoginForm() {
+  const [error, setError] = useState()
+  const [loading, setLoading] = useState(false)
+
   const { setUser } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const form = event.target
+    await setLoading(true)
+    const form = event.target as any
 
     const body: LoginData = {
       email: form.email.value,
@@ -24,6 +30,7 @@ export default function LoginForm() {
     if (user && access_token) {
       SetToken(user.role, user._id, access_token)
       setUser({ ...user, access_token: access_token })
+      setLoading(false)
 
       switch (user.role) {
         case 'client':
@@ -38,6 +45,9 @@ export default function LoginForm() {
         default:
           navigate('/login')
       }
+    } else {
+      setError(data.message)
+      setLoading(false)
     }
   }
 
@@ -107,12 +117,18 @@ export default function LoginForm() {
           </span>
         </div>
       </div>
-
+      {error && (
+        <div className="flex items-center justify-center">
+          <p className="text-sm text-red-500">{error}</p>
+        </div>
+      )}
       <div className="flex items-center justify-center">
         <button
           type="submit"
-          className="inline-block rounded-lg bg-zinc-950 px-32 md:px-48 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700">
-          Continue
+          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
+            loading && 'hover:bg-zinc-950 cursor-wait'
+          }`}>
+          {loading ? 'Logging in...' : 'Login'}
         </button>
       </div>
     </form>
