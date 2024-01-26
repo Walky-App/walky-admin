@@ -1,6 +1,7 @@
 import React from 'react';
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
+import HeaderComponent from '../../../components/shared/general/HeaderComponent';
 
 export default function AdminFacilities() {
   const [facilitiesData, setFacilitiesData] = React.useState<any>([])
@@ -26,7 +27,8 @@ export default function AdminFacilities() {
 
   return (
     <div className="flex flex-col gap-4">
-      <GlobalTable data={facilitiesData} columns={facilitiesColumns} />
+        <HeaderComponent title={'Facilities'} />
+        <GlobalTable data={facilitiesData} columns={facilitiesColumns} />
     </div>
   );
 }
