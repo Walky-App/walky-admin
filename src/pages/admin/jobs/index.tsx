@@ -27,7 +27,7 @@ export default function AdminJobs() {
   ];
 
   return (
-    <div className="">
+    <div className=" px-20 ">
       <HeaderComponent title={'Jobs'} />
       <GlobalTable data={jobsData} columns={jobsColumns} />
     </div>
