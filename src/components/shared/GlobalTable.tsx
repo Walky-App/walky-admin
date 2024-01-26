@@ -109,7 +109,7 @@ function SelectMenu1({
               <Listbox.Option
                 key={option.id}
                 className={({ active }) =>
-                  `relative cursor-default select-none py-3 pl-10 pr-4 ${active ? 'bg-red-100' : ''}`
+                  `relative cursor-default select-none py-3 pl-10 pr-4 ${active ? 'bg-green-100' : ''}`
                 }
                 value={option.id}>
                 {({ selected }) => (
@@ -118,7 +118,7 @@ function SelectMenu1({
                       {option.caption}
                     </span>
                     {selected ? (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-red-400">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-green-500">
                         <FaCheck size="0.5rem" aria-hidden="true" />
                       </span>
                     ) : null}
@@ -137,8 +137,8 @@ function Button2({ content, onClick, active, disabled }: any) {
   return (
     <button
       className={`flex flex-col cursor-pointer items-center justify-center w-9 h-9 shadow-[0_4px_10px_rgba(0,0,0,0.03)] text-sm font-normal transition-colors rounded-lg
-      ${active ? 'bg-red-500 text-white' : 'text-red-500'}
-      ${!disabled ? 'bg-white hover:bg-red-500 hover:text-white' : 'text-red-300 bg-white cursor-not-allowed'}
+      ${active ? 'bg-green-500 text-green-500' : 'text-green-500'}
+      ${!disabled ? 'bg-white hover:bg-green-500 hover:text-white' : 'text-green-300 bg-white cursor-not-allowed'}
       `}
       onClick={onClick}
       disabled={disabled}>
@@ -249,11 +249,11 @@ function TableComponent({
                     <div className="flex flex-col">
                       <FaSortUp
                         className={`text-sm translate-y-1/2 ${
-                          column.isSorted && !column.isSortedDesc ? 'text-red-400' : 'text-gray-300'
+                          column.isSorted && !column.isSortedDesc ? 'text-green-500' : 'text-gray-300'
                         }`}
                       />
                       <FaSortDown
-                        className={`text-sm -translate-y-1/2 ${column.isSortedDesc ? 'text-red-400' : 'text-gray-300'}`}
+                        className={`text-sm -translate-y-1/2 ${column.isSortedDesc ? 'text-green-500' : 'text-gray-300'}`}
                       />
                     </div>
                   </div>
@@ -311,7 +311,7 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
       columns,
       data,
       //@ts-ignore
-      initialState: { pageSize: 5 },
+      initialState: { pageSize: 10 },
     },
     useGlobalFilter,
     useSortBy,
@@ -327,7 +327,6 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
           value={pageSize}
           setValue={setPageSize}
           options={[
-            { id: 5, caption: '5 items per page' },
             { id: 10, caption: '10 items per page' },
             { id: 20, caption: '20 items per page' },
           ]}
