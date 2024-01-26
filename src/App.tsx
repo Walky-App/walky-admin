@@ -28,6 +28,7 @@ import AddJob from './pages/client/jobs/AddJob'
 
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
+import AdminProfile from './pages/admin/profile'
 import AdminUsers from './pages/admin/users'
 import AdminUserDetail from './pages/admin/users/AdminUserDetail'
 import AdminFacilities from './pages/admin/facilities'
@@ -58,6 +59,7 @@ export default function App() {
               </Route>
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/profile" element={<AdminProfile />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/users/:id" element={<AdminUserDetail />} />
                 <Route path="/admin/facilities/:id" element={<AdminUserDetail />} />
