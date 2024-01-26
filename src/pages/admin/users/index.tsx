@@ -28,7 +28,7 @@ export default function AdminUsers() {
   ]
 
   return (
-    <div className="">
+    <div className=" px-20 ">
       <HeaderComponent title={'Users'} />
       <GlobalTable data={usersData} columns={usersColumns} />
     </div>
