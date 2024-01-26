@@ -16,17 +16,16 @@ export default function Learn() {
   const [categories, setCategories] = useState<Category[]>([])
 
   const fecthData = async () => {
-    const response = await RequestService('categories')
-    //@ts-ignore
-    setCategories(response as Category[])
+    const response: Category[] = await RequestService('categories')
+    setCategories(response)
   }
 
   useEffect(() => {
-    if (categories.length == 0) {
+    if (categories.length === 0) {
       fecthData()
     }
     setSearch(searchParams.get('search') || '')
-  }, [searchParams])
+  }, [searchParams, categories])
 
   return (
     <>
