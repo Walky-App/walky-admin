@@ -319,11 +319,11 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
   )
 
   return (
-    <div className="flex flex-col gap-4 items-center w-full">
+    <div className="flex flex-col gap-4 items-center">
       <div className="flex flex-col sm:flex-row justify-between gap-2 w-full">
         <GlobalSearchFilter1 className="w-full sm:w-64" globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
         <SelectMenu1
-          className="w-full sm:w-44"
+          className="sm:w-44"
           value={pageSize}
           setValue={setPageSize}
           options={[
@@ -332,7 +332,7 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
           ]}
         />
       </div>
-      <div className="w-full max-w-3xl mx-auto overflow-x-auto">
+      <div className="max-w-6xl mx-auto overflow-x-auto">
       <TableComponent
         getTableProps={getTableProps}
         headerGroups={headerGroups}
