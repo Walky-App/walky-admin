@@ -1,8 +1,12 @@
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 import { useAuth } from '../../../contexts/AuthContext'
+import { CheckCircleIcon } from '@heroicons/react/20/solid';
 
 export default function AdminAddUser() {
+  const [updateSuccess, setUpdateSuccess] = React.useState(false);
+
+
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -15,14 +19,6 @@ export default function AdminAddUser() {
       password_confirmed: { value: string }
       role: { value: string }
     }
-
-    // first_name: req.body.first_name,
-    //     last_name: req.body.last_name,
-    //     email: req.body.email,
-    //     password: req.body.password,
-    //     password_confirmed: req.body.password_confirmed,
-    //     password_changed_at: req.body.password_changed_at,
-    //     role: req.body.role
 
     const formData = {
       first_name: target.first_name.value,
@@ -42,7 +38,19 @@ export default function AdminAddUser() {
       },
       body: JSON.stringify(formData),
     })
-  }
+    .then(response => {
+      if(response.ok) {
+        setUpdateSuccess(true);
+        setTimeout(() => setUpdateSuccess(false), 5000); // Hide message after 5 seconds
+      } else {
+        throw new Error('Failed to add user');
+      }
+    })
+    .catch(error => {
+      console.error("Error adding user:", error);
+      setUpdateSuccess(false);
+    });
+  };
 
   return (
     <>
@@ -277,14 +285,14 @@ export default function AdminAddUser() {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-        {/* {updateSuccess && (
+        {updateSuccess && (
           <div className="rounded-md bg-green-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">Admin successfully updated</p>
+              <p className="text-sm font-medium text-green-800">User successfully added</p>
             </div>
             <div className="ml-auto pl-3">
               <div className="-mx-1.5 -my-1.5">
@@ -292,7 +300,7 @@ export default function AdminAddUser() {
             </div>
           </div>
         </div>
-        )} */}
+        )}
           <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
             Cancel
           </button>
