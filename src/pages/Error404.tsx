@@ -25,7 +25,7 @@ export default function Error404() {
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <a
               href={user ? `/${user.role}/dashboard` : '/'}
-              className="rounded-md bg-green-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              className="rounded-md bg-green-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
               Go back home
             </a>
             <a href="mailto:notifications@hemptemps.com" className="text-sm font-semibold text-gray-900">
