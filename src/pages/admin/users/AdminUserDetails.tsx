@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 
-export default function AdminUserDetail() {
+export default function AdminUserDetails() {
   const [userData, setUserState] = useState<any>({})
   const { id } = useParams()
 
