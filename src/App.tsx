@@ -37,6 +37,7 @@ import AdminFacilities from './pages/admin/facilities'
 import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
 import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
+import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 
 export default function App() {
   return (
@@ -65,10 +66,11 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/profile" element={<AdminProfile />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
-                <Route path="/admin/users/add" element={<AdminAddUser />} />
+                <Route path="/admin/users/new" element={<AdminAddUser />} />
                 <Route path="/admin/users/:id" element={<AdminUserDetails />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
                 <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
+                <Route path="/admin/facilities/new" element={<AdminAddFacility/>} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
                 <Route path="/admin/learn" element={<Learn />} />
