@@ -71,6 +71,7 @@ export default function App() {
                 <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
+                <Route path="/admin/learn" element={<Learn />} />
               </Route>
             </Route>
           </Route>
