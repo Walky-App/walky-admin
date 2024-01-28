@@ -33,8 +33,13 @@ export default function Facilities() {
     <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
       <TitleComponent title={'Facilities'} />
 
+  
       <div className="flex flex-col gap-4">
-        <GlobalTable data={facilities} columns={facilitiesColumns} />
+        {facilities.length > 0 ? (
+          <GlobalTable data={facilities} columns={facilitiesColumns} />
+        ) : (
+          <div>No facilities available.</div>
+        )}
       </div>
     </div>
   )
