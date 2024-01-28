@@ -38,6 +38,7 @@ import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
 import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
+import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 
 export default function App() {
   return (
@@ -72,6 +73,7 @@ export default function App() {
                 <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
                 <Route path="/admin/facilities/new" element={<AdminAddFacility/>} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
+                <Route path="/admin/jobs/new" element={<AdminAddJob />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
                 <Route path="/admin/learn" element={<Learn />} />
               </Route>

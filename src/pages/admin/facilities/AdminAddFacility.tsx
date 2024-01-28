@@ -36,7 +36,7 @@ export default function AdminAddFacility() {
       //contacts: e.target.contacts.value,
       // role: e.target.contacts.value,
       active: "true",
-     //state_license: e.target.state_license.value,
+      //state_license: e.target.state_license.value,
       // jobs: e.target.jobs.value, // array of job ids
       // city_license: e.target.city_license.value,
       notes: target.notes.value,
@@ -49,18 +49,18 @@ export default function AdminAddFacility() {
       },
       body: JSON.stringify(formData),
     })
-    .then(response => {
-      if(response.ok) {
-        setUpdateSuccess(true);
-        setTimeout(() => setUpdateSuccess(false), 5000); // Hide message after 5 seconds
-      } else {
-        throw new Error('Failed to add facility');
-      }
-    })
-    .catch(error => {
-      console.error("Error adding facility:", error);
-      setUpdateSuccess(false);
-    });
+      .then(response => {
+        if (response.ok) {
+          setUpdateSuccess(true);
+          setTimeout(() => setUpdateSuccess(false), 5000); // Hide message after 5 seconds
+        } else {
+          throw new Error('Failed to add facility');
+        }
+      })
+      .catch(error => {
+        console.error("Error adding facility:", error);
+        setUpdateSuccess(false);
+      });
   }
 
   return (
@@ -105,7 +105,7 @@ export default function AdminAddFacility() {
                   name="name"
                   id="name"
                   className="px-3 py-2 block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
+                />
               </div>
             </div>
             <div className="sm:col-span-3">
@@ -448,21 +448,21 @@ export default function AdminAddFacility() {
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
-      {updateSuccess && (
+        {updateSuccess && (
           <div className="rounded-md bg-green-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">Facility successfully added</p>
-            </div>
-            <div className="ml-auto pl-3">
-              <div className="-mx-1.5 -my-1.5">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-green-800">Facility successfully added</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <div className="-mx-1.5 -my-1.5">
+                </div>
               </div>
             </div>
           </div>
-        </div>
         )}
         <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
           Cancel
