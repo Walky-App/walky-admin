@@ -13,7 +13,7 @@ import {
 import { RequestService } from '../../../services/RequestService'
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 
-export default function JobDetailView() {
+export default function JobDetailViewClient() {
   const [job, setJob] = useState<any>({})
   const params = useParams()
 
