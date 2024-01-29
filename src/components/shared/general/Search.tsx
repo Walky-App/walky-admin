@@ -31,8 +31,9 @@ export default function Search({ searchQuery, roundedOrientation }: Props) {
         type="text"
         name="search-component"
         id="search-component"
-        className={`hidden w-full ${roundedOrientation ? roundedOrientation : 'rounded'
-          } border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-800 sm:block`}
+        className={`hidden w-full ${
+          roundedOrientation ? roundedOrientation : 'rounded'
+        } border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-800 sm:block`}
         placeholder="Search"
         defaultValue={searchParams.get(searchQuery) as string}
       />

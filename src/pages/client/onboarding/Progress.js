@@ -15,16 +15,12 @@ export default function Progress({ step }) {
           ) : (
             <div
               className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                step === 1
-                  ? 'bg-zinc-950 border-zinc-50 text-zinc-50'
-                  : 'bg-zinc-950 border-zinc-500 text-zinc-500'
+                step === 1 ? 'bg-zinc-950 border-zinc-50 text-zinc-50' : 'bg-zinc-950 border-zinc-500 text-zinc-500'
               }`}>
               1
             </div>
           )}
-          <span className={`ml-2 ${step === 1 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Business Information
-          </span>
+          <span className={`ml-2 ${step === 1 ? 'text-zinc-50' : 'text-zinc-500'}`}>Business Information</span>
         </div>
 
         <div className="flex items-center">
@@ -33,16 +29,12 @@ export default function Progress({ step }) {
           ) : (
             <div
               className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                step === 2
-                  ? 'bg-zinc-950 border-zinc-50 text-zinc-50'
-                  : 'bg-zinc-950 border-zinc-500 text-zinc-500'
+                step === 2 ? 'bg-zinc-950 border-zinc-50 text-zinc-50' : 'bg-zinc-950 border-zinc-500 text-zinc-500'
               }`}>
               2
             </div>
           )}
-          <span className={`ml-2 ${step === 2 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Facility Information
-          </span>
+          <span className={`ml-2 ${step === 2 ? 'text-zinc-50' : 'text-zinc-500'}`}>Facility Information</span>
         </div>
 
         <div className="flex items-center">
@@ -51,16 +43,12 @@ export default function Progress({ step }) {
           ) : (
             <div
               className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                step === 3
-                  ? 'bg-zinc-950 border-zinc-50 text-zinc-50'
-                  : 'bg-zinc-950 border-zinc-500 text-zinc-500'
+                step === 3 ? 'bg-zinc-950 border-zinc-50 text-zinc-50' : 'bg-zinc-950 border-zinc-500 text-zinc-500'
               }`}>
               2
             </div>
           )}
-          <span className={`ml-2 ${step === 3 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Payment Information
-          </span>
+          <span className={`ml-2 ${step === 3 ? 'text-zinc-50' : 'text-zinc-500'}`}>Payment Information</span>
         </div>
       </div>
     </div>

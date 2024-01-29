@@ -1,37 +1,35 @@
-import * as React from 'react';
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { RequestService } from '../../../services/RequestService';
-import { PhotoIcon } from '@heroicons/react/24/solid';
+import * as React from 'react'
+import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { RequestService } from '../../../services/RequestService'
+import { PhotoIcon } from '@heroicons/react/24/solid'
 
 export default function FacilityDetail() {
-  const { facilityId } = useParams();
+  const { facilityId } = useParams()
   const [facility, setFacility] = React.useState<any>([])
 
   useEffect(() => {
     const fetchFacility = async () => {
-      const data = await RequestService(`facilities/${facilityId}`);
-      setFacility(data);
-    };
-    fetchFacility();
-  }, [facilityId]);
-
-
+      const data = await RequestService(`facilities/${facilityId}`)
+      setFacility(data)
+    }
+    fetchFacility()
+  }, [facilityId])
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
-      name: { value: string };
-      country: { value: string };
-      address: { value: string };
-      city: { value: string };
-      state: { value: string };
-      zip: { value: string };
-      tax_id: { value: string };
-      phone_number: { value: string };
-      notes: { value: string };
-    };
+      name: { value: string }
+      country: { value: string }
+      address: { value: string }
+      city: { value: string }
+      state: { value: string }
+      zip: { value: string }
+      tax_id: { value: string }
+      phone_number: { value: string }
+      notes: { value: string }
+    }
 
     const formValues = {
       name: target.name.value,
@@ -62,28 +60,26 @@ export default function FacilityDetail() {
     })
   }
 
-  if (!facility) return <div>Loading...</div>;
+  if (!facility) return <div>Loading...</div>
   return (
     <>
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Business Information
-              </h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Business Information</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your business so that we can verify you on the
-                platform.{' '}
+                Please provide information about your business so that we can verify you on the platform.{' '}
               </p>
-              
+
               <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-                {facility?.main_image && <img
-                  className="h-64 w-64 flex-none rounded-lg object-cover bg-gray-50 mb-4"
-                  src={facility?.main_image
-                  }
-                  alt=" Facility Image "
-                />}
+                {facility?.main_image && (
+                  <img
+                    className="h-64 w-64 flex-none rounded-lg object-cover bg-gray-50 mb-4"
+                    src={facility?.main_image}
+                    alt=" Facility Image "
+                  />
+                )}
                 <div className="space-y-2">
                   <h1 className="text-2xl font-bold text-gray-900">Facility: {facility?.name}</h1>
                   <h2 className="text-xl text-gray-700">{facility?.address}</h2>
@@ -95,10 +91,7 @@ export default function FacilityDetail() {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="tax-id"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
+                <label htmlFor="tax-id" className="block text-sm font-medium leading-6 text-gray-900">
                   Tax ID
                 </label>
                 <div className="mt-2">
@@ -112,9 +105,7 @@ export default function FacilityDetail() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="tax-id"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="tax-id" className="block text-sm font-medium leading-6 text-gray-900">
                   Facility Name
                 </label>
                 <div className="mt-2">
@@ -128,9 +119,7 @@ export default function FacilityDetail() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="phone-number"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="phone-number" className="block text-sm font-medium leading-6 text-gray-900">
                   Business Contact Mobile Number*
                 </label>
                 <div className="mt-2">
@@ -146,9 +135,7 @@ export default function FacilityDetail() {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
                   Business Contact First Name*
                 </label>
                 <div className="mt-2">
@@ -162,9 +149,7 @@ export default function FacilityDetail() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
                   Business Contact Last Name*
                 </label>
                 <div className="mt-2">
@@ -180,9 +165,7 @@ export default function FacilityDetail() {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="role"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
                   Business Contact Designation
                 </label>
                 <div className="mt-2">
@@ -263,15 +246,11 @@ export default function FacilityDetail() {
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-                <p className="mt-3 text-sm leading-6 text-gray-600">
-                  Write notes about the facility.
-                </p>
+                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
               </div>
 
               <div className="col-span-full">
-                <label
-                  htmlFor="facility-photo"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="facility-photo" className="block text-sm font-medium leading-6 text-gray-900">
                   Facility photo
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -305,9 +284,7 @@ export default function FacilityDetail() {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="country"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
                   Country
                 </label>
                 <div className="mt-2">
@@ -324,9 +301,7 @@ export default function FacilityDetail() {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
                   Street Address
                 </label>
                 <div className="mt-2">
@@ -374,9 +349,7 @@ export default function FacilityDetail() {
               </div>
 
               <div className="sm:col-span-2">
-                <label
-                  htmlFor="postal-code"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
                   ZIP / Postal code
                 </label>
                 <div className="mt-2">
@@ -395,12 +368,10 @@ export default function FacilityDetail() {
 
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Business License Document
-              </h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Document</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please upload your business license documents. Please make sure your upload is clear
-                without any warped or blur portions and shows all relevant information.{' '}
+                Please upload your business license documents. Please make sure your upload is clear without any warped
+                or blur portions and shows all relevant information.{' '}
               </p>
             </div>
 
@@ -412,9 +383,7 @@ export default function FacilityDetail() {
                   Upload State License Document*
                 </legend>
                 <div className="col-span-full">
-                  <label
-                    htmlFor="cover-photo"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
                     State License
                   </label>
                   <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -425,12 +394,7 @@ export default function FacilityDetail() {
                           htmlFor="file-upload"
                           className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
                           <span>Upload a file</span>
-                          <input
-                            id="state_license"
-                            name="state_license"
-                            type="file"
-                            className="sr-only"
-                          />
+                          <input id="state_license" name="state_license" type="file" className="sr-only" />
                         </label>
                         <p className="pl-1">or drag and drop</p>
                       </div>
@@ -438,13 +402,9 @@ export default function FacilityDetail() {
                     </div>
                   </div>
                 </div>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">
-                  Upload City License Document*
-                </legend>
+                <legend className="text-sm font-semibold leading-6 text-gray-900">Upload City License Document*</legend>
                 <div className="col-span-full">
-                  <label
-                    htmlFor="cover-photo"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
                     City License
                   </label>
                   <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -455,12 +415,7 @@ export default function FacilityDetail() {
                           htmlFor="file-upload"
                           className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
                           <span>Upload a file</span>
-                          <input
-                            id="city_license"
-                            name="city_license"
-                            type="file"
-                            className="sr-only"
-                          />
+                          <input id="city_license" name="city_license" type="file" className="sr-only" />
                         </label>
                         <p className="pl-1">or drag and drop</p>
                       </div>
@@ -484,8 +439,6 @@ export default function FacilityDetail() {
           </button>
         </div>
       </form>
-
-
     </>
   )
 }

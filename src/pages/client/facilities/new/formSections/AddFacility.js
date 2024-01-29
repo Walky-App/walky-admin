@@ -35,23 +35,9 @@ export default function AddFacility({ open, setOpen, handleSubmit }) {
                 </Dialog.Title>
                 <form className="mt-4">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <TextInput
-                      label="Facility Name*"
-                      name="name"
-                      placeholder="Facility Name*"
-                      required
-                    />
-                    <TextInput
-                      label="Street Address*"
-                      name="streetAddress"
-                      placeholder="Street Address*"
-                      required
-                    />
-                    <TextInput
-                      label="Apt, Suite or Unit"
-                      name="address2"
-                      placeholder="Apt, Suite or Unit"
-                    />
+                    <TextInput label="Facility Name*" name="name" placeholder="Facility Name*" required />
+                    <TextInput label="Street Address*" name="streetAddress" placeholder="Street Address*" required />
+                    <TextInput label="Apt, Suite or Unit" name="address2" placeholder="Apt, Suite or Unit" />
                     <TextInput label="City*" name="city" placeholder="City*" required />
                     <Select
                       options={states}

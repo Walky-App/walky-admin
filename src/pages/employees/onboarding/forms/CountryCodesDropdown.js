@@ -110,10 +110,7 @@ export default function CountryCodesDropdown({ formValues, setFormValues }) {
                         <div className="flex items-center">
                           <span className="h-5 w-5 flex-shrink-0 rounded-full">{code.flag}</span>
                           <span
-                            className={classNames(
-                              selected ? 'font-semibold' : 'font-normal',
-                              'ml-3 block truncate',
-                            )}>
+                            className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
                             {code.name}
                           </span>
                         </div>

@@ -1,5 +1,14 @@
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
-import { FaBriefcase, FaBuilding, FaBusinessTime, FaFileContract, FaFileInvoiceDollar, FaPlus, FaRegPlusSquare, FaUserGraduate } from 'react-icons/fa'
+import {
+  FaBriefcase,
+  FaBuilding,
+  FaBusinessTime,
+  FaFileContract,
+  FaFileInvoiceDollar,
+  FaPlus,
+  FaRegPlusSquare,
+  FaUserGraduate,
+} from 'react-icons/fa'
 import { IoMdMail } from 'react-icons/io'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { MdSchool, MdLogout } from 'react-icons/md'
@@ -112,7 +121,7 @@ export default function SideBar() {
         id: 1,
         name: 'Users',
         href: '/admin/users',
-        icon: <FaUserGroup />
+        icon: <FaUserGroup />,
       },
       {
         id: 2,
@@ -124,7 +133,7 @@ export default function SideBar() {
         id: 3,
         name: 'Jobs',
         href: '/admin/jobs',
-        icon: <FaBriefcase />
+        icon: <FaBriefcase />,
       },
       {
         id: 4,
@@ -141,7 +150,6 @@ export default function SideBar() {
         icon: <IoMdMail />,
         disabled: true,
       },
-
     ],
   }
   return (

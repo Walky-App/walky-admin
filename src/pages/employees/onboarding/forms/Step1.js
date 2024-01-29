@@ -1,62 +1,32 @@
 import Select from '@/components/shared/forms/Select'
 import TextInput from '@/components/shared/forms/TextInput'
-import { states, countries, months, days, years  } from '@/variables'
+import { states, countries, months, days, years } from '@/variables'
 
 export default function Step1({ setContinueStyle, stepComplete, setStepComplete }) {
   const handleStepComplete = () => {
     setContinueStyle(true)
     setStepComplete({ ...stepComplete, form1: 'complete' })
   }
-  
+
   return (
     <section className="h-[calc(100vh-250px)] overflow-y-scroll pb-16">
       <div className="flex flex-col">
         <h1 className="text-3xl flex justify-center mr-auto">Confirm legal name and verify SSN</h1>
         <p className="flex justify-center mt-3">
-          Please enter your name exactly as it appears on your Social Security card. When you enter
-          your Social Security Number it will be encrypted. You will enter the number two times. The
-          numbers must match in order to save the information.
+          Please enter your name exactly as it appears on your Social Security card. When you enter your Social Security
+          Number it will be encrypted. You will enter the number two times. The numbers must match in order to save the
+          information.
         </p>
       </div>
       <div className="mx-auto mt-8 space-y-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <TextInput
-            label="Legal First Name*"
-            name="legalFirstName"
-            placeholder="Legal First Name*"
-            required
-          />
-          <TextInput
-            label="Legal Middle Name*"
-            name="legalMiddleName"
-            placeholder="Legal Middle Name*"
-            required
-          />
-          <TextInput
-            label="Legal Last Name*"
-            name="legalLastName"
-            placeholder="Legal Last Name*"
-            required
-          />
+          <TextInput label="Legal First Name*" name="legalFirstName" placeholder="Legal First Name*" required />
+          <TextInput label="Legal Middle Name*" name="legalMiddleName" placeholder="Legal Middle Name*" required />
+          <TextInput label="Legal Last Name*" name="legalLastName" placeholder="Legal Last Name*" required />
           <TextInput label="Maiden Name*" name="maidenName" placeholder="Maiden Name*" required />
-          <TextInput
-            label="Preffered Name*"
-            name="preferredName"
-            placeholder="Preffered Name*"
-            required
-          />
-          <TextInput
-            label="Email Address*"
-            name="emailAddress"
-            placeholder="Email Address*"
-            required
-          />
-          <TextInput
-            label="Social Security Number*"
-            name="ssn"
-            placeholder="Social Security Number*"
-            required
-          />
+          <TextInput label="Preffered Name*" name="preferredName" placeholder="Preffered Name*" required />
+          <TextInput label="Email Address*" name="emailAddress" placeholder="Email Address*" required />
+          <TextInput label="Social Security Number*" name="ssn" placeholder="Social Security Number*" required />
           <TextInput
             label="Confirm Social Security Number*"
             name="confirmSsn"
@@ -73,14 +43,8 @@ export default function Step1({ setContinueStyle, stepComplete, setStepComplete 
             placeholder="State / Province*"
           />
           <TextInput label="Zip Code*" name="zipCode" placeholder="Zip Code*" required />
-          <Select
-            options={countries}
-            required
-            name="country"
-            label="Country*"
-            placeholder="Country*"
-          />
-          
+          <Select options={countries} required name="country" label="Country*" placeholder="Country*" />
+
           <TextInput label="Main Phone*" name="mainPhone" placeholder="Main Phone*" required />
           <TextInput label="Alternate Phone" name="altPhone" placeholder="Alternate Phone" />
           <TextInput label="Mobile Phone" name="mobilePhone" placeholder="Mobile Phone" />
@@ -91,9 +55,7 @@ export default function Step1({ setContinueStyle, stepComplete, setStepComplete 
             <Select options={years} required name="year" label="Year*" placeholder="Year*" />
           </div>
           <div>
-            <label
-              htmlFor="dateOfBirth"
-              className="top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
+            <label htmlFor="dateOfBirth" className="top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
               Date of Birth
             </label>
 

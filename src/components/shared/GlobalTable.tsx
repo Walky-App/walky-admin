@@ -270,7 +270,9 @@ function TableComponent({
               <tr
                 {...row.getRowProps()}
                 className="hover:bg-gray-100"
-                onClick={() => navigate(`${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${row.original._id}`)}>
+                onClick={() =>
+                  navigate(`${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${row.original._id}`)
+                }>
                 {row.cells.map((cell: any) => {
                   return (
                     <td
@@ -321,7 +323,11 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
   return (
     <div className="flex flex-col gap-4 items-center">
       <div className="flex flex-col sm:flex-row justify-between gap-2 w-full">
-        <GlobalSearchFilter1 className="w-full sm:w-64" globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
+        <GlobalSearchFilter1
+          className="w-full sm:w-64"
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
         <SelectMenu1
           className="sm:w-44"
           value={pageSize}
@@ -333,15 +339,15 @@ function GlobalTable({ data, columns }: { data: any; columns: any }) {
         />
       </div>
       <div className="max-w-6xl mx-auto overflow-x-auto">
-      <TableComponent
-        getTableProps={getTableProps}
-        headerGroups={headerGroups}
-        getTableBodyProps={getTableBodyProps}
-        rows={rows}
-        prepareRow={prepareRow}
-        navigate={navigate}
-        location={location}
-      />
+        <TableComponent
+          getTableProps={getTableProps}
+          headerGroups={headerGroups}
+          getTableBodyProps={getTableBodyProps}
+          rows={rows}
+          prepareRow={prepareRow}
+          navigate={navigate}
+          location={location}
+        />
       </div>
       <div className="">
         <PaginationNav1
