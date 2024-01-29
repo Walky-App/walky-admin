@@ -29,7 +29,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { RequestService } from '../../../services/RequestService';
-import { CheckCircleIcon, PhotoIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon } from '@heroicons/react/20/solid';
 import TitleComponent from '../../../components/shared/general/TitleComponent';
 
 export default function AdminJobDetails() {
@@ -107,6 +107,8 @@ export default function AdminJobDetails() {
                       type="text"
                       name="title"
                       id="job-title"
+                      value={formJob.title || ''}
+                      onChange={handleInputChange}
                       className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -122,6 +124,8 @@ export default function AdminJobDetails() {
                       type="text"
                       name="company"
                       id="company"
+                      value={formJob.company || ''}
+                      onChange={handleInputChange}
                       className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -137,6 +141,8 @@ export default function AdminJobDetails() {
                       type="text"
                       name="created_by"
                       id="email"
+                      value={formJob.created_by || ''}
+                      onChange={handleInputChange}
                       className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -150,8 +156,10 @@ export default function AdminJobDetails() {
                   <div className="mt-2">
                     <input
                       type="text"
-                      name="facility_id"
+                      name="facility.name"
                       id="facility-id"
+                      // value={formJob.facility.name || ''}
+                      // onChange={handleInputChange}
                       className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
