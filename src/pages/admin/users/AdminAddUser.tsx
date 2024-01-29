@@ -1,12 +1,8 @@
 import * as React from 'react'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
-import { useAuth } from '../../../contexts/AuthContext'
 import { CheckCircleIcon } from '@heroicons/react/20/solid';
 
 export default function AdminAddUser() {
   const [updateSuccess, setUpdateSuccess] = React.useState(false);
-
-
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -162,7 +158,7 @@ export default function AdminAddUser() {
                 <select
                   id="role"
                   name="role"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                   <option>admin</option>
                   <option>employee</option>
                   <option>client</option>
@@ -173,7 +169,7 @@ export default function AdminAddUser() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          {/* <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="col-span-full">
                 <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
@@ -235,7 +231,7 @@ export default function AdminAddUser() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
@@ -255,6 +251,7 @@ export default function AdminAddUser() {
                         id="notification_email"
                         name="notification_email"
                         type="checkbox"
+                        disabled
                         className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                       />
                     </div>
@@ -271,6 +268,7 @@ export default function AdminAddUser() {
                         id="notification_sms"
                         name="notification_sms"
                         type="checkbox"
+                        disabled
                         className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                       />
                     </div>
