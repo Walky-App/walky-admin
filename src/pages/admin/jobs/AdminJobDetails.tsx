@@ -109,7 +109,7 @@ export default function AdminJobDetails() {
                       id="job-title"
                       value={formJob.title || ''}
                       onChange={handleInputChange}
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -126,7 +126,7 @@ export default function AdminJobDetails() {
                       id="company"
                       value={formJob.company || ''}
                       onChange={handleInputChange}
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -143,7 +143,7 @@ export default function AdminJobDetails() {
                       id="email"
                       value={formJob.created_by || ''}
                       onChange={handleInputChange}
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -160,7 +160,7 @@ export default function AdminJobDetails() {
                       id="facility-id"
                       // value={formJob.facility.name || ''}
                       // onChange={handleInputChange}
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export default function AdminJobDetails() {
                       type="text"
                       name="salary"
                       id="salary"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export default function AdminJobDetails() {
                       type="text"
                       name="employment_type"
                       id="employment-type"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -206,7 +206,7 @@ export default function AdminJobDetails() {
                       name="skills"
                       id="skills"
                       placeholder="Enter skills separated by commas"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -222,7 +222,7 @@ export default function AdminJobDetails() {
                       name="shift_days"
                       id="shift-days"
                       placeholder="e.g., 1,4"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -238,7 +238,7 @@ export default function AdminJobDetails() {
                       name="shift_times"
                       id="shift-times"
                       placeholder="e.g., 8:00,19:00"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export default function AdminJobDetails() {
                       name="shift_dates"
                       id="shift-dates"
                       placeholder="e.g., 2024-01-31,2024-02-20"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -266,7 +266,7 @@ export default function AdminJobDetails() {
                       id="description"
                       name="description"
                       rows={3}
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                       defaultValue={''}
                     />
                   </div>
@@ -302,7 +302,7 @@ export default function AdminJobDetails() {
                       id="country"
                       name="country"
                       autoComplete="country-name"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6">
                       <option>United States</option>
                       <option>Canada</option>
                       <option>Mexico</option>
@@ -322,7 +322,7 @@ export default function AdminJobDetails() {
                       name="address"
                       id="address"
                       autoComplete="address-line1"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export default function AdminJobDetails() {
                       name="city"
                       id="city"
                       autoComplete="address-level2"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export default function AdminJobDetails() {
                       name="state"
                       id="state"
                       autoComplete="address-level1"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -369,7 +369,7 @@ export default function AdminJobDetails() {
                       name="zip"
                       id="zip"
                       autoComplete="postal-code"
-                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
