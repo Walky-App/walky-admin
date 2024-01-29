@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { RequestService } from '../../../services/RequestService';
 import { CheckCircleIcon, PhotoIcon } from '@heroicons/react/20/solid';
-import TitleComponent from '../../../components/shared/general/TitleComponent';
 
 export default function AdminFacilityDetails() {
     const { facilityId } = useParams();
@@ -31,15 +30,11 @@ export default function AdminFacilityDetails() {
     };
 
     const handleUpdate = async (e: any) => {
-        console.log('formFacility -->', formFacility);
         e.preventDefault();
         try {
-            console.log('facilityID -->', facilityId)
             const res = await RequestService(`facilities/${facilityId}`, 'PATCH', formFacility);
             setFormFacility(res);
-            console.log('formFacility -->', formFacility)
             setUpdateSuccess(true);
-            console.log('update success -->', updateSuccess)
             setTimeout(() => setUpdateSuccess(false), 5000);
         } catch (error) {
             console.error("Error updating facility data:", error);
@@ -52,7 +47,18 @@ export default function AdminFacilityDetails() {
     }
     return (
         <>
-        <TitleComponent title={'Facility details'} />
+
+            <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
+                <img
+                    className="h-64 w-64 flex-none square-full bg-gray-50"
+                    src={formFacility.main_image}
+                    alt=""
+                />
+                <h1>Facility: {formFacility.name}</h1>
+                <h2>Address: {formFacility.address}</h2>
+                <h2>City: {formFacility.city}</h2>
+                <h3>Zip: {formFacility.zip}</h3>
+            </div>
             <form onSubmit={handleUpdate}>
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -153,6 +159,7 @@ export default function AdminFacilityDetails() {
                                         autoComplete="first-name"
                                         value={formFacility.first_name || ''}
                                         onChange={handleInputChange}
+                                        disabled
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -171,6 +178,7 @@ export default function AdminFacilityDetails() {
                                         autoComplete="last-name"
                                         value={formFacility.last_name || ''}
                                         onChange={handleInputChange}
+                                        disabled
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -206,6 +214,7 @@ export default function AdminFacilityDetails() {
                                         id="role"
                                         name="role"
                                         autoComplete="role"
+                                        disabled
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                         <option>Owner</option>
                                         <option>Manager</option>
