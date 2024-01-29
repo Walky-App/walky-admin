@@ -183,9 +183,11 @@ export default function NewJob() {
                     name="facility_id"
                     id="facility-id"
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <option value="">Select a Facility</option>
-                    <option value="facility1">Facility</option>
-                    <option value="65b17214be28d9553fa75580">65b17214be28d9553fa75580</option>
+                    {facilities.map((facility: Facility) => (
+                      <option key={facility._id} value={facility._id}>
+                        {facility.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -354,17 +356,24 @@ export default function NewJob() {
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="state" className="block text-sm font-medium leading-6 text-gray-900">
                   State / Province
                 </label>
                 <div className="mt-2">
-                  <input
-                    type="text"
+                  <select
                     name="state"
                     id="state"
-                    autoComplete="address-level1"
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
+                    defaultValue="">
+                    <option value="" disabled>
+                      Select your state
+                    </option>
+                    {states.map(state => (
+                      <option key={state.code} value={state.code}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
