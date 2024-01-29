@@ -17,7 +17,6 @@ export default function CategoryCards({ category, filter = '', isLoading = true 
   }
   return (
     <>
-
       {
         !isLoading ?
           <>
@@ -27,7 +26,7 @@ export default function CategoryCards({ category, filter = '', isLoading = true 
                   <div className="m-3">
                     {
                       category.image ?
-                        <img alt={`Hemp Temp ${category.title} category`} src={category.image} className="h-24 w-24 rounded-xl" />
+                        <img alt={`Hemp Temp ${category.title} category`} src={category.image} className="h-24 w-24 object-cover object-center rounded-xl" />
                         :
                         <div className="h-24 w-24 rounded-xl bg-neutral-200" />
                     }

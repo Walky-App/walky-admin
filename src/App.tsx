@@ -28,6 +28,7 @@ import NewFacility from './pages/client/facilities/NewFacility'
 import Jobs from './pages/client/jobs'
 import AddJob from './pages/client/jobs/AddJob'
 import ClientProfile from './pages/client/profile'
+import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
 
 /** Admin Pages */
@@ -67,7 +68,7 @@ export default function App() {
                 <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
                 <Route path="/client/jobs" element={<Jobs />} />
                 <Route path="/client/jobs/new" element={<AddJob />} />
-                {/* <Route path="/client/jobs/:id" element={<JobsView />} /> */}
+                <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
               </Route>
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
