@@ -67,7 +67,7 @@ export default function FacilityDetail() {
     <>
       <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
       <img
-            className="h-64 w-64 flex-none square-full bg-gray-50"
+            className="h-64 w-64 flex-none square-full bg-gray-50 rounded-lg overflow-hidden"
             src={facility.main_image}
             alt=""
           />
