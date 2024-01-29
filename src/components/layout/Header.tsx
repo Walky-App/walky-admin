@@ -85,7 +85,7 @@ export default function Header() {
           {/* Profile dropdown */}
           <Menu as="div" className="relative ml-4 flex-shrink-0">
             <div>
-              <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:outline-none focus:ring-green-600 focus:ring-offset-2">
+              <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
                 <img
