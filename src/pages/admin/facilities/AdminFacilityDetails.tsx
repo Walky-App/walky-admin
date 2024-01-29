@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { RequestService } from '../../../services/RequestService';
 import { CheckCircleIcon, PhotoIcon } from '@heroicons/react/20/solid';
+import TitleComponent from '../../../components/shared/general/TitleComponent';
 
 export default function AdminFacilityDetails() {
     const { facilityId } = useParams();
@@ -51,6 +52,7 @@ export default function AdminFacilityDetails() {
     }
     return (
         <>
+        <TitleComponent title={'Facility details'} />
             <form onSubmit={handleUpdate}>
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -59,8 +61,7 @@ export default function AdminFacilityDetails() {
                                 Business Information
                             </h2>
                             <p className="mt-1 text-sm leading-6 text-gray-600">
-                                Please provide information about your business so that we can verify you on the
-                                platform.{' '}
+                                Please see the information about this particular facility.{' '}
                             </p>
                         </div>
 
@@ -264,7 +265,7 @@ export default function AdminFacilityDetails() {
                         <div>
                             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
                             <p className="mt-1 text-sm leading-6 text-gray-600">
-                                Please provide your business address information below.
+                                Business address information of this particular facility.
                             </p>
                         </div>
 
@@ -368,7 +369,7 @@ export default function AdminFacilityDetails() {
                                 Business License Document
                             </h2>
                             <p className="mt-1 text-sm leading-6 text-gray-600">
-                                Please upload your business license documents. Please make sure your upload is clear
+                                Please upload business license documents. Please make sure your upload is clear
                                 without any warped or blur portions and shows all relevant information.{' '}
                             </p>
                         </div>

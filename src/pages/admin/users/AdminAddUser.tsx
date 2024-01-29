@@ -128,7 +128,7 @@ export default function AdminAddUser() {
                 </label>
                 <div className="mt-2">
                   <input
-                    type="text"
+                    type="password"
                     name="password"
                     id="password"
                     autoComplete="given-name"
@@ -143,7 +143,7 @@ export default function AdminAddUser() {
                 </label>
                 <div className="mt-2">
                   <input
-                    type="text"
+                    type="password"
                     name="password_confirmed"
                     id="password-confirmed"
                     autoComplete="password-confirmed"
