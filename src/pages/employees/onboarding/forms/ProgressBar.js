@@ -1,7 +1,6 @@
 import Checkmark from './Checkmark'
 
 export default function ProgressBar({ currentStep, formValues, setFormValues, stepComplete }) {
-
   return (
     <div className="w-1/4 bg-zinc-950 p-4 h-screen">
       <img
@@ -23,9 +22,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               1
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 1 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Identification
-          </span>
+          <span className={`ml-2 ${currentStep === 1 ? 'text-zinc-50' : 'text-zinc-500'}`}>Identification</span>
         </div>
 
         <div className="flex items-center">
@@ -41,9 +38,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               2
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 2 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Direct Deposit
-          </span>
+          <span className={`ml-2 ${currentStep === 2 ? 'text-zinc-50' : 'text-zinc-500'}`}>Direct Deposit</span>
         </div>
 
         <div className="flex items-center">
@@ -59,9 +54,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               3
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 3 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            W4
-          </span>
+          <span className={`ml-2 ${currentStep === 3 ? 'text-zinc-50' : 'text-zinc-500'}`}>W4</span>
         </div>
 
         <div className="flex items-center">
@@ -77,9 +70,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               4
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 4 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            State W4
-          </span>
+          <span className={`ml-2 ${currentStep === 4 ? 'text-zinc-50' : 'text-zinc-500'}`}>State W4</span>
         </div>
 
         <div className="flex items-center">
@@ -95,9 +86,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               5
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 5 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            EEO
-          </span>
+          <span className={`ml-2 ${currentStep === 5 ? 'text-zinc-50' : 'text-zinc-500'}`}>EEO</span>
         </div>
 
         <div className="flex items-center">
@@ -113,9 +102,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               6
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 6 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Upload Document
-          </span>
+          <span className={`ml-2 ${currentStep === 6 ? 'text-zinc-50' : 'text-zinc-500'}`}>Upload Document</span>
         </div>
 
         <div className="flex items-center">
@@ -131,9 +118,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               7
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 7 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Policy Acknowledgment
-          </span>
+          <span className={`ml-2 ${currentStep === 7 ? 'text-zinc-50' : 'text-zinc-500'}`}>Policy Acknowledgment</span>
         </div>
 
         <div className="flex items-center">
@@ -185,9 +170,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               10
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 10 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Federal Form I-9
-          </span>
+          <span className={`ml-2 ${currentStep === 10 ? 'text-zinc-50' : 'text-zinc-500'}`}>Federal Form I-9</span>
         </div>
         <div className="flex items-center">
           {stepComplete.form11 === 'complete' ? (
@@ -202,9 +185,7 @@ export default function ProgressBar({ currentStep, formValues, setFormValues, st
               11
             </div>
           )}
-          <span className={`ml-2 ${currentStep === 11 ? 'text-zinc-50' : 'text-zinc-500'}`}>
-            Final Message
-          </span>
+          <span className={`ml-2 ${currentStep === 11 ? 'text-zinc-50' : 'text-zinc-500'}`}>Final Message</span>
         </div>
       </div>
     </div>

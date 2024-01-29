@@ -1,10 +1,9 @@
-import { CheckCircleIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
 
 export default function AdminAddFacility() {
-  const [updateSuccess, setUpdateSuccess] = React.useState(false);
-
+  const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -37,7 +36,7 @@ export default function AdminAddFacility() {
       // company_dba: e.target.dba.value,
       //contacts: e.target.contacts.value,
       // role: e.target.contacts.value,
-      active: "true",
+      active: 'true',
       //state_license: e.target.state_license.value,
       // jobs: e.target.jobs.value, // array of job ids
       // city_license: e.target.city_license.value,
@@ -55,16 +54,16 @@ export default function AdminAddFacility() {
     })
       .then(response => {
         if (response.ok) {
-          setUpdateSuccess(true);
-          setTimeout(() => setUpdateSuccess(false), 5000); // Hide message after 5 seconds
+          setUpdateSuccess(true)
+          setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
         } else {
-          throw new Error('Failed to add facility');
+          throw new Error('Failed to add facility')
         }
       })
       .catch(error => {
-        console.error("Error adding facility:", error);
-        setUpdateSuccess(false);
-      });
+        console.error('Error adding facility:', error)
+        setUpdateSuccess(false)
+      })
   }
 
   return (
@@ -72,20 +71,15 @@ export default function AdminAddFacility() {
       <div className="space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">
-              Business Information
-            </h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Business Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please provide information about your business so that we can verify you on the
-              platform.{' '}
+              Please provide information about your business so that we can verify you on the platform.{' '}
             </p>
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
-              <label
-                htmlFor="tax-id"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="tax-id" className="block text-sm font-medium leading-6 text-gray-900">
                 Tax ID
               </label>
               <div className="mt-2">
@@ -128,9 +122,7 @@ export default function AdminAddFacility() {
               </div>
             </div>
             <div className="sm:col-span-3">
-              <label
-                htmlFor="phone-number"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="phone-number" className="block text-sm font-medium leading-6 text-gray-900">
                 Business Contact Mobile Number*
               </label>
               <div className="mt-2">
@@ -145,9 +137,7 @@ export default function AdminAddFacility() {
             </div>
 
             <div className="sm:col-span-3">
-              <label
-                htmlFor="sqft"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="sqft" className="block text-sm font-medium leading-6 text-gray-900">
                 Facility Square Footage
               </label>
               <div className="mt-2">
@@ -162,9 +152,7 @@ export default function AdminAddFacility() {
             </div>
 
             <div className="sm:col-span-3">
-              <label
-                htmlFor="first-name"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
                 Business Contact First Name*
               </label>
               <div className="mt-2">
@@ -178,9 +166,7 @@ export default function AdminAddFacility() {
               </div>
             </div>
             <div className="sm:col-span-3">
-              <label
-                htmlFor="first-name"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
                 Business Contact Last Name*
               </label>
               <div className="mt-2">
@@ -196,9 +182,7 @@ export default function AdminAddFacility() {
             </div>
 
             <div className="sm:col-span-3">
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
                 Business Contact Designation
               </label>
               <div className="mt-2">
@@ -283,15 +267,11 @@ export default function AdminAddFacility() {
                   defaultValue={''}
                 />
               </div>
-              <p className="mt-3 text-sm leading-6 text-gray-600">
-                Write notes about the facility.
-              </p>
+              <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
             </div>
 
             <div className="col-span-full">
-              <label
-                htmlFor="facility-photo"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="facility-photo" className="block text-sm font-medium leading-6 text-gray-900">
                 Facility photo
               </label>
               <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -325,9 +305,7 @@ export default function AdminAddFacility() {
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
-              <label
-                htmlFor="country"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
                 Country
               </label>
               <div className="mt-2">
@@ -344,9 +322,7 @@ export default function AdminAddFacility() {
             </div>
 
             <div className="sm:col-span-3">
-              <label
-                htmlFor="last-name"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
                 Street Address
               </label>
               <div className="mt-2">
@@ -391,9 +367,7 @@ export default function AdminAddFacility() {
             </div>
 
             <div className="sm:col-span-2">
-              <label
-                htmlFor="postal-code"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
                 ZIP / Postal code
               </label>
               <div className="mt-2">
@@ -411,12 +385,10 @@ export default function AdminAddFacility() {
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">
-              Business License Document
-            </h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Document</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please upload your business license documents. Please make sure your upload is clear
-              without any warped or blur portions and shows all relevant information.{' '}
+              Please upload your business license documents. Please make sure your upload is clear without any warped or
+              blur portions and shows all relevant information.{' '}
             </p>
           </div>
 
@@ -424,13 +396,9 @@ export default function AdminAddFacility() {
 
           <div className="max-w-2xl space-y-10 md:col-span-2">
             <fieldset>
-              <legend className="text-sm font-semibold leading-6 text-gray-900">
-                Upload State License Document*
-              </legend>
+              <legend className="text-sm font-semibold leading-6 text-gray-900">Upload State License Document*</legend>
               <div className="col-span-full">
-                <label
-                  htmlFor="cover-photo"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
                   State License
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -441,12 +409,7 @@ export default function AdminAddFacility() {
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
                         <span>Upload a file</span>
-                        <input
-                          id="state_license"
-                          name="state_license"
-                          type="file"
-                          className="sr-only"
-                        />
+                        <input id="state_license" name="state_license" type="file" className="sr-only" />
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
@@ -454,13 +417,9 @@ export default function AdminAddFacility() {
                   </div>
                 </div>
               </div>
-              <legend className="text-sm font-semibold leading-6 text-gray-900">
-                Upload City License Document*
-              </legend>
+              <legend className="text-sm font-semibold leading-6 text-gray-900">Upload City License Document*</legend>
               <div className="col-span-full">
-                <label
-                  htmlFor="cover-photo"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
                   City License
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -471,12 +430,7 @@ export default function AdminAddFacility() {
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
                         <span>Upload a file</span>
-                        <input
-                          id="city_license"
-                          name="city_license"
-                          type="file"
-                          className="sr-only"
-                        />
+                        <input id="city_license" name="city_license" type="file" className="sr-only" />
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
@@ -500,8 +454,7 @@ export default function AdminAddFacility() {
                 <p className="text-sm font-medium text-green-800">Facility successfully added</p>
               </div>
               <div className="ml-auto pl-3">
-                <div className="-mx-1.5 -my-1.5">
-                </div>
+                <div className="-mx-1.5 -my-1.5"></div>
               </div>
             </div>
           </div>

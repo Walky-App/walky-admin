@@ -7,11 +7,11 @@ import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export default function Facilities() {
   const user = GetTokenInfo()
-  const id = user?._id 
+  const id = user?._id
   const [facilities, setFacilities] = React.useState<any>([])
   const [jobsData, setJobsData] = React.useState<any>([])
   interface Facility {
-    _id: string;
+    _id: string
   }
 
   React.useEffect(() => {
@@ -21,23 +21,21 @@ export default function Facilities() {
     }
     getFacilities()
   }, [])
-  
+
   React.useEffect(() => {
     const getJobs = async () => {
       if (facilities.length > 0) {
         try {
-          const jobsRequests = facilities.map((facility: Facility) => 
-            RequestService(`jobs/facility/${facility._id}`)
-          );
-          const jobsResults = await Promise.all(jobsRequests);
-          const allJobs = jobsResults.flat(); // Flatten the array of arrays
-          setJobsData(allJobs);
+          const jobsRequests = facilities.map((facility: Facility) => RequestService(`jobs/facility/${facility._id}`))
+          const jobsResults = await Promise.all(jobsRequests)
+          const allJobs = jobsResults.flat() // Flatten the array of arrays
+          setJobsData(allJobs)
         } catch (error) {
-          console.error("Error fetching jobs data:", error);
+          console.error('Error fetching jobs data:', error)
         }
       }
     }
-    getJobs();
+    getJobs()
   }, [facilities])
 
   const jobsColumns = [
@@ -47,15 +45,14 @@ export default function Facilities() {
     { Header: 'Status', accessor: 'status' },
     { Header: 'Salary', accessor: 'salary' },
     //@ts-ignore
-    { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => Array.isArray(value) ? value.join(', ') : 'N/A'},
+    { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => (Array.isArray(value) ? value.join(', ') : 'N/A') },
     { Header: 'Employment Type', accessor: 'employment_type' },
-  ];
+  ]
 
   return (
     <div className="flex flex-col gap-4">
       <TitleComponent title={'Jobs'} />
       <GlobalTable data={jobsData} columns={jobsColumns} />
     </div>
-  );
-
+  )
 }

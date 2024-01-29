@@ -13,42 +13,44 @@ export default function AdminUserDetails() {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const userFound = await RequestService(`users/${id}`);
-        setFormUser(userFound);
+        const userFound = await RequestService(`users/${id}`)
+        setFormUser(userFound)
       } catch (error) {
-        console.error("Error fetching user data: ", error);
+        console.error('Error fetching user data: ', error)
       }
     }
     getUser()
   }, [id])
 
   const handleInputChange = (e: any) => {
-    const { name, value, type, checked } = e.target;
-    const inputValue = type === 'checkbox' ? checked : value;
+    const { name, value, type, checked } = e.target
+    const inputValue = type === 'checkbox' ? checked : value
     setFormUser((prevFormUser: any) => ({
-        ...prevFormUser,
-        [name]: inputValue,
-    }));
-  };
+      ...prevFormUser,
+      [name]: inputValue,
+    }))
+  }
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response: any = await RequestService(`users/${formUser.id}`, 'PATCH', formUser)
       setFormUser(response)
-      setUpdateSuccess(true);
-      setTimeout(() => setUpdateSuccess(false), 5000);
+      setUpdateSuccess(true)
+      setTimeout(() => setUpdateSuccess(false), 5000)
     } catch (error) {
-      console.error("Error updating user data:", error);
-      setUpdateSuccess(false);
+      console.error('Error updating user data:', error)
+      setUpdateSuccess(false)
     }
   }
-  
+
   console.log('formUser -->', formUser)
   return (
     <>
       <div className="border-b border-gray-200 pb-5 w-full mb-12 ">
-        <h3 className="text-base font-semibold leading-6 text-gray-900">{formUser.first_name} {formUser.last_name}'s Profile Details</h3>
+        <h3 className="text-base font-semibold leading-6 text-gray-900">
+          {formUser.first_name} {formUser.last_name}'s Profile Details
+        </h3>
       </div>
 
       {formUser.role && (
@@ -135,7 +137,6 @@ export default function AdminUserDetails() {
                       value={formUser.first_name || ''}
                       onChange={handleInputChange}
                       type="text"
-                      
                       name="first_name"
                       id="first_name"
                       autoComplete="given-name"
@@ -528,8 +529,7 @@ export default function AdminUserDetails() {
                     <p className="text-sm font-medium text-green-800">Facility successfully updated</p>
                   </div>
                   <div className="ml-auto pl-3">
-                    <div className="-mx-1.5 -my-1.5">
-                    </div>
+                    <div className="-mx-1.5 -my-1.5"></div>
                   </div>
                 </div>
               </div>

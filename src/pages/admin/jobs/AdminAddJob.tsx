@@ -1,12 +1,11 @@
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
-import { CheckCircleIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 export default function AdminAddJob() {
-  const [updateSuccess, setUpdateSuccess] = React.useState(false);
+  const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
-
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -36,8 +35,7 @@ export default function AdminAddJob() {
       shift_times: target.shift_times.value.split(','),
       shift_dates: target.shift_dates.value.split(','),
       status: 'active',
-    };
-
+    }
 
     fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs`, {
       method: 'POST',
@@ -49,16 +47,16 @@ export default function AdminAddJob() {
     })
       .then(response => {
         if (response.ok) {
-          setUpdateSuccess(true);
-          setTimeout(() => setUpdateSuccess(false), 5000); // Hide message after 5 seconds
+          setUpdateSuccess(true)
+          setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
         } else {
-          throw new Error('Job posted successfully');
+          throw new Error('Job posted successfully')
         }
       })
       .catch(error => {
-        console.error("Error posting job:", error);
-        setUpdateSuccess(false);
-      });
+        console.error('Error posting job:', error)
+        setUpdateSuccess(false)
+      })
   }
 
   return (
@@ -69,20 +67,15 @@ export default function AdminAddJob() {
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Job Information
-              </h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Information</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your business so that we can verify you on the
-                platform.{' '}
+                Please provide information about your business so that we can verify you on the platform.{' '}
               </p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="job-title"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="job-title" className="block text-sm font-medium leading-6 text-gray-900">
                   Title
                 </label>
                 <div className="mt-2">
@@ -95,9 +88,7 @@ export default function AdminAddJob() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="company-id"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="company-id" className="block text-sm font-medium leading-6 text-gray-900">
                   Company
                 </label>
                 <div className="mt-2">
@@ -110,9 +101,7 @@ export default function AdminAddJob() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="created_by"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="created_by" className="block text-sm font-medium leading-6 text-gray-900">
                   Created By
                 </label>
                 <div className="mt-2">
@@ -125,9 +114,7 @@ export default function AdminAddJob() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="facility-id"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="facility-id" className="block text-sm font-medium leading-6 text-gray-900">
                   Facility ID*
                 </label>
                 <div className="mt-2">
@@ -140,9 +127,7 @@ export default function AdminAddJob() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="salary"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="salary" className="block text-sm font-medium leading-6 text-gray-900">
                   Salary*
                 </label>
                 <div className="mt-2">
@@ -156,9 +141,7 @@ export default function AdminAddJob() {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="employment-type"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="employment-type" className="block text-sm font-medium leading-6 text-gray-900">
                   employment_type
                 </label>
                 <div className="mt-2">
@@ -246,11 +229,7 @@ export default function AdminAddJob() {
                   />
                 </div>
 
-
-                <p className="mt-3 text-sm leading-6 text-gray-600">
-                  Write notes about the Job.
-
-                </p>
+                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the Job.</p>
               </div>
             </div>
           </div>
@@ -260,16 +239,12 @@ export default function AdminAddJob() {
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Location</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide the address information below.
-              </p>
+              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide the address information below.</p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="country"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
                   Country
                 </label>
                 <div className="mt-2">
@@ -286,9 +261,7 @@ export default function AdminAddJob() {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
                   Street Address
                 </label>
                 <div className="mt-2">
@@ -333,9 +306,7 @@ export default function AdminAddJob() {
               </div>
 
               <div className="sm:col-span-2">
-                <label
-                  htmlFor="postal-code"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
                   ZIP / Postal code
                 </label>
                 <div className="mt-2">
@@ -363,8 +334,7 @@ export default function AdminAddJob() {
                   <p className="text-sm font-medium text-green-800">Job successfully posted</p>
                 </div>
                 <div className="ml-auto pl-3">
-                  <div className="-mx-1.5 -my-1.5">
-                  </div>
+                  <div className="-mx-1.5 -my-1.5"></div>
                 </div>
               </div>
             </div>
