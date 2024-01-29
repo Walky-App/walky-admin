@@ -127,6 +127,23 @@ export default function AdminAddFacility() {
 
             <div className="sm:col-span-3">
               <label
+                htmlFor="sqft"
+                className="block text-sm font-medium leading-6 text-gray-900">
+                Facility Square Footage
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  name="sqft"
+                  id="sqft"
+                  autoComplete="sqft"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <label
                 htmlFor="first-name"
                 className="block text-sm font-medium leading-6 text-gray-900">
                 Business Contact First Name*
@@ -136,6 +153,7 @@ export default function AdminAddFacility() {
                   type="text"
                   name="first_name"
                   id="tax-id"
+                  disabled
                   className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
@@ -152,6 +170,7 @@ export default function AdminAddFacility() {
                   name="last_name"
                   id="last-name"
                   autoComplete="given-name"
+                  disabled
                   className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
@@ -168,6 +187,7 @@ export default function AdminAddFacility() {
                   id="role"
                   name="role"
                   autoComplete="role"
+                  disabled
                   className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                   <option>Owner</option>
                   <option>Manager</option>
@@ -184,6 +204,7 @@ export default function AdminAddFacility() {
                       id="services"
                       name="services"
                       type="checkbox"
+                      disabled
                       className="px-3 h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                     />
                   </div>
@@ -199,6 +220,7 @@ export default function AdminAddFacility() {
                       id="services"
                       name="services"
                       type="checkbox"
+                      disabled
                       className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                     />
                   </div>
@@ -214,6 +236,7 @@ export default function AdminAddFacility() {
                       id="services"
                       name="services"
                       type="checkbox"
+                      disabled
                       className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                     />
                   </div>
