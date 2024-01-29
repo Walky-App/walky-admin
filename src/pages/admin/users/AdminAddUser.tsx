@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { CheckCircleIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 export default function AdminAddUser() {
-  const [updateSuccess, setUpdateSuccess] = React.useState(false);
+  const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -19,13 +19,12 @@ export default function AdminAddUser() {
     const formData = {
       first_name: target.first_name.value,
       last_name: target.last_name.value,
-      email: target.email.value, 
+      email: target.email.value,
       password: target.password.value,
       password_confirmed: target.password_confirmed.value,
       role: target.role.value,
-    };
+    }
 
-  
     fetch(`${process.env.REACT_APP_PUBLIC_API}/auth`, {
       method: 'POST',
       headers: {
@@ -34,19 +33,19 @@ export default function AdminAddUser() {
       },
       body: JSON.stringify(formData),
     })
-    .then(response => {
-      if(response.ok) {
-        setUpdateSuccess(true);
-        setTimeout(() => setUpdateSuccess(false), 5000); // Hide message after 5 seconds
-      } else {
-        throw new Error('Failed to add user');
-      }
-    })
-    .catch(error => {
-      console.error("Error adding user:", error);
-      setUpdateSuccess(false);
-    });
-  };
+      .then(response => {
+        if (response.ok) {
+          setUpdateSuccess(true)
+          setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+        } else {
+          throw new Error('Failed to add user')
+        }
+      })
+      .catch(error => {
+        console.error('Error adding user:', error)
+        setUpdateSuccess(false)
+      })
+  }
 
   return (
     <>
@@ -118,7 +117,7 @@ export default function AdminAddUser() {
                   />
                 </div>
               </div>
-              
+
               <div className="sm:col-span-3">
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Password
@@ -150,23 +149,20 @@ export default function AdminAddUser() {
               </div>
 
               <div className="sm:col-span-3">
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium leading-6 text-gray-900">
-                Select User Role
-              </label>
-              <div className="mt-2">
-                <select
-                  id="role"
-                  name="role"
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                  <option>admin</option>
-                  <option>employee</option>
-                  <option>client</option>
-                </select>
+                <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
+                  Select User Role
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="role"
+                    name="role"
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                    <option>admin</option>
+                    <option>employee</option>
+                    <option>client</option>
+                  </select>
+                </div>
               </div>
-            </div>
-
             </div>
           </div>
 
@@ -287,22 +283,21 @@ export default function AdminAddUser() {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-        {updateSuccess && (
-          <div className="rounded-md bg-green-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">User successfully added</p>
-            </div>
-            <div className="ml-auto pl-3">
-              <div className="-mx-1.5 -my-1.5">
+          {updateSuccess && (
+            <div className="rounded-md bg-green-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-green-800">User successfully added</p>
+                </div>
+                <div className="ml-auto pl-3">
+                  <div className="-mx-1.5 -my-1.5"></div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        )}
+          )}
           <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
             Cancel
           </button>

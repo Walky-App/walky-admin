@@ -1,12 +1,6 @@
 'use client'
 import * as React from 'react'
-import {
-  BriefcaseIcon,
-  PhoneIcon,
-  MapPinIcon,
-  CreditCardIcon,
-  BookmarkIcon,
-} from '@heroicons/react/20/solid'
+import { BriefcaseIcon, PhoneIcon, MapPinIcon, CreditCardIcon, BookmarkIcon } from '@heroicons/react/20/solid'
 
 export default function JobListItem({ job }) {
   const days = () => {

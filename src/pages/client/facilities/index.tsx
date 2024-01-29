@@ -8,17 +8,17 @@ import { GetTokenInfo } from '../../../utils/TokenUtils'
 export default function Facilities() {
   const [facilities, setFacilities] = React.useState<any>([])
   const user = GetTokenInfo()
-  const id = user?._id 
+  const id = user?._id
 
   React.useEffect(() => {
     const getFacilities = async () => {
       const allFacilities = await RequestService(`facilities/byclient/${id}`)
       setFacilities(allFacilities)
     }
-    
+
     getFacilities()
   }, [])
-  
+
   const facilitiesColumns = [
     { Header: 'Name', accessor: 'name' },
     { Header: 'Address', accessor: 'address' },
@@ -33,7 +33,6 @@ export default function Facilities() {
     <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
       <TitleComponent title={'Facilities'} />
 
-  
       <div className="flex flex-col gap-4">
         {facilities.length > 0 ? (
           <GlobalTable data={facilities} columns={facilitiesColumns} />

@@ -97,12 +97,8 @@ export default function Onboarding() {
       <Exit />
       <div className="inline-block max-w-4xl my-40 mx-60">
         {step === 0 && <Welcome />}
-        {step === 1 && (
-          <Step1 setContinueStyle={setContinueStyle} setStepComplete={setStepComplete} />
-        )}
-        {step === 2 && (
-          <Step2 setContinueStyle={setContinueStyle} setStepComplete={setStepComplete} />
-        )}
+        {step === 1 && <Step1 setContinueStyle={setContinueStyle} setStepComplete={setStepComplete} />}
+        {step === 2 && <Step2 setContinueStyle={setContinueStyle} setStepComplete={setStepComplete} />}
       </div>
       {step === 0 ? (
         <div className="flex items-center py-6 border-t-2 bottom-0 absolute w-3/4">
@@ -110,11 +106,7 @@ export default function Onboarding() {
         </div>
       ) : (
         <div className="flex justify-between items-center py-6 border-t-2 bottom-0 absolute w-3/4">
-          <Back
-            prevStep={prevStep}
-            continueStyle={continueStyle}
-            setContinueStyle={setContinueStyle}
-          />
+          <Back prevStep={prevStep} continueStyle={continueStyle} setContinueStyle={setContinueStyle} />
           <Continue continueStyle={continueStyle} setContinueStyle={setContinueStyle} />
         </div>
       )}
