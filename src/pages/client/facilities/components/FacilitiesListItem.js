@@ -15,11 +15,7 @@ export default function FacilitiesListItem({ facility }) {
         key={facility._id}
         className="relative flex justify-between gap-x-6 py-5 shadow-md border-gray-300 hover:bg-gray-50 hover:shadow-lg  ">
         <div className="flex min-w-0 gap-x-4">
-          <img
-            className="h-12 w-12 flex-none square-full bg-gray-50"
-            src={facility.main_image}
-            alt=""
-          />
+          <img className="h-12 w-12 flex-none square-full bg-gray-50" src={facility.main_image} alt="" />
           <div className="min-w-0 flex-auto">
             <p className="text-sm font-semibold leading-6 text-gray-900"></p>
             <p className="mt-1 flex text-xs leading-5 text-gray-500">

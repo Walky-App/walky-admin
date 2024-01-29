@@ -1,49 +1,47 @@
 import { useEffect, useState } from 'react'
 import { RequestService } from '../../../services/RequestService'
-import { CheckCircleIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 export default function ClientProfile({ userId }: { userId: string }) {
   const [formClient, setFormClient] = useState<any>()
-  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false); // state to track update status
-
+  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false) // state to track update status
 
   useEffect(() => {
     const getUser = async () => {
       try {
-        const userFound = await RequestService(`users/${userId}`);
-        setFormClient(userFound);
+        const userFound = await RequestService(`users/${userId}`)
+        setFormClient(userFound)
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error('Error fetching user data:', error)
       }
-    };
-    getUser();
-  }, [userId]);
+    }
+    getUser()
+  }, [userId])
 
   const handleInputChange = (e: any) => {
-    const { name, value, type, checked } = e.target;
-    const inputValue = type === 'checkbox' ? checked : value;
+    const { name, value, type, checked } = e.target
+    const inputValue = type === 'checkbox' ? checked : value
     setFormClient((prevFormClient: any) => ({
       ...prevFormClient,
       [name]: inputValue,
-    }));
-  };
-
+    }))
+  }
 
   const handleUpdate = async (e: any) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      const res = await RequestService(`users/${userId}`, 'PATCH', formClient);
-      setFormClient(res);
-      setUpdateSuccess(true); 
-      setTimeout(() => setUpdateSuccess(false), 5000); 
+      const res = await RequestService(`users/${userId}`, 'PATCH', formClient)
+      setFormClient(res)
+      setUpdateSuccess(true)
+      setTimeout(() => setUpdateSuccess(false), 5000)
     } catch (error) {
-      console.error("Error updating Client data:", error);
-      setUpdateSuccess(false);
+      console.error('Error updating Client data:', error)
+      setUpdateSuccess(false)
     }
-  };
+  }
 
   if (!formClient) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (
@@ -253,22 +251,23 @@ export default function ClientProfile({ userId }: { userId: string }) {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-        {updateSuccess && (
-          <div className="rounded-md bg-green-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">Successfully updated {formClient.first_name}'s profile</p>
-            </div>
-            <div className="ml-auto pl-3">
-              <div className="-mx-1.5 -my-1.5">
+          {updateSuccess && (
+            <div className="rounded-md bg-green-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-green-800">
+                    Successfully updated {formClient.first_name}'s profile
+                  </p>
+                </div>
+                <div className="ml-auto pl-3">
+                  <div className="-mx-1.5 -my-1.5"></div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        )}
+          )}
           <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
             Cancel
           </button>

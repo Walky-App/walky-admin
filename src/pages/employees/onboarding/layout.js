@@ -5,7 +5,6 @@ import ProgressBar from './forms/ProgressBar'
 export const OnboardingContext = createContext()
 
 export default function Layout({ children }) {
-
   const [step, setStep] = useState(0)
   const [stepComplete, setStepComplete] = useState({
     form1: 'incomplete',

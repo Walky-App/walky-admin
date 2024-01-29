@@ -2,17 +2,10 @@ export default function Footer() {
   return (
     <footer className="py-6 border-t-2">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-sm">
-          &nbsp; &copy; {new Date().getFullYear()} Hemp Temps. All rights reserved.
-        </div>
+        <div className="text-sm">&nbsp; &copy; {new Date().getFullYear()} Hemp Temps. All rights reserved.</div>
         <div className="space-x-4 flex">
           <a href="https://www.facebook.com/HempTemps/" target="_blank" rel="noopener noreferrer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
-              viewBox="0 0 30 30"
-              fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="currentColor">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -25,12 +18,7 @@ export default function Footer() {
             </svg>
           </a>
           <a href="https://twitter.com/hemp_temps">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
-              viewBox="0 0 30 30"
-              fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="currentColor">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -42,16 +30,8 @@ export default function Footer() {
               </svg>
             </svg>
           </a>
-          <a
-            href="https://www.instagram.com/hemp_temps/?hl=en"
-            target="_blank"
-            rel="noopener noreferrer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
-              viewBox="0 0 30 30"
-              fill="currentColor">
+          <a href="https://www.instagram.com/hemp_temps/?hl=en" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="currentColor">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
