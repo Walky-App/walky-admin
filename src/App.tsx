@@ -61,6 +61,7 @@ export default function App() {
                 <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
                 <Route path="/client/jobs" element={<Jobs />} />
                 <Route path="/client/jobs/new" element={<AddJob />} />
+                <Route path="/client/jobs/:id" element={<ClientDashboard />} />
               </Route>
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />

@@ -1,38 +1,45 @@
 import * as React from 'react'
 
 import { RequestService } from '../../../services/RequestService'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import TitleComponent from '../../../components/shared/general/TitleComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 
-export default function Jobs() {
-  const [jobs, setJobs] = React.useState<any>([])
+export default function Facilities() {
+  const [facilities, setFacilities] = React.useState<any>([])
+  const user = GetTokenInfo()
+  const id = user?._id 
 
   React.useEffect(() => {
-    const getJobs = async () => {
-      const allJobs = await RequestService('jobs')
-      setJobs(allJobs)
+    const getFacilities = async () => {
+      const allFacilities = await RequestService(`facilities/byclient/${id}`)
+      setFacilities(allFacilities)
     }
-
-    getJobs()
+    
+    getFacilities()
   }, [])
-
-  const jobsColumns = [
-    { Header: 'Job Title', accessor: 'title' },
-    //@ts-ignore
-    { Header: 'Facility', accessor: `row => row.facility.name`, Cell: ({ value }) => value || 'No Facility' },
-    { Header: 'Status', accessor: 'status' },
-    { Header: 'Salary', accessor: 'salary' },
-    //@ts-ignore
-    { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => value.join(', ') },
-    { Header: 'Employment Type', accessor: 'employment_type' },
+  
+  const facilitiesColumns = [
+    { Header: 'Name', accessor: 'name' },
+    { Header: 'Address', accessor: 'address' },
+    { Header: 'Phone Number', accessor: 'phone_number' },
+    { Header: 'City', accessor: 'city' },
+    { Header: 'State', accessor: 'state' },
+    { Header: 'Zip', accessor: 'zip' },
+    { Header: 'Country', accessor: 'country' },
   ]
 
   return (
-    <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-      <HeaderComponent title={'Jobs'} />
+    <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <TitleComponent title={'Jobs by Facility'} />
 
+  
       <div className="flex flex-col gap-4">
-        <GlobalTable data={jobs} columns={jobsColumns} />
+        {facilities.length > 0 ? (
+          <GlobalTable data={facilities} columns={facilitiesColumns} />
+        ) : (
+          <div>No facilities available.</div>
+        )}
       </div>
     </div>
   )
