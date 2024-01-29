@@ -131,7 +131,6 @@ export default function SideBar() {
         name: 'HTU',
         href: '/admin/learn',
         icon: <FaUserGraduate />,
-        disabled: true,
       },
 
       {

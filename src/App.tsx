@@ -33,11 +33,14 @@ import ClientProfile from './pages/client/profile'
 import AdminDashboard from './pages/admin/dashboard'
 import AdminProfile from './pages/admin/profile'
 import AdminUsers from './pages/admin/users'
-import AdminUserDetail from './pages/admin/users/AdminUserDetail'
+import AdminAddUser from './pages/admin/users/AdminAddUser'
+import AdminUserDetails from './pages/admin/users/AdminUserDetails'
 import AdminFacilities from './pages/admin/facilities'
 import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
 import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
+import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
+import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 
 export default function App() {
   return (
@@ -68,11 +71,15 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/profile" element={<AdminProfile />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
-                <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+                <Route path="/admin/users/new" element={<AdminAddUser />} />
+                <Route path="/admin/users/:id" element={<AdminUserDetails />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
                 <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
+                <Route path="/admin/facilities/new" element={<AdminAddFacility/>} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
+                <Route path="/admin/jobs/new" element={<AdminAddJob />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
+                <Route path="/admin/learn" element={<Learn />} />
               </Route>
             </Route>
           </Route>
