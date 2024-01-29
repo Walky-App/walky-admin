@@ -38,13 +38,13 @@ export default function EmployeeProfile() {
         target.notification_sms?.checked ? target.notification_sms.name : '',
       ],
       direct_deposit: {
-        bank_name: target.bank_name.value,
-        account_number: target.account_number.value,
-        routing_number: target.routing_number.value,
-        bank_address: target.bank_address.value,
-        bank_city: target.bank_city.value,
-        bank_state: target.bank_state.value,
-        bank_zip: target.bank_zip.value,
+        bank_name: target.bank_name?.value,
+        account_number: target.account_number?.value,
+        routing_number: target.routing_number?.value,
+        bank_address: target.bank_address?.value,
+        bank_city: target.bank_city?.value,
+        bank_state: target.bank_state?.value,
+        bank_zip: target.bank_zip?.value,
       },
     }
 
@@ -331,7 +331,7 @@ export default function EmployeeProfile() {
                     </label>
                     <div className="mt-2">
                       <input
-                        defaultValue={formUser.direct_deposit.bank_name}
+                        defaultValue={formUser.direct_deposit?.bank_name}
                         type="text"
                         name="bank_name"
                         id="bank_name"
@@ -346,7 +346,7 @@ export default function EmployeeProfile() {
                     </label>
                     <div className="mt-2">
                       <input
-                        defaultValue={formUser.direct_deposit.account_number}
+                        defaultValue={formUser.direct_deposit?.account_number}
                         type="text"
                         name="account_number"
                         id="account_number"
@@ -362,7 +362,7 @@ export default function EmployeeProfile() {
                     </label>
                     <div className="mt-2">
                       <input
-                        defaultValue={formUser.direct_deposit.routing_number}
+                        defaultValue={formUser.direct_deposit?.routing_number}
                         type="text"
                         name="routing_number"
                         id="routing_number"
@@ -378,7 +378,7 @@ export default function EmployeeProfile() {
                     </label>
                     <div className="mt-2">
                       <input
-                        defaultValue={formUser.direct_deposit.bank_address}
+                        defaultValue={formUser.direct_deposit?.bank_address}
                         type="text"
                         name="bank_address"
                         id="bank_address"
@@ -394,7 +394,7 @@ export default function EmployeeProfile() {
                     </label>
                     <div className="mt-2">
                       <input
-                        defaultValue={formUser.direct_deposit.bank_city}
+                        defaultValue={formUser.direct_deposit?.bank_city}
                         type="text"
                         name="bank_city"
                         id="bank_city"
@@ -410,7 +410,7 @@ export default function EmployeeProfile() {
                     </label>
                     <div className="mt-2">
                       <input
-                        defaultValue={formUser.direct_deposit.bank_state}
+                        defaultValue={formUser.direct_deposit?.bank_state}
                         type="text"
                         name="bank_state"
                         id="bank_state"
@@ -426,7 +426,7 @@ export default function EmployeeProfile() {
                     </label>
                     <div className="mt-2">
                       <input
-                        defaultValue={formUser.direct_deposit.bank_zip}
+                        defaultValue={formUser.direct_deposit?.bank_zip}
                         type="text"
                         name="bank_zip"
                         id="bank_zip"
