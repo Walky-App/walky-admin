@@ -17,7 +17,7 @@ export default function CategoryCards({ category, filter = '' }: CategoryCardsPr
   return (
     <>
       {categoriesFilter().map(category => (
-        <Link key={category._id} to={`/learn/categories/${category._id}`}>
+        <Link key={category._id} to={`/learn/category/${category._id}`}>
           <div className="mb-4 flex sm:h-32 h-auto rounded-2xl border border-zinc-100 bg-white">
             <div className="m-3">
               {
@@ -42,7 +42,7 @@ export default function CategoryCards({ category, filter = '' }: CategoryCardsPr
                 <div className="relative h-1 w-10">
                   <div className="w-10 h-1 left-0 top-0 absolute bg-neutral-100 rounded-2xl"></div>
                   <div
-                    className={`w-${category.progress / 10
+                    className={`w-${Math.floor(category.progress / 10)
                       } h-1 left-0 top-0 absolute bg-black rounded-2xl`}></div>
                 </div>
               </div>

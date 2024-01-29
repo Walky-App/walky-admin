@@ -18,6 +18,7 @@ import EmployeeProfile from './pages/employees/EmployeeProfile'
 
 /** Learn Pages */
 import Learn from './pages/learn'
+import Modules from './pages/learn/modules'
 
 /** Client Pages */
 import ClientDashboard from './pages/client/dashboard'
@@ -53,6 +54,7 @@ export default function App() {
               <Route path="/employee/profile" element={<EmployeeProfile />} />
               {/* LMS Module */}
               <Route path="/learn" element={<Learn />} />
+              <Route path="/learn/category/:id" element={<Modules />} />
               <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
                 <Route path="/client/dashboard" element={<ClientDashboard />} />
                 <Route path="/client/profile" element={<ClientProfile />} />
