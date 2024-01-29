@@ -1,58 +1,70 @@
-'use client'
-
-
-import { RequestService } from '@/services/RequestService'
+import { CheckCircleIcon } from '@heroicons/react/20/solid';
 import { PhotoIcon } from '@heroicons/react/24/solid'
+import * as React from 'react'
 
-export default async function facilityDetail({ params }) {
-  const facility = await RequestService(`facilities/${params.id}`)
+export default function AdminAddFacility() {
+  const [updateSuccess, setUpdateSuccess] = React.useState(false);
 
-  const handleForm = e => {
+
+  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const formValues = {
-      name: e.target.name.value,
-      country: e.target.country.value,
-      address: e.target.address.value,
-      city: e.target.city.value,
-      state: e.target.state.value,
-      zip: e.target.zip.value,
-      // email: e.target.email.value,
-      tax_id: e.target.tax_id.value,
-      phone_number: e.target.phone_number.value,
+
+    const target = e.target as typeof e.target & {
+      name: { value: string };
+      country: { value: string };
+      address: { value: string };
+      city: { value: string };
+      state: { value: string };
+      zip: { value: string };
+      tax_id: { value: string };
+      phone_number: { value: string };
+      notes: { value: string };
+      active: { value: string };
+    };
+
+    const formData = {
+      name: target.name.value,
+      country: target.country.value,
+      address: target.address.value,
+      city: target.city.value,
+      state: target.state.value,
+      zip: target.zip.value,
+      // email: target.email.value,
+      tax_id: target.tax_id.value,
+      phone_number: target.phone_number.value,
       // company_dba: e.target.dba.value,
       //contacts: e.target.contacts.value,
       // role: e.target.contacts.value,
-      // active: "true",
-     //state_license: e.target.state_license.value,
+      active: "true",
+      //state_license: e.target.state_license.value,
       // jobs: e.target.jobs.value, // array of job ids
       // city_license: e.target.city_license.value,
-      notes: e.target.notes.value,
+      notes: target.notes.value,
     }
-    fetch(`${process.env.NEXT_PUBLIC_API}/facilities/${params.id}`, {
-      method: 'PATCH',
+    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         // Authorization: `Bearer ${user?.access_token}`,
       },
-      body: JSON.stringify(formValues),
+      body: JSON.stringify(formData),
     })
+      .then(response => {
+        if (response.ok) {
+          setUpdateSuccess(true);
+          setTimeout(() => setUpdateSuccess(false), 5000); // Hide message after 5 seconds
+        } else {
+          throw new Error('Failed to add facility');
+        }
+      })
+      .catch(error => {
+        console.error("Error adding facility:", error);
+        setUpdateSuccess(false);
+      });
   }
 
   return (
-    <>
-      <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-      <img
-            className="h-64 w-64 flex-none square-full bg-gray-50"
-            src={facility.main_image}
-            alt=""
-          />
-      <h1>{facility.name}</h1>
-      <h2>{facility.address}</h2>
-      <h2>{facility.city}</h2>
-      <h3>{facility.zip}</h3>
-      </div>
-
-      <form onSubmit={handleForm}>
+    <form onSubmit={handleForm}>
       <div className="space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
@@ -69,8 +81,7 @@ export default async function facilityDetail({ params }) {
             <div className="sm:col-span-3">
               <label
                 htmlFor="tax-id"
-                className="block text-sm font-medium leading-6 text-gray-900"
-                >
+                className="block text-sm font-medium leading-6 text-gray-900">
                 Tax ID
               </label>
               <div className="mt-2">
@@ -78,8 +89,7 @@ export default async function facilityDetail({ params }) {
                   type="text"
                   name="tax_id"
                   id="tax-id"
-                  defaultValue ={facility.tax_id}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -94,8 +104,7 @@ export default async function facilityDetail({ params }) {
                   type="text"
                   name="name"
                   id="name"
-                  defaultValue={facility.name}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 py-2 block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -111,8 +120,24 @@ export default async function facilityDetail({ params }) {
                   name="phone_number"
                   id="phone-number"
                   autoComplete="phone-number"
-                  defaultValue={facility.phone_number}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <label
+                htmlFor="sqft"
+                className="block text-sm font-medium leading-6 text-gray-900">
+                Facility Square Footage
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  name="sqft"
+                  id="sqft"
+                  autoComplete="sqft"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -128,8 +153,8 @@ export default async function facilityDetail({ params }) {
                   type="text"
                   name="first_name"
                   id="tax-id"
-                  defaultValue={facility.first_name}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  disabled
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -145,8 +170,8 @@ export default async function facilityDetail({ params }) {
                   name="last_name"
                   id="last-name"
                   autoComplete="given-name"
-                  defaultValue={facility.last_name}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  disabled
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -162,7 +187,8 @@ export default async function facilityDetail({ params }) {
                   id="role"
                   name="role"
                   autoComplete="role"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                  disabled
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                   <option>Owner</option>
                   <option>Manager</option>
                 </select>
@@ -178,7 +204,8 @@ export default async function facilityDetail({ params }) {
                       id="services"
                       name="services"
                       type="checkbox"
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      disabled
+                      className="px-3 h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                     />
                   </div>
                   <div className="text-sm leading-6">
@@ -193,6 +220,7 @@ export default async function facilityDetail({ params }) {
                       id="services"
                       name="services"
                       type="checkbox"
+                      disabled
                       className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                     />
                   </div>
@@ -208,6 +236,7 @@ export default async function facilityDetail({ params }) {
                       id="services"
                       name="services"
                       type="checkbox"
+                      disabled
                       className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                     />
                   </div>
@@ -231,8 +260,8 @@ export default async function facilityDetail({ params }) {
                   id="about"
                   name="notes"
                   rows={3}
-                 defaultValue={facility.notes}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  defaultValue={''}
                 />
               </div>
               <p className="mt-3 text-sm leading-6 text-gray-600">
@@ -287,7 +316,7 @@ export default async function facilityDetail({ params }) {
                   id="country"
                   name="country"
                   autoComplete="country-name"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                   <option>United States</option>
                   <option>Canada</option>
                   <option>Mexico</option>
@@ -306,9 +335,8 @@ export default async function facilityDetail({ params }) {
                   type="text"
                   name="address"
                   id="address"
-                  defaultValue={facility.address}
                   autoComplete="address-line1"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -322,9 +350,8 @@ export default async function facilityDetail({ params }) {
                   type="text"
                   name="city"
                   id="city"
-                  defaultValue={facility.city}
                   autoComplete="address-level2"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -338,9 +365,8 @@ export default async function facilityDetail({ params }) {
                   type="text"
                   name="state"
                   id="state"
-                  defaultValue={facility.state}
                   autoComplete="address-level1"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -356,9 +382,8 @@ export default async function facilityDetail({ params }) {
                   type="text"
                   name="zip"
                   id="zip"
-                  defaultValue={facility.zip}
                   autoComplete="postal-code"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -446,6 +471,22 @@ export default async function facilityDetail({ params }) {
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
+        {updateSuccess && (
+          <div className="rounded-md bg-green-50 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-green-800">Facility successfully added</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <div className="-mx-1.5 -my-1.5">
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
           Cancel
         </button>
@@ -456,8 +497,5 @@ export default async function facilityDetail({ params }) {
         </button>
       </div>
     </form>
-
-
-    </>
   )
 }

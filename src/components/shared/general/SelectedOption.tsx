@@ -91,7 +91,7 @@ export default function SelectedOption({
                           {selected ? (
                             <span
                               className={classNames(
-                                active ? 'text-white' : 'text-indigo-600',
+                                active ? 'text-white' : 'text-green-800',
                                 'absolute inset-y-0 right-0 flex items-center pr-4',
                               )}>
                               <CheckIcon className="h-5 w-5" aria-hidden="true" />
