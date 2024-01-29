@@ -115,7 +115,7 @@ export default function JobDetailView() {
                 <span className="text-black text-sm font-medium">{job?.employment_type}</span>
               </div>
               <div className=" justify-start items-start gap-2 inline-flex">
-                {job?.skills.map((skill: string) => (
+                {job?.skills?.map((skill: string) => (
                   <div className="p-2 bg-neutral-100 rounded justify-center items-center gap-2 flex">
                     <div className="text-center text-stone-500 text-xs font-normal">{skill}</div>
                   </div>
