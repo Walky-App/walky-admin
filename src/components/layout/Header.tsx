@@ -19,7 +19,6 @@ export default function Header() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
-
   useEffect(() => {
     if (user.role === 'employee') {
       setProfilePath('/employee/profile')
@@ -73,6 +72,7 @@ export default function Header() {
         </div> */}
 
         <div className="hidden lg:ml-4 lg:flex lg:items-center">
+          <small>Hi, John</small>
           <button
             type="button"
             disabled
@@ -85,7 +85,7 @@ export default function Header() {
           {/* Profile dropdown */}
           <Menu as="div" className="relative ml-4 flex-shrink-0">
             <div>
-              <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:outline-none focus:ring-green-600 focus:ring-offset-2">
+              <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
                 <img
@@ -107,8 +107,7 @@ export default function Header() {
                 <Menu.Item>
                   {({ active }) => (
                     <button
-                    onClick={() => navigate(profilePath)}
-
+                      onClick={() => navigate(profilePath)}
                       className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       My Profile
                     </button>
