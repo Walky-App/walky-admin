@@ -47,18 +47,6 @@ export default function AdminFacilityDetails() {
     }
     return (
         <>
-
-            <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-                <img
-                    className="h-64 w-64 flex-none square-full bg-gray-50"
-                    src={formFacility.main_image}
-                    alt=""
-                />
-                <h1>Facility: {formFacility.name}</h1>
-                <h2>Address: {formFacility.address}</h2>
-                <h2>City: {formFacility.city}</h2>
-                <h3>Zip: {formFacility.zip}</h3>
-            </div>
             <form onSubmit={handleUpdate}>
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -69,6 +57,20 @@ export default function AdminFacilityDetails() {
                             <p className="mt-1 text-sm leading-6 text-gray-600">
                                 Please see the information about this particular facility.{' '}
                             </p>
+                            <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
+                                {formFacility?.main_image &&  <img
+                                    className="h-64 w-64 flex-none rounded-lg object-cover bg-gray-50 mb-4"
+                                    src={formFacility?.main_image
+                                    }
+                                    alt=" Facility Image "
+                                />}
+                                <div className="space-y-2">
+                                    <h1 className="text-2xl font-bold text-gray-900">Facility: {formFacility?.name}</h1>
+                                    <h2 className="text-xl text-gray-700">{formFacility?.address}</h2>
+                                    <h2 className="text-lg text-gray-600">{formFacility?.city}</h2>
+                                    <h3 className="text-md text-gray-500">{formFacility?.zip}</h3>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
@@ -214,7 +216,7 @@ export default function AdminFacilityDetails() {
                                         id="role"
                                         name="role"
                                         autoComplete="role"
-                                        disabled    
+                                        disabled
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                         <option>Owner</option>
                                         <option>Manager</option>
