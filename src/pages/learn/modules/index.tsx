@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, lazy, useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { RequestService } from "../../../services/RequestService"
 import { Module } from "../../../interfaces/Module"
@@ -8,6 +8,7 @@ import ModuleCards from "../components/ModuleCards"
 import { PencilIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline"
 
 export default function Modules() {
+  const [loading, setLoading] = useState<boolean>(true)
   const params = useParams()
   const [searchParams] = useSearchParams()
   const [search, setSearch] = useState('')
@@ -18,7 +19,7 @@ export default function Modules() {
     if (response.length !== 0) {
       setModules(response)
     }
-
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function Modules() {
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
             <Suspense key={search + '-module-cards'} fallback={<div>loading...</div>}>
-              <ModuleCards module={modules} filter={search} />
+              <ModuleCards module={modules} filter={search} isLoading={loading} />
             </Suspense>
           </div>
 
