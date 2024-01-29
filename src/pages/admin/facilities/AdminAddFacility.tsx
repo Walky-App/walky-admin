@@ -20,6 +20,8 @@ export default function AdminAddFacility() {
       phone_number: { value: string };
       notes: { value: string };
       active: { value: string };
+      sqft: { value: number };
+      corp_name: { value: string };
     };
 
     const formData = {
@@ -40,6 +42,8 @@ export default function AdminAddFacility() {
       // jobs: e.target.jobs.value, // array of job ids
       // city_license: e.target.city_license.value,
       notes: target.notes.value,
+      sqft: target.sqft.value,
+      corp_name: target.corp_name.value,
     }
     fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities`, {
       method: 'POST',
@@ -90,6 +94,21 @@ export default function AdminAddFacility() {
                   name="tax_id"
                   id="tax-id"
                   className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+            <div className="sm:col-span-3">
+              <label
+                htmlFor="corp_name"
+                className="block text-sm font-medium leading-6 text-gray-900">
+                Corporate Name
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  name="corp_name"
+                  id="corp-name"
+                  className="px-3 py-2 block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
