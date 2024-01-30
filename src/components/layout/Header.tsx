@@ -17,6 +17,7 @@ export default function Header() {
   const [profilePath, setProfilePath] = useState<string>('')
 
   const { user } = useAuth()
+  const first_name = user.first_name
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function Header() {
         </div> */}
 
         <div className="hidden lg:ml-4 lg:flex lg:items-center">
-          {/* <small>Hi, John</small> */}
+          <small>Hi, {first_name}</small>
           <button
             type="button"
             disabled
