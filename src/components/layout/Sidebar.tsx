@@ -103,12 +103,6 @@ export default function SideBar() {
         icon: <FaBuilding />,
       },
       {
-        id: 9,
-        name: 'Add Facility',
-        href: '/client/facilities/new',
-        icon: <FaRegPlusSquare />,
-      },
-      {
         id: 10,
         name: 'HTU',
         href: '/learn',
