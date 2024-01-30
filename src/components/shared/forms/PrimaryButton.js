@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The rendered primary button component.
  */
 export default function PrimaryButton({ clickFunction, text, type }) {
-  const inputProps = (type === 'submit') ? { type: 'submit' } : { onclick: clickFunction }
+  const inputProps = type === 'submit' ? { type: 'submit' } : { onclick: clickFunction }
   return (
     <button
       {...inputProps}
@@ -20,11 +20,7 @@ export default function PrimaryButton({ clickFunction, text, type }) {
         strokeWidth="1.5"
         stroke="currentColor"
         className="w-6 h-6">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
       </svg>
     </button>
   )

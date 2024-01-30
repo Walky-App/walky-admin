@@ -8,7 +8,8 @@ import PrimaryButton from '@/components/shared/forms/PrimaryButton'
 const steps = [
   {
     component: <ClientForm1 />,
-    formVals: ['tax_id',
+    formVals: [
+      'tax_id',
       'phone_number',
       'company_name',
       'role',
@@ -31,7 +32,6 @@ const steps = [
 ]
 
 export default function ClientOnboarding() {
-
   const { step, setStep, company, setCompany } = useContext(OnboardingContext)
 
   const nextStep = () => {
@@ -43,19 +43,19 @@ export default function ClientOnboarding() {
     }
   }
 
-  const handleClientOnboarding = (e) => {
+  const handleClientOnboarding = e => {
     e.preventDefault()
 
     // TODO: Handle uploads !!
 
     let formValues = {}
-    for (const val of steps[step-1]?.formVals) {
+    for (const val of steps[step - 1]?.formVals) {
       if (e.target[val]?.value !== '') {
         formValues[val] = e.target[val]?.value
       }
     }
     // For client onboarding, we want to create a company with the user as the owner.
-    const companyUpdateRoute = (company) ? `/companies/${company._id}` : '/companies'
+    const companyUpdateRoute = company ? `/companies/${company._id}` : '/companies'
     // fetch(`${process.env.NEXT_PUBLIC_API}/${companyUpdateRoute}`, {
     fetch(`${process.env.NEXT_PUBLIC_API}/companies`, {
       method: 'POST',
@@ -65,27 +65,26 @@ export default function ClientOnboarding() {
       },
       body: JSON.stringify(formValues),
     })
-    .then(res => res.json())
-    .then(data => {
-      setCompany(data)
-      nextStep()
-    })
-    .catch(err => {
-      console.log(err)
-      alert('Something went wrong. Please try again.')
-    })
+      .then(res => res.json())
+      .then(data => {
+        setCompany(data)
+        nextStep()
+      })
+      .catch(err => {
+        console.log(err)
+        alert('Something went wrong. Please try again.')
+      })
   }
-  
+
   return (
     <form onSubmit={handleClientOnboarding} className="w-3/4 bg-zinc-50 h-screen mx-auto">
-      {steps[step-1]?.component || null}
+      {steps[step - 1]?.component || null}
 
       <div className="mx-auto w-auto py-6 md:flex md:items-center md:justify-between">
         <div className="flex justify-center items-end py-6 w-full border-t-2">
           <PrimaryButton clickFunction={null} text="Continue" type="submit" />
         </div>
       </div>
-
     </form>
-    )
+  )
 }

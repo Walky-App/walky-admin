@@ -1,11 +1,6 @@
 import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
-import {
-  BarsArrowUpIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from '@heroicons/react/20/solid'
+import { BarsArrowUpIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
 
 interface Props {
@@ -36,15 +31,13 @@ export default function SelectedOption({
           <>
             <div className="relative">
               <Listbox.Button
-                className={`relative h-9 w-full ${roundedOrientation ? roundedOrientation : 'rounded-md'
-                  } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
+                className={`relative h-9 w-full ${
+                  roundedOrientation ? roundedOrientation : 'rounded-md'
+                } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
                 <div className="flex gap-1 items-center justify-start">
                   {showInputIcon ? (
                     <span className="block truncate">
-                      <BarsArrowUpIcon
-                        className="-ml-0.5 h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
+                      <BarsArrowUpIcon className="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
                   ) : null}
 
@@ -91,7 +84,7 @@ export default function SelectedOption({
                           {selected ? (
                             <span
                               className={classNames(
-                                active ? 'text-white' : 'text-indigo-600',
+                                active ? 'text-white' : 'text-green-800',
                                 'absolute inset-y-0 right-0 flex items-center pr-4',
                               )}>
                               <CheckIcon className="h-5 w-5" aria-hidden="true" />

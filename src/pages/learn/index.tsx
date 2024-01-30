@@ -6,18 +6,17 @@ import { useSearchParams } from 'react-router-dom'
 import HeaderComponent from '../../components/shared/general/HeaderComponent'
 
 export default function Learn() {
-  const categorysOptions = [
-    { id: 1, name: 'All Skills' },
-    { id: 2, name: 'Not Skills' },
-  ]
-
+  const [loading, setLoading] = useState<boolean>(true)
   const [searchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [categories, setCategories] = useState<Category[]>([])
 
   const fecthData = async () => {
     const response: Category[] = await RequestService('categories')
-    setCategories(response)
+    if (response.length !== 0) {
+      setCategories(response)
+    }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -35,7 +34,7 @@ export default function Learn() {
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
             <Suspense key={search + '-category-cards'} fallback={<div>loading...</div>}>
-              <CategoryCards category={categories} filter={search} />
+              <CategoryCards category={categories} filter={search} isLoading={loading} />
             </Suspense>
           </div>
 
