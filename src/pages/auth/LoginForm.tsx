@@ -28,7 +28,7 @@ export default function LoginForm() {
     const { access_token, user }: any = data
 
     if (user && access_token) {
-      SetToken(user.role, user._id, access_token)
+      SetToken(user.role, user._id, access_token, user.first_name)
       setUser({ ...user, access_token: access_token })
       setLoading(false)
 
