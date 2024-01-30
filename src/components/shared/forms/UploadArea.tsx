@@ -108,7 +108,7 @@ export default function UploadArea({ label, name, path, required, id }: any) {
         />
         <div className={`image-upload`}>
           <div className="image-upload__preview">
-            {previewUrl && <img src={previewUrl} className='w-200 h-200' alt="Preview" />}
+            {previewUrl && <img src={previewUrl} className="w-200 h-200" alt="Preview" />}
             {!previewUrl && <p>Please pick an image.</p>}
           </div>
           <button type="button" onClick={pickImageHandler}>
