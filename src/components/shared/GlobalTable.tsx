@@ -269,7 +269,7 @@ function TableComponent({
             return (
               <tr
                 {...row.getRowProps()}
-                className="hover:bg-gray-100"
+                className="hover:bg-gray-100 cursor-pointer"
                 onClick={() =>
                   navigate(`${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${row.original._id}`)
                 }>
