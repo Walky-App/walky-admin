@@ -4,8 +4,8 @@ export default function BasicInfo() {
       <div className="px-4 sm:px-0">
         <h2 className="text-base font-semibold leading-7 text-zinc-900">Basic Information</h2>
         <p className="mt-1 text-sm leading-6 text-zinc-600">
-          Please provide the essential information for the job posting. Specify the position title,
-          and provide a comprehensive job description.
+          Please provide the essential information for the job posting. Specify the position title, and provide a
+          comprehensive job description.
         </p>
       </div>
       <section className="bg-white shadow-sm ring-1 ring-zinc-900/5 sm:rounded-xl md:col-span-2">
@@ -28,9 +28,7 @@ export default function BasicInfo() {
             </div>
 
             <div className="col-span-full">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium leading-6 text-zinc-900">
+              <label htmlFor="description" className="block text-sm font-medium leading-6 text-zinc-900">
                 Job Description
               </label>
               <div className="mt-2">
@@ -40,7 +38,7 @@ export default function BasicInfo() {
                 <textarea
                   name="description"
                   rows={3}
-                  className="block w-full rounded-md border-0 py-1.5 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   defaultValue={''}
                 />
               </div>

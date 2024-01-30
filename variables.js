@@ -364,4 +364,4 @@ export const years = Array.from({ length: 116 }, (_, index) => {
 export const accountTypes = [
   { name: 'Checking', code: 'Checking' },
   { name: 'Savings', code: 'Savings' },
-];
+]

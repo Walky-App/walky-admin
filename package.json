@@ -22,12 +22,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "deploy-prod": "npm run build && firebase deploy --only hosting:prod",
-    "deploy": "npm run build && firebase deploy",
+    "deploy-prod": "npm run build && firebase deploy",
+    "deploy-st": "npm run build && firebase hosting:channel:deploy staging",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "format": "npx prettier . --write"
+    "format": "npx prettier . --write",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@types/react-table": "^7.7.19",
+    "husky": "^9.0.7",
     "prettier": "3.2.4",
     "tailwindcss": "^3.4.1"
   }
