@@ -4,8 +4,10 @@ import { RequestService } from '../../../services/RequestService'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { useNavigate } from 'react-router-dom'
 
 export default function Facilities() {
+  const navigate = useNavigate()
   const [facilities, setFacilities] = React.useState<any>([])
   const user = GetTokenInfo()
   const id = user?._id
@@ -35,7 +37,8 @@ export default function Facilities() {
       <button
         type="button"
         onClick={() => {
-          window.location.href = '/client/facilities/new'
+          // window.location.href = '/client/facilities/new'
+          navigate('/client/facilities/new')
         }}
         className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
         Add Facility
