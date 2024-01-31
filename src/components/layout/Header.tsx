@@ -17,7 +17,7 @@ export default function Header() {
   const [profilePath, setProfilePath] = useState<string>('')
 
   const { user } = useAuth()
-  const first_name = user.first_name
+  const first_name = user ? user.first_name : ''
   const navigate = useNavigate()
 
   useEffect(() => {
