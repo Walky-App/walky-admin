@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { RequestService } from '../../../services/RequestService'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
@@ -6,6 +7,7 @@ import GlobalTable from '../../../components/shared/GlobalTable'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export default function Facilities() {
+  const navigate = useNavigate()
   const user = GetTokenInfo()
   const id = user?._id
   const [facilities, setFacilities] = React.useState<any>([])
@@ -28,7 +30,7 @@ export default function Facilities() {
         try {
           const jobsRequests = facilities.map((facility: Facility) => RequestService(`jobs/facility/${facility._id}`))
           const jobsResults = await Promise.all(jobsRequests)
-          const allJobs = jobsResults.flat() // Flatten the array of arrays
+          const allJobs = jobsResults.flat()
           setJobsData(allJobs)
         } catch (error) {
           console.error('Error fetching jobs data:', error)
@@ -50,8 +52,16 @@ export default function Facilities() {
   ]
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
       <TitleComponent title={'Jobs'} />
+      <button
+        type="button"
+        onClick={() => {
+         navigate('/client/jobs/new')
+        }}
+        className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+        Add Job
+      </button>
       <GlobalTable data={jobsData} columns={jobsColumns} />
     </div>
   )
