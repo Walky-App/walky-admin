@@ -178,9 +178,10 @@ export default function AdminFacilityDetails() {
                 </label>
                 <div className="mt-2">
                   <input
-                    type="text"
+                    type="number"
                     name="sqft"
                     id="sqft"
+                    min="0"
                     autoComplete="sqft"
                     value={formFacility.sqft || ''}
                     onChange={handleInputChange}
