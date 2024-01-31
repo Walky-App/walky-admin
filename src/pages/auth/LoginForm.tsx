@@ -9,7 +9,7 @@ import { useAuth } from '../../contexts/AuthContext'
 export default function LoginForm() {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
-
+ //wao 
   const { setUser } = useAuth()
   const navigate = useNavigate()
 
@@ -122,7 +122,7 @@ export default function LoginForm() {
           <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center"> 
         <button
           type="submit"
           className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
