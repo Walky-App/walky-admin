@@ -27,7 +27,7 @@ import FacilityDetail from './pages/client/facilities/DetailView'
 import NewFacility from './pages/client/facilities/NewFacility'
 import Jobs from './pages/client/jobs'
 import AddJob from './pages/client/jobs/AddJob'
-import ClientProfile from './pages/client/profile'
+import ClientProfile from './pages/client/ClientProfile'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
 /** Admin Pages */
