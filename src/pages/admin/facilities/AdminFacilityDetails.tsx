@@ -60,7 +60,7 @@ export default function AdminFacilityDetails() {
                   <img
                     className="h-64 w-64 flex-none rounded-lg object-cover bg-gray-50 mb-4"
                     src={formFacility?.main_image}
-                    alt=" Facility Image "
+                    alt=" Missing Facility Image "
                   />
                 )}
                 <div className="space-y-2">
@@ -209,15 +209,31 @@ export default function AdminFacilityDetails() {
               {/* Section 2 */}
 
               <div className="col-span-full">
-                <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                  Notes
+                <label htmlFor="ext-notes" className="block text-sm font-medium leading-6 text-gray-900">
+                  External Notes for public
                 </label>
                 <div className="mt-2">
                   <textarea
-                    id="about"
+                    id="ext-notes"
                     name="notes"
                     rows={5}
                     value={formFacility.notes || ''}
+                    onChange={handleInputChange}
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
+              </div>
+              <div className="col-span-full">
+                <label htmlFor="" className="block text-sm font-medium leading-6 text-gray-900">
+                  Internal Notes for management
+                </label>
+                <div className="mt-2">
+                  <textarea
+                    id="int_notes"
+                    name="int_notes"
+                    rows={5}
+                    value={formFacility.int_notes || ''}
                     onChange={handleInputChange}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
