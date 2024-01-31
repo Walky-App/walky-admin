@@ -33,7 +33,7 @@ export default function Signup() {
     const { access_token, user }: any = data
 
     if (user && access_token) {
-      SetToken(user.role, user._id, access_token)
+      SetToken(user.role, user._id, user.first_name, access_token )
       setUser({ ...user, access_token: access_token })
       setLoading(false)
 
