@@ -50,7 +50,6 @@ export default function LoginForm() {
       setLoading(false)
     }
   }
-
   return (
     <form onSubmit={handleSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
       <div>
@@ -122,15 +121,12 @@ export default function LoginForm() {
           <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
-      <div className="flex items-center justify-center">
         <button
           type="submit"
-          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-            loading && 'hover:bg-zinc-950 cursor-wait'
-          }`}>
+          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${loading && 'hover:bg-zinc-950 cursor-wait'
+            }`}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
-      </div>
     </form>
   )
 }

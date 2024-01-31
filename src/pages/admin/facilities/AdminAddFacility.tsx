@@ -9,19 +9,19 @@ export default function AdminAddFacility() {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
-      name: { value: string };
-      country: { value: string };
-      address: { value: string };
-      city: { value: string };
-      state: { value: string };
-      zip: { value: string };
-      tax_id: { value: string };
-      phone_number: { value: string };
-      notes: { value: string };
-      active: { value: string };
-      sqft: { value: number };
-      corp_name: { value: string };
-    };
+      name: { value: string }
+      country: { value: string }
+      address: { value: string }
+      city: { value: string }
+      state: { value: string }
+      zip: { value: string }
+      tax_id: { value: string }
+      phone_number: { value: string }
+      notes: { value: string }
+      active: { value: string }
+      sqft: { value: number }
+      corp_name: { value: string }
+    }
 
     const formData = {
       name: target.name.value,
@@ -92,9 +92,7 @@ export default function AdminAddFacility() {
               </div>
             </div>
             <div className="sm:col-span-3">
-              <label
-                htmlFor="corp_name"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="corp_name" className="block text-sm font-medium leading-6 text-gray-900">
                 Corporate Name
               </label>
               <div className="mt-2">
@@ -107,9 +105,7 @@ export default function AdminAddFacility() {
               </div>
             </div>
             <div className="sm:col-span-3">
-              <label
-                htmlFor="tax-id"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="tax-id" className="block text-sm font-medium leading-6 text-gray-900">
                 Facility Name
               </label>
               <div className="mt-2">
