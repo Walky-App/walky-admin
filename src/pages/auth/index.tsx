@@ -9,7 +9,7 @@ export default function Auth() {
   const [userForm, setUserForm] = useState('login')
 
   return (
-    <section className="relative flex flex-wrap sm:mb-8 md:mb-0 h-screen lg:items-center">
+    <section className="min-h-screen flex items-center justify-center relative flex flex-wrap sm:mb-8 md:mb-0 h-screen lg:items-center">
       <div className="w-full px-4 py-12 sm:px-6 sm:py-16 lg:w-1/2 lg:px-8 lg:py-24">
         <div className="flex justify-center">
           <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" height={300} />
@@ -50,16 +50,16 @@ export default function Auth() {
             )}
           </p>
         </div>
-        <small className="absolute bottom-2 text-xs text-gray-400 left-1/4 transform -translate-x-1/2">
+        <small className=" absolute bottom-2 text-xs text-gray-400 left-1/2 transform -translate-x-1/2 lg:bottom-2 lg:left-1/4 lg:transform lg:-translate-x-1/2">
           v.1.0.0{process.env.NODE_ENV === 'development' ? 'd' : 'p'}
         </small>
       </div>
 
-      <div className="relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
+      <div className=" hidden lg:flex relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
         <img
           alt="Hemp Temp employees trimming"
           src="/assets/photos/trim-close-up.jpg"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover hidden sm:block"
         />
       </div>
     </section>
