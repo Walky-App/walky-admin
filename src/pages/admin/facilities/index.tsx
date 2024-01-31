@@ -6,13 +6,21 @@ import { useNavigate } from 'react-router-dom'
 
 export default function AdminFacilities() {
   const [facilitiesData, setFacilitiesData] = React.useState<any>([])
+  const [isLoading, setIsLoading] = React.useState(true);
+
   const navigate = useNavigate()
 
   React.useEffect(() => {
     const getFacilities = async () => {
-      const allFacilities = await RequestService('facilities')
-      setFacilitiesData(allFacilities)
-    }
+      try {
+        const allFacilities = await RequestService('facilities');
+        setFacilitiesData(allFacilities);
+      } catch (error) {
+        console.error('Error fetching facility data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
     getFacilities()
   }, [])
@@ -46,7 +54,13 @@ export default function AdminFacilities() {
         className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
         Add New Facility
       </button>
+
+      {isLoading ? (
+      <div className="flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+      </div>
+    ) : (
       <GlobalTable data={memoFacilitiesData} columns={memoFacilitiesColumns} />
-    </div>
-  )
-}
+    )}
+  </div>
+)}
