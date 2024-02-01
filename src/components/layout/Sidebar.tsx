@@ -126,9 +126,8 @@ export default function SideBar() {
       {
         id: 4,
         name: 'HTU',
-        href: '/admin/learn',
+        href: '/admin/learn/category',
         icon: <FaUserGraduate />,
-        disabled: true,
       },
 
       {

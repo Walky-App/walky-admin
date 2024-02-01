@@ -2,13 +2,14 @@ import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { BarsArrowUpIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
+import { useSearchParams } from 'react-router-dom'
 
 interface Props {
   selectedOptions: SelectedOptionInterface[]
   defaultOption?: number
   showInputIcon?: boolean
   classStyle?: string
-  roundedOrientation: string
+  roundedOrientation?: string
 }
 
 function classNames(...classes: string[]) {
@@ -23,17 +24,28 @@ export default function SelectedOption({
   roundedOrientation,
 }: Props) {
   const [selected, setSelected] = useState(selectedOptions[defaultOption])
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const handlerSelect = (terms: any) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (terms.name.toLowerCase().includes("all")) {
+      params.delete("selected")
+    } else {
+      params.set("selected", terms.name.toLowerCase())
+    }
+    setSearchParams(params)
+    setSelected(terms)
+  }
 
   return (
     <div className={`${classStyle}`}>
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox value={selected} onChange={handlerSelect}>
         {({ open }) => (
           <>
             <div className="relative">
               <Listbox.Button
-                className={`relative h-9 w-full ${
-                  roundedOrientation ? roundedOrientation : 'rounded-md'
-                } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
+                className={`relative h-9 w-full ${roundedOrientation ? roundedOrientation : 'rounded-md'
+                  } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
                 <div className="flex gap-1 items-center justify-start">
                   {showInputIcon ? (
                     <span className="block truncate">
