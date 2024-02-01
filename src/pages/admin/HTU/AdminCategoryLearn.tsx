@@ -25,7 +25,7 @@ export default function AdminCategoryLearn() {
                 actionButton={
                     {
                         to: '/learn',
-                        text: 'New Category'
+                        text: 'New Jobs'
                     }
                 } />
             <EmptyState type="category" to='/learn' />
