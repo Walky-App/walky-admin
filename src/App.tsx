@@ -42,7 +42,8 @@ import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminAddJob from './pages/admin/jobs/AdminAddJob'
-import AdminCategoryLearn from './pages/admin/learn'
+import AdminCategoryLearn from './pages/admin/HTU/AdminCategoryLearn'
+import AdminDashboardLearn from './pages/admin/HTU'
 
 export default function App() {
   return (
@@ -82,7 +83,8 @@ export default function App() {
                 <Route path="/admin/jobs" element={<AdminJobs />} />
                 <Route path="/admin/jobs/new" element={<AdminAddJob />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
-                <Route path="/admin/learn/category" element={<AdminCategoryLearn />} />
+                <Route path="/admin/learn" element={<AdminDashboardLearn />} />
+                <Route path="/admin/learn/categories" element={<AdminCategoryLearn />} />
               </Route>
             </Route>
           </Route>

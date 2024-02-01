@@ -7,10 +7,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import { LogoutService } from '../../services/AuthService'
 import { useAuth } from '../../contexts/AuthContext'
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(' ')
-}
+import { classNames } from '../../utils/Tailwind'
 
 export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
