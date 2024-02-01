@@ -16,7 +16,7 @@ const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     const ls_data = JSON.parse(localStorage.getItem('ht_usr') as any)
     if (ls_data && ls_data.role) {
-      setUser({ ...user, role: ls_data.role, first_name: ls_data.first_name})
+      setUser({ ...user, role: ls_data.role, first_name: ls_data.first_name })
     }
   }, [])
 
