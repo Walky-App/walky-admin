@@ -1,70 +1,80 @@
-import { useRef, useState, useEffect } from 'react'
-import { UserCircleIcon } from '@heroicons/react/24/solid'
+import { useRef, useState, useMemo } from 'react'
+import { UserCircleIcon, PencilIcon } from '@heroicons/react/24/solid'
+import { Spinner } from 'flowbite-react'
 
-export default function UploadAvatar() {
-  const [file, setFile] = useState()
-  const [previewUrl, setPreviewUrl] = useState<any>()
+export default function UploadAvatar({ formUser, setFormUser }: any) {
+  const [file, setFile] = useState<any>()
+  const [previewUrl, setPreviewUrl] = useState<any>(formUser.avatar)
+  const [uploading, setUploading] = useState(false)
 
   const filePickerRef = useRef<any>()
 
-  useEffect(() => {
+  const handleAvatarUpload = async () => {
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('avatar', file)
+
+    const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/users/upload-avatar/${formUser._id}`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    const avatar_url = await response.json()
+
+    setFormUser({ ...formUser, avatar: avatar_url })
+    setPreviewUrl(avatar_url)
+    setUploading(false)
+  }
+
+  useMemo(() => {
     if (!file) return
-
-    const fileReader = new FileReader()
-    const started = fileReader.onprogress
-
-    fileReader.onload = () => {
-      console.log('fileReader ->', fileReader)
-      setPreviewUrl(fileReader.result)
-    }
-    fileReader.readAsDataURL(file)
+    handleAvatarUpload()
   }, [file])
 
   const pickedHandler = (event: any) => {
     if (event.target.files && event.target.files.length === 1) {
       const pickedFile = event.target.files[0]
       setFile(pickedFile)
-      // setIsValid(true)
-    } else {
-      // setIsValid(false)
     }
-    // props.onInput(props.id)
   }
 
   const pickImageHandler = () => {
     filePickerRef.current.click()
   }
 
+  const uniqueImageUrl = `${previewUrl}?${new Date().getTime()}` // to force the browser to reload the image
+
   return (
     <div className="col-span-full">
-      <label htmlFor="photo" className="block ml-2 text-sm font-medium leading-6 text-gray-900">
-        Avatar
-      </label>
       <div className="mt-2 flex items-center gap-x-3">
         <input
-          // id={id}
           ref={filePickerRef}
           style={{ display: 'none' }}
           type="file"
           accept=".jpg,.png,.jpeg"
           onChange={pickedHandler}
         />
-        {previewUrl ? (
-          <img
-            src={previewUrl}
-            className="inline-block h-14 w-14 rounded-full object-cover object-center"
-            alt="Preview"
-          />
-        ) : (
-          <UserCircleIcon className="h-14 w-14 text-gray-300" aria-hidden="true" />
-        )}
 
-        <button
-          type="button"
-          onClick={pickImageHandler}
-          className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-          Change
-        </button>
+        {!uploading ? (
+          <span
+            className="relative inline-block hover:bg-gray-500 rounded-full hover:ring-2 hover:ring-green-500 hover:cursor-pointer"
+            onClick={pickImageHandler}>
+            {previewUrl ? (
+              <img
+                src={uniqueImageUrl}
+                className="inline-block h-20 w-20 rounded-full object-cover object-center"
+                alt="Preview"
+              />
+            ) : (
+              <UserCircleIcon className="h-20 w-20 text-gray-300" aria-hidden="true" />
+            )}
+            <span className="absolute right-0  top-0 block  rounded-xl bg-zinc-200 ring-4 ring-white text-center">
+              <PencilIcon className="h-6 w-6 text-zinc-500 py-1 " aria-hidden="true" />
+            </span>
+          </span>
+        ) : (
+          <Spinner color="success" size="lg" aria-label="Success spinner example" />
+        )}
       </div>
     </div>
   )

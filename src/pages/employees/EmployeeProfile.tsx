@@ -1,16 +1,13 @@
-import { useEffect, useState } from 'react'
-import { PhotoIcon } from '@heroicons/react/24/solid'
+import { useMemo, useState } from 'react'
 import { RequestService } from '../../services/RequestService'
 
 import { GetTokenInfo } from '../../utils/TokenUtils'
-
-import UploadArea from '../../components/shared/forms/UploadArea'
 import UploadAvatar from '../../components/shared/forms/UploadAvatar'
 
 export default function EmployeeProfile() {
   const [formUser, setFormUser] = useState<any>({})
 
-  useEffect(() => {
+  useMemo(() => {
     const { _id } = GetTokenInfo()
 
     const getUser = async () => {
@@ -72,14 +69,16 @@ export default function EmployeeProfile() {
           <div className="space-y-12">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Profile</h2>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Avatar</h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
                   This information will be displayed publicly so be careful what you share.
                 </p>
               </div>
 
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-                <div className="col-span-full">
+              <div className="">
+                <UploadAvatar formUser={formUser} setFormUser={setFormUser} />
+
+                {/* <div className="flex-1 ml-10">
                   <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
                     About
                   </label>
@@ -93,11 +92,9 @@ export default function EmployeeProfile() {
                     />
                   </div>
                   <p className="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>
-                </div>
+                </div> */}
 
-                <UploadArea label="Photo" name="photo" path={`users/${formUser._id}/photo`} required={false} />
-
-                <UploadAvatar />
+                {/* <UploadArea label="Photo" name="photo" path={`users/${formUser._id}/photo`} required={false} /> */}
               </div>
             </div>
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
