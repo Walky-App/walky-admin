@@ -121,12 +121,13 @@ export default function LoginForm() {
           <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
-        <button
-          type="submit"
-          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${loading && 'hover:bg-zinc-950 cursor-wait'
-            }`}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
+      <button
+        type="submit"
+        className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
+          loading && 'hover:bg-zinc-950 cursor-wait'
+        }`}>
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
     </form>
   )
 }
