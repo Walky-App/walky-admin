@@ -18,19 +18,18 @@ export default function AdminCategoryLearn() {
     },
   ]
 
-    return (
-        <div className="w-full sm:overflow-x-hidden">
-            <HeaderComponent
-                title={'Manage Categories'}
-                search
-                selectedOptions={selectOption}
-                actionButton={
-                    {
-                        to: '/learn/categories/new',
-                        text: 'New Category'
-                    }
-                } />
-            <EmptyState type="category" to='/learn/categories/new' />
-        </div>
-    )
+  return (
+    <div className="w-full sm:overflow-x-hidden">
+      <HeaderComponent
+        title={'Manage Categories'}
+        search
+        selectedOptions={selectOption}
+        actionButton={{
+          to: '/learn/categories/new',
+          text: 'New Category',
+        }}
+      />
+      <EmptyState type="category" to="/learn/categories/new" />
+    </div>
+  )
 }

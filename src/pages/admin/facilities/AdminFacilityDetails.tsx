@@ -17,7 +17,6 @@ import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../../utils/Tailwind'
 
-
 export default function AdminFacilityDetails() {
   const { facilityId } = useParams()
   const [formFacility, setFormFacility] = useState<any>({})
