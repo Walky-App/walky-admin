@@ -26,46 +26,62 @@ const AdminFacilityHeaderInfo = ({ formFacility }: { formFacility: any }) => {
           </div>
         </div>
       </div>
-      <div className="mt-5 flex lg:ml-4 lg:mt-0">
-        {renderButton('Contacts', <UserCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 " />)}
-        {renderButton('Images', <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " />)}
-        {renderButton('Jobs', <BriefcaseIcon className="-ml-0.5 mr-1.5 h-5 w-5" />)}
-        {renderButton('Notes', <PaperClipIcon className="-ml-0.5 mr-1.5 h-5 w-5" />)}
-        {renderButton('Licenses', <IdentificationIcon className="-ml-0.5 mr-1.5 h-5 w-5" />)}
-        {renderButton('Docs', <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" />)}
-      </div>
+      <div className="mt-5 flex lg:ml-4 lg:mt-0 ">
+          <span className="hidden sm:block">
+            <button
+              type="button"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              <UserCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
+              Contacts
+            </button>
+          </span>
+
+          <span className="ml-3 hidden sm:block">
+            <button
+              type="button"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
+              Images
+            </button>
+          </span>
+
+          <span className="ml-3 hidden sm:block">
+            <button
+              type="button"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              <BriefcaseIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Jobs
+            </button>
+          </span>
+          <span className="ml-3 hidden sm:block">
+            <button
+              type="button"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              <PaperClipIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Notes
+            </button>
+          </span>
+          <span className="ml-3 hidden sm:block">
+            <button
+              type="button"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              <IdentificationIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Licenses
+            </button>
+          </span>
+          <span className="ml-3 hidden sm:block">
+            <button
+              type="button"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Docs
+            </button>
+          </span>
+    </div>
     </div>
   )
 }
 
-const renderButton = (
-  label:
-    | string
-    | number
-    | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | Iterable<React.ReactNode>
-    | React.PromiseLikeOfReactNode
-    | null
-    | undefined,
-  icon:
-    | string
-    | number
-    | boolean
-    | Iterable<React.ReactNode>
-    | React.PromiseLikeOfReactNode
-    | JSX.Element
-    | null
-    | undefined,
-) => (
-  <span className="ml-3 hidden sm:block">
-    <button
-      type="button"
-      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-      {icon}
-      {label}
-    </button>
-  </span>
-)
+
 
 export default AdminFacilityHeaderInfo
