@@ -18,14 +18,25 @@ export default function Header() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (user.role === 'employee') {
-      setProfilePath('/employee/profile')
-    } else if (user.role === 'client') {
-      setProfilePath('/client/profile')
-    } else if (user.role === 'admin') {
-      setProfilePath('/admin/profile')
+    if (user && user.role) {
+      switch (user.role) {
+        case 'employee':
+          setProfilePath('/employee/profile')
+          break
+        case 'client':
+          setProfilePath('/client/profile')
+          break
+        case 'admin':
+          setProfilePath('/admin/profile')
+          break
+        default:
+          setProfilePath('/')
+          break
+      }
+    } else {
+      setProfilePath('/')
     }
-  }, [user.role])
+  }, [user])
 
   const handleBurgerClick = () => {
     setShowMobileMenu(true)
@@ -70,7 +81,7 @@ export default function Header() {
         </div> */}
 
         <div className="hidden lg:ml-4 lg:flex lg:items-center">
-          <small>Hi, {first_name}</small>
+          {first_name && <small className='mr-2 text-zinc-500 '>Hi, {first_name}</small>}
           <button
             type="button"
             disabled
@@ -88,7 +99,7 @@ export default function Header() {
                 <span className="sr-only">Open user menu</span>
                 <img
                   className="h-8 w-8 rounded-full"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  src={user ? user.avatar : 'https://ui-avatars.com/api/?name=John+Doe'}
                   alt=""
                 />
               </Menu.Button>
@@ -104,11 +115,12 @@ export default function Header() {
               <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <Menu.Item>
                   {({ active }) => (
-                    <button
+                    <a
+                      href="#"
                       onClick={() => navigate(profilePath)}
                       className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       My Profile
-                    </button>
+                    </a>
                   )}
                 </Menu.Item>
                 {/* <Menu.Item>
