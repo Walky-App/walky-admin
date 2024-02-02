@@ -15,10 +15,8 @@ import {
 } from '@heroicons/react/20/solid'
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
+import { classNames } from '../../../utils/Tailwind'
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(' ')
-}
 
 export default function AdminFacilityDetails() {
   const { facilityId } = useParams()
