@@ -5,14 +5,15 @@ import { CheckCircleIcon, PhotoIcon } from '@heroicons/react/20/solid'
 
 export default function AdminFacilityDetails() {
     const { facilityId } = useParams()
-    const [formFacility, setFormFacility] = useState<any>({})
+    const [facility, setFacility] = useState<any>({ contacts: [] })
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
+
 
     useEffect(() => {
         const getFacility = async () => {
             try {
                 const facilityFound = await RequestService(`facilities/${facilityId}`)
-                setFormFacility(facilityFound)
+                setFacility(facilityFound)
             } catch (error) {
                 console.error('Error fetching facility data:', error)
             }
@@ -20,34 +21,59 @@ export default function AdminFacilityDetails() {
         getFacility()
     }, [facilityId])
 
-    const handleInputChange = (e: any) => {
-        const { name, value, type, checked } = e.target
-        const inputValue = type === 'select-one' ? value === 'true' : value;
-        setFormFacility((prevFormFacility: any) => ({
-            ...prevFormFacility,
-            [name]: inputValue,
-        }))
-    }
-
-    const handleUpdate = async (e: any) => {
+    const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        try {
-            const res = await RequestService(`facilities/${facilityId}`, 'PATCH', formFacility)
-            setFormFacility(res)
-            setUpdateSuccess(true)
-            setTimeout(() => setUpdateSuccess(false), 5000)
-        } catch (error) {
-            console.error('Error updating facility data:', error)
-            setUpdateSuccess(false)
+
+        const target = e.target as typeof e.target & {
+            name: { value: string }
+            country: { value: string }
+            address: { value: string }
+            city: { value: string }
+            state: { value: string }
+            zip: { value: string }
+            tax_id: { value: string }
+            phone_number: { value: string }
+            notes: { value: string }
+            contacts: { value: string[] }
+            active: { value: string }
         }
+
+        const formValues = {
+            name: target.name.value,
+            country: target.country.value,
+            address: target.address.value,
+            city: target.city.value,
+            state: target.state.value,
+            zip: target.zip.value,
+            tax_id: target.tax_id.value,
+            phone_number: target.phone_number.value,
+            // company_dba: target.dba.value,
+            contacts: target.contacts.value,
+            role: target.contacts.value,
+            // active: "true",
+            //state_license: target.state_license.value,
+            // jobs: target.jobs.value, // array of job ids
+            // city_license: target.city_license.value,
+            notes: target.notes.value,
+        }
+        fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                // Authorization: `Bearer ${user?.access_token}`,
+            },
+            body: JSON.stringify(formValues),
+        })
     }
 
-    if (!formFacility) {
-        return <div>Loading...</div>
-    }
+    // const handleDesignationChange = (e: any) => {
+    //     setSelectedDesignation(e.target.value);
+    // };
+
+    if (!facility) return <div>Loading...</div>
     return (
         <>
-            <form onSubmit={handleUpdate}>
+            <form onSubmit={handleForm}>
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                         <div>
@@ -56,18 +82,18 @@ export default function AdminFacilityDetails() {
                                 Please see the information about this particular facility.{' '}
                             </p>
                             <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-                                {formFacility?.main_image && (
+                                {facility?.main_image && (
                                     <img
                                         className="h-64 w-64 flex-none rounded-lg object-cover bg-gray-50 mb-4"
-                                        src={formFacility?.main_image}
+                                        src={facility?.main_image}
                                         alt=" Missing Facility Image "
                                     />
                                 )}
                                 <div className="space-y-2">
-                                    <h1 className="text-2xl font-bold text-gray-900">Facility: {formFacility?.name}</h1>
-                                    <h2 className="text-xl text-gray-700">{formFacility?.address}</h2>
-                                    <h2 className="text-lg text-gray-600">{formFacility?.city}</h2>
-                                    <h3 className="text-md text-gray-500">{formFacility?.zip}</h3>
+                                    <h1 className="text-2xl font-bold text-gray-900">Facility: {facility?.name}</h1>
+                                    <h2 className="text-xl text-gray-700">{facility?.address}</h2>
+                                    <h2 className="text-lg text-gray-600">{facility?.city}</h2>
+                                    <h3 className="text-md text-gray-500">{facility?.zip}</h3>
                                 </div>
                             </div>
                         </div>
@@ -83,8 +109,7 @@ export default function AdminFacilityDetails() {
                                         name="tax_id"
                                         id="tax-id"
                                         autoComplete="tax-id"
-                                        value={formFacility.tax_id || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.tax_id || ''}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -98,8 +123,7 @@ export default function AdminFacilityDetails() {
                                         type="text"
                                         name="corp_name"
                                         id="corp-name"
-                                        value={formFacility.corp_name || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.corp_name || ''}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -113,8 +137,7 @@ export default function AdminFacilityDetails() {
                                         type="text"
                                         name="name"
                                         id="name"
-                                        value={formFacility.name || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.name || ''}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -128,8 +151,7 @@ export default function AdminFacilityDetails() {
                                     <select
                                         id="status"
                                         name="active"
-                                        value={formFacility.active ? 'true' : 'false'}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.active ? 'true' : 'false'}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     >
                                         <option value="true">Active</option>
@@ -148,43 +170,7 @@ export default function AdminFacilityDetails() {
                                         name="phone_number"
                                         id="phone-number"
                                         autoComplete="phone-number"
-                                        value={formFacility.phone_number || ''}
-                                        onChange={handleInputChange}
-                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="sm:col-span-3">
-                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Business Contact First Name*
-                                </label>
-                                <div className="mt-2">
-                                    <input
-                                        type="text"
-                                        name="first_name"
-                                        id="first-name"
-                                        autoComplete="first-name"
-                                        value={formFacility.first_name || ''}
-                                        onChange={handleInputChange}
-                                        disabled
-                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                                    />
-                                </div>
-                            </div>
-                            <div className="sm:col-span-3">
-                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Business Contact Last Name*
-                                </label>
-                                <div className="mt-2">
-                                    <input
-                                        type="text"
-                                        name="last_name"
-                                        id="last-name"
-                                        autoComplete="last-name"
-                                        value={formFacility.last_name || ''}
-                                        onChange={handleInputChange}
-                                        disabled
+                                        defaultValue={facility.phone_number || ''}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -201,8 +187,7 @@ export default function AdminFacilityDetails() {
                                         id="sqft"
                                         min="0"
                                         autoComplete="sqft"
-                                        value={formFacility.sqft || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.sqft || ''}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -217,11 +202,45 @@ export default function AdminFacilityDetails() {
                                         id="role"
                                         name="role"
                                         autoComplete="role"
-                                        disabled
-                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                        defaultValue={facility.role || ''}
+                                        // onChange={handleDesignationChange}
+                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                    >
                                         <option>Owner</option>
-                                        <option>Manager</option>
+                                        <option>AP</option>
+                                        <option>Onsite</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div className="sm:col-span-3">
+                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                    Business Contact First Name*
+                                </label>
+                                <div className="mt-2">
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        id="first-name"
+                                        autoComplete="first-name"
+                                        defaultValue={facility.contacts.first_name || ''}
+                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                                    />
+                                </div>
+                            </div>
+                            <div className="sm:col-span-3">
+                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                    Business Contact Last Name*
+                                </label>
+                                <div className="mt-2">
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        id="last-name"
+                                        autoComplete="last-name"
+                                        defaultValue={facility.contacts.last_name || ''}
+                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                                    />
                                 </div>
                             </div>
 
@@ -236,8 +255,7 @@ export default function AdminFacilityDetails() {
                                         id="ext-notes"
                                         name="notes"
                                         rows={5}
-                                        value={formFacility.notes || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.notes || ''}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -252,8 +270,7 @@ export default function AdminFacilityDetails() {
                                         id="int_notes"
                                         name="int_notes"
                                         rows={5}
-                                        value={formFacility.int_notes || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.int_notes || ''}
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
                                 </div>
@@ -320,8 +337,7 @@ export default function AdminFacilityDetails() {
                                         type="text"
                                         name="address"
                                         id="address"
-                                        value={formFacility.address || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.address || ''}
                                         autoComplete="address"
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
@@ -337,8 +353,7 @@ export default function AdminFacilityDetails() {
                                         type="text"
                                         name="city"
                                         id="city"
-                                        value={formFacility.city || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.city || ''}
                                         autoComplete="address-level2"
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
@@ -354,8 +369,7 @@ export default function AdminFacilityDetails() {
                                         type="text"
                                         name="state"
                                         id="state"
-                                        value={formFacility.state || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.state || ''}
                                         autoComplete="address-level1"
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
@@ -371,8 +385,7 @@ export default function AdminFacilityDetails() {
                                         type="text"
                                         name="zip"
                                         id="zip"
-                                        value={formFacility.zip || ''}
-                                        onChange={handleInputChange}
+                                        defaultValue={facility.zip || ''}
                                         autoComplete="postal-code"
                                         className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                                     />
