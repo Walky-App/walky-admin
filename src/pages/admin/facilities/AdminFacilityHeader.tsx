@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   MapPinIcon,
   MapIcon,
@@ -9,7 +9,7 @@ import {
   IdentificationIcon,
   DocumentPlusIcon,
 } from '@heroicons/react/20/solid'
-import { JSX } from 'react/jsx-runtime';
+import { JSX } from 'react/jsx-runtime'
 
 const AdminFacilityHeaderInfo = ({ formFacility }: { formFacility: any }) => {
   return (
@@ -35,19 +35,37 @@ const AdminFacilityHeaderInfo = ({ formFacility }: { formFacility: any }) => {
         {renderButton('Docs', <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" />)}
       </div>
     </div>
-  );
-};
+  )
+}
 
-const renderButton = (label: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.PromiseLikeOfReactNode | null | undefined, icon: string | number | boolean | Iterable<React.ReactNode> | React.PromiseLikeOfReactNode | JSX.Element | null | undefined) => (
+const renderButton = (
+  label:
+    | string
+    | number
+    | boolean
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | Iterable<React.ReactNode>
+    | React.PromiseLikeOfReactNode
+    | null
+    | undefined,
+  icon:
+    | string
+    | number
+    | boolean
+    | Iterable<React.ReactNode>
+    | React.PromiseLikeOfReactNode
+    | JSX.Element
+    | null
+    | undefined,
+) => (
   <span className="ml-3 hidden sm:block">
     <button
       type="button"
-      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-    >
+      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
       {icon}
       {label}
     </button>
   </span>
-);
+)
 
-export default AdminFacilityHeaderInfo;
+export default AdminFacilityHeaderInfo

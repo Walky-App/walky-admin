@@ -50,7 +50,6 @@ export default function AddFacility({ open, setOpen, handleSubmit }) {
                   </div>
 
                   <div className="mt-4 flex justify-end gap-4">
-                    
                     <button
                       type="submit"
                       onClick={e => handleSubmit(e)} // Cannot use onSubmit with nested form
