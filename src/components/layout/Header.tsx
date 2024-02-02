@@ -18,14 +18,25 @@ export default function Header() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (user.role === 'employee') {
-      setProfilePath('/employee/profile')
-    } else if (user.role === 'client') {
-      setProfilePath('/client/profile')
-    } else if (user.role === 'admin') {
-      setProfilePath('/admin/profile')
+    if (user && user.role) {
+      switch (user.role) {
+        case 'employee':
+          setProfilePath('/employee/profile')
+          break
+        case 'client':
+          setProfilePath('/client/profile')
+          break
+        case 'admin':
+          setProfilePath('/admin/profile')
+          break
+        default:
+          setProfilePath('/')
+          break
+      }
+    } else {
+      setProfilePath('/')
     }
-  }, [user.role])
+  }, [user])
 
   const handleBurgerClick = () => {
     setShowMobileMenu(true)
@@ -70,7 +81,7 @@ export default function Header() {
         </div> */}
 
         <div className="hidden lg:ml-4 lg:flex lg:items-center">
-          <small>Hi, {first_name}</small>
+          {first_name && <small className="mr-2 text-zinc-500 ">Hi, {first_name}</small>}
           <button
             type="button"
             disabled
@@ -86,11 +97,15 @@ export default function Header() {
               <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
-                <img
-                  className="h-8 w-8 rounded-full"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
+                {user && user.avatar ? (
+                  <img className="h-8 w-8 rounded-full" src={user.avatar} alt="" />
+                ) : (
+                  <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                    <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </span>
+                )}
               </Menu.Button>
             </div>
             <Transition
@@ -104,11 +119,12 @@ export default function Header() {
               <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <Menu.Item>
                   {({ active }) => (
-                    <button
+                    <a
+                      href="#"
                       onClick={() => navigate(profilePath)}
                       className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                       My Profile
-                    </button>
+                    </a>
                   )}
                 </Menu.Item>
                 {/* <Menu.Item>
