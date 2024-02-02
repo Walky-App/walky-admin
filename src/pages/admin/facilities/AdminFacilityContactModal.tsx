@@ -11,11 +11,7 @@ export default function AdminFacilityContactModal({
 }: any) {
   const [form, setform] = useState<any>(currentContact)
   const handleUpdateContact = async (e: any) => {
-    const response = await RequestService(
-      `/facilities/${facilityId}/contacts/${currentContact._id}`,
-      'PATCH',
-      form,
-    )
+    const response = await RequestService(`/facilities/${facilityId}/contacts/${currentContact._id}`, 'PATCH', form)
     if (response) {
       setFacilityContacts(response)
       setOpenModal(false)
