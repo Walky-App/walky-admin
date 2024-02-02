@@ -55,6 +55,7 @@ export default function AdminFacilityDetails() {
       // city_license: target.city_license.value,
       notes: target.notes.value,
     }
+    
     fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`, {
       method: 'PATCH',
       headers: {
