@@ -14,3 +14,8 @@ export interface SelectedOptionInterface {
   id: number
   name: string
 }
+
+export interface NavigationButtonInterface {
+  to: string
+  text: string
+}
