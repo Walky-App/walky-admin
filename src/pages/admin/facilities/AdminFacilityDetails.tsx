@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import { CheckCircleIcon, PhotoIcon } from '@heroicons/react/20/solid'
+import { CheckCircleIcon, DocumentPlusIcon, IdentificationIcon, MapIcon, PaperClipIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 import { Fragment } from 'react'
 import {
   BriefcaseIcon,
@@ -63,19 +63,28 @@ export default function AdminFacilityDetails() {
   }
   return (
     <>
-      <div className="lg:flex lg:items-center lg:justify-between mb-20">
+      <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 mb-20 w-full ">
         <div className="min-w-0 flex-1">
-          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+          <div className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
             {formFacility?.name}
-          </h2>
+            <div className="flex items-center gap-x-2">
+              <MapPinIcon className="h-10 w-5 text-gray-400" aria-hidden="true" />
+              <h2 className="text-sm font-light text-gray-500">{formFacility?.city}</h2>
+              <MapIcon className="h-10 w-5 text-gray-400" aria-hidden="true" />
+            <h2 className="text-sm font-light text-gray-500">{formFacility?.address}</h2>
+              
+            <span className="text-xl text-gray-700"></span>
+            
+          </div>
         </div>
-        <div className="mt-5 flex lg:ml-4 lg:mt-0">
+        </div>
+        <div className="mt-5 flex lg:ml-4 lg:mt-0 ">
           <span className="hidden sm:block">
             <button
               type="button"
               className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <PencilIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-              Edit
+              <UserCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
+              Contacts
             </button>
           </span>
 
@@ -83,8 +92,8 @@ export default function AdminFacilityDetails() {
             <button
               type="button"
               className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-              View
+              <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
+              Images
             </button>
           </span>
 
@@ -92,35 +101,32 @@ export default function AdminFacilityDetails() {
             <button
               type="button"
               className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-              View
+              <BriefcaseIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Jobs
             </button>
           </span>
-
           <span className="ml-3 hidden sm:block">
             <button
               type="button"
               className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-              View
+              <PaperClipIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Notes
             </button>
           </span>
-
           <span className="ml-3 hidden sm:block">
             <button
               type="button"
               className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-              View
+              <IdentificationIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Licenses
             </button>
           </span>
-
           <span className="ml-3 hidden sm:block">
             <button
               type="button"
               className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-              View
+              <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+              Docs
             </button>
           </span>
 
@@ -163,11 +169,12 @@ export default function AdminFacilityDetails() {
           </Menu>
         </div>
       </div>
+
       <form onSubmit={handleUpdate}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-700">{formFacility?.address}</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Business Information</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please see the information about this particular facility.{' '}
               </p>
@@ -179,12 +186,7 @@ export default function AdminFacilityDetails() {
                     alt=" Missing Facility Image "
                   />
                 )}
-                <div className="space-y-2">
-                  <h1 className="text-2xl font-bold text-gray-900">Facility: {formFacility?.name}</h1>
-                  <h2 className="text-xl text-gray-700">{formFacility?.address}</h2>
-                  <h2 className="text-lg text-gray-600">{formFacility?.city}</h2>
-                  <h3 className="text-md text-gray-500">{formFacility?.zip}</h3>
-                </div>
+               
               </div>
             </div>
 
