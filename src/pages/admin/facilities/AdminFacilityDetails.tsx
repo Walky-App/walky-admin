@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import { CheckCircleIcon, PhotoIcon } from '@heroicons/react/20/solid'
+import { CheckCircleIcon, ChevronDownIcon, PhotoIcon } from '@heroicons/react/20/solid'
+import { Fragment } from 'react'
+import { Menu, Transition } from '@headlessui/react'
+import { classNames } from '../../../utils/Tailwind'
+import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityDetails() {
   const { facilityId } = useParams()
@@ -470,9 +474,6 @@ export default function AdminFacilityDetails() {
               </div>
             </div>
           )}
-          <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
-            Cancel
-          </button>
           <button
             type="submit"
             className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">

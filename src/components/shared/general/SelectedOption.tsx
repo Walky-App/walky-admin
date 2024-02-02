@@ -3,6 +3,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { BarsArrowUpIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
 import { useSearchParams } from 'react-router-dom'
+import { classNames } from '../../../utils/Tailwind'
 
 interface Props {
   selectedOptions: SelectedOptionInterface[]
@@ -10,10 +11,6 @@ interface Props {
   showInputIcon?: boolean
   classStyle?: string
   roundedOrientation?: string
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
 }
 
 export default function SelectedOption({

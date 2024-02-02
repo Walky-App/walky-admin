@@ -1,3 +1,5 @@
+import { ITokenInfo } from '../interfaces/services.interfaces'
+
 export const GetTokenInfo = () => {
   const ls_data = JSON.parse(localStorage.getItem('ht_usr') as any)
 
@@ -7,10 +9,7 @@ export const GetTokenInfo = () => {
   return { _id, access_token, role, first_name }
 }
 
-export const SetToken = (role: string, _id: string, access_token: string, first_name: string) => {
-  localStorage.setItem(
-    'ht_usr',
-    JSON.stringify({ role: role, _id: _id, first_name: first_name, access_token: access_token }),
-  )
+export const SetToken = (ls_info: ITokenInfo) => {
+  localStorage.setItem('ht_usr', JSON.stringify(ls_info))
   return true
 }
