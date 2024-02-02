@@ -2,7 +2,6 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
 
-
 export default function AdminAddFacility() {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
@@ -68,7 +67,6 @@ export default function AdminAddFacility() {
   }
 
   return (
-    
     <form onSubmit={handleForm}>
       <div className="space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
