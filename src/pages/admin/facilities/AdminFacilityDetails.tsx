@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import { CheckCircleIcon, DocumentPlusIcon, IdentificationIcon, MapIcon, PaperClipIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/20/solid'
+import {
+  CheckCircleIcon,
+  DocumentPlusIcon,
+  IdentificationIcon,
+  MapIcon,
+  PaperClipIcon,
+  PhotoIcon,
+  UserCircleIcon,
+} from '@heroicons/react/20/solid'
 import { Fragment } from 'react'
 import {
   BriefcaseIcon,
@@ -71,12 +79,11 @@ export default function AdminFacilityDetails() {
               <MapPinIcon className="h-10 w-5 text-gray-400" aria-hidden="true" />
               <h2 className="text-sm font-light text-gray-500">{formFacility?.city}</h2>
               <MapIcon className="h-10 w-5 text-gray-400" aria-hidden="true" />
-            <h2 className="text-sm font-light text-gray-500">{formFacility?.address}</h2>
-              
-            <span className="text-xl text-gray-700"></span>
-            
+              <h2 className="text-sm font-light text-gray-500">{formFacility?.address}</h2>
+
+              <span className="text-xl text-gray-700"></span>
+            </div>
           </div>
-        </div>
         </div>
         <div className="mt-5 flex lg:ml-4 lg:mt-0 ">
           <span className="hidden sm:block">
@@ -186,7 +193,6 @@ export default function AdminFacilityDetails() {
                     alt=" Missing Facility Image "
                   />
                 )}
-               
               </div>
             </div>
 
