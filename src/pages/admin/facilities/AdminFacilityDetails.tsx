@@ -1,26 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import {
-  CheckCircleIcon,
-  DocumentPlusIcon,
-  IdentificationIcon,
-  MapIcon,
-  PaperClipIcon,
-  PhotoIcon,
-  UserCircleIcon,
-} from '@heroicons/react/20/solid'
+import {CheckCircleIcon,BriefcaseIcon,ChevronDownIcon,MapPinIcon,DocumentPlusIcon,IdentificationIcon,MapIcon,PaperClipIcon,PhotoIcon,UserCircleIcon,} from '@heroicons/react/20/solid'
 import { Fragment } from 'react'
-import {
-  BriefcaseIcon,
-  CalendarIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  CurrencyDollarIcon,
-  LinkIcon,
-  MapPinIcon,
-  PencilIcon,
-} from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 
 function classNames(...classes: any) {
