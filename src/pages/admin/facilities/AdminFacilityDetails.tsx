@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import {
-  CheckCircleIcon, ChevronDownIcon, PhotoIcon,
-} from '@heroicons/react/20/solid'
+import { CheckCircleIcon, ChevronDownIcon, PhotoIcon } from '@heroicons/react/20/solid'
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../../utils/Tailwind'
@@ -55,7 +53,6 @@ export default function AdminFacilityDetails() {
     <>
       <AdminFacilityHeaderInfo formFacility={formFacility} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Dropdown */}
         <Menu as="div" className="relative ml-3 sm:hidden">
           <Menu.Button className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
@@ -94,7 +91,6 @@ export default function AdminFacilityDetails() {
           </Transition>
         </Menu>
       </div>
-
 
       <form onSubmit={handleUpdate}>
         <div className="space-y-12">
