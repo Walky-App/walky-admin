@@ -81,7 +81,7 @@ export default function Header() {
         </div> */}
 
         <div className="hidden lg:ml-4 lg:flex lg:items-center">
-          {first_name && <small className='mr-2 text-zinc-500 '>Hi, {first_name}</small>}
+          {first_name && <small className="mr-2 text-zinc-500 ">Hi, {first_name}</small>}
           <button
             type="button"
             disabled
