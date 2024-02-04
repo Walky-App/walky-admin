@@ -58,14 +58,9 @@ export default function AdminFacilityDetails() {
       // company_dba: target.dba.value,
     }
 
-    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formValues),
-    })
+    RequestService(`/facilities/${facilityId}`, 'PATCH', formValues)
+
+  
   }
 
   if (!facility) return <div>Loading...</div>
