@@ -59,8 +59,6 @@ export default function AdminFacilityDetails() {
     }
 
     RequestService(`/facilities/${facilityId}`, 'PATCH', formValues)
-
-  
   }
 
   if (!facility) return <div>Loading...</div>
