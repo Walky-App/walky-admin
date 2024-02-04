@@ -31,7 +31,7 @@ export default function AdminFacilityDetails() {
       tax_id: { value: string }
       corp_name: { value: string }
       name: { value: string }
-      active: { value: string }
+      active: { value: boolean }
       phone_number: { value: string }
       sqft: { value: number }
       notes: { value: string }
@@ -46,7 +46,7 @@ export default function AdminFacilityDetails() {
       tax_id: target.tax_id.value,
       corp_name: target.corp_name.value,
       name: target.name.value,
-      active: target.active.value === 'true' ? true : false,
+      active: target.active.value,
       phone_number: target.phone_number.value,
       sqft: target.sqft.value,
       notes: target.notes.value,
@@ -146,14 +146,17 @@ export default function AdminFacilityDetails() {
                   Status
                 </label>
                 <div className="mt-2">
-                  <select
-                    id="status"
-                    name="active"
-                    defaultValue={facility.active ? 'true' : 'false'}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6">
-                    <option value="true">Active</option>
-                    <option value="false">Disabled</option>
-                  </select>
+                  {facility && (
+                    <select
+                      key={facility.active ? 'Active' : 'Disabled'}
+                      id="status"
+                      name="active"
+                      defaultValue={facility.active ? 'true' : 'false'}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Active</option>
+                      <option value="false">Disabled</option>
+                    </select>
+                  )}
                 </div>
               </div>
 
@@ -207,7 +210,7 @@ export default function AdminFacilityDetails() {
                 </div>
                 <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
               </div>
-            
+
               <div className="col-span-full">
                 <label htmlFor="facility-photo" className="block text-sm font-medium leading-6 text-gray-900">
                   Facility photo

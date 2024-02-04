@@ -145,7 +145,7 @@ export default function AdminFacilityContacts() {
                     id="role"
                     autoComplete="role"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6">
-                    <option value="">Select a role</option> 
+                    <option value="">Select a role</option>
                     <option value="Owner">Owner</option>
                     <option value="AP">AP</option>
                     <option value="Onsite">Onsite</option>
