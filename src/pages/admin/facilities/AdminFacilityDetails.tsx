@@ -28,36 +28,34 @@ export default function AdminFacilityDetails() {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
+      tax_id: { value: string }
+      corp_name: { value: string }
       name: { value: string }
+      active: { value: string }
+      phone_number: { value: string }
+      sqft: { value: number }
+      notes: { value: string }
       country: { value: string }
       address: { value: string }
       city: { value: string }
       state: { value: string }
       zip: { value: string }
-      tax_id: { value: string }
-      phone_number: { value: string }
-      notes: { value: string }
-      contacts: { value: string[] }
-      active: { value: string }
     }
 
     const formValues = {
+      tax_id: target.tax_id.value,
+      corp_name: target.corp_name.value,
       name: target.name.value,
+      active: target.active.value === 'true' ? true : false,
+      phone_number: target.phone_number.value,
+      sqft: target.sqft.value,
+      notes: target.notes.value,
       country: target.country.value,
       address: target.address.value,
       city: target.city.value,
       state: target.state.value,
       zip: target.zip.value,
-      tax_id: target.tax_id.value,
-      phone_number: target.phone_number.value,
       // company_dba: target.dba.value,
-      contacts: target.contacts.value,
-      role: target.contacts.value,
-      // active: "true",
-      //state_license: target.state_license.value,
-      // jobs: target.jobs.value, // array of job ids
-      // city_license: target.city_license.value,
-      notes: target.notes.value,
     }
 
     fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`, {
@@ -69,10 +67,6 @@ export default function AdminFacilityDetails() {
       body: JSON.stringify(formValues),
     })
   }
-
-  // const handleDesignationChange = (e: any) => {
-  //     setSelectedDesignation(e.target.value);
-  // };
 
   if (!facility) return <div>Loading...</div>
   return (
@@ -196,61 +190,11 @@ export default function AdminFacilityDetails() {
                 </div>
               </div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                  Business Contact Designation
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="role"
-                    name="role"
-                    autoComplete="role"
-                    defaultValue={facility.role || ''}
-                    // onChange={handleDesignationChange}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>Owner</option>
-                    <option>AP</option>
-                    <option>Onsite</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Business Contact First Name*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="first_name"
-                    id="first-name"
-                    autoComplete="first-name"
-                    defaultValue={facility.contacts.first_name || ''}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Business Contact Last Name*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="last_name"
-                    id="last-name"
-                    autoComplete="last-name"
-                    defaultValue={facility.contacts.last_name || ''}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
               {/* Section 2 */}
 
               <div className="col-span-full">
                 <label htmlFor="ext-notes" className="block text-sm font-medium leading-6 text-gray-900">
-                  External Notes for public
+                  Notes
                 </label>
                 <div className="mt-2">
                   <textarea
@@ -263,22 +207,7 @@ export default function AdminFacilityDetails() {
                 </div>
                 <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
               </div>
-              <div className="col-span-full">
-                <label htmlFor="" className="block text-sm font-medium leading-6 text-gray-900">
-                  Internal Notes for management
-                </label>
-                <div className="mt-2">
-                  <textarea
-                    id="int_notes"
-                    name="int_notes"
-                    rows={5}
-                    defaultValue={facility.int_notes || ''}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
-              </div>
-
+            
               <div className="col-span-full">
                 <label htmlFor="facility-photo" className="block text-sm font-medium leading-6 text-gray-900">
                   Facility photo

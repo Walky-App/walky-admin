@@ -12,8 +12,6 @@ export default function AdminFacilityContacts() {
   const [facilityName, setFacilityName] = useState<string>('')
   const [formData, setFormData] = useState<any>([{}])
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
-
-  //Modal state
   const [openModal, setOpenModal] = useState(false)
 
   useEffect(() => {
@@ -50,25 +48,17 @@ export default function AdminFacilityContacts() {
       email: target.email.value,
     }
 
-    const res = await fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/contacts`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formData),
-    })
+    const res = await RequestService(`/facilities/${facilityId}/contacts`, 'PATCH', formData)
 
-    const result = await res.json()
-
-    if (result) {
-      setFacilityContacts(result.contacts)
-      setFormData(result)
+    if (res) {
+      setFacilityContacts(res.contacts)
+      setFormData(res)
+    } else {
+      console.error('Error adding contact')
     }
   }
 
   const handleEditButtonClick = (contact: any) => {
-    console.log('contact inside edit button click->', contact)
     setCurrentContact(contact)
     setOpenModal(true)
   }
@@ -155,7 +145,7 @@ export default function AdminFacilityContacts() {
                     id="role"
                     autoComplete="role"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6">
-                    <option value="">Select a role</option> {/* Optional: prompt the user to make a selection */}
+                    <option value="">Select a role</option> 
                     <option value="Owner">Owner</option>
                     <option value="AP">AP</option>
                     <option value="Onsite">Onsite</option>
