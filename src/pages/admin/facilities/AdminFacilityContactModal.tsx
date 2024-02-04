@@ -71,7 +71,6 @@ export default function AdminFacilityContactModal({
                 id="phone-number"
                 defaultValue={currentContact.phone_number}
                 onChange={e => setform({ ...form, phone_number: e.target.value })}
-                // defaultValue={contact.phone_number}
               />
             </div>
             <div>
