@@ -9,7 +9,7 @@ import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityDetails() {
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<any>({ contacts: [] })
+  const [facility, setFacility] = useState<any>({})
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function AdminFacilityDetails() {
     getFacility()
   }, [facilityId])
 
-  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -58,7 +58,19 @@ export default function AdminFacilityDetails() {
       // company_dba: target.dba.value,
     }
 
-    RequestService(`/facilities/${facilityId}`, 'PATCH', formValues)
+    try {
+      const response = await RequestService(`/facilities/${facilityId}`, 'PATCH', formValues)
+      if (response) {
+        setUpdateSuccess(true)
+        setTimeout(() => setUpdateSuccess(false), 5000)
+      } else {
+        setUpdateSuccess(false)
+        console.error('Failed to update the facility.')
+      }
+    } catch (error) {
+      setUpdateSuccess(false)
+      console.error('Error occurred while updating facility:', error)
+    }
   }
 
   if (!facility) return <div>Loading...</div>
@@ -244,9 +256,11 @@ export default function AdminFacilityDetails() {
                 </label>
                 <div className="mt-2">
                   <select
+                    key={facility.country || 'United States'}
                     id="country"
                     name="country"
                     autoComplete="country-name"
+                    defaultValue={facility.country || 'United States'}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                     <option>United States</option>
                     <option>Canada</option>
@@ -392,9 +406,6 @@ export default function AdminFacilityDetails() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-green-800">Facility successfully updated</p>
-                </div>
-                <div className="ml-auto pl-3">
-                  <div className="-mx-1.5 -my-1.5"></div>
                 </div>
               </div>
             </div>
