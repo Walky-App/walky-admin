@@ -140,7 +140,7 @@ export default function SideBar() {
     ],
   }
   return (
-    <aside className="w-64 h-screen transition-transform" aria-label="Sidebar">
+    <aside className="hidden h-screen bg-zinc-50 lg:block w-64">
       <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 bg-zinc-800">
         <ul className="space-y-2 font-medium">
           {user?.role &&
@@ -157,3 +157,4 @@ export default function SideBar() {
     </aside>
   )
 }
+
