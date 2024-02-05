@@ -82,7 +82,7 @@ export default function AdminFacilityDetails() {
   if (!facility) return <div>Loading...</div>
   return (
     <>
-      <AdminFacilityHeaderInfo formFacility={formFacility} />
+      <AdminFacilityHeaderInfo formFacility={facility} />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -99,12 +99,6 @@ export default function AdminFacilityDetails() {
                     alt=" Missing Facility Image "
                   />
                 )}
-                <div className="space-y-2">
-                  <h1 className="text-2xl font-bold text-gray-900">Facility: {facility?.name}</h1>
-                  <h2 className="text-xl text-gray-700">{facility?.address}</h2>
-                  <h2 className="text-lg text-gray-600">{facility?.city}</h2>
-                  <h3 className="text-md text-gray-500">{facility?.zip}</h3>
-                </div>
               </div>
             </div>
 
