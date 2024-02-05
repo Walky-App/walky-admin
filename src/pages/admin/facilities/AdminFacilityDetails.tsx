@@ -44,10 +44,9 @@ export default function AdminFacilityDetails() {
     }
 
     const companyDbas = target.company_dbas.value
-    .split(',')
-    .map(dba => dba.trim())
-    .filter(dba => dba);
-
+      .split(',')
+      .map(dba => dba.trim())
+      .filter(dba => dba)
 
     const formValues = {
       tax_id: target.tax_id.value,
