@@ -38,6 +38,7 @@ import AdminAddUser from './pages/admin/users/AdminAddUser'
 import AdminUserDetails from './pages/admin/users/AdminUserDetails'
 import AdminFacilities from './pages/admin/facilities'
 import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
+import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
 import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
@@ -80,6 +81,7 @@ export default function App() {
                 <Route path="/admin/users/:id" element={<AdminUserDetails />} />
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
                 <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
+                <Route path="/admin/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
                 <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
                 <Route path="/admin/jobs/new" element={<AdminAddJob />} />

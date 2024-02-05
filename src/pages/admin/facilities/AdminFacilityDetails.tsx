@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon, ChevronDownIcon, PhotoIcon } from '@heroicons/react/20/solid'
@@ -9,14 +9,14 @@ import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityDetails() {
   const { facilityId } = useParams()
-  const [formFacility, setFormFacility] = useState<any>({})
+  const [facility, setFacility] = useState<any>({})
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
 
   useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
-        setFormFacility(facilityFound)
+        setFacility(facilityFound)
       } catch (error) {
         console.error('Error fetching facility data:', error)
       }
@@ -24,75 +24,65 @@ export default function AdminFacilityDetails() {
     getFacility()
   }, [facilityId])
 
-  const handleInputChange = (e: any) => {
-    const { name, value, type, checked } = e.target
-    const inputValue = type === 'select-one' ? value === 'true' : value
-    setFormFacility((prevFormFacility: any) => ({
-      ...prevFormFacility,
-      [name]: inputValue,
-    }))
-  }
-
-  const handleUpdate = async (e: any) => {
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    const target = e.target as typeof e.target & {
+      tax_id: { value: string }
+      corp_name: { value: string }
+      name: { value: string }
+      active: { value: boolean }
+      phone_number: { value: string }
+      sqft: { value: number }
+      notes: { value: string }
+      country: { value: string }
+      address: { value: string }
+      city: { value: string }
+      state: { value: string }
+      zip: { value: string }
+      company_dbas: { value: string }
+    }
+
+    const companyDbas = target.company_dbas.value
+      .split(',')
+      .map(dba => dba.trim())
+      .filter(dba => dba)
+
+    const formValues = {
+      tax_id: target.tax_id.value,
+      corp_name: target.corp_name.value,
+      name: target.name.value,
+      active: target.active.value,
+      phone_number: target.phone_number.value,
+      sqft: target.sqft.value,
+      notes: target.notes.value,
+      country: target.country.value,
+      address: target.address.value,
+      city: target.city.value,
+      state: target.state.value,
+      zip: target.zip.value,
+      company_dbas: companyDbas,
+    }
+
     try {
-      const res = await RequestService(`facilities/${facilityId}`, 'PATCH', formFacility)
-      setFormFacility(res)
-      setUpdateSuccess(true)
-      setTimeout(() => setUpdateSuccess(false), 5000)
+      const response = await RequestService(`/facilities/${facilityId}`, 'PATCH', formValues)
+      if (response) {
+        setUpdateSuccess(true)
+        setTimeout(() => setUpdateSuccess(false), 5000)
+      } else {
+        setUpdateSuccess(false)
+        console.error('Failed to update the facility.')
+      }
     } catch (error) {
-      console.error('Error updating facility data:', error)
       setUpdateSuccess(false)
+      console.error('Error occurred while updating facility:', error)
     }
   }
 
-  if (!formFacility) {
-    return <div>Loading...</div>
-  }
+  if (!facility) return <div>Loading...</div>
   return (
     <>
-      <AdminFacilityHeaderInfo formFacility={formFacility} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Dropdown */}
-        <Menu as="div" className="relative ml-3 sm:hidden">
-          <Menu.Button className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
-            More
-            <ChevronDownIcon className="-mr-1 ml-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-          </Menu.Button>
-
-          <Transition
-            as={Fragment}
-            enter="transition ease-out duration-200"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95">
-            <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
-                    Edit
-                  </a>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
-                    View
-                  </a>
-                )}
-              </Menu.Item>
-            </Menu.Items>
-          </Transition>
-        </Menu>
-      </div>
-
-      <form onSubmit={handleUpdate}>
+      <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
@@ -101,13 +91,19 @@ export default function AdminFacilityDetails() {
                 Please see the information about this particular facility.{' '}
               </p>
               <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-                {formFacility?.main_image && (
+                {facility?.main_image && (
                   <img
                     className="h-64 w-64 flex-none rounded-lg object-cover bg-gray-50 mb-4"
-                    src={formFacility?.main_image}
+                    src={facility?.main_image}
                     alt=" Missing Facility Image "
                   />
                 )}
+                <div className="space-y-2">
+                  <h1 className="text-2xl font-bold text-gray-900">Facility: {facility?.name}</h1>
+                  <h2 className="text-xl text-gray-700">{facility?.address}</h2>
+                  <h2 className="text-lg text-gray-600">{facility?.city}</h2>
+                  <h3 className="text-md text-gray-500">{facility?.zip}</h3>
+                </div>
               </div>
             </div>
 
@@ -122,8 +118,7 @@ export default function AdminFacilityDetails() {
                     name="tax_id"
                     id="tax-id"
                     autoComplete="tax-id"
-                    value={formFacility.tax_id || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.tax_id || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -137,8 +132,22 @@ export default function AdminFacilityDetails() {
                     type="text"
                     name="corp_name"
                     id="corp-name"
-                    value={formFacility.corp_name || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.corp_name || ''}
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="company-dbas" className="block text-sm font-medium leading-6 text-gray-900">
+                  Company DBAs
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    name="company_dbas"
+                    id="company-dbas"
+                    placeholder="Enter company DBAs separated by comma"
+                    defaultValue={facility.company_dbas ? facility.company_dbas.join(', ') : ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -152,8 +161,7 @@ export default function AdminFacilityDetails() {
                     type="text"
                     name="name"
                     id="name"
-                    value={formFacility.name || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.name || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -164,15 +172,17 @@ export default function AdminFacilityDetails() {
                   Status
                 </label>
                 <div className="mt-2">
-                  <select
-                    id="status"
-                    name="active"
-                    value={formFacility.active ? 'true' : 'false'}
-                    onChange={handleInputChange}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6">
-                    <option value="true">Active</option>
-                    <option value="false">Disabled</option>
-                  </select>
+                  {facility && (
+                    <select
+                      key={facility.active ? 'Active' : 'Disabled'}
+                      id="status"
+                      name="active"
+                      defaultValue={facility.active ? 'true' : 'false'}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Active</option>
+                      <option value="false">Disabled</option>
+                    </select>
+                  )}
                 </div>
               </div>
 
@@ -186,43 +196,7 @@ export default function AdminFacilityDetails() {
                     name="phone_number"
                     id="phone-number"
                     autoComplete="phone-number"
-                    value={formFacility.phone_number || ''}
-                    onChange={handleInputChange}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Business Contact First Name*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="first_name"
-                    id="first-name"
-                    autoComplete="first-name"
-                    value={formFacility.first_name || ''}
-                    onChange={handleInputChange}
-                    disabled
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Business Contact Last Name*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="last_name"
-                    id="last-name"
-                    autoComplete="last-name"
-                    value={formFacility.last_name || ''}
-                    onChange={handleInputChange}
-                    disabled
+                    defaultValue={facility.phone_number || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -239,27 +213,9 @@ export default function AdminFacilityDetails() {
                     id="sqft"
                     min="0"
                     autoComplete="sqft"
-                    value={formFacility.sqft || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.sqft || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                  Business Contact Designation
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="role"
-                    name="role"
-                    autoComplete="role"
-                    disabled
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>Owner</option>
-                    <option>Manager</option>
-                  </select>
                 </div>
               </div>
 
@@ -267,31 +223,14 @@ export default function AdminFacilityDetails() {
 
               <div className="col-span-full">
                 <label htmlFor="ext-notes" className="block text-sm font-medium leading-6 text-gray-900">
-                  External Notes for public
+                  Notes
                 </label>
                 <div className="mt-2">
                   <textarea
                     id="ext-notes"
                     name="notes"
                     rows={5}
-                    value={formFacility.notes || ''}
-                    onChange={handleInputChange}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
-              </div>
-              <div className="col-span-full">
-                <label htmlFor="" className="block text-sm font-medium leading-6 text-gray-900">
-                  Internal Notes for management
-                </label>
-                <div className="mt-2">
-                  <textarea
-                    id="int_notes"
-                    name="int_notes"
-                    rows={5}
-                    value={formFacility.int_notes || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.notes || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -338,9 +277,11 @@ export default function AdminFacilityDetails() {
                 </label>
                 <div className="mt-2">
                   <select
+                    key={facility.country || 'United States'}
                     id="country"
                     name="country"
                     autoComplete="country-name"
+                    defaultValue={facility.country || 'United States'}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
                     <option>United States</option>
                     <option>Canada</option>
@@ -358,8 +299,7 @@ export default function AdminFacilityDetails() {
                     type="text"
                     name="address"
                     id="address"
-                    value={formFacility.address || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.address || ''}
                     autoComplete="address"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
@@ -375,8 +315,7 @@ export default function AdminFacilityDetails() {
                     type="text"
                     name="city"
                     id="city"
-                    value={formFacility.city || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.city || ''}
                     autoComplete="address-level2"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
@@ -392,8 +331,7 @@ export default function AdminFacilityDetails() {
                     type="text"
                     name="state"
                     id="state"
-                    value={formFacility.state || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.state || ''}
                     autoComplete="address-level1"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
@@ -409,8 +347,7 @@ export default function AdminFacilityDetails() {
                     type="text"
                     name="zip"
                     id="zip"
-                    value={formFacility.zip || ''}
-                    onChange={handleInputChange}
+                    defaultValue={facility.zip || ''}
                     autoComplete="postal-code"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
@@ -490,9 +427,6 @@ export default function AdminFacilityDetails() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-green-800">Facility successfully updated</p>
-                </div>
-                <div className="ml-auto pl-3">
-                  <div className="-mx-1.5 -my-1.5"></div>
                 </div>
               </div>
             </div>
