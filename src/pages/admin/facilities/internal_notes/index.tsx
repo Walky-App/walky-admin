@@ -77,7 +77,7 @@ export default function AdminFacilityInternalNotes() {
           <div className="mt-2">
             <textarea
               id="internal-notes"
-              name="internal_notes"
+              name="note"
               rows={3}
               className="px-3 block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-green-500 focus:border-green-500 sm:text-sm"
               placeholder="Write notes about the facility"
