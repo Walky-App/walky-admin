@@ -14,22 +14,29 @@ import {
 import { JSX } from 'react/jsx-runtime'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../../utils/Tailwind'
+import { useNavigate } from 'react-router-dom'
 
-const AdminFacilityHeaderInfo = ({ formFacility }: { formFacility: any }) => (
+const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
+
+  const navigate = useNavigate()
+
+  const handleNavigate = (path: string) => { navigate(path) }
+
+  return (
   <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 mb-20 w-full ">
     <div className="min-w-0 flex-1">
       <div className="min-w-0 flex-1 ">
         <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-          {formFacility?.name}
+          {facility?.name}
         </h2>
         <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
           <div className="mt-2 flex items-center text-sm text-gray-500">
             <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-            {formFacility?.city}
+            {facility?.city}
           </div>
           <div className="mt-2 flex items-center text-sm text-gray-500">
             <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-            {formFacility?.address}
+            {facility?.address}
           </div>
         </div>
       </div>
@@ -38,6 +45,7 @@ const AdminFacilityHeaderInfo = ({ formFacility }: { formFacility: any }) => (
       <span className="hidden lg:inline-block">
         <button
           type="button"
+          onClick={() => handleNavigate(`/admin/facilities/${facility._id}/contacts`) }
           className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
           <UserCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
           Contacts
@@ -64,6 +72,7 @@ const AdminFacilityHeaderInfo = ({ formFacility }: { formFacility: any }) => (
       <span className="ml-3 hidden lg:inline-block">
         <button
           type="button"
+          onClick={() => handleNavigate(`/admin/facilities/${facility._id}/internal_notes`) }
           className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
           <PaperClipIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
           Notes
@@ -160,6 +169,7 @@ const AdminFacilityHeaderInfo = ({ formFacility }: { formFacility: any }) => (
       </Menu>
     </div>
   </div>
-)
+  )
+}
 
 export default AdminFacilityHeaderInfo

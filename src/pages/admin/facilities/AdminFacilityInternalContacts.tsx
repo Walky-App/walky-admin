@@ -2,9 +2,9 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
-import { RequestService } from '../../../../services/RequestService'
-import HeaderComponent from '../../../../components/shared/general/HeaderComponent'
-import { useAuth } from '../../../../contexts/AuthContext'
+import { RequestService } from '../../../services/RequestService'
+import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export default function AdminFacilityInternalNotes() {
   const { facilityId } = useParams()
