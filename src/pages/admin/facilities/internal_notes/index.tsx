@@ -124,9 +124,6 @@ export default function AdminFacilityInternalNotes() {
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Created At
                     </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                      <span className="sr-only">Edit</span>
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -141,11 +138,6 @@ export default function AdminFacilityInternalNotes() {
                       <td className="px-3 py-4 text-sm text-gray-500">
                         {new Date(singleNote.createdAt).toLocaleDateString()}{' '}
                         {new Date(singleNote.createdAt).toLocaleTimeString()}
-                      </td>
-                      <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                        <a href="#" className="text-green-600 hover:text-green-900">
-                          Edit<span className="sr-only">,</span>
-                        </a>
                       </td>
                     </tr>
                   ))}
