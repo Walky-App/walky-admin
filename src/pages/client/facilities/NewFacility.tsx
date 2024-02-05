@@ -1,8 +1,10 @@
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export default function NewFacility() {
+  const user = GetTokenInfo()
+  const user_id = user._id
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -17,9 +19,11 @@ export default function NewFacility() {
       phone_number: { value: string }
       notes: { value: string }
       active: { value: string }
+      user_id: { value: string }
     }
 
     const formData = {
+      user_id: user_id,
       name: target.name.value,
       country: target.country.value,
       address: target.address.value,
@@ -391,9 +395,6 @@ export default function NewFacility() {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
-            Cancel
-          </button>
           <button
             type="submit"
             className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">

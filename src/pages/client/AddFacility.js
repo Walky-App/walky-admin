@@ -51,12 +51,6 @@ export default function AddFacility({ open, setOpen, handleSubmit }) {
 
                   <div className="mt-4 flex justify-end gap-4">
                     <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2"
-                      onClick={() => setOpen(false)}>
-                      Cancel
-                    </button>
-                    <button
                       type="submit"
                       onClick={e => handleSubmit(e)} // Cannot use onSubmit with nested form
                       className="inline-flex justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2">

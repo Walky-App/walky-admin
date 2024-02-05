@@ -37,7 +37,7 @@ export default function AdminAddCategory() {
             const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/categories`, {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${user.access_token}`,
+                    Authorization: `Bearer ${user?.access_token}`,
                 },
                 body: formData,
             });

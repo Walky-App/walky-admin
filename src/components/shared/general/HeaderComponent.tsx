@@ -19,11 +19,10 @@ export default function HeaderComponent({ title, selectedOptions, search = false
           Search
         </label>
         <div className="flex rounded-md ">
-          {selectedOptions ?
+          {selectedOptions ? (
             actionButton ? (
               <>
-                <div className='mx-3'>
-
+                <div className="mx-3">
                   <Search searchQuery="search" />
                 </div>
                 <div className='mx-3 w-32'>
@@ -38,9 +37,10 @@ export default function HeaderComponent({ title, selectedOptions, search = false
                 <Search searchQuery="search" roundedOrientation="rounded-l-md" />
                 <SelectedOptionWithFilter selectedOptions={selectedOptions} roundedOrientation="rounded-r-md" />
               </>
-            ) : (
-              search && <Search searchQuery="search" />
-            )}
+            )
+          ) : (
+            search && <Search searchQuery="search" />
+          )}
         </div>
       </div>
     </div>

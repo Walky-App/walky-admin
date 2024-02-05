@@ -1,22 +1,25 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
+import { IUser } from '../interfaces/User'
+import { ITokenInfo } from '../interfaces/services.interfaces'
+
 interface AuthContextType {
-  user: any | null
-  setUser: (user: any) => void
+  user: IUser | undefined
+  setUser: (user: IUser) => void
 }
 
 const AuthContext = createContext<AuthContextType>({
-  user: null,
+  user: undefined,
   setUser: () => {},
 })
 
 const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState<any>({})
+  const [user, setUser] = useState<IUser>()
 
   useEffect(() => {
-    const ls_data = JSON.parse(localStorage.getItem('ht_usr') as any)
+    const ls_data: ITokenInfo = JSON.parse(localStorage.getItem('ht_usr') as any)
     if (ls_data && ls_data.role) {
-      setUser({ ...user, role: ls_data.role, first_name: ls_data.first_name })
+      setUser(ls_data as IUser)
     }
   }, [])
 
