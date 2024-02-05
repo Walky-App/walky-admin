@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { ITokenInfo } from '../../interfaces/services.interfaces'
+
 import { SetToken } from '../../utils/TokenUtils'
 import { useAuth } from '../../contexts/AuthContext'
 import { RequestService } from '../../services/RequestService'
@@ -33,7 +35,15 @@ export default function Signup() {
     const { access_token, user }: any = data
 
     if (user && access_token) {
-      SetToken(user.role, user._id, user.first_name, access_token)
+      const ls_info: ITokenInfo = {
+        first_name: user.first_name,
+        _id: user._id,
+        role: user.role,
+        access_token: access_token,
+        avatar: user.avatar,
+      }
+
+      SetToken(ls_info)
       setUser({ ...user, access_token: access_token })
       setLoading(false)
 

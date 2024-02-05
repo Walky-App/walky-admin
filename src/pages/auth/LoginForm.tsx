@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { ITokenInfo } from '../../interfaces/services.interfaces'
+
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
 import { LoginData } from '../../interfaces/Global'
@@ -28,7 +30,15 @@ export default function LoginForm() {
     const { access_token, user }: any = data
 
     if (user && access_token) {
-      SetToken(user.role, user._id, access_token, user.first_name)
+      const data: ITokenInfo = {
+        first_name: user.first_name,
+        _id: user._id,
+        role: user.role,
+        access_token: access_token,
+        avatar: user.avatar,
+      }
+
+      SetToken(data)
       setUser({ ...user, access_token: access_token })
       setLoading(false)
 
@@ -121,12 +131,13 @@ export default function LoginForm() {
           <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
-        <button
-          type="submit"
-          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${loading && 'hover:bg-zinc-950 cursor-wait'
-            }`}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
+      <button
+        type="submit"
+        className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
+          loading && 'hover:bg-zinc-950 cursor-wait'
+        }`}>
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
     </form>
   )
 }

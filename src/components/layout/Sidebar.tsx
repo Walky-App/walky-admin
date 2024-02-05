@@ -126,7 +126,7 @@ export default function SideBar() {
       {
         id: 4,
         name: 'HTU',
-        href: '/admin/learn/category',
+        href: '/admin/learn',
         icon: <FaUserGraduate />,
       },
 
@@ -140,8 +140,8 @@ export default function SideBar() {
     ],
   }
   return (
-    <aside className="w-64 h-screen transition-transform" aria-label="Sidebar">
-      <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 dark:bg-zinc-800">
+    <aside className="hidden h-screen bg-zinc-50 lg:block w-64">
+      <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 bg-zinc-800">
         <ul className="space-y-2 font-medium">
           {user?.role &&
             links[user.role].map(link => <li key={link.id}>{!link.disabled && <SidebarMenuItem link={link} />}</li>)}
@@ -157,3 +157,4 @@ export default function SideBar() {
     </aside>
   )
 }
+
