@@ -12,9 +12,11 @@ export default function AdminFacilityContactModal({
   const [form, setform] = useState<any>(currentContact)
   const handleUpdateContact = async (e: any) => {
     const response = await RequestService(`/facilities/${facilityId}/contacts/${currentContact._id}`, 'PATCH', form)
-    if (response) {
+    if (response && response.length) {
       setFacilityContacts(response)
       setOpenModal(false)
+    } else {
+      console.log('error updating contact')
     }
   }
 
@@ -73,20 +75,8 @@ export default function AdminFacilityContactModal({
                 onChange={e => setform({ ...form, phone_number: e.target.value })}
               />
             </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="Role" value="Role" />
-              </div>
-              <TextInput
-                type="text"
-                name="role"
-                id="role"
-                defaultValue={currentContact.role}
-                onChange={e => setform({ ...form, role: e.target.value })}
-              />
-            </div>
             <div className="w-full">
-              <Button onClick={handleUpdateContact}>Update</Button>
+              <Button disabled onClick={handleUpdateContact}>Update</Button>
             </div>
           </div>
         </Modal.Body>
