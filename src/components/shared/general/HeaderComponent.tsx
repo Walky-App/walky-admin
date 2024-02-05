@@ -1,7 +1,7 @@
-import SelectedOption from './SelectedOption'
 import Search from './Search'
 import { NavigationButtonInterface, SelectedOptionInterface } from '../../../interfaces/Global'
 import NavigationButton from './NavigationButton'
+import SelectedOptionWithFilter from './SelectedOptionWithFilter'
 
 interface Props {
   title: string
@@ -27,7 +27,7 @@ export default function HeaderComponent({ title, selectedOptions, search = false
                   <Search searchQuery="search" />
                 </div>
                 <div className='mx-3 w-32'>
-                  <SelectedOption selectedOptions={selectedOptions} />
+                  <SelectedOptionWithFilter selectedOptions={selectedOptions} />
                 </div>
                 <div className="mx-3">
                   <NavigationButton to={actionButton.to} text={actionButton.text} />
@@ -36,7 +36,7 @@ export default function HeaderComponent({ title, selectedOptions, search = false
             ) : (
               <>
                 <Search searchQuery="search" roundedOrientation="rounded-l-md" />
-                <SelectedOption selectedOptions={selectedOptions} roundedOrientation="rounded-r-md" />
+                <SelectedOptionWithFilter selectedOptions={selectedOptions} roundedOrientation="rounded-r-md" />
               </>
             ) : (
               search && <Search searchQuery="search" />

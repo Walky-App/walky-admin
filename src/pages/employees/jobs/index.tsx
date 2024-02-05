@@ -6,9 +6,9 @@ import JobListItem from './JobListItem'
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 
 const categorysOptions = [
-  { id: 1, name: 'All Skills' },
-  { id: 2, name: 'Trimming' },
-  { id: 3, name: 'Packaging' },
+  { name: 'All Skills', code: 'all' },
+  { name: 'Trimming', code: 'trimming' },
+  { name: 'Packaging', code: 'packaging' },
 ]
 
 export default function Jobs() {

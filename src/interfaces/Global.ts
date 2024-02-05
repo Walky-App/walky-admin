@@ -11,11 +11,16 @@ export interface LoginData {
 }
 
 export interface SelectedOptionInterface {
-  id: number
   name: string
+  code: string
 }
 
 export interface NavigationButtonInterface {
   to: string
   text: string
+}
+
+export interface TagsInterface {
+  state: string
+  value: number
 }

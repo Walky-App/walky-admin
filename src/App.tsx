@@ -43,6 +43,7 @@ import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 import AdminCategoryLearn from './pages/admin/learn'
+import AdminAddCategory from './pages/admin/learn/AdminAddCategory'
 
 export default function App() {
   return (
@@ -83,6 +84,7 @@ export default function App() {
                 <Route path="/admin/jobs/new" element={<AdminAddJob />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
                 <Route path="/admin/learn/category" element={<AdminCategoryLearn />} />
+                <Route path="/admin/learn/category/new" element={<AdminAddCategory />} />
               </Route>
             </Route>
           </Route>
