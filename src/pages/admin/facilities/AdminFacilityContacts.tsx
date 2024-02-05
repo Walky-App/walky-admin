@@ -49,10 +49,8 @@ export default function AdminFacilityContacts() {
     }
 
     const res = await RequestService(`/facilities/${facilityId}/contacts`, 'PATCH', formData)
-
     if (res) {
-      setFacilityContacts(res.contacts)
-      setFormData(res)
+      setFacilityContacts(res)
     } else {
       console.error('Error adding contact')
     }
@@ -236,8 +234,8 @@ export default function AdminFacilityContacts() {
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                         <button
                           onClick={() => handleEditButtonClick(singleContact)}
+                          disabled
                           className="text-green-600 hover:text-green-900">
-                          Edit
                         </button>
                       </td>
                     </tr>
