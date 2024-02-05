@@ -76,7 +76,9 @@ export default function AdminFacilityContactModal({
               />
             </div>
             <div className="w-full">
-              <Button disabled onClick={handleUpdateContact}>Update</Button>
+              <Button disabled onClick={handleUpdateContact}>
+                Update
+              </Button>
             </div>
           </div>
         </Modal.Body>
