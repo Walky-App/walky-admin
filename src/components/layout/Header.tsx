@@ -167,7 +167,11 @@ export default function Header() {
         <div className="navbar-backdrop fixed inset-0 bg-zinc-800 opacity-25"></div>
         <nav className="fixed top-0 left-0 bottom-0 flex flex-col w-64 max-w-sm py-6 px-6 bg-zinc-800 border-r overflow-y-auto">
           <div className="flex items-center mb-8">
-            <img src="/assets/logos/Hemp-Temps-logo-horizontal-white@2x.png" alt="Hemp-Temps" className="h-10 w-auto mr-2" />
+            <img
+              src="/assets/logos/Hemp-Temps-logo-horizontal-white@2x.png"
+              alt="Hemp-Temps"
+              className="h-10 w-auto mr-2"
+            />
             <button className="navbar-close mr-4 right-0 absolute" onClick={closeBurgerModal}>
               <svg
                 className="h-6 w-6 text-zinc-400 cursor-pointer hover:text-zinc-500"
@@ -182,7 +186,9 @@ export default function Header() {
           <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 bg-zinc-800">
             <ul className="space-y-2 font-medium">
               {user?.role &&
-                links[user.role].map(link => <li key={link.id}>{!link.disabled && <SidebarMenuItem link={link} />}</li>)}
+                links[user.role].map(link => (
+                  <li key={link.id}>{!link.disabled && <SidebarMenuItem link={link} />}</li>
+                ))}
             </ul>
             <h4 className="text-zinc-400 my-3">Coming soon </h4>
             <ul className="space-y-2 font-medium">
