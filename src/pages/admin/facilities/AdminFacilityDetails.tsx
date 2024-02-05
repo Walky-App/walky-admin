@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon, ChevronDownIcon, PhotoIcon } from '@heroicons/react/20/solid'
@@ -40,7 +40,14 @@ export default function AdminFacilityDetails() {
       city: { value: string }
       state: { value: string }
       zip: { value: string }
+      company_dbas: { value: string }
     }
+
+    const companyDbas = target.company_dbas.value
+    .split(',')
+    .map(dba => dba.trim())
+    .filter(dba => dba);
+
 
     const formValues = {
       tax_id: target.tax_id.value,
@@ -55,7 +62,7 @@ export default function AdminFacilityDetails() {
       city: target.city.value,
       state: target.state.value,
       zip: target.zip.value,
-      // company_dba: target.dba.value,
+      company_dbas: companyDbas,
     }
 
     try {
@@ -127,6 +134,21 @@ export default function AdminFacilityDetails() {
                     name="corp_name"
                     id="corp-name"
                     defaultValue={facility.corp_name || ''}
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="company-dbas" className="block text-sm font-medium leading-6 text-gray-900">
+                  Company DBAs
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    name="company_dbas"
+                    id="company-dbas"
+                    placeholder="Enter company DBAs separated by comma"
+                    defaultValue={facility.company_dbas ? facility.company_dbas.join(', ') : ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
