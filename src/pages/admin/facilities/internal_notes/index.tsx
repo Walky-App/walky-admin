@@ -28,7 +28,6 @@ export default function AdminFacilityInternalNotes() {
     getInternalNotes()
   }, [facilityId])
 
-
   return (
     <div className="">
       <HeaderComponent title={'Internal Notes'} />
@@ -73,7 +72,7 @@ export default function AdminFacilityInternalNotes() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {internalNotes.map((singleNote : any) => (
+                    {internalNotes.map((singleNote: any) => (
                       <tr key={singleNote._id}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                           {singleNote.note}
