@@ -12,7 +12,6 @@ export default function AdminAddCategory() {
     const [tags, setTags] = useState<TagsInterface[]>([])
     const { user } = useAuth()
 
-    console.log(tags)
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -33,7 +32,6 @@ export default function AdminAddCategory() {
         formData.append('state_tags', JSON.stringify(tags));
 
         try {
-            console.log(formData);
             const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/categories`, {
                 method: 'POST',
                 headers: {
