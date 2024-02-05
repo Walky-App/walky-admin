@@ -34,111 +34,7 @@ export default function SideBar() {
     [key: string]: SideBarData[]
   }
 
-  const links: SideBarOptions = {
-    employee: [
-      { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
-      { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-      {
-        id: 2,
-        disabled: true,
-        name: 'My Jobs',
-        href: '/employee/jobs/mine',
-        icon: <FaBusinessTime />,
-      },
-      { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-      // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
-    ],
-    client: [
-      {
-        id: 1,
-        name: 'My Jobs',
-        href: '/client/jobs',
-        icon: <FaBriefcase />,
-      },
-      {
-        id: 2,
-        name: 'Contracts',
-        href: '/dashboard/contracts',
-        icon: <FaFileContract />,
-        disabled: true,
-      },
-      {
-        id: 3,
-        name: 'Invoices',
-        href: '/dashboard/invoices',
-        icon: <FaFileInvoiceDollar />,
-        disabled: true,
-      },
-      {
-        id: 4,
-        name: 'Timesheets',
-        href: '/dashboard/timesheets',
-        icon: <BsFillFileEarmarkSpreadsheetFill />,
-        disabled: true,
-      },
-      {
-        id: 5,
-        name: 'Reports',
-        href: '/dashboard/reports',
-        icon: <HiDocumentReport />,
-        disabled: true,
-      },
-      {
-        id: 6,
-        name: 'Messages',
-        href: '/dashboard/messages',
-        icon: <IoMdMail />,
-        disabled: true,
-      },
-      {
-        id: 7,
-        name: 'Facilities',
-        href: `/client/facilities/`,
-        icon: <FaBuilding />,
-      },
-      {
-        id: 8,
-        name: 'HTU',
-        href: '/learn',
-        icon: <MdSchool />,
-      },
-      // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
-    ],
-    admin: [
-      {
-        id: 1,
-        name: 'Users',
-        href: '/admin/users',
-        icon: <FaUserGroup />,
-      },
-      {
-        id: 2,
-        name: 'Facilities',
-        href: '/admin/facilities',
-        icon: <FaBuilding />,
-      },
-      {
-        id: 3,
-        name: 'Jobs',
-        href: '/admin/jobs',
-        icon: <FaBriefcase />,
-      },
-      {
-        id: 4,
-        name: 'HTU',
-        href: '/admin/learn',
-        icon: <FaUserGraduate />,
-      },
-
-      {
-        id: 5,
-        name: 'Messages',
-        href: '/admin/messages',
-        icon: <IoMdMail />,
-        disabled: true,
-      },
-    ],
-  }
+  
   return (
     <aside className="hidden h-screen bg-zinc-50 lg:block w-64">
       <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 bg-zinc-800">
@@ -157,4 +53,112 @@ export default function SideBar() {
     </aside>
   )
 }
+export interface SideBarOptions {
+  [key: string]: SideBarData[];
+}
 
+export const links: SideBarOptions = {
+  employee: [
+    { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+    { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
+    {
+      id: 2,
+      disabled: true,
+      name: 'My Jobs',
+      href: '/employee/jobs/mine',
+      icon: <FaBusinessTime />,
+    },
+    { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+    // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
+  ],
+  client: [
+    {
+      id: 1,
+      name: 'My Jobs',
+      href: '/client/jobs',
+      icon: <FaBriefcase />,
+    },
+    {
+      id: 2,
+      name: 'Contracts',
+      href: '/dashboard/contracts',
+      icon: <FaFileContract />,
+      disabled: true,
+    },
+    {
+      id: 3,
+      name: 'Invoices',
+      href: '/dashboard/invoices',
+      icon: <FaFileInvoiceDollar />,
+      disabled: true,
+    },
+    {
+      id: 4,
+      name: 'Timesheets',
+      href: '/dashboard/timesheets',
+      icon: <BsFillFileEarmarkSpreadsheetFill />,
+      disabled: true,
+    },
+    {
+      id: 5,
+      name: 'Reports',
+      href: '/dashboard/reports',
+      icon: <HiDocumentReport />,
+      disabled: true,
+    },
+    {
+      id: 6,
+      name: 'Messages',
+      href: '/dashboard/messages',
+      icon: <IoMdMail />,
+      disabled: true,
+    },
+    {
+      id: 7,
+      name: 'Facilities',
+      href: `/client/facilities/`,
+      icon: <FaBuilding />,
+    },
+    {
+      id: 8,
+      name: 'HTU',
+      href: '/learn',
+      icon: <MdSchool />,
+    },
+    // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
+  ],
+  admin: [
+    {
+      id: 1,
+      name: 'Users',
+      href: '/admin/users',
+      icon: <FaUserGroup />,
+    },
+    {
+      id: 2,
+      name: 'Facilities',
+      href: '/admin/facilities',
+      icon: <FaBuilding />,
+    },
+    {
+      id: 3,
+      name: 'Jobs',
+      href: '/admin/jobs',
+      icon: <FaBriefcase />,
+    },
+    {
+      id: 4,
+      name: 'HTU',
+      href: '/admin/learn',
+      icon: <FaUserGraduate />,
+    },
+
+    {
+      id: 5,
+      name: 'Messages',
+      href: '/admin/messages',
+      icon: <IoMdMail />,
+      disabled: true,
+    },
+  ],
+}
