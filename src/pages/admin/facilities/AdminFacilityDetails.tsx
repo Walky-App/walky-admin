@@ -99,12 +99,6 @@ export default function AdminFacilityDetails() {
                     alt=" Missing Facility Image "
                   />
                 )}
-                <div className="space-y-2">
-                  <h1 className="text-2xl font-bold text-gray-900">Facility: {facility?.name}</h1>
-                  <h2 className="text-xl text-gray-700">{facility?.address}</h2>
-                  <h2 className="text-lg text-gray-600">{facility?.city}</h2>
-                  <h3 className="text-md text-gray-500">{facility?.zip}</h3>
-                </div>
               </div>
             </div>
 
