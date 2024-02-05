@@ -34,7 +34,6 @@ export default function SideBar() {
     [key: string]: SideBarData[]
   }
 
-  
   return (
     <aside className="hidden h-screen bg-zinc-50 lg:block w-64">
       <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 bg-zinc-800">
@@ -54,7 +53,7 @@ export default function SideBar() {
   )
 }
 export interface SideBarOptions {
-  [key: string]: SideBarData[];
+  [key: string]: SideBarData[]
 }
 
 export const links: SideBarOptions = {
