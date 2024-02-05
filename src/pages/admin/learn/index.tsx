@@ -5,14 +5,14 @@ import { SelectedOptionInterface } from "../../../interfaces/Global";
 
 export default function AdminCategoryLearn() {
     const selectOption: SelectedOptionInterface[] = [{
-        id: 1,
         name: 'All',
+        code: 'all'
     }, {
-        id: 2,
         name: 'Active',
+        code: 'active'
     }, {
-        id: 3,
         name: 'Inactive',
+        code: 'inactive'
     }]
 
 
@@ -24,11 +24,11 @@ export default function AdminCategoryLearn() {
                 selectedOptions={selectOption}
                 actionButton={
                     {
-                        to: '/learn',
+                        to: '/admin/learn/category/new',
                         text: 'New Category'
                     }
                 } />
-            <EmptyState type="category" to='/learn' />
+            <EmptyState type="category" to='/admin/learn/category/new' />
         </div>
     )
 }

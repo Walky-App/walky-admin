@@ -2,10 +2,10 @@ import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { BarsArrowUpIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
+import { useSearchParams } from 'react-router-dom'
 
 interface Props {
   selectedOptions: SelectedOptionInterface[]
-  setSelectedOptions: (value: string) => void,
   defaultOption?: number
   showInputIcon?: boolean
   classStyle?: string
@@ -16,19 +16,25 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function SelectedOption({
+export default function SelectedOptionWithFilter({
   selectedOptions,
-  setSelectedOptions,
   defaultOption = 0,
-  showInputIcon = false,
+  showInputIcon = true,
   classStyle = '',
   roundedOrientation,
 }: Props) {
   const [selected, setSelected] = useState(selectedOptions[defaultOption])
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const handlerSelect = (terms: any) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (terms.name.toLowerCase().includes("all")) {
+      params.delete("selected")
+    } else {
+      params.set("selected", terms.code.toLowerCase())
+    }
+    setSearchParams(params)
     setSelected(terms)
-    setSelectedOptions(terms.code)
   }
 
   return (
