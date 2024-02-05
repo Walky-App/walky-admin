@@ -235,8 +235,7 @@ export default function AdminFacilityContacts() {
                         <button
                           onClick={() => handleEditButtonClick(singleContact)}
                           disabled
-                          className="text-green-600 hover:text-green-900">
-                        </button>
+                          className="text-green-600 hover:text-green-900"></button>
                       </td>
                     </tr>
                   ))}
