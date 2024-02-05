@@ -41,6 +41,7 @@ import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
 import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
+import AdminFacilityInternalNotes from './pages/admin/facilities/internal_notes'
 import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 import AdminCategoryLearn from './pages/admin/HTU/AdminCategoryLearn'
 import AdminDashboardLearn from './pages/admin/HTU'
@@ -81,6 +82,7 @@ export default function App() {
                 <Route path="/admin/facilities" element={<AdminFacilities />} />
                 <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
                 <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
+                <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
                 <Route path="/admin/jobs/new" element={<AdminAddJob />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
