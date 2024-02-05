@@ -53,7 +53,6 @@ export default function AdminFacilityDetails() {
     <>
       <AdminFacilityHeaderInfo formFacility={formFacility} />
 
-
       <form onSubmit={handleUpdate}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
