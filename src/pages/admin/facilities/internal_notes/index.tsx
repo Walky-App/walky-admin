@@ -99,8 +99,7 @@ export default function AdminFacilityInternalNotes() {
           )}
           <button
             type="submit"
-            className="mt-4 sm:mt-0 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
-          >
+            className="mt-4 sm:mt-0 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
             Add Note
           </button>
         </div>
@@ -116,10 +115,7 @@ export default function AdminFacilityInternalNotes() {
               <table className="w-full divide-y divide-gray-300">
                 <thead>
                   <tr>
-                    <th
-                      scope="col"
-                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                    >
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                       Note
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -134,12 +130,11 @@ export default function AdminFacilityInternalNotes() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {internalNotes.map((singleNote) => (
+                  {internalNotes.map(singleNote => (
                     <tr key={singleNote._id}>
                       <td
                         className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                        style={{ wordWrap: 'break-word', maxWidth: '250px' }}
-                      >
+                        style={{ wordWrap: 'break-word', maxWidth: '250px' }}>
                         {singleNote.note}
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500">{singleNote.createdBy}</td>
@@ -147,19 +142,19 @@ export default function AdminFacilityInternalNotes() {
                         {new Date(singleNote.createdAt).toLocaleDateString()}{' '}
                         {new Date(singleNote.createdAt).toLocaleTimeString()}
                       </td>
-                          <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                            <a href="#" className="text-green-600 hover:text-green-900">
-                              Edit<span className="sr-only">,</span>
-                            </a>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                      <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                        <a href="#" className="text-green-600 hover:text-green-900">
+                          Edit<span className="sr-only">,</span>
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-        )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
