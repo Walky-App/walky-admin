@@ -1,33 +1,52 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
+
 import { RequestService } from '../../../../services/RequestService'
 import HeaderComponent from '../../../../components/shared/general/HeaderComponent'
-import { useNavigate } from 'react-router-dom'
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import { useAuth } from '../../../../contexts/AuthContext'
 
 export default function AdminFacilityInternalNotes() {
   const { facilityId } = useParams()
   const [internalNotes, setInternalNotes] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const [userFound, setUserFound] = React.useState<any>({})
 
-  const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const fetchUser = async () => {
+    try {
+      //@ts-ignore
+      const userFound = await RequestService(`users/${user._id}`)
+      setUserFound(userFound)
+      console.log('userFound -->', userFound)
+    } catch (error) {
+      console.error('Error fetching user:', error)
+    }
+  }
 
   React.useEffect(() => {
-    const getInternalNotes = async () => {
-      try {
-        const allInternalNotes = await RequestService(`facilities/${facilityId}/internal_notes`)
-        setInternalNotes(allInternalNotes)
-      } catch (error) {
-        console.error('Error fetching facility internal notes:', error)
-      } finally {
-        setIsLoading(false)
-      }
+    fetchUser()
+  }, [user])
+
+  const fetchInternalNotes = async () => {
+    setIsLoading(true)
+    try {
+      const allInternalNotes = await RequestService(`facilities/${facilityId}/internal_notes`)
+      setInternalNotes(allInternalNotes)
+    } catch (error) {
+      console.error('Error fetching facility internal notes:', error)
+    } finally {
+      setIsLoading(false)
     }
-    getInternalNotes()
+  }
+
+  React.useEffect(() => {
+    fetchInternalNotes()
   }, [facilityId])
 
-  const handleAddInternalNote = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddInternalNote = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const target = e.target as typeof e.target & {
       note: { value: string }
@@ -35,41 +54,23 @@ export default function AdminFacilityInternalNotes() {
     }
     const internalNote = {
       note: target.note.value,
-      createdBy: target.createdBy.value,
+      createdBy: userFound.email,
     }
-    RequestService(`facilities/${facilityId}/internal_notes`, 'POST', internalNote)
-      .then(response => {
-        if (response) {
-          setUpdateSuccess(true)
-          setTimeout(() => setUpdateSuccess(false), 5000)
-        } else {
-          throw new Error('Error showing success message.')
-        }
-      })
-      .catch(error => {
-        console.error('Error posting internal note:', error)
-        setUpdateSuccess(false)
-      })
+    try {
+      await RequestService(`facilities/${facilityId}/internal_notes`, 'POST', internalNote)
+      setUpdateSuccess(true)
+      setTimeout(() => setUpdateSuccess(false), 5000)
+      fetchInternalNotes()
+    } catch (error) {
+      console.error('Error posting internal note:', error)
+      setUpdateSuccess(false)
+    }
   }
 
   return (
     <div className="w-full flex flex-col items-center p-4">
       <HeaderComponent title={'Internal Notes'} />
       <form onSubmit={handleAddInternalNote} className="w-full">
-        <div className="mb-4 max-w-md">
-          <label htmlFor="created-by" className="block text-sm font-medium leading-6 text-gray-900">
-            Created By
-          </label>
-          <div className="mt-2">
-            <input
-              type="text"
-              name="createdBy"
-              id="created-by"
-              className="px-3 block w-full rounded-md border border-gray-300 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-green-500 focus:border-green-500 sm:text-sm"
-              placeholder="Enter creator's email"
-            />
-          </div>
-        </div>
         <div className="mb-4 max-w-md">
           <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
             Note
