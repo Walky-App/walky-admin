@@ -193,55 +193,55 @@ export default function AdminAddFacility() {
             </div>
 
             <fieldset>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">Services*</legend>
-                <div className="mt-6 space-y-6">
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="services"
-                        name="services"
-                        type="checkbox"
-                        className="px-3 h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label htmlFor="comments" className="font-medium text-gray-900">
-                        Trimming
-                      </label>
-                    </div>
+              <legend className="text-sm font-semibold leading-6 text-gray-900">Services*</legend>
+              <div className="mt-6 space-y-6">
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="services"
+                      name="services"
+                      type="checkbox"
+                      className="px-3 h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
                   </div>
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="services"
-                        name="services"
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label htmlFor="candidates" className="font-medium text-gray-900">
-                        Harvest
-                      </label>
-                    </div>
-                  </div>
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="services"
-                        name="services"
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label htmlFor="offers" className="font-medium text-gray-900">
-                        Packaging
-                      </label>
-                    </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="comments" className="font-medium text-gray-900">
+                      Trimming
+                    </label>
                   </div>
                 </div>
-              </fieldset>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="services"
+                      name="services"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="candidates" className="font-medium text-gray-900">
+                      Harvest
+                    </label>
+                  </div>
+                </div>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="services"
+                      name="services"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="offers" className="font-medium text-gray-900">
+                      Packaging
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
 
             {/* Section 2 */}
 
@@ -390,7 +390,7 @@ export default function AdminAddFacility() {
           </div>
         </div>
 
-          {/* section 3 */}
+        {/* section 3 */}
         {/* <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Document</h2>
