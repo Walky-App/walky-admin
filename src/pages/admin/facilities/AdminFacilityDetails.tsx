@@ -44,10 +44,10 @@ export default function AdminFacilityDetails() {
     }
 
     const services = Array.from(e.currentTarget.services)
-    //@ts-ignore
-    .filter((input: HTMLInputElement) => input.checked)
-    //@ts-ignore
-    .map((input: HTMLInputElement) => input.value);
+      //@ts-ignore
+      .filter((input: HTMLInputElement) => input.checked)
+      //@ts-ignore
+      .map((input: HTMLInputElement) => input.value)
 
     const companyDbas = target.company_dbas.value
       .split(',')
@@ -68,7 +68,7 @@ export default function AdminFacilityDetails() {
       state: target.state.value,
       zip: target.zip.value,
       company_dbas: companyDbas,
-      services
+      services,
     }
 
     try {
@@ -224,14 +224,14 @@ export default function AdminFacilityDetails() {
               <fieldset>
                 <legend className="text-sm font-semibold leading-6 text-gray-900">Services</legend>
                 <div className="mt-6 space-y-6">
-                <div className="relative flex gap-x-3">
+                  <div className="relative flex gap-x-3">
                     <div className="flex h-6 items-center">
                       <input
                         id="services"
                         name="services"
                         type="checkbox"
                         value="Trimming"
-                        defaultChecked={facility.services?.includes("Trimming")}
+                        defaultChecked={facility.services?.includes('Trimming')}
                         className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                       />
                     </div>
@@ -248,7 +248,7 @@ export default function AdminFacilityDetails() {
                         name="services"
                         type="checkbox"
                         value="Harvest"
-                        defaultChecked={facility.services?.includes("Harvest")}
+                        defaultChecked={facility.services?.includes('Harvest')}
                         className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                       />
                     </div>
@@ -265,7 +265,7 @@ export default function AdminFacilityDetails() {
                         name="services"
                         type="checkbox"
                         value="Packaging"
-                        defaultChecked={facility.services?.includes("Packaging")}
+                        defaultChecked={facility.services?.includes('Packaging')}
                         className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                       />
                     </div>
