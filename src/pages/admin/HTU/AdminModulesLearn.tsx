@@ -3,20 +3,16 @@ import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
 
 export default function AdminModulesLearn() {
-  const selectOption: SelectedOptionInterface[] = [
-    {
-      id: 1,
-      name: 'All',
-    },
-    {
-      id: 2,
-      name: 'Active',
-    },
-    {
-      id: 3,
-      name: 'Inactive',
-    },
-  ]
+  const selectOption: SelectedOptionInterface[] = [{
+    name: 'All',
+    code: 'all'
+  }, {
+    name: 'Active',
+    code: 'active'
+  }, {
+    name: 'Inactive',
+    code: 'inactive'
+  }]
 
   return (
     <div className="w-full sm:overflow-x-hidden">
