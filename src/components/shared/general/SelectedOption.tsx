@@ -6,7 +6,7 @@ import { classNames } from '../../../utils/Tailwind'
 
 interface Props {
   selectedOptions: SelectedOptionInterface[]
-  setSelectedOptions: (value: string) => void,
+  setSelectedOptions: (value: string) => void
   defaultOption?: number
   showInputIcon?: boolean
   classStyle?: string
@@ -35,8 +35,9 @@ export default function SelectedOption({
           <>
             <div className="relative">
               <Listbox.Button
-                className={`relative h-9 w-full ${roundedOrientation ? roundedOrientation : 'rounded-md'
-                  } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
+                className={`relative h-9 w-full ${
+                  roundedOrientation ? roundedOrientation : 'rounded-md'
+                } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
                 <div className="flex gap-1 items-center justify-start">
                   {showInputIcon ? (
                     <span className="block truncate">
