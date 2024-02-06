@@ -43,6 +43,12 @@ export default function AdminFacilityDetails() {
       company_dbas: { value: string }
     }
 
+    const services = Array.from(e.currentTarget.services)
+      //@ts-ignore
+      .filter((input: HTMLInputElement) => input.checked)
+      //@ts-ignore
+      .map((input: HTMLInputElement) => input.value)
+
     const companyDbas = target.company_dbas.value
       .split(',')
       .map(dba => dba.trim())
@@ -62,6 +68,7 @@ export default function AdminFacilityDetails() {
       state: target.state.value,
       zip: target.zip.value,
       company_dbas: companyDbas,
+      services,
     }
 
     try {
@@ -183,7 +190,7 @@ export default function AdminFacilityDetails() {
 
               <div className="sm:col-span-3">
                 <label htmlFor="phone-number" className="block text-sm font-medium leading-6 text-gray-900">
-                  Business Contact Mobile Number*
+                  Facility Phone Number
                 </label>
                 <div className="mt-2">
                   <input
@@ -214,6 +221,80 @@ export default function AdminFacilityDetails() {
                 </div>
               </div>
 
+              <fieldset>
+                <legend className="text-sm font-semibold leading-6 text-gray-900">Services</legend>
+                <div className="mt-6 space-y-6">
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        value="Trimming"
+                        defaultChecked={facility.services?.includes('Trimming')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="trimming" className="font-medium text-gray-900">
+                        Trimming
+                      </label>
+                    </div>
+                  </div>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        value="Harvesting"
+                        defaultChecked={facility.services?.includes('Harvesting')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="harvest" className="font-medium text-gray-900">
+                        Harvest
+                      </label>
+                    </div>
+                  </div>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        value="Packaging"
+                        defaultChecked={facility.services?.includes('Packaging')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="packaging" className="font-medium text-gray-900">
+                        Packaging
+                      </label>
+                    </div>
+                  </div>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        value="General Labor"
+                        defaultChecked={facility.services?.includes('General Labor')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="packaging" className="font-medium text-gray-900">
+                        General Labor
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+
               {/* Section 2 */}
 
               <div className="col-span-full">
@@ -230,27 +311,6 @@ export default function AdminFacilityDetails() {
                   />
                 </div>
                 <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
-              </div>
-
-              <div className="col-span-full">
-                <label htmlFor="facility-photo" className="block text-sm font-medium leading-6 text-gray-900">
-                  Facility photo
-                </label>
-                <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                  <div className="text-center">
-                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
-                        <span>Upload a file</span>
-                        <input id="file-upload" name="main_image" type="file" className="sr-only" />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -278,7 +338,7 @@ export default function AdminFacilityDetails() {
                     autoComplete="country-name"
                     defaultValue={facility.country || 'United States'}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>United States</option>
+                    <option>USA</option>
                     <option>Canada</option>
                     <option>Mexico</option>
                   </select>
@@ -348,67 +408,6 @@ export default function AdminFacilityDetails() {
                   />
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Document</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please upload business license documents. Please make sure your upload is clear without any warped or
-                blur portions and shows all relevant information.{' '}
-              </p>
-            </div>
-
-            {/* section 3 */}
-
-            <div className="max-w-2xl space-y-10 md:col-span-2">
-              <fieldset>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">
-                  Upload State License Document*
-                </legend>
-                <div className="col-span-full">
-                  <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
-                    State License
-                  </label>
-                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                    <div className="text-center">
-                      <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
-                      <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
-                          <span>Upload a file</span>
-                          <input id="state_license" name="state_license" type="file" className="sr-only" />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
-                    </div>
-                  </div>
-                </div>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">Upload City License Document*</legend>
-                <div className="col-span-full">
-                  <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
-                    City License
-                  </label>
-                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                    <div className="text-center">
-                      <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
-                      <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
-                          <span>Upload a file</span>
-                          <input id="city_license" name="city_license" type="file" className="sr-only" />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
-                    </div>
-                  </div>
-                </div>
-              </fieldset>
             </div>
           </div>
         </div>
