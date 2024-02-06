@@ -8,6 +8,9 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { LogoutService } from '../../services/AuthService'
 import { useAuth } from '../../contexts/AuthContext'
 import { classNames } from '../../utils/Tailwind'
+import { links } from './Sidebar'
+import SidebarMenuItem from './SidebarMenuItem'
+import SideBarMenuItemDisabled from './SidebarMenuItemDisabled'
 
 export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -162,9 +165,13 @@ export default function Header() {
       </div>
       <div className={`navbar-menu relative ${showMobileMenu === true ? 'block' : 'hidden'}`}>
         <div className="navbar-backdrop fixed inset-0 bg-zinc-800 opacity-25"></div>
-        <nav className="fixed top-0 left-0 bottom-0 flex flex-col w-5/6 max-w-sm py-6 px-6 bg-zinc-50 border-r overflow-y-auto">
+        <nav className="fixed top-0 left-0 bottom-0 flex flex-col w-64 max-w-sm py-6 px-6 bg-zinc-800 border-r overflow-y-auto">
           <div className="flex items-center mb-8">
-            <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp-Temps" className="h-12 w-auto mr-2" />
+            <img
+              src="/assets/logos/Hemp-Temps-logo-horizontal-white@2x.png"
+              alt="Hemp-Temps"
+              className="h-10 w-auto mr-2"
+            />
             <button className="navbar-close mr-4 right-0 absolute" onClick={closeBurgerModal}>
               <svg
                 className="h-6 w-6 text-zinc-400 cursor-pointer hover:text-zinc-500"
@@ -176,31 +183,20 @@ export default function Header() {
               </svg>
             </button>
           </div>
-          <div className="space-y-4 flex-col flex justify-center items-center">
-            <a className="font-bold text-base" href="/">
-              Services
-            </a>
-            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
-              Apply/Jobs
-            </a>
-            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
-              Employers
-            </a>
-            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
-              Training
-            </a>
-            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
-              News/Blog
-            </a>
-            <a className="font-bold text-base" href="/" onClick={closeBurgerModal}>
-              Contact
-            </a>
-            <a className="font-bold text-base" href="/login" onClick={closeBurgerModal}>
-              Log In
-            </a>
-            <a className="font-bold text-base" href="/signup" onClick={closeBurgerModal}>
-              Register
-            </a>
+          <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 bg-zinc-800">
+            <ul className="space-y-2 font-medium">
+              {user?.role &&
+                links[user.role].map(link => (
+                  <li key={link.id}>{!link.disabled && <SidebarMenuItem link={link} />}</li>
+                ))}
+            </ul>
+            <h4 className="text-zinc-400 my-3">Coming soon </h4>
+            <ul className="space-y-2 font-medium">
+              {user?.role &&
+                links[user.role].map(link => (
+                  <li key={link.id}>{link.disabled && <SideBarMenuItemDisabled link={link} />}</li>
+                ))}
+            </ul>
           </div>
         </nav>
       </div>
