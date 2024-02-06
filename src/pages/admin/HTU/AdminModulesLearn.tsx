@@ -25,11 +25,11 @@ export default function AdminModulesLearn() {
         search
         selectedOptions={selectOption}
         actionButton={{
-          to: '/learn/modules/new',
+          to: '/admin/learn/modules/new',
           text: 'New Module',
         }}
       />
-      <EmptyState type="module" to="/learn/modules/new" />
+      <EmptyState type="module" to="/admin/learn/modules/new" />
     </div>
   )
 }
