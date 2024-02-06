@@ -25,7 +25,7 @@ export default function HeaderComponent({ title, selectedOptions, search = false
                 <div className="mx-3">
                   <Search searchQuery="search" />
                 </div>
-                <div className='mx-3 w-32'>
+                <div className="mx-3 w-32">
                   <SelectedOptionWithFilter selectedOptions={selectedOptions} />
                 </div>
                 <div className="mx-3">
