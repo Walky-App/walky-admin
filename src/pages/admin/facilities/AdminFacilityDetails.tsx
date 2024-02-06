@@ -278,7 +278,7 @@ export default function AdminFacilityDetails() {
                     autoComplete="country-name"
                     defaultValue={facility.country || 'United States'}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>United States</option>
+                    <option>USA</option>
                     <option>Canada</option>
                     <option>Mexico</option>
                   </select>
