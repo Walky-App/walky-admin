@@ -39,10 +39,10 @@ export default function TagsArray({ tags, setTags, optional = false }: Props) {
 
   return (
     <>
-      <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+      <label className="block text-sm font-medium leading-6 text-gray-900">
         Values for states {optional && '(optional)'}
       </label>
-      <div className="flex rounded-md sm:max-w-md gap-3 w-full mt-3">
+      <div className="flex flex-col gap-3 mt-3 rounded-md sm:flex-row sm:max-w-md w-full">
         <SelectedOption classStyle="min-w-40" selectedOptions={states} setSelectedOptions={setState} />
         <input
           type="number"
