@@ -247,8 +247,8 @@ export default function AdminFacilityDetails() {
                         id="services"
                         name="services"
                         type="checkbox"
-                        value="Harvest"
-                        defaultChecked={facility.services?.includes('Harvest')}
+                        value="Harvesting"
+                        defaultChecked={facility.services?.includes('Harvesting')}
                         className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
                       />
                     </div>
@@ -272,6 +272,23 @@ export default function AdminFacilityDetails() {
                     <div className="text-sm leading-6">
                       <label htmlFor="packaging" className="font-medium text-gray-900">
                         Packaging
+                      </label>
+                    </div>
+                  </div>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        value="General Labor"
+                        defaultChecked={facility.services?.includes('General Labor')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="packaging" className="font-medium text-gray-900">
+                        General Labor
                       </label>
                     </div>
                   </div>
