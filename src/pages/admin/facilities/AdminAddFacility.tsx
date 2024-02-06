@@ -30,12 +30,9 @@ export default function AdminAddFacility() {
       city: target.city.value,
       state: target.state.value,
       zip: target.zip.value,
-      // email: target.email.value,
       tax_id: target.tax_id.value,
       phone_number: target.phone_number.value,
       // company_dba: e.target.dba.value,
-      //contacts: e.target.contacts.value,
-      // role: e.target.contacts.value,
       active: 'true',
       //state_license: e.target.state_license.value,
       // jobs: e.target.jobs.value, // array of job ids
@@ -196,68 +193,65 @@ export default function AdminAddFacility() {
             </div>
 
             <fieldset>
-              <legend className="text-sm font-semibold leading-6 text-gray-900">Services*</legend>
-              <div className="mt-6 space-y-6">
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      disabled
-                      className="px-3 h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
+                <legend className="text-sm font-semibold leading-6 text-gray-900">Services*</legend>
+                <div className="mt-6 space-y-6">
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        className="px-3 h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="comments" className="font-medium text-gray-900">
+                        Trimming
+                      </label>
+                    </div>
                   </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="comments" className="font-medium text-gray-900">
-                      Trimming
-                    </label>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="candidates" className="font-medium text-gray-900">
+                        Harvest
+                      </label>
+                    </div>
                   </div>
-                </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      disabled
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="candidates" className="font-medium text-gray-900">
-                      Harvest
-                    </label>
-                  </div>
-                </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      disabled
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="offers" className="font-medium text-gray-900">
-                      Packaging
-                    </label>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="offers" className="font-medium text-gray-900">
+                        Packaging
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
 
             {/* Section 2 */}
 
             <div className="col-span-full">
-              <label htmlFor="external-notes" className="block text-sm font-medium leading-6 text-gray-900">
-                External Notes for public
+              <label htmlFor="notes" className="block text-sm font-medium leading-6 text-gray-900">
+                Notes
               </label>
               <div className="mt-2">
                 <textarea
-                  id="external-notes"
+                  id="notes"
                   name="notes"
                   rows={3}
                   className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
@@ -267,7 +261,7 @@ export default function AdminAddFacility() {
               <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
             </div>
 
-            <div className="col-span-full">
+            {/* <div className="col-span-full">
               <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
                 Internal notes for management
               </label>
@@ -281,7 +275,7 @@ export default function AdminAddFacility() {
                 />
               </div>
               <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
-            </div>
+            </div> */}
 
             <div className="col-span-full">
               <label htmlFor="facility-photo" className="block text-sm font-medium leading-6 text-gray-900">
@@ -327,7 +321,7 @@ export default function AdminAddFacility() {
                   name="country"
                   autoComplete="country-name"
                   className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                  <option>United States</option>
+                  <option>USA</option>
                   <option>Canada</option>
                   <option>Mexico</option>
                 </select>
@@ -396,7 +390,8 @@ export default function AdminAddFacility() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          {/* section 3 */}
+        {/* <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Document</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
@@ -405,7 +400,6 @@ export default function AdminAddFacility() {
             </p>
           </div>
 
-          {/* section 3 */}
 
           <div className="max-w-2xl space-y-10 md:col-span-2">
             <fieldset>
@@ -453,7 +447,7 @@ export default function AdminAddFacility() {
               </div>
             </fieldset>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
