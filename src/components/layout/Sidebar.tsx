@@ -52,6 +52,7 @@ export default function SideBar() {
     </aside>
   )
 }
+
 export interface SideBarOptions {
   [key: string]: SideBarData[]
 }
