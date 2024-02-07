@@ -68,7 +68,7 @@ export default function AdminFacilityContacts() {
       <AdminFacilityHeaderInfo facility={facilityFound} />
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-semibold leading-6 text-gray-900"> {facilityName} Facility contacts</h1>
+          <h1 className="text-2xl font-semibold leading-6 text-gray-900">Facility contacts</h1>
         </div>
         <div className="border-b border-gray-200 pb-5 w-full mb-12 pt-10">
           <h3 className="text-base font-semibold leading-6 text-gray-900">Add contact: </h3>
