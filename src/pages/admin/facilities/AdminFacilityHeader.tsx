@@ -55,7 +55,7 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
             ${location.pathname.includes('/images') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
             Images
-          </Link> 
+          </Link>
         </span>
 
         <span className=" ml-3 hidden lg:inline-block">
