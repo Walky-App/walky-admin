@@ -1,5 +1,5 @@
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
-import { AcademicCapIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline'
+import { AcademicCapIcon, TagIcon } from '@heroicons/react/24/outline'
 import { classNames } from '../../../utils/Tailwind'
 import { Link } from 'react-router-dom'
 
@@ -23,7 +23,7 @@ export default function AdminDashboardLearn() {
   return (
     <div className="w-full sm:overflow-x-hidden">
       <HeaderComponent title={'Manage HTU'} />
-      <ul role="list" className="grid grid-cols-1 gap-6 border-b border-gray-200 pb-6 sm:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-6 border-b border-gray-200 pb-6 sm:grid-cols-2">
         {items.map((item, itemIdx) => (
           <Link key={itemIdx} to={item.to}>
             <li className="flow-root">
