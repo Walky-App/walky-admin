@@ -9,7 +9,6 @@ import {
   IdentificationIcon,
   DocumentPlusIcon,
   ChevronDownIcon,
-  HashtagIcon,
 } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../../utils/Tailwind'

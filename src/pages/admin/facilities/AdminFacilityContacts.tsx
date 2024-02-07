@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
@@ -7,14 +7,11 @@ import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityContacts() {
   const { facilityId } = useParams()
-  const { contactId } = useParams()
-  const [currentContact, setCurrentContact] = useState<any>({})
+  const [currentContact, setCurrentContact] = useState<string>('')
   const [facilityContacts, setFacilityContacts] = useState<any>([])
   const [facilityName, setFacilityName] = useState<string>('')
-  const [formData, setFormData] = useState<any>([{}])
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
-  const [openModal, setOpenModal] = useState(false)
-  const [facility, setFacility] = useState<any>({})
+  const [openModal, setOpenModal] = useState<boolean>(false)
   const [facilityFound, setFacilityFound] = useState<any>({})
 
   useEffect(() => {
@@ -55,12 +52,13 @@ export default function AdminFacilityContacts() {
     const res = await RequestService(`/facilities/${facilityId}/contacts`, 'PATCH', formData)
     if (res) {
       setFacilityContacts(res)
+      setUpdateSuccess(true)
     } else {
       console.error('Error adding contact')
     }
   }
 
-  const handleEditButtonClick = (contact: any) => {
+  const handleEditButtonClick = (contact: string) => {
     setCurrentContact(contact)
     setOpenModal(true)
   }
