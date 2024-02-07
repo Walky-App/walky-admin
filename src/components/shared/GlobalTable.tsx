@@ -42,7 +42,7 @@ function InputGroup7({
         placeholder={label}
         aria-label={label}
         onChange={onChange}
-        className={`peer block w-full p-3 text-gray-600 focus:outline-none focus:ring-0 appearance-none ${
+        className={`peer block w-full p-3 text-gray-600 focus:outline-none focus:border-transparent border-transparent focus:ring-0 appearance-none ${
           disabled ? 'bg-gray-200' : ''
         } ${inputClassName}`}
         disabled={disabled}
