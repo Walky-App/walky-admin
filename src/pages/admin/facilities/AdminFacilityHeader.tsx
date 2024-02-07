@@ -1,11 +1,22 @@
-import React, { Fragment } from 'react';
-import { MapPinIcon, MapIcon, UserCircleIcon, PhotoIcon, BriefcaseIcon, PaperClipIcon, IdentificationIcon, DocumentPlusIcon, ChevronDownIcon, HashtagIcon } from '@heroicons/react/20/solid';
-import { Menu, Transition } from '@headlessui/react';
-import { classNames } from '../../../utils/Tailwind';
-import { Link, useLocation } from 'react-router-dom';
+import React, { Fragment } from 'react'
+import {
+  MapPinIcon,
+  MapIcon,
+  UserCircleIcon,
+  PhotoIcon,
+  BriefcaseIcon,
+  PaperClipIcon,
+  IdentificationIcon,
+  DocumentPlusIcon,
+  ChevronDownIcon,
+  HashtagIcon,
+} from '@heroicons/react/20/solid'
+import { Menu, Transition } from '@headlessui/react'
+import { classNames } from '../../../utils/Tailwind'
+import { Link, useLocation } from 'react-router-dom'
 
 const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
-  const location = useLocation();
+  const location = useLocation()
 
   return (
     <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 mb-20 w-full ">
@@ -28,7 +39,8 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
       </div>
       <div className="mt-5 flex lg:ml-4 lg:mt-0 ">
         <span className=" ml-3 hidden lg:inline-block">
-          <Link to={`/admin/facilities/${facility._id}/contacts`}
+          <Link
+            to={`/admin/facilities/${facility._id}/contacts`}
             className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
             ${location.pathname.includes('/contacts') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <UserCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
@@ -37,7 +49,8 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
         </span>
 
         <span className="ml-3 hidden lg:inline-block">
-          <Link to={`/admin/facilities/${facility._id}/images`}
+          <Link
+            to={`/admin/facilities/${facility._id}/images`}
             className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
             ${location.pathname.includes('/images') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
@@ -46,7 +59,8 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
         </span>
 
         <span className=" ml-3 hidden lg:inline-block">
-          <Link to={`/admin/facilities/${facility._id}/jobs`}
+          <Link
+            to={`/admin/facilities/${facility._id}/jobs`}
             className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
             ${location.pathname.includes('/jobs') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <BriefcaseIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
@@ -54,7 +68,8 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
           </Link>
         </span>
         <span className="ml-3 hidden lg:inline-block">
-          <Link to={`/admin/facilities/${facility._id}/internal_notes`}
+          <Link
+            to={`/admin/facilities/${facility._id}/internal_notes`}
             className={`flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
             ${location.pathname.includes('/internal_notes') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <PaperClipIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
@@ -62,7 +77,8 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
           </Link>
         </span>
         <span className=" ml-3 hidden lg:inline-block">
-          <Link to={`/admin/facilities/${facility._id}/contacts`}
+          <Link
+            to={`/admin/facilities/${facility._id}/contacts`}
             className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
             ${location.pathname.includes('/contacts') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <IdentificationIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
@@ -70,7 +86,8 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
           </Link>
         </span>
         <span className=" ml-3 hidden lg:inline-block">
-          <Link to={`/admin/facilities/${facility._id}/contacts`}
+          <Link
+            to={`/admin/facilities/${facility._id}/contacts`}
             className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
             ${location.pathname.includes('/contacts') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
@@ -152,7 +169,7 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
         </Menu>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminFacilityHeaderInfo;
+export default AdminFacilityHeaderInfo
