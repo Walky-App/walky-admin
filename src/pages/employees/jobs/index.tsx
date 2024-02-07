@@ -28,14 +28,13 @@ export default function Jobs() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8">
       <HeaderComponent title="Jobs" search selectedOptions={categorysOptions} />
-
-      <ul role="list" className="grid mt-10 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
+      <ul className="grid mt-10 grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
         {jobs?.map((job: any) => (
-          <a href={`/employee/jobs/${job._id}`}>
+          // <a href={`/employee/jobs/${job._id}`}>
             <JobListItem key={job._id} job={job} />
-          </a>
+          // </a>
         ))}
       </ul>
     </div>

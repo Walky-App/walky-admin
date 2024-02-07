@@ -1,60 +1,61 @@
 {
-  "name": "hemptemps-app",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@headlessui/react": "^1.7.18",
-    "@heroicons/react": "^2.1.1",
-    "@nextui-org/chip": "^2.0.25",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.74",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "flowbite": "^2.2.1",
-    "flowbite-react": "^0.7.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.0.1",
-    "react-router-dom": "^6.21.3",
-    "react-scripts": "5.0.1",
-    "react-table": "^7.8.0",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "deploy-prod": "npm run build && firebase deploy",
-    "deploy-st": "npm run build && firebase hosting:channel:deploy staging",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "format": "npx prettier . --write",
-    "prepare": "husky"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@types/react-table": "^7.7.19",
-    "husky": "^9.0.7",
-    "prettier": "3.2.4",
-    "tailwindcss": "^3.4.1"
-  }
+    "name": "hemptemps-app",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@headlessui/react": "^1.7.18",
+        "@heroicons/react": "^2.1.1",
+        "@nextui-org/chip": "^2.0.25",
+        "@testing-library/jest-dom": "^5.17.0",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "@types/jest": "^27.5.2",
+        "@types/node": "^16.18.74",
+        "@types/react": "^18.2.48",
+        "@types/react-dom": "^18.2.18",
+        "flowbite": "^2.2.1",
+        "flowbite-react": "^0.7.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-icons": "^5.0.1",
+        "react-router-dom": "^6.21.3",
+        "react-scripts": "5.0.1",
+        "react-table": "^7.8.0",
+        "typescript": "^4.9.5",
+        "web-vitals": "^2.1.4"
+    },
+    "scripts": {
+        "deploy-prod": "npm run build && firebase deploy",
+        "deploy-st": "npm run build && firebase hosting:channel:deploy staging",
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "format": "npx prettier . --write",
+        "prepare": "husky"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@types/react-table": "^7.7.19",
+        "husky": "^9.0.7",
+        "prettier": "3.2.4",
+        "tailwindcss": "^3.4.1",
+        "prettier-plugin-tailwindcss": "^0.5.11"
+    }
 }
