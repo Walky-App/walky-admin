@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import {
   MapPinIcon,
   MapIcon,
@@ -11,7 +11,6 @@ import {
   ChevronDownIcon,
   HashtagIcon,
 } from '@heroicons/react/20/solid'
-import { JSX } from 'react/jsx-runtime'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../../utils/Tailwind'
 import { useNavigate } from 'react-router-dom'
@@ -24,7 +23,7 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
   }
 
   return (
-    <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 mb-20 w-full ">
+    <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 mb-10 w-full ">
       <div className="min-w-0 flex-1">
         <div className="min-w-0 flex-1 ">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -56,6 +55,7 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
         <span className="ml-3 hidden lg:inline-block">
           <button
             type="button"
+            onClick={() => handleNavigate(`/admin/facilities/${facility._id}/images`)}
             className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
             <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
             Images
