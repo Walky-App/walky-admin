@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon, ChevronDownIcon, PhotoIcon } from '@heroicons/react/20/solid'
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { classNames } from '../../../utils/Tailwind'
 import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityDetails() {
