@@ -7,9 +7,7 @@ interface Props {
 
 export default function SidebarMenuItem({ link }: Props) {
 
-
   const { pathname } = useLocation()
-  console.log('pathname', pathname)
   const unread = 3
   return (
     <Link
