@@ -25,11 +25,11 @@ export default function AdminCategoryLearn() {
         search
         selectedOptions={selectOption}
         actionButton={{
-          to: '/admin/learn/category/new',
+          to: '/admin/learn/categories/new',
           text: 'New Category',
         }}
       />
-      <EmptyState type="category" to="/admin/learn/category/new" />
+      <EmptyState type="category" to="/admin/learn/categories/new" />
     </div>
   )
 }
