@@ -11,7 +11,7 @@ export const countries: CountriesSelectedOptionInterface[] = [
 ]
 
 export const states: SelectedOptionInterface[] = [
-  { name: 'Selecte', code: 'all' },
+  { name: 'Select', code: 'all' },
   { name: 'Alabama', code: 'AL' },
   { name: 'Alaska', code: 'AK' },
   { name: 'Arizona', code: 'AZ' },
