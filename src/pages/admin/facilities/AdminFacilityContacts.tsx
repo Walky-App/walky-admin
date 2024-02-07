@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import AdminFacilityContactModal from './AdminFacilityContactModal'
+import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityContacts() {
   const { facilityId } = useParams()
@@ -13,6 +14,8 @@ export default function AdminFacilityContacts() {
   const [formData, setFormData] = useState<any>([{}])
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
   const [openModal, setOpenModal] = useState(false)
+  const [facility, setFacility] = useState<any>({})
+  const [facilityFound, setFacilityFound] = useState<any>({})
 
   useEffect(() => {
     const getFacilityContacts = async () => {
@@ -21,6 +24,7 @@ export default function AdminFacilityContacts() {
         const facilityContacts = facilityFound.contacts
         const facilityName = facilityFound.name
         setFacilityContacts(facilityContacts)
+        setFacilityFound(facilityFound)
         setFacilityName(facilityName)
       } catch (error) {
         console.error('Error fetching facility contacts', error)
@@ -55,14 +59,14 @@ export default function AdminFacilityContacts() {
       console.error('Error adding contact')
     }
   }
-
+    
   const handleEditButtonClick = (contact: any) => {
     setCurrentContact(contact)
     setOpenModal(true)
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
+    <><AdminFacilityHeaderInfo facility={facilityFound} /><div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold leading-6 text-gray-900"> {facilityName} Facility contacts</h1>
       </div>
@@ -84,8 +88,7 @@ export default function AdminFacilityContacts() {
                     name="first_name"
                     id="first_name"
                     autoComplete="given-name"
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
@@ -99,8 +102,7 @@ export default function AdminFacilityContacts() {
                     name="last_name"
                     id="last_name"
                     autoComplete="family-name"
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
@@ -114,8 +116,7 @@ export default function AdminFacilityContacts() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
@@ -129,8 +130,7 @@ export default function AdminFacilityContacts() {
                     name="phone_number"
                     id="phone_number"
                     autoComplete="phone_number"
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
               <div className="sm:col-span-2">
@@ -245,8 +245,7 @@ export default function AdminFacilityContacts() {
                   setOpenModal={setOpenModal}
                   facilityId={facilityId}
                   currentContact={currentContact}
-                  setFacilityContacts={setFacilityContacts}
-                />
+                  setFacilityContacts={setFacilityContacts} />
               </table>
             ) : (
               // No contacts found
@@ -260,6 +259,6 @@ export default function AdminFacilityContacts() {
           </div>
         </div>
       </div>
-    </div>
+    </div></>
   )
 }
