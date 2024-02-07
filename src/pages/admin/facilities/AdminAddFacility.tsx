@@ -1,6 +1,7 @@
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
+import TitleComponent from '../../../components/shared/general/TitleComponent'
 
 export default function AdminAddFacility() {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
@@ -69,6 +70,8 @@ export default function AdminAddFacility() {
   }
 
   return (
+    <>
+    <TitleComponent title="Add Facility" />
     <form onSubmit={handleForm}>
       <div className="space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -208,7 +211,7 @@ export default function AdminAddFacility() {
                     />
                   </div>
                   <div className="text-sm leading-6">
-                    <label htmlFor="harvest" className="font-medium text-gray-900">
+                    <label htmlFor="harvesting" className="font-medium text-gray-900">
                       Harvesting
                     </label>
                   </div>
@@ -232,6 +235,38 @@ export default function AdminAddFacility() {
                 <div className="relative flex gap-x-3">
                   <div className="flex h-6 items-center">
                     <input
+                      id="budtending"
+                      name="services"
+                      type="checkbox"
+                      value="Budtending"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="budtending" className="font-medium text-gray-900">
+                      Budtending
+                    </label>
+                  </div>
+                </div>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="gardening"
+                      name="services"
+                      type="checkbox"
+                      value="Gardening"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="gardening" className="font-medium text-gray-900">
+                      Gardening
+                    </label>
+                  </div>
+                </div>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
                       id="general-labor"
                       name="services"
                       type="checkbox"
@@ -240,8 +275,24 @@ export default function AdminAddFacility() {
                     />
                   </div>
                   <div className="text-sm leading-6">
-                    <label htmlFor="packaging" className="font-medium text-gray-900">
+                    <label htmlFor="general-labor" className="font-medium text-gray-900">
                       General Labor
+                    </label>
+                  </div>
+                </div>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="other"
+                      name="services"
+                      type="checkbox"
+                      value="Other"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="other" className="font-medium text-gray-900">
+                      Other
                     </label>
                   </div>
                 </div>
@@ -382,5 +433,6 @@ export default function AdminAddFacility() {
         </button>
       </div>
     </form>
+    </>
   )
 }
