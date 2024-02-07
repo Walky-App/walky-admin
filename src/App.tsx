@@ -42,7 +42,7 @@ import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContact
 import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
-import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityInternalContacts'
+import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityInternalNotes'
 import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 import AdminAddCategory from './pages/admin/HTU/AdminAddCategory'
 import AdminCategoryLearn from './pages/admin/HTU/AdminCategoryLearn'
