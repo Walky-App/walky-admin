@@ -42,13 +42,14 @@ import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContact
 import AdminJobs from './pages/admin/jobs'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
-import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityInternalContacts'
+import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityInternalNotes'
 import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 import AdminAddCategory from './pages/admin/HTU/AdminAddCategory'
 import AdminAddModule from './pages/admin/HTU/AdminAddModule'
 import AdminCategoryLearn from './pages/admin/HTU/AdminCategoryLearn'
 import AdminDashboardLearn from './pages/admin/HTU'
 import AdminModulesLearn from './pages/admin/HTU/AdminModulesLearn'
+import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 
 export default function App() {
   return (
@@ -87,6 +88,7 @@ export default function App() {
                 <Route path="/admin/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
                 <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
                 <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
+                <Route path="/admin/facilities/:facilityId/images" element={<AdminFacilityImages />} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
                 <Route path="/admin/jobs/new" element={<AdminAddJob />} />
                 <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />

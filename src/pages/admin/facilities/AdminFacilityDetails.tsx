@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon, ChevronDownIcon, PhotoIcon } from '@heroicons/react/20/solid'
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { classNames } from '../../../utils/Tailwind'
 import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityDetails() {
@@ -221,6 +218,21 @@ export default function AdminFacilityDetails() {
                 </div>
               </div>
 
+              <div className="col-span-full">
+                <label htmlFor="ext-notes" className="block text-sm font-medium leading-6 text-gray-900">
+                  Arrival Notes
+                </label>
+                <div className="mt-2">
+                  <textarea
+                    id="ext-notes"
+                    name="notes"
+                    rows={5}
+                    defaultValue={facility.notes || ''}
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
+              </div>
               <fieldset>
                 <legend className="text-sm font-semibold leading-6 text-gray-900">Services</legend>
                 <div className="mt-6 space-y-6">
@@ -253,8 +265,8 @@ export default function AdminFacilityDetails() {
                       />
                     </div>
                     <div className="text-sm leading-6">
-                      <label htmlFor="harvest" className="font-medium text-gray-900">
-                        Harvest
+                      <label htmlFor="harvesting" className="font-medium text-gray-900">
+                        Harvesting
                       </label>
                     </div>
                   </div>
@@ -281,6 +293,40 @@ export default function AdminFacilityDetails() {
                         id="services"
                         name="services"
                         type="checkbox"
+                        value="Budtending"
+                        defaultChecked={facility.services?.includes('Budtending')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="budtending" className="font-medium text-gray-900">
+                        Budtending
+                      </label>
+                    </div>
+                  </div>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        value="Gardening"
+                        defaultChecked={facility.services?.includes('Gardening')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="gardening" className="font-medium text-gray-900">
+                        Gardening
+                      </label>
+                    </div>
+                  </div>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
                         value="General Labor"
                         defaultChecked={facility.services?.includes('General Labor')}
                         className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
@@ -292,26 +338,25 @@ export default function AdminFacilityDetails() {
                       </label>
                     </div>
                   </div>
+                  <div className="relative flex gap-x-3">
+                    <div className="flex h-6 items-center">
+                      <input
+                        id="services"
+                        name="services"
+                        type="checkbox"
+                        value="Other"
+                        defaultChecked={facility.services?.includes('Other')}
+                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                      />
+                    </div>
+                    <div className="text-sm leading-6">
+                      <label htmlFor="other" className="font-medium text-gray-900">
+                        Other
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </fieldset>
-
-              {/* Section 2 */}
-
-              <div className="col-span-full">
-                <label htmlFor="ext-notes" className="block text-sm font-medium leading-6 text-gray-900">
-                  Notes
-                </label>
-                <div className="mt-2">
-                  <textarea
-                    id="ext-notes"
-                    name="notes"
-                    rows={5}
-                    defaultValue={facility.notes || ''}
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
-              </div>
             </div>
           </div>
 

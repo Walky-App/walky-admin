@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import {
   MapPinIcon,
   MapIcon,
@@ -19,7 +19,7 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
   const location = useLocation()
 
   return (
-    <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 mb-20 w-full ">
+    <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 mb-10 w-full ">
       <div className="min-w-0 flex-1">
         <div className="min-w-0 flex-1 ">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -55,7 +55,7 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
             ${location.pathname.includes('/images') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
             Images
-          </Link>
+          </Link> 
         </span>
 
         <span className=" ml-3 hidden lg:inline-block">
@@ -78,18 +78,18 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
         </span>
         <span className=" ml-3 hidden lg:inline-block">
           <Link
-            to={`/admin/facilities/${facility._id}/contacts`}
+            to={`/admin/facilities/${facility._id}/licenses`}
             className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/contacts') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
+            ${location.pathname.includes('/licenses') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <IdentificationIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
             Licenses
           </Link>
         </span>
         <span className=" ml-3 hidden lg:inline-block">
           <Link
-            to={`/admin/facilities/${facility._id}/contacts`}
+            to={`/admin/facilities/${facility._id}/documents`}
             className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/contacts') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
+            ${location.pathname.includes('/documents') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
             <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
             Docs
           </Link>
