@@ -40,9 +40,9 @@ export default function AdminAddFacility() {
       corp_name: target.corp_name.value,
       company_dbas: target.company_dbas.value.split(',').map(dba => dba.trim()),
       services: Array.from(document.querySelectorAll('input[name="services"]:checked'))
-      //@ts-ignore
-      .map(input => input.value),
-        }
+        //@ts-ignore
+        .map(input => input.value),
+    }
 
     fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities`, {
       method: 'POST',
@@ -64,8 +64,8 @@ export default function AdminAddFacility() {
         console.error('Error adding facility:', error)
         setUpdateSuccess(false)
       })
-      
-      console.log(formData)
+
+    console.log(formData)
   }
 
   return (
@@ -179,74 +179,74 @@ export default function AdminAddFacility() {
             </div>
 
             <fieldset>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">Services</legend>
-                <div className="mt-6 space-y-6">
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="trimming"
-                        name="services"
-                        type="checkbox"
-                        value="Trimming"
-                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label htmlFor="trimming" className="font-medium text-gray-900">
-                        Trimming
-                      </label>
-                    </div>
+              <legend className="text-sm font-semibold leading-6 text-gray-900">Services</legend>
+              <div className="mt-6 space-y-6">
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="trimming"
+                      name="services"
+                      type="checkbox"
+                      value="Trimming"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
                   </div>
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="harvesting"
-                        name="services"
-                        type="checkbox"
-                        value="Harvesting"
-                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label htmlFor="harvest" className="font-medium text-gray-900">
-                        Harvesting
-                      </label>
-                    </div>
-                  </div>
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="packaging"
-                        name="services"
-                        type="checkbox"
-                        value="Packaging"
-                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label htmlFor="packaging" className="font-medium text-gray-900">
-                        Packaging
-                      </label>
-                    </div>
-                  </div>
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="general-labor"
-                        name="services"
-                        type="checkbox"
-                        value="General Labor"
-                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label htmlFor="packaging" className="font-medium text-gray-900">
-                        General Labor
-                      </label>
-                    </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="trimming" className="font-medium text-gray-900">
+                      Trimming
+                    </label>
                   </div>
                 </div>
-              </fieldset>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="harvesting"
+                      name="services"
+                      type="checkbox"
+                      value="Harvesting"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="harvest" className="font-medium text-gray-900">
+                      Harvesting
+                    </label>
+                  </div>
+                </div>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="packaging"
+                      name="services"
+                      type="checkbox"
+                      value="Packaging"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="packaging" className="font-medium text-gray-900">
+                      Packaging
+                    </label>
+                  </div>
+                </div>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="general-labor"
+                      name="services"
+                      type="checkbox"
+                      value="General Labor"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                    />
+                  </div>
+                  <div className="text-sm leading-6">
+                    <label htmlFor="packaging" className="font-medium text-gray-900">
+                      General Labor
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
 
             {/* Section 2 */}
 
@@ -382,6 +382,5 @@ export default function AdminAddFacility() {
         </button>
       </div>
     </form>
-    
   )
 }
