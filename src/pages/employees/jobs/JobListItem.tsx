@@ -1,8 +1,8 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Badge } from 'flowbite-react'
 import { BriefcaseIcon, MapPinIcon, CreditCardIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
 import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outline'
-import { Badge } from 'flowbite-react'
-import { useState } from 'react'
-
 export default function JobListItem({ job }: any) {
   const [savedJob, setSavedJob] = useState(false)
 
@@ -15,18 +15,18 @@ export default function JobListItem({ job }: any) {
       key={job.company_id}
       className="col-span-1 divide-y divide-gray-200 rounded-lg transition delay-150 ease-in-out hover:shadow-2xl">
       {/* Job Card */}
-      <div className="flex h-full flex-col items-start justify-center rounded-lg border border-zinc-100 bg-white pt-5">
-        {/* Job Skills */}
-        <div className="mb-3 flex basis-1/3 flex-wrap gap-2 px-5">
-          {job.skills.map((skill: string) => (
-            <Badge key={skill} color="gray" size="sm">
-              <p className="text-xs font-normal text-stone-500">{skill}</p>
-            </Badge>
-          ))}
-        </div>
+      <div className="flex h-full flex-col items-start justify-center rounded-lg border border-zinc-100 bg-white">
+        <Link to={`/employee/jobs/${job._id}`}>
+          {/* Job Skills */}
+          <div className="mb-3 flex basis-1/3 flex-wrap gap-2 px-5 pt-5">
+            {job.skills.map((skill: string) => (
+              <Badge key={skill} color="gray" size="sm">
+                <p className="text-xs font-normal text-stone-500">{skill}</p>
+              </Badge>
+            ))}
+          </div>
 
-        {/* Job Details */}
-        <a href={`/employee/jobs/${job._id}`}>
+          {/* Job Details */}
           <div className="flex w-full basis-2/3 cursor-pointer flex-col items-start justify-start gap-4 px-5 pb-5">
             <p className="text-balance text-base font-semibold capitalize text-black">{job.title}</p>
             <div className="flex flex-wrap gap-8">
@@ -70,7 +70,7 @@ export default function JobListItem({ job }: any) {
               </div>
             </div>
           </div>
-        </a>
+        </Link>
 
         {/* Job Card Footer */}
         <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
