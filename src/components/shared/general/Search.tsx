@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useSearchParams } from 'react-router-dom'
+import { useDebouncedCallback } from 'use-debounce'
 
 interface Props {
   searchQuery: string
@@ -9,7 +10,7 @@ interface Props {
 export default function Search({ searchQuery, roundedOrientation }: Props) {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const handlerSearch = (terms: string) => {
+  const handlerSearch = useDebouncedCallback((terms: string) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (terms) {
@@ -19,7 +20,7 @@ export default function Search({ searchQuery, roundedOrientation }: Props) {
     }
 
     setSearchParams(params)
-  }
+  }, 500)
 
   return (
     <div className="relative flex-grow focus-within:z-10">
@@ -31,9 +32,8 @@ export default function Search({ searchQuery, roundedOrientation }: Props) {
         type="text"
         name="search-component"
         id="search-component"
-        className={`hidden w-full ${
-          roundedOrientation ? roundedOrientation : 'rounded'
-        } border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-800 sm:block`}
+        className={`hidden w-full ${roundedOrientation ? roundedOrientation : 'rounded'
+          } border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-800 sm:block`}
         placeholder="Search"
         defaultValue={searchParams.get(searchQuery) as string}
       />
