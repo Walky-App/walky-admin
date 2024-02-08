@@ -3,19 +3,12 @@ import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 import { Module } from '../../../interfaces/Module'
 import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 import CircularProgressBar from './CircularProgressBar'
+import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 
 interface ModuleCardsProps {
   module: Module[]
   filter?: string
   isLoading: boolean
-}
-
-const secondsToHours = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const remainingSeconds = seconds % 60
-
-  return `${hours}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
 }
 
 export default function ModuleCards({ module, filter = '', isLoading = true }: ModuleCardsProps) {
@@ -53,7 +46,7 @@ export default function ModuleCards({ module, filter = '', isLoading = true }: M
                       <div className="flex items-center justify-start gap-1">
                         <ClockIcon className="h-5" />
                         <div className="flex items-center h-5 text-xs font-medium text-black">
-                          {secondsToHours(module.total_time)} Time
+                          {secondsToTimeDescription(module.total_time)}
                         </div>
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500"></div>
