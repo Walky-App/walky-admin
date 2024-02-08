@@ -4,11 +4,12 @@ import { Category } from '../../interfaces/Category'
 import { RequestService } from '../../services/RequestService'
 import { useSearchParams } from 'react-router-dom'
 import HeaderComponent from '../../components/shared/general/HeaderComponent'
+import { FilterInterface } from '../../interfaces/Global'
 
 export default function Learn() {
   const [loading, setLoading] = useState<boolean>(true)
   const [searchParams] = useSearchParams()
-  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState<FilterInterface>({ search: '', selected: '' })
   const [categories, setCategories] = useState<Category[]>([])
 
   const fecthData = async () => {
@@ -23,7 +24,10 @@ export default function Learn() {
     if (categories.length === 0) {
       fecthData()
     }
-    setSearch(searchParams.get('search') || '')
+    setFilter({
+      search: searchParams.get('search') || '',
+      selected: '',
+    })
   }, [searchParams, categories])
 
   return (
@@ -33,9 +37,7 @@ export default function Learn() {
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
-            <Suspense key={search + '-category-cards'} fallback={<div>loading...</div>}>
-              <CategoryCards category={categories} filter={search} isLoading={loading} />
-            </Suspense>
+            <CategoryCards category={categories} filter={filter} isLoading={loading} />
           </div>
 
           {/*right content*/}
