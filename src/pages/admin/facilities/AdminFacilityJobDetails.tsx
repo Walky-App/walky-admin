@@ -1,67 +1,106 @@
-import { useState, useEffect } from 'react'
+import * as React from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
 export default function AdminFacilityJobDetails() {
-  const { id } = useParams()
-  const [formJob, setFormJob] = useState<any>({})
-  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
+  const { facilityId, jobId } = useParams()
+  const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const [facility, setFacility] = React.useState<any>({})
+  const [job, setJob] = React.useState<any>({})
 
   useEffect(() => {
-    const getJob = async () => {
+    const fetchResources = async () => {
       try {
-        const jobFound = await RequestService(`jobs/${id}`)
-        setFormJob(jobFound)
+        const facility = await RequestService(`facilities/${facilityId}`)
+        if (facility) {
+          setFacility(facility)
+        } else {
+          console.log('No facility found or unexpected data structure received, setting default value.')
+          setFacility({})
+        }
+      } catch (error) {
+        console.error('Error fetching facility data:', error)
+      }
+
+      try {
+        console.log('Job ID:', jobId)
+        const job = await RequestService(`jobs/${jobId}`)
+        if (job) {
+          setJob(job)
+        } else {
+          console.log('No job found or unexpected data structure received.')
+          setJob({})
+        }
       } catch (error) {
         console.error('Error fetching job data:', error)
       }
     }
-    getJob()
-  }, [id])
 
-  const handleInputChange = (e: any) => {
-    const { name, value, type, checked } = e.target
-    const inputValue = type === 'checkbox' ? checked : value
-    setFormJob((prevFormJob: any) => ({
-      ...prevFormJob,
-      [name]: inputValue,
-    }))
-  }
+    fetchResources()
+  }, [])
 
-  const handleUpdate = async (e: any) => {
-    console.log('formJob -->', formJob)
+  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    try {
-      console.log('jobID -->', id)
-      const res = await RequestService(`jobs/${id}`, 'PATCH', formJob)
-      setFormJob(res)
-      console.log('formJob -->', formJob)
-      setUpdateSuccess(true)
-      console.log('update success -->', updateSuccess)
-      setTimeout(() => setUpdateSuccess(false), 5000)
-    } catch (error) {
-      console.error('Error updating job data:', error)
-      setUpdateSuccess(false)
+
+    const target = e.target as typeof e.target & {
+      created_by: { value: string }
+      facility_id: { value: string }
+      title: { value: string }
+      salary: { value: string }
+      description: { value: string }
+      skills: { value: string }
+      employment_type: { value: string }
+      shift_days: { value: string }
+      shift_times: { value: string }
+      shift_dates: { value: string }
     }
+    const skills = target.skills.value
+      .split(',')
+      .map(skill => skill.trim())
+      .filter(skill => skill)
+
+    const formData = {
+      created_by: target.created_by.value,
+      facility_id: facilityId,
+      title: target.title.value,
+      salary: target.salary.value,
+      description: target.description.value,
+      skills: skills,
+      employment_type: target.employment_type.value,
+      shift_days: target.shift_days.value.split(',').map(Number),
+      shift_times: target.shift_times.value.split(','),
+      shift_dates: target.shift_dates.value.split(','),
+      status: 'active',
+    }
+
+    RequestService(`/jobs/${jobId}`, 'PATCH', formData)
+      .then(response => {
+        if (response) {
+          setUpdateSuccess(true)
+          setTimeout(() => setUpdateSuccess(false), 5000)
+        } else {
+          console.error('Update was not successful')
+          setUpdateSuccess(false)
+        }
+      })
+      .catch(error => {
+        console.error('Error updating job:', error)
+        setUpdateSuccess(false)
+      })
   }
 
-  if (!formJob) {
-    return <div>Loading...</div>
-  }
   return (
     <>
-      <TitleComponent title={'Job details'} />
-
-      <form onSubmit={handleUpdate}>
+      <AdminFacilityHeaderInfo facility={facility} />
+      <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Information</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your business so that we can verify you on the platform.{' '}
-              </p>
+              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide information about the new job. </p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
@@ -74,24 +113,8 @@ export default function AdminFacilityJobDetails() {
                     type="text"
                     name="title"
                     id="job-title"
-                    value={formJob.title || ''}
-                    onChange={handleInputChange}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="company-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Company
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="company"
-                    id="company"
-                    value={formJob.company || ''}
-                    onChange={handleInputChange}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
+                    defaultValue={job.title}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -104,24 +127,8 @@ export default function AdminFacilityJobDetails() {
                     type="text"
                     name="created_by"
                     id="email"
-                    value={formJob.created_by || ''}
-                    onChange={handleInputChange}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="facility-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Facility ID*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="facility.name"
-                    id="facility-id"
-                    // value={formJob.facility.name || ''}
-                    // onChange={handleInputChange}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
+                    defaultValue={job.created_by}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -134,7 +141,8 @@ export default function AdminFacilityJobDetails() {
                     type="text"
                     name="salary"
                     id="salary"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
+                    defaultValue={job.salary}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -148,7 +156,8 @@ export default function AdminFacilityJobDetails() {
                     type="text"
                     name="employment_type"
                     id="employment-type"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
+                    defaultValue={job.employment_type}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -163,7 +172,8 @@ export default function AdminFacilityJobDetails() {
                     name="skills"
                     id="skills"
                     placeholder="Enter skills separated by commas"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
+                    defaultValue={job.skills}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -179,7 +189,8 @@ export default function AdminFacilityJobDetails() {
                     name="shift_days"
                     id="shift-days"
                     placeholder="e.g., 1,4"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6"
+                    defaultValue={job.shift_days}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -195,7 +206,8 @@ export default function AdminFacilityJobDetails() {
                     name="shift_times"
                     id="shift-times"
                     placeholder="e.g., 8:00,19:00"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6"
+                    defaultValue={job.shift_times}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -210,113 +222,26 @@ export default function AdminFacilityJobDetails() {
                     name="shift_dates"
                     id="shift-dates"
                     placeholder="e.g., 2024-01-31,2024-02-20"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6"
+                    defaultValue={job.shift_dates}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               <div className="col-span-full">
                 <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                  description
+                  Description
                 </label>
                 <div className="mt-2">
                   <textarea
                     id="description"
                     name="description"
                     rows={3}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                    defaultValue={''}
+                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    defaultValue={job.description}
                   />
                 </div>
 
                 <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the Job.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* section two */}
-
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Location</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide the address information below.</p>
-            </div>
-
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                  Country
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="country"
-                    name="country"
-                    autoComplete="country-name"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>Mexico</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Street Address
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="address"
-                    id="address"
-                    autoComplete="address-line1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2 sm:col-start-1">
-                <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-                  City
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="city"
-                    id="city"
-                    autoComplete="address-level2"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
-                  State / Province
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="state"
-                    id="state"
-                    autoComplete="address-level1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
-                  ZIP / Postal code
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="zip"
-                    id="zip"
-                    autoComplete="postal-code"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -330,7 +255,7 @@ export default function AdminFacilityJobDetails() {
                   <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-green-800">Job successfully posted</p>
+                  <p className="text-sm font-medium text-green-800">Job successfully updated</p>
                 </div>
                 <div className="ml-auto pl-3">
                   <div className="-mx-1.5 -my-1.5"></div>

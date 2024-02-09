@@ -25,7 +25,7 @@ export default function AdminFacilityAddJob() {
       }
     }
     getFacility()
-  }, []) 
+  }, [])
 
   const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -43,13 +43,18 @@ export default function AdminFacilityAddJob() {
       shift_dates: { value: string }
     }
 
+    const skills = target.skills.value
+      .split(',')
+      .map(skill => skill.trim())
+      .filter(skill => skill)
+
     const formData = {
       created_by: target.created_by.value,
       facility_id: facilityId,
       title: target.title.value,
       salary: target.salary.value,
       description: target.description.value,
-      skills: target.skills.value.split(','),
+      skills: skills,
       employment_type: target.employment_type.value,
       shift_days: target.shift_days.value.split(',').map(Number),
       shift_times: target.shift_times.value.split(','),
@@ -82,7 +87,6 @@ export default function AdminFacilityAddJob() {
   return (
     <>
       <AdminFacilityHeaderInfo facility={facility} />
-
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
