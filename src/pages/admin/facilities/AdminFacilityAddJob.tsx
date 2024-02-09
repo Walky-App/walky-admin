@@ -27,7 +27,7 @@ export default function AdminFacilityAddJob() {
     getFacility()
   }, [])
 
-  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -62,26 +62,20 @@ export default function AdminFacilityAddJob() {
       status: 'active',
     }
 
-    fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(response => {
-        if (response.ok) {
-          setUpdateSuccess(true)
-          setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
-        } else {
-          throw new Error('Job posted successfully')
-        }
-      })
-      .catch(error => {
-        console.error('Error posting job:', error)
-        setUpdateSuccess(false)
-      })
+    try {
+      const response = await RequestService(`/jobs`, 'POST', formData);
+      if (response) { 
+        setUpdateSuccess(true);
+        setTimeout(() => setUpdateSuccess(false), 5000);
+      } else {
+        console.error('Failed to post job');
+        setUpdateSuccess(false);
+      }
+    } catch (error) {
+      console.error('Error posting job:', error);
+      setUpdateSuccess(false);
+    }
+
   }
 
   return (
