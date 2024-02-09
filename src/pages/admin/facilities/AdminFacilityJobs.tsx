@@ -2,14 +2,29 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import GlobalTable from '../../../components/shared/GlobalTable';
 import { RequestService } from '../../../services/RequestService';
+import AdminFacilityHeaderInfo from './AdminFacilityHeader';
 
 export default function AdminFacilityJobs() {
   const { facilityId } = useParams();
+  const [facility, setFacility] = useState<any>({});
   const [facilityJobs, setFacilityJobs] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const getFacility = async () => {
+      try {
+        const facility = await RequestService(`facilities/${facilityId}`);
+        if (facility) {
+          setFacility(facility);
+        } else {
+          console.log('No facility found or unexpected data structure received, setting default value.');
+          setFacility({});
+        }
+      } catch (error) {
+        console.error('Error fetching facility data:', error);
+      }
+    };
     const getFacilityJobs = async () => {
       try {
         const facilityJobs = await RequestService(`jobs/facility/${facilityId}`);
@@ -25,7 +40,7 @@ export default function AdminFacilityJobs() {
         setIsLoading(false);
       }
     };
-
+    getFacility();
     getFacilityJobs();
   }, [facilityId]); // Ensure useEffect is run whenever facilityId changes
 
@@ -43,6 +58,7 @@ export default function AdminFacilityJobs() {
 
   return (
     <>
+    <AdminFacilityHeaderInfo facility={facility} />
       <div>
         <button
           type="button"
