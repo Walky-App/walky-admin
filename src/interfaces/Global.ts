@@ -24,3 +24,8 @@ export interface TagsInterface {
   state: string
   value: number
 }
+
+export interface FilterInterface {
+  search: string
+  selected: string
+}
