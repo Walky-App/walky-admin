@@ -94,7 +94,7 @@ export default function App() {
                 <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
                 <Route path="/admin/facilities/:facilityId/jobs" element={<AdminFacilityJobs />} />
                 <Route path="/admin/facilities/:facilityId/jobs/new" element={<AdminFacilityAddJob />} />
-                <Route path="/admin/facilities/:facilityId/jobs/:id" element={<AdminFacilityJobDetails />} />
+                <Route path="/admin/facilities/:facilityId/jobs/:jobId" element={<AdminFacilityJobDetails />} />
                 <Route path="/admin/facilities/:facilityId/images" element={<AdminFacilityImages />} />
                 <Route path="/admin/facilities/:facilityId/licenses" element={<AdminFacilityLicenses />} />
                 <Route path="/admin/jobs" element={<AdminJobs />} />
