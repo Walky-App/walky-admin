@@ -40,7 +40,9 @@ export default function HeaderComponent({ title, selectedOptions, search = false
             )
           ) : (
             search && <Search searchQuery="search" />
-          )}
+          )
+          }
+          {(actionButton && !search && !selectedOptions) && <NavigationButton to={actionButton.to} text={actionButton.text} />}
         </div>
       </div>
     </div>
