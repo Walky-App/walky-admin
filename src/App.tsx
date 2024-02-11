@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 
 import { AuthProvider } from './contexts/AuthContext'
+import { AdminProvider } from './contexts/AdminContext'
 
 /** Utilities Pages */
 import Layout from './components/layout/'
@@ -51,60 +52,64 @@ import AdminDashboardLearn from './pages/admin/HTU'
 import AdminModulesLearn from './pages/admin/HTU/AdminModulesLearn'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
+import AdminDetailsCategory from './pages/admin/HTU/AdminDetailsCategory'
 
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Auth />} />
-          <Route path="/login" element={<Auth />} />
-          <Route element={<Layout />}>
-            <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
-              <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-              <Route path="/employee/jobs" element={<EmployeeJobs />} />
-              <Route path="/employee/jobs/:id" element={<JobDetailView />} />
-              <Route path="/employee/profile" element={<EmployeeProfile />} />
-              {/* LMS Module */}
-              <Route path="/learn" element={<Learn />} />
-              <Route path="/learn/category/:id" element={<Modules />} />
-              <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
-                <Route path="/client/dashboard" element={<ClientDashboard />} />
-                <Route path="/client/profile" element={<ClientProfile />} />
-                <Route path="/client/facilities" element={<Facilities />} />
-                <Route path="/client/facilities/new" element={<NewFacility />} />
-                <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
-                <Route path="/client/jobs" element={<Jobs />} />
-                <Route path="/client/jobs/new" element={<AddJob />} />
-                <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
-              </Route>
-              <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/profile" element={<AdminProfile />} />
-                <Route path="/admin/users" element={<AdminUsers />} />
-                <Route path="/admin/users/new" element={<AdminAddUser />} />
-                <Route path="/admin/users/:id" element={<AdminUserDetails />} />
-                <Route path="/admin/facilities" element={<AdminFacilities />} />
-                <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
-                <Route path="/admin/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
-                <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
-                <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
-                <Route path="/admin/facilities/:facilityId/images" element={<AdminFacilityImages />} />
-                <Route path="/admin/facilities/:facilityId/licenses" element={<AdminFacilityLicenses />} />
-                <Route path="/admin/jobs" element={<AdminJobs />} />
-                <Route path="/admin/jobs/new" element={<AdminAddJob />} />
-                <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
-                <Route path="/admin/learn" element={<AdminDashboardLearn />} />
-                <Route path="/admin/learn/categories" element={<AdminCategoryLearn />} />
-                <Route path="/admin/learn/categories/new" element={<AdminAddCategory />} />
-                <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
-                <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
+      <AdminProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Auth />} />
+            <Route path="/login" element={<Auth />} />
+            <Route element={<Layout />}>
+              <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
+                <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+                <Route path="/employee/jobs" element={<EmployeeJobs />} />
+                <Route path="/employee/jobs/:id" element={<JobDetailView />} />
+                <Route path="/employee/profile" element={<EmployeeProfile />} />
+                {/* LMS Module */}
+                <Route path="/learn" element={<Learn />} />
+                <Route path="/learn/category/:id" element={<Modules />} />
+                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
+                  <Route path="/client/dashboard" element={<ClientDashboard />} />
+                  <Route path="/client/profile" element={<ClientProfile />} />
+                  <Route path="/client/facilities" element={<Facilities />} />
+                  <Route path="/client/facilities/new" element={<NewFacility />} />
+                  <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
+                  <Route path="/client/jobs" element={<Jobs />} />
+                  <Route path="/client/jobs/new" element={<AddJob />} />
+                  <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
+                </Route>
+                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/profile" element={<AdminProfile />} />
+                  <Route path="/admin/users" element={<AdminUsers />} />
+                  <Route path="/admin/users/new" element={<AdminAddUser />} />
+                  <Route path="/admin/users/:id" element={<AdminUserDetails />} />
+                  <Route path="/admin/facilities" element={<AdminFacilities />} />
+                  <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
+                  <Route path="/admin/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
+                  <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
+                  <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
+                  <Route path="/admin/facilities/:facilityId/images" element={<AdminFacilityImages />} />
+                  <Route path="/admin/facilities/:facilityId/licenses" element={<AdminFacilityLicenses />} />
+                  <Route path="/admin/jobs" element={<AdminJobs />} />
+                  <Route path="/admin/jobs/new" element={<AdminAddJob />} />
+                  <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
+                  <Route path="/admin/learn" element={<AdminDashboardLearn />} />
+                  <Route path="/admin/learn/categories" element={<AdminCategoryLearn />} />
+                  <Route path="/admin/learn/categories/:idCategory" element={<AdminDetailsCategory />} />
+                  <Route path="/admin/learn/categories/new" element={<AdminAddCategory />} />
+                  <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
+                  <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
+                </Route>
               </Route>
             </Route>
-          </Route>
-          <Route path="*" element={<Error404 />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            <Route path="*" element={<Error404 />} />
+          </Routes>
+        </BrowserRouter>
+      </AdminProvider>
+    </AuthProvider >
   )
 }
