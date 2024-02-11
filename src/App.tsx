@@ -53,6 +53,7 @@ import AdminModulesLearn from './pages/admin/HTU/AdminModulesLearn'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
 import AdminDetailsCategory from './pages/admin/HTU/AdminDetailsCategory'
+import AdminDetailsModule from './pages/admin/HTU/AdminDetailsModule'
 
 export default function App() {
   return (
@@ -102,6 +103,7 @@ export default function App() {
                   <Route path="/admin/learn/categories/:idCategory" element={<AdminDetailsCategory />} />
                   <Route path="/admin/learn/categories/new" element={<AdminAddCategory />} />
                   <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
+                  <Route path="/admin/learn/modules/:idModule" element={<AdminDetailsModule />} />
                   <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
                 </Route>
               </Route>

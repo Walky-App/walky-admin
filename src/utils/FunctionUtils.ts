@@ -11,3 +11,13 @@ export function secondsToTimeDescription(seconds: number) {
     return `${minutes} minute${minutes !== 1 ? 's' : ''}`
   }
 }
+
+export function getModifiedProperties(oldObj: any, newObj: any): Partial<any> {
+  const modifiedProperties: Partial<any> = {}
+  for (const key of Object.keys(newObj)) {
+    if (newObj[key] !== oldObj[key]) {
+      modifiedProperties[key] = newObj[key]
+    }
+  }
+  return modifiedProperties
+}
