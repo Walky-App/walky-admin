@@ -53,6 +53,10 @@ import AdminModulesLearn from './pages/admin/HTU/AdminModulesLearn'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
 import AdminDetailsCategory from './pages/admin/HTU/AdminDetailsCategory'
+import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
+import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
+import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
+
 
 export default function App() {
   return (
@@ -92,6 +96,9 @@ export default function App() {
                   <Route path="/admin/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
                   <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
                   <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
+                  <Route path="/admin/facilities/:facilityId/jobs" element={<AdminFacilityJobs />} />
+                  <Route path="/admin/facilities/:facilityId/jobs/new" element={<AdminFacilityAddJob />} />
+                  <Route path="/admin/facilities/:facilityId/jobs/:jobId" element={<AdminFacilityJobDetails />} />
                   <Route path="/admin/facilities/:facilityId/images" element={<AdminFacilityImages />} />
                   <Route path="/admin/facilities/:facilityId/licenses" element={<AdminFacilityLicenses />} />
                   <Route path="/admin/jobs" element={<AdminJobs />} />
