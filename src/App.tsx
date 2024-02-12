@@ -37,7 +37,7 @@ import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 import AdminDashboard from './pages/admin/dashboard'
 import AdminProfile from './pages/admin/profile'
 import AdminUsers from './pages/admin/users'
-import AdminAddUser from './pages/admin/users/AdminAddUser'
+import AdminInviteUser from './pages/admin/users/AdminInviteUser'
 import AdminUserDetails from './pages/admin/users/AdminUserDetails'
 import AdminFacilities from './pages/admin/facilities'
 import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
@@ -93,7 +93,7 @@ export default function App() {
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/profile" element={<AdminProfile />} />
                   <Route path="/admin/users" element={<AdminUsers />} />
-                  <Route path="/admin/users/new" element={<AdminAddUser />} />
+                  <Route path="/admin/users/invite" element={<AdminInviteUser />} />
                   <Route path="/admin/users/:id" element={<AdminUserDetails />} />
                   <Route path="/admin/facilities" element={<AdminFacilities />} />
                   <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
