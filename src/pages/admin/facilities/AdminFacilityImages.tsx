@@ -39,12 +39,13 @@ export default function AdminFacilityImages() {
       formData.append('files', files[i])
     }
 
-    const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/images`, {
-      method: 'POST',
-      body: formData,
-    })
+    const updatedFacility = await RequestService(
+      `${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/images`,
+      'POST',
+      formData,
+      'binary',
+    )
 
-    const updatedFacility = await response.json()
     setFacility(updatedFacility)
     setFiles([])
     setUploading(false)

@@ -1,14 +1,25 @@
 import { IRequestService } from '../interfaces/services.interfaces'
 import { GetTokenInfo } from '../utils/TokenUtils'
 
-export const RequestService = async (path: string, method: string = 'GET', body: any = null): Promise<any> => {
+export const RequestService: IRequestService = async (
+  path: string,
+  method: string = 'GET',
+  body: any = null,
+  dataType: string = 'json',
+): Promise<any> => {
   const { access_token } = GetTokenInfo()
 
   const url = `${process.env.REACT_APP_PUBLIC_API}/${path}`
-  const headers = {
+  const headersJsonData = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${access_token}`,
   }
+
+  const headersBinaryData = {
+    Authorization: `Bearer ${access_token}`,
+  }
+
+  const headers = dataType === 'json' ? headersJsonData : headersBinaryData
 
   const options: RequestInit = {
     method,
