@@ -32,7 +32,14 @@ export default function AdminUsers() {
       { Header: 'First Name', accessor: 'first_name' },
       { Header: 'Last Name', accessor: 'last_name' },
       { Header: 'Role', accessor: 'role' },
-      { Header: 'Email', accessor: 'email' },
+      {
+        Header: 'Status',
+        accessor: (d: any) => (d.active ? 'Active' : 'Disabled'),
+        sortType: (a: any, b: any) => {
+          if (a.original.active === b.original.active) return 0;
+          return a.original.active ? -1 : 1;
+        },
+      },      { Header: 'Email', accessor: 'email' },
       { Header: 'Phone Number', accessor: 'phone_number' },
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
