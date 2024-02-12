@@ -6,24 +6,19 @@ import { Module } from '../../../interfaces/Module'
 import { RequestService } from '../../../services/RequestService'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
+import { Category } from '../../../interfaces/Category'
+import { useAdmin } from '../../../contexts/AdminContext'
 
 export default function AdminModulesLearn() {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [modules, setModules] = useState<Module[]>([])
-  const selectOption: SelectedOptionInterface[] = [
+  const { setCategoryOptions } = useAdmin()
+  const [categories, setCategories] = useState<SelectedOptionInterface[]>([
     {
-      name: 'All',
-      code: 'all',
+      name: 'Select',
+      code: 'select',
     },
-    {
-      name: 'Active',
-      code: 'active',
-    },
-    {
-      name: 'Disabled',
-      code: 'disabled',
-    },
-  ]
+  ])
 
   const categoryColumns = [
     { Header: 'Name', accessor: 'title' },
@@ -47,26 +42,33 @@ export default function AdminModulesLearn() {
   ]
 
   const fecthData = async () => {
-    const response: Module[] = await RequestService('modules')
-    if (response.length !== 0) {
-      setModules(response)
-      console.log(response)
+    const responseModule: Module[] = await RequestService('modules')
+    if (responseModule.length !== 0) {
+      setModules(responseModule)
+    }
+    const responseCategory: Category[] = await RequestService('categories')
+    if (responseCategory.length !== 0) {
+      const categoriesMap = responseCategory.map(object => {
+        return {
+          name: object.title,
+          code: object._id,
+        }
+      })
+      setCategoryOptions([...categories, ...categoriesMap])
     }
     setIsLoading(false)
   }
 
   useEffect(() => {
-    if (modules.length === 0) {
+    if (categories.length === 1 && (modules.length === 0)) {
       fecthData()
     }
-  }, [modules])
+  }, [modules, categories])
 
   return (
     <div className="w-full sm:overflow-x-hidden">
       <HeaderComponent
         title={'Manage Modules'}
-        search
-        selectedOptions={selectOption}
         actionButton={{
           to: '/admin/learn/modules/new',
           text: 'New Module',
@@ -89,4 +91,3 @@ export default function AdminModulesLearn() {
     </div>
   )
 }
-
