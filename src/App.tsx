@@ -36,7 +36,7 @@ import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
-import AdminProfile from './pages/admin/profile'
+import AdminProfile from './pages/admin/profile/AdminProfile'
 import AdminUsers from './pages/admin/users'
 import AdminInviteUser from './pages/admin/users/AdminInviteUser'
 import AdminUserDetails from './pages/admin/users/AdminUserDetails'
