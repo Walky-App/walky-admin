@@ -14,8 +14,27 @@ import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../../utils/Tailwind'
 import { Link, useLocation } from 'react-router-dom'
 
+export interface AdminFacilityHeaderOptions {
+  id: number
+  name: string
+  href: string
+  icon: React.ReactNode
+  disabled?: boolean
+}
+
+export const links: AdminFacilityHeaderOptions[] = [
+
+  { id: 1, name: 'Contacts', href: '/contacts', icon: <UserCircleIcon /> },
+  { id: 2, name: 'Images', href: '/images', icon: <PhotoIcon /> },
+  { id: 3, name: 'Jobs', href: '/jobs', icon: <BriefcaseIcon /> },
+  { id: 4, name: 'Notes', href: '/internal_notes', icon: <PaperClipIcon /> },
+  { id: 5, name: 'Licenses', href: '/licenses', icon: <IdentificationIcon /> },
+  { id: 6, name: 'Docs', href: '/documents', icon: <DocumentPlusIcon />, disabled: true },
+]
+
 const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
   const location = useLocation()
+
 
   return (
     <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 p-2 mb-10 w-full ">
@@ -41,62 +60,25 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
         </div>
       </div>
       <div className="mt-5 flex lg:ml-4 lg:mt-0 ">
-        <span className=" ml-3 hidden lg:inline-block">
-          <Link
-            to={`/admin/facilities/${facility._id}/contacts`}
-            className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/contacts') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
-            <UserCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
-            Contacts
-          </Link>
-        </span>
+        {
+          links.map(link => {
 
-        <span className="ml-3 hidden lg:inline-block">
-          <Link
-            to={`/admin/facilities/${facility._id}/images`}
-            className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/images') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
-            <PhotoIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
-            Images
-          </Link>
-        </span>
+            return (!link.disabled && (<span key={link.id} className=" ml-3 hidden lg:inline-block">
+              <Link
+                to={`/admin/facilities/${facility._id}${link.href}`}
+                className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
+             ${location.pathname.includes(link.href) ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
+                <span className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true">
+                  {link.icon}
+                </span>
+                {link.name}
+              </Link>
+            </span>)
+            )
+          }
+          )
 
-        <span className=" ml-3 hidden lg:inline-block">
-          <Link
-            to={`/admin/facilities/${facility._id}/jobs`}
-            className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/jobs') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
-            <BriefcaseIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
-            Jobs
-          </Link>
-        </span>
-        <span className="ml-3 hidden lg:inline-block">
-          <Link
-            to={`/admin/facilities/${facility._id}/internal_notes`}
-            className={`flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/internal_notes') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
-            <PaperClipIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-            Notes
-          </Link>
-        </span>
-        <span className=" ml-3 hidden lg:inline-block">
-          <Link
-            to={`/admin/facilities/${facility._id}/licenses`}
-            className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/licenses') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
-            <IdentificationIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
-            Licenses
-          </Link>
-        </span>
-        <span className=" ml-3 hidden lg:inline-block">
-          <Link
-            to={`/admin/facilities/${facility._id}/documents`}
-            className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-            ${location.pathname.includes('/documents') ? 'bg-green-500 text-white hover:bg-green-400' : ''}`}>
-            <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true" />
-            Docs
-          </Link>
-        </span>
+        }
         {/* Dropdown */}
         <Menu as="div" className="relative ml-3 lg:hidden  w-full">
           <Menu.Button className="inline-flex items-center  rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
@@ -174,5 +156,9 @@ const AdminFacilityHeaderInfo = ({ facility }: { facility: any }) => {
     </div>
   )
 }
+
+
+
+
 
 export default AdminFacilityHeaderInfo
