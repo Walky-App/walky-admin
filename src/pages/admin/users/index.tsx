@@ -56,10 +56,10 @@ export default function AdminUsers() {
       <button
         type="button"
         onClick={() => {
-          navigate('/admin/users/new')
+          navigate('/admin/users/invite')
         }}
         className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        Add User
+        Invite User
       </button>
       {isLoading ? (
         <div className="flex items-center justify-center">
