@@ -7,15 +7,15 @@ import { useAdmin } from "../../../contexts/AdminContext"
 
 
 export default function AdminDetailsModule() {
-    const { module } = useAdmin()
+    const { module, categoryOptions } = useAdmin()
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (!module) {
+        if (!module || categoryOptions.length <= 1) {
+            console.log(categoryOptions.length)
             navigate('/admin/learn/modules')
         }
-
-    }, [])
+    })
 
     return (
         <div className="w-full sm:overflow-x-hidden">

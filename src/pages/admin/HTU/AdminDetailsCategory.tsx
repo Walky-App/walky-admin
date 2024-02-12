@@ -14,8 +14,7 @@ export default function AdminDetailsCategory() {
         if (!category) {
             navigate('/admin/learn/categories')
         }
-
-    }, [])
+    })
 
     return (
         <div className="w-full sm:overflow-x-hidden">

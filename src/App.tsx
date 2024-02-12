@@ -11,6 +11,7 @@ import Error404 from './pages/Error404'
 /** Auth Pages */
 import Auth from './pages/auth'
 import NewPasswordForm from './pages/auth/NewPasswordForm'
+import ResetSuccess from './pages/auth/ResetSuccess'
 
 /** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
@@ -68,6 +69,7 @@ export default function App() {
             <Route path="/" element={<Auth />} />
             <Route path="/login" element={<Auth />} />
             <Route path="/reset/:id/:at" element={<NewPasswordForm />} />
+            <Route path="/reset-success" element={<ResetSuccess />} />
           <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route path="/employee/dashboard" element={<EmployeeDashboard />} />

@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom"
 import { FileInput } from "flowbite-react"
 import { ChangeEvent, useEffect, useState } from "react"
 import { XMarkIcon } from "@heroicons/react/20/solid"
-import { useAuth } from "../../../../contexts/AuthContext"
 import { SelectedOptionInterface, TagsInterface } from "../../../../interfaces/Global"
 import TagsArray from "./TagsArray"
 import { Category } from "../../../../interfaces/Category"
@@ -18,7 +17,6 @@ interface Props {
 }
 
 export default function FormModule({ action, module }: Props) {
-    const { user } = useAuth()
     const [title, setTitle] = useState<string>(module?.title || '')
     const [category, setCategory] = useState<string>(module?.category || '')
     const [level, setLevel] = useState<string>(module?.level || '')
@@ -77,7 +75,6 @@ export default function FormModule({ action, module }: Props) {
         const formData = new FormData()
 
         if (action === 'edit') {
-            alert(level)
             const differences: Partial<Category> = getModifiedProperties(module, { title, description, category, level, state_tags: tags, image });
 
             for (const key of Object.keys(differences)) {
@@ -99,17 +96,10 @@ export default function FormModule({ action, module }: Props) {
         }
 
         try {
-            const url = action === 'add' ? `${process.env.REACT_APP_PUBLIC_API}/modules` : `${process.env.REACT_APP_PUBLIC_API}/modules/${module?._id}`
+            const url = action === 'add' ? `modules` : `modules/${module?._id}`
             const method = action === 'add' ? 'POST' : 'PATCH'
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    Authorization: `Bearer ${user?.access_token}`,
-                },
-                body: formData,
-            })
-
-            if (response.ok) {
+            const response = await RequestService(url, method, formData, 'form-data')
+            if (response) {
                 console.log('Data and image uploaded successfully')
                 navigate('/admin/learn/modules')
             } else {
@@ -124,6 +114,13 @@ export default function FormModule({ action, module }: Props) {
     const handleRemoveImage = () => {
         setImagePreview(undefined);
     };
+
+    useEffect(() => {
+        if (!module || categoryOptions.length <= 1) {
+            navigate('/admin/learn/modules')
+        }
+    })
+
 
     return (
         <form>

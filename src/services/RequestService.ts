@@ -23,10 +23,12 @@ export const RequestService: IRequestService = async (
 
   const headers = dataType === 'json' ? headersJsonData : headersBinaryData
 
+  const bodyData = dataType === 'json' ? JSON.stringify(body) : body
+
   const options: RequestInit = {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? bodyData : undefined,
   }
 
   const response = await fetch(url, options)
