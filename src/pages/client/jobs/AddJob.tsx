@@ -57,7 +57,7 @@ export default function NewJob() {
     }
 
     try {
-      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/jobs`, 'POST', formData)
+      const response = await RequestService(`jobs`, 'POST', formData)
     } catch (error) {
       console.error(error)
     }
