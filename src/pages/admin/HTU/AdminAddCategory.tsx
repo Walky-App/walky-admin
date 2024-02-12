@@ -35,7 +35,7 @@ export default function AdminAddCategory() {
 
     try {
       const response = await RequestService(
-        `${process.env.REACT_APP_PUBLIC_API}/categories`,
+        `categories`,
         'POST',
         formData,
         'binary',
