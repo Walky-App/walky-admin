@@ -32,6 +32,7 @@ export default function AdminFacilityContacts() {
 
   const handleAddContactForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget; 
 
     const target = e.target as typeof e.target & {
       first_name: { value: string }
@@ -53,6 +54,7 @@ export default function AdminFacilityContacts() {
     if (res) {
       setFacilityContacts(res)
       setUpdateSuccess(true)
+      form.reset()
     } else {
       console.error('Error adding contact')
     }
@@ -80,10 +82,11 @@ export default function AdminFacilityContacts() {
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                 <div className="sm:col-span-3">
                   <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
-                    First name
+                    First name*
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="first_name"
                       id="first_name"
@@ -95,10 +98,11 @@ export default function AdminFacilityContacts() {
 
                 <div className="sm:col-span-3">
                   <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
-                    Last name
+                    Last name*
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="last_name"
                       id="last_name"
@@ -110,10 +114,11 @@ export default function AdminFacilityContacts() {
 
                 <div className="sm:col-span-4">
                   <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                    Email address
+                    Email address*
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       id="email"
                       name="email"
                       type="email"
@@ -125,10 +130,11 @@ export default function AdminFacilityContacts() {
 
                 <div className="sm:col-span-2">
                   <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
-                    Phone number
+                    Phone number*
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="phone_number"
                       id="phone_number"
@@ -139,10 +145,11 @@ export default function AdminFacilityContacts() {
                 </div>
                 <div className="sm:col-span-2">
                   <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                    Role
+                    Role*
                   </label>
                   <div className="mt-2">
                     <select
+                      required
                       name="role"
                       id="role"
                       autoComplete="role"
