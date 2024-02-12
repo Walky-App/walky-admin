@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { ITokenInfo } from '../../interfaces/services.interfaces'
 
@@ -12,6 +12,7 @@ export default function Signup() {
   const [loading, setLoading] = useState(false)
   const { setUser } = useAuth()
 
+  const {email, role} = useParams()
   const navigate = useNavigate()
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -21,13 +22,13 @@ export default function Signup() {
     const target = e.target as any
 
     const formData = {
-      email: target.email.value,
+      email: email,
       phone: target.phone.value,
       password: target.password.value,
       password_confirmed: target.password_confirmed.value,
       first_name: target.firstName.value,
       last_name: target.lastName.value,
-      role: target.role.value,
+      role: role,
     }
 
     const data: any = await RequestService('auth', 'POST', formData)
@@ -102,6 +103,8 @@ export default function Signup() {
 
         <div className="relative">
           <input
+            disabled
+            value={email}
             required
             type="email"
             name="email"
@@ -156,19 +159,6 @@ export default function Signup() {
             className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
             placeholder="Verify Password"
           />
-        </div>
-      </div>
-
-      <div className="flex justify-center">
-        <div className="inline-block relative w-64">
-          <p className="text-center">I want to:</p>
-          <select
-            name="role"
-            className="block appearance-none w-full bg-zinc-50 border border-zinc-200 hover:border-green-600 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline  focus:border-green-500 focus:ring-green-500">
-            <option value="employee">Become a HempTemp</option>
-            <option value="client">Hire HempTemps</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-zinc-700"></div>
         </div>
       </div>
       {error && (
