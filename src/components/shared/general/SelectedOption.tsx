@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { BarsArrowUpIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
@@ -11,6 +11,7 @@ interface Props {
   showInputIcon?: boolean
   classStyle?: string
   roundedOrientation?: string
+  value?: string
 }
 
 export default function SelectedOption({
@@ -20,6 +21,7 @@ export default function SelectedOption({
   showInputIcon = false,
   classStyle = '',
   roundedOrientation,
+  value
 }: Props) {
   const [selected, setSelected] = useState(selectedOptions[defaultOption])
 
@@ -28,6 +30,17 @@ export default function SelectedOption({
     setSelectedOptions(terms.code)
   }
 
+  useEffect(() => {
+    if (value) {
+      const selectedOption = selectedOptions.find((option) => option.code === value)
+      if (selectedOption) {
+        setSelected(selectedOption)
+      }
+    }
+
+  })
+
+
   return (
     <div className={`${classStyle}`}>
       <Listbox value={selected} onChange={handlerSelect}>
@@ -35,9 +48,8 @@ export default function SelectedOption({
           <>
             <div className="relative">
               <Listbox.Button
-                className={`relative h-9 w-full ${
-                  roundedOrientation ? roundedOrientation : 'rounded-md'
-                } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
+                className={`relative h-9 w-full ${roundedOrientation ? roundedOrientation : 'rounded-md'
+                  } cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-800 sm:text-sm sm:leading-6`}>
                 <div className="flex gap-1 items-center justify-start">
                   {showInputIcon ? (
                     <span className="block truncate">
@@ -46,7 +58,7 @@ export default function SelectedOption({
                   ) : null}
 
                   <span className="block truncate text-center text-black text-sm font-semibold leading-tight">
-                    {selected.name}
+                    {selected?.name}
                   </span>
                 </div>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">

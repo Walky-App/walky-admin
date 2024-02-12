@@ -50,7 +50,7 @@ export default function AdminFacilityLicenses() {
     }
 
     const updatedFacility = await RequestService(
-      `${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`,
+      `facilities/${facilityId}/licenses`,
       'POST',
       formData,
       'binary',
