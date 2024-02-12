@@ -6,12 +6,11 @@ import ForgotPasswordForm from './ForgotPasswordForm'
 // import ResetPasswordForm from './ResetPasswordForm'
 
 export default function Auth() {
-  const [userForm, setUserForm] = useState('login')
+  const [userForm, setUserForm] = useState('Login')
 
   return (
     <section className="min-h-screen items-center justify-center flex sm:mb-8 md:mb-0 h-full lg:items-center">
       <div className='flex flex-col gap-10 md:basis-1/2'>
-        {/* <div className="w-full px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24"> */}
         <div className="w-full">
           <div className="flex justify-center">
             <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" height={300} />
@@ -23,7 +22,6 @@ export default function Auth() {
           {userForm === 'login' && <LoginForm />}
           {userForm === 'signup' && <SignupForm />}
           {userForm === 'forgotPassword' && <ForgotPasswordForm />}
-          {/* {userForm === 'resetPassword' && <ResetPasswordForm />} */}
 
           <div className="flex flex-col justify-center items-center gap-2">
             <a className="underline font-medium hover:text-green-700" href="#">

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useTable, useGlobalFilter, useSortBy, usePagination } from 'react-table'
 import { FaSearch, FaChevronDown, FaCheck, FaChevronLeft, FaChevronRight, FaSortUp, FaSortDown } from 'react-icons/fa'
 import { Listbox, Transition } from '@headlessui/react'
+import { useAdmin } from '../../contexts/AdminContext'
 
 function Avatar({ src, alt = 'avatar' }: { src: any; alt?: any }) {
   return <img src={src} alt={alt} className="w-8 h-8 rounded-full object-cover" />
@@ -42,9 +43,8 @@ function InputGroup7({
         placeholder={label}
         aria-label={label}
         onChange={onChange}
-        className={`peer block w-full p-3 text-gray-600 focus:outline-none focus:border-transparent border-transparent focus:ring-0 appearance-none ${
-          disabled ? 'bg-gray-200' : ''
-        } ${inputClassName}`}
+        className={`peer block w-full p-3 text-gray-600 focus:outline-none focus:border-transparent border-transparent focus:ring-0 appearance-none ${disabled ? 'bg-gray-200' : ''
+          } ${inputClassName}`}
         disabled={disabled}
       />
       <div
@@ -166,15 +166,15 @@ function PaginationNav1({
     let numberOfButtons = pageCount < visiblePageButtonCount ? pageCount : visiblePageButtonCount
     const pageIndices = [pageIndex]
     numberOfButtons--
-    ;[...Array(numberOfButtons)].forEach((_item, itemIndex) => {
-      const pageNumberBefore = pageIndices[0] - 1
-      const pageNumberAfter = pageIndices[pageIndices.length - 1] + 1
-      if (pageNumberBefore >= 0 && (itemIndex < numberOfButtons / 2 || pageNumberAfter > pageCount - 1)) {
-        pageIndices.unshift(pageNumberBefore)
-      } else {
-        pageIndices.push(pageNumberAfter)
-      }
-    })
+      ;[...Array(numberOfButtons)].forEach((_item, itemIndex) => {
+        const pageNumberBefore = pageIndices[0] - 1
+        const pageNumberAfter = pageIndices[pageIndices.length - 1] + 1
+        if (pageNumberBefore >= 0 && (itemIndex < numberOfButtons / 2 || pageNumberAfter > pageCount - 1)) {
+          pageIndices.unshift(pageNumberBefore)
+        } else {
+          pageIndices.push(pageNumberAfter)
+        }
+      })
     return pageIndices.map(pageIndexToMap => (
       <li key={pageIndexToMap}>
         <Button2
@@ -233,6 +233,16 @@ function TableComponent({
   navigate: any
   location: any
 }) {
+  const { setModule } = useAdmin()
+  const handlerClick = (row: any) => {
+    if (location.pathname === '/admin/learn/modules') {
+      row.original.category = row.original.category._id
+      setModule(row.original)
+    }
+    navigate(`${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${row.original._id}`)
+  }
+
+
   return (
     <div className="w-full min-w-[30rem] p-4 bg-white rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)]">
       <table {...getTableProps()}>
@@ -248,9 +258,8 @@ function TableComponent({
                     <div className="text-gray-600">{column.render('Header')}</div>
                     <div className="flex flex-col">
                       <FaSortUp
-                        className={`text-sm translate-y-1/2 ${
-                          column.isSorted && !column.isSortedDesc ? 'text-green-500' : 'text-gray-300'
-                        }`}
+                        className={`text-sm translate-y-1/2 ${column.isSorted && !column.isSortedDesc ? 'text-green-500' : 'text-gray-300'
+                          }`}
                       />
                       <FaSortDown
                         className={`text-sm -translate-y-1/2 ${column.isSortedDesc ? 'text-green-500' : 'text-gray-300'}`}
@@ -270,9 +279,7 @@ function TableComponent({
               <tr
                 {...row.getRowProps()}
                 className="hover:bg-gray-100 cursor-pointer"
-                onClick={() =>
-                  navigate(`${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${row.original._id}`)
-                }>
+                onClick={() => { handlerClick(row) }}>
                 {row.cells.map((cell: any) => {
                   return (
                     <td
@@ -290,6 +297,7 @@ function TableComponent({
     </div>
   )
 }
+
 function GlobalTable({ data, columns }: { data: any; columns: any }) {
   const navigate = useNavigate()
   const location = useLocation()

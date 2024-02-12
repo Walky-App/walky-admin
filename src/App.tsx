@@ -10,6 +10,8 @@ import Error404 from './pages/Error404'
 
 /** Auth Pages */
 import Auth from './pages/auth'
+import NewPasswordForm from './pages/auth/NewPasswordForm'
+import ResetSuccess from './pages/auth/ResetSuccess'
 
 /** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
@@ -53,10 +55,10 @@ import AdminModulesLearn from './pages/admin/HTU/AdminModulesLearn'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
 import AdminDetailsCategory from './pages/admin/HTU/AdminDetailsCategory'
+import AdminDetailsModule from './pages/admin/HTU/AdminDetailsModule'
 import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
-
 
 export default function App() {
   return (
@@ -66,7 +68,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/login" element={<Auth />} />
-            <Route element={<Layout />}>
+            <Route path="/reset/:id/:at" element={<NewPasswordForm />} />
+            <Route path="/reset-success" element={<ResetSuccess />} />
+          <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
                 <Route path="/employee/jobs" element={<EmployeeJobs />} />
@@ -109,6 +113,7 @@ export default function App() {
                   <Route path="/admin/learn/categories/:idCategory" element={<AdminDetailsCategory />} />
                   <Route path="/admin/learn/categories/new" element={<AdminAddCategory />} />
                   <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
+                  <Route path="/admin/learn/modules/:idModule" element={<AdminDetailsModule />} />
                   <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
                 </Route>
               </Route>
