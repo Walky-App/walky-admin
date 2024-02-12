@@ -1,27 +1,52 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { FileInput } from "flowbite-react"
 import { ChangeEvent, useEffect, useState } from "react"
 import { XMarkIcon } from "@heroicons/react/20/solid"
 import { useAuth } from "../../../../contexts/AuthContext"
-import { TagsInterface } from "../../../../interfaces/Global"
-import HeaderComponent from "../../../../components/shared/general/HeaderComponent"
+import { SelectedOptionInterface, TagsInterface } from "../../../../interfaces/Global"
 import TagsArray from "./TagsArray"
 import { Category } from "../../../../interfaces/Category"
+import { Module } from "../../../../interfaces/Module"
+import SelectedOption from "../../../../components/shared/general/SelectedOption"
 import { getModifiedProperties } from "../../../../utils/FunctionUtils"
+import { RequestService } from "../../../../services/RequestService"
+import { useAdmin } from "../../../../contexts/AdminContext"
 
 interface Props {
     action: "add" | "edit"
-    category?: Category
+    module?: Module
 }
 
-export default function FormCategory({ action, category }: Props) {
+export default function FormModule({ action, module }: Props) {
     const { user } = useAuth()
-    const [title, setTitle] = useState<string>(category?.title || '')
-    const [description, setDescription] = useState<string>(category?.description || '')
+    const [title, setTitle] = useState<string>(module?.title || '')
+    const [category, setCategory] = useState<string>(module?.category || '')
+    const [level, setLevel] = useState<string>(module?.level || '')
+    const [description, setDescription] = useState<string>(module?.description || '')
     const [image, setImage] = useState<File | null>(null)
-    const [tags, setTags] = useState<TagsInterface[]>(category?.state_tags || [])
-    const [imagePreview, setImagePreview] = useState<string | undefined>(category?.image || undefined);
+    const [tags, setTags] = useState<TagsInterface[]>(module?.state_tags || [])
+    const { categoryOptions } = useAdmin()
+    const [imagePreview, setImagePreview] = useState<string | undefined>(module?.image || undefined);
     const navigate = useNavigate()
+
+    const levelOptions: SelectedOptionInterface[] = [
+        {
+            name: 'All levels',
+            code: 'All levels',
+        },
+        {
+            name: 'Beginner',
+            code: 'Beginner',
+        },
+        {
+            name: 'Intermediate',
+            code: 'Intermediate',
+        },
+        {
+            name: 'Advanced',
+            code: 'Advanced',
+        },
+    ]
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -39,17 +64,21 @@ export default function FormCategory({ action, category }: Props) {
         }
     }
 
-    const handleUpload = async () => {
+    const handleRequest = async () => {
         if (!image && action === 'add') {
             console.error('No image selected')
-            alert('No image selected')
+            return
+        }
+        if (category === 'select' && action === 'add') {
+            console.error('No category selected')
             return
         }
 
         const formData = new FormData()
 
         if (action === 'edit') {
-            const differences: Partial<Category> = getModifiedProperties(category, { title, description, state_tags: tags, image });
+            alert(level)
+            const differences: Partial<Category> = getModifiedProperties(module, { title, description, category, level, state_tags: tags, image });
 
             for (const key of Object.keys(differences)) {
                 if (key === 'state_tags') {
@@ -63,12 +92,14 @@ export default function FormCategory({ action, category }: Props) {
         } else {
             formData.append('image', image as File)
             formData.append('title', title)
+            formData.append('category', category)
+            formData.append('level', level)
             formData.append('description', description)
             formData.append('state_tags', JSON.stringify(tags))
         }
 
         try {
-            const url = action === 'add' ? `${process.env.REACT_APP_PUBLIC_API}/categories` : `${process.env.REACT_APP_PUBLIC_API}/categories/${category?._id}`
+            const url = action === 'add' ? `${process.env.REACT_APP_PUBLIC_API}/modules` : `${process.env.REACT_APP_PUBLIC_API}/modules/${module?._id}`
             const method = action === 'add' ? 'POST' : 'PATCH'
             const response = await fetch(url, {
                 method: method,
@@ -80,7 +111,7 @@ export default function FormCategory({ action, category }: Props) {
 
             if (response.ok) {
                 console.log('Data and image uploaded successfully')
-                navigate('/admin/learn/categories')
+                navigate('/admin/learn/modules')
             } else {
                 console.error('Error uploading data and image')
                 alert('Error Details, Coming soon')
@@ -94,7 +125,6 @@ export default function FormCategory({ action, category }: Props) {
         setImagePreview(undefined);
     };
 
-
     return (
         <form>
             <div className="space-y-12">
@@ -105,7 +135,7 @@ export default function FormCategory({ action, category }: Props) {
                                 Title
                             </label>
                             <div className="mt-2">
-                                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 sm:max-w-md">
+                                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
                                     <input
                                         type="text"
                                         name="title"
@@ -113,9 +143,37 @@ export default function FormCategory({ action, category }: Props) {
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
                                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                                        placeholder="category title"
+                                        placeholder="module title"
                                     />
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="sm:col-span-3">
+                            <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                                Category
+                            </label>
+                            <div className="mt-2">
+                                <SelectedOption
+                                    classStyle="w-full sm:max-w-md"
+                                    selectedOptions={categoryOptions}
+                                    setSelectedOptions={setCategory}
+                                    value={category}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="sm:col-span-3">
+                            <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                                Level
+                            </label>
+                            <div className="mt-2">
+                                <SelectedOption
+                                    classStyle="w-full sm:max-w-md"
+                                    selectedOptions={levelOptions}
+                                    setSelectedOptions={setLevel}
+                                    value={level}
+                                />
                             </div>
                         </div>
 
@@ -131,14 +189,14 @@ export default function FormCategory({ action, category }: Props) {
                                     value={description}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                                     onChange={e => setDescription(e.target.value)}
-                                    placeholder="category description"
+                                    placeholder="module description"
                                 />
                             </div>
                         </div>
 
                         <div className="col-span-full">
-                            <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900 mb-3">
-                                categoy photo
+                            <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+                                Module photo
                             </label>
                             {imagePreview ? (
                                 <div className="relative inline-block">
@@ -164,16 +222,17 @@ export default function FormCategory({ action, category }: Props) {
             </div>
 
             <div className="mt-6 flex items-center justify-end gap-x-6">
-                <button type="button"
+                <button
+                    type="button"
                     onClick={() => {
-                        navigate('/admin/learn/categories')
+                        navigate('/admin/learn/modules')
                     }}
                     className="text-sm font-semibold leading-6 text-gray-900">
                     Cancel
                 </button>
                 <button
                     type="button"
-                    onClick={handleUpload}
+                    onClick={handleRequest}
                     className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                     {action === 'add' ? 'Create' : 'Update'}
                 </button>
