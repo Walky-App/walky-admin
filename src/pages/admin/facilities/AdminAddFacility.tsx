@@ -47,7 +47,7 @@ export default function AdminAddFacility() {
     }
 
     try {
-      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/facilities`, 'POST', formData)
+      const response = await RequestService(`facilities`, 'POST', formData)
       if (response.ok) {
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
