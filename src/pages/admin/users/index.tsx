@@ -36,10 +36,11 @@ export default function AdminUsers() {
         Header: 'Status',
         accessor: (d: any) => (d.active ? 'Active' : 'Disabled'),
         sortType: (a: any, b: any) => {
-          if (a.original.active === b.original.active) return 0;
-          return a.original.active ? -1 : 1;
+          if (a.original.active === b.original.active) return 0
+          return a.original.active ? -1 : 1
         },
-      },      { Header: 'Email', accessor: 'email' },
+      },
+      { Header: 'Email', accessor: 'email' },
       { Header: 'Phone Number', accessor: 'phone_number' },
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
@@ -61,8 +62,8 @@ export default function AdminUsers() {
         Add User
       </button>
       {isLoading ? (
-        <div className="flex justify-center items-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+        <div className="flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
         </div>
       ) : (
         <GlobalTable data={memoUsersData} columns={memoUsersColumns} />

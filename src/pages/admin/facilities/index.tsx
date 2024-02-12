@@ -34,10 +34,12 @@ export default function AdminFacilities() {
       { Header: 'Phone Number', accessor: 'phone_number' },
       {
         Header: 'Status',
-        accessor: 'active',
-        Cell: ({ value }: { value: boolean }) => (value ? <span> Active</span> : <span>Disabled</span>),
+        accessor: (d: any) => (d.active ? 'Active' : 'Disabled'),
+        sortType: (a: any, b: any) => {
+          if (a.original.active === b.original.active) return 0
+          return a.original.active ? -1 : 1
+        },
       },
-
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
       { Header: 'Zip', accessor: 'zip' },
