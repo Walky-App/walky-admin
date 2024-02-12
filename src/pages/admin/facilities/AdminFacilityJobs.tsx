@@ -60,12 +60,13 @@ export default function AdminFacilityJobs() {
     <>
     <AdminFacilityHeaderInfo facility={facility} />
       <div>
-        <button
+        {/* <button
           type="button"
           onClick={() => navigate(`/admin/facilities/${facilityId}/jobs/new`)}
+          disabled
           className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
           Add Job
-        </button>
+        </button> */}
 
         {isLoading ? (
           <div className="flex justify-center items-center">

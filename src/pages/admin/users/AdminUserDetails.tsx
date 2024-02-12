@@ -47,7 +47,7 @@ export default function AdminUserDetails() {
   console.log('formUser -->', formUser)
   return (
     <>
-      <div className="border-b border-gray-200 pb-5 w-full mb-12 ">
+      <div className="mb-12 w-full border-b border-gray-200 pb-5 ">
         <h3 className="text-base font-semibold leading-6 text-gray-900">
           {formUser.first_name} {formUser.last_name}'s Profile Details
         </h3>
@@ -66,25 +66,8 @@ export default function AdminUserDetails() {
 
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                 <div className="col-span-full">
-                  <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                    About
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      id="about"
-                      name="about"
-                      disabled
-                      rows={3}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      defaultValue={''}
-                    />
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">A few sentences this user wrote about himself.</p>
-                </div>
-
-                <div className="col-span-full">
                   <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
-                    Photo
+                    Avatar
                   </label>
                   <div className="mt-2 flex items-center gap-x-3">
                     <UserCircleIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
@@ -94,27 +77,6 @@ export default function AdminUserDetails() {
                       className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                       Change
                     </button>
-                  </div>
-                </div>
-
-                <div className="col-span-full">
-                  <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
-                    Cover photo
-                  </label>
-                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                    <div className="text-center">
-                      <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
-                      <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
-                          <span>Upload a file</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" disabled />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -140,7 +102,7 @@ export default function AdminUserDetails() {
                       name="first_name"
                       id="first_name"
                       autoComplete="given-name"
-                      className="block w-full bg-slate-100 rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -158,7 +120,7 @@ export default function AdminUserDetails() {
                       name="last_name"
                       id="last_name"
                       autoComplete="family-name"
-                      className="block  w-full bg-slate-100 rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block  w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -176,7 +138,7 @@ export default function AdminUserDetails() {
                       name="email"
                       type="email"
                       autoComplete="email"
-                      className="block bg-slate-100 w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -194,7 +156,7 @@ export default function AdminUserDetails() {
                       name="birthday"
                       id="birthday"
                       autoComplete="birthday"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-slate-100 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -212,7 +174,7 @@ export default function AdminUserDetails() {
                       name="gender"
                       id="gender"
                       autoComplete="gender"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-slate-100 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -230,7 +192,7 @@ export default function AdminUserDetails() {
                       name="phone_number"
                       id="phone_number"
                       autoComplete="phone_number"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-slate-100 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -247,7 +209,7 @@ export default function AdminUserDetails() {
                       name="role"
                       id="role"
                       autoComplete="role"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-slate-100 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -275,7 +237,7 @@ export default function AdminUserDetails() {
                       name="address"
                       id="address"
                       autoComplete="address"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -292,7 +254,7 @@ export default function AdminUserDetails() {
                       name="city"
                       id="city"
                       autoComplete="city"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -309,7 +271,7 @@ export default function AdminUserDetails() {
                       name="state"
                       id="state"
                       autoComplete="state"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -326,7 +288,7 @@ export default function AdminUserDetails() {
                       name="zip"
                       id="zip"
                       autoComplete="zip"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -355,7 +317,7 @@ export default function AdminUserDetails() {
                         name="bank_name"
                         id="bank_name"
                         autoComplete="bank_name"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -371,7 +333,7 @@ export default function AdminUserDetails() {
                         name="account_number"
                         id="account_number"
                         autoComplete="account_number"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -388,7 +350,7 @@ export default function AdminUserDetails() {
                         name="routing_number"
                         id="routing_number"
                         autoComplete="routing_number"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -405,7 +367,7 @@ export default function AdminUserDetails() {
                         name="bank_address"
                         id="bank_address"
                         autoComplete="bank_address"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -422,7 +384,7 @@ export default function AdminUserDetails() {
                         name="bank_city"
                         id="bank_city"
                         autoComplete="address-level2"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -439,7 +401,7 @@ export default function AdminUserDetails() {
                         name="bank_state"
                         id="bank_state"
                         autoComplete="address-level1"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -456,7 +418,7 @@ export default function AdminUserDetails() {
                         name="bank_zip"
                         id="bank_zip"
                         autoComplete="bank_zip"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
