@@ -1,4 +1,4 @@
-import React, {  useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
@@ -32,6 +32,7 @@ export default function AdminFacilityContacts() {
 
   const handleAddContactForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget
 
     const target = e.target as typeof e.target & {
       first_name: { value: string }
@@ -53,6 +54,8 @@ export default function AdminFacilityContacts() {
     if (res) {
       setFacilityContacts(res)
       setUpdateSuccess(true)
+      setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+      form.reset()
     } else {
       console.error('Error adding contact')
     }
@@ -70,7 +73,7 @@ export default function AdminFacilityContacts() {
         <div className="sm:flex sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold leading-6 text-gray-900">Facility contacts</h1>
         </div>
-        <div className="border-b border-gray-200 pb-5 w-full mb-12 pt-10">
+        <div className="mb-12 w-full border-b border-gray-200 pb-5 pt-10">
           <h3 className="text-base font-semibold leading-6 text-gray-900">Add contact: </h3>
         </div>
 
@@ -80,73 +83,81 @@ export default function AdminFacilityContacts() {
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                 <div className="sm:col-span-3">
                   <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
-                    First name
+                    First name*
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="first_name"
                       id="first_name"
                       autoComplete="given-name"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-3">
                   <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
-                    Last name
+                    Last name*
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="last_name"
                       id="last_name"
                       autoComplete="family-name"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-4">
                   <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                    Email address
+                    Email address*
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       id="email"
                       name="email"
                       type="email"
                       autoComplete="email"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
-                    Phone number
+                <div className="sm:col-span-3">
+                  <label htmlFor="phone-number" className="block text-sm font-medium leading-6 text-gray-900">
+                    Contact Phone Number*
                   </label>
                   <div className="mt-2">
                     <input
-                      type="text"
+                      required
+                      type="tel"
                       name="phone_number"
-                      id="phone_number"
-                      autoComplete="phone_number"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      id="phone-number"
+                      autoComplete="tel"
+                      className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                      placeholder="123-456-7890"
+                      title="Phone number should be in the format: 123-456-7890"
                     />
                   </div>
                 </div>
                 <div className="sm:col-span-2">
                   <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                    Role
+                    Role*
                   </label>
                   <div className="mt-2">
                     <select
+                      required
                       name="role"
                       id="role"
                       autoComplete="role"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6">
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                       <option value="">Select a role</option>
                       <option value="Owner">Owner</option>
                       <option value="AP">AP</option>
@@ -167,7 +178,7 @@ export default function AdminFacilityContacts() {
                     <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-green-800">Contact successfully updated</p>
+                    <p className="text-sm font-medium text-green-800">Contact successfully added</p>
                   </div>
                   <div className="ml-auto pl-3">
                     <div className="-mx-1.5 -my-1.5"></div>
@@ -258,7 +269,7 @@ export default function AdminFacilityContacts() {
                 </table>
               ) : (
                 // No contacts found
-                <div className="flex items-center justify-center h-96">
+                <div className="flex h-96 items-center justify-center">
                   <div className="text-center">
                     <h2 className="text-3xl font-semibold text-gray-900">No contacts found</h2>
                     <p className="mt-1 text-sm text-gray-500">Add a contact to the facility</p>
