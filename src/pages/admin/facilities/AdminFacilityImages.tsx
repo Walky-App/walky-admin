@@ -40,7 +40,7 @@ export default function AdminFacilityImages() {
     }
 
     const updatedFacility = await RequestService(
-      `${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/images`,
+      `facilities/${facilityId}/images`,
       'POST',
       formData,
       'binary',

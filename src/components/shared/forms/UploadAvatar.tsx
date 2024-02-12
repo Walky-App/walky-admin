@@ -18,7 +18,7 @@ export default function UploadAvatar({ formUser, setFormUser }: any) {
     formData.append('avatar', file)
 
     const avatar_url = await RequestService(
-      `${process.env.REACT_APP_PUBLIC_API}/users/upload-avatar/${formUser._id}`,
+      `users/upload-avatar/${formUser._id}`,
       'POST',
       formData,
       'binary',
