@@ -69,7 +69,7 @@ export default function Signup() {
 
   return (
     <form onSubmit={handleSignup} className="mx-auto max-w-md">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 p-3">
         <div>
           <label className="sr-only" htmlFor="firstName">
             First Name
@@ -88,7 +88,7 @@ export default function Signup() {
           </label>
           <input
             required
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
+            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500 "
             placeholder="Last Name"
             type="text"
             name="lastName"
@@ -96,7 +96,7 @@ export default function Signup() {
         </div>
       </div>
 
-      <div>
+      <div className='p-3'>
         <label htmlFor="email" className="sr-only">
           Email
         </label>
@@ -114,7 +114,7 @@ export default function Signup() {
         </div>
       </div>
 
-      <div>
+      <div className='p-3'>
         <label htmlFor="phone" className="sr-only">
           Phone
         </label>
@@ -130,7 +130,7 @@ export default function Signup() {
         </div>
       </div>
 
-      <div>
+      <div className='p-3'>
         <label htmlFor="password" className="sr-only">
           Password
         </label>
@@ -151,7 +151,7 @@ export default function Signup() {
           password_confirmed
         </label>
 
-        <div className="relative">
+        <div className="relative p-3">
           <input
             required
             type="password"
@@ -170,9 +170,8 @@ export default function Signup() {
         <button
           disabled={loading}
           type="submit"
-          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-            loading && 'hover:bg-zinc-950 cursor-wait'
-          }`}>
+          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${loading && 'hover:bg-zinc-950 cursor-wait'
+            }`}>
           {loading ? 'Signing up...' : 'Signup'}
         </button>
       </div>
