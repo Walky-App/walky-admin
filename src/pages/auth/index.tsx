@@ -3,7 +3,6 @@ import { useState } from 'react'
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
 import ForgotPasswordForm from './ForgotPasswordForm'
-// import ResetPasswordForm from './ResetPasswordForm'
 
 export default function Auth() {
   const [userForm, setUserForm] = useState('Login')
@@ -19,28 +18,29 @@ export default function Auth() {
             <h1 className="text-2xl font-bold sm:text-3xl">Login</h1>
           </div>
 
-          {userForm === 'login' && <LoginForm />}
-          {userForm === 'signup' && <SignupForm />}
-          {userForm === 'forgotPassword' && <ForgotPasswordForm />}
+          {userForm === 'Login' && <LoginForm />}
+          {userForm === 'Sign up' && <SignupForm />}
+          {userForm === 'Forgot Password' && <ForgotPasswordForm />}
 
           <div className="flex flex-col justify-center items-center gap-2">
-            <a className="underline font-medium hover:text-green-700" href="#">
+            {userForm === 'Login' &&  <a className="underline font-medium hover:text-green-700" href="#" onClick={() => setUserForm('Forgot Password')} >
               Forgot your password?
-            </a>
+            </a>}
+           
             <p className="text-sm text-zinc-500">
-              {userForm === 'login' && (
+              {userForm === 'Login' && (
                 <section>
                   No account? &nbsp;
-                  <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('signup')}>
+                  <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Sign up')}>
                     Sign up
                   </a>
                 </section>
               )}
 
-              {userForm === 'signup' && (
+              {userForm !== 'Login' && (
                 <div>
                   Already have an account? &nbsp;
-                  <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('login')}>
+                  <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Login')}>
                     Login
                   </a>
                 </div>
@@ -61,9 +61,6 @@ export default function Auth() {
           className="absolute inset-0 object-cover h-full hidden sm:block"
         />
       </div>
-
-
     </section>
-
   )
 }
