@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Category } from '../../../interfaces/Category'
 import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 import { Badge } from 'flowbite-react'
@@ -19,7 +19,7 @@ export default function CategoryCards({ category, filter = { search: '', selecte
     if (isAdmin) {
       let categoriesTemp = [...category]
       if (filter.selected !== 'all') {
-        categoriesTemp = categoriesTemp.filter(category => filter.selected == 'active' ? !category.is_disabled : category.is_disabled)
+        categoriesTemp = categoriesTemp.filter(category => filter.selected === 'active' ? !category.is_disabled : category.is_disabled)
       }
       return categoriesTemp.filter(category => category.title.toLowerCase().includes(filter.search.toLocaleLowerCase()))
     }
