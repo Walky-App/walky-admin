@@ -58,7 +58,7 @@ export default function SelectedOption({
                   ) : null}
 
                   <span className="block truncate text-center text-black text-sm font-semibold leading-tight">
-                    {selected.name}
+                    {selected?.name}
                   </span>
                 </div>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">

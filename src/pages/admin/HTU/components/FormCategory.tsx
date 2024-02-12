@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom"
 import { FileInput } from "flowbite-react"
 import { ChangeEvent, useState } from "react"
 import { XMarkIcon } from "@heroicons/react/20/solid"
-import { useAuth } from "../../../../contexts/AuthContext"
 import { TagsInterface } from "../../../../interfaces/Global"
 import TagsArray from "./TagsArray"
 import { Category } from "../../../../interfaces/Category"
@@ -15,7 +14,6 @@ interface Props {
 }
 
 export default function FormCategory({ action, category }: Props) {
-    const { user } = useAuth()
     const [title, setTitle] = useState<string>(category?.title || '')
     const [description, setDescription] = useState<string>(category?.description || '')
     const [image, setImage] = useState<File | null>(null)

@@ -13,7 +13,7 @@ export default function AdminModulesLearn() {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [modules, setModules] = useState<Module[]>([])
   const { setCategoryOptions } = useAdmin()
-  const [categories, setCategories] = useState<SelectedOptionInterface[]>([
+  const [categories] = useState<SelectedOptionInterface[]>([
     {
       name: 'Select',
       code: 'select',
