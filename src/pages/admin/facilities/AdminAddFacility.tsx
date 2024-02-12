@@ -2,11 +2,12 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { RequestService } from '../../../services/RequestService'
 
 export default function AdminAddFacility() {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
-  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -45,28 +46,18 @@ export default function AdminAddFacility() {
         .map(input => input.value),
     }
 
-    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(response => {
-        if (response.ok) {
-          setUpdateSuccess(true)
-          setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
-        } else {
-          throw new Error('Failed to add facility')
-        }
-      })
-      .catch(error => {
-        console.error('Error adding facility:', error)
-        setUpdateSuccess(false)
-      })
-
-    console.log(formData)
+    try {
+      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/facilities`, 'POST', formData)
+      if (response.ok) {
+        setUpdateSuccess(true)
+        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+      } else {
+        throw new Error('Failed to add facility')
+      }
+    } catch (error) {
+      console.error('Error adding facility:', error)
+      setUpdateSuccess(false)
+    }
   }
 
   return (

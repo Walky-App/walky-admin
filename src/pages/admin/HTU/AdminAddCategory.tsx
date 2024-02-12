@@ -5,6 +5,7 @@ import { ChangeEvent, useState } from 'react'
 import { TagsInterface } from '../../../interfaces/Global'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { RequestService } from '../../../services/RequestService'
 
 export default function AdminAddCategory() {
   const [title, setTitle] = useState<string>('')
@@ -33,13 +34,12 @@ export default function AdminAddCategory() {
     formData.append('state_tags', JSON.stringify(tags))
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/categories`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${user?.access_token}`,
-        },
-        body: formData,
-      })
+      const response = await RequestService(
+        `${process.env.REACT_APP_PUBLIC_API}/categories`,
+        'POST',
+        formData,
+        'binary',
+      )
 
       if (response.ok) {
         console.log('Data and image uploaded successfully')

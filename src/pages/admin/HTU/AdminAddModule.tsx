@@ -74,13 +74,7 @@ export default function AdminAddModule() {
     formData.append('state_tags', JSON.stringify(tags))
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/modules`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${user?.access_token}`,
-        },
-        body: formData,
-      })
+      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/modules`, 'POST', formData, 'binary')
 
       if (response.ok) {
         console.log('Data and image uploaded successfully')
