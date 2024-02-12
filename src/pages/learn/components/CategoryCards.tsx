@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Category } from '../../../interfaces/Category'
 import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 import { Badge } from 'flowbite-react'
 import { FilterInterface } from '../../../interfaces/Global'
+import { useAdmin } from '../../../contexts/AdminContext'
 
 interface CategoryCardsProps {
   category: Category[]
@@ -12,6 +13,8 @@ interface CategoryCardsProps {
 }
 
 export default function CategoryCards({ category, filter = { search: '', selected: '' }, isLoading = true, isAdmin = false }: CategoryCardsProps) {
+  const { setCategory } = useAdmin()
+  const navigate = useNavigate()
   const categoriesFilter = () => {
     if (isAdmin) {
       let categoriesTemp = [...category]
@@ -24,12 +27,23 @@ export default function CategoryCards({ category, filter = { search: '', selecte
     return categoriesTemp.filter(category => category.title.toLowerCase().includes(filter.search.toLocaleLowerCase()))
 
   }
+
+  const handlerSetCategory = (category: Category) => {
+    if (isAdmin) {
+      setCategory(category)
+      navigate(`/admin/learn/categories/${category._id}`)
+      return
+    }
+    navigate(`/learn/category/${category._id}`)
+  }
+
+
   return (
     <>
       {!isLoading ? (
         <>
           {categoriesFilter().length > 0 ? (categoriesFilter().map(category => (
-            <Link key={category._id} to={isAdmin ? `/admin/learn/categories/${category._id}` : `/learn/category/${category._id}`}>
+            <div onClick={() => handlerSetCategory(category)} key={category._id} className='cursor-pointer'>
               <div className="mb-4 flex sm:h-32 h-auto rounded-2xl border border-zinc-100 bg-white">
                 <div className="m-3">
                   {category.image ? (
@@ -79,7 +93,7 @@ export default function CategoryCards({ category, filter = { search: '', selecte
                     )
                 }
               </div>
-            </Link>
+            </div>
           ))) : (
             <div className="flex flex-col items-center justify-center h-96">
               <div className="text-2xl font-semibold text-black">Your search - did not match any categories</div>

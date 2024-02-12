@@ -49,12 +49,13 @@ export default function AdminFacilityLicenses() {
       formData.append('files', files[i])
     }
 
-    const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`, {
-      method: 'POST',
-      body: formData,
-    })
+    const updatedFacility = await RequestService(
+      `${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`,
+      'POST',
+      formData,
+      'binary',
+    )
 
-    const updatedFacility = await response.json()
     setFacility(updatedFacility)
     setFiles([])
     setUploading(false)
@@ -105,10 +106,7 @@ export default function AdminFacilityLicenses() {
           <li key={license._id} className="flex items-center justify-between gap-x-6 py-5">
             <div className="min-w-0">
               <div className="flex items-start gap-x-3">
-                <a
-                  href={license.url}
-                  target="_blank"
-                  className="hidden px-5 py-1.5 text-sm font-semibold sm:block">
+                <a href={license.url} target="_blank" className="hidden px-5 py-1.5 text-sm font-semibold sm:block">
                   <p className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">{license.key}</p>
                 </a>
                 <p
