@@ -10,6 +10,7 @@ import Error404 from './pages/Error404'
 
 /** Auth Pages */
 import Auth from './pages/auth'
+import NewPasswordForm from './pages/auth/NewPasswordForm'
 
 /** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
@@ -66,7 +67,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/login" element={<Auth />} />
-            <Route element={<Layout />}>
+            <Route path="/reset/:id/:at" element={<NewPasswordForm />} />
+          <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
                 <Route path="/employee/jobs" element={<EmployeeJobs />} />
