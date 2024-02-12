@@ -20,7 +20,7 @@ export default function AdminInviteUser() {
     }
 
     try {
-      const response = await RequestService(`invite`, 'POST', formData)
+      const response = await RequestService(`auth/invite`, 'POST', formData)
       if (response) {
         setUpdateSuccess(true)
         form.reset()
