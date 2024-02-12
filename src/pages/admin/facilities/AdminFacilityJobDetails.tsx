@@ -1,17 +1,52 @@
 import * as React from 'react'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
-export default function AdminAddJob() {
+export default function AdminFacilityJobDetails() {
+  const { facilityId, jobId } = useParams()
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const [facility, setFacility] = React.useState<any>({})
+  const [job, setJob] = React.useState<any>({})
 
-  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const facility = await RequestService(`facilities/${facilityId}`)
+        if (facility) {
+          setFacility(facility)
+        } else {
+          console.log('No facility found or unexpected data structure received, setting default value.')
+          setFacility({})
+        }
+      } catch (error) {
+        console.error('Error fetching facility data:', error)
+      }
+
+      try {
+        console.log('Job ID:', jobId)
+        const job = await RequestService(`jobs/${jobId}`)
+        if (job) {
+          setJob(job)
+        } else {
+          console.log('No job found or unexpected data structure received.')
+          setJob({})
+        }
+      } catch (error) {
+        console.error('Error fetching job data:', error)
+      }
+    }
+
+    fetchResources()
+  }, [])
+
+  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
       created_by: { value: string }
-      company: { value: string }
       facility_id: { value: string }
       title: { value: string }
       salary: { value: string }
@@ -22,15 +57,18 @@ export default function AdminAddJob() {
       shift_times: { value: string }
       shift_dates: { value: string }
     }
+    const skills = target.skills.value
+      .split(',')
+      .map(skill => skill.trim())
+      .filter(skill => skill)
 
     const formData = {
       created_by: target.created_by.value,
-      company: target.company.value,
-      facility_id: target.facility_id.value,
+      facility_id: facilityId,
       title: target.title.value,
       salary: target.salary.value,
       description: target.description.value,
-      skills: target.skills.value.split(','),
+      skills: skills,
       employment_type: target.employment_type.value,
       shift_days: target.shift_days.value.split(',').map(Number),
       shift_times: target.shift_times.value.split(','),
@@ -38,32 +76,31 @@ export default function AdminAddJob() {
       status: 'active',
     }
 
-    try {
-      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/jobs`, 'POST', formData)
-      if (response.ok) {
-        setUpdateSuccess(true)
-        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
-      } else {
-        throw new Error('Job posted successfully')
-      }
-    } catch (error) {
-      console.error('Error posting job:', error)
-      setUpdateSuccess(false)
-    }
+    RequestService(`/jobs/${jobId}`, 'PATCH', formData)
+      .then(response => {
+        if (response) {
+          setUpdateSuccess(true)
+          setTimeout(() => setUpdateSuccess(false), 5000)
+        } else {
+          console.error('Update was not successful')
+          setUpdateSuccess(false)
+        }
+      })
+      .catch(error => {
+        console.error('Error updating job:', error)
+        setUpdateSuccess(false)
+      })
   }
 
   return (
     <>
-      <TitleComponent title={'Add Job'} />
-
+      <AdminFacilityHeaderInfo facility={facility} />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Information</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your business so that we can verify you on the platform.{' '}
-              </p>
+              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide information about the new job. </p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
@@ -76,19 +113,7 @@ export default function AdminAddJob() {
                     type="text"
                     name="title"
                     id="job-title"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="company-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Company
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="company"
-                    id="company"
+                    defaultValue={job.title}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -102,19 +127,7 @@ export default function AdminAddJob() {
                     type="text"
                     name="created_by"
                     id="email"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="facility-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Facility ID*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="facility_id"
-                    id="facility-id"
+                    defaultValue={job.created_by}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -128,6 +141,7 @@ export default function AdminAddJob() {
                     type="text"
                     name="salary"
                     id="salary"
+                    defaultValue={job.salary}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -142,6 +156,7 @@ export default function AdminAddJob() {
                     type="text"
                     name="employment_type"
                     id="employment-type"
+                    defaultValue={job.employment_type}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -157,6 +172,7 @@ export default function AdminAddJob() {
                     name="skills"
                     id="skills"
                     placeholder="Enter skills separated by commas"
+                    defaultValue={job.skills}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -173,6 +189,7 @@ export default function AdminAddJob() {
                     name="shift_days"
                     id="shift-days"
                     placeholder="e.g., 1,4"
+                    defaultValue={job.shift_days}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -189,6 +206,7 @@ export default function AdminAddJob() {
                     name="shift_times"
                     id="shift-times"
                     placeholder="e.g., 8:00,19:00"
+                    defaultValue={job.shift_times}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -204,13 +222,14 @@ export default function AdminAddJob() {
                     name="shift_dates"
                     id="shift-dates"
                     placeholder="e.g., 2024-01-31,2024-02-20"
+                    defaultValue={job.shift_dates}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               <div className="col-span-full">
                 <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                  description
+                  Description
                 </label>
                 <div className="mt-2">
                   <textarea
@@ -218,99 +237,11 @@ export default function AdminAddJob() {
                     name="description"
                     rows={3}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                    defaultValue={''}
+                    defaultValue={job.description}
                   />
                 </div>
 
                 <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the Job.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* section two */}
-
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Location</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide the address information below.</p>
-            </div>
-
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                  Country
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="country"
-                    name="country"
-                    autoComplete="country-name"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>Mexico</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Street Address
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="address"
-                    id="address"
-                    autoComplete="address-line1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2 sm:col-start-1">
-                <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-                  City
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="city"
-                    id="city"
-                    autoComplete="address-level2"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
-                  State / Province
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="state"
-                    id="state"
-                    autoComplete="address-level1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
-                  ZIP / Postal code
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="zip"
-                    id="zip"
-                    autoComplete="postal-code"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -324,7 +255,7 @@ export default function AdminAddJob() {
                   <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-green-800">Job successfully posted</p>
+                  <p className="text-sm font-medium text-green-800">Job successfully updated</p>
                 </div>
                 <div className="ml-auto pl-3">
                   <div className="-mx-1.5 -my-1.5"></div>
