@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { useParams } from 'react-router-dom'
+import { Dialog, Transition } from '@headlessui/react'
 import { Spinner } from 'flowbite-react'
-import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
+import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
 
 import { RequestService } from '../../../services/RequestService'
 import AdminFacilityHeaderInfo from './AdminFacilityHeader'
@@ -10,9 +11,21 @@ export default function AdminFacilityImages() {
   const [facility, setFacility] = React.useState<any>({})
   const [uploading, setUploading] = React.useState(false)
   const [files, setFiles] = React.useState<any>([])
-  const { facilityId } = useParams()
-
   const filesInputRef = React.useRef<any>()
+
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false)
+  const cancelButtonRef = React.useRef(null)
+
+  const handleDialogOpen = (file: any) => {
+    setFacility({ ...facility, selected_image: file, main_image: file.url })
+    setOpenDialog(true)
+  }
+
+  const handleDialogClose = () => {
+    setOpenDialog(false)
+  }
+
+  const { facilityId } = useParams()
 
   React.useMemo(() => {
     const getFacility = async () => {
@@ -39,12 +52,7 @@ export default function AdminFacilityImages() {
       formData.append('files', files[i])
     }
 
-    const updatedFacility = await RequestService(
-      `facilities/${facilityId}/images`,
-      'POST',
-      formData,
-      'binary',
-    )
+    const updatedFacility = await RequestService(`facilities/${facilityId}/images`, 'POST', formData, 'binary')
 
     setFacility(updatedFacility)
     setFiles([])
@@ -53,6 +61,26 @@ export default function AdminFacilityImages() {
 
   const pickImageHandler = () => {
     filesInputRef.current.click()
+  }
+
+  const handleRemoveImage = async () => {
+    setOpenDialog(false)
+    const body = {
+      file_type: 'images',
+      file_id: facility.selected_image._id,
+      file_path: facility.selected_image.key,
+    }
+
+    const updatedFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
+
+    setFacility(updatedFacility)
+  }
+
+  const handleFacilityUpdate = async () => {
+    setOpenDialog(false)
+    const updatedFacility = await RequestService(`facilities/${facilityId}`, 'PATCH', facility)
+
+    setFacility(updatedFacility)
   }
 
   return (
@@ -69,7 +97,7 @@ export default function AdminFacilityImages() {
       />
 
       {!uploading ? (
-        <div className="flex items-center my-5">
+        <div className="my-5 flex items-center">
           {files.length === 0 ? (
             <>
               <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
@@ -91,11 +119,13 @@ export default function AdminFacilityImages() {
       ) : (
         <Spinner color="success" size="lg" aria-label="Success spinner example" />
       )}
-      <ul role="list" className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
         {facility?.images?.map((file: any) => (
-          <li key={file.source} className="relative">
-            <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-              <img src={file.url} alt="" className="pointer-events-none object-cover h-80 group-hover:opacity-75" />
+          <li key={file._id} className="relative">
+            <div
+              onClick={() => handleDialogOpen(file)}
+              className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+              <img src={file.url} alt="" className="pointer-events-none h-80 object-cover group-hover:opacity-75" />
               <button type="button" className="absolute inset-0 focus:outline-none">
                 <span className="sr-only">View details for {file.title}</span>
               </button>
@@ -105,6 +135,75 @@ export default function AdminFacilityImages() {
           </li>
         ))}
       </ul>
+      <Transition.Root show={openDialog} as={React.Fragment}>
+        <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleDialogClose}>
+          <Transition.Child
+            as={React.Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={React.Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                  <div className="absolute right-0 top-0 hidden pb-4 pl-4 pr-1 pt-1 sm:block">
+                    <button
+                      type="button"
+                      className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                      onClick={() => setOpenDialog(false)}>
+                      <span className="sr-only">Close</span>
+                      <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
+                    <img src={facility.selected_image?.url} alt="facility" className="h-full object-cover" />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                      Facility Image
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius aliquam laudantium explicabo
+                        pariatur iste dolorem animi vitae error totam. At sapiente aliquam accusamus facere veritatis.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:col-start-2"
+                      onClick={handleFacilityUpdate}
+                      ref={cancelButtonRef}>
+                      Set as Default
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                      onClick={handleRemoveImage}
+                      ref={cancelButtonRef}>
+                      Remove
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
     </div>
   )
 }
