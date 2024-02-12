@@ -1,17 +1,37 @@
 import * as React from 'react'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 
-export default function AdminAddJob() {
+export default function AdminFacilityAddJob() {
+  const { facilityId } = useParams()
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const [facility, setFacility] = React.useState<any>({})
+
+  useEffect(() => {
+    const getFacility = async () => {
+      try {
+        const facility = await RequestService(`facilities/${facilityId}`)
+        if (facility) {
+          setFacility(facility)
+        } else {
+          console.log('No facility found or unexpected data structure received, setting default value.')
+          setFacility({})
+        }
+      } catch (error) {
+        console.error('Error fetching facility data:', error)
+      }
+    }
+    getFacility()
+  }, [])
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
       created_by: { value: string }
-      company: { value: string }
       facility_id: { value: string }
       title: { value: string }
       salary: { value: string }
@@ -23,14 +43,18 @@ export default function AdminAddJob() {
       shift_dates: { value: string }
     }
 
+    const skills = target.skills.value
+      .split(',')
+      .map(skill => skill.trim())
+      .filter(skill => skill)
+
     const formData = {
       created_by: target.created_by.value,
-      company: target.company.value,
-      facility_id: target.facility_id.value,
+      facility_id: facilityId,
       title: target.title.value,
       salary: target.salary.value,
       description: target.description.value,
-      skills: target.skills.value.split(','),
+      skills: skills,
       employment_type: target.employment_type.value,
       shift_days: target.shift_days.value.split(',').map(Number),
       shift_times: target.shift_times.value.split(','),
@@ -39,31 +63,30 @@ export default function AdminAddJob() {
     }
 
     try {
-      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/jobs`, 'POST', formData)
-      if (response.ok) {
-        setUpdateSuccess(true)
-        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+      const response = await RequestService(`/jobs`, 'POST', formData);
+      if (response) { 
+        setUpdateSuccess(true);
+        setTimeout(() => setUpdateSuccess(false), 5000);
       } else {
-        throw new Error('Job posted successfully')
+        console.error('Failed to post job');
+        setUpdateSuccess(false);
       }
     } catch (error) {
-      console.error('Error posting job:', error)
-      setUpdateSuccess(false)
+      console.error('Error posting job:', error);
+      setUpdateSuccess(false);
     }
+
   }
 
   return (
     <>
-      <TitleComponent title={'Add Job'} />
-
+      <AdminFacilityHeaderInfo facility={facility} />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Information</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your business so that we can verify you on the platform.{' '}
-              </p>
+              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide information about the new job. </p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
@@ -81,19 +104,6 @@ export default function AdminAddJob() {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label htmlFor="company-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Company
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="company"
-                    id="company"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
                 <label htmlFor="created_by" className="block text-sm font-medium leading-6 text-gray-900">
                   Created By
                 </label>
@@ -102,19 +112,6 @@ export default function AdminAddJob() {
                     type="text"
                     name="created_by"
                     id="email"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="facility-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Facility ID*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="facility_id"
-                    id="facility-id"
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -210,7 +207,7 @@ export default function AdminAddJob() {
               </div>
               <div className="col-span-full">
                 <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                  description
+                  Description
                 </label>
                 <div className="mt-2">
                   <textarea
@@ -223,94 +220,6 @@ export default function AdminAddJob() {
                 </div>
 
                 <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the Job.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* section two */}
-
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Location</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide the address information below.</p>
-            </div>
-
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                  Country
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="country"
-                    name="country"
-                    autoComplete="country-name"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>Mexico</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Street Address
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="address"
-                    id="address"
-                    autoComplete="address-line1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2 sm:col-start-1">
-                <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-                  City
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="city"
-                    id="city"
-                    autoComplete="address-level2"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
-                  State / Province
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="state"
-                    id="state"
-                    autoComplete="address-level1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
-                  ZIP / Postal code
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="zip"
-                    id="zip"
-                    autoComplete="postal-code"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
               </div>
             </div>
           </div>

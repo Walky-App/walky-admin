@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 import { Module } from '../../../interfaces/Module'
 import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 import CircularProgressBar from './CircularProgressBar'
