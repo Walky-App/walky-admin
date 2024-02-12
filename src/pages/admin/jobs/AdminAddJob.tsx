@@ -39,7 +39,7 @@ export default function AdminAddJob() {
     }
 
     try {
-      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/jobs`, 'POST', formData)
+      const response = await RequestService(`jobs`, 'POST', formData)
       if (response.ok) {
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds

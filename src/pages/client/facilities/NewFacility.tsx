@@ -46,7 +46,7 @@ export default function NewFacility() {
     }
 
     try {
-      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/facilities`, 'POST', formData)
+      const response = await RequestService(`facilities`, 'POST', formData)
     } catch (error) {
       console.error(error)
     }
