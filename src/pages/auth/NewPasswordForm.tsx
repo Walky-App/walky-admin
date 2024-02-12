@@ -1,15 +1,14 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { RequestService } from '../../services/RequestService'
 
-export default function NewPasswordForm({ setUserForm }: any) {
+export default function NewPasswordForm() {
   const { id, at } = useParams()
-  const [form, setForm] = useState({ _id: id, access_token: at, password: '', password_confirm: '' })
+  const [form, setForm] = useState({ _id: id, access_token: at, password: '', password_confirmed: '' })
   const [error, setError] = useState<any>()
   const [loading, setLoading] = useState(false)
 
-  console.log('id -> ', id)
-  console.log('at -> ', at)
+  const navigate =  useNavigate()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -18,12 +17,10 @@ export default function NewPasswordForm({ setUserForm }: any) {
     const response = await RequestService('auth/new', 'POST', form)
 
     if (response) {
-      setUserForm('Login')
+      navigate('/reset-success')
       setLoading(false)
     }
   }
-
-  console.log('form -> ', form)
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
@@ -86,7 +83,7 @@ export default function NewPasswordForm({ setUserForm }: any) {
               name="password_confirmed"
               className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
               placeholder="Password Confirmed"
-              onChange={e => setForm({ ...form, password_confirm: e.target.value })}
+              onChange={e => setForm({ ...form, password_confirmed: e.target.value })}
             />
 
             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
