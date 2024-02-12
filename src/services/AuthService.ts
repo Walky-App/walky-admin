@@ -3,7 +3,7 @@ import { RequestService } from './RequestService'
 
 export const LoginService = async (body: LoginData) => {
   try {
-    const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/auth/login`, 'POST', body)
+    const response = await RequestService(`auth/login`, 'POST', body)
     if (response) return response
   } catch (error) {
     console.error(error)
