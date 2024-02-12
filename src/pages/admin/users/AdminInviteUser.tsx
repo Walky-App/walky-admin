@@ -26,10 +26,10 @@ export default function AdminInviteUser() {
         form.reset()
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
       } else {
-        throw new Error('Failed to add user')
+        throw new Error('Failed to invite user')
       }
     } catch (error) {
-      console.error('Error adding user:', error)
+      console.error('Error inviting user:', error)
       setUpdateSuccess(false)
     }
   }
