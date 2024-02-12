@@ -14,6 +14,7 @@ export default function AdminAddUser() {
       password: { value: string }
       password_confirmed: { value: string }
       role: { value: string }
+      phone_number: { value: string }
     }
 
     const formData = {
@@ -23,6 +24,7 @@ export default function AdminAddUser() {
       password: target.password.value,
       password_confirmed: target.password_confirmed.value,
       role: target.role.value,
+      phone_number: target.phone_number.value,
     }
 
     fetch(`${process.env.REACT_APP_PUBLIC_API}/auth`, {
@@ -112,7 +114,6 @@ export default function AdminAddUser() {
                     name="phone_number"
                     id="phone_number"
                     autoComplete="phone_number"
-                    disabled
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
