@@ -29,7 +29,7 @@ export default function AdminAddUser() {
     }
 
     try {
-      const response = await RequestService(`${process.env.REACT_APP_PUBLIC_API}/auth`, 'POST', formData)
+      const response = await RequestService(`auth`, 'POST', formData)
       if (response.ok) {
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds

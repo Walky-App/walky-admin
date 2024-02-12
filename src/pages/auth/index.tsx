@@ -6,7 +6,7 @@ import ForgotPasswordForm from './ForgotPasswordForm'
 // import ResetPasswordForm from './ResetPasswordForm'
 
 export default function Auth() {
-  const [userForm, setUserForm] = useState('login')
+  const [userForm, setUserForm] = useState('Login')
 
   return (
     <section className="min-h-screen flex items-center justify-center relative flex flex-wrap sm:mb-8 md:mb-0 h-screen lg:items-center">
@@ -14,36 +14,51 @@ export default function Auth() {
         <div className="flex justify-center">
           <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" height={300} />
         </div>
+
         <div className="mx-auto max-w-lg text-center">
-          <h1 className="text-2xl font-bold sm:text-3xl">Login</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">{userForm}</h1>
         </div>
 
-        {userForm === 'login' && <LoginForm />}
-        {userForm === 'signup' && <SignupForm />}
-        {userForm === 'forgotPassword' && <ForgotPasswordForm />}
+        {userForm === 'Login' && <LoginForm />}
+        {userForm === 'Sign Up' && <SignupForm />}
+        {userForm === 'Forgot Password' && <ForgotPasswordForm setUserForm={setUserForm} />}
         {/* {userForm === 'resetPassword' && <ResetPasswordForm />} */}
 
         <hr className="my-10 w-1/2 mx-auto border-t border-green-600" />
-        <div className="flex justify-center">
-          <a className="underline font-medium hover:text-green-700" href="#">
-            Forgot your password?
-          </a>
-        </div>
+        {userForm !== 'Forgot Password' && (
+          <div className="flex justify-center">
+            <a
+              className="underline font-medium hover:text-green-700"
+              href="#"
+              onClick={() => setUserForm('Forgot Password')}>
+              Forgot your password?
+            </a>
+          </div>
+        )}
         <div className="flex justify-center">
           <p className="text-sm text-zinc-500">
-            {userForm === 'login' && (
+            {userForm === 'Login' && (
               <section>
                 No account? &nbsp;
-                <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('signup')}>
+                <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Sign Up')}>
                   Sign up
                 </a>
               </section>
             )}
 
-            {userForm === 'signup' && (
+            {userForm === 'Sign Up' && (
               <div>
                 Already have an account? &nbsp;
-                <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('login')}>
+                <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Login')}>
+                  Login
+                </a>
+              </div>
+            )}
+
+            {userForm === 'Forgot Password' && (
+              <div>
+                Remembered your password? &nbsp;
+                <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Login')}>
                   Login
                 </a>
               </div>
