@@ -1,13 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { FileInput } from "flowbite-react"
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useState } from "react"
 import { XMarkIcon } from "@heroicons/react/20/solid"
 import { useAuth } from "../../../../contexts/AuthContext"
 import { TagsInterface } from "../../../../interfaces/Global"
-import HeaderComponent from "../../../../components/shared/general/HeaderComponent"
 import TagsArray from "./TagsArray"
 import { Category } from "../../../../interfaces/Category"
 import { getModifiedProperties } from "../../../../utils/FunctionUtils"
+import { RequestService } from "../../../../services/RequestService"
 
 interface Props {
     action: "add" | "edit"
@@ -68,17 +68,11 @@ export default function FormCategory({ action, category }: Props) {
         }
 
         try {
-            const url = action === 'add' ? `${process.env.REACT_APP_PUBLIC_API}/categories` : `${process.env.REACT_APP_PUBLIC_API}/categories/${category?._id}`
+            const url = action === 'add' ? `categories` : `categories/${category?._id}`
             const method = action === 'add' ? 'POST' : 'PATCH'
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    Authorization: `Bearer ${user?.access_token}`,
-                },
-                body: formData,
-            })
+            const response = await RequestService(url, method, formData, 'form-data')
 
-            if (response.ok) {
+            if (response) {
                 console.log('Data and image uploaded successfully')
                 navigate('/admin/learn/categories')
             } else {
