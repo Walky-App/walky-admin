@@ -53,7 +53,7 @@ export default function FacilityDetail() {
 
     try {
       const response = await RequestService(
-        `${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`,
+        `facilities/${facilityId}`,
         'PATCH',
         formValues,
       )

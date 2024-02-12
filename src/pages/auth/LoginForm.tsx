@@ -9,7 +9,7 @@ import { LoginData } from '../../interfaces/Global'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function LoginForm() {
-  const [error, setError] = useState()
+  const [error, setError] = useState<any>()
   const [loading, setLoading] = useState(false)
 
   const { setUser } = useAuth()
@@ -27,39 +27,49 @@ export default function LoginForm() {
 
     const data: any = await LoginService(body)
 
-    const { access_token, user }: any = data
+    try {
+      if (!data) {
+        setLoading(false)
+        return setError('Email/Password invalid')
+      } else {
+        const { access_token, user }: any = data
 
-    if (user && access_token) {
-      const data: ITokenInfo = {
-        first_name: user.first_name,
-        _id: user._id,
-        role: user.role,
-        access_token: access_token,
-        avatar: user.avatar,
+        if (user && access_token) {
+          const data: ITokenInfo = {
+            first_name: user.first_name,
+            _id: user._id,
+            role: user.role,
+            access_token: access_token,
+            avatar: user.avatar,
+          }
+
+          SetToken(data)
+          setUser({ ...user, access_token: access_token })
+          setLoading(false)
+
+          switch (user.role) {
+            case 'client':
+              navigate('/client/dashboard')
+              break
+            case 'admin':
+              navigate('/admin/dashboard')
+              break
+            case 'employee':
+              navigate('/employee/dashboard')
+              break
+            default:
+              navigate('/login')
+          }
+        } else {
+          setError(data.message)
+          setLoading(false)
+        }
       }
-
-      SetToken(data)
-      setUser({ ...user, access_token: access_token })
-      setLoading(false)
-
-      switch (user.role) {
-        case 'client':
-          navigate('/client/dashboard')
-          break
-        case 'admin':
-          navigate('/admin/dashboard')
-          break
-        case 'employee':
-          navigate('/employee/dashboard')
-          break
-        default:
-          navigate('/login')
-      }
-    } else {
-      setError(data.message)
-      setLoading(false)
+    } catch (error) {
+      console.error(error)
     }
   }
+
   return (
     <form onSubmit={handleSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
       <div>

@@ -10,6 +10,8 @@ export const RequestService: IRequestService = async (
   const { access_token } = GetTokenInfo()
 
   const url = `${process.env.REACT_APP_PUBLIC_API}/${path}`
+  console.log('url => ', url)
+
   const headersJsonData = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${access_token}`,
