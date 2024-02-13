@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { RequestService } from '../../../services/RequestService'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export default function AdminInviteUser() {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const {user} = useAuth()
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,6 +19,7 @@ export default function AdminInviteUser() {
     const formData = {
       email: target.email.value,
       role: target.role.value,
+      inviter: user?.email
     }
 
     try {
