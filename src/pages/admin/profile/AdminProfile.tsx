@@ -21,6 +21,7 @@ export default function AdminProfile() {
     e.preventDefault()
 
     const target = e.target as any
+    const birthDateIso = new Date(target.birthday.value).toISOString();
 
     const formData = {
       first_name: target.first_name.value,
@@ -28,7 +29,7 @@ export default function AdminProfile() {
       email: target.email.value,
       phone: target.phone_number.value,
       gender: target.gender.value,
-      birthday: target.birthday.value,
+      birth_date: birthDateIso,
       phone_number: target.phone_number.value,
       address: target.address.value,
       city: target.city.value,
@@ -155,12 +156,10 @@ export default function AdminProfile() {
                   <div className="mt-2">
                     <input
                       type="date"
-                      defaultValue={formUser.birthday}
-                      // disabled
-                      name="birthday"
-                      id="birthday"
-                      autoComplete="birthday"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      defaultValue={formUser.birth_date}
+                      name="birth_date"
+                      id="birth_day"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -173,28 +172,26 @@ export default function AdminProfile() {
                     <input
                       defaultValue={formUser.gender}
                       type="text"
-                      // disabled
                       name="gender"
                       id="gender"
                       autoComplete="gender"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
-                    Cell Phone
+                    Phone number
                   </label>
                   <div className="mt-2">
                     <input
                       defaultValue={formUser.phone_number}
                       type="text"
-                      // disabled
                       name="phone_number"
                       id="phone_number"
                       autoComplete="phone_number"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
