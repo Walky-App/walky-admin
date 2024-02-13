@@ -197,10 +197,13 @@ export default function AdminProfile() {
                   <div className="mt-2">
                     <input
                       defaultValue={formUser.phone_number}
-                      type="text"
+                      type="tel"
                       name="phone_number"
                       id="phone_number"
                       autoComplete="phone_number"
+                      pattern="\d{10}"
+                      placeholder="10-digit phone-number"
+                      title="Enter a valid US phone number (e.g. 9876543210)"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
