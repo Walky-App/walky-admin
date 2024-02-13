@@ -30,11 +30,25 @@ export default function AdminUserDetails() {
       [name]: inputValue,
     }))
   }
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, notificationType: string) => {
+    const isChecked = e.target.checked;
+    
+    setFormUser((prevFormUser: any) => {
+      const notificationsSet = new Set(prevFormUser.notifications);
+      if (isChecked) {
+        notificationsSet.add(notificationType);
+      } else {
+        notificationsSet.delete(notificationType);
+      }
+      return { ...prevFormUser, notifications: Array.from(notificationsSet) };
+    });
+  };
+  
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const response: any = await RequestService(`users/${formUser.id}`, 'PATCH', formUser)
+      const response: any = await RequestService(`users/${formUser._id}`, 'PATCH', formUser)
       setFormUser(response)
       setUpdateSuccess(true)
       setTimeout(() => setUpdateSuccess(false), 5000)
@@ -44,7 +58,6 @@ export default function AdminUserDetails() {
     }
   }
 
-  console.log('formUser -->', formUser)
   return (
     <>
       <div className="mb-12 w-full border-b border-gray-200 pb-5 ">
@@ -56,31 +69,6 @@ export default function AdminUserDetails() {
       {formUser.role && (
         <form onSubmit={handleUpdate}>
           <div className="space-y-12">
-            <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  This section contains information about the user.
-                </p>
-              </div>
-
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-                <div className="col-span-full">
-                  <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
-                    Avatar
-                  </label>
-                  <div className="mt-2 flex items-center gap-x-3">
-                    <UserCircleIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
-                    <button
-                      type="button"
-                      disabled
-                      className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                      Change
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
@@ -99,6 +87,7 @@ export default function AdminUserDetails() {
                       value={formUser.first_name || ''}
                       onChange={handleInputChange}
                       type="text"
+                      disabled
                       name="first_name"
                       id="first_name"
                       autoComplete="given-name"
@@ -143,20 +132,37 @@ export default function AdminUserDetails() {
                   </div>
                 </div>
 
+                <div className="sm:col-span-3">
+                  <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
+                    Status
+                  </label>
+                  <div className="mt-2">
+                    <select
+                      id="status"
+                      name="active"
+                      value={formUser.active.toString()}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Active</option>
+                      <option value="false">Disabled</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div className="sm:col-span-2 sm:col-start-1">
-                  <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="birth_date" className="block text-sm font-medium leading-6 text-gray-900">
                     Birthday
                   </label>
                   <div className="mt-2">
                     <input
                       type="date"
-                      value={formUser.birthday || ''}
+                      defaultValue={
+                        formUser.birth_date ? new Date(formUser.birth_date).toISOString().split('T')[0] : ''
+                      }
                       onChange={handleInputChange}
-                      // disabled
-                      name="birthday"
-                      id="birthday"
-                      autoComplete="birthday"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      name="birth_date"
+                      id="birth_date"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -166,36 +172,39 @@ export default function AdminUserDetails() {
                     Gender
                   </label>
                   <div className="mt-2">
-                    <input
+                    <select
                       value={formUser.gender || ''}
                       onChange={handleInputChange}
-                      type="text"
-                      // disabled
                       name="gender"
                       id="gender"
                       autoComplete="gender"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                    />
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
-                    Cell Phone
+                    Phone Number
                   </label>
                   <div className="mt-2">
                     <input
                       value={formUser.phone_number || ''}
                       onChange={handleInputChange}
-                      type="text"
-                      // disabled
+                      type="tel"
                       name="phone_number"
                       id="phone_number"
                       autoComplete="phone_number"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      pattern="\d{10}"
+                      title="Phone number should be 10 digits"
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
+
                 <div className="sm:col-span-2">
                   <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
                     Role
@@ -295,137 +304,6 @@ export default function AdminUserDetails() {
               </div>
             </div>
 
-            {formUser?.role === 'employee' && (
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Direct Deposit</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Use a permanent address where you can receive mail.
-                  </p>
-                </div>
-
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank Name
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        value={formUser.direct_deposit?.bank_name || ''}
-                        onChange={handleInputChange}
-                        type="text"
-                        name="bank_name"
-                        id="bank_name"
-                        autoComplete="bank_name"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="account_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Account #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        value={formUser.direct_deposit?.account_number || ''}
-                        onChange={handleInputChange}
-                        type="text"
-                        name="account_number"
-                        id="account_number"
-                        autoComplete="account_number"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="routing_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Routing #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        value={formUser.direct_deposit?.routing_number || ''}
-                        onChange={handleInputChange}
-                        type="text"
-                        name="routing_number"
-                        id="routing_number"
-                        autoComplete="routing_number"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-full">
-                    <label htmlFor="bank_address" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank address
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        value={formUser.direct_deposit?.bank_address || ''}
-                        onChange={handleInputChange}
-                        type="text"
-                        name="bank_address"
-                        id="bank_address"
-                        autoComplete="bank_address"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_city" className="block text-sm font-medium leading-6 text-gray-900">
-                      City
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        value={formUser.direct_deposit?.bank_city || ''}
-                        onChange={handleInputChange}
-                        type="text"
-                        name="bank_city"
-                        id="bank_city"
-                        autoComplete="address-level2"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_state" className="block text-sm font-medium leading-6 text-gray-900">
-                      State / Province
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        value={formUser.direct_deposit?.bank_state || ''}
-                        onChange={handleInputChange}
-                        type="text"
-                        name="bank_state"
-                        id="bank_state"
-                        autoComplete="address-level1"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_zip" className="block text-sm font-medium leading-6 text-gray-900">
-                      ZIP / Postal code
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        value={formUser.direct_deposit?.bank_zip || ''}
-                        onChange={handleInputChange}
-                        type="text"
-                        name="bank_zip"
-                        id="bank_zip"
-                        autoComplete="bank_zip"
-                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
@@ -435,48 +313,49 @@ export default function AdminUserDetails() {
               </div>
 
               <div className="max-w-2xl space-y-10 md:col-span-2">
-                <fieldset>
-                  <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
-                  <div className="mt-6 space-y-6">
-                    <div className="relative flex gap-x-3">
-                      <div className="flex h-6 items-center">
-                        <input
-                          defaultChecked={formUser.notifications?.includes('notification_email')}
-                          id="notification_email"
-                          name="notification_email"
-                          type="checkbox"
-                          disabled
-                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                        />
-                      </div>
-                      <div className="text-sm leading-6">
-                        <label htmlFor="notification_email" className="font-medium text-gray-900">
-                          Email Notifications
-                        </label>
-                        <p className="text-gray-500">Get notified when someones posts a comment on a posting.</p>
-                      </div>
-                    </div>
-                    <div className="relative flex gap-x-3">
-                      <div className="flex h-6 items-center">
-                        <input
-                          defaultChecked={formUser.notifications?.includes('notification_sms')}
-                          id="notification_sms"
-                          name="notification_sms"
-                          type="checkbox"
-                          disabled
-                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                        />
-                      </div>
-                      <div className="text-sm leading-6">
-                        <label htmlFor="notification_sms" className="font-medium text-gray-900">
-                          SMS Push Notifications
-                        </label>
-                        <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
-                      </div>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
+  <fieldset>
+    <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
+    <div className="mt-6 space-y-6">
+      <div className="relative flex gap-x-3">
+        <div className="flex h-6 items-center">
+          <input
+            checked={formUser.notifications?.includes('notification_email')}
+            onChange={e => handleCheckboxChange(e, 'notification_email')}
+            id="notification_email"
+            name="notification_email"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+          />
+        </div>
+        <div className="text-sm leading-6">
+          <label htmlFor="notification_email" className="font-medium text-gray-900">
+            Email Notifications
+          </label>
+          <p className="text-gray-500">Get notified when someone posts a comment on a posting.</p>
+        </div>
+      </div>
+      <div className="relative flex gap-x-3">
+        <div className="flex h-6 items-center">
+          <input
+            checked={formUser.notifications?.includes('notification_sms')}
+            onChange={e => handleCheckboxChange(e, 'notification_sms')}
+            id="notification_sms"
+            name="notification_sms"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+          />
+        </div>
+        <div className="text-sm leading-6">
+          <label htmlFor="notification_sms" className="font-medium text-gray-900">
+            SMS Push Notifications
+          </label>
+          <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
             </div>
           </div>
 
@@ -488,7 +367,7 @@ export default function AdminUserDetails() {
                     <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-green-800">Facility successfully updated</p>
+                    <p className="text-sm font-medium text-green-800">User successfully updated</p>
                   </div>
                   <div className="ml-auto pl-3">
                     <div className="-mx-1.5 -my-1.5"></div>
