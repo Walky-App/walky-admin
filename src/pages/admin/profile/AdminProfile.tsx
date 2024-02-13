@@ -162,7 +162,7 @@ export default function AdminProfile() {
                   <div className="mt-2">
                     <input
                       type="date"
-                      defaultValue={formUser.birth_date}
+                      defaultValue={formUser.birth_date ? new Date(formUser.birth_date).toISOString().split('T')[0] : ''}
                       name="birth_date"
                       id="birth_date"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
