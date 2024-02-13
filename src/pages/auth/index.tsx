@@ -28,14 +28,14 @@ export default function Auth() {
             </a>}
            
             <p className="text-sm text-zinc-500">
-              {userForm === 'Login' && (
+              {/* {userForm === 'Login' && (
                 <section>
                   No account? &nbsp;
                   <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Sign up')}>
                     Sign up
                   </a>
                 </section>
-              )}
+              )} */}
 
               {userForm !== 'Login' && (
                 <div>

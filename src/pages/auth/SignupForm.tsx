@@ -68,7 +68,11 @@ export default function Signup() {
   }
 
   return (
-    <form onSubmit={handleSignup} className="mx-auto max-w-md">
+    <div className="w-full">
+        <div className="flex justify-center">
+            <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
+          </div>
+      <form onSubmit={handleSignup} className="mx-auto max-w-md">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 p-3">
         <div>
           <label className="sr-only" htmlFor="firstName">
@@ -175,6 +179,8 @@ export default function Signup() {
           {loading ? 'Signing up...' : 'Signup'}
         </button>
       </div>
-    </form>
+    </form>    
+    </div>
+    
   )
 }
