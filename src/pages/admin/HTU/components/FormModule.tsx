@@ -115,13 +115,6 @@ export default function FormModule({ action, module }: Props) {
         setImagePreview(undefined);
     };
 
-    useEffect(() => {
-        if (!module || categoryOptions.length <= 1) {
-            navigate('/admin/learn/modules')
-        }
-    })
-
-
     return (
         <form>
             <div className="space-y-12">
