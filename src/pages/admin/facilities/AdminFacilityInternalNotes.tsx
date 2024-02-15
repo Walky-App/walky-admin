@@ -27,6 +27,7 @@ export default function AdminFacilityInternalNotes() {
     }
   }
 
+  // fix dependencies, may need to useMemo or useCallback
   React.useEffect(() => {
     fetchUser()
   }, [user])
@@ -82,8 +83,8 @@ export default function AdminFacilityInternalNotes() {
 
   return (
     <>
-      <SubHeader facility={facility} links={adminFacilitiesLinks} />
-      <div className="w-full flex flex-col items-center p-4">
+      <SubHeader data={facility} links={adminFacilitiesLinks} />
+      <div className="flex w-full flex-col items-center p-4">
         <form onSubmit={handleAddInternalNote} className="w-full">
           <div className="mb-4 max-w-md">
             <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
@@ -94,12 +95,12 @@ export default function AdminFacilityInternalNotes() {
                 id="internal-notes"
                 name="note"
                 rows={3}
-                className="px-3 block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                className="block w-full rounded-md border border-gray-300 px-3 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500 sm:text-sm"
                 placeholder="Write a note about the facility"
               />
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-x-6">
+          <div className="flex flex-col items-center gap-x-6 sm:flex-row">
             {updateSuccess && (
               <div className="rounded-md bg-green-50 p-4">
                 <div className="flex">
@@ -114,17 +115,17 @@ export default function AdminFacilityInternalNotes() {
             )}
             <button
               type="submit"
-              className="mt-4 sm:mt-0 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+              className="mt-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:mt-0">
               Add Note
             </button>
           </div>
         </form>
         {isLoading ? (
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+          <div className="flex items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
           </div>
         ) : internalNotes.length === 0 ? (
-          <div className="flex items-center justify-center h-96">
+          <div className="flex h-96 items-center justify-center">
             <div className="text-center">
               <h2 className="text-3xl font-semibold text-gray-900">No internal notes found</h2>
               <p className="mt-1 text-sm text-gray-500">Add a new note to the facility</p>

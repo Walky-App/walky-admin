@@ -85,7 +85,7 @@ export default function AdminFacilityImages() {
 
   return (
     <div>
-      <SubHeader facility={facility} links={adminFacilitiesLinks} />
+      <SubHeader data={facility} links={adminFacilitiesLinks} />
       <input
         ref={filesInputRef}
         className="hidden"

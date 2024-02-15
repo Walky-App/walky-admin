@@ -69,7 +69,7 @@ export default function AdminFacilityContacts() {
 
   return (
     <>
-      <SubHeader facility={facilityFound} links={adminFacilitiesLinks} />
+      <SubHeader data={facilityFound} links={adminFacilitiesLinks} />
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold leading-6 text-gray-900">Facility contacts</h1>
