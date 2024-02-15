@@ -1,49 +1,48 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import GlobalTable from '../../../components/shared/GlobalTable';
-import { RequestService } from '../../../services/RequestService';
-import { SubHeader } from '../../../components/shared/SubHeader';
-import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks';
+import { useState, useEffect, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
+import GlobalTable from '../../../components/shared/GlobalTable'
+import { RequestService } from '../../../services/RequestService'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityJobs() {
-  const { facilityId } = useParams();
-  const [facility, setFacility] = useState<any>({});
-  const [facilityJobs, setFacilityJobs] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  const { facilityId } = useParams()
+  const [facility, setFacility] = useState<any>({})
+  const [facilityJobs, setFacilityJobs] = useState<any>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const getFacility = async () => {
       try {
-        const facility = await RequestService(`facilities/${facilityId}`);
+        const facility = await RequestService(`facilities/${facilityId}`)
         if (facility) {
-          setFacility(facility);
+          setFacility(facility)
         } else {
-          console.log('No facility found or unexpected data structure received, setting default value.');
-          setFacility({});
+          console.log('No facility found or unexpected data structure received, setting default value.')
+          setFacility({})
         }
       } catch (error) {
-        console.error('Error fetching facility data:', error);
+        console.error('Error fetching facility data:', error)
       }
-    };
+    }
     const getFacilityJobs = async () => {
       try {
-        const facilityJobs = await RequestService(`jobs/facility/${facilityId}`);
+        const facilityJobs = await RequestService(`jobs/facility/${facilityId}`)
         if (facilityJobs && Array.isArray(facilityJobs)) {
-          setFacilityJobs(facilityJobs);
+          setFacilityJobs(facilityJobs)
         } else {
-          console.log('No facility jobs found or unexpected data structure received, setting default value.');
-          setFacilityJobs([]);
+          console.log('No facility jobs found or unexpected data structure received, setting default value.')
+          setFacilityJobs([])
         }
       } catch (error) {
-        console.error('Error fetching facility jobs data:', error);
+        console.error('Error fetching facility jobs data:', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
-    getFacility();
-    getFacilityJobs();
-  }, [facilityId]); // Ensure useEffect is run whenever facilityId changes
+    }
+    getFacility()
+    getFacilityJobs()
+  }, [facilityId]) // Ensure useEffect is run whenever facilityId changes
 
   const memoFacilityJobsColumns = useMemo(
     () => [
@@ -55,11 +54,11 @@ export default function AdminFacilityJobs() {
       { Header: 'Employment Type', accessor: 'employment_type' },
     ],
     [],
-  );
+  )
 
   return (
     <>
-      <SubHeader facility={facility} links={adminFacilitiesLinks} />
+      <SubHeader data={facility} links={adminFacilitiesLinks} />
       <div>
         {/* <button
           type="button"
@@ -70,8 +69,8 @@ export default function AdminFacilityJobs() {
         </button> */}
 
         {isLoading ? (
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+          <div className="flex items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
           </div>
         ) : facilityJobs.length > 0 ? (
           <GlobalTable data={facilityJobs} columns={memoFacilityJobsColumns} />
@@ -83,5 +82,5 @@ export default function AdminFacilityJobs() {
         )}
       </div>
     </>
-  );
+  )
 }

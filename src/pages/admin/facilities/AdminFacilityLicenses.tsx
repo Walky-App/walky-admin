@@ -2,10 +2,6 @@ import * as React from 'react'
 import { useParams } from 'react-router-dom'
 import { Spinner } from 'flowbite-react'
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
-
-import { Menu, Transition } from '@headlessui/react'
-import { BriefcaseIcon, DocumentPlusIcon, EllipsisVerticalIcon, IdentificationIcon, PaperClipIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/20/solid'
-
 import { RequestService } from '../../../services/RequestService'
 import { classNames } from '../../../utils/Tailwind'
 import { SubHeader } from '../../../components/shared/SubHeader'
@@ -50,12 +46,7 @@ export default function AdminFacilityLicenses() {
       formData.append('files', files[i])
     }
 
-    const updatedFacility = await RequestService(
-      `facilities/${facilityId}/licenses`,
-      'POST',
-      formData,
-      'binary',
-    )
+    const updatedFacility = await RequestService(`facilities/${facilityId}/licenses`, 'POST', formData, 'binary')
 
     setFacility(updatedFacility)
     setFiles([])
@@ -67,8 +58,8 @@ export default function AdminFacilityLicenses() {
   }
 
   return (
-    <div>
-      <SubHeader facility={facility} links={adminFacilitiesLinks} />
+    <>
+      <SubHeader data={facility} links={adminFacilitiesLinks} />
       <input
         ref={filesInputRef}
         className="hidden"
@@ -80,7 +71,7 @@ export default function AdminFacilityLicenses() {
       />
 
       {!uploading ? (
-        <div className="flex items-center my-5">
+        <div className="my-5 flex items-center">
           {files.length === 0 ? (
             <>
               <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
@@ -113,7 +104,7 @@ export default function AdminFacilityLicenses() {
                 <p
                   className={classNames(
                     statuses['Complete'],
-                    'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
+                    'mt-0.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
                   )}>
                   Approved
                 </p>
@@ -139,6 +130,6 @@ export default function AdminFacilityLicenses() {
           </li>
         ))}
       </ul>
-    </div>
+    </>
   )
 }
