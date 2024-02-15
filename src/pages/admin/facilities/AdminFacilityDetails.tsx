@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon, ChevronDownIcon, PhotoIcon } from '@heroicons/react/20/solid'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityDetails() {
   const { facilityId } = useParams()
@@ -86,7 +87,7 @@ export default function AdminFacilityDetails() {
   if (!facility) return <div>Loading...</div>
   return (
     <>
-      <AdminFacilityHeaderInfo facility={facility} />
+      <SubHeader facility={facility} links={adminFacilitiesLinks} />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">

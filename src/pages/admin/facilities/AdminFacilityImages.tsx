@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom'
 import { Dialog, Transition } from '@headlessui/react'
 import { Spinner } from 'flowbite-react'
 import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
-
 import { RequestService } from '../../../services/RequestService'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityImages() {
   const [facility, setFacility] = React.useState<any>({})
@@ -85,7 +85,7 @@ export default function AdminFacilityImages() {
 
   return (
     <div>
-      <AdminFacilityHeaderInfo facility={facility} />
+      <SubHeader facility={facility} links={adminFacilitiesLinks} />
       <input
         ref={filesInputRef}
         className="hidden"

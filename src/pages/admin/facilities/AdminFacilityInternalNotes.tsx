@@ -1,10 +1,10 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-
 import { RequestService } from '../../../services/RequestService'
 import { useAuth } from '../../../contexts/AuthContext'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityInternalNotes() {
   const { facilityId } = useParams()
@@ -82,7 +82,7 @@ export default function AdminFacilityInternalNotes() {
 
   return (
     <>
-      <AdminFacilityHeaderInfo facility={facility} />
+      <SubHeader facility={facility} links={adminFacilitiesLinks} />
       <div className="w-full flex flex-col items-center p-4">
         <form onSubmit={handleAddInternalNote} className="w-full">
           <div className="mb-4 max-w-md">

@@ -4,11 +4,12 @@ import { Spinner } from 'flowbite-react'
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
 import { Menu, Transition } from '@headlessui/react'
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { BriefcaseIcon, DocumentPlusIcon, EllipsisVerticalIcon, IdentificationIcon, PaperClipIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 
 import { RequestService } from '../../../services/RequestService'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 import { classNames } from '../../../utils/Tailwind'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 const statuses: any = {
   Complete: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -67,7 +68,7 @@ export default function AdminFacilityLicenses() {
 
   return (
     <div>
-      <AdminFacilityHeaderInfo facility={facility} />
+      <SubHeader facility={facility} links={adminFacilitiesLinks} />
       <input
         ref={filesInputRef}
         className="hidden"
