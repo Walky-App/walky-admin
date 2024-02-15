@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import GlobalTable from '../../../components/shared/GlobalTable';
 import { RequestService } from '../../../services/RequestService';
-import AdminFacilityHeaderInfo from './AdminFacilityHeader';
+import { SubHeader } from '../../../components/shared/SubHeader';
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks';
 
 export default function AdminFacilityJobs() {
   const { facilityId } = useParams();
@@ -58,7 +59,7 @@ export default function AdminFacilityJobs() {
 
   return (
     <>
-    <AdminFacilityHeaderInfo facility={facility} />
+      <SubHeader facility={facility} links={adminFacilitiesLinks} />
       <div>
         {/* <button
           type="button"
@@ -75,7 +76,7 @@ export default function AdminFacilityJobs() {
         ) : facilityJobs.length > 0 ? (
           <GlobalTable data={facilityJobs} columns={memoFacilityJobsColumns} />
         ) : (
-            <div className="text-left">
+          <div className="text-left">
             <h2 className="text-3xl font-semibold text-gray-900">No jobs found for this facility</h2>
             <p className="mt-1 text-sm text-gray-500">Please add a new job</p>
           </div>
