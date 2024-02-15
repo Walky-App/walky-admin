@@ -1,18 +1,9 @@
 import { Fragment } from 'react'
-import {
-  MapPinIcon,
-  MapIcon,
-  UserCircleIcon,
-  PhotoIcon,
-  BriefcaseIcon,
-  PaperClipIcon,
-  IdentificationIcon,
-  DocumentPlusIcon,
-  ChevronDownIcon,
-} from '@heroicons/react/20/solid'
+import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../utils/Tailwind'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { cn } from '../../utils/cn'
 
 export interface SubHeaderLink {
   id: number
@@ -27,12 +18,10 @@ export interface SubHeaderProps {
   links: SubHeaderLink[]
 }
 
-
 export const SubHeader: React.FC<SubHeaderProps> = ({ facility, links }) => {
-  const location = useLocation()
 
   return (
-    <div className="lg:flex lg:items-center lg:justify-between border-b border-gray-300 p-2 mb-10 w-full ">
+    <div className="mb-10 w-full border-b border-gray-300 p-2 lg:flex lg:items-center lg:justify-between ">
       <div className="min-w-0 flex-1">
         <div className="min-w-0 flex-1 ">
           <span>
@@ -55,53 +44,31 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ facility, links }) => {
         </div>
       </div>
       <div className="mt-5 flex lg:ml-4 lg:mt-0 ">
-        {
-          links.map(link => {
-            console.log('link--->', link.href)
-            console.log('location--->', location.pathname)
-
-
-            const highlightLink = (linkHref: string, currentPath: string) => {
-              // Normalize the current path to remove a trailing slash for an exact match comparison
-              const normalizedCurrentPath = currentPath.endsWith('/') ? currentPath.slice(0, -1) : currentPath;
-              console.log('normalizedCurrentPath--->', normalizedCurrentPath)
-              // Special handling for root link ("/")
-
-              if (linkHref === '/') {
-                return normalizedCurrentPath === '' ? 'bg-green-500 text-white hover:bg-green-400' : '';
-              } else if (normalizedCurrentPath.startsWith(linkHref)) {
-                return 'bg-green-500 text-white hover:bg-green-400';
-              }
-
-
-              // For non-root links, check if the current path starts with the link href
-             
-            };
-
-            // Example usage:
-            // Assuming location.pathname could be "/admin/images/65b17214be28d9553fa75580/"
-            // and you're rendering a link with href="/"
-            const currentPath = location.pathname.slice(1); // Remove the leading "/" to normalize
-            const linkHref = link.href; // The href for the root link
-            const className = highlightLink(linkHref, currentPath);
-            return (!link.disabled && (<span key={link.id} className=" ml-3 hidden lg:inline-block">
-              <Link
-                to={`/admin/facilities/${facility._id}${link.href}`}
-                className={` flex items-center p-2 rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 group 
-                ${highlightLink(linkHref, currentPath)}}`}>
-                <span className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true">
-                  {link.icon}
-                </span>
-                {link.name}
-              </Link>
-            </span>)
+        {links.map(link => {
+          return (
+            !link.disabled && (
+              <span key={link.id} className=" ml-3 hidden lg:inline-block">
+                <NavLink
+                  to={`/admin/facilities/${facility._id}${link.href}`}
+                  end
+                  className={({ isActive }) =>
+                    cn(
+                      'group flex items-center rounded-md  p-2 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800',
+                      { 'bg-green-500 text-white hover:bg-green-400': isActive },
+                    )
+                  }>
+                  <span className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true">
+                    {link.icon}
+                  </span>
+                  {link.name}
+                </NavLink>
+              </span>
             )
-          }
           )
+        })}
 
-        }
-        {/* Dropdown */}
-        <Menu as="div" className="relative ml-3 lg:hidden  w-full">
+        {/* Mobile Dropdown */}
+        <Menu as="div" className="relative ml-3 w-full  lg:hidden">
           <Menu.Button className="inline-flex items-center  rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
             More
             <ChevronDownIcon className="-mr-1 ml-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -177,9 +144,3 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ facility, links }) => {
     </div>
   )
 }
-
-
-
-
-
-
