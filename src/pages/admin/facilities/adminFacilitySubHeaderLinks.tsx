@@ -2,7 +2,7 @@ import { UserCircleIcon, PhotoIcon, BriefcaseIcon, PaperClipIcon, Identification
 import { type SubHeaderLink } from "../../../components/shared/SubHeader";
 
 export const adminFacilitiesLinks: SubHeaderLink[] = [
-  { id: 0, name: 'Details', href: '/', icon: < HomeIcon/>},
+  { id: 0, name: 'Details', href: '', icon: < HomeIcon/>},
   { id: 1, name: 'Contacts', href: '/contacts', icon: <UserCircleIcon /> },
   { id: 2, name: 'Images', href: '/images', icon: <PhotoIcon /> },
   { id: 3, name: 'Jobs', href: '/jobs', icon: <BriefcaseIcon /> },
