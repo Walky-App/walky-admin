@@ -1,20 +1,20 @@
-import * as React from 'react'
+import { useState, useRef, Fragment, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Dialog, Transition } from '@headlessui/react'
 import { Spinner } from 'flowbite-react'
 import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
-
 import { RequestService } from '../../../services/RequestService'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityImages() {
-  const [facility, setFacility] = React.useState<any>({})
-  const [uploading, setUploading] = React.useState(false)
-  const [files, setFiles] = React.useState<any>([])
-  const filesInputRef = React.useRef<any>()
+  const [facility, setFacility] = useState<any>({})
+  const [uploading, setUploading] = useState(false)
+  const [files, setFiles] = useState<any>([])
+  const filesInputRef = useRef<any>()
 
-  const [openDialog, setOpenDialog] = React.useState<boolean>(false)
-  const cancelButtonRef = React.useRef(null)
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const cancelButtonRef = useRef(null)
 
   const handleDialogOpen = (file: any) => {
     setFacility({ ...facility, selected_image: file, main_image: file.url })
@@ -27,7 +27,7 @@ export default function AdminFacilityImages() {
 
   const { facilityId } = useParams()
 
-  React.useMemo(() => {
+  useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
@@ -85,7 +85,7 @@ export default function AdminFacilityImages() {
 
   return (
     <div>
-      <AdminFacilityHeaderInfo facility={facility} />
+      <SubHeader data={facility} links={adminFacilitiesLinks} />
       <input
         ref={filesInputRef}
         className="hidden"
@@ -135,10 +135,10 @@ export default function AdminFacilityImages() {
           </li>
         ))}
       </ul>
-      <Transition.Root show={openDialog} as={React.Fragment}>
+      <Transition.Root show={openDialog} as={Fragment}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleDialogClose}>
           <Transition.Child
-            as={React.Fragment}
+            as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -151,7 +151,7 @@ export default function AdminFacilityImages() {
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
-                as={React.Fragment}
+                as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 enterTo="opacity-100 translate-y-0 sm:scale-100"

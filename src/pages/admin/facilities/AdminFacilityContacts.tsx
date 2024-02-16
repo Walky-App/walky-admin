@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import AdminFacilityContactModal from './AdminFacilityContactModal'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityContacts() {
   const { facilityId } = useParams()
@@ -68,7 +69,7 @@ export default function AdminFacilityContacts() {
 
   return (
     <>
-      <AdminFacilityHeaderInfo facility={facilityFound} />
+      <SubHeader data={facilityFound} links={adminFacilitiesLinks} />
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold leading-6 text-gray-900">Facility contacts</h1>
