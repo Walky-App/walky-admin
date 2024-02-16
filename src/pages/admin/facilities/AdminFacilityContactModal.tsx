@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Checkbox, Label, Modal, TextInput } from 'flowbite-react'
+import { Button, Label, Modal, TextInput } from 'flowbite-react'
 import { RequestService } from '../../../services/RequestService'
 
 export default function AdminFacilityContactModal({
