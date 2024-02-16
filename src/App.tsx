@@ -28,7 +28,7 @@ import Modules from './pages/learn/modules'
 import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
-import NewFacility from './pages/client/facilities/NewFacility'
+import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
 import AddJob from './pages/client/jobs/AddJob'
 import ClientProfile from './pages/client/ClientProfile'
@@ -85,7 +85,7 @@ export default function App() {
                   <Route path="/client/dashboard" element={<ClientDashboard />} />
                   <Route path="/client/profile" element={<ClientProfile />} />
                   <Route path="/client/facilities" element={<Facilities />} />
-                  <Route path="/client/facilities/new" element={<NewFacility />} />
+                  <Route path="/client/facilities/new" element={<ClientAddFacility />} />
                   <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
                   <Route path="/client/jobs" element={<Jobs />} />
                   <Route path="/client/jobs/new" element={<AddJob />} />
