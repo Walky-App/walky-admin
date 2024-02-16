@@ -179,7 +179,7 @@ export default function AdminProfile() {
                   <div className="mt-2">
                     <input
                       defaultValue={formUser.phone_number}
-                      type="tel"
+                      type="number"
                       name="phone_number"
                       id="phone_number"
                       autoComplete="phone_number"
