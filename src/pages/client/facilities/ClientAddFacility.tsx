@@ -1,14 +1,15 @@
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
-import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { RequestService } from '../../../services/RequestService'
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import TitleComponent from '../../../components/shared/general/TitleComponent'
 
-export default function AdminAddFacility() {
+export default function ClientAddFacility() {
   const user = GetTokenInfo()
   const user_id = user._id
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
+
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -53,7 +54,7 @@ export default function AdminAddFacility() {
 
     try {
       const response = await RequestService(`facilities`, 'POST', formData)
-      if (response.ok) {
+      if (response) {
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
       } else {
@@ -426,7 +427,7 @@ export default function AdminAddFacility() {
           <button
             type="submit"
             className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-            Add Facility
+            Submit
           </button>
         </div>
       </form>
