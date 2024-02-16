@@ -183,7 +183,7 @@ export default function Header() {
               </svg>
             </button>
           </div>
-          <div className="h-full px-3 py-4 overflow-y-auto bg-zinc-50 bg-zinc-800">
+          <div className="h-full px-3 py-4 overflow-y-auto  bg-zinc-800">
             <ul className="space-y-2 font-medium">
               {user?.role &&
                 links[user.role].map(link => (
