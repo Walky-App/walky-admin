@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import { CheckCircleIcon} from '@heroicons/react/20/solid'
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 

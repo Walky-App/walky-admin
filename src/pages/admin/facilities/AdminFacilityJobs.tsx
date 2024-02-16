@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
 import { SubHeader } from '../../../components/shared/SubHeader'
@@ -10,6 +10,8 @@ export default function AdminFacilityJobs() {
   const [facility, setFacility] = useState<any>({})
   const [facilityJobs, setFacilityJobs] = useState<any>([])
   const [isLoading, setIsLoading] = useState(true)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getFacility = async () => {
@@ -60,14 +62,12 @@ export default function AdminFacilityJobs() {
     <>
       <SubHeader data={facility} links={adminFacilitiesLinks} />
       <div>
-        {/* <button
+        <button
           type="button"
           onClick={() => navigate(`/admin/facilities/${facilityId}/jobs/new`)}
-          disabled
           className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
           Add Job
-        </button> */}
-
+        </button>
         {isLoading ? (
           <div className="flex items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
