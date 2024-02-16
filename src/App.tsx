@@ -25,6 +25,7 @@ import Learn from './pages/learn'
 import Modules from './pages/learn/modules'
 
 /** Client Pages */
+import ClientOnboarding from './pages/client/onboarding'
 import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
 import FacilityDetail from './pages/client/facilities/DetailView'
@@ -82,6 +83,7 @@ export default function App() {
                 <Route path="/learn" element={<Learn />} />
                 <Route path="/learn/category/:id" element={<Modules />} />
                 <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
+                  <Route path="/client/onboarding" element={<ClientOnboarding />} />
                   <Route path="/client/dashboard" element={<ClientDashboard />} />
                   <Route path="/client/profile" element={<ClientProfile />} />
                   <Route path="/client/facilities" element={<Facilities />} />
