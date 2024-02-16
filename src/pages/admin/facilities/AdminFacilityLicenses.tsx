@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Spinner } from 'flowbite-react'
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
@@ -14,14 +14,14 @@ const statuses: any = {
 }
 
 export default function AdminFacilityLicenses() {
-  const [facility, setFacility] = React.useState<any>({})
-  const [uploading, setUploading] = React.useState(false)
-  const [files, setFiles] = React.useState<any>([])
+  const [facility, setFacility] = useState<any>({})
+  const [uploading, setUploading] = useState(false)
+  const [files, setFiles] = useState<any>([])
   const { facilityId } = useParams()
 
-  const filesInputRef = React.useRef<any>()
+  const filesInputRef = useRef<any>()
 
-  React.useMemo(() => {
+  useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)

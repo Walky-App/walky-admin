@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { cn } from '../../utils/cn'
 
 export interface SubHeaderData {
@@ -15,7 +15,7 @@ export interface SubHeaderLink {
   id: number
   name: string
   href: string
-  icon: React.ReactNode
+  icon?: React.ReactNode
   disabled?: boolean
 }
 
@@ -25,14 +25,19 @@ export interface SubHeaderProps {
 }
 
 export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
+  const { pathname } = useLocation()
+  const basePath = pathname.split('/').slice(0, 3).join('/')
+
   return (
     <div className="mb-10 w-full border-b border-gray-300 p-2 lg:flex lg:items-center lg:justify-between">
       <div className="min-w-0 flex-1">
-        <Link
-          className="text-2xl font-bold leading-7 text-gray-900 hover:text-green-500 sm:truncate sm:text-3xl sm:tracking-tight"
-          to={`/admin/facilities/${data._id}`}>
-          {data?.name}
-        </Link>
+        {data._id && data.name ? (
+          <Link
+            className="text-2xl font-bold leading-7 text-gray-900 hover:text-green-500 sm:truncate sm:text-3xl sm:tracking-tight"
+            to={`${basePath}/${data._id}`}>
+            {data?.name}
+          </Link>
+        ) : null}
         <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
           {data.city ? (
             <div className="mt-2 flex items-center text-sm text-gray-500">
@@ -54,7 +59,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
             !link.disabled && (
               <span key={link.id} className="hidden md:block">
                 <NavLink
-                  to={`/admin/facilities/${data._id}${link.href}`}
+                  to={`${basePath}/${data._id}${link.href}`}
                   end
                   className={({ isActive }) =>
                     cn(
@@ -94,7 +99,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
                     <Menu.Item key={link.id}>
                       {({ active }) => (
                         <NavLink
-                          to={`/admin/facilities/${data._id}${link.href}`}
+                          to={`${basePath}/${data._id}${link.href}`}
                           end
                           className={cn(
                             { 'bg-gray-100': active },

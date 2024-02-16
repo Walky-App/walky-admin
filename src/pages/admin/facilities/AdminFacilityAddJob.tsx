@@ -3,7 +3,8 @@ import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityAddJob() {
   const { facilityId } = useParams()
@@ -25,7 +26,7 @@ export default function AdminFacilityAddJob() {
       }
     }
     getFacility()
-  }, [])
+  }, [facilityId])
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -63,24 +64,23 @@ export default function AdminFacilityAddJob() {
     }
 
     try {
-      const response = await RequestService(`/jobs`, 'POST', formData);
-      if (response) { 
-        setUpdateSuccess(true);
-        setTimeout(() => setUpdateSuccess(false), 5000);
+      const response = await RequestService(`/jobs`, 'POST', formData)
+      if (response) {
+        setUpdateSuccess(true)
+        setTimeout(() => setUpdateSuccess(false), 5000)
       } else {
-        console.error('Failed to post job');
-        setUpdateSuccess(false);
+        console.error('Failed to post job')
+        setUpdateSuccess(false)
       }
     } catch (error) {
-      console.error('Error posting job:', error);
-      setUpdateSuccess(false);
+      console.error('Error posting job:', error)
+      setUpdateSuccess(false)
     }
-
   }
 
   return (
     <>
-      <AdminFacilityHeaderInfo facility={facility} />
+      <SubHeader data={facility} links={adminFacilitiesLinks} />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -99,7 +99,7 @@ export default function AdminFacilityAddJob() {
                     type="text"
                     name="title"
                     id="job-title"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function AdminFacilityAddJob() {
                     type="text"
                     name="created_by"
                     id="email"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -125,7 +125,7 @@ export default function AdminFacilityAddJob() {
                     type="text"
                     name="salary"
                     id="salary"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -139,7 +139,7 @@ export default function AdminFacilityAddJob() {
                     type="text"
                     name="employment_type"
                     id="employment-type"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -154,7 +154,7 @@ export default function AdminFacilityAddJob() {
                     name="skills"
                     id="skills"
                     placeholder="Enter skills separated by commas"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -170,7 +170,7 @@ export default function AdminFacilityAddJob() {
                     name="shift_days"
                     id="shift-days"
                     placeholder="e.g., 1,4"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function AdminFacilityAddJob() {
                     name="shift_times"
                     id="shift-times"
                     placeholder="e.g., 8:00,19:00"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -201,7 +201,7 @@ export default function AdminFacilityAddJob() {
                     name="shift_dates"
                     id="shift-dates"
                     placeholder="e.g., 2024-01-31,2024-02-20"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function AdminFacilityAddJob() {
                     id="description"
                     name="description"
                     rows={3}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     defaultValue={''}
                   />
                 </div>

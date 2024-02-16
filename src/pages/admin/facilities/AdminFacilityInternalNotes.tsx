@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useEffect, FormEvent, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { RequestService } from '../../../services/RequestService'
@@ -8,31 +8,29 @@ import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export default function AdminFacilityInternalNotes() {
   const { facilityId } = useParams()
-  const [facility, setFacility] = React.useState<any>({})
-  const [internalNotes, setInternalNotes] = React.useState<any[]>([])
-  const [isLoading, setIsLoading] = React.useState(true)
-  const [updateSuccess, setUpdateSuccess] = React.useState(false)
-  const [userFound, setUserFound] = React.useState<any>({})
+  const [facility, setFacility] = useState<any>({})
+  const [internalNotes, setInternalNotes] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [updateSuccess, setUpdateSuccess] = useState(false)
+  const [userFound, setUserFound] = useState<any>({})
 
   const { user } = useAuth()
 
-  const fetchUser = async () => {
-    try {
-      //@ts-ignore
-      const userFound = await RequestService(`users/${user._id}`)
-      setUserFound(userFound)
-      console.log('userFound -->', userFound)
-    } catch (error) {
-      console.error('Error fetching user:', error)
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        //@ts-ignore
+        const userFound = await RequestService(`users/${user._id}`)
+        setUserFound(userFound)
+        console.log('userFound -->', userFound)
+      } catch (error) {
+        console.error('Error fetching user:', error)
+      }
     }
-  }
-
-  // fix dependencies, may need to useMemo or useCallback
-  React.useEffect(() => {
     fetchUser()
   }, [user])
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchFacility = async () => {
       try {
         const facility = await RequestService(`facilities/${facilityId}`)
@@ -44,7 +42,7 @@ export default function AdminFacilityInternalNotes() {
     fetchFacility()
   }, [facilityId])
 
-  const fetchInternalNotes = async () => {
+  const fetchInternalNotes = useCallback(async () => {
     setIsLoading(true)
     try {
       const allInternalNotes = await RequestService(`facilities/${facilityId}/internal_notes`)
@@ -54,13 +52,13 @@ export default function AdminFacilityInternalNotes() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  React.useEffect(() => {
-    fetchInternalNotes()
   }, [facilityId])
 
-  const handleAddInternalNote = async (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    fetchInternalNotes()
+  }, [fetchInternalNotes])
+
+  const handleAddInternalNote = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const target = e.target as typeof e.target & {
       note: { value: string }

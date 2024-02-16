@@ -1,5 +1,4 @@
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
