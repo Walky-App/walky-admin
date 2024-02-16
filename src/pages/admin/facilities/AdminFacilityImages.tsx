@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Dialog, Transition } from '@headlessui/react'
 import { Spinner } from 'flowbite-react'
@@ -6,18 +6,21 @@ import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/
 
 import { RequestService } from '../../../services/RequestService'
 import AdminFacilityHeaderInfo from './AdminFacilityHeader'
+import React from 'react'
 
 export default function AdminFacilityImages() {
-  const [facility, setFacility] = React.useState<any>({})
-  const [uploading, setUploading] = React.useState(false)
-  const [files, setFiles] = React.useState<any>([])
-  const filesInputRef = React.useRef<any>()
+  const [facility, setFacility] = useState<any>({})
+  const [uploading, setUploading] = useState(false)
+  const [files, setFiles] = useState<any>([])
+  const filesInputRef = useRef<any>()
 
-  const [openDialog, setOpenDialog] = React.useState<boolean>(false)
-  const cancelButtonRef = React.useRef(null)
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const cancelButtonRef = useRef(null)
+
+  const selectedImage = useRef<any>(null)
 
   const handleDialogOpen = (file: any) => {
-    setFacility({ ...facility, selected_image: file, main_image: file.url })
+    selectedImage.current = file
     setOpenDialog(true)
   }
 
@@ -27,7 +30,7 @@ export default function AdminFacilityImages() {
 
   const { facilityId } = useParams()
 
-  React.useMemo(() => {
+  useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
@@ -67,8 +70,8 @@ export default function AdminFacilityImages() {
     setOpenDialog(false)
     const body = {
       file_type: 'images',
-      file_id: facility.selected_image._id,
-      file_path: facility.selected_image.key,
+      file_id: selectedImage.current._id,
+      file_path: selectedImage.current.key,
     }
 
     const updatedFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
@@ -78,7 +81,11 @@ export default function AdminFacilityImages() {
 
   const handleFacilityUpdate = async () => {
     setOpenDialog(false)
-    const updatedFacility = await RequestService(`facilities/${facilityId}`, 'PATCH', facility)
+
+    const updatedFacility = await RequestService(`facilities/${facilityId}`, 'PATCH', {
+      ...facility,
+      main_image: selectedImage.current.url,
+    })
 
     setFacility(updatedFacility)
   }
@@ -135,7 +142,7 @@ export default function AdminFacilityImages() {
           </li>
         ))}
       </ul>
-      <Transition.Root show={openDialog} as={React.Fragment}>
+      <Transition.Root show={openDialog} as={Fragment}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleDialogClose}>
           <Transition.Child
             as={React.Fragment}
@@ -169,7 +176,7 @@ export default function AdminFacilityImages() {
                     </button>
                   </div>
                   <div className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
-                    <img src={facility.selected_image?.url} alt="facility" className="h-full object-cover" />
+                    <img src={selectedImage.current?.url} alt="facility" className="h-full object-cover" />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
