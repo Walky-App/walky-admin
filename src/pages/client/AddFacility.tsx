@@ -1,10 +1,10 @@
 import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import TextInput from '@/components/shared/forms/TextInput'
-import Select from '@/components/shared/forms/Select'
-import { states } from '@/variables'
+import TextInput from '../../components/shared/forms/TextInput'
+import Select from '../../components/shared/forms/Select'
+import { states } from '../../../variables'
 
-export default function AddFacility({ open, setOpen, handleSubmit }) {
+export default function AddFacility({ open, setOpen, handleSubmit }:any) {
   return (
     <Transition appear show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={() => setOpen(false)}>
@@ -39,13 +39,13 @@ export default function AddFacility({ open, setOpen, handleSubmit }) {
                     <TextInput label="Street Address*" name="streetAddress" placeholder="Street Address*" required />
                     <TextInput label="Apt, Suite or Unit" name="address2" placeholder="Apt, Suite or Unit" />
                     <TextInput label="City*" name="city" placeholder="City*" required />
-                    <Select
+                    {/* <Select
                       options={states}
                       required
                       name="state"
                       label="State / Province*"
                       placeholder="State / Province*"
-                    />
+                    /> */}
                     <TextInput label="Zip Code*" name="zipCode" placeholder="Zip Code*" required />
                   </div>
 
