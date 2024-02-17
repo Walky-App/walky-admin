@@ -1,11 +1,12 @@
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import { RequestService } from '../../../services/RequestService'
 
 export default function AdminAddJob() {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
-  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -37,26 +38,18 @@ export default function AdminAddJob() {
       status: 'active',
     }
 
-    fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(response => {
-        if (response.ok) {
-          setUpdateSuccess(true)
-          setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
-        } else {
-          throw new Error('Job posted successfully')
-        }
-      })
-      .catch(error => {
-        console.error('Error posting job:', error)
-        setUpdateSuccess(false)
-      })
+    try {
+      const response = await RequestService(`jobs`, 'POST', formData)
+      if (response.ok) {
+        setUpdateSuccess(true)
+        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+      } else {
+        throw new Error('Job posted successfully')
+      }
+    } catch (error) {
+      console.error('Error posting job:', error)
+      setUpdateSuccess(false)
+    }
   }
 
   return (

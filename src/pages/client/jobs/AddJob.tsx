@@ -24,7 +24,7 @@ export default function NewJob() {
 
   const facility_id = facilities.map((facility: any) => facility._id)
 
-  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -56,14 +56,11 @@ export default function NewJob() {
       status: 'active',
     }
 
-    fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formData),
-    })
+    try {
+      const response = await RequestService(`jobs`, 'POST', formData)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const states = [

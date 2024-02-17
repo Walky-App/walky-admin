@@ -1,16 +1,14 @@
 import { LoginData } from '../interfaces/Global'
+import { RequestService } from './RequestService'
 
 export const LoginService = async (body: LoginData) => {
-  const url = `${process.env.REACT_APP_PUBLIC_API}/auth/login`
-
-  const options: RequestInit = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+  try {
+    const response = await RequestService(`auth/login`, 'POST', body)
+    console.log('response -> ', response)
+    if (response) return response
+  } catch (error) {
+    console.error(error)
   }
-
-  const response = await fetch(url, options)
-  return await response.json()
 }
 
 export const LogoutService = async () => {

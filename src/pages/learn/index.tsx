@@ -5,6 +5,8 @@ import { RequestService } from '../../services/RequestService'
 import { useSearchParams } from 'react-router-dom'
 import HeaderComponent from '../../components/shared/general/HeaderComponent'
 import { FilterInterface } from '../../interfaces/Global'
+import { PhoneIcon } from '@heroicons/react/24/outline'
+import { EnvelopeIcon } from '@heroicons/react/20/solid'
 
 export default function Learn() {
   const [loading, setLoading] = useState<boolean>(true)
@@ -33,6 +35,28 @@ export default function Learn() {
   return (
     <>
       <div className="w-full sm:overflow-x-hidden">
+        <div className='bg-gray-100 pb-2 mb-4 border-1 rounded-xl shadow-md'>
+          <div >
+            <img className="h-28 w-full object-cover object-center lg:h-32 border-1 rounded-t-xl" src={'https://www.hemptempsuniversity.com/wp-content/uploads/2019/07/htuniversity1-1-1799x1011.jpg'} alt="" />
+          </div>
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+              <div className="flex">
+                <img className="h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32" src={'https://www.hemptempsuniversity.com/wp-content/uploads/2016/05/hemptempsuniversitylogo-1-e1465278344770.png'} alt="" />
+              </div>
+              <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
+                <div className="mt-6 min-w-0 flex-1 sm:hidden md:block">
+                  <h1 className="truncate text-2xl font-bold text-gray-900">Hemp Temps University</h1>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 hidden min-w-0 flex-1 sm:block md:hidden">
+              <h1 className="truncate text-2xl font-bold text-gray-900">Hemp Temps University</h1>
+            </div>
+          </div>
+        </div>
+
+
         <HeaderComponent title={'Learn'} search />
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
