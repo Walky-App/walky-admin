@@ -60,6 +60,7 @@ import AdminDetailsModule from './pages/admin/HTU/AdminDetailsModule'
 import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
+import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 
 export default function App() {
   return (
@@ -99,6 +100,7 @@ export default function App() {
                   <Route path="/admin/users/:id" element={<AdminUserDetails />} />
                   <Route path="/admin/facilities" element={<AdminFacilities />} />
                   <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
+                  <Route path="/admin/facilities/:facilityId/activity" element={<AdminFacilityActivity />} />
                   <Route path="/admin/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
                   <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
                   <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
