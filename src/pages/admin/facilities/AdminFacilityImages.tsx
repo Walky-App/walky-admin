@@ -1,4 +1,4 @@
-import { useState, useRef, Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Dialog, Transition } from '@headlessui/react'
 import { Spinner } from 'flowbite-react'
@@ -16,8 +16,10 @@ export default function AdminFacilityImages() {
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const cancelButtonRef = useRef(null)
 
+  const selectedImage = useRef<any>(null)
+
   const handleDialogOpen = (file: any) => {
-    setFacility({ ...facility, selected_image: file, main_image: file.url })
+    selectedImage.current = file
     setOpenDialog(true)
   }
 
@@ -67,8 +69,8 @@ export default function AdminFacilityImages() {
     setOpenDialog(false)
     const body = {
       file_type: 'images',
-      file_id: facility.selected_image._id,
-      file_path: facility.selected_image.key,
+      file_id: selectedImage.current._id,
+      file_path: selectedImage.current.key,
     }
 
     const updatedFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
@@ -78,7 +80,11 @@ export default function AdminFacilityImages() {
 
   const handleFacilityUpdate = async () => {
     setOpenDialog(false)
-    const updatedFacility = await RequestService(`facilities/${facilityId}`, 'PATCH', facility)
+
+    const updatedFacility = await RequestService(`facilities/${facilityId}`, 'PATCH', {
+      ...facility,
+      main_image: selectedImage.current.url,
+    })
 
     setFacility(updatedFacility)
   }
@@ -169,7 +175,7 @@ export default function AdminFacilityImages() {
                     </button>
                   </div>
                   <div className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
-                    <img src={facility.selected_image?.url} alt="facility" className="h-full object-cover" />
+                    <img src={selectedImage.current?.url} alt="facility" className="h-full object-cover" />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
