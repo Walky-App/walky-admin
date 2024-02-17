@@ -1,11 +1,13 @@
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { RequestService } from '../../../services/RequestService'
 
 export default function NewFacility() {
   const user = GetTokenInfo()
   const user_id = user._id
-  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -42,14 +44,12 @@ export default function NewFacility() {
       // city_license: e.target.city_license.value,
       notes: target.notes.value,
     }
-    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formData),
-    })
+
+    try {
+      const response = await RequestService(`facilities`, 'POST', formData)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (

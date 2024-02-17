@@ -1,4 +1,4 @@
-import { Documents } from './Global'
+import { Documents, TagsInterface } from './Global'
 
 export interface Module extends Documents {
   category: string
@@ -8,5 +8,6 @@ export interface Module extends Documents {
   level: string
   title: string
   total_time: number
+  state_tags: TagsInterface[]
   units?: any[]
 }

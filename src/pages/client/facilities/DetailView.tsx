@@ -16,7 +16,7 @@ export default function FacilityDetail() {
     fetchFacility()
   }, [facilityId])
 
-  const handleForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
@@ -50,14 +50,16 @@ export default function FacilityDetail() {
       // city_license: target.city_license.value,
       notes: target.notes.value,
     }
-    fetch(`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${user?.access_token}`,
-      },
-      body: JSON.stringify(formValues),
-    })
+
+    try {
+      const response = await RequestService(
+        `facilities/${facilityId}`,
+        'PATCH',
+        formValues,
+      )
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   if (!facility) return <div>Loading...</div>

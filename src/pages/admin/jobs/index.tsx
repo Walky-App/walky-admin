@@ -43,14 +43,14 @@ export default function AdminJobs() {
   return (
     <div className="">
       <HeaderComponent title={'Jobs'} />
-      <button
+      {/* <button
         type="button"
         onClick={() => {
           navigate('/admin/jobs/new')
         }}
         className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
         Post New Job
-      </button>
+      </button> */}
       {isLoading ? (
         <div className="flex justify-center items-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>

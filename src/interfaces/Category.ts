@@ -1,4 +1,4 @@
-import { Documents } from './Global'
+import { Documents, TagsInterface } from './Global'
 
 export interface Category extends Documents {
   description: string
@@ -8,4 +8,5 @@ export interface Category extends Documents {
   createdAt: Date
   updatedAt: Date
   progress: number
+  state_tags: TagsInterface[]
 }

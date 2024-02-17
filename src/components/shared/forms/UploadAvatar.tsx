@@ -1,11 +1,14 @@
 import { useRef, useState, useMemo } from 'react'
 import { UserCircleIcon, PencilIcon } from '@heroicons/react/24/solid'
 import { Spinner } from 'flowbite-react'
+import { useAuth } from '../../../contexts/AuthContext'
+import { RequestService } from '../../../services/RequestService'
 
 export default function UploadAvatar({ formUser, setFormUser }: any) {
   const [file, setFile] = useState<any>()
   const [previewUrl, setPreviewUrl] = useState<any>(formUser.avatar)
   const [uploading, setUploading] = useState(false)
+  const { user } = useAuth()
 
   const filePickerRef = useRef<any>()
 
@@ -14,12 +17,12 @@ export default function UploadAvatar({ formUser, setFormUser }: any) {
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/users/upload-avatar/${formUser._id}`, {
-      method: 'POST',
-      body: formData,
-    })
-
-    const avatar_url = await response.json()
+    const avatar_url = await RequestService(
+      `users/upload-avatar/${formUser._id}`,
+      'POST',
+      formData,
+      'binary',
+    )
 
     setFormUser({ ...formUser, avatar: avatar_url })
     setPreviewUrl(avatar_url)
