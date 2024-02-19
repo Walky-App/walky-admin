@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { AppShell } from '../shared/ui/AppShell'
+import { AppShell } from './AppShell'
 
 export default function Layout() {
   return (
