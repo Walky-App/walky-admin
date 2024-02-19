@@ -12,7 +12,7 @@ export default function NavigationButton({ path, status, redirect }: DisableButt
     <button
       type="button"
       onClick={handlerButton}
-      className={`inline-flex items-center rounded-md ${status ? 'bg-green-800 hover:bg-green-600' : 'bg-red-800 hover:bg-red-600'} px-3 py-2 text-sm font-semibold text-white shadow-sm `} >
+      className={`ml-2 inline-flex items-center rounded-md ${status ? 'bg-green-800 hover:bg-green-600' : 'bg-red-800 hover:bg-red-600'} px-3 py-2 text-sm font-semibold text-white shadow-sm `} >
       {status ? 'Active' : 'Disable'}
     </button >
   )

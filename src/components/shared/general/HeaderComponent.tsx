@@ -45,7 +45,7 @@ export default function HeaderComponent({ title, selectedOptions, search = false
             search && <Search searchQuery="search" />
           )
           }
-          {(actionButton && !search && !selectedOptions) && <NavigationButton to={actionButton.to} text={actionButton.text} />}
+          {(actionButton && !search && !selectedOptions) && <NavigationButton to={actionButton.to} text={actionButton.text} disbalePlusIcon={actionButton.disbalePlusIcon} />}
           {(disableButton && !search && !selectedOptions) && <DisableButton path={disableButton.path} status={disableButton.status} redirect={disableButton.redirect} />}
         </div>
       </div>
