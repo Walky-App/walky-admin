@@ -1,14 +1,11 @@
-import * as React from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Spinner } from 'flowbite-react'
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
-
-import { Menu, Transition } from '@headlessui/react'
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
-
 import { RequestService } from '../../../services/RequestService'
-import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 import { classNames } from '../../../utils/Tailwind'
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 const statuses: any = {
   Complete: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -17,14 +14,14 @@ const statuses: any = {
 }
 
 export default function AdminFacilityLicenses() {
-  const [facility, setFacility] = React.useState<any>({})
-  const [uploading, setUploading] = React.useState(false)
-  const [files, setFiles] = React.useState<any>([])
+  const [facility, setFacility] = useState<any>({})
+  const [uploading, setUploading] = useState(false)
+  const [files, setFiles] = useState<any>([])
   const { facilityId } = useParams()
 
-  const filesInputRef = React.useRef<any>()
+  const filesInputRef = useRef<any>()
 
-  React.useMemo(() => {
+  useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
@@ -49,12 +46,7 @@ export default function AdminFacilityLicenses() {
       formData.append('files', files[i])
     }
 
-    const updatedFacility = await RequestService(
-      `facilities/${facilityId}/licenses`,
-      'POST',
-      formData,
-      'binary',
-    )
+    const updatedFacility = await RequestService(`facilities/${facilityId}/licenses`, 'POST', formData, 'binary')
 
     setFacility(updatedFacility)
     setFiles([])
@@ -66,8 +58,8 @@ export default function AdminFacilityLicenses() {
   }
 
   return (
-    <div>
-      <AdminFacilityHeaderInfo facility={facility} />
+    <>
+      <SubHeader data={facility} links={adminFacilitiesLinks} />
       <input
         ref={filesInputRef}
         className="hidden"
@@ -79,7 +71,7 @@ export default function AdminFacilityLicenses() {
       />
 
       {!uploading ? (
-        <div className="flex items-center my-5">
+        <div className="my-5 flex items-center">
           {files.length === 0 ? (
             <>
               <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
@@ -112,7 +104,7 @@ export default function AdminFacilityLicenses() {
                 <p
                   className={classNames(
                     statuses['Complete'],
-                    'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
+                    'mt-0.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
                   )}>
                   Approved
                 </p>
@@ -138,6 +130,6 @@ export default function AdminFacilityLicenses() {
           </li>
         ))}
       </ul>
-    </div>
+    </>
   )
 }

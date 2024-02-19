@@ -273,7 +273,6 @@ function TableComponent({
         </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row: any, i: any) => {
-            console.log(location.pathname)
             prepareRow(row)
             return (
               <tr
