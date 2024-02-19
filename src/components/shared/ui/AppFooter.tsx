@@ -1,42 +1,28 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
+export default function AppFooter() {
+  return (
+    <footer className="bg-white py-6" aria-labelledby="footer-heading">
+      <h2 id="footer-heading" className="sr-only">
+        Footer
+      </h2>
+      {/* Footer */}
+      <div className="border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
+        <div className="flex space-x-6 md:order-2">
+          {navigation.social.map(item => (
+            <a key={item.name} href={item.href} className="text-gray-400 hover:text-gray-500">
+              <span className="sr-only">{item.name}</span>
+              <item.icon className="h-6 w-6" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+        <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
+          &nbsp; &copy; {new Date().getFullYear()} Hemp Temps. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  )
+}
+
 const navigation = {
-  solutions: [
-    { name: 'Marketing', href: '#' },
-    { name: 'Analytics', href: '#' },
-    { name: 'Commerce', href: '#' },
-    { name: 'Insights', href: '#' },
-  ],
-  support: [
-    { name: 'Pricing', href: '#' },
-    { name: 'Documentation', href: '#' },
-    { name: 'Guides', href: '#' },
-    { name: 'API Status', href: '#' },
-  ],
-  company: [
-    { name: 'About', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Jobs', href: '#' },
-    { name: 'Press', href: '#' },
-    { name: 'Partners', href: '#' },
-  ],
-  legal: [
-    { name: 'Claim', href: '#' },
-    { name: 'Privacy', href: '#' },
-    { name: 'Terms', href: '#' },
-  ],
   social: [
     {
       name: 'Facebook',
@@ -87,28 +73,4 @@ const navigation = {
     //   ),
     // },
   ],
-}
-
-export default function AppFooter() {
-  return (
-    <footer className="bg-white py-6" aria-labelledby="footer-heading">
-      <h2 id="footer-heading" className="sr-only">
-        Footer
-      </h2>
-      {/* Footer */}
-      <div className="border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
-        <div className="flex space-x-6 md:order-2">
-          {navigation.social.map(item => (
-            <a key={item.name} href={item.href} className="text-gray-400 hover:text-gray-500">
-              <span className="sr-only">{item.name}</span>
-              <item.icon className="h-6 w-6" aria-hidden="true" />
-            </a>
-          ))}
-        </div>
-        <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
-          &nbsp; &copy; {new Date().getFullYear()} Hemp Temps. All rights reserved.
-        </p>
-      </div>
-    </footer>
-  )
 }
