@@ -20,6 +20,12 @@ export interface NavigationButtonInterface {
   text: string
 }
 
+export interface DisableButtonInterface {
+  path: string
+  status: boolean
+  redirect: string
+}
+
 export interface TagsInterface {
   state: string
   value: number
