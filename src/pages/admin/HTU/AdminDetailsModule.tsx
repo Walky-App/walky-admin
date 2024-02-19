@@ -3,7 +3,7 @@ import HeaderComponent from "../../../components/shared/general/HeaderComponent"
 import { useEffect } from "react"
 import FormModule from "./components/FormModule"
 import { useAdmin } from "../../../contexts/AdminContext"
-import { DisableButtonInterface } from "../../../interfaces/Global"
+import { DisableButtonInterface, NavigationButtonInterface } from "../../../interfaces/Global"
 
 
 
@@ -17,6 +17,14 @@ export default function AdminDetailsModule() {
         redirect: '/admin/learn/modules'
     }
 
+    const actionButton: NavigationButtonInterface = {
+        text: 'Units',
+        to: `/admin/learn/modules/${module?._id}/units`,
+        disbalePlusIcon: true
+    }
+
+
+
     useEffect(() => {
         if (!module || categoryOptions.length <= 1) {
             console.log(categoryOptions.length)
@@ -26,7 +34,7 @@ export default function AdminDetailsModule() {
 
     return (
         <div className="w-full sm:overflow-x-hidden">
-            <HeaderComponent title={'Update Module'} disableButton={disableButtonData} />
+            <HeaderComponent title={'Update Module'} actionButton={actionButton} disableButton={disableButtonData} />
             <FormModule action="edit" module={module} />
         </div>
     )
