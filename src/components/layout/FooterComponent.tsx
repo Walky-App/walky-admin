@@ -1,4 +1,4 @@
-export default function AppFooter() {
+export default function FooterComponent() {
   return (
     <footer className="bg-white py-6" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
