@@ -83,7 +83,7 @@ export default function AdminModulesLearn() {
           {modules.length === 0 && !isLoading && <EmptyState type="module" to="/admin/learn/modules/new" />}
           {modules.length > 0 && !isLoading && (
             <div className="w-full">
-              <GlobalTable data={modules} columns={categoryColumns} />
+              <GlobalTable data={modules} columns={categoryColumns} allowClick />
             </div>
           )}
         </>
