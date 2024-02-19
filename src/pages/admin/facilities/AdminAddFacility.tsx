@@ -1,16 +1,19 @@
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import { PhotoIcon } from '@heroicons/react/24/solid'
 import * as React from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export default function AdminAddFacility() {
+  const user = GetTokenInfo()
+  const user_id = user._id
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const target = e.target as typeof e.target & {
+      user_id: { value: string }
       name: { value: string }
       country: { value: string }
       address: { value: string }
@@ -28,6 +31,7 @@ export default function AdminAddFacility() {
     }
 
     const formData = {
+      user_id: user_id,
       name: target.name.value,
       country: target.country.value,
       address: target.address.value,

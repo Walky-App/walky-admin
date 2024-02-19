@@ -45,7 +45,7 @@ export default function Facilities() {
 
       <div className="flex flex-col gap-4">
         {facilities.length > 0 ? (
-          <GlobalTable data={facilities} columns={facilitiesColumns} />
+          <GlobalTable data={facilities} columns={facilitiesColumns} allowClick />
         ) : (
           <div>No facilities available.</div>
         )}

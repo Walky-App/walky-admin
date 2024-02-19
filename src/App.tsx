@@ -28,8 +28,8 @@ import Modules from './pages/learn/modules'
 import ClientOnboarding from './pages/client/onboarding'
 import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
-import FacilityDetail from './pages/client/facilities/DetailView'
-import NewFacility from './pages/client/facilities/NewFacility'
+import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
+import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
 import AddJob from './pages/client/jobs/AddJob'
 import ClientProfile from './pages/client/ClientProfile'
@@ -61,6 +61,7 @@ import AdminDetailsModule from './pages/admin/HTU/AdminDetailsModule'
 import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
+import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 
 export default function App() {
   return (
@@ -87,8 +88,8 @@ export default function App() {
                   <Route path="/client/dashboard" element={<ClientDashboard />} />
                   <Route path="/client/profile" element={<ClientProfile />} />
                   <Route path="/client/facilities" element={<Facilities />} />
-                  <Route path="/client/facilities/new" element={<NewFacility />} />
-                  <Route path="/client/facilities/:facilityId" element={<FacilityDetail />} />
+                  <Route path="/client/facilities/new" element={<ClientAddFacility />} />
+                  <Route path="/client/facilities/:facilityId" element={<ClientFacilityDetails />} />
                   <Route path="/client/jobs" element={<Jobs />} />
                   <Route path="/client/jobs/new" element={<AddJob />} />
                   <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
@@ -101,6 +102,7 @@ export default function App() {
                   <Route path="/admin/users/:id" element={<AdminUserDetails />} />
                   <Route path="/admin/facilities" element={<AdminFacilities />} />
                   <Route path="/admin/facilities/:facilityId" element={<AdminFacilityDetails />} />
+                  <Route path="/admin/facilities/:facilityId/activity" element={<AdminFacilityActivity />} />
                   <Route path="/admin/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
                   <Route path="/admin/facilities/new" element={<AdminAddFacility />} />
                   <Route path="/admin/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />

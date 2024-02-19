@@ -1,25 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import { SubHeader } from '../../../components/shared/SubHeader'
-import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-export default function AdminFacilityDetails() {
+export default function ClientFacilityDetails() {
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<any>({})
+  const [facility, setFacility] = React.useState<any>([])
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
 
+
   useEffect(() => {
-    const getFacility = async () => {
-      try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
-        setFacility(facilityFound)
-      } catch (error) {
-        console.error('Error fetching facility data:', error)
-      }
+    const fetchFacility = async () => {
+      const data = await RequestService(`facilities/${facilityId}`)
+      setFacility(data)
     }
-    getFacility()
+    fetchFacility()
   }, [facilityId])
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -87,7 +83,6 @@ export default function AdminFacilityDetails() {
   if (!facility) return <div>Loading...</div>
   return (
     <>
-      <SubHeader data={facility} links={adminFacilitiesLinks} />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
