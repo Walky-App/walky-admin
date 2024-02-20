@@ -65,7 +65,7 @@ export default function AdminFacilities() {
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
         </div>
       ) : (
-        <GlobalTable data={memoFacilitiesData} columns={memoFacilitiesColumns} />
+        <GlobalTable data={memoFacilitiesData} columns={memoFacilitiesColumns} allowClick />
       )}
     </div>
   )
