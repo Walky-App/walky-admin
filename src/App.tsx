@@ -60,6 +60,7 @@ import AdminDetailsModule from './pages/admin/HTU/AdminDetailsModule'
 import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
+import AdminUnitsLearn from './pages/admin/HTU/AdminUnitsLearn'
 
 export default function App() {
   return (
@@ -72,7 +73,7 @@ export default function App() {
             <Route path="/reset/:id/:at" element={<NewPasswordForm />} />
             <Route path="/reset-success" element={<ResetSuccess />} />
             <Route path="/invite/:email/:role" element={<Signup />} />
-          <Route element={<Layout />}>
+            <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
                 <Route path="/employee/jobs" element={<EmployeeJobs />} />
@@ -116,6 +117,7 @@ export default function App() {
                   <Route path="/admin/learn/categories/new" element={<AdminAddCategory />} />
                   <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
                   <Route path="/admin/learn/modules/:idModule" element={<AdminDetailsModule />} />
+                  <Route path="/admin/learn/modules/:idModule/units" element={<AdminUnitsLearn />} />
                   <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
                 </Route>
               </Route>

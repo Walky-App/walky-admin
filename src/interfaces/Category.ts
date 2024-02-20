@@ -10,3 +10,9 @@ export interface Category extends Documents {
   progress: number
   state_tags: TagsInterface[]
 }
+
+
+export interface CategoryTitle {
+  title: string
+  _id: string
+}
