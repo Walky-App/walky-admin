@@ -18,6 +18,7 @@ export interface SelectedOptionInterface {
 export interface NavigationButtonInterface {
   to: string
   text: string
+  disbalePlusIcon?: boolean
 }
 
 export interface DisableButtonInterface {
