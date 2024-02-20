@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState , useMemo} from 'react'
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { RequestService } from '../../services/RequestService'
 import { GetTokenInfo } from '../../utils/TokenUtils'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import UploadAvatar from '../../components/shared/forms/UploadAvatar'
 
 export default function ClientProfile() {
   const [formUser, setFormUser] = useState<any>({})
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
 
-  useEffect(() => {
+  useMemo(() => {
     const { _id } = GetTokenInfo()
 
     const getUser = async () => {
@@ -27,9 +28,8 @@ export default function ClientProfile() {
       first_name: target.first_name.value,
       last_name: target.last_name.value,
       email: target.email.value,
-      phone: target.phone_number.value,
       gender: target.gender.value,
-      birthday: target.birthday.value,
+      birth_date: target.birth_date.value,
       phone_number: target.phone_number.value,
       address: target.address.value,
       city: target.city.value,
@@ -41,21 +41,25 @@ export default function ClientProfile() {
       ],
     }
 
-    const response: any = await RequestService(`users/${formUser._id}`, 'PATCH', formData)
-
-    if (response._id) {
-      setFormUser(response)
-      setUpdateSuccess(true)
-      setTimeout(() => setUpdateSuccess(false), 2500)
-    } else {
-      console.error('Error updating user')
+    try {
+      const response = await RequestService(`users/${formUser._id}`, 'PATCH', formData)
+      if (response && response._id) {
+        setFormUser(response)
+        setUpdateSuccess(true)
+        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+      } else {
+        throw new Error('Failed to update user')
+      }
+    } catch (error) {
+      console.error('Error updating user:', error)
+      setUpdateSuccess(false)
     }
   }
 
   return (
     <>
-      <div className="border-b border-gray-200 pb-5 w-full mb-12 ">
-        <h3 className="text-base font-semibold leading-6 text-gray-900">{formUser.first_name}'s profile</h3>
+      <div className="mb-12 w-full border-b border-gray-200 pb-5 ">
+        <h3 className="text-base font-semibold leading-6 text-gray-900">Your Profile Details</h3>
       </div>
 
       {formUser.role && (
@@ -63,63 +67,14 @@ export default function ClientProfile() {
           <div className="space-y-12">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Profile</h2>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Avatar</h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
                   This information will be displayed publicly so be careful what you share.
                 </p>
               </div>
 
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-                <div className="col-span-full">
-                  <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                    About
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      id="about"
-                      name="about"
-                      rows={3}
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      defaultValue={''}
-                    />
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>
-                </div>
-
-                <div className="col-span-full">
-                  <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
-                    Photo
-                  </label>
-                  <div className="mt-2 flex items-center gap-x-3">
-                    <UserCircleIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
-                    <button
-                      type="button"
-                      className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                      Change
-                    </button>
-                  </div>
-                </div>
-
-                <div className="col-span-full">
-                  <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
-                    Cover photo
-                  </label>
-                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                    <div className="text-center">
-                      <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
-                      <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-semibold text-green-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-600 focus-within:ring-offset-2 hover:text-green-500">
-                          <span>Upload a file</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
-                    </div>
-                  </div>
-                </div>
+              <div className="">
+                <UploadAvatar formUser={formUser} setFormUser={setFormUser} />
               </div>
             </div>
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -143,7 +98,7 @@ export default function ClientProfile() {
                       name="first_name"
                       id="first_name"
                       autoComplete="given-name"
-                      className="px-1.5 block w-full bg-slate-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -160,7 +115,7 @@ export default function ClientProfile() {
                       name="last_name"
                       id="last_name"
                       autoComplete="family-name"
-                      className="px-1.5 block  w-full bg-slate-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block  w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -177,7 +132,7 @@ export default function ClientProfile() {
                       name="email"
                       type="email"
                       autoComplete="email"
-                      className="px-1.5 block bg-slate-100 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -189,12 +144,12 @@ export default function ClientProfile() {
                   <div className="mt-2">
                     <input
                       type="date"
-                      defaultValue={formUser.birthday}
-                      // disabled
-                      name="birthday"
-                      id="birthday"
-                      autoComplete="birthday"
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-slate-100 sm:text-sm sm:leading-6"
+                      defaultValue={
+                        formUser.birth_date ? new Date(formUser.birth_date).toISOString().split('T')[0] : ''
+                      }
+                      name="birth_date"
+                      id="birth_date"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -204,31 +159,34 @@ export default function ClientProfile() {
                     Gender
                   </label>
                   <div className="mt-2">
-                    <input
+                    <select
                       defaultValue={formUser.gender}
-                      type="text"
-                      // disabled
                       name="gender"
                       id="gender"
                       autoComplete="gender"
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-slate-100 sm:text-sm sm:leading-6"
-                    />
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
-                    Cell Phone
+                    Phone number
                   </label>
                   <div className="mt-2">
                     <input
                       defaultValue={formUser.phone_number}
-                      type="text"
-                      // disabled
+                      type="tel"
                       name="phone_number"
                       id="phone_number"
                       autoComplete="phone_number"
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-slate-100 sm:text-sm sm:leading-6"
+                      pattern="\d{10}"
+                      placeholder="10-digit phone-number"
+                      title="Enter a valid US phone number (e.g. 9876543210)"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -255,7 +213,7 @@ export default function ClientProfile() {
                       name="address"
                       id="address"
                       autoComplete="address"
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -271,7 +229,7 @@ export default function ClientProfile() {
                       name="city"
                       id="city"
                       autoComplete="city"
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -287,7 +245,7 @@ export default function ClientProfile() {
                       name="state"
                       id="state"
                       autoComplete="state"
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -303,136 +261,12 @@ export default function ClientProfile() {
                       name="zip"
                       id="zip"
                       autoComplete="zip"
-                      className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
               </div>
             </div>
-
-            {formUser?.role === 'employee' && (
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Direct Deposit</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Use a permanent address where you can receive mail.
-                  </p>
-                </div>
-
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank Name
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_name}
-                        type="text"
-                        name="bank_name"
-                        id="bank_name"
-                        autoComplete="bank_name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="account_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Account #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.account_number}
-                        type="text"
-                        name="account_number"
-                        id="account_number"
-                        autoComplete="account_number"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="routing_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Routing #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.routing_number}
-                        type="text"
-                        name="routing_number"
-                        id="routing_number"
-                        autoComplete="routing_number"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-full">
-                    <label htmlFor="bank_address" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank address
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_address}
-                        type="text"
-                        name="bank_address"
-                        id="bank_address"
-                        autoComplete="bank_address"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_city" className="block text-sm font-medium leading-6 text-gray-900">
-                      City
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_city}
-                        type="text"
-                        name="bank_city"
-                        id="bank_city"
-                        autoComplete="address-level2"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_state" className="block text-sm font-medium leading-6 text-gray-900">
-                      State / Province
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_state}
-                        type="text"
-                        name="bank_state"
-                        id="bank_state"
-                        autoComplete="address-level1"
-                        className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_zip" className="block text-sm font-medium leading-6 text-gray-900">
-                      ZIP / Postal code
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_zip}
-                        type="text"
-                        name="bank_zip"
-                        id="bank_zip"
-                        autoComplete="bank_zip"
-                        className="px-1.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
@@ -494,9 +328,7 @@ export default function ClientProfile() {
                     <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-green-800">
-                      Successfully updated {formUser.first_name}'s profile
-                    </p>
+                    <p className="text-sm font-medium text-green-800">Profile updated successfully</p>
                   </div>
                   <div className="ml-auto pl-3">
                     <div className="-mx-1.5 -my-1.5"></div>
@@ -506,7 +338,7 @@ export default function ClientProfile() {
             )}
             <button
               type="submit"
-              className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
               Update
             </button>
           </div>
