@@ -1,16 +1,19 @@
 import Search from './Search'
-import { NavigationButtonInterface, SelectedOptionInterface } from '../../../interfaces/Global'
+import { DisableButtonInterface, NavigationButtonInterface, SelectedOptionInterface } from '../../../interfaces/Global'
 import NavigationButton from './NavigationButton'
+import DisableButton from './DisableButton'
 import SelectedOptionWithFilter from './SelectedOptionWithFilter'
+import { states } from '../../../utils/VariablesUtils';
 
 interface Props {
   title: string
   search?: boolean
   selectedOptions?: SelectedOptionInterface[]
   actionButton?: NavigationButtonInterface
+  disableButton?: DisableButtonInterface
 }
 
-export default function HeaderComponent({ title, selectedOptions, search = false, actionButton }: Props) {
+export default function HeaderComponent({ title, selectedOptions, search = false, actionButton, disableButton }: Props) {
   return (
     <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between mb-10">
       <h3 className="text-base font-semibold leading-6 text-gray-900">{title}</h3>
@@ -43,6 +46,7 @@ export default function HeaderComponent({ title, selectedOptions, search = false
           )
           }
           {(actionButton && !search && !selectedOptions) && <NavigationButton to={actionButton.to} text={actionButton.text} />}
+          {(disableButton && !search && !selectedOptions) && <DisableButton path={disableButton.path} status={disableButton.status} redirect={disableButton.redirect} />}
         </div>
       </div>
     </div>
