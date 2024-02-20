@@ -37,7 +37,7 @@ export default function AdminFacilityDetails() {
       address: { value: string }
       city: { value: string }
       state: { value: string }
-      zip: { value: string }
+      zip: { value: number }
       company_dbas: { value: string }
     }
 
@@ -445,7 +445,7 @@ export default function AdminFacilityDetails() {
                 </label>
                 <div className="mt-2">
                   <input
-                    type="text"
+                    type="number"
                     name="zip"
                     id="zip"
                     defaultValue={facility.zip || ''}
