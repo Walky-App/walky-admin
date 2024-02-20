@@ -27,7 +27,6 @@ export default function AdminDetailsModule() {
 
     useEffect(() => {
         if (!module || categoryOptions.length <= 1) {
-            console.log(categoryOptions.length)
             navigate('/admin/learn/modules')
         }
     })
