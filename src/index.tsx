@@ -3,7 +3,7 @@ import { PrimeReactProvider } from 'primereact/api'
 import App from './App'
 import './index.css'
 
-import 'primereact/resources/themes/lara-light-green/theme.css' // theme
+import './primereact-themes/customized/lara/lara-light/green/theme.css' // theme
 import 'primeicons/primeicons.css'
 
 const container = document.getElementById('root')
