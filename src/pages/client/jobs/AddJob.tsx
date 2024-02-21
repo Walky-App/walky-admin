@@ -1,7 +1,10 @@
 import * as React from 'react'
+import { useState } from 'react'
 import TitleComponent from '../../../components/shared/general/TitleComponent'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { RequestService } from '../../../services/RequestService'
+import { Calendar } from 'primereact/calendar'
+import { Nullable } from 'primereact/ts-helpers'
 
 export default function NewJob() {
   interface Facility {
@@ -9,6 +12,7 @@ export default function NewJob() {
     name: string
   }
   const [facilities, setFacilities] = React.useState<any>([])
+  const [dates, setDates] = useState<Nullable<Date[]>>(null)
 
   const user = GetTokenInfo()
   const id = user?._id
@@ -29,7 +33,6 @@ export default function NewJob() {
 
     const target = e.target as typeof e.target & {
       created_by: { value: string }
-      company_id: { value: string }
       facility_id: { value: string }
       title: { value: string }
       salary: { value: string }
@@ -43,7 +46,6 @@ export default function NewJob() {
 
     const formData = {
       created_by: target.created_by.value,
-      company_id: target.company_id.value,
       facility_id: target.facility_id.value,
       title: target.title.value,
       salary: target.salary.value,
@@ -63,59 +65,6 @@ export default function NewJob() {
     }
   }
 
-  const states = [
-    { name: 'Alabama', code: 'AL' },
-    { name: 'Alaska', code: 'AK' },
-    { name: 'Arizona', code: 'AZ' },
-    { name: 'Arkansas', code: 'AR' },
-    { name: 'California', code: 'CA' },
-    { name: 'Colorado', code: 'CO' },
-    { name: 'Connecticut', code: 'CT' },
-    { name: 'Delaware', code: 'DE' },
-    { name: 'Florida', code: 'FL' },
-    { name: 'Georgia', code: 'GA' },
-    { name: 'Hawaii', code: 'HI' },
-    { name: 'Idaho', code: 'ID' },
-    { name: 'Illinois', code: 'IL' },
-    { name: 'Indiana', code: 'IN' },
-    { name: 'Iowa', code: 'IA' },
-    { name: 'Kansas', code: 'KS' },
-    { name: 'Kentucky', code: 'KY' },
-    { name: 'Louisiana', code: 'LA' },
-    { name: 'Maine', code: 'ME' },
-    { name: 'Maryland', code: 'MD' },
-    { name: 'Massachusetts', code: 'MA' },
-    { name: 'Michigan', code: 'MI' },
-    { name: 'Minnesota', code: 'MN' },
-    { name: 'Mississippi', code: 'MS' },
-    { name: 'Missouri', code: 'MO' },
-    { name: 'Montana', code: 'MT' },
-    { name: 'Nebraska', code: 'NE' },
-    { name: 'Nevada', code: 'NV' },
-    { name: 'New Hampshire', code: 'NH' },
-    { name: 'New Jersey', code: 'NJ' },
-    { name: 'New Mexico', code: 'NM' },
-    { name: 'New York', code: 'NY' },
-    { name: 'North Carolina', code: 'NC' },
-    { name: 'North Dakota', code: 'ND' },
-    { name: 'Ohio', code: 'OH' },
-    { name: 'Oklahoma', code: 'OK' },
-    { name: 'Oregon', code: 'OR' },
-    { name: 'Pennsylvania', code: 'PA' },
-    { name: 'Rhode Island', code: 'RI' },
-    { name: 'South Carolina', code: 'SC' },
-    { name: 'South Dakota', code: 'SD' },
-    { name: 'Tennessee', code: 'TN' },
-    { name: 'Texas', code: 'TX' },
-    { name: 'Utah', code: 'UT' },
-    { name: 'Vermont', code: 'VT' },
-    { name: 'Virginia', code: 'VA' },
-    { name: 'Washington', code: 'WA' },
-    { name: 'West Virginia', code: 'WV' },
-    { name: 'Wisconsin', code: 'WI' },
-    { name: 'Wyoming', code: 'WY' },
-  ]
-
   return (
     <>
       <TitleComponent title={'Add Job'} />
@@ -131,7 +80,7 @@ export default function NewJob() {
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
+              {/* <div className="sm:col-span-3">
                 <label htmlFor="job-title" className="block text-sm font-medium leading-6 text-gray-900">
                   Title
                 </label>
@@ -140,11 +89,11 @@ export default function NewJob() {
                     type="text"
                     name="title"
                     id="job-title"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-              </div>
-              <div className="sm:col-span-3">
+              </div> */}
+              {/* <div className="sm:col-span-3">
                 <label htmlFor="company-id" className="block text-sm font-medium leading-6 text-gray-900">
                   Company
                 </label>
@@ -153,11 +102,11 @@ export default function NewJob() {
                     type="text"
                     name="company_id"
                     id="company-id"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-              </div>
-              <div className="sm:col-span-3">
+              </div> */}
+              {/* <div className="sm:col-span-3">
                 <label htmlFor="created_by" className="block text-sm font-medium leading-6 text-gray-900">
                   Created By
                 </label>
@@ -166,20 +115,20 @@ export default function NewJob() {
                     type="text"
                     name="created_by"
                     id="email"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-              </div>
+              </div> */}
 
               <div className="sm:col-span-3">
                 <label htmlFor="facility-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Facility ID*
+                  Choose Facility*
                 </label>
                 <div className="mt-2">
                   <select
                     name="facility_id"
                     id="facility-id"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     {facilities.map((facility: Facility) => (
                       <option key={facility._id} value={facility._id}>
                         {facility.name}
@@ -197,7 +146,7 @@ export default function NewJob() {
                     type="text"
                     name="salary"
                     id="salary"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -211,7 +160,7 @@ export default function NewJob() {
                     type="text"
                     name="employment_type"
                     id="employment-type"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -226,7 +175,7 @@ export default function NewJob() {
                     name="skills"
                     id="skills"
                     placeholder="Enter skills separated by commas"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -242,7 +191,7 @@ export default function NewJob() {
                     name="shift_days"
                     id="shift-days"
                     placeholder="e.g., 1,4"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -258,7 +207,7 @@ export default function NewJob() {
                     name="shift_times"
                     id="shift-times"
                     placeholder="e.g., 8:00,19:00"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -273,8 +222,13 @@ export default function NewJob() {
                     name="shift_dates"
                     id="shift-dates"
                     placeholder="e.g., 2024-01-31,2024-02-20"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
+                </div>
+
+                {/* Calendar Input */}
+                <div className="card justify-content-center flex">
+                  <Calendar value={dates} onChange={e => setDates(e.value)} selectionMode="multiple" readOnlyInput />
                 </div>
               </div>
               <div className="col-span-full">
@@ -286,7 +240,7 @@ export default function NewJob() {
                     id="description"
                     name="description"
                     rows={3}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     defaultValue={''}
                   />
                 </div>
@@ -314,7 +268,7 @@ export default function NewJob() {
                     id="country"
                     name="country"
                     autoComplete="country-name"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                     <option>United States</option>
                     <option>Canada</option>
                     <option>Mexico</option>
@@ -332,7 +286,7 @@ export default function NewJob() {
                     name="address"
                     id="address"
                     autoComplete="address-line1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -347,30 +301,8 @@ export default function NewJob() {
                     name="city"
                     id="city"
                     autoComplete="address-level2"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="state" className="block text-sm font-medium leading-6 text-gray-900">
-                  State / Province
-                </label>
-                <div className="mt-2">
-                  <select
-                    name="state"
-                    id="state"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue="">
-                    <option value="" disabled>
-                      Select your state
-                    </option>
-                    {states.map(state => (
-                      <option key={state.code} value={state.code}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </div>
 
@@ -384,7 +316,7 @@ export default function NewJob() {
                     name="zip"
                     id="zip"
                     autoComplete="postal-code"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
