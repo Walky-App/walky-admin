@@ -30,7 +30,7 @@ import Facilities from './pages/client/facilities'
 import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import ClientAddJob from './pages/client/jobs/ClientAddJob'
+import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
 import ClientProfile from './pages/client/ClientProfile'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
