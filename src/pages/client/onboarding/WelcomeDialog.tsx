@@ -14,7 +14,7 @@ export const WelcomeDialog: React.FC = () => {
           modal
           dismissableMask
           onHide={() => setVisible(false)}
-          content={({ hide }) => (
+          content={
             <div className="flex flex-col gap-4 rounded-lg bg-white px-8 py-5 sm:w-full sm:max-w-md">
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-base font-semibold leading-6 text-gray-900">Welcome to HempTemps</h3>
@@ -26,15 +26,10 @@ export const WelcomeDialog: React.FC = () => {
                 </div>
               </div>
               <div className="mx-auto">
-                <Button
-                  label="Continue"
-                  onClick={e => {
-                    hide(e)
-                  }}
-                />
+                <Button label="Continue" onClick={() => setVisible(false)} />
               </div>
             </div>
-          )}></Dialog>
+          }></Dialog>
       </div>
     </>
   )
