@@ -41,19 +41,14 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
     reset,
   } = useForm({
     defaultValues: {
-      job_dates: null,
+      job_dates: [],
       startTime: null,
       endTime: null,
-      shift_type: [],
       lunch_break: null,
+      totalHours: null,
     },
   })
 
-  const shift_type = [
-    { name: 'Morning' },
-    { name: 'Day' },
-    { name: 'Night' },
-  ]
   const getFormErrorMessage = (name: string) => {
     //@ts-ignore
     return errors[name] ? (
@@ -90,54 +85,41 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
         <Controller
           name="job_dates"
           control={control}
-          rules={{ required: 'Date is required.' }}
+          rules={{
+            required: 'Date is required.',
+            validate: value => value.length > 0 || 'At least one date must be selected.',
+          }}
           render={({ field, fieldState }) => (
             <>
               <label htmlFor={field.name}>Shift Dates</label>
-              <Calendar
-                inputId={field.name}
-                value={field.value}
-                onChange={field.onChange}
-                dateFormat="dd/mm/yy"
-                selectionMode="multiple"
-                className={classNames({ 'p-invalid': fieldState.error })}
-              />
-              {getFormErrorMessage(field.name)}
+              <div>
+                <Calendar
+                  inputId={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  dateFormat="dd/mm/yy"
+                  selectionMode="multiple"
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                />
+                {getFormErrorMessage(field.name)}
+              </div>
             </>
           )}
         />{' '}
       </div>
       <div className="mt-6">
         <label htmlFor="start_time">Start Time</label>
-        <Calendar value={startTime} onChange={e => setStartTime(e.value ?? null)} timeOnly />
+        <div>
+          {' '}
+          <Calendar value={startTime} onChange={e => setStartTime(e.value ?? null)} timeOnly />
+        </div>
       </div>
       <div className="mt-6">
         <label htmlFor="end_time">End Time</label>
-        <Calendar value={endTime} onChange={e => setEndTime(e.value ?? null)} timeOnly />
-      </div>
-      <div className="mt-6">
-        <label htmlFor="skills">Shift Type</label>
-        <Controller
-          name="shift_type"
-          control={control}
-          rules={{ required: 'Select Shift type.' }}
-          render={({ field, fieldState }) => (
-            <>
-              <MultiSelect
-                id={field.name}
-                name="value"
-                value={field.value}
-                options={shift_type}
-                onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
-                optionLabel="name"
-                placeholder="Select Shift Type"
-                maxSelectedLabels={3}
-                className="md:w-20rem w-full"
-              />
-              {getFormErrorMessage(field.name)}
-            </>
-          )}
-        />
+        <div>
+          {' '}
+          <Calendar value={endTime} onChange={e => setEndTime(e.value ?? null)} timeOnly />
+        </div>
       </div>
       <div>
         <Controller
@@ -149,7 +131,35 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
           }}
           render={({ field, fieldState }) => (
             <>
-              <label htmlFor={field.name}>Lunch Break in minutes</label>
+              <label htmlFor={field.name}>Lunch Break (minutes)</label>
+              <div>
+                <InputNumber
+                  id={field.name}
+                  inputRef={field.ref}
+                  value={field.value}
+                  onBlur={field.onBlur}
+                  onValueChange={e => field.onChange(e)}
+                  useGrouping={false}
+                  inputClassName={classNames({ 'p-invalid': fieldState.error })}
+                />
+              </div>
+              {getFormErrorMessage(field.name)}
+            </>
+          )}
+        />
+      </div>
+      <div>
+        <Controller
+          name="totalHours"
+          control={control}
+          rules={{
+            required: 'Enter total number of hours for this job.',
+            validate: value =>
+              (value !== null && value >= 0 && value <= 90) || 'Enter total number of hours for this job.',
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <label htmlFor={field.name}>Total Hours</label>
               <div>
                 <InputNumber
                   id={field.name}
