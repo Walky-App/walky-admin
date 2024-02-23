@@ -73,16 +73,19 @@ export default function BasicInfo(props: BasicInfoProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <Toast ref={toast} />
       <div className="space-y-12">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Basic Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide basic information about the job.</p>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please take a moment to provide the essential information for the job posting. We require you to specify
+              the job title and provide a facility this job pertains to.
+            </p>
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
               <label htmlFor="taxId" className="block text-sm font-medium leading-6 text-gray-900">
-                *Tax ID:
+                Job Title:
               </label>
               <div className="mt-2">
                 <Controller
@@ -94,9 +97,6 @@ export default function BasicInfo(props: BasicInfoProps) {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
-                        Job Title
-                      </label>
                       <span className="p-float-label">
                         <InputText
                           id={field.name}
@@ -117,7 +117,7 @@ export default function BasicInfo(props: BasicInfoProps) {
               <label
                 htmlFor="businessContactMobileNumber"
                 className="block text-sm font-medium leading-6 text-gray-900">
-                Select Facility
+                Select Facility:
               </label>
               <div className="mt-2">
                 <Controller
@@ -126,9 +126,6 @@ export default function BasicInfo(props: BasicInfoProps) {
                   rules={{ required: 'Facility is required.' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
-                        Select Facility
-                      </label>
                       <div>
                         <Dropdown
                           id={field.name}
@@ -153,16 +150,16 @@ export default function BasicInfo(props: BasicInfoProps) {
         {/* Business Location */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Job Description</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please provide your business address information below.
+              Please provide a comprehensive job description for this job.{' '}
             </p>
           </div>
 
-          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 md:col-span-2">
             <div className="sm:col-span-3">
               <label htmlFor="facilityName" className="block text-sm font-medium leading-6 text-gray-900">
-                Text Editor:
+                Job Description:
               </label>
               <div className="mt-2">
                 <Controller
@@ -175,9 +172,6 @@ export default function BasicInfo(props: BasicInfoProps) {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
-                        Job Description
-                      </label>
                       <Editor
                         value={field.value}
                         onTextChange={(e: EditorTextChangeEvent) => field.onChange(e.htmlValue ?? '')}
