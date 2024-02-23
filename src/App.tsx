@@ -30,7 +30,7 @@ import Facilities from './pages/client/facilities'
 import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import AddJob from './pages/client/jobs/AddJob'
+import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
 import ClientProfile from './pages/client/ClientProfile'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
@@ -90,7 +90,7 @@ export default function App() {
                   <Route path="/client/facilities/new" element={<ClientAddFacility />} />
                   <Route path="/client/facilities/:facilityId" element={<ClientFacilityDetails />} />
                   <Route path="/client/jobs" element={<Jobs />} />
-                  <Route path="/client/jobs/new" element={<AddJob />} />
+                  <Route path="/client/jobs/new" element={<ClientAddJob />} />
                   <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
