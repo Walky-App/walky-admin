@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useMemo } from 'react'
 import { Dialog, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
@@ -23,111 +23,10 @@ import { IoMdMail } from 'react-icons/io'
 import { MdSchool } from 'react-icons/md'
 import FooterComponent from './FooterComponent'
 
-export const sidebarLinks: SideBarOptions = {
-  employee: [
-    { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
-    { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-    {
-      id: 2,
-      disabled: true,
-      name: 'My Jobs',
-      href: '/employee/jobs/mine',
-      icon: <FaBusinessTime />,
-    },
-    { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-    // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
-  ],
-  client: [
-    {
-      id: 1,
-      name: 'My Jobs',
-      href: '/client/jobs',
-      icon: <FaBriefcase />,
-    },
-    {
-      id: 2,
-      name: 'Contracts',
-      href: '/dashboard/contracts',
-      icon: <FaFileContract />,
-      disabled: true,
-    },
-    {
-      id: 3,
-      name: 'Invoices',
-      href: '/dashboard/invoices',
-      icon: <FaFileInvoiceDollar />,
-      disabled: true,
-    },
-    {
-      id: 4,
-      name: 'Timesheets',
-      href: '/dashboard/timesheets',
-      icon: <BsFillFileEarmarkSpreadsheetFill />,
-      disabled: true,
-    },
-    {
-      id: 5,
-      name: 'Reports',
-      href: '/dashboard/reports',
-      icon: <HiDocumentReport />,
-      disabled: true,
-    },
-    {
-      id: 6,
-      name: 'Messages',
-      href: '/dashboard/messages',
-      icon: <IoMdMail />,
-      disabled: true,
-    },
-    {
-      id: 7,
-      name: 'Facilities',
-      href: `/client/facilities/`,
-      icon: <FaBuilding />,
-    },
-    {
-      id: 8,
-      name: 'HTU',
-      href: '/learn',
-      icon: <MdSchool />,
-    },
-    // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
-  ],
-  admin: [
-    {
-      id: 1,
-      name: 'Users',
-      href: '/admin/users',
-      icon: <FaUserGroup />,
-    },
-    {
-      id: 2,
-      name: 'Facilities',
-      href: '/admin/facilities',
-      icon: <FaBuilding />,
-    },
-    {
-      id: 3,
-      name: 'Jobs',
-      href: '/admin/jobs',
-      icon: <FaBriefcase />,
-    },
-    {
-      id: 4,
-      name: 'HTU',
-      href: '/admin/learn',
-      icon: <FaUserGraduate />,
-    },
-
-    {
-      id: 5,
-      name: 'Messages',
-      href: '/admin/messages',
-      icon: <IoMdMail />,
-      disabled: true,
-    },
-  ],
-}
+const admin_role = process.env.REACT_APP_ADMIN_ROLE?.toString()
+const client_role = process.env.REACT_APP_CLIENT_ROLE?.toString()
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE?.toString()
+const sales_role = process.env.REACT_APP_SALES_ROLE?.toString()
 
 export interface SideBarData {
   id: number
@@ -135,10 +34,6 @@ export interface SideBarData {
   href: string
   icon: React.ReactNode
   disabled?: boolean
-}
-
-interface SideBarOptions {
-  [key: string]: SideBarData[]
 }
 
 export interface UserNavigationItem {
@@ -150,6 +45,40 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
+const adminLinks = [
+  { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
+  { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
+  { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
+  { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
+  { id: 5, name: 'Messages', href: '/admin/messages', icon: <IoMdMail />, disabled: true },
+]
+
+const clientLinks = [
+  { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase /> },
+  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
+  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
+  {
+    id: 4,
+    name: 'Timesheets',
+    href: '/dashboard/timesheets',
+    icon: <BsFillFileEarmarkSpreadsheetFill />,
+    disabled: true,
+  },
+  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
+  { id: 6, name: 'Messages', href: '/dashboard/messages', icon: <IoMdMail />, disabled: true },
+  { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
+  { id: 8, name: 'HTU', href: '/learn', icon: <MdSchool /> },
+  // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
+]
+
+const employeeLinks = [
+  { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+  { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
+  { id: 2, disabled: true, name: 'My Jobs', href: '/employee/jobs/mine', icon: <FaBusinessTime /> },
+  { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+  // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
+]
+
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -160,6 +89,16 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     LogoutService()
     navigate('/login')
   }
+
+  const role = user?.role.toString()
+
+  const links = useMemo(() => {
+    if (role === admin_role) return adminLinks
+    if (role === client_role) return clientLinks
+    if (role === employee_role) return employeeLinks
+    if (role === sales_role) return employeeLinks
+    return []
+  }, [role])
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
@@ -184,7 +123,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             <li>
               <ul role="list" className="-mx-2 space-y-1">
                 {user?.role &&
-                  sidebarLinks[user.role].map(link => (
+                  links.map(link => (
                     <li key={link.id}>
                       {!link.disabled && (
                         <NavLink
@@ -208,7 +147,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
               <ul role="list" className="-mx-2 mt-2 space-y-1">
                 {user?.role &&
-                  sidebarLinks[user.role].map(link => {
+                  links.map(link => {
                     let unread = 3
 
                     if (link.disabled) {
