@@ -1,33 +1,37 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
 import ForgotPasswordForm from './ForgotPasswordForm'
 import { set } from 'react-hook-form'
+import { RequestService } from '../../services/RequestService'
 
-const ImageRotator: React.FC = () => {
-  const [imageIndex, setImageIndex] = useState<number>(1)
+// const ImageRotator: React.FC = () => {
+//   const [imageIndex, setImageIndex] = useState<number>(1)
 
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * 13) + 1
-    setImageIndex(randomIndex)
-  }, [])
-
-  const imageUrl = `https://hemptemps-prod.s3.amazonaws.com/web-images/${imageIndex}.png`
-
-  return (
-    <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
-      <img
-        alt="Hemp Temp employees trimming"
-        src={imageUrl}
-        className="absolute inset-0 hidden h-full object-cover sm:block"
-      />
-    </div>
-  )
-}
+// }
 
 export default function Auth() {
   const [userForm, setUserForm] = useState('Login')
+  const [heroImage, setHeroImage] = useState<string>('')
+  
+
+  useMemo(() => {
+    const getImages = async () => {
+      try {
+        const allImages = await RequestService('/auth/images')
+        console.log(allImages)
+
+        // set hero image to a random image from the array
+        const randomIndex = Math.floor(Math.random() * allImages.length)
+
+        setHeroImage(allImages[randomIndex])
+      } catch (error) {
+        console.error('Error fetching images:', error)
+      }
+    }
+    getImages()
+  }, [])
 
   return (
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
@@ -79,7 +83,9 @@ export default function Auth() {
           <small className="text-xs text-gray-400  ">v.1.0.0{process.env.NODE_ENV === 'development' ? 'd' : 'p'}</small>
         </div>
       </div>
-      <ImageRotator />
+      <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
+        <img src={heroImage} alt="" className="absolute inset-0 hidden h-full object-cover sm:block" />
+      </div>
     </section>
   )
 }
