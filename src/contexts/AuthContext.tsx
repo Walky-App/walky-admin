@@ -3,6 +3,11 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { IUser } from '../interfaces/User'
 import { ITokenInfo } from '../interfaces/services.interfaces'
 
+const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
+const client_role = process.env.REACT_APP_CLIENT_ROLE as string
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
+const sales_role = process.env.REACT_APP_SALES_ROLE as string
+
 interface AuthContextType {
   user: IUser | undefined
   setUser: (user: IUser) => void
@@ -31,14 +36,17 @@ const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     if (user && user.role) {
       switch (user.role) {
-        case 'employee':
-          setProfilePath('/employee/profile')
+        case admin_role:
+          setProfilePath('/admin/profile')
           break
-        case 'client':
+        case client_role:
           setProfilePath('/client/profile')
           break
-        case 'admin':
-          setProfilePath('/admin/profile')
+        case employee_role:
+          setProfilePath('/employee/profile')
+          break
+        case sales_role:
+          setProfilePath('/sales/profile')
           break
         default:
           setProfilePath('/')
