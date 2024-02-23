@@ -62,6 +62,7 @@ import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
 import AdminUnitsLearn from './pages/admin/HTU/AdminUnitsLearn'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
+import AdminAddUnit from './pages/admin/HTU/AdminAddUnit'
 
 export default function App() {
   return (
@@ -120,6 +121,7 @@ export default function App() {
                   <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
                   <Route path="/admin/learn/modules/:idModule" element={<AdminDetailsModule />} />
                   <Route path="/admin/learn/modules/:idModule/units" element={<AdminUnitsLearn />} />
+                  <Route path="/admin/learn/modules/:idModule/units/new" element={<AdminAddUnit />} />
                   <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
                 </Route>
               </Route>
