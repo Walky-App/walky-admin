@@ -1,0 +1,35 @@
+export interface IFacility {
+    _id: String
+    corp_name: String
+    name: String
+    tax_id: String
+    phone_number: String
+    company_dbas: String[]
+    contacts: String[]
+    country: String
+    address: String
+    zip: String
+    city: String
+    state: String
+    city_license: String
+    state_license: String
+    active: Boolean
+    sqft: Number
+    services: String[]
+    jobs: String[]
+    location_pin: Number[]
+    contract_url: String[]
+    entrance_image: String
+    main_image: String
+    logo_url: String
+    contracts: String[]
+    onsite_map: String
+    entrance_pin: Number[]
+    parking_details: String
+    notes: String
+    internal_notes: String[]
+    messages: String[]
+    history: String[]
+    account_info: String[]
+    invoices: String[]
+  }

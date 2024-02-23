@@ -1,5 +1,4 @@
-import React, { useRef } from 'react'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { useRef } from 'react'
 import { RequestService } from '../../../../services/RequestService'
 import { Controller, useForm } from 'react-hook-form'
 import { InputText } from 'primereact/inputtext'
@@ -7,7 +6,6 @@ import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils'
 import { InputNumber } from 'primereact/inputnumber'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
-
 import { Toast } from 'primereact/toast'
 
 //Interfaces start
@@ -15,26 +13,14 @@ interface JobDetailsProps {
   jobId: string | null
   onNext: () => void
 }
-interface Facility {
-  _id: string
-  name: string
-  address: string
-}
 //interfaces end
 export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
-  console.log('Brought this job id from BasicInfo ->', jobId)
-  const [facilities, setFacilities] = React.useState<any>([])
-  const user = GetTokenInfo()
-  const id = user?._id
   const toast = useRef<Toast>(null)
-  const defaultValues = { base_rate: null }
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-    getValues,
-    reset,
   } = useForm({
     defaultValues: {
       base_rate: null,
@@ -72,7 +58,6 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
     try {
       data.skills = data.skills.map((skill: { name: string }) => skill.name)
       const updatedData = { ...data, id: jobId }
-      console.log('Lets see Updated data -->', updatedData)
       const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
       if (response) {
         toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Job details saved successfully' })
@@ -95,7 +80,8 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
         control={control}
         rules={{
           required: 'Enter a valid base rate.',
-          validate: value => (value !== null && value >= 0 && value <= 100) || 'Base rate should be a number between 0 and 100.',
+          validate: value =>
+            (value !== null && value >= 0 && value <= 100) || 'Base rate should be a number between 0 and 100.',
         }}
         render={({ field, fieldState }) => (
           <>
@@ -124,8 +110,8 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
         }}
         render={({ field, fieldState }) => (
           <>
-          <div>
-            <label htmlFor={field.name}>Available Vacancies</label>
+            <div>
+              <label htmlFor={field.name}>Available Vacancies</label>
             </div>
             <div>
               <InputNumber
