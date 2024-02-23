@@ -1,28 +1,18 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
 import ForgotPasswordForm from './ForgotPasswordForm'
-import { set } from 'react-hook-form'
 import { RequestService } from '../../services/RequestService'
-
-// const ImageRotator: React.FC = () => {
-//   const [imageIndex, setImageIndex] = useState<number>(1)
-
-// }
 
 export default function Auth() {
   const [userForm, setUserForm] = useState('Login')
   const [heroImage, setHeroImage] = useState<string>('')
-  
 
   useMemo(() => {
     const getImages = async () => {
       try {
         const allImages = await RequestService('/auth/images')
-        console.log(allImages)
-
-        // set hero image to a random image from the array
         const randomIndex = Math.floor(Math.random() * allImages.length)
 
         setHeroImage(allImages[randomIndex])
@@ -59,15 +49,6 @@ export default function Auth() {
             )}
 
             <p className="text-sm text-zinc-500">
-              {/* {userForm === 'Login' && (
-                <section>
-                  No account? &nbsp;
-                  <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Sign up')}>
-                    Sign up
-                  </a>
-                </section>
-              )} */}
-
               {userForm !== 'Login' && (
                 <div>
                   Already have an account? &nbsp;
