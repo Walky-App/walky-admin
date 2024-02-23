@@ -51,13 +51,12 @@ export default function LoginForm() {
           SetToken(data)
           setUser({ ...user, access_token: access_token })
           setLoading(false)
-          
+
           const user_role = user.role.toString()
 
           switch (admin_role) {
             case admin_role:
               navigate('/admin/dashboard')
-              console.log('admin')
               break
             case client_role:
               navigate('/client/dashboard')
