@@ -7,12 +7,17 @@ import { SetToken } from '../../utils/TokenUtils'
 import { useAuth } from '../../contexts/AuthContext'
 import { RequestService } from '../../services/RequestService'
 
+const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
+const client_role = process.env.REACT_APP_CLIENT_ROLE as string
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
+const sales_role = process.env.REACT_APP_SALES_ROLE as string
+
 export default function Signup() {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
   const { setUser } = useAuth()
 
-  const {email, role} = useParams()
+  const { email, role } = useParams()
   const navigate = useNavigate()
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,14 +54,17 @@ export default function Signup() {
       setLoading(false)
 
       switch (user.role) {
-        case 'client':
+        case client_role:
           navigate('/client/dashboard')
           break
-        case 'admin':
+        case admin_role:
           navigate('/admin/dashboard')
           break
-        case 'employee':
+        case employee_role:
           navigate('/employee/dashboard')
+          break
+        case sales_role:
+          navigate('/sales/dashboard')
           break
         default:
           navigate('/login')
@@ -69,118 +77,118 @@ export default function Signup() {
 
   return (
     <div className="w-full">
-        <div className="flex justify-center">
-            <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
-          </div>
+      <div className="flex justify-center">
+        <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
+      </div>
       <form onSubmit={handleSignup} className="mx-auto max-w-md">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 p-3">
-        <div>
-          <label className="sr-only" htmlFor="firstName">
-            First Name
+        <div className="grid grid-cols-1 gap-4 p-3 sm:grid-cols-2">
+          <div>
+            <label className="sr-only" htmlFor="firstName">
+              First Name
+            </label>
+            <input
+              required
+              className="w-full rounded-lg border-zinc-200 p-4 text-sm  focus:border-green-500 focus:ring-green-500"
+              placeholder="First Name"
+              type="text"
+              name="firstName"
+            />
+          </div>
+          <div>
+            <label className="sr-only" htmlFor="lastName">
+              Last Name
+            </label>
+            <input
+              required
+              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500 "
+              placeholder="Last Name"
+              type="text"
+              name="lastName"
+            />
+          </div>
+        </div>
+
+        <div className="p-3">
+          <label htmlFor="email" className="sr-only">
+            Email
           </label>
-          <input
-            required
-            className="w-full rounded-lg border-zinc-200 p-4 text-sm  focus:border-green-500 focus:ring-green-500"
-            placeholder="First Name"
-            type="text"
-            name="firstName"
-          />
+
+          <div className="relative">
+            <input
+              disabled
+              value={email}
+              required
+              type="email"
+              name="email"
+              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
+              placeholder="Email"
+            />
+          </div>
         </div>
-        <div>
-          <label className="sr-only" htmlFor="lastName">
-            Last Name
+
+        <div className="p-3">
+          <label htmlFor="phone" className="sr-only">
+            Phone
           </label>
-          <input
-            required
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500 "
-            placeholder="Last Name"
-            type="text"
-            name="lastName"
-          />
+
+          <div className="relative">
+            <input
+              required
+              type="tel"
+              name="phone"
+              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
+              placeholder="Phone Number"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className='p-3'>
-        <label htmlFor="email" className="sr-only">
-          Email
-        </label>
+        <div className="p-3">
+          <label htmlFor="password" className="sr-only">
+            Password
+          </label>
 
-        <div className="relative">
-          <input
-            disabled
-            value={email}
-            required
-            type="email"
-            name="email"
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-            placeholder="Email"
-          />
+          <div className="relative">
+            <input
+              required
+              type="password"
+              name="password"
+              className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
+              placeholder="Password"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className='p-3'>
-        <label htmlFor="phone" className="sr-only">
-          Phone
-        </label>
+        <div>
+          <label htmlFor="password_confirmed" className="sr-only">
+            password_confirmed
+          </label>
 
-        <div className="relative">
-          <input
-            required
-            type="tel"
-            name="phone"
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-            placeholder="Phone Number"
-          />
+          <div className="relative p-3">
+            <input
+              required
+              type="password"
+              name="password_confirmed"
+              className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
+              placeholder="Verify Password"
+            />
+          </div>
         </div>
-      </div>
-
-      <div className='p-3'>
-        <label htmlFor="password" className="sr-only">
-          Password
-        </label>
-
-        <div className="relative">
-          <input
-            required
-            type="password"
-            name="password"
-            className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-            placeholder="Password"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="password_confirmed" className="sr-only">
-          password_confirmed
-        </label>
-
-        <div className="relative p-3">
-          <input
-            required
-            type="password"
-            name="password_confirmed"
-            className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-            placeholder="Verify Password"
-          />
-        </div>
-      </div>
-      {error && (
+        {error && (
+          <div className="flex items-center justify-center">
+            <p className="text-sm text-red-500">{error}</p>
+          </div>
+        )}
         <div className="flex items-center justify-center">
-          <p className="text-sm text-red-500">{error}</p>
-        </div>
-      )}
-      <div className="flex items-center justify-center">
-        <button
-          disabled={loading}
-          type="submit"
-          className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${loading && 'hover:bg-zinc-950 cursor-wait'
+          <button
+            disabled={loading}
+            type="submit"
+            className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
+              loading && 'cursor-wait hover:bg-zinc-950'
             }`}>
-          {loading ? 'Signing up...' : 'Signup'}
-        </button>
-      </div>
-    </form>    
+            {loading ? 'Signing up...' : 'Signup'}
+          </button>
+        </div>
+      </form>
     </div>
-    
   )
 }

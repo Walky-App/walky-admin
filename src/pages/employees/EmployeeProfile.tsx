@@ -5,6 +5,11 @@ import { GetTokenInfo } from '../../utils/TokenUtils'
 import UploadAvatar from '../../components/shared/forms/UploadAvatar'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
 
+const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
+const client_role = process.env.REACT_APP_CLIENT_ROLE as string
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
+const sales_role = process.env.REACT_APP_SALES_ROLE as string
+
 export default function EmployeeProfile() {
   const [formUser, setFormUser] = useState<any>({})
   const [updateSuccess,  setUpdateSuccess] = useState(false)
@@ -296,7 +301,7 @@ export default function EmployeeProfile() {
               </div>
             </div>
 
-            {formUser?.role === 'employee' && (
+            {formUser?.role === employee_role && (
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                 <div>
                   <h2 className="text-base font-semibold leading-7 text-gray-900">Direct Deposit</h2>
