@@ -8,6 +8,11 @@ import { SetToken } from '../../utils/TokenUtils'
 import { LoginData } from '../../interfaces/Global'
 import { useAuth } from '../../contexts/AuthContext'
 
+const admin_role = process.env.REACT_APP_ADMIN_ROLE?.toString()
+const client_role = process.env.REACT_APP_CLIENT_ROLE?.toString()
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE?.toString()
+const sales_role = process.env.REACT_APP_SALES_ROLE?.toString()
+
 export default function LoginForm() {
   const [error, setError] = useState<any>()
   const [loading, setLoading] = useState(false)
@@ -47,15 +52,20 @@ export default function LoginForm() {
           setUser({ ...user, access_token: access_token })
           setLoading(false)
 
-          switch (user.role) {
-            case 'client':
-              navigate('/client/dashboard')
-              break
-            case 'admin':
+          const user_role = user.role.toString()
+
+          switch (admin_role) {
+            case admin_role:
               navigate('/admin/dashboard')
               break
-            case 'employee':
+            case client_role:
+              navigate('/client/dashboard')
+              break
+            case employee_role:
               navigate('/employee/dashboard')
+              break
+            case sales_role:
+              navigate('/sales/dashboard')
               break
             default:
               navigate('/login')
@@ -144,7 +154,7 @@ export default function LoginForm() {
       <button
         type="submit"
         className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'hover:bg-zinc-950 cursor-wait'
+          loading && 'cursor-wait hover:bg-zinc-950'
         }`}>
         {loading ? 'Logging in...' : 'Login'}
       </button>
