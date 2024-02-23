@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { RequestService } from '../../../../services/RequestService'
@@ -7,27 +7,18 @@ import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Controller } from 'react-hook-form'
 import { Toast } from 'primereact/toast'
-import { Nullable } from 'primereact/ts-helpers'
 import { classNames } from 'primereact/utils'
 import { Dropdown } from 'primereact/dropdown'
-
+import { IFacility } from '../../../../interfaces/Facility'
 interface BasicInfoProps {
   onJobCreated: (id: string) => void
   onNext: () => void
 }
-interface Facility {
-  _id: string
-  name: string
-  address: string
-}
 export default function BasicInfo(props: BasicInfoProps) {
   const user = GetTokenInfo()
   const id = user?._id
-  const [activeIndex, setActiveIndex] = useState<number>(0)
   const toast = useRef<Toast>(null)
-  const [facilities, setFacilities] = React.useState<any>([])
-  const [dates, setDates] = useState<Nullable<Date[]>>(null)
-  const [description, setDescription] = useState<string>('')
+  const [facilities, setFacilities] = React.useState<IFacility[]>()
 
   React.useEffect(() => {
     const getFacilities = async () => {
@@ -47,8 +38,6 @@ export default function BasicInfo(props: BasicInfoProps) {
     control,
     formState: { errors },
     handleSubmit,
-    getValues,
-    reset,
   } = useForm({ defaultValues })
 
   const getFormErrorMessage = (name: string) => {
@@ -66,11 +55,7 @@ export default function BasicInfo(props: BasicInfoProps) {
   const onSubmit = async (data: any) => {
     try {
       const requestData = { ...data }
-      console.log('Request data -->', requestData)
       const response = await RequestService('jobs', 'POST', requestData)
-      console.log('Just created this job -->', response)
-      console.log('And here is the id of the job -->', response._id)
-
       if (response) {
         toast.current?.show({
           severity: 'success',

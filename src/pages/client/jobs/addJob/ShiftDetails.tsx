@@ -1,46 +1,25 @@
 import React, { useRef } from 'react'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { RequestService } from '../../../../services/RequestService'
-import { Controller, set, useForm } from 'react-hook-form'
-import { InputText } from 'primereact/inputtext'
+import { Controller, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils'
 import { InputNumber } from 'primereact/inputnumber'
-import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { Calendar } from 'primereact/calendar'
-import { Nullable } from 'primereact/ts-helpers'
-
 import { Toast } from 'primereact/toast'
 import { useNavigate } from 'react-router-dom'
-
-//Interfaces start
 interface ShiftDetailsProps {
   jobId: string | null
 }
-interface Facility {
-  _id: string
-  name: string
-  address: string
-}
-//interfaces end
 export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
-  console.log('Brought this job id from BasicInfo ->', jobId)
-  const [facilities, setFacilities] = React.useState<any>([])
-  const [datetime24h, setDateTime24h] = React.useState<Date | null>(null)
   const [startTime, setStartTime] = React.useState<Date | null>(null)
   const [endTime, setEndTime] = React.useState<Date | null>(null)
-  const user = GetTokenInfo()
-  const id = user?._id
   const toast = useRef<Toast>(null)
-  const defaultValues = { base_rate: null }
   const navigate = useNavigate()
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-    getValues,
-    reset,
   } = useForm({
     defaultValues: {
       job_dates: [],
@@ -128,7 +107,10 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
                 <div>
                   <Calendar
                     value={field.value}
-                    onChange={e => field.onChange(e.value ?? null)}
+                    onChange={e => {
+                      field.onChange(e.value ?? null)
+                      setStartTime(e.value ?? null)
+                    }}
                     timeOnly
                     className={classNames({ 'p-invalid': fieldState.error })}
                   />
@@ -151,7 +133,10 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
                 <div>
                   <Calendar
                     value={field.value}
-                    onChange={e => field.onChange(e.value ?? null)}
+                    onChange={e => {
+                      field.onChange(e.value ?? null)
+                      setEndTime(e.value ?? null)
+                    }}
                     timeOnly
                     className={classNames({ 'p-invalid': fieldState.error })}
                   />
