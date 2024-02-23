@@ -1,13 +1,8 @@
 import { Fragment, useState, useMemo } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Dialog, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { cn } from '../../utils/cn'
-import AppFooter from './FooterComponent'
-import { useAuth } from '../../contexts/AuthContext'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { LogoutService } from '../../services/AuthService'
-
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
 import {
   FaBusinessTime,
@@ -21,12 +16,12 @@ import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
 import { MdSchool } from 'react-icons/md'
-import FooterComponent from './FooterComponent'
 
-const admin_role = process.env.REACT_APP_ADMIN_ROLE?.toString()
-const client_role = process.env.REACT_APP_CLIENT_ROLE?.toString()
-const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE?.toString()
-const sales_role = process.env.REACT_APP_SALES_ROLE?.toString()
+import { useAuth } from '../../contexts/AuthContext'
+import { getCurrentUserRole } from '../../utils/UserRole'
+import { LogoutService } from '../../services/AuthService'
+import { cn } from '../../utils/cn'
+import FooterComponent from './FooterComponent'
 
 export interface SideBarData {
   id: number
@@ -68,7 +63,6 @@ const clientLinks = [
   { id: 6, name: 'Messages', href: '/dashboard/messages', icon: <IoMdMail />, disabled: true },
   { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
   { id: 8, name: 'HTU', href: '/learn', icon: <MdSchool /> },
-  // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
 ]
 
 const employeeLinks = [
@@ -76,7 +70,6 @@ const employeeLinks = [
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
   { id: 2, disabled: true, name: 'My Jobs', href: '/employee/jobs/mine', icon: <FaBusinessTime /> },
   { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-  // { id: 99, name: 'Logout', href: '/logout', icon: <MdLogout /> },
 ]
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
@@ -90,13 +83,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     navigate('/login')
   }
 
-  const role = user?.role.toString()
+  const role = getCurrentUserRole()
 
   const links = useMemo(() => {
-    if (role === admin_role) return adminLinks
-    if (role === client_role) return clientLinks
-    if (role === employee_role) return employeeLinks
-    if (role === sales_role) return employeeLinks
+    if (role === 'admin') return adminLinks
+    if (role === 'client') return clientLinks
+    if (role === 'employee') return employeeLinks
+    if (role === 'sales') return employeeLinks
     return []
   }, [role])
 
