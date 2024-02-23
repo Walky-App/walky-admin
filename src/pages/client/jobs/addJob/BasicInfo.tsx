@@ -70,96 +70,135 @@ export default function BasicInfo(props: BasicInfoProps) {
     }
   }
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <Toast ref={toast} />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <p className="mb-6 mt-6 text-sm leading-6 text-gray-600">
-          Please take a moment to provide the essential information for the job posting. We require you to specify the
-          job title, select facility and provide a comprehensive job description. Click on Save Progress when you are
-          done with this step.
-        </p>
-        <div>
-          <Controller
-            name="title"
-            control={control}
-            rules={{
-              required: 'Job Title is required.',
-              maxLength: { value: 100, message: 'Job Title cannot exceed 100 characters.' },
-            }}
-            render={({ field, fieldState }) => (
-              <>
-                <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
-                  Job Title
-                </label>
-                <span className="p-float-label">
-                  <InputText
-                    id={field.name}
-                    value={field.value}
-                    className={classNames({ 'p-invalid': fieldState.error })}
-                    onChange={e => field.onChange(e.target.value)}
-                  />
-                </span>
-                {getFormErrorMessage(field.name)}
-              </>
-            )}
-          />
-        </div>
-        <div>
-          <Controller
-            name="facility_id"
-            control={control}
-            rules={{ required: 'Facility is required.' }}
-            render={({ field, fieldState }) => (
-              <>
-                <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
-                  Select Facility
-                </label>
-                <div>
-                  <Dropdown
-                    id={field.name}
-                    value={field.value}
-                    optionLabel="name"
-                    placeholder="Select Facility"
-                    options={facilities}
-                    focusInputRef={field.ref}
-                    onChange={e => field.onChange(e.value)}
-                    className={classNames({ 'p-invalid': fieldState.error })}
-                  />
-                  <div>{getFormErrorMessage(field.name)}</div>
-                </div>
-              </>
-            )}
-          />
-        </div>
-        <div className="col-span-full">
-          <Controller
-            name="description"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: 'Job Description is required.',
-              maxLength: { value: 5000, message: 'Job Description cannot exceed 5000 characters.' },
-            }}
-            render={({ field, fieldState }) => (
-              <>
-                <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
-                  Job Description
-                </label>
-                <Editor
-                  value={field.value}
-                  onTextChange={(e: EditorTextChangeEvent) => field.onChange(e.htmlValue ?? '')}
-                  style={{ height: '320px' }}
-                />
-                {getFormErrorMessage(field.name)}
-              </>
-            )}
-          />
-          <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the Job.</p>
-          <div className="mt-6 flex items-center justify-center gap-x-6">
-            <Button type="submit">Save Progress</Button>
+      <div className="space-y-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Basic Information</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide basic information about the job.</p>
+          </div>
+
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-3">
+              <label htmlFor="taxId" className="block text-sm font-medium leading-6 text-gray-900">
+                *Tax ID:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  name="title"
+                  control={control}
+                  rules={{
+                    required: 'Job Title is required.',
+                    maxLength: { value: 100, message: 'Job Title cannot exceed 100 characters.' },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
+                        Job Title
+                      </label>
+                      <span className="p-float-label">
+                        <InputText
+                          id={field.name}
+                          value={field.value}
+                          className={classNames({ 'p-invalid': fieldState.error })}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      </span>
+                      {getFormErrorMessage(field.name)}
+                    </>
+                  )}
+                />{' '}
+              </div>
+              {getFormErrorMessage('taxId')}
+            </div>
+
+            <div className="sm:col-span-3">
+              <label
+                htmlFor="businessContactMobileNumber"
+                className="block text-sm font-medium leading-6 text-gray-900">
+                Select Facility
+              </label>
+              <div className="mt-2">
+                <Controller
+                  name="facility_id"
+                  control={control}
+                  rules={{ required: 'Facility is required.' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
+                        Select Facility
+                      </label>
+                      <div>
+                        <Dropdown
+                          id={field.name}
+                          value={field.value}
+                          optionLabel="name"
+                          options={facilities}
+                          focusInputRef={field.ref}
+                          onChange={e => field.onChange(e.value)}
+                          className={classNames({ 'p-invalid': fieldState.error })}
+                        />
+                        <div>{getFormErrorMessage(field.name)}</div>
+                      </div>
+                    </>
+                  )}
+                />{' '}
+              </div>
+              {getFormErrorMessage('businessContactMobileNumber')}
+            </div>
           </div>
         </div>
-      </form>
-    </>
+
+        {/* Business Location */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please provide your business address information below.
+            </p>
+          </div>
+
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-3">
+              <label htmlFor="facilityName" className="block text-sm font-medium leading-6 text-gray-900">
+                Text Editor:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  name="description"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: 'Job Description is required.',
+                    maxLength: { value: 5000, message: 'Job Description cannot exceed 5000 characters.' },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
+                        Job Description
+                      </label>
+                      <Editor
+                        value={field.value}
+                        onTextChange={(e: EditorTextChangeEvent) => field.onChange(e.htmlValue ?? '')}
+                        style={{ height: '320px' }}
+                      />
+                      {getFormErrorMessage(field.name)}
+                    </>
+                  )}
+                />
+              </div>
+              {getFormErrorMessage('facilityName')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <div>
+          <Button type="submit" label="Submit" />
+        </div>
+      </div>
+    </form>
   )
 }
