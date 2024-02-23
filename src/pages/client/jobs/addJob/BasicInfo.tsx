@@ -78,8 +78,8 @@ export default function BasicInfo(props: BasicInfoProps) {
           detail: 'Basic information submitted successfully',
         })
         onJobCreated(response._id)
-        setTimeout(onNext, 2000);      
-    }
+        setTimeout(onNext, 2000)
+      }
     } catch (error) {
       console.error(error)
     }
@@ -90,13 +90,17 @@ export default function BasicInfo(props: BasicInfoProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <p className="mb-6 mt-6 text-sm leading-6 text-gray-600">
           Please take a moment to provide the essential information for the job posting. We require you to specify the
-          job title, select facility and provide a comprehensive job description. Click on Save Progress when you are done with this step.
+          job title, select facility and provide a comprehensive job description. Click on Save Progress when you are
+          done with this step.
         </p>
         <div>
           <Controller
-            name="title" // This references the field name in your form
-            control={control} // Passed from useForm()
-            rules={{ required: 'Job Title is required.' }} // Validation rules for this field
+            name="title"
+            control={control}
+            rules={{
+              required: 'Job Title is required.',
+              maxLength: { value: 100, message: 'Job Title cannot exceed 100 characters.' },
+            }}
             render={({ field, fieldState }) => (
               <>
                 <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>
@@ -104,10 +108,10 @@ export default function BasicInfo(props: BasicInfoProps) {
                 </label>
                 <span className="p-float-label">
                   <InputText
-                    id={field.name} // Each field should have a unique ID
-                    value={field.value} // Set the value to the field value
-                    className={classNames({ 'p-invalid': fieldState.error })} // Add 'p-invalid' class if there is an error
-                    onChange={e => field.onChange(e.target.value)} // Handle changes with field.onChange
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ 'p-invalid': fieldState.error })}
+                    onChange={e => field.onChange(e.target.value)}
                   />
                 </span>
                 {getFormErrorMessage(field.name)}
@@ -147,7 +151,10 @@ export default function BasicInfo(props: BasicInfoProps) {
             name="description"
             control={control}
             defaultValue=""
-            rules={{ required: 'Job Description is required.' }}
+            rules={{
+              required: 'Job Description is required.',
+              maxLength: { value: 5000, message: 'Job Description cannot exceed 5000 characters.' },
+            }}
             render={({ field, fieldState }) => (
               <>
                 <label htmlFor={field.name} className={classNames({ 'p-error': fieldState.error })}>

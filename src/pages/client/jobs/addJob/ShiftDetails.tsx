@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { RequestService } from '../../../../services/RequestService'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, set, useForm } from 'react-hook-form'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils'
@@ -11,6 +11,7 @@ import { Calendar } from 'primereact/calendar'
 import { Nullable } from 'primereact/ts-helpers'
 
 import { Toast } from 'primereact/toast'
+import { useNavigate } from 'react-router-dom'
 
 //Interfaces start
 interface ShiftDetailsProps {
@@ -32,6 +33,7 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
   const id = user?._id
   const toast = useRef<Toast>(null)
   const defaultValues = { base_rate: null }
+  const navigate = useNavigate()
 
   const {
     control,
@@ -67,7 +69,14 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
       console.log('Lets see Updated data -->', updatedData)
       const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
       if (response) {
-        toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Job details saved successfully' })
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Congratulations! Shift details saved successfully',
+        })
+        setTimeout(() => {
+          navigate('/client/jobs')
+        }, 3000)
       }
     } catch (error) {
       console.error(error)
@@ -108,17 +117,49 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
         />{' '}
       </div>
       <div className="mt-6">
-        <label htmlFor="start_time">Start Time</label>
         <div>
-          {' '}
-          <Calendar value={startTime} onChange={e => setStartTime(e.value ?? null)} timeOnly />
+          <Controller
+            name="startTime"
+            control={control}
+            rules={{ required: 'Start Time is required.' }}
+            render={({ field, fieldState }) => (
+              <div className="mt-6">
+                <label htmlFor="start_time">Start Time</label>
+                <div>
+                  <Calendar
+                    value={field.value}
+                    onChange={e => field.onChange(e.value ?? null)}
+                    timeOnly
+                    className={classNames({ 'p-invalid': fieldState.error })}
+                  />
+                  {getFormErrorMessage(field.name)}
+                </div>
+              </div>
+            )}
+          />
         </div>
       </div>
       <div className="mt-6">
-        <label htmlFor="end_time">End Time</label>
         <div>
-          {' '}
-          <Calendar value={endTime} onChange={e => setEndTime(e.value ?? null)} timeOnly />
+          <Controller
+            name="endTime"
+            control={control}
+            rules={{ required: 'End Time is required.' }}
+            render={({ field, fieldState }) => (
+              <div className="mt-6">
+                <label htmlFor="end_time">End Time</label>
+                <div>
+                  <Calendar
+                    value={field.value}
+                    onChange={e => field.onChange(e.value ?? null)}
+                    timeOnly
+                    className={classNames({ 'p-invalid': fieldState.error })}
+                  />
+                  {getFormErrorMessage(field.name)}
+                </div>
+              </div>
+            )}
+          />
         </div>
       </div>
       <div>

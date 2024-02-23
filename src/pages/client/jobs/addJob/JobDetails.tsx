@@ -95,7 +95,7 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
         control={control}
         rules={{
           required: 'Enter a valid base rate.',
-          validate: value => (value !== null && value >= 0 && value <= 200) || 'Enter a valid base rate.',
+          validate: value => (value !== null && value >= 0 && value <= 100) || 'Base rate should be a number between 0 and 100.',
         }}
         render={({ field, fieldState }) => (
           <>
@@ -120,7 +120,7 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
         control={control}
         rules={{
           required: 'Enter a valid number of vacancies.',
-          validate: value => (value !== null && value >= 0 && value <= 200) || 'Enter a valid base rate.',
+          validate: value => (value !== null && value >= 0 && value <= 200) || 'Enter a valid number of vacancies.',
         }}
         render={({ field, fieldState }) => (
           <>

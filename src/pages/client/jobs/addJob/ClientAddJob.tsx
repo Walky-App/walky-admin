@@ -10,7 +10,7 @@ import { Toast } from 'primereact/toast'
 import { MenuItem } from 'primereact/menuitem'
 
 export default function ClientAddJob() {
-  const [activeIndex, setActiveIndex] = useState<number>(2)
+  const [activeIndex, setActiveIndex] = useState<number>(0)
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<any>([])
   const [dates, setDates] = useState<Nullable<Date[]>>(null)
