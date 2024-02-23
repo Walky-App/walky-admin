@@ -1,14 +1,12 @@
-import * as React from 'react'
 import { useParams } from 'react-router-dom'
 import { Spinner } from 'flowbite-react'
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
-
-import { Menu, Transition } from '@headlessui/react'
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
-
 import { RequestService } from '../../../services/RequestService'
-// import AdminFacilityHeaderInfo from './AdminFacilityHeader'
 import { classNames } from '../../../utils/Tailwind'
+import { FileUpload } from 'primereact/fileupload'
+import { StepProps } from '.'
+import { Button } from 'primereact/button'
+import { useState, useRef, useEffect } from 'react'
 
 const statuses: any = {
   Complete: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -16,15 +14,15 @@ const statuses: any = {
   Archived: 'text-yellow-800 bg-yellow-50 ring-yellow-600/20',
 }
 
-export default function Step2() {
-  const [facility, setFacility] = React.useState<any>({})
-  const [uploading, setUploading] = React.useState(false)
-  const [files, setFiles] = React.useState<any>([])
+export default function Step2({ step, setStep }: StepProps) {
+  const [facility, setFacility] = useState<any>({})
+  const [uploading, setUploading] = useState(false)
+  const [files, setFiles] = useState<any>([])
   const { facilityId } = useParams()
 
-  const filesInputRef = React.useRef<any>()
+  const filesInputRef = useRef<any>()
 
-  React.useMemo(() => {
+  useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
@@ -49,12 +47,7 @@ export default function Step2() {
       formData.append('files', files[i])
     }
 
-    const updatedFacility = await RequestService(
-      `facilities/${facilityId}/licenses`,
-      'POST',
-      formData,
-      'binary',
-    )
+    const updatedFacility = await RequestService(`facilities/${facilityId}/licenses`, 'POST', formData, 'binary')
 
     setFacility(updatedFacility)
     setFiles([])
@@ -67,8 +60,6 @@ export default function Step2() {
 
   return (
     <div>
-      <h3 className=''>Upload Licenses here </h3>
-      {/* <AdminFacilityHeaderInfo facility={facility} /> */}
       <input
         ref={filesInputRef}
         className="hidden"
@@ -79,8 +70,54 @@ export default function Step2() {
         onChange={pickedHandler}
       />
 
+      <div className="space-y-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Documents</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please upload your business license documents. Please make sure your upload is clear without any warped or
+              blur portions and shows all relevant information.
+            </p>
+          </div>
+
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-6">
+              <label htmlFor="demo" className="block text-sm font-medium leading-6 text-gray-900">
+                *Upload State License:
+              </label>
+              <div className="mt-2">
+                <FileUpload
+                  mode="basic"
+                  name="demo[]"
+                  url="/api/upload"
+                  accept="image/*"
+                  maxFileSize={1000000}
+                  // onUpload={onUpload}
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-6">
+              <label htmlFor="demo" className="block text-sm font-medium leading-6 text-gray-900">
+                *Upload City License:
+              </label>
+              <div className="mt-2">
+                <FileUpload
+                  mode="basic"
+                  name="demo[]"
+                  url="/api/upload"
+                  accept="image/*"
+                  maxFileSize={1000000}
+                  // onUpload={onUpload}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {!uploading ? (
-        <div className="flex items-center my-5">
+        <div className="my-5 flex items-center">
           {files.length === 0 ? (
             <>
               <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
@@ -113,7 +150,7 @@ export default function Step2() {
                 <p
                   className={classNames(
                     statuses['Complete'],
-                    'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
+                    'mt-0.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
                   )}>
                   Approved
                 </p>
@@ -139,6 +176,10 @@ export default function Step2() {
           </li>
         ))}
       </ul>
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
+        <Button label="Save" onClick={() => setStep(step + 1)} />
+      </div>
     </div>
   )
 }
