@@ -1,18 +1,18 @@
-import { useState } from 'react'
-
 import { Dialog } from 'primereact/dialog'
 import { Button } from 'primereact/button'
 
-export const WelcomeDialog: React.FC = () => {
-  const [visible, setVisible] = useState<boolean>(true)
+interface WelcomeDialogProps {
+  visible: boolean
+  setVisible: (visible: boolean) => void
+}
 
+export default function WelcomeDialog({ visible, setVisible }: WelcomeDialogProps) {
   return (
     <>
       <div className="flex justify-center">
         <Dialog
           visible={visible}
           modal
-          dismissableMask
           onHide={() => setVisible(false)}
           content={
             <div className="flex flex-col gap-4 rounded-lg bg-white px-8 py-5 sm:w-full sm:max-w-md">

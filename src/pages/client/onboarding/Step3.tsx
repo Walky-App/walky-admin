@@ -1,87 +1,182 @@
-const people = [
-  {
-    name: 'Leslie Alexander',
-    email: 'leslie.alexander@example.com',
-    role: 'Co-Founder / CEO',
-    imageUrl:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Michael Foster',
-    email: 'michael.foster@example.com',
-    role: 'Co-Founder / CTO',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Dries Vincent',
-    email: 'dries.vincent@example.com',
-    role: 'Business Relations',
-    imageUrl:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: null,
-  },
-  {
-    name: 'Lindsay Walton',
-    email: 'lindsay.walton@example.com',
-    role: 'Front-end Developer',
-    imageUrl:
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Courtney Henry',
-    email: 'courtney.henry@example.com',
-    role: 'Designer',
-    imageUrl:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Tom Cook',
-    email: 'tom.cook@example.com',
-    role: 'Director of Product',
-    imageUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: null,
-  },
-]
+import { Fragment, useContext, useRef, useState } from 'react'
+import { Menu, Transition } from '@headlessui/react'
+import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
+import { cn } from '../../../utils/cn'
+import { Toast } from 'primereact/toast'
+import { Button } from 'primereact/button'
+import { FormDataContext, IFormInputs, StepProps } from '.'
+import AddFacilityDialog from './AddFacilityDialog'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
-export default function Step3() {
+export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
+  return strings.filter(Boolean).join(separator)
+}
+
+export default function Step3({ step, setStep }: StepProps) {
+  const [visible, setVisible] = useState<boolean>(false)
+
+  const { facilitiesArray, setFacilitiesArray, defaultValues, selectedFacility, setSelectedFacility } =
+    useContext(FormDataContext)
+
+  console.log('selectedFacility: ', selectedFacility)
+
+  const toast = useRef(null)
+
+  const acceptToast = ({ facilityName }: IFormInputs) => {
+    // @ts-ignore
+    toast.current?.show({
+      severity: 'info',
+      summary: 'Confirmed',
+      detail: `${facilityName} removed`,
+      life: 3000,
+    })
+  }
+
+  const confirm1 = (facility: IFormInputs) => {
+    confirmDialog({
+      message: `Are you sure you want to delete ${facility.facilityName} ?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      defaultFocus: 'accept',
+      acceptClassName: 'p-button-danger',
+      accept: () => {
+        setFacilitiesArray(facilitiesArray.filter(f => f.facilityName !== facility.facilityName))
+        acceptToast(facility)
+      },
+      rejectClassName: 'p-button-danger p-button-outlined',
+    })
+  }
+
   return (
-    <ul role="list" className="divide-y divide-gray-100">
-      {people.map((person) => (
-        <li key={person.email} className="flex justify-between gap-x-6 py-5">
-          <div className="flex min-w-0 gap-x-4">
-            <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
-            <div className="min-w-0 flex-auto">
-              <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
-              <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>
-            </div>
-          </div>
-          <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-            <p className="text-sm leading-6 text-gray-900">{person.role}</p>
-            {person.lastSeen ? (
-              <p className="mt-1 text-xs leading-5 text-gray-500">
-                Last seen <time dateTime={person.lastSeenDateTime}>{person.lastSeen}</time>
-              </p>
-            ) : (
-              <div className="mt-1 flex items-center gap-x-1.5">
-                <div className="flex-none rounded-full bg-emerald-500/20 p-1">
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+    <div className="space-y-12">
+      <AddFacilityDialog
+        visible={visible}
+        setVisible={setVisible}
+        toastRef={toast}
+        values={selectedFacility || defaultValues}
+      />
+      <ConfirmDialog />
+      <Toast ref={toast} />
+      {/* Do you have more locations to add?  */}
+      <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div>
+          <h2 className="text-base font-semibold leading-7 text-gray-900">Do you have more locations to add?</h2>
+          <p className="mt-1 text-sm leading-6 text-gray-600">
+            To continue, enter your business location information below.
+          </p>
+        </div>
+
+        <div className="sm:col-span-full">
+          <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
+            {facilitiesArray?.map(facility => (
+              <li key={facility.facilityName} className="overflow-hidden rounded-xl border border-gray-200">
+                <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                  {/* <img
+                    src={client.imageUrl}
+                    alt={client.name}
+                    className="h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
+                  /> */}
+                  <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
+                  <div className="text-sm font-medium leading-6 text-gray-900">{facility.facilityName}</div>
+                  <Menu as="div" className="relative ml-auto">
+                    <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
+                      <span className="sr-only">Open options</span>
+                      <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+                    </Menu.Button>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95">
+                      <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                        {/* <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              className={cn(
+                                active ? 'bg-gray-50' : '',
+                                'block px-3 py-1 text-sm leading-6 text-gray-900',
+                              )}>
+                              View<span className="sr-only">, {facility.businessName}</span>
+                            </button>
+                          )}
+                        </Menu.Item> */}
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => {
+                                setVisible(true)
+                                setSelectedFacility(facility)
+                              }}
+                              className={cn(
+                                active ? 'bg-gray-50' : '',
+                                'block px-3 py-1 text-sm leading-6 text-gray-900',
+                              )}>
+                              Edit<span className="sr-only">, {facility.businessName}</span>
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => confirm1(facility)}
+                              className={cn(
+                                active ? 'bg-gray-50' : '',
+                                'block px-3 py-1 text-sm leading-6 text-gray-900',
+                              )}>
+                              Delete<span className="sr-only">, {facility.businessName}</span>
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
                 </div>
-                <p className="text-xs leading-5 text-gray-500">Online</p>
+                <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                  {/* <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">Last Added</dt>
+                    <dd className="text-gray-700">
+                      <time dateTime="2022-12-13">Feb 21, 2024</time>
+                    </dd>
+                  </div> */}
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">Address</dt>
+                    <dd className="flex items-start gap-x-2">
+                      <div className="font-medium text-gray-900">
+                        {joinTruthyStrings(
+                          [facility.address, facility.address2, facility.city, facility.state, facility.postalCode],
+                          ', ',
+                        )}
+                      </div>
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">{facility.businessContactDesignation}</dt>
+                    <dd className="flex items-start gap-x-2">
+                      <div className="font-medium text-gray-900">
+                        {joinTruthyStrings([facility.businessContactFirstName, facility.businessContactLastName], ' ')}
+                      </div>
+                    </dd>
+                  </div>
+                </dl>
+              </li>
+            ))}
+            <li className="overflow-hidden rounded-xl border border-gray-200">
+              {/* Card Header */}
+              <div className="flex h-full flex-col items-center justify-center gap-x-4 gap-y-3 border-b border-gray-900/5 bg-gray-50 p-6">
+                <Button icon="pi pi-plus" rounded aria-label="Add" onClick={() => setVisible(true)} />
+                <div className="text-sm font-medium leading-6 text-gray-900">Add new location</div>
               </div>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
+        <Button label="Save" onClick={() => setStep(step + 1)} />
+      </div>
+    </div>
   )
 }
