@@ -34,6 +34,10 @@ import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
 import ClientProfile from './pages/client/ClientProfile'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
+/** Sales Pages */
+import SalesDashboard from './pages/sales/dashboard'
+
+
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
 import AdminProfile from './pages/admin/profile/AdminProfile'
@@ -62,6 +66,7 @@ import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
 import AdminUnitsLearn from './pages/admin/HTU/AdminUnitsLearn'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
+import SalesProfile from './pages/sales/profile/SalesProfile'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -100,8 +105,8 @@ export default function App() {
                 </Route>
 
                 <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess={sales_role} />}>
-                  <Route path="/sales/dashboard" element={<ClientDashboard />} />
-                  <Route path="/sales/profile" element={<ClientProfile />} />
+                  <Route path="/sales/dashboard" element={<SalesDashboard />} />
+                  <Route path="/sales/profile" element={<SalesProfile />} />
                   <Route path="/sales/facilities" element={<Facilities />} />
                   <Route path="/sales/facilities/new" element={<ClientAddFacility />} />
                   <Route path="/sales/facilities/:facilityId" element={<ClientFacilityDetails />} />
