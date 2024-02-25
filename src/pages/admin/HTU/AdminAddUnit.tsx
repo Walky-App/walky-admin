@@ -1,31 +1,28 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 import { useState } from 'react';
-import { Section } from '../../../interfaces/Unit';
-import { Card } from 'flowbite-react';
 import { RequestService } from '../../../services/RequestService';
 import { useAdmin } from '../../../contexts/AdminContext';
-import { Module } from '../../../interfaces/Module';
-import { TabPanel, TabView, TabViewTabChangeEvent } from 'primereact/tabview';
-import SectionImage from './components/SectionImage';
-import SectionEditor from './components/SectionEditor';
+import { Unit } from '../../../interfaces/Unit';
 
 
 
 export default function AdminAddUnit() {
-    const { module, setModule } = useAdmin()
+    const { unit, setUnit, setModule } = useAdmin()
     const [title, setTitle] = useState<string>('')
     const [time, setTime] = useState<number>(0)
-    const [sections, setSections] = useState<Section[]>([])
-    const [selectedSection, setSelectedSection] = useState<Section>()
-    const [activeIndex, setActiveIndex] = useState(0)
     const params = useParams()
     const navigate = useNavigate()
 
-    const redirectToPreviousPath = () => {
+    const redirectToPreviousPath = (unitId: string = '') => {
         const currentPath = window.location.pathname;
         const newPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-        navigate(newPath);
+        if (unitId === '') {
+            setModule(undefined)
+            navigate(newPath);
+        } else {
+            navigate(newPath + `/${unitId}`);
+        }
     };
 
     const handleRequest = async () => {
@@ -34,25 +31,17 @@ export default function AdminAddUnit() {
             return
         }
         const newUnit = {
-            moduleId: params.idModule,
+            moduleId: params.moduleId,
             title,
             time: time * 60,
         }
         try {
             const url = 'units'
             const method = 'POST'
-
-            const response = await RequestService(url, method, newUnit)
-
+            const response: Unit = await RequestService(url, method, newUnit)
             if (response) {
-                if (module) {
-                    const moduleUpdate: Module = {
-                        ...module,
-                        units: module.units ? [...module.units, response] : [response]
-                    }
-                    setModule(moduleUpdate)
-                }
-                redirectToPreviousPath()
+                setUnit(response)
+                redirectToPreviousPath(response._id)
 
             } else {
                 console.error('Error uploading data and image')
@@ -61,31 +50,6 @@ export default function AdminAddUnit() {
         } catch (error) {
             console.error('Request error:', error)
         }
-    }
-
-    const handlerSectionEdit = (section: Section) => {
-        if (section.type === 'text') {
-            handleTabChange(0)
-        } else {
-            handleTabChange(1)
-        }
-        setSelectedSection(section)
-    }
-
-    const handlerSectionDelete = (sectionDelete: Section) => {
-        const newSection = sections.filter(section => JSON.stringify(section) !== JSON.stringify(sectionDelete));
-        setSections(newSection)
-    }
-
-    const handleTabChange = (index: number) => {
-        setActiveIndex(index);
-    }
-    const handlerBeforeTabChang = (e: TabViewTabChangeEvent) => {
-        setSelectedSection(undefined)
-    }
-
-    const deleteSelectedSection = () => {
-        setSelectedSection(undefined)
     }
 
     return (
@@ -132,60 +96,23 @@ export default function AdminAddUnit() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-6 flex items-center justify-end gap-x-6">
-                                <button
-                                    type="button"
-                                    onClick={redirectToPreviousPath}
-                                    className="text-sm font-semibold leading-6 text-gray-900">
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleRequest}
-                                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
-                                    {'Create'}
-                                </button>
-                            </div>
-                            <div className="col-span-6">
-                                <label htmlFor="section_title" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Create section
-                                </label>
-                                <TabView activeIndex={activeIndex} onTabChange={(e) => handleTabChange(e.index)} onBeforeTabChange={handlerBeforeTabChang}>
-                                    <TabPanel header="Text">
-                                        <SectionEditor section={sections} setSection={setSections} selectedSection={selectedSection} deleteSelectedSection={deleteSelectedSection} />
-                                    </TabPanel>
-                                    <TabPanel header="Image">
-                                        <SectionImage section={sections} setSection={setSections} selectedSection={selectedSection} deleteSelectedSection={deleteSelectedSection} />
-                                    </TabPanel>
-                                </TabView>
-                            </div>
-                            <div className="col-span-6">
-                                <label className="block text-sm font-medium leading-6 text-gray-900">
-                                    Sections
-                                </label>
-                                <div className='flex flex-wrap gap-1 justify-center'>
-                                    {
-                                        sections.map((section, index) => {
-                                            return (
-                                                <Card key={index} className='w-1/5'>
-                                                    <p className="m-0">
-                                                        #{index + 1} {section.title}
-                                                    </p>
-                                                    <div className='flex flex-row justify-between'>
-                                                        <button type='button' onClick={() => handlerSectionEdit(section)} className='rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500'>edit</button>
-                                                        <button type='button' onClick={() => handlerSectionDelete(section)} className='rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500'>delete</button>
-                                                    </div>
-                                                </Card>
-                                            )
-                                        })
-                                    }
-                                </div>
-                            </div>
+                        </div>
+                        <div className="mt-6 flex items-center justify-end gap-x-6">
+                            <button
+                                type="button"
+                                onClick={() => redirectToPreviousPath()}
+                                className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200">
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleRequest}
+                                className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+                                {'Create'}
+                            </button>
                         </div>
                     </div>
                 </div>
-
-
             </form >
         </div >
     )

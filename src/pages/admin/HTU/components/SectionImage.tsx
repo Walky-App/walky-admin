@@ -1,11 +1,13 @@
-import { Section, SectionProps } from '../../../../interfaces/Unit'
+import { Section, SectionProps, Unit } from '../../../../interfaces/Unit'
 import { ChangeEvent, useEffect, useState } from 'react';
 import { RequestService } from '../../../../services/RequestService';
 import { Editor, EditorTextChangeEvent } from 'primereact/editor';
 import { FileInput } from 'flowbite-react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useAdmin } from '../../../../contexts/AdminContext';
 
 export default function SectionImage({ section, setSection, selectedSection, deleteSelectedSection }: SectionProps) {
+    const { unit } = useAdmin()
     const [title, setTitle] = useState<string>('')
     const [image, setImage] = useState<string>('')
     const [text, setText] = useState<string>('')
@@ -33,7 +35,24 @@ export default function SectionImage({ section, setSection, selectedSection, del
 
     const header = renderHeader();
 
-    const handlerSection = () => {
+    const dataSet = async (section: Section, method: string): Promise<Unit> => {
+        const body = {
+            unitId: unit?._id,
+            section
+        }
+        try {
+            const responseModule: Unit = await RequestService(`units/section`, method, body)
+            if (responseModule) {
+                return responseModule
+            }
+
+        } catch (error) {
+            console.error('Request error:', error)
+        }
+        return {} as Unit;
+    }
+
+    const handlerSection = async () => {
         if (title === '' || image === '' || text === '') {
             alert('Please fill the section title and image or body')
             return
@@ -41,22 +60,23 @@ export default function SectionImage({ section, setSection, selectedSection, del
         const body: string = text + image
         if (selectedSection) {
             const sectionUpdate: Section = {
+                _id: selectedSection._id,
                 title: title,
                 body: body,
                 type: 'image'
             }
-            const index = section.findIndex(section => JSON.stringify(section));
-            if (index !== -1) {
-                const newArray = [...section];
-                newArray[index] = sectionUpdate;
-                setSection(newArray);
-            }
+            const newSection: Unit = await dataSet(sectionUpdate, 'PATCH')
+            setSection(newSection.sections)
+            deleteSelectedSection()
         } else {
-            setSection([...section, {
+            const dataSection: Section = {
                 title: title,
                 body: body,
                 type: 'image'
-            }])
+            }
+            const newSection: Unit = await dataSet(dataSection, 'POST')
+            setSection(newSection.sections)
+            deleteSelectedSection()
         }
 
         setTitle('')
@@ -73,7 +93,7 @@ export default function SectionImage({ section, setSection, selectedSection, del
             formData.append('image', image as File)
 
             try {
-                const response = await RequestService('units/section/image', 'POST', formData, 'form-data');
+                const response = await RequestService(`units/section/image/${unit?._id}`, 'POST', formData, 'form-data');
                 if (response) {
                     setImage(
                         `<div className='w-9/12 mt-2'> <img className='object-cover rounded-xl' src="${response.fileUrl}" alt="${response.originalname}"/></div>`
@@ -98,7 +118,6 @@ export default function SectionImage({ section, setSection, selectedSection, del
         }
     }
 
-
     const handleRemoveImage = () => {
         setImagePreview(undefined);
     };
@@ -110,7 +129,6 @@ export default function SectionImage({ section, setSection, selectedSection, del
         setImage('')
         setImagePreview(undefined);
     }
-
 
     useEffect(() => {
         if (selectedSection) {
@@ -129,6 +147,7 @@ export default function SectionImage({ section, setSection, selectedSection, del
             setImagePreview(srcAttributeValue as string)
         }
     }, [selectedSection])
+
     return (
         <>
             <div className="my-2">

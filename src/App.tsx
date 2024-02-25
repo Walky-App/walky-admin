@@ -51,7 +51,7 @@ import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 import AdminAddCategory from './pages/admin/HTU/AdminAddCategory'
 import AdminAddModule from './pages/admin/HTU/AdminAddModule'
 import AdminCategoryLearn from './pages/admin/HTU/AdminCategoryLearn'
-import AdminDashboardLearn from './pages/admin/HTU'
+import AdminDashboardLearn from './pages/admin/HTU/AdminDashboardLearn'
 import AdminModulesLearn from './pages/admin/HTU/AdminModulesLearn'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
@@ -63,6 +63,7 @@ import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDe
 import AdminUnitsLearn from './pages/admin/HTU/AdminUnitsLearn'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 import AdminAddUnit from './pages/admin/HTU/AdminAddUnit'
+import AdminDetailsUnit from './pages/admin/HTU/AdminDetailsUnit'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -89,7 +90,7 @@ export default function App() {
                 {/* LMS Module */}
                 <Route path="/learn" element={<Learn />} />
                 <Route path="/learn/category/:id" element={<Modules />} />
-                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess={client_role} />}>
+                <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
                   <Route path="/client/dashboard" element={<ClientDashboard />} />
                   <Route path="/client/profile" element={<ClientProfile />} />
                   <Route path="/client/facilities" element={<Facilities />} />
@@ -100,7 +101,7 @@ export default function App() {
                   <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
                 </Route>
 
-                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess={sales_role} />}>
+                <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route path="/sales/dashboard" element={<ClientDashboard />} />
                   <Route path="/sales/profile" element={<ClientProfile />} />
                   <Route path="/sales/facilities" element={<Facilities />} />
@@ -109,7 +110,7 @@ export default function App() {
                   <Route path="/sales/jobs" element={<Jobs />} />
                 </Route>
 
-                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess={admin_role} />}>
+                <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/profile" element={<AdminProfile />} />
                   <Route path="/admin/users" element={<AdminUsers />} />
@@ -131,12 +132,13 @@ export default function App() {
                   <Route path="/admin/jobs/:id" element={<AdminJobDetails />} />
                   <Route path="/admin/learn" element={<AdminDashboardLearn />} />
                   <Route path="/admin/learn/categories" element={<AdminCategoryLearn />} />
-                  <Route path="/admin/learn/categories/:idCategory" element={<AdminDetailsCategory />} />
+                  <Route path="/admin/learn/categories/:categoryId" element={<AdminDetailsCategory />} />
                   <Route path="/admin/learn/categories/new" element={<AdminAddCategory />} />
                   <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
-                  <Route path="/admin/learn/modules/:idModule" element={<AdminDetailsModule />} />
-                  <Route path="/admin/learn/modules/:idModule/units" element={<AdminUnitsLearn />} />
-                  <Route path="/admin/learn/modules/:idModule/units/new" element={<AdminAddUnit />} />
+                  <Route path="/admin/learn/modules/:moduleId" element={<AdminDetailsModule />} />
+                  <Route path="/admin/learn/modules/:moduleId/units" element={<AdminUnitsLearn />} />
+                  <Route path="/admin/learn/modules/:moduleId/units/new" element={<AdminAddUnit />} />
+                  <Route path="/admin/learn/modules/:moduleId/units/:unitId" element={<AdminDetailsUnit />} />
                   <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
                 </Route>
               </Route>
