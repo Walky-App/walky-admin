@@ -4,11 +4,14 @@ export interface Section {
   _id?: string
   title: string
   body: string
+  type: string
 }
 
 export interface SectionProps {
-  section: string
-  setSection: (value: string) => void
+  section: Section[]
+  setSection: (value: Section[]) => void
+  selectedSection?: Section
+  deleteSelectedSection: () => void
 }
 
 export interface Assessment {
