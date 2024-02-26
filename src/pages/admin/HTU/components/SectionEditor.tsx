@@ -1,36 +1,55 @@
 import { Editor, EditorTextChangeEvent } from "primereact/editor";
-import { SectionProps, Section } from '../../../../interfaces/Unit';
+import { SectionProps, Section, Unit } from '../../../../interfaces/Unit';
 import { useEffect, useState } from "react";
+import { RequestService } from "../../../../services/RequestService";
+import { useAdmin } from "../../../../contexts/AdminContext";
 
 
 export default function SectionEditor({ section, setSection, selectedSection, deleteSelectedSection }: SectionProps) {
+    const { unit, } = useAdmin()
     const [sectionLocal, setSectionLocal] = useState<string>('')
     const [title, setTitle] = useState<string>('')
 
-    const handlerSection = () => {
+    const dataSet = async (section: Section, method: string): Promise<Unit> => {
+        const body = {
+            unitId: unit?._id,
+            section
+        }
+        try {
+            const responseModule: Unit = await RequestService(`units/section`, method, body)
+            if (responseModule) {
+                return responseModule
+            }
+        } catch (error) {
+            console.error('Request error:', error)
+        }
+        return {} as Unit;
+    }
+
+    const handlerSection = async () => {
         if (title === '' || sectionLocal === '') {
             alert('Please fill the section title and body')
             return
         }
         if (selectedSection) {
             const sectionUpdate: Section = {
+                _id: selectedSection._id,
                 title: title,
                 body: sectionLocal,
                 type: 'text'
             }
-            const index = section.findIndex(section => JSON.stringify(section));
-            if (index !== -1) {
-                const newArray = [...section];
-                newArray[index] = sectionUpdate;
-                setSection(newArray);
-            }
+            const newSection: Unit = await dataSet(sectionUpdate, 'PATCH')
+            setSection(newSection.sections)
+            deleteSelectedSection()
         } else {
-            setSection([...section, {
+            const dataSection: Section = {
                 title: title,
                 body: sectionLocal,
                 type: 'text'
-            }]
-            )
+            }
+            const newSection: Unit = await dataSet(dataSection, 'POST')
+            setSection(newSection.sections)
+            deleteSelectedSection()
         }
         setTitle('')
         setSectionLocal('')
