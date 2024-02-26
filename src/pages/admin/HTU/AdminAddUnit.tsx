@@ -108,7 +108,7 @@ export default function AdminAddUnit() {
                                 type="button"
                                 onClick={handleRequest}
                                 className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
-                                {'Create'}
+                                Create
                             </button>
                         </div>
                     </div>
