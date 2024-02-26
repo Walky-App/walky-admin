@@ -27,6 +27,7 @@ import Units from './pages/learn/units'
 import UnitDetail from './pages/learn/units/UnitDetail'
 
 /** Client Pages */
+import ClientOnboarding from './pages/client/onboarding'
 import ClientDashboard from './pages/client/dashboard'
 import Facilities from './pages/client/facilities'
 import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
@@ -41,7 +42,6 @@ import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 import SalesDashboard from './pages/sales/dashboard'
 import SalesProfile from './pages/sales/profile/SalesProfile'
 import Products from './pages/sales/products'
-
 
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
@@ -102,6 +102,7 @@ export default function App() {
                 <Route path="/learn/module/:moduleId" element={<Units />} />
                 <Route path="/learn/module/:moduleId/unit/:unitId" element={<UnitDetail />} />
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
+                  <Route path="/client/onboarding" element={<ClientOnboarding />} />
                   <Route path="/client/dashboard" element={<ClientDashboard />} />
                   <Route path="/client/profile" element={<ClientProfile />} />
                   <Route path="/client/facilities" element={<Facilities />} />
