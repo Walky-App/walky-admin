@@ -82,10 +82,10 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="ml-auto mr-[9.5rem] mb-4 max-w-md space-y-4">
-       <div className="mx-auto max-w-lg text-center">
-            {/* <h1 className="text-2xl font-bold sm:text-3xl">Login</h1> */}
-          </div>
+    <form onSubmit={handleSubmit} className="mb-4 ml-auto mr-[9.5rem] max-w-md space-y-4">
+      <div className="mx-auto max-w-lg text-center">
+        {/* <h1 className="text-2xl font-bold sm:text-3xl">Login</h1> */}
+      </div>
       <div>
         <label htmlFor="email" className="sr-only">
           Email
@@ -104,8 +104,8 @@ export default function LoginForm() {
 
       <div>
         <Password
-          inputId='password'
-          placeholder='*Password'
+          inputId="password"
+          placeholder="*Password"
           value={value}
           onChange={e => setValue(e.target.value)}
           toggleMask
@@ -113,9 +113,8 @@ export default function LoginForm() {
             panel: { className: 'hidden' },
             input: { className: 'w-full' },
           }}
-          className="w-full rounded-lg border-zinc-200 text-sm shadow-sm focus:border-green-500 focus:ring-green-500"/>
-          
-
+          className="w-full rounded-lg border-zinc-200 text-sm shadow-sm focus:border-green-500 focus:ring-green-500"
+        />
       </div>
       {/* </div> */}
       {error && (
