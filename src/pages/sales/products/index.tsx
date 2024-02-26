@@ -39,7 +39,6 @@ export default function Products() {
         accessor: 'name',
         width: '300px',
         Cell: ({ row, value }: any) => {
-          console.log(row)
           return (
             <div className="flex items-center gap-2">
               <Avatar src={row.original.ImageThumb} alt={`${value}'s Avatar`} />
