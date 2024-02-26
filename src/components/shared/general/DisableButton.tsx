@@ -1,0 +1,19 @@
+import { DisableButtonInterface } from '../../../interfaces/Global'
+import { RequestService } from '../../../services/RequestService'
+import { useNavigate } from 'react-router-dom'
+
+export default function NavigationButton({ path, status, redirect }: DisableButtonInterface) {
+  const navigate = useNavigate()
+  const handlerButton = async () => {
+    await RequestService(path, 'PATCH', { is_disabled: !status })
+    navigate(redirect)
+  }
+  return (
+    <button
+      type="button"
+      onClick={handlerButton}
+      className={`ml-2 inline-flex items-center rounded-md ${status ? 'bg-green-800 hover:bg-green-600' : 'bg-red-800 hover:bg-red-600'} px-3 py-2 text-sm font-semibold text-white shadow-sm `} >
+      {status ? 'Active' : 'Disable'}
+    </button >
+  )
+}
