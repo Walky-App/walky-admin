@@ -6,14 +6,15 @@ import { classNames } from 'primereact/utils'
 import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
 import { Toast } from 'primereact/toast'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 interface ShiftDetailsProps {
   jobId: string | null
 }
-export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
+export default function ShiftDetails() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
   const [endTime, setEndTime] = React.useState<Date | null>(null)
   const toast = useRef<Toast>(null)
+  const id = useParams()
   const navigate = useNavigate()
 
   const {
@@ -43,9 +44,9 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
     try {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      const updatedData = { ...data, id: jobId, startTime: startTimeMilitary, endTime: endTimeMilitary }
+      const updatedData = { ...data, id: id, startTime: startTimeMilitary, endTime: endTimeMilitary }
       console.log('Lets see Updated data -->', updatedData)
-      const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
+      const response = await RequestService(`jobs/${id}`, 'PATCH', updatedData)
       if (response) {
         toast.current?.show({
           severity: 'success',

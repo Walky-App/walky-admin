@@ -31,6 +31,7 @@ export default function Facilities() {
           const jobsRequests = facilities.map((facility: Facility) => RequestService(`jobs/facility/${facility._id}`))
           const jobsResults = await Promise.all(jobsRequests)
           const allJobs = jobsResults.flat()
+          console.log('All Jobs:', allJobs)
           setJobsData(allJobs)
         } catch (error) {
           console.error('Error fetching jobs data:', error)
@@ -45,7 +46,6 @@ export default function Facilities() {
     //@ts-ignore
     { Header: 'Facility', accessor: row => row.facility?.name, Cell: ({ value }) => value || 'No Facility' },
     { Header: 'Status', accessor: 'status' },
-    { Header: 'Salary', accessor: 'salary' },
     //@ts-ignore
     { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => (Array.isArray(value) ? value.join(', ') : 'N/A') },
     { Header: 'Employment Type', accessor: 'employment_type' },
