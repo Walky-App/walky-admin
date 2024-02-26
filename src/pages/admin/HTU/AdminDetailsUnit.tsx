@@ -60,7 +60,6 @@ export default function AdminDetailsUnit() {
         } else {
             handleTabChange(1)
         }
-        console.log(section)
         setSelectedSection(section)
     }
 
