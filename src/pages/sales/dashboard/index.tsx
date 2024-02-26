@@ -1,7 +1,6 @@
 import { TaskList, ClassList, CalendarWidget, MessagesWidget } from './widgets'
 
-
-export default function AdminDashboard() {
+export default function SalesDashboard() {
   return (
     <>
       <div className="w-full sm:w-1/2">
