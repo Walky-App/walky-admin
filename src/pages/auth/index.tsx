@@ -47,7 +47,7 @@ export default function Auth() {
           {userForm === 'Sign up' && <SignupForm />}
           {userForm === 'Forgot Password' && <ForgotPasswordForm />}
 
-          <div className="flex mr-6 flex-col items-center justify-center gap-2">
+          <div className="flex mr-center flex-col items-center justify-center gap-2">
             {userForm === 'Login' && (
               <a
                 className="font-medium underline hover:text-green-700"
@@ -70,7 +70,7 @@ export default function Auth() {
           </div>
         </div>
         <div className="flex justify-center">
-          <small className="text-xs mr-6 text-gray-400  ">v.1.0.0{process.env.NODE_ENV === 'development' ? 'd' : 'p'}</small>
+          <small className="text-xs text-gray-400  ">v.1.0.0{process.env.NODE_ENV === 'development' ? 'd' : 'p'}</small>
         </div>
       </div>
       <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
