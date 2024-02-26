@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom"
 import { RequestService } from "../../../services/RequestService"
 import TableContents from "../components/TableContents"
 import { NavigationButtonInterface } from "../../../interfaces/Global"
+import UnitDetailsCard from "../components/UnitDetailsCard"
+import { Unit } from "../../../interfaces/Unit"
 
 export default function UnitDetail() {
     const { unit, setUnit } = useAdmin()
@@ -29,7 +31,6 @@ export default function UnitDetail() {
         if (!unit) {
             fetchData()
         }
-
     })
 
     return (
@@ -38,21 +39,7 @@ export default function UnitDetail() {
                 {/*left content*/}
                 <div className="col-span-4 md:col-span-2 order-2 md:order-1 ">
                     <div className="flex flex-col h-auto rounded-2xl border border-zinc-100 bg-white">
-                        <p className="text-2xl p-3">
-                            {unit?.title}
-                        </p>
-                        <div className="pt-3">
-                            {
-                                unit?.sections.map((item, index) => (
-                                    <div key={index} id={item.title.replace(' ', '-')} className={` ${index === unit?.sections.length - 1 ? 'mx-3 mb-3' : 'border-b pb-4 mb-4 mx-3'}`}>
-                                        <div className='mb-4 text-xs text-gray-500'>{item.title}</div>
-                                        <div className='p-editor-content ql-container ql-snow !border-0'>
-                                            <div className='ql-editor !p-0 b-0' dangerouslySetInnerHTML={{ __html: item.body }} />
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                        </div>
+                        <UnitDetailsCard unit={unit as Unit} />
                     </div>
                 </div>
 
