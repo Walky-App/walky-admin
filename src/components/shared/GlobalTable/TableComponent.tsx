@@ -35,8 +35,8 @@ export default function TableComponent({
     <div className="w-full min-w-[30rem] rounded-xl bg-white p-4 shadow-[0_4px_10px_rgba(0,0,0,0.03)]">
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup: any, index: number) => (
-            <tr key={index} {...headerGroup.getHeaderGroupProps()}>
+          {headerGroups.map((headerGroup: any) => (
+            <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column: any) => (
                 <th
                   key={column.id}
@@ -62,16 +62,15 @@ export default function TableComponent({
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row: any, index: number) => {
+          {rows.map((row: any) => {
             prepareRow(row)
             if (allowClick) {
               return (
                 <tr className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>
-                  {row.cells.map((cell: any, index: number) => {
+                  {row.cells.map((cell: any) => {
                     return (
                       <td
                         key={cell.column.id}
-                        id={index + 1}
                         {...cell.getCellProps()}
                         className="p-3 text-sm font-normal text-gray-700 first:rounded-l-lg last:rounded-r-lg">
                         {cell.render('Cell')}
@@ -83,11 +82,10 @@ export default function TableComponent({
             } else {
               return (
                 <tr>
-                  {row.cells.map((cell: any, index: number) => {
+                  {row.cells.map((cell: any) => {
                     return (
                       <td
                         key={cell.column.id}
-                        id={(index + 1).toString()}
                         className="p-3 text-sm font-normal text-gray-700 first:rounded-l-lg last:rounded-r-lg">
                         {cell.render('Cell')}
                       </td>
