@@ -1,5 +1,7 @@
 import React, { useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { set, useForm } from 'react-hook-form'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { RequestService } from '../../../../services/RequestService'
 import { Editor, EditorTextChangeEvent } from 'primereact/editor'
@@ -11,19 +13,42 @@ import { classNames } from 'primereact/utils'
 import { Dropdown } from 'primereact/dropdown'
 import { IFacility } from '../../../../interfaces/Facility'
 interface BasicInfoProps {
-  onJobCreated: (id: string) => void
-  onNext: () => void
+  nextStep: () => void
 }
-export default function BasicInfo(props: BasicInfoProps) {
+export default function BasicInfo( { nextStep }: BasicInfoProps) {
   const user = GetTokenInfo()
   const id = user?._id
   const toast = useRef<Toast>(null)
+  const [job, setJob] = useState<any>({})
+  const navigate = useNavigate()
+  const params = useParams()
+  const jobId = params.id
   const [facilities, setFacilities] = React.useState<IFacility[]>()
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const getJob = async () => {
+      const job = await RequestService(`jobs/${params.id}`)
+
+      if (job) {
+        setJob(job)
+        setValue('title', job.title)
+        setValue('description', job.description)
+        //@ts-ignore
+        const facility = facilities?.find(facility => facility._id === job.facility.id)
+        //@ts-ignore
+        setValue('facility', facility)
+      } else {
+        console.log(job)
+      }
+    }
+    getJob()
+  }, [facilities])
+
+  useEffect(() => {
     const getFacilities = async () => {
-      const allFacilities = await RequestService(`facilities/byclient/${id}`)
-      setFacilities(allFacilities)
+      console.log('id for fetching all facilities', id)
+      const allFacilitiesByClient = await RequestService(`facilities/byclient/${id}`)
+      setFacilities(allFacilitiesByClient)
     }
 
     getFacilities()
@@ -32,10 +57,11 @@ export default function BasicInfo(props: BasicInfoProps) {
   const defaultValues = {
     title: '',
     description: '',
-    facility_id: '',
+    facility: '',
   }
   const {
     control,
+    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({ defaultValues })
@@ -50,20 +76,20 @@ export default function BasicInfo(props: BasicInfoProps) {
     )
   }
 
-  const { onJobCreated, onNext } = props
-
   const onSubmit = async (data: any) => {
     try {
       const requestData = { ...data }
-      const response = await RequestService('jobs', 'POST', requestData)
+      console.log('Lets see the update data -->', requestData)
+      const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData)
       if (response) {
         toast.current?.show({
           severity: 'success',
           summary: 'Success',
-          detail: 'Basic information submitted successfully',
+          detail: 'Basic information updated successfully',
         })
-        onJobCreated(response._id)
-        setTimeout(onNext, 2000)
+        setTimeout(() => {
+          nextStep()
+        }, 3000)
       }
     } catch (error) {
       console.error(error)
@@ -113,14 +139,12 @@ export default function BasicInfo(props: BasicInfoProps) {
             </div>
 
             <div className="sm:col-span-3">
-              <label
-                htmlFor="facility"
-                className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="facility" className="block text-sm font-medium leading-6 text-gray-900">
                 Select Facility:
               </label>
               <div className="mt-2">
                 <Controller
-                  name="facility_id"
+                  name="facility"
                   control={control}
                   rules={{ required: 'Facility is required.' }}
                   render={({ field, fieldState }) => (

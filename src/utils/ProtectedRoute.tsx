@@ -11,15 +11,12 @@ export function ProtectedRouteAuth({ redirectTo = '/login' }: ProtectedRouteProp
   return <Outlet />
 }
 
-type ProtectedRouteByRolProps = RouteProps & {
-  redirectTo: string
-  roleAccess: string
-}
+type ProtectedRouteByRolProps = RouteProps & { redirectTo: string; roleAccess: string }
 
 export function ProtectedRouteRol({ redirectTo, roleAccess }: ProtectedRouteByRolProps) {
-  // const { user } = GetTokenInfo()
+  const { role } = GetTokenInfo()
 
-  // if (user.role !== roleAccess) return <Navigate to={redirectTo} replace />
+  if (role !== roleAccess) return <Navigate to={redirectTo} replace />
 
   return <Outlet />
 }
