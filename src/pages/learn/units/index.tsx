@@ -100,12 +100,12 @@ export default function Units() {
                         <div className={`space-y-6 pb-6 ${index !== (module?.units?.length ?? 0) - 1 && 'border-l-2 border-dashed'} `}>
                             <div className="relative w-full">
                                 <div className="-ml-3.5 -top-0.5 absolute bg-white border flex h-7 justify-center rounded-full text-blue-500 w-7 z-10"></div>
-                                <div onClick={() => handlerUnit(unit)} className="ml-6 min-h-24 max-h-24 cursor-pointer">
+                                <div onClick={() => handlerUnit(unit)} className="ml-6 min-h-24 max-h-24 h-24 cursor-pointer">
                                     <div className="flex flex-row h-auto rounded-2xl border border-zinc-100 bg-white">
                                         <div>
                                             <div className="m-2 flex flex-1 flex-row gap-3">
                                                 <div className="flex flex-1 flex-col justify-evenly">
-                                                    <div className="text-xl font-semibold text-black">{unit.title}</div>
+                                                    <div className="text-base font-semibold text-black">{unit.title}</div>
                                                 </div>
                                             </div>
                                             <div className="mx-2 mb-2 h-auto text-xs font-normal text-stone-500">

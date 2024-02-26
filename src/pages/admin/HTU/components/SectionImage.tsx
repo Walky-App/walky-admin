@@ -96,7 +96,7 @@ export default function SectionImage({ section, setSection, selectedSection, del
                 const response = await RequestService(`units/section/image/${unit?._id}`, 'POST', formData, 'form-data');
                 if (response) {
                     setImage(
-                        `<div className='w-9/12 mt-2'> <img className='object-cover rounded-xl' src="${response.fileUrl}" alt="${response.originalname}"/></div>`
+                        `<div className='w-9/12 mt-2'> <img className='object-cover rounded-2xl' src="${response.fileUrl}" alt="${response.originalname}"/></div>`
                     )
                 } else {
                     console.error('Error uploading data and image')
