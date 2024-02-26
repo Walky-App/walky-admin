@@ -11,10 +11,7 @@ export function ProtectedRouteAuth({ redirectTo = '/login' }: ProtectedRouteProp
   return <Outlet />
 }
 
-type ProtectedRouteByRolProps = RouteProps & {
-  redirectTo: string
-  roleAccess: string
-}
+type ProtectedRouteByRolProps = RouteProps & { redirectTo: string; roleAccess: string }
 
 export function ProtectedRouteRol({ redirectTo, roleAccess }: ProtectedRouteByRolProps) {
   const { role } = GetTokenInfo()

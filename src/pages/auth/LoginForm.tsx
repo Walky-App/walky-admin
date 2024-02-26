@@ -8,10 +8,10 @@ import { useAuth } from '../../contexts/AuthContext'
 import { Password } from 'primereact/password'
 import { InputText } from 'primereact/inputtext'
 
-const admin_role = process.env.REACT_APP_ADMIN_ROLE?.toString()
-const client_role = process.env.REACT_APP_CLIENT_ROLE?.toString()
-const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE?.toString()
-const sales_role = process.env.REACT_APP_SALES_ROLE?.toString()
+const admin_role = process.env.REACT_APP_ADMIN_ROLE
+const client_role = process.env.REACT_APP_CLIENT_ROLE
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE
+const sales_role = process.env.REACT_APP_SALES_ROLE
 
 export default function LoginForm() {
   const [error, setError] = useState<any>()
@@ -33,6 +33,8 @@ export default function LoginForm() {
 
     const data: any = await LoginService(body)
 
+    console.log('sales_role in login form', sales_role)
+
     try {
       if (!data) {
         setLoading(false)
@@ -53,9 +55,7 @@ export default function LoginForm() {
           setUser({ ...user, access_token: access_token })
           setLoading(false)
 
-          const user_role = user.role.toString()
-
-          switch (admin_role) {
+          switch (user.role) {
             case admin_role:
               navigate('/admin/dashboard')
               break
@@ -66,6 +66,7 @@ export default function LoginForm() {
               navigate('/employee/dashboard')
               break
             case sales_role:
+              console.log('sending user to sales/dashboard', sales_role)
               navigate('/sales/dashboard')
               break
             default:
