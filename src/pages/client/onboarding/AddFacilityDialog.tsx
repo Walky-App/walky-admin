@@ -4,16 +4,16 @@ import { Dialog } from 'primereact/dialog'
 import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { countries, states } from './formOptions'
-import { FormDataContext, IFormInputs } from '.'
+import { FormDataContext, IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '.'
 import { Dropdown } from 'primereact/dropdown'
 
 interface AddFacilityDialogProps {
   visible: boolean
   setVisible: (visible: boolean) => void
   toastRef: any
-  values: IFormInputs
+  values: IFacilityFormInputs
 }
 
 export default function AddFacilityDialog({ visible, setVisible, toastRef, values }: AddFacilityDialogProps) {
@@ -25,21 +25,18 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
     handleSubmit,
     getValues,
     reset,
-  } = useForm<IFormInputs>({ values })
+  } = useForm<IFacilityFormInputs>({ values })
 
-  const getFormErrorMessage = (name: keyof typeof errors) => {
-    return errors[name] ? (
-      <small className="p-error">{errors[name]?.message}</small>
-    ) : (
-      <small className="p-error">&nbsp;</small>
-    )
-  }
+  const { fields } = useFieldArray({
+    control,
+    name: 'contacts',
+  })
 
-  const onSubmit: SubmitHandler<IFormInputs> = data => {
-    if (values.facilityName) {
+  const onSubmit: SubmitHandler<IFacilityFormInputs> = data => {
+    if (values.name) {
       // If we're in "edit" mode, update the facility
       setFacilitiesArray(prevArray =>
-        prevArray.map(facility => (facility.businessName === values.businessName ? data : facility)),
+        prevArray.map(facility => (facility.corp_name === values.corp_name ? data : facility)),
       )
       setSelectedFacility(undefined)
     } else {
@@ -52,7 +49,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
     toastRef.current?.show({
       severity: 'success',
       summary: 'Changes Saved',
-      detail: getValues('facilityName'),
+      detail: getValues('name'),
     })
 
     reset()
@@ -71,73 +68,21 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
       visible={visible}
       draggable={false}
       blockScroll
-      //   style={{ width: '50vw' }}
+      // style={{ width: '50vw' }}
       breakpoints={{ '960px': '75vw', '641px': '100vw' }}
       onHide={() => setVisible(false)}
       footer={footerContent}>
-      <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
-        <div className="sm:col-span-6">
-          <label htmlFor="facilityName" className="block text-sm font-medium leading-6 text-gray-900">
-            *Facility Name:
-          </label>
-          <div className="mt-2">
-            <Controller
-              control={control}
-              name="facilityName"
-              rules={{ required: 'Facility Name is required' }}
-              render={({ field, fieldState }) => (
-                <InputText
-                  id={field.name}
-                  {...field}
-                  className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
-                />
-              )}
-            />
-          </div>
-          {getFormErrorMessage('facilityName')}
-        </div>
-      </div>
-      {/* Location */}
-      <div className="grid grid-cols-1 gap-y-6 pb-2">
-        <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Please provide your business address information below.
-          </p>
-        </div>
-
+      <div className="flex flex-col gap-y-4">
         <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
-          <div className="sm:col-span-3">
-            <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-              *Country:
+          <div className="sm:col-span-6">
+            <label htmlFor="facilityName" className="block text-sm font-medium leading-6 text-gray-900">
+              *Facility Name:
             </label>
             <div className="mt-2">
               <Controller
                 control={control}
-                name="country"
-                rules={{ required: 'Country is required' }}
-                render={({ field, fieldState }) => (
-                  <Dropdown
-                    id={field.name}
-                    {...field}
-                    options={countries}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
-                  />
-                )}
-              />
-            </div>
-            {getFormErrorMessage('country')}
-          </div>
-
-          <div className="sm:col-span-3">
-            <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
-              *Address:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="address"
-                rules={{ required: 'Address is required' }}
+                name="name"
+                rules={{ required: 'Facility Name is required' }}
                 render={({ field, fieldState }) => (
                   <InputText
                     id={field.name}
@@ -147,10 +92,63 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
                 )}
               />
             </div>
-            {getFormErrorMessage('address')}
+            {getFormErrorMessage('name', errors)}
+          </div>
+        </div>
+        {/* Location */}
+        <div className="grid grid-cols-1 gap-y-6 pb-2">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please provide your business address information below.
+            </p>
           </div>
 
-          <div className="sm:col-span-3">
+          <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
+            <div className="mb-4 sm:col-span-3">
+              <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
+                *Country:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  control={control}
+                  name="country"
+                  rules={{ required: 'Country is required' }}
+                  render={({ field, fieldState }) => (
+                    <Dropdown
+                      id={field.name}
+                      {...field}
+                      options={countries}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                    />
+                  )}
+                />
+              </div>
+              {getFormErrorMessage('country', errors)}
+            </div>
+
+            <div className="mb-4 sm:col-span-3">
+              <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
+                *Address:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  control={control}
+                  name="address"
+                  rules={{ required: 'Address is required' }}
+                  render={({ field, fieldState }) => (
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                    />
+                  )}
+                />
+              </div>
+              {getFormErrorMessage('address', errors)}
+            </div>
+
+            {/* <div className="sm:col-span-3 mb-4">
             <label htmlFor="address2" className="block text-sm font-medium leading-6 text-gray-900">
               Apt, Suite or Unit:
             </label>
@@ -161,175 +159,218 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
                 render={({ field }) => <InputText id={field.name} {...field} className="w-full" />}
               />
             </div>
-          </div>
+          </div> */}
 
-          <div className="sm:col-span-3">
-            <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-              *City:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="city"
-                rules={{ required: 'City is required' }}
-                render={({ field, fieldState }) => (
-                  <InputText
-                    id={field.name}
-                    {...field}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
-                  />
-                )}
-              />
+            <div className="mb-4 sm:col-span-3">
+              <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
+                *City:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  control={control}
+                  name="city"
+                  rules={{ required: 'City is required' }}
+                  render={({ field, fieldState }) => (
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                    />
+                  )}
+                />
+              </div>
+              {getFormErrorMessage('city', errors)}
             </div>
-            {getFormErrorMessage('city')}
-          </div>
 
-          <div className="sm:col-span-3">
-            <label htmlFor="state" className="block text-sm font-medium leading-6 text-gray-900">
-              *State:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="state"
-                rules={{ required: 'State is required' }}
-                render={({ field, fieldState }) => (
-                  <Dropdown id={field.name} {...field} filter options={states} className="w-full" />
-                )}
-              />
+            <div className="mb-4 sm:col-span-3">
+              <label htmlFor="state" className="block text-sm font-medium leading-6 text-gray-900">
+                *State:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  control={control}
+                  name="state"
+                  rules={{ required: 'State is required' }}
+                  render={({ field, fieldState }) => (
+                    <Dropdown
+                      id={field.name}
+                      {...field}
+                      filter
+                      options={states}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                    />
+                  )}
+                />
+              </div>
+              {getFormErrorMessage('state', errors)}
             </div>
-            {getFormErrorMessage('state')}
-          </div>
 
-          <div className="sm:col-span-3">
-            <label htmlFor="postalCode" className="block text-sm font-medium leading-6 text-gray-900">
-              *Postal Code:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="postalCode"
-                rules={{ required: 'Postal Code is required' }}
-                render={({ field, fieldState }) => (
-                  <InputMask
-                    id={field.name}
-                    {...field}
-                    mask="99999"
-                    slotChar="x"
-                    tooltip="E.g. 90210"
-                    tooltipOptions={{ position: 'bottom' }}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
-                  />
-                )}
-              />
+            <div className="mb-4 sm:col-span-3">
+              <label htmlFor="postalCode" className="block text-sm font-medium leading-6 text-gray-900">
+                *Postal Code:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  control={control}
+                  name="zip"
+                  rules={{ required: 'Postal Code is required' }}
+                  render={({ field, fieldState }) => (
+                    <InputMask
+                      id={field.name}
+                      {...field}
+                      mask="99999"
+                      slotChar="x"
+                      tooltip="E.g. 90210"
+                      tooltipOptions={{ position: 'bottom' }}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                    />
+                  )}
+                />
+              </div>
+              {getFormErrorMessage('zip', errors)}
             </div>
-            {getFormErrorMessage('postalCode')}
           </div>
         </div>
-      </div>
 
-      {/* Contact Person*/}
-      <div className="grid grid-cols-1 gap-y-6 ">
-        <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Person</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">Please enter contact person detail for this address.</p>
-        </div>
-        <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
-          <div className="sm:col-span-3">
-            <label htmlFor="businessContactMobileNumber" className="block text-sm font-medium leading-6 text-gray-900">
-              *Business Contact Mobile Number:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="businessContactMobileNumber"
-                rules={{
-                  required: 'Mobile Number is required',
-                  pattern: {
-                    value: /^\(\d{3}\) \d{3}-\d{4}$/,
-                    message: 'Invalid Mobile Number. E.g. (123) 456-7890',
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <InputMask
-                    id={field.name}
-                    {...field}
-                    mask="(999) 999-9999"
-                    slotChar="x"
-                    tooltip="E.g. (281) 330-8004"
-                    tooltipOptions={{ position: 'bottom' }}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
-                  />
-                )}
-              />
-            </div>
-            {getFormErrorMessage('businessContactMobileNumber')}
+        {/* Contact Person*/}
+        <div className="grid grid-cols-1 gap-y-6 ">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Person</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">Please enter contact person detail for this address.</p>
           </div>
 
-          <div className="sm:col-span-3">
-            <label htmlFor="businessContactFirstName" className="block text-sm font-medium leading-6 text-gray-900">
-              *Business Contact First Name:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="businessContactFirstName"
-                rules={{ required: 'First Name is required' }}
-                render={({ field, fieldState }) => (
-                  <InputText
-                    id={field.name}
-                    {...field}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+          {fields.map((field, index) => (
+            <div key={field.id} className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
+              <div className="mb-4 sm:col-span-3">
+                <label
+                  htmlFor={`contacts.${index}.first_name`}
+                  className="block text-sm font-medium leading-6 text-gray-900">
+                  *First Name:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    control={control}
+                    name={`contacts.${index}.first_name`}
+                    rules={{ required: 'First Name is required' }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                      />
+                    )}
                   />
-                )}
-              />
-            </div>
-            {getFormErrorMessage('businessContactFirstName')}
-          </div>
+                </div>
+                {getFormErrorMessage(`contacts.${index}.first_name`, errors)}
+              </div>
 
-          <div className="sm:col-span-3">
-            <label htmlFor="businessContactLastName" className="block text-sm font-medium leading-6 text-gray-900">
-              *Business Contact Last Name:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="businessContactLastName"
-                rules={{ required: 'Last Name is required' }}
-                render={({ field, fieldState }) => (
-                  <InputText
-                    id={field.name}
-                    {...field}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+              <div className="mb-4 sm:col-span-3">
+                <label
+                  htmlFor={`contacts.${index}.last_name`}
+                  className="block text-sm font-medium leading-6 text-gray-900">
+                  *Last Name:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    control={control}
+                    name={`contacts.${index}.last_name`}
+                    rules={{ required: 'Last Name is required' }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                      />
+                    )}
                   />
-                )}
-              />
-            </div>
-            {getFormErrorMessage('businessContactLastName')}
-          </div>
+                </div>
+                {getFormErrorMessage(`contacts.${index}.last_name`, errors)}
+              </div>
 
-          <div className="sm:col-span-3">
-            <label htmlFor="businessContactDesignation" className="block text-sm font-medium leading-6 text-gray-900">
-              *Business Contact Designation:
-            </label>
-            <div className="mt-2">
-              <Controller
-                control={control}
-                name="businessContactDesignation"
-                rules={{ required: 'Designation is required' }}
-                render={({ field, fieldState }) => (
-                  <Dropdown
-                    id={field.name}
-                    {...field}
-                    filter
-                    options={['Manager', 'Owner', 'Employee']}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+              <div className="mb-4 sm:col-span-3">
+                <label htmlFor={`contacts.${index}.role`} className="block text-sm font-medium leading-6 text-gray-900">
+                  *Role:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    control={control}
+                    name={`contacts.${index}.role`}
+                    rules={{ required: 'Role is required' }}
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        {...field}
+                        filter
+                        options={['Owner', 'AP', 'Onsite', 'Security', 'Other']}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                      />
+                    )}
                   />
-                )}
-              />
+                </div>
+                {getFormErrorMessage(`contacts.${index}.role`, errors)}
+              </div>
+              <div className="mb-4 sm:col-span-3">
+                <label
+                  htmlFor={`contacts.${index}.phone_number`}
+                  className="block text-sm font-medium leading-6 text-gray-900">
+                  *Phone Number:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    control={control}
+                    name={`contacts.${index}.phone_number`}
+                    rules={{
+                      required: 'Mobile Number is required',
+                      pattern: {
+                        value: /^\(\d{3}\) \d{3}-\d{4}$/,
+                        message: 'Invalid Mobile Number. E.g. (123) 456-7890',
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputMask
+                        id={field.name}
+                        {...field}
+                        mask="(999) 999-9999"
+                        slotChar="x"
+                        tooltip="E.g. (281) 330-8004"
+                        tooltipOptions={tooltipOptions}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                      />
+                    )}
+                  />
+                </div>
+                {getFormErrorMessage(`contacts.${index}.phone_number`, errors)}
+              </div>
+              <div className="mb-4 sm:col-span-6">
+                <label
+                  htmlFor={`contacts.${index}.email`}
+                  className="block text-sm font-medium leading-6 text-gray-900">
+                  *Email:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    control={control}
+                    name={`contacts.${index}.email`}
+                    rules={{
+                      required: 'Email is required',
+                      pattern: {
+                        value: /\S+@\S+\.\S+/,
+                        message: 'Invalid email',
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
+                      />
+                    )}
+                  />
+                </div>
+                {getFormErrorMessage(`contacts.${index}.email`, errors)}
+              </div>
             </div>
-            {getFormErrorMessage('businessContactDesignation')}
-          </div>
+          ))}
         </div>
       </div>
     </Dialog>
