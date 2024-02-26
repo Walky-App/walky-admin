@@ -82,7 +82,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 ml-auto mr-[9.5rem] max-w-md space-y-4">
+    <form onSubmit={handleSubmit} className="mb-6 ml-auto mr-auto sm:px-0 px-4 max-w-md space-y-4">
       <div className="mx-auto max-w-lg text-center">
       </div>
       <div>
