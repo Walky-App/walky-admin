@@ -30,9 +30,7 @@ export default function AdminUnitsLearn() {
     const handlerCreateUnit = () => {
         navigate(`/admin/learn/modules/${module?._id}/units/new`)
     }
-    const handlerEditUnit = () => {
-        navigate(`/admin/learn/modules/${module?._id}/units/${unit?._id}`)
-    }
+
     const handlerSelectUnit = (unit: Unit) => {
         setUnit(unit)
     }

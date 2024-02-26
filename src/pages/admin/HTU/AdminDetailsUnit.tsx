@@ -8,6 +8,9 @@ import { RequestService } from "../../../services/RequestService"
 import HeaderComponent from "../../../components/shared/general/HeaderComponent"
 import SectionEditor from "./components/SectionEditor"
 import SectionImage from "./components/SectionImage"
+import { Badge } from "primereact/badge"
+import { Tag } from "primereact/tag"
+import { EnvelopeIcon, PencilSquareIcon, PhoneIcon, TrashIcon } from "@heroicons/react/20/solid"
 
 export default function AdminDetailsUnit() {
     const { unit, setUnit, setModule } = useAdmin()
@@ -23,6 +26,7 @@ export default function AdminDetailsUnit() {
         const currentPath = window.location.pathname;
         const newPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
         setModule(undefined)
+        setUnit(undefined)
         navigate(newPath);
     };
 
@@ -64,8 +68,8 @@ export default function AdminDetailsUnit() {
     }
 
     const handlerSectionDelete = (sectionDelete: Section) => {
-        const newSection = sections.filter(section => JSON.stringify(section) !== JSON.stringify(sectionDelete));
-        setSections(newSection)
+        //const newSection = sections.filter(section => JSON.stringify(section) !== JSON.stringify(sectionDelete));
+        //setSections(newSection)
     }
 
     const handleTabChange = (index: number) => {
@@ -168,25 +172,44 @@ export default function AdminDetailsUnit() {
                                 </TabView>
                             </div>
                             <div className="col-span-6">
-                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                <label className="block text-sm font-medium leading-6 text-gray-900 mb-4">
                                     Sections
                                 </label>
                                 <div className='flex flex-wrap gap-1 justify-center'>
-                                    {
-                                        sections.map((section, index) => {
-                                            return (
-                                                <Card key={index} className='w-1/5'>
-                                                    <p className="m-0">
-                                                        #{index + 1} {section.title}
-                                                    </p>
-                                                    <div className='flex flex-row justify-between'>
-                                                        <button type='button' onClick={() => handlerSectionEdit(section)} className='rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500'>edit</button>
-                                                        <button type='button' onClick={() => handlerSectionDelete(section)} className='rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500'>delete</button>
+                                    <div className="grid grid-cols-1 gap-4 mx-2 sm:grid-cols-2 lg:grid-cols-3">
+                                        {
+                                            sections.map((section, index) => {
+                                                return (
+                                                    <div key={index} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow">
+                                                        <div className="flex w-full items-center justify-between space-x-6 p-6">
+                                                            <div className="h-8 w-8 flex rounded-full bg-gray-300 justify-center items-center" >{`#${index + 1}`}</div>
+                                                            <div className="flex-1 truncate">
+                                                                <div className="flex items-center space-x-3">
+                                                                    <h3 className="truncate text-sm font-medium text-gray-900">{section.title}</h3>
+                                                                </div>
+                                                                <span className="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                                    {`Type: ${section.type}`}
+                                                                </span>
+                                                            </div>
+
+                                                        </div>
+                                                        <div>
+                                                            <div className="-mt-px flex divide-x divide-gray-200">
+                                                                <div className="flex p-2 w-0 flex-1 justify-center items-center cursor-pointer transition-colors duration-300 ease-in-out hover:bg-green-100" onClick={() => handlerSectionEdit(section)}>
+                                                                    <PencilSquareIcon className="h-5 w-5 text-gray-400 " aria-hidden="true" />
+                                                                    Edit
+                                                                </div>
+                                                                <div className="-ml-px p-2 flex w-0 flex-1 justify-center items-center" >
+                                                                    <TrashIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                                    Delete
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </Card>
-                                            )
-                                        })
-                                    }
+                                                )
+                                            })
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
