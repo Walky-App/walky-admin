@@ -34,6 +34,11 @@ import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
 import ClientProfile from './pages/client/ClientProfile'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
+/** Sales Pages */
+import SalesDashboard from './pages/sales/dashboard'
+import SalesProfile from './pages/sales/profile/SalesProfile'
+
+
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
 import AdminProfile from './pages/admin/profile/AdminProfile'
