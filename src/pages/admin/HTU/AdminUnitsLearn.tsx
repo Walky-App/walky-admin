@@ -95,9 +95,9 @@ export default function AdminUnitsLearn() {
                     <div className="flex flex-col h-auto rounded-2xl border border-zinc-100 bg-white">
                         <button onClick={handlerCreateUnit} className="flex flex-row justify-center p-3 text-left text-sm bg-gray-300 rounded-t-2xl border "> <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" /> Create Unit</button>
                         {
-                            module?.units?.map((unit) => {
+                            module?.units?.map((unit, index) => {
                                 return (
-                                    <button onClick={() => { handlerEditUnit(unit) }} key={unit._id} className="flex flex-row justify-between p-3 text-left text-sm border-b rounded-b-2xl border-zinc-100 hover:bg-gray-50" >
+                                    <button onClick={() => { handlerEditUnit(unit) }} key={unit._id} className={`flex flex-row justify-between p-3 text-left text-sm border-b border-zinc-100 hover:bg-gray-100  ${index === (module?.units?.length ?? 0) - 1 ? 'rounded-b-2xl' : ''}`}>
                                         <div className="flex flex-row gap-3 items-center">
                                             <Bars2Icon className="h-5 w-5" />
                                             <div>{unit.title}</div>
