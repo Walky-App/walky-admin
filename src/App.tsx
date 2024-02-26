@@ -39,6 +39,7 @@ import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 /** Sales Pages */
 import SalesDashboard from './pages/sales/dashboard'
 import SalesProfile from './pages/sales/profile/SalesProfile'
+import Products from './pages/sales/products'
 
 
 /** Admin Pages */
@@ -77,6 +78,8 @@ const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
+console.log('sales_role', sales_role)
+
 export default function App() {
   return (
     <AuthProvider>
@@ -111,12 +114,12 @@ export default function App() {
                 </Route>
 
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
-                  <Route path="/sales/dashboard" element={<ClientDashboard />} />
+                  <Route path="/sales/dashboard" element={<SalesDashboard />} />
                   <Route path="/sales/profile" element={<ClientProfile />} />
                   <Route path="/sales/facilities" element={<Facilities />} />
                   <Route path="/sales/facilities/new" element={<ClientAddFacility />} />
                   <Route path="/sales/facilities/:facilityId" element={<ClientFacilityDetails />} />
-                  <Route path="/sales/jobs" element={<Jobs />} />
+                  <Route path="/sales/products" element={<Products />} />
                 </Route>
 
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>

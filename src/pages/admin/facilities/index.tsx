@@ -13,7 +13,7 @@ export default function AdminFacilities() {
   React.useEffect(() => {
     const getFacilities = async () => {
       try {
-        const allFacilities = await RequestService('facilities')
+        const allFacilities = await RequestService('vendor')
         setFacilitiesData(allFacilities)
       } catch (error) {
         console.error('Error fetching facility data:', error)
