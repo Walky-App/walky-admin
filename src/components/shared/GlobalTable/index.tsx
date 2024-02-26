@@ -4,16 +4,14 @@ import TableComponent from './TableComponent'
 import PaginationNav from './PaginationNav'
 import SelectMenu from './SelectMenu'
 import GlobalSearchFilter from './GlobalSearchFilter'
-import RowAvatar from './RowAvatar'
 
 interface ITableProps {
   data: any
   columns: any
-  showAvatar?: boolean
   allowClick?: boolean
 }
 
-export default function GlobalTable({ data, columns, showAvatar, allowClick }: ITableProps) {
+export default function GlobalTable({ data, columns, allowClick }: ITableProps) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -55,6 +53,7 @@ export default function GlobalTable({ data, columns, showAvatar, allowClick }: I
           options={[
             { id: 10, caption: '10 items per page' },
             { id: 20, caption: '20 items per page' },
+            { id: 40, caption: '40 items per page' },
           ]}
         />
       </div>
@@ -65,7 +64,6 @@ export default function GlobalTable({ data, columns, showAvatar, allowClick }: I
           getTableBodyProps={getTableBodyProps}
           rows={rows}
           prepareRow={prepareRow}
-          showAvatar={showAvatar}
           allowClick={allowClick}
         />
       </div>
