@@ -78,8 +78,6 @@ const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
-console.log('sales_role', sales_role)
-
 export default function App() {
   return (
     <AuthProvider>
