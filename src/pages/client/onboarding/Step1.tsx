@@ -2,10 +2,10 @@ import { InputText } from 'primereact/inputtext'
 import { InputMask } from 'primereact/inputmask'
 import { Dropdown } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
-import { Toast } from 'primereact/toast'
+import { Toast, ToastMessage } from 'primereact/toast'
 
 import { classNames } from 'primereact/utils'
-import { useContext, useRef } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { useForm, Controller, SubmitHandler, useFieldArray } from 'react-hook-form'
 import { countries, states } from './formOptions'
 import { FormDataContext, IFacilityFormInputs, StepProps, getFormErrorMessage, tooltipOptions } from '.'
@@ -13,10 +13,31 @@ import { InputNumber } from 'primereact/inputnumber'
 import { RequestService } from '../../../services/RequestService'
 
 export default function Step1({ step, setStep }: StepProps) {
-  const { setFormData, defaultValues, formData, setFacilitiesArray, editingIndex, setEditingIndex } =
-    useContext(FormDataContext)
+  const [isLoading, setIsLoading] = useState(false)
+  const { setFormData, defaultValues, formData, facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 
   const toast = useRef(null)
+
+  const showSuccessToast = () => {
+    // @ts-ignore
+    toast.current?.show({
+      severity: 'success',
+      summary: 'Success',
+      detail: `${getValues('name')} created successfully.`,
+      life: 2000,
+    })
+  }
+
+  const onRemove = (toastData: ToastMessage) => {
+    // @ts-ignore
+    const severity = toastData.message ? toastData.message.severity : toastData.severity
+
+    if (severity === 'success') {
+      setStep(step + 1)
+    }
+
+    setIsLoading(false)
+  }
 
   const values = formData || defaultValues
 
@@ -25,7 +46,7 @@ export default function Step1({ step, setStep }: StepProps) {
     formState: { errors },
     handleSubmit,
     getValues,
-    reset,
+    // reset,
   } = useForm<IFacilityFormInputs>({ values })
 
   const { fields } = useFieldArray({
@@ -36,40 +57,71 @@ export default function Step1({ step, setStep }: StepProps) {
   const onSubmit: SubmitHandler<IFacilityFormInputs> = async data => {
     setFormData(data)
 
-    if (editingIndex !== null) {
-      // Update the facility at editingIndex
-      setFacilitiesArray(prevArray => [...prevArray.slice(0, editingIndex), data, ...prevArray.slice(editingIndex + 1)])
-      setEditingIndex(null) // Reset editingIndex
-    } else {
-      // Add the new facility to the end of the facilitiesArray
-      setFacilitiesArray(prevArray => [...prevArray, data])
-    }
+    // if (editingIndex !== null) {
+    //   // Update the facility at editingIndex
+    //   setFacilitiesArray(prevArray => [...prevArray.slice(0, editingIndex), data, ...prevArray.slice(editingIndex + 1)])
+    //   setEditingIndex(null) // Reset editingIndex
+    // } else {
+    //   // Add the new facility to the end of the facilitiesArray
 
-    try {
-      const response = await RequestService(`facilities`, 'POST', data)
-      if (response.ok) {
+    //   setFacilitiesArray(prevArray => [...prevArray, data])
+    // }
+
+    if (facilitiesArray[0]?._id) {
+      setIsLoading(true)
+      try {
+        const response = await RequestService(`facilities/${facilitiesArray[0]?._id}`, 'PATCH', data)
+
+        if (response?._id) {
+          // @ts-ignore
+          toast.current?.show({
+            severity: 'success',
+            summary: 'Changes saved for:',
+            detail: getValues('name'),
+          })
+          setFacilitiesArray(prevArray =>
+            prevArray.map(facility => (facility._id === response._id ? response : facility)),
+          )
+        } else {
+          throw new Error('Failed to update facility')
+        }
+      } catch (error) {
+        console.error('Error adding facility:', error)
         // @ts-ignore
         toast.current?.show({
-          severity: 'success',
-          summary: 'Form Submitted',
-          detail: getValues('name'),
-          onClose: () => setStep(step + 1),
+          severity: 'error',
+          summary: 'Error saving changes',
+          detail: `${getValues('name')} has been added.`,
         })
-      } else {
-        throw new Error('Failed to add facility')
       }
-    } catch (error) {
-      console.error('Error adding facility:', error)
-      // @ts-ignore
-      toast.current?.show({ severity: 'error', summary: 'Error adding facility', detail: getValues('name') })
-    }
+    } else {
+      setIsLoading(true)
+      try {
+        const response = await RequestService(`facilities`, 'POST', data)
 
-    reset()
+        if (response?._id) {
+          showSuccessToast()
+          setFacilitiesArray([response])
+        } else {
+          throw new Error('Failed to add facility')
+        }
+      } catch (error) {
+        console.error('Error adding facility:', error)
+        // @ts-ignore
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Error adding facility',
+          detail: `${getValues('name')} already exists.`,
+        })
+      }
+
+      // reset()
+    }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <Toast ref={toast} />
+      <Toast ref={toast} onRemove={e => onRemove(e)} />
       <div className="space-y-12">
         {/* Business Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -221,9 +273,8 @@ export default function Step1({ step, setStep }: StepProps) {
                       id={field.name}
                       {...field}
                       onChange={e => field.onChange(Number(e.value))}
-                      suffix=" sqft"
                       min={0}
-                      tooltip="E.g. 10000 sqft"
+                      tooltip="E.g. 10000"
                       tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid })}
                     />
@@ -526,7 +577,7 @@ export default function Step1({ step, setStep }: StepProps) {
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <div>
-          <Button type="submit" label="Submit" />
+          <Button type="submit" label="Submit" loading={isLoading} />
         </div>
       </div>
     </form>

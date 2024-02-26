@@ -8,6 +8,8 @@ import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-fo
 import { countries, states } from './formOptions'
 import { FormDataContext, IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '.'
 import { Dropdown } from 'primereact/dropdown'
+import { RequestService } from '../../../services/RequestService'
+import { InputNumber } from 'primereact/inputnumber'
 
 interface AddFacilityDialogProps {
   visible: boolean
@@ -17,14 +19,15 @@ interface AddFacilityDialogProps {
 }
 
 export default function AddFacilityDialog({ visible, setVisible, toastRef, values }: AddFacilityDialogProps) {
-  const { setFacilitiesArray, setSelectedFacility } = useContext(FormDataContext)
+  const { facilitiesArray, setFacilitiesArray, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
+  const { corp_name, tax_id } = facilitiesArray[0]
 
   const {
     control,
     formState: { errors },
     handleSubmit,
     getValues,
-    reset,
+    // reset,
   } = useForm<IFacilityFormInputs>({ values })
 
   const { fields } = useFieldArray({
@@ -32,27 +35,61 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
     name: 'contacts',
   })
 
-  const onSubmit: SubmitHandler<IFacilityFormInputs> = data => {
+  const onSubmit: SubmitHandler<IFacilityFormInputs> = async data => {
+    const newFacilityData = {
+      ...data,
+      corp_name,
+      tax_id,
+    }
     if (values.name) {
       // If we're in "edit" mode, update the facility
-      setFacilitiesArray(prevArray =>
-        prevArray.map(facility => (facility.corp_name === values.corp_name ? data : facility)),
-      )
+      try {
+        const response = await RequestService(`facilities/${selectedFacility?._id}`, 'PATCH', data)
+
+        if (response?._id) {
+          toastRef.current?.show({
+            severity: 'info',
+            summary: 'Changes saved for:',
+            detail: getValues('name'),
+          })
+          setFacilitiesArray(prevArray =>
+            prevArray.map(facility => (facility._id === response._id ? response : facility)),
+          )
+        } else {
+          throw new Error('Failed to update facility')
+        }
+      } catch (error) {
+        console.error('Error adding facility:', error)
+        // @ts-ignore
+        toastRef.current?.show({ severity: 'error', summary: 'Error saving changes', detail: getValues('name') })
+      }
+      setVisible(false)
       setSelectedFacility(undefined)
     } else {
       // If we're in "add" mode, add a new facility
-      setFacilitiesArray(prevArray => [...prevArray, data])
+      try {
+        const response = await RequestService(`facilities`, 'POST', newFacilityData)
+
+        if (response?._id) {
+          toastRef.current?.show({
+            severity: 'info',
+            summary: 'Facility Added',
+            detail: getValues('name'),
+          })
+          setFacilitiesArray(prevArray => [...prevArray, response])
+        } else {
+          throw new Error('Failed to add facility')
+        }
+      } catch (error) {
+        console.error('Error adding facility:', error)
+        // @ts-ignore
+        toastRef.current?.show({ severity: 'error', summary: 'Error adding facility', detail: getValues('name') })
+      }
+
+      setVisible(false)
+
+      // reset()
     }
-
-    setVisible(false)
-
-    toastRef.current?.show({
-      severity: 'success',
-      summary: 'Changes Saved',
-      detail: getValues('name'),
-    })
-
-    reset()
   }
 
   const footerContent = (
@@ -73,8 +110,8 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
       onHide={() => setVisible(false)}
       footer={footerContent}>
       <div className="flex flex-col gap-y-4">
-        <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
-          <div className="sm:col-span-6">
+        <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2 [&>*]:mb-4">
+          <div className="sm:col-span-3">
             <label htmlFor="facilityName" className="block text-sm font-medium leading-6 text-gray-900">
               *Facility Name:
             </label>
@@ -94,6 +131,68 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
             </div>
             {getFormErrorMessage('name', errors)}
           </div>
+
+          <div className="sm:col-span-3">
+            <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
+              *Facility Phone Number:
+            </label>
+            <div className="mt-2">
+              <Controller
+                control={control}
+                name="phone_number"
+                rules={{
+                  required: 'Mobile Number is required',
+                  pattern: {
+                    value: /^\(\d{3}\) \d{3}-\d{4}$/,
+                    message: 'Invalid Mobile Number. E.g. (123) 456-7890',
+                  },
+                }}
+                render={({ field, fieldState }) => (
+                  <InputMask
+                    id={field.name}
+                    {...field}
+                    mask="(999) 999-9999"
+                    slotChar="x"
+                    tooltip="E.g. (281) 330-8004"
+                    tooltipOptions={tooltipOptions}
+                    className={classNames({ 'p-invalid': fieldState.invalid })}
+                  />
+                )}
+              />
+            </div>
+            {getFormErrorMessage('phone_number', errors)}
+          </div>
+
+          <div className="sm:col-span-3">
+            <label htmlFor="sqft" className="block text-sm font-medium leading-6 text-gray-900">
+              *Facility Square Footage:
+            </label>
+            <div className="mt-2">
+              <Controller
+                control={control}
+                name="sqft"
+                rules={{
+                  required: 'Facility Square Footage is required',
+                  pattern: {
+                    value: /^\d+$/,
+                    message: 'Invalid Facility Square Footage. It should be a number.',
+                  },
+                }}
+                render={({ field, fieldState }) => (
+                  <InputNumber
+                    id={field.name}
+                    {...field}
+                    onChange={e => field.onChange(Number(e.value))}
+                    min={0}
+                    tooltip="E.g. 10000"
+                    tooltipOptions={tooltipOptions}
+                    className={classNames({ 'p-invalid': fieldState.invalid })}
+                  />
+                )}
+              />
+            </div>
+            {getFormErrorMessage('sqft', errors)}
+          </div>
         </div>
         {/* Location */}
         <div className="grid grid-cols-1 gap-y-6 pb-2">
@@ -104,8 +203,8 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
             </p>
           </div>
 
-          <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
-            <div className="mb-4 sm:col-span-3">
+          <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2 [&>*]:mb-4">
+            <div className="sm:col-span-3">
               <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
                 *Country:
               </label>
@@ -127,7 +226,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
               {getFormErrorMessage('country', errors)}
             </div>
 
-            <div className="mb-4 sm:col-span-3">
+            <div className="sm:col-span-3">
               <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
                 *Address:
               </label>
@@ -161,7 +260,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
             </div>
           </div> */}
 
-            <div className="mb-4 sm:col-span-3">
+            <div className="sm:col-span-3">
               <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
                 *City:
               </label>
@@ -182,7 +281,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
               {getFormErrorMessage('city', errors)}
             </div>
 
-            <div className="mb-4 sm:col-span-3">
+            <div className="sm:col-span-3">
               <label htmlFor="state" className="block text-sm font-medium leading-6 text-gray-900">
                 *State:
               </label>
@@ -205,7 +304,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
               {getFormErrorMessage('state', errors)}
             </div>
 
-            <div className="mb-4 sm:col-span-3">
+            <div className="sm:col-span-3">
               <label htmlFor="postalCode" className="block text-sm font-medium leading-6 text-gray-900">
                 *Postal Code:
               </label>
@@ -240,8 +339,10 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
           </div>
 
           {fields.map((field, index) => (
-            <div key={field.id} className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2">
-              <div className="mb-4 sm:col-span-3">
+            <div
+              key={field.id}
+              className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2 [&>*]:mb-4">
+              <div className="sm:col-span-3">
                 <label
                   htmlFor={`contacts.${index}.first_name`}
                   className="block text-sm font-medium leading-6 text-gray-900">
@@ -264,7 +365,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
                 {getFormErrorMessage(`contacts.${index}.first_name`, errors)}
               </div>
 
-              <div className="mb-4 sm:col-span-3">
+              <div className="sm:col-span-3">
                 <label
                   htmlFor={`contacts.${index}.last_name`}
                   className="block text-sm font-medium leading-6 text-gray-900">
@@ -287,7 +388,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
                 {getFormErrorMessage(`contacts.${index}.last_name`, errors)}
               </div>
 
-              <div className="mb-4 sm:col-span-3">
+              <div className="sm:col-span-3">
                 <label htmlFor={`contacts.${index}.role`} className="block text-sm font-medium leading-6 text-gray-900">
                   *Role:
                 </label>
@@ -309,7 +410,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
                 </div>
                 {getFormErrorMessage(`contacts.${index}.role`, errors)}
               </div>
-              <div className="mb-4 sm:col-span-3">
+              <div className="sm:col-span-3">
                 <label
                   htmlFor={`contacts.${index}.phone_number`}
                   className="block text-sm font-medium leading-6 text-gray-900">
@@ -341,7 +442,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
                 </div>
                 {getFormErrorMessage(`contacts.${index}.phone_number`, errors)}
               </div>
-              <div className="mb-4 sm:col-span-6">
+              <div className="sm:col-span-6">
                 <label
                   htmlFor={`contacts.${index}.email`}
                   className="block text-sm font-medium leading-6 text-gray-900">

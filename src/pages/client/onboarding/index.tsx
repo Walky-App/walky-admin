@@ -11,6 +11,7 @@ import { Toast } from 'primereact/toast'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { FieldErrors } from 'react-hook-form'
 import { TooltipOptions } from 'primereact/tooltip/tooltipoptions'
+import Step5 from './Step5'
 
 const defaultFacilityFormValues: IFacilityFormInputs = {
   user_id: '',
@@ -72,6 +73,7 @@ export interface IFacilityFormInputs {
   company_dbas: string[]
   services: string[]
   contacts: IContact[]
+  _id?: string
 }
 
 export interface FormDataContextProps {
@@ -82,8 +84,6 @@ export interface FormDataContextProps {
   setFacilitiesArray: Dispatch<SetStateAction<IFacilityFormInputs[]>>
   selectedFacility: IFacilityFormInputs | undefined
   setSelectedFacility: Dispatch<SetStateAction<IFacilityFormInputs | undefined>>
-  editingIndex: number | null
-  setEditingIndex: Dispatch<SetStateAction<number | null>>
 }
 
 // Initialize the context with the defined shape and default value
@@ -95,8 +95,6 @@ export const FormDataContext = React.createContext<FormDataContextProps>({
   setFacilitiesArray: () => {},
   selectedFacility: defaultFacilityFormValues,
   setSelectedFacility: () => {},
-  editingIndex: null,
-  setEditingIndex: () => {},
 })
 
 export interface StepProps {
@@ -126,7 +124,9 @@ export function getFormErrorMessage<TFormInputs extends Record<string, any>>(
 }
 
 export const tooltipOptions: TooltipOptions = {
-  position: 'bottom',
+  position: 'top',
+  showDelay: 300,
+  hideDelay: 500,
   pt: {
     text: {
       className: 'bg-green-500 max-w-lg text-sm',
@@ -143,15 +143,9 @@ export default function ClientOnboarding() {
     user_id: user?._id || '',
   })
 
-  console.log('formData: ', formData)
-
   const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
 
   const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
-  console.log('facilitiesArray: ', facilitiesArray)
-
-  const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  console.log('editingIndex: ', editingIndex);
 
   const toast = useRef(null)
 
@@ -184,6 +178,13 @@ export default function ClientOnboarding() {
         toast.current?.show({ severity: 'info', summary: 'Fourth Step', detail: event.item.label })
       },
     },
+    {
+      label: 'Terms and Conditions',
+      command: event => {
+        // @ts-ignore
+        toast.current?.show({ severity: 'info', summary: 'Fifth Step', detail: event.item.label })
+      },
+    },
   ]
 
   return (
@@ -196,8 +197,6 @@ export default function ClientOnboarding() {
         setFacilitiesArray,
         selectedFacility,
         setSelectedFacility,
-        editingIndex,
-        setEditingIndex,
       }}>
       <div>
         <Toast ref={toast}></Toast>
@@ -218,7 +217,7 @@ export default function ClientOnboarding() {
           {activeIndex === 1 && <Step2 step={activeIndex} setStep={setActiveIndex} />}
           {activeIndex === 2 && <Step3 step={activeIndex} setStep={setActiveIndex} />}
           {activeIndex === 3 && <Step4 step={activeIndex} setStep={setActiveIndex} />}
-          {/* {activeIndex === 4 && <h1>Step 5</h1>} */}
+          {activeIndex === 4 && <Step5 step={activeIndex} setStep={setActiveIndex} />}
         </div>
       </div>
     </FormDataContext.Provider>
