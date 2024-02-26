@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import {
   BriefcaseIcon,
   StarIcon,
@@ -9,14 +9,16 @@ import {
   CheckCircleIcon,
   UserGroupIcon,
 } from '@heroicons/react/20/solid'
+import { Button } from 'primereact/button'
 
 import { RequestService } from '../../../services/RequestService'
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 
 export default function JobDetailViewClient() {
   const [job, setJob] = useState<any>({})
+  const navigate = useNavigate()
   const params = useParams()
-
+  const id = params.id
   useEffect(() => {
     const getJob = async () => {
       const job = await RequestService(`jobs/${params.id}`)
@@ -34,6 +36,7 @@ export default function JobDetailViewClient() {
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
       <HeaderComponent title="Job Detail" />
+      <Button label="Edit" onClick={() => navigate(`/client/jobs/${id}/edit`)} />
       <div className="flex align-bottom">
         <div className="bg-white w-2/3  rounded-2xl border border-zinc-100">
           <div className="flex-col justify-start items-start gap-6 inline-flex p-20">

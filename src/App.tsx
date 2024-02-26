@@ -31,6 +31,7 @@ import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetai
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
 import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
+import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
 import ClientProfile from './pages/client/ClientProfile'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 
@@ -96,6 +97,7 @@ export default function App() {
                   <Route path="/client/facilities/:facilityId" element={<ClientFacilityDetails />} />
                   <Route path="/client/jobs" element={<Jobs />} />
                   <Route path="/client/jobs/new" element={<ClientAddJob />} />
+                  <Route path="/client/jobs/:id/edit" element={<ClientEditJob />} />
                   <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
                 </Route>
 
