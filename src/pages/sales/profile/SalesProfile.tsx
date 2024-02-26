@@ -1,18 +1,14 @@
 import { useMemo, useState } from 'react'
-import { RequestService } from '../../services/RequestService'
+import { RequestService } from '../../../services/RequestService'
 
-import { GetTokenInfo } from '../../utils/TokenUtils'
-import UploadAvatar from '../../components/shared/forms/UploadAvatar'
-import { CheckCircleIcon } from '@heroicons/react/24/outline'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
+import UploadAvatar from '../../../components/shared/forms/UploadAvatar'
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
-const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
-const client_role = process.env.REACT_APP_CLIENT_ROLE as string
-const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
-const sales_role = process.env.REACT_APP_SALES_ROLE as string
-
-export default function EmployeeProfile() {
+export default function SalesProfile() {
   const [formUser, setFormUser] = useState<any>({})
-  const [updateSuccess,  setUpdateSuccess] = useState(false)
+  const [updateSuccess, setUpdateSuccess] = useState(false)
+
   useMemo(() => {
     const { _id } = GetTokenInfo()
 
@@ -25,7 +21,6 @@ export default function EmployeeProfile() {
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
 
     const target = e.target as any
 
@@ -33,7 +28,6 @@ export default function EmployeeProfile() {
       first_name: target.first_name.value,
       last_name: target.last_name.value,
       email: target.email.value,
-      phone: target.phone_number.value,
       gender: target.gender.value,
       birth_date: target.birth_date.value,
       phone_number: target.phone_number.value,
@@ -45,15 +39,6 @@ export default function EmployeeProfile() {
         target.notification_email?.checked ? target.notification_email.name : '',
         target.notification_sms?.checked ? target.notification_sms.name : '',
       ],
-      direct_deposit: {
-        bank_name: target.bank_name?.value,
-        account_number: target.account_number?.value,
-        routing_number: target.routing_number?.value,
-        bank_address: target.bank_address?.value,
-        bank_city: target.bank_city?.value,
-        bank_state: target.bank_state?.value,
-        bank_zip: target.bank_zip?.value,
-      },
     }
 
     try {
@@ -73,8 +58,8 @@ export default function EmployeeProfile() {
 
   return (
     <>
-      <div className="border-b border-gray-200 pb-5 w-full mb-12 ">
-        <h3 className="text-base font-semibold leading-6 text-gray-900">Profile Detail</h3>
+      <div className="mb-12 w-full border-b border-gray-200 pb-5 ">
+        <h3 className="text-base font-semibold leading-6 text-gray-900">Your Profile Details</h3>
       </div>
 
       {formUser.role && (
@@ -90,24 +75,6 @@ export default function EmployeeProfile() {
 
               <div className="">
                 <UploadAvatar formUser={formUser} setFormUser={setFormUser} />
-
-                {/* <div className="flex-1 ml-10">
-                  <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                    About
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      id="about"
-                      name="about"
-                      rows={3}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      defaultValue={''}
-                    />
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>
-                </div> */}
-
-                {/* <UploadArea label="Photo" name="photo" path={`users/${formUser._id}/photo`} required={false} /> */}
               </div>
             </div>
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -131,7 +98,7 @@ export default function EmployeeProfile() {
                       name="first_name"
                       id="first_name"
                       autoComplete="given-name"
-                      className="block w-full bg-slate-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -148,7 +115,7 @@ export default function EmployeeProfile() {
                       name="last_name"
                       id="last_name"
                       autoComplete="family-name"
-                      className="block  w-full bg-slate-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block  w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -165,7 +132,7 @@ export default function EmployeeProfile() {
                       name="email"
                       type="email"
                       autoComplete="email"
-                      className="block bg-slate-100 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -175,7 +142,7 @@ export default function EmployeeProfile() {
                     Birthday
                   </label>
                   <div className="mt-2">
-                  <input
+                    <input
                       type="date"
                       defaultValue={
                         formUser.birth_date ? new Date(formUser.birth_date).toISOString().split('T')[0] : ''
@@ -197,7 +164,7 @@ export default function EmployeeProfile() {
                       name="gender"
                       id="gender"
                       autoComplete="gender"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                       <option value="male">Male</option>
                       <option value="female">Female</option>
                       <option value="other">Other</option>
@@ -219,7 +186,7 @@ export default function EmployeeProfile() {
                       pattern="\d{10}"
                       placeholder="10-digit phone-number"
                       title="Enter a valid US phone number (e.g. 9876543210)"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -246,7 +213,7 @@ export default function EmployeeProfile() {
                       name="address"
                       id="address"
                       autoComplete="address"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -262,7 +229,7 @@ export default function EmployeeProfile() {
                       name="city"
                       id="city"
                       autoComplete="city"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -278,7 +245,7 @@ export default function EmployeeProfile() {
                       name="state"
                       id="state"
                       autoComplete="state"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -290,140 +257,16 @@ export default function EmployeeProfile() {
                   <div className="mt-2">
                     <input
                       defaultValue={formUser.zip}
-                      type="number"
+                      type="text"
                       name="zip"
                       id="zip"
                       autoComplete="zip"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
               </div>
             </div>
-
-            {formUser?.role === employee_role && (
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Direct Deposit</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Use a permanent address where you can receive mail.
-                  </p>
-                </div>
-
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank Name
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_name}
-                        type="text"
-                        name="bank_name"
-                        id="bank_name"
-                        autoComplete="bank_name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="account_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Account #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.account_number}
-                        type="text"
-                        name="account_number"
-                        id="account_number"
-                        autoComplete="account_number"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="routing_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Routing #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.routing_number}
-                        type="text"
-                        name="routing_number"
-                        id="routing_number"
-                        autoComplete="routing_number"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-full">
-                    <label htmlFor="bank_address" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank address
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_address}
-                        type="text"
-                        name="bank_address"
-                        id="bank_address"
-                        autoComplete="bank_address"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_city" className="block text-sm font-medium leading-6 text-gray-900">
-                      City
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_city}
-                        type="text"
-                        name="bank_city"
-                        id="bank_city"
-                        autoComplete="address-level2"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_state" className="block text-sm font-medium leading-6 text-gray-900">
-                      State / Province
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_state}
-                        type="text"
-                        name="bank_state"
-                        id="bank_state"
-                        autoComplete="address-level1"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_zip" className="block text-sm font-medium leading-6 text-gray-900">
-                      ZIP / Postal code
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_zip}
-                        type="number"
-                        name="bank_zip"
-                        id="bank_zip"
-                        autoComplete="bank_zip"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:outline-none focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>

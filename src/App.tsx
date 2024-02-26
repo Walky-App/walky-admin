@@ -31,9 +31,12 @@ import Facilities from './pages/client/facilities'
 import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import AddJob from './pages/client/jobs/AddJob'
+import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
 import ClientProfile from './pages/client/ClientProfile'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
+
+/** Sales Pages */
+import SalesDashboard from './pages/sales/dashboard'
 
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
@@ -61,7 +64,14 @@ import AdminDetailsModule from './pages/admin/HTU/AdminDetailsModule'
 import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
+import AdminUnitsLearn from './pages/admin/HTU/AdminUnitsLearn'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
+import SalesProfile from './pages/sales/profile/SalesProfile'
+
+const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
+const client_role = process.env.REACT_APP_CLIENT_ROLE as string
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
+const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export default function App() {
   return (
@@ -74,7 +84,7 @@ export default function App() {
             <Route path="/reset/:id/:at" element={<NewPasswordForm />} />
             <Route path="/reset-success" element={<ResetSuccess />} />
             <Route path="/invite/:email/:role" element={<Signup />} />
-          <Route element={<Layout />}>
+            <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
                 <Route path="/employee/jobs" element={<EmployeeJobs />} />
@@ -83,7 +93,7 @@ export default function App() {
                 {/* LMS Module */}
                 <Route path="/learn" element={<Learn />} />
                 <Route path="/learn/category/:id" element={<Modules />} />
-                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="client" />}>
+                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess={client_role} />}>
                   <Route path="/client/onboarding" element={<ClientOnboarding />} />
                   <Route path="/client/dashboard" element={<ClientDashboard />} />
                   <Route path="/client/profile" element={<ClientProfile />} />
@@ -91,10 +101,20 @@ export default function App() {
                   <Route path="/client/facilities/new" element={<ClientAddFacility />} />
                   <Route path="/client/facilities/:facilityId" element={<ClientFacilityDetails />} />
                   <Route path="/client/jobs" element={<Jobs />} />
-                  <Route path="/client/jobs/new" element={<AddJob />} />
+                  <Route path="/client/jobs/new" element={<ClientAddJob />} />
                   <Route path="/client/jobs/:id" element={<JobDetailViewClient />} />
                 </Route>
-                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess="admin" />}>
+
+                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess={sales_role} />}>
+                  <Route path="/sales/dashboard" element={<SalesDashboard />} />
+                  <Route path="/sales/profile" element={<SalesProfile />} />
+                  <Route path="/sales/facilities" element={<Facilities />} />
+                  <Route path="/sales/facilities/new" element={<ClientAddFacility />} />
+                  <Route path="/sales/facilities/:facilityId" element={<ClientFacilityDetails />} />
+                  <Route path="/sales/jobs" element={<Jobs />} />
+                </Route>
+
+                <Route element={<ProtectedRouteRol redirectTo="/login" roleAccess={admin_role} />}>
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/profile" element={<AdminProfile />} />
                   <Route path="/admin/users" element={<AdminUsers />} />
@@ -120,6 +140,7 @@ export default function App() {
                   <Route path="/admin/learn/categories/new" element={<AdminAddCategory />} />
                   <Route path="/admin/learn/modules" element={<AdminModulesLearn />} />
                   <Route path="/admin/learn/modules/:idModule" element={<AdminDetailsModule />} />
+                  <Route path="/admin/learn/modules/:idModule/units" element={<AdminUnitsLearn />} />
                   <Route path="/admin/learn/modules/new" element={<AdminAddModule />} />
                 </Route>
               </Route>
@@ -128,6 +149,6 @@ export default function App() {
           </Routes>
         </BrowserRouter>
       </AdminProvider>
-    </AuthProvider >
+    </AuthProvider>
   )
 }
