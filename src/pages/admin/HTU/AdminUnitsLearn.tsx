@@ -7,18 +7,20 @@ import { Module } from "../../../interfaces/Module"
 import { RequestService } from "../../../services/RequestService"
 import { useNavigate, useParams } from "react-router-dom"
 import { CategoryTitle } from "../../../interfaces/Category"
-import { Bars2Icon, PlusIcon } from "@heroicons/react/20/solid"
+import { Bars2Icon, PencilSquareIcon, PlusIcon } from "@heroicons/react/20/solid"
 import { Unit } from '../../../interfaces/Unit';
+import { TabPanel, TabView } from "primereact/tabview"
+import UnitDetailsCard from "../../learn/components/UnitDetailsCard"
 
 export default function AdminUnitsLearn() {
-    const { module, setModule } = useAdmin()
+    const { module, setModule, setUnit, unit } = useAdmin()
     const [category, setCategory] = useState<CategoryTitle>()
     const params = useParams()
     const navigate = useNavigate()
 
 
     const fecthData = async () => {
-        const responseModule: Module = await RequestService(`modules/${params.idModule}`)
+        const responseModule: Module = await RequestService(`modules/${params.moduleId}`)
         if (responseModule) {
             setModule(responseModule)
             setCategory(responseModule.category as unknown as CategoryTitle)
@@ -28,9 +30,11 @@ export default function AdminUnitsLearn() {
     const handlerCreateUnit = () => {
         navigate(`/admin/learn/modules/${module?._id}/units/new`)
     }
-    const handlerEditUnit = (unit: Unit) => {
-        navigate(`/admin/learn/modules/${module?._id}/units/${unit?._id}`)
+
+    const handlerSelectUnit = (unit: Unit) => {
+        setUnit(unit)
     }
+
 
     useEffect(() => {
         if (!module) {
@@ -94,9 +98,9 @@ export default function AdminUnitsLearn() {
                     <div className="flex flex-col h-auto rounded-2xl border border-zinc-100 bg-white">
                         <button onClick={handlerCreateUnit} className="flex flex-row justify-center p-3 text-left text-sm bg-gray-300 rounded-t-2xl border "> <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" /> Create Unit</button>
                         {
-                            module?.units?.map((unit) => {
+                            module?.units?.map((unit, index) => {
                                 return (
-                                    <button onClick={() => { handlerEditUnit(unit) }} key={unit._id} className="flex flex-row justify-between p-3 text-left text-sm border-b border-zinc-100">
+                                    <button onClick={() => { handlerSelectUnit(unit) }} key={unit._id} className={`flex flex-row justify-between p-3 text-left text-sm border-b border-zinc-100 hover:bg-gray-100  ${index === (module?.units?.length ?? 0) - 1 ? 'rounded-b-2xl' : ''}`}>
                                         <div className="flex flex-row gap-3 items-center">
                                             <Bars2Icon className="h-5 w-5" />
                                             <div>{unit.title}</div>
@@ -110,9 +114,18 @@ export default function AdminUnitsLearn() {
 
                 {/*right content*/}
                 <div className="col-span-3 ">
-                    <div className=" h-auto rounded-2xl border border-zinc-100 bg-white">
-                        Coming Soon ...
-                    </div>
+                    {
+                        unit && <div className=" h-auto border border-zinc-100 bg-white">
+                            <TabView>
+                                <TabPanel header="Unit Detail">
+                                    <UnitDetailsCard unit={unit as Unit} isAdmin />
+                                </TabPanel>
+                                <TabPanel header="Assessment Detail">
+                                    Coming soon
+                                </TabPanel>
+                            </TabView>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

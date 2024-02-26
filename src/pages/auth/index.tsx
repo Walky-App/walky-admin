@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
 import ForgotPasswordForm from './ForgotPasswordForm'
-import { RequestService } from '../../services/RequestService'
 
 export default function Auth() {
   const [userForm, setUserForm] = useState('Login')
@@ -11,7 +10,21 @@ export default function Auth() {
   useMemo(() => {
     const getImages = async () => {
       try {
-        const allImages = await RequestService('/auth/images')
+        const allImages = [
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/1.png",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/10.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/11.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/12.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/13.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/2.png",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/3.png",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/4.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/8.jpg",
+          "https://hemptemps-prod.s3.amazonaws.com/web-images/9.jpg"
+        ]
         const randomIndex = Math.floor(Math.random() * allImages.length)
 
         setHeroImage(allImages[randomIndex])
@@ -29,15 +42,12 @@ export default function Auth() {
           <div className="flex justify-center">
             <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" height={300} />
           </div>
-          <div className="mx-auto max-w-lg text-center">
-            <h1 className="text-2xl font-bold sm:text-3xl">Login</h1>
-          </div>
-
+         
           {userForm === 'Login' && <LoginForm />}
           {userForm === 'Sign up' && <SignupForm />}
           {userForm === 'Forgot Password' && <ForgotPasswordForm />}
 
-          <div className="flex flex-col items-center justify-center gap-2">
+          <div className="flex mr-center flex-col items-center justify-center gap-2">
             {userForm === 'Login' && (
               <a
                 className="font-medium underline hover:text-green-700"
