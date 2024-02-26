@@ -4,7 +4,7 @@ import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
 import { cn } from '../../../utils/cn'
 import { Toast } from 'primereact/toast'
 import { Button } from 'primereact/button'
-import { FormDataContext, IFormInputs, StepProps } from '.'
+import { FormDataContext, IFacilityFormInputs, StepProps } from '.'
 import AddFacilityDialog from './AddFacilityDialog'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
@@ -22,25 +22,25 @@ export default function Step4({ step, setStep }: StepProps) {
 
   const toast = useRef(null)
 
-  const acceptToast = ({ facilityName }: IFormInputs) => {
+  const acceptToast = ({ name }: IFacilityFormInputs) => {
     // @ts-ignore
     toast.current?.show({
       severity: 'info',
       summary: 'Confirmed',
-      detail: `${facilityName} removed`,
+      detail: `${name} removed`,
       life: 3000,
     })
   }
 
-  const confirm1 = (facility: IFormInputs) => {
+  const confirm1 = (facility: IFacilityFormInputs) => {
     confirmDialog({
-      message: `Are you sure you want to delete ${facility.facilityName} ?`,
+      message: `Are you sure you want to delete ${facility.name} ?`,
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
       acceptClassName: 'p-button-danger',
       accept: () => {
-        setFacilitiesArray(facilitiesArray.filter(f => f.facilityName !== facility.facilityName))
+        setFacilitiesArray(facilitiesArray.filter(f => f.name !== facility.name))
         acceptToast(facility)
       },
       rejectClassName: 'p-button-danger p-button-outlined',
@@ -68,9 +68,9 @@ export default function Step4({ step, setStep }: StepProps) {
         </div>
 
         <div className="sm:col-span-full">
-          <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 xl:gap-x-8">
+          <ul className="grid auto-rows-fr grid-cols-2 gap-x-6 gap-y-8 xl:gap-x-8">
             {facilitiesArray?.map(facility => (
-              <li key={facility.facilityName} className="overflow-hidden rounded-xl border border-gray-200">
+              <li key={facility.name} className="overflow-hidden rounded-xl border border-gray-200">
                 <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                   {/* <img
                     src={client.imageUrl}
@@ -78,7 +78,7 @@ export default function Step4({ step, setStep }: StepProps) {
                     className="h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
                   /> */}
                   <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
-                  <div className="text-sm font-medium leading-6 text-gray-900">{facility.facilityName}</div>
+                  <div className="text-sm font-medium leading-6 text-gray-900">{facility.name}</div>
                   <Menu as="div" className="relative ml-auto">
                     <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                       <span className="sr-only">Open options</span>
@@ -100,7 +100,7 @@ export default function Step4({ step, setStep }: StepProps) {
                                 active ? 'bg-gray-50' : '',
                                 'block px-3 py-1 text-sm leading-6 text-gray-900',
                               )}>
-                              View<span className="sr-only">, {facility.businessName}</span>
+                              View<span className="sr-only">, {facility.corp_name}</span>
                             </button>
                           )}
                         </Menu.Item> */}
@@ -115,7 +115,7 @@ export default function Step4({ step, setStep }: StepProps) {
                                 active ? 'bg-gray-50' : '',
                                 'block px-3 py-1 text-sm leading-6 text-gray-900',
                               )}>
-                              Edit<span className="sr-only">, {facility.businessName}</span>
+                              Edit<span className="sr-only">, {facility.corp_name}</span>
                             </button>
                           )}
                         </Menu.Item>
@@ -127,7 +127,7 @@ export default function Step4({ step, setStep }: StepProps) {
                                 active ? 'bg-gray-50' : '',
                                 'block px-3 py-1 text-sm leading-6 text-gray-900',
                               )}>
-                              Delete<span className="sr-only">, {facility.businessName}</span>
+                              Delete<span className="sr-only">, {facility.corp_name}</span>
                             </button>
                           )}
                         </Menu.Item>
@@ -146,18 +146,16 @@ export default function Step4({ step, setStep }: StepProps) {
                     <dt className="text-gray-500">Address</dt>
                     <dd className="flex items-start gap-x-2">
                       <div className="font-medium text-gray-900">
-                        {joinTruthyStrings(
-                          [facility.address, facility.address2, facility.city, facility.state, facility.postalCode],
-                          ', ',
-                        )}
+                        {joinTruthyStrings([facility.address, facility.city, facility.state, facility.zip], ', ')}
                       </div>
                     </dd>
                   </div>
                   <div className="flex justify-between gap-x-4 py-3">
-                    <dt className="text-gray-500">{facility.businessContactDesignation}</dt>
+                    <dt className="text-gray-500">{facility.contacts[0].role}</dt>
+
                     <dd className="flex items-start gap-x-2">
                       <div className="font-medium text-gray-900">
-                        {joinTruthyStrings([facility.businessContactFirstName, facility.businessContactLastName], ' ')}
+                        {joinTruthyStrings([facility.contacts[0].first_name, facility.contacts[0].last_name], ' ')}
                       </div>
                     </dd>
                   </div>
@@ -172,7 +170,7 @@ export default function Step4({ step, setStep }: StepProps) {
                 <p className="mt-1 text-sm font-semibold leading-6 text-gray-900">
                   You have not set up any billing methods yet.
                 </p>
-                <p className="text-sm leading-6 text-gray-600">
+                <p className="text-sm leading-6 text-center text-gray-600">
                   Your billing method will charged only when your available balance from HempTemp earnings is not
                   sufficient to pay for your monthly membership and/or connects.
                 </p>

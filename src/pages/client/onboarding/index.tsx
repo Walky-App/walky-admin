@@ -8,61 +8,95 @@ import WelcomeDialog from './WelcomeDialog'
 import { Steps } from 'primereact/steps'
 import { MenuItem } from 'primereact/menuitem'
 import { Toast } from 'primereact/toast'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { FieldErrors } from 'react-hook-form'
+import { TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
-const defaultValues = {
-  taxId: '',
-  businessContactMobileNumber: '',
-  businessContactFirstName: '',
-  businessContactLastName: '',
-  businessContactDesignation: '',
-  businessName: '',
-  facilityName: '',
+const defaultFacilityFormValues: IFacilityFormInputs = {
+  user_id: '',
+  name: '',
   country: '',
   address: '',
-  address2: '',
   city: '',
   state: '',
-  postalCode: '',
-  stateLicenseDocument: '',
-  cityLicenseDocument: '',
+  zip: '',
+  tax_id: '',
+  phone_number: '',
+  notes: '',
+  active: false,
+  sqft: undefined,
+  corp_name: '',
+  company_dbas: [],
+  services: [],
+  contacts: [
+    {
+      first_name: '',
+      last_name: '',
+      role: '',
+      phone_number: '',
+      email: '',
+    },
+  ],
 }
 
-export interface IFormInputs {
-  taxId: string
-  businessContactMobileNumber: string
-  businessContactFirstName: string
-  businessContactLastName: string
-  businessContactDesignation: string
-  businessName: string
-  facilityName: string
+export interface ILicenseDocument {
+  id: number
+  url: string
+  key: string
+  timestamp: string
+  // createdBy: string
+}
+
+export interface IContact {
+  first_name: string
+  last_name: string
+  role: string
+  phone_number: string
+  email: string
+}
+
+export interface IFacilityFormInputs {
+  user_id: string
+  name: string
   country: string
   address: string
-  address2: string
   city: string
   state: string
-  postalCode: string
-  stateLicenseDocument: string
-  cityLicenseDocument: string
+  zip: string
+  tax_id: string
+  phone_number: string
+  notes: string
+  active: boolean
+  sqft: number | undefined
+  corp_name: string
+  company_dbas: string[]
+  services: string[]
+  contacts: IContact[]
 }
+
 export interface FormDataContextProps {
-  defaultValues: IFormInputs
-  formData: IFormInputs
-  setFormData: Dispatch<SetStateAction<IFormInputs>>
-  facilitiesArray: IFormInputs[]
-  setFacilitiesArray: Dispatch<SetStateAction<IFormInputs[]>>
-  selectedFacility: IFormInputs | undefined
-  setSelectedFacility: Dispatch<SetStateAction<IFormInputs | undefined>>
+  defaultValues: IFacilityFormInputs
+  formData: IFacilityFormInputs
+  setFormData: Dispatch<SetStateAction<IFacilityFormInputs>>
+  facilitiesArray: IFacilityFormInputs[]
+  setFacilitiesArray: Dispatch<SetStateAction<IFacilityFormInputs[]>>
+  selectedFacility: IFacilityFormInputs | undefined
+  setSelectedFacility: Dispatch<SetStateAction<IFacilityFormInputs | undefined>>
+  editingIndex: number | null
+  setEditingIndex: Dispatch<SetStateAction<number | null>>
 }
 
 // Initialize the context with the defined shape and default value
 export const FormDataContext = React.createContext<FormDataContextProps>({
-  defaultValues: defaultValues,
-  formData: defaultValues,
+  defaultValues: defaultFacilityFormValues,
+  formData: defaultFacilityFormValues,
   setFormData: () => {},
   facilitiesArray: [],
   setFacilitiesArray: () => {},
-  selectedFacility: defaultValues,
+  selectedFacility: defaultFacilityFormValues,
   setSelectedFacility: () => {},
+  editingIndex: null,
+  setEditingIndex: () => {},
 })
 
 export interface StepProps {
@@ -70,17 +104,54 @@ export interface StepProps {
   setStep: (step: number) => void
 }
 
+export function getFormErrorMessage<TFormInputs extends Record<string, any>>(
+  path: string,
+  errors: FieldErrors<TFormInputs> = {},
+) {
+  const pathParts = path.split('.')
+  let error: FieldErrors<TFormInputs> | undefined = errors
+
+  for (const part of pathParts) {
+    if (typeof error !== 'object' || error === null) {
+      return null
+    }
+    error = error[part as keyof typeof error] as FieldErrors<TFormInputs>
+  }
+
+  if (error?.message) {
+    return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
+  }
+
+  return null
+}
+
+export const tooltipOptions: TooltipOptions = {
+  position: 'bottom',
+  pt: {
+    text: {
+      className: 'bg-green-500 max-w-lg text-sm',
+    },
+  },
+}
+
 export default function ClientOnboarding() {
+  const user = GetTokenInfo()
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = React.useState<number>(0)
-  const [formData, setFormData] = useState<IFormInputs>(defaultValues)
-  const [selectedFacility, setSelectedFacility] = useState<IFormInputs | undefined>()
+  const [formData, setFormData] = useState<IFacilityFormInputs>({
+    ...defaultFacilityFormValues,
+    user_id: user?._id || '',
+  })
 
   console.log('formData: ', formData)
 
-  const [facilitiesArray, setFacilitiesArray] = useState<IFormInputs[]>([])
+  const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
 
+  const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
   console.log('facilitiesArray: ', facilitiesArray)
+
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  console.log('editingIndex: ', editingIndex);
 
   const toast = useRef(null)
 
@@ -120,11 +191,13 @@ export default function ClientOnboarding() {
       value={{
         formData,
         setFormData,
-        defaultValues,
+        defaultValues: defaultFacilityFormValues,
         facilitiesArray,
         setFacilitiesArray,
         selectedFacility,
         setSelectedFacility,
+        editingIndex,
+        setEditingIndex,
       }}>
       <div>
         <Toast ref={toast}></Toast>
