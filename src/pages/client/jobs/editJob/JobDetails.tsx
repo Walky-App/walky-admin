@@ -7,15 +7,16 @@ import { classNames } from 'primereact/utils'
 import { InputNumber } from 'primereact/inputnumber'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
+import { useParams } from 'react-router-dom'
 
 //Interfaces start
 interface JobDetailsProps {
   jobId: string | null
-  onNext: () => void
 }
 //interfaces end
-export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
+export default function JobDetails() {
   const toast = useRef<Toast>(null)
+  const id = useParams()
 
   const {
     control,
@@ -58,11 +59,10 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
   const onSubmit = async (data: any) => {
     try {
       data.skills = data.skills.map((skill: { name: string }) => skill.name)
-      const updatedData = { ...data, id: jobId }
-      const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
+      const updatedData = { ...data, id: id }
+      const response = await RequestService(`jobs/${id}`, 'PATCH', updatedData)
       if (response) {
         toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Job details saved successfully' })
-        setTimeout(onNext, 2000)
       }
     } catch (error) {
       console.error(error)
