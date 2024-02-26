@@ -11,14 +11,14 @@ import { Bars2Icon, PlusIcon } from "@heroicons/react/20/solid"
 import { Unit } from '../../../interfaces/Unit';
 
 export default function AdminUnitsLearn() {
-    const { module, setModule } = useAdmin()
+    const { module, setModule, setUnit } = useAdmin()
     const [category, setCategory] = useState<CategoryTitle>()
     const params = useParams()
     const navigate = useNavigate()
 
 
     const fecthData = async () => {
-        const responseModule: Module = await RequestService(`modules/${params.idModule}`)
+        const responseModule: Module = await RequestService(`modules/${params.moduleId}`)
         if (responseModule) {
             setModule(responseModule)
             setCategory(responseModule.category as unknown as CategoryTitle)
@@ -29,6 +29,7 @@ export default function AdminUnitsLearn() {
         navigate(`/admin/learn/modules/${module?._id}/units/new`)
     }
     const handlerEditUnit = (unit: Unit) => {
+        setUnit(unit)
         navigate(`/admin/learn/modules/${module?._id}/units/${unit?._id}`)
     }
 
@@ -96,7 +97,7 @@ export default function AdminUnitsLearn() {
                         {
                             module?.units?.map((unit) => {
                                 return (
-                                    <button onClick={() => { handlerEditUnit(unit) }} key={unit._id} className="flex flex-row justify-between p-3 text-left text-sm border-b border-zinc-100">
+                                    <button onClick={() => { handlerEditUnit(unit) }} key={unit._id} className="flex flex-row justify-between p-3 text-left text-sm border-b rounded-b-2xl border-zinc-100 hover:bg-gray-50" >
                                         <div className="flex flex-row gap-3 items-center">
                                             <Bars2Icon className="h-5 w-5" />
                                             <div>{unit.title}</div>
