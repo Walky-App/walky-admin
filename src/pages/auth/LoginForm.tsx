@@ -84,7 +84,6 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="mb-4 ml-auto mr-[9.5rem] max-w-md space-y-4">
       <div className="mx-auto max-w-lg text-center">
-        {/* <h1 className="text-2xl font-bold sm:text-3xl">Login</h1> */}
       </div>
       <div>
         <label htmlFor="email" className="sr-only">
@@ -131,7 +130,6 @@ export default function LoginForm() {
           className="w-full rounded-lg border-zinc-200 text-sm shadow-sm focus:border-green-500 focus:ring-green-500"
         />
       </div>
-      {/* </div> */}
       {error && (
         <div className="flex items-center justify-center">
           <p className="text-sm text-red-500">{error}</p>
