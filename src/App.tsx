@@ -42,6 +42,7 @@ import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 import SalesDashboard from './pages/sales/dashboard'
 import SalesProfile from './pages/sales/profile/SalesProfile'
 import Products from './pages/sales/products'
+import ProductDetail from './pages/sales/products/ProductDetail'
 
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
@@ -117,10 +118,17 @@ export default function App() {
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route path="/sales/dashboard" element={<SalesDashboard />} />
                   <Route path="/sales/profile" element={<ClientProfile />} />
-                  <Route path="/sales/facilities" element={<Facilities />} />
+                  <Route path="/sales/facilities" element={<AdminFacilities />} />
                   <Route path="/sales/facilities/new" element={<ClientAddFacility />} />
-                  <Route path="/sales/facilities/:facilityId" element={<ClientFacilityDetails />} />
+                  <Route path="/sales/facilities/:facilityId" element={<AdminFacilityDetails />} />
+                  <Route path="/sales/facilities/:facilityId/contacts" element={<AdminFacilityContacts />} />
+                  <Route path="/sales/facilities/:facilityId/images" element={<AdminFacilityImages />} />
+                  <Route path="/sales/facilities/:facilityId/jobs" element={<AdminFacilityJobs />} />
+                  <Route path="/sales/facilities/:facilityId/internal_notes" element={<AdminFacilityInternalNotes />} />
+                  <Route path="/sales/facilities/:facilityId/licenses" element={<AdminFacilityLicenses />} />
+                  <Route path="/sales/facilities/:facilityId/activity" element={<AdminFacilityActivity />} />
                   <Route path="/sales/products" element={<Products />} />
+                  <Route path="/sales/products/:id" element={<ProductDetail />} />
                 </Route>
 
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
