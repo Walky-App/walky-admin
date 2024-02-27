@@ -96,7 +96,7 @@ export default function LoginForm() {
             required
             type="email"
             name="email"
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 shadow-sm  focus:border-green-500 focus:ring-green-500"
+            className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
             placeholder="*Email"
           />
           <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
@@ -126,9 +126,9 @@ export default function LoginForm() {
           toggleMask
           pt={{
             panel: { className: 'hidden' },
-            input: { className: 'w-full' },
+            input: { className: 'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500' },
           }}
-          className="w-full rounded-lg border-zinc-200 text-sm shadow-sm focus:border-green-500 focus:ring-green-500"
+          className="w-full"
         />
       </div>
       {error && (

@@ -19,17 +19,19 @@ export default function Facilities() {
   React.useEffect(() => {
     const getFacilities = async () => {
       const allFacilities = await RequestService(`facilities/byclient/${id}`)
+      console.log('All Facilities:', allFacilities)
       setFacilities(allFacilities)
     }
     getFacilities()
   }, [])
 
-  React.useEffect(() => {
+  React.useMemo(() => {
     const getJobs = async () => {
       if (facilities.length > 0) {
         try {
           const jobsRequests = facilities.map((facility: Facility) => RequestService(`jobs/facility/${facility._id}`))
-          const jobsResults = await Promise.all(jobsRequests)
+          let jobsResults = await Promise.all(jobsRequests)
+          jobsResults = jobsResults.filter(job => job.message !== 'No jobs found')
           const allJobs = jobsResults.flat()
           console.log('All Jobs:', allJobs)
           setJobsData(allJobs)
@@ -44,12 +46,32 @@ export default function Facilities() {
   const jobsColumns = [
     { Header: 'Job Title', accessor: 'title' },
     //@ts-ignore
-    { Header: 'Facility', accessor: row => row.facility?.name, Cell: ({ value }) => value || 'No Facility' },
-    { Header: 'Status', accessor: 'status' },
-    //@ts-ignore
+    {
+      Header: 'Status',
+      accessor: (d: any) => (d.isActive ? 'Active' : 'Disabled'),
+      sortType: (a: any, b: any) => {
+        if (a.original.isActive === b.original.active) return 0
+        return a.original.isActive ? -1 : 1
+      },
+    },    //@ts-ignore
+    {
+      Header: 'Past/Present',
+      accessor: (d: any) => (d.isCompleted ? 'Past' : 'Present'),
+      sortType: (a: any, b: any) => {
+        if (a.original.isCompleted === b.original.isCompleted) return 0
+        return a.original.isCompleted ? -1 : 1
+      },
+    },    //@ts-ignore
     { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => (Array.isArray(value) ? value.join(', ') : 'N/A') },
-    { Header: 'Employment Type', accessor: 'employment_type' },
-  ]
+    { Header: 'Vacancy', accessor: 'vacancy' },
+    {
+      Header: 'Availability',
+      accessor: (d: any) => (d.isFull ? 'Full' : 'Open'),
+      sortType: (a: any, b: any) => {
+        if (a.original.isFull === b.original.isFull) return 0
+        return a.original.isFull ? -1 : 1
+      },
+    }  ]
 
   return (
     <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
