@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
+import { Product } from '../../../interfaces/Product'
 
 export default function Products() {
   const [productsData, setProductsData] = React.useState<any>([])
@@ -29,15 +30,15 @@ export default function Products() {
   const memoProductsData = React.useMemo(() => productsData, [productsData])
 
   function Avatar({ src, alt = 'avatar' }: { src: any; alt?: any }) {
-    return <img src={src} alt={alt} className="h-8 w-8 rounded-full object-cover" />
+    return <img src={src} alt={alt} className="h-32 w-32  object-cover" />
   }
 
   const memoProductsColumns = React.useMemo(
     () => [
       {
-        Header: 'Name',
-        accessor: 'name',
-        width: '300px',
+        Header: 'Image',
+
+        width: '200px',
         Cell: ({ row, value }: any) => {
           return (
             <div className="flex items-center gap-2">
@@ -47,9 +48,9 @@ export default function Products() {
           )
         },
       },
-      { Header: 'Name', accessor: 'Name' },
+      { Header: 'Name', accessor: 'Name', width: '400px' },
       { Header: 'Sku', accessor: 'sku' },
-      { Header: 'Stock', accessor: 'StockTotal' },
+      { Header: 'Stock', accessor: 'StockTotal' , width: '30px' },
       {
         Header: 'Status',
         accessor: (d: any) => (d.isActive ? 'Active' : 'Disabled'),
@@ -59,8 +60,8 @@ export default function Products() {
         },
       },
       { Header: 'Price', accessor: 'EachPrice' },
-      { Header: 'MSRP', accessor: 'EachMsrp' },
-      { Header: 'On Sale', accessor: 'IsSale' },
+      { Header: 'MSRP', accessor: 'EachMsrp', width: '30px' },
+      { Header: 'On Sale', width: '120px', accessor: (item: Product) => (item.IsSale ? 'Yes' : 'No') },
     ],
     [],
   )
