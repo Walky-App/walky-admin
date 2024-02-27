@@ -26,25 +26,6 @@ export default function BasicInfo( { nextStep }: BasicInfoProps) {
   const [facilities, setFacilities] = React.useState<IFacility[]>()
 
   useEffect(() => {
-    const getJob = async () => {
-      const job = await RequestService(`jobs/${params.id}`)
-
-      if (job) {
-        setJob(job)
-        setValue('title', job.title)
-        setValue('description', job.description)
-        //@ts-ignore
-        const facility = facilities?.find(facility => facility._id === job.facility.id)
-        //@ts-ignore
-        setValue('facility', facility)
-      } else {
-        console.log(job)
-      }
-    }
-    getJob()
-  }, [facilities])
-
-  useEffect(() => {
     const getFacilities = async () => {
       console.log('id for fetching all facilities', id)
       const allFacilitiesByClient = await RequestService(`facilities/byclient/${id}`)
@@ -53,6 +34,27 @@ export default function BasicInfo( { nextStep }: BasicInfoProps) {
 
     getFacilities()
   }, [])
+
+  useEffect(() => {
+    const getJob = async () => {
+      const job = await RequestService(`jobs/${params.id}`)
+
+      if (job) {
+        setJob(job)
+        setValue('title', job.title)
+        setValue('description', job.description)
+        //@ts-ignore
+        const facility = facilities?.find(facility => facility._id === job?.facility?.id)
+        //@ts-ignore
+        setValue('facility', facility?.name)
+      } else {
+        console.log(job)
+      }
+    }
+    getJob()
+  }, [facilities])
+
+  
 
   const defaultValues = {
     title: '',
