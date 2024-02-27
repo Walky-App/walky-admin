@@ -75,6 +75,7 @@ const employeeLinks = [
 const salesLinks = [
   { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
   { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
+  { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: true },
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
 ]
