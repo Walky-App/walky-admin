@@ -1,7 +1,8 @@
-import { Module } from '../../../interfaces/Module'
+import { Module } from '../../../interfaces/Module';
 import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 import CircularProgressBar from './CircularProgressBar'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
+import { useNavigate } from 'react-router-dom';
 
 interface ModuleCardsProps {
   module: Module[]
@@ -10,15 +11,17 @@ interface ModuleCardsProps {
 }
 
 export default function ModuleCards({ module, filter = '', isLoading = true }: ModuleCardsProps) {
-  const dataTemp = {
-    total: 3,
-    complete: 2,
-  }
+  const navigate = useNavigate()
 
   const modulesFilter = () => {
     const modulesTemp = [...module]
     return modulesTemp.filter(module => module.title.toLowerCase().includes(filter.toLocaleLowerCase()))
   }
+
+  const handlerSetModule = (module: Module) => {
+    navigate(`/learn/module/${module._id}`)
+  }
+
   return (
     <>
       {!isLoading ? (
@@ -26,7 +29,7 @@ export default function ModuleCards({ module, filter = '', isLoading = true }: M
           {module.length !== 0 ? (
             <>
               {modulesFilter().map(module => (
-                <div key={module._id} className="mb-4 flex h-30 rounded-2xl border border-zinc-100 bg-white sm:h-32">
+                <div onClick={() => handlerSetModule(module)} key={module._id} className="mb-4 flex h-30 rounded-2xl border border-zinc-100 bg-white sm:h-32 cursor-pointer">
                   <div className="m-3">
                     {module.image ? (
                       <img
@@ -66,7 +69,10 @@ export default function ModuleCards({ module, filter = '', isLoading = true }: M
                     </div>
                   </div>
                   <div className="m-3 flex flex-col items-center">
-                    <CircularProgressBar progressData={dataTemp} />
+                    <CircularProgressBar progressData={{
+                      total: module.units?.length || 0,
+                      complete: 0,
+                    }} />
                   </div>
                 </div>
               ))}

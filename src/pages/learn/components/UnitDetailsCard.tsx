@@ -1,0 +1,46 @@
+import { useNavigate } from "react-router-dom";
+import { useAdmin } from "../../../contexts/AdminContext";
+import { Unit } from "../../../interfaces/Unit";
+import { PencilSquareIcon } from "@heroicons/react/20/solid";
+
+interface UnitDetailsCardProps {
+    unit: Unit;
+    isAdmin?: boolean;
+}
+
+export default function UnitDetailsCard({ unit, isAdmin = false }: UnitDetailsCardProps) {
+    const { module } = useAdmin()
+    const navigate = useNavigate()
+    const handlerEditUnit = () => {
+        navigate(`/admin/learn/modules/${module?._id}/units/${unit?._id}`)
+    }
+    return (
+        <div>
+            <div className="flex flex-row">
+                <p className="flex-1 text-2xl p-3">
+                    {unit?.title}
+                </p>
+                {
+                    isAdmin && <div className="flex justify-end text-black hover:text-green-400">
+                        <button onClick={handlerEditUnit}>
+                            <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+                }
+
+            </div>
+            <div className="pt-3">
+                {
+                    unit?.sections.map((item, index) => (
+                        <div key={index} id={item.title.replace(' ', '-')} className={` ${index === unit.sections.length - 1 ? 'mx-3 mb-3' : 'border-b pb-4 mb-4 mx-3'}`}>
+                            <div className='mb-4 text-xs text-gray-500'>{item.title}</div>
+                            <div className='p-editor-content ql-container ql-snow !border-0'>
+                                <div className='ql-editor !p-0 b-0' dangerouslySetInnerHTML={{ __html: item.body }} />
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    )
+}

@@ -3,10 +3,16 @@ import { RequestService } from '../../services/RequestService'
 
 import { GetTokenInfo } from '../../utils/TokenUtils'
 import UploadAvatar from '../../components/shared/forms/UploadAvatar'
+import { CheckCircleIcon } from '@heroicons/react/24/outline'
+
+const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
+const client_role = process.env.REACT_APP_CLIENT_ROLE as string
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
+const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export default function EmployeeProfile() {
   const [formUser, setFormUser] = useState<any>({})
-
+  const [updateSuccess,  setUpdateSuccess] = useState(false)
   useMemo(() => {
     const { _id } = GetTokenInfo()
 
@@ -19,6 +25,7 @@ export default function EmployeeProfile() {
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
 
     const target = e.target as any
 
@@ -28,7 +35,7 @@ export default function EmployeeProfile() {
       email: target.email.value,
       phone: target.phone_number.value,
       gender: target.gender.value,
-      birthday: target.birthday.value,
+      birth_date: target.birth_date.value,
       phone_number: target.phone_number.value,
       address: target.address.value,
       city: target.city.value,
@@ -49,12 +56,18 @@ export default function EmployeeProfile() {
       },
     }
 
-    const response: any = await RequestService(`users/${formUser._id}`, 'PATCH', formData)
-
-    if (response._id) {
-      setFormUser(response)
-    } else {
-      console.error('Error updating user')
+    try {
+      const response = await RequestService(`users/${formUser._id}`, 'PATCH', formData)
+      if (response && response._id) {
+        setFormUser(response)
+        setUpdateSuccess(true)
+        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+      } else {
+        throw new Error('Failed to update user')
+      }
+    } catch (error) {
+      console.error('Error updating user:', error)
+      setUpdateSuccess(false)
     }
   }
 
@@ -162,14 +175,14 @@ export default function EmployeeProfile() {
                     Birthday
                   </label>
                   <div className="mt-2">
-                    <input
+                  <input
                       type="date"
-                      defaultValue={formUser.birthday}
-                      // disabled
-                      name="birthday"
-                      id="birthday"
-                      autoComplete="birthday"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      defaultValue={
+                        formUser.birth_date ? new Date(formUser.birth_date).toISOString().split('T')[0] : ''
+                      }
+                      name="birth_date"
+                      id="birth_date"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -288,7 +301,7 @@ export default function EmployeeProfile() {
               </div>
             </div>
 
-            {formUser?.role === 'employee' && (
+            {formUser?.role === employee_role && (
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                 <div>
                   <h2 className="text-base font-semibold leading-7 text-gray-900">Direct Deposit</h2>
@@ -465,6 +478,21 @@ export default function EmployeeProfile() {
           </div>
 
           <div className="mt-6 flex items-center justify-end gap-x-6">
+            {updateSuccess && (
+              <div className="rounded-md bg-green-50 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-green-800">Profile updated successfully</p>
+                  </div>
+                  <div className="ml-auto pl-3">
+                    <div className="-mx-1.5 -my-1.5"></div>
+                  </div>
+                </div>
+              </div>
+            )}
             <button
               type="submit"
               className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">

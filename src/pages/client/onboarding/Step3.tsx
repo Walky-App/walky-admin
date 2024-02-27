@@ -1,87 +1,153 @@
-const people = [
-  {
-    name: 'Leslie Alexander',
-    email: 'leslie.alexander@example.com',
-    role: 'Co-Founder / CEO',
-    imageUrl:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Michael Foster',
-    email: 'michael.foster@example.com',
-    role: 'Co-Founder / CTO',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Dries Vincent',
-    email: 'dries.vincent@example.com',
-    role: 'Business Relations',
-    imageUrl:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: null,
-  },
-  {
-    name: 'Lindsay Walton',
-    email: 'lindsay.walton@example.com',
-    role: 'Front-end Developer',
-    imageUrl:
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Courtney Henry',
-    email: 'courtney.henry@example.com',
-    role: 'Designer',
-    imageUrl:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: '3h ago',
-    lastSeenDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    name: 'Tom Cook',
-    email: 'tom.cook@example.com',
-    role: 'Director of Product',
-    imageUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastSeen: null,
-  },
-]
+import { Fragment, useContext, useRef, useState } from 'react'
+import { Menu, Transition } from '@headlessui/react'
+import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
+import { cn } from '../../../utils/cn'
+import { Toast, ToastMessage } from 'primereact/toast'
+import { Button } from 'primereact/button'
+import { FormDataContext, StepProps } from '.'
+import AddFacilityDialog from './AddFacilityDialog'
 
-export default function Step3() {
+export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
+  return strings.filter(Boolean).join(separator)
+}
+
+export default function Step3({ step, setStep }: StepProps) {
+  const [visible, setVisible] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const { facilitiesArray, defaultValues, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
+
+  const toast = useRef(null)
+
+  const showSavedToast = () => {
+    setIsLoading(true)
+    // @ts-ignore
+    toast.current?.show({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Changes saved successfully.',
+      life: 2000,
+    })
+  }
+
+  const onRemove = (toastData: ToastMessage) => {
+    // @ts-ignore
+    const severity = toastData.message ? toastData.message.severity : toastData.severity
+
+    if (severity === 'success') {
+      setStep(step + 1)
+    }
+
+    setIsLoading(false)
+  }
+
   return (
-    <ul role="list" className="divide-y divide-gray-100">
-      {people.map((person) => (
-        <li key={person.email} className="flex justify-between gap-x-6 py-5">
-          <div className="flex min-w-0 gap-x-4">
-            <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
-            <div className="min-w-0 flex-auto">
-              <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
-              <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>
-            </div>
-          </div>
-          <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-            <p className="text-sm leading-6 text-gray-900">{person.role}</p>
-            {person.lastSeen ? (
-              <p className="mt-1 text-xs leading-5 text-gray-500">
-                Last seen <time dateTime={person.lastSeenDateTime}>{person.lastSeen}</time>
-              </p>
-            ) : (
-              <div className="mt-1 flex items-center gap-x-1.5">
-                <div className="flex-none rounded-full bg-emerald-500/20 p-1">
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+    <div className="space-y-12">
+      <AddFacilityDialog
+        visible={visible}
+        setVisible={setVisible}
+        toastRef={toast}
+        values={selectedFacility || defaultValues}
+      />
+      <Toast ref={toast} onRemove={e => onRemove(e)}></Toast>
+
+      {/* Do you have more locations to add?  */}
+      <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div>
+          <h2 className="text-base font-semibold leading-7 text-gray-900">Do you have more locations to add?</h2>
+          <p className="mt-1 text-sm leading-6 text-gray-600">
+            To continue, enter your business location information below.
+          </p>
+        </div>
+
+        <div className="sm:col-span-full">
+          <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
+            {facilitiesArray?.map(facility => (
+              <li key={facility._id} className="overflow-hidden rounded-xl border border-gray-200">
+                <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                  <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
+                  <div className="text-sm font-medium leading-6 text-gray-900">{facility.name}</div>
+                  <Menu as="div" className="relative ml-auto">
+                    <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
+                      <span className="sr-only">Open options</span>
+                      <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+                    </Menu.Button>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95">
+                      <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => {
+                                setVisible(true)
+                                setSelectedFacility(facility)
+                              }}
+                              className={cn(
+                                active ? 'bg-gray-50' : '',
+                                'block w-full px-3 py-1 text-start text-sm leading-6 text-gray-900',
+                              )}>
+                              Edit<span className="sr-only">, {facility.name}</span>
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
                 </div>
-                <p className="text-xs leading-5 text-gray-500">Online</p>
+                <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">Address</dt>
+                    <dd className="flex items-start gap-x-2">
+                      <div className="font-medium text-gray-900">
+                        {joinTruthyStrings([facility.address, facility.city, facility.state, facility.zip], ', ')}
+                      </div>
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">Contact name</dt>
+                    <dd className="flex items-start gap-x-2">
+                      <div className="font-medium text-gray-900">
+                        {joinTruthyStrings([facility.contacts[0].first_name, facility.contacts[0].last_name], ' ')}
+                      </div>
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">Role</dt>
+                    <dd className="flex items-start gap-x-2">
+                      <div className="font-medium text-gray-900">{facility.contacts[0].role}</div>
+                    </dd>
+                  </div>
+                </dl>
+              </li>
+            ))}
+            <li className="overflow-hidden rounded-xl border border-gray-200">
+              {/* Card Header */}
+              <div className="flex h-full flex-col items-center justify-center gap-x-4 gap-y-3 border-b border-gray-900/5 bg-gray-50 p-6">
+                <Button
+                  icon="pi pi-plus"
+                  rounded
+                  aria-label="Add"
+                  onClick={() => {
+                    setVisible(true)
+                    setSelectedFacility(undefined)
+                  }}
+                />
+                <div className="text-sm font-medium leading-6 text-gray-900">Add new location</div>
               </div>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
+        <Button label="Save" onClick={showSavedToast} loading={isLoading} />
+      </div>
+    </div>
   )
 }

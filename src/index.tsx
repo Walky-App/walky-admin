@@ -5,6 +5,7 @@ import './index.css'
 
 import './primereact-themes/customized/lara/lara-light/green/theme.css' // theme
 import 'primeicons/primeicons.css'
+import 'quill/dist/quill.core.css';
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Failed to find the root element')

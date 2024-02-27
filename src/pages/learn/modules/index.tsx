@@ -15,7 +15,7 @@ export default function Modules() {
   const [modules, setModules] = useState<Module[]>([])
 
   const fecthData = async () => {
-    const response = await RequestService(`modules/category/${params.id}`)
+    const response = await RequestService(`modules/category/${params.categoryId}`)
     if (response.length !== 0) {
       setModules(response)
     }
