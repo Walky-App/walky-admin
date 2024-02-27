@@ -20,7 +20,6 @@ export default function AdminFacilityJobs() {
         if (facility) {
           setFacility(facility)
         } else {
-          console.log('No facility found or unexpected data structure received, setting default value.')
           setFacility({})
         }
       } catch (error) {
@@ -33,7 +32,6 @@ export default function AdminFacilityJobs() {
         if (facilityJobs && Array.isArray(facilityJobs)) {
           setFacilityJobs(facilityJobs)
         } else {
-          console.log('No facility jobs found or unexpected data structure received, setting default value.')
           setFacilityJobs([])
         }
       } catch (error) {

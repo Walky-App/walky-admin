@@ -22,7 +22,6 @@ export default function AdminFacilityInternalNotes() {
         //@ts-ignore
         const userFound = await RequestService(`users/${user._id}`)
         setUserFound(userFound)
-        console.log('userFound -->', userFound)
       } catch (error) {
         console.error('Error fetching user:', error)
       }

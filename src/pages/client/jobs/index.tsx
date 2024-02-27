@@ -33,7 +33,6 @@ export default function Facilities() {
           let jobsResults = await Promise.all(jobsRequests)
           jobsResults = jobsResults.filter(job => job.message !== 'No jobs found')
           const allJobs = jobsResults.flat()
-          console.log('All Jobs:', allJobs)
           setJobsData(allJobs)
         } catch (error) {
           console.error('Error fetching jobs data:', error)

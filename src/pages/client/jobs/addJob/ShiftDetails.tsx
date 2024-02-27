@@ -44,7 +44,6 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
       const updatedData = { ...data, id: jobId, startTime: startTimeMilitary, endTime: endTimeMilitary }
-      console.log('Lets see Updated data -->', updatedData)
       const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
       if (response) {
         toast.current?.show({
