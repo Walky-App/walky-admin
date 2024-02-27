@@ -46,7 +46,6 @@ export default function Facilities() {
   const jobsColumns = [
     { Header: 'Job Title', accessor: 'title' },
     //@ts-ignore
-    { Header: 'Facility', accessor: row => row.facility?.name, Cell: ({ value }) => value || 'No Facility' },
     {
       Header: 'Status',
       accessor: (d: any) => (d.isActive ? 'Active' : 'Disabled'),

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react' 
+import React, { useEffect } from 'react'
 import { useRef } from 'react'
 import { RequestService } from '../../../../services/RequestService'
 import { Controller, useForm } from 'react-hook-form'
@@ -17,11 +17,10 @@ interface JobDetailsProps {
 //interfaces end
 export default function JobDetails({ nextStep }: JobDetailsProps) {
   const toast = useRef<Toast>(null)
-  const { setValue } = useForm()
   const params = useParams()
-  const [job, setJob] = React.useState<any>({})
   const {
     control,
+    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -37,7 +36,7 @@ export default function JobDetails({ nextStep }: JobDetailsProps) {
     { name: 'Budtending' },
     { name: 'Harvesting' },
     { name: 'Packaging' },
-    { name: 'Gardening'},
+    { name: 'Gardening' },
     { name: 'Cultivation' },
     { name: 'Extraction' },
     { name: 'Edibles' },
@@ -50,12 +49,12 @@ export default function JobDetails({ nextStep }: JobDetailsProps) {
   useEffect(() => {
     const getJob = async () => {
       const job = await RequestService(`jobs/${params.id}`)
-  
+      console.log('Here is the job before setting values -->', job)
       if (job) {
-        setJob(job)
         setValue('vacancy', job.vacancy)
-        setValue('skills', job.skills)
         setValue('employment_type', job.employment_type)
+        const skillsArray = job.skills.map((skill: string) => ({ name: skill }))
+        setValue('skills', skillsArray)
       } else {
         console.log(job)
       }
@@ -79,7 +78,7 @@ export default function JobDetails({ nextStep }: JobDetailsProps) {
       const updatedData = { ...data }
       const response = await RequestService(`jobs/${params.id}`, 'PATCH', updatedData)
       console.log('Here is params id --> ', params.id)
-      console.log( "Here is the response -->", response )
+      console.log('Here is the response -->', response)
       if (response) {
         toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Job details saved successfully' })
         setTimeout(() => {

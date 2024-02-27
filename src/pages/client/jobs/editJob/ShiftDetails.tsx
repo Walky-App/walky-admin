@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { RequestService } from '../../../../services/RequestService'
 import { Controller, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
@@ -14,14 +14,21 @@ export default function ShiftDetails() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
   const [endTime, setEndTime] = React.useState<Date | null>(null)
   const toast = useRef<Toast>(null)
-  const id = useParams()
+  const params = useParams()
   const navigate = useNavigate()
-
+  type FormValues = {
+    job_dates: Date[]
+    startTime: Date | null,
+    endTime: Date | null,
+    lunch_break: number | null
+    // Include other form fields here...
+  }
   const {
     control,
+    setValue,
     formState: { errors },
     handleSubmit,
-  } = useForm({
+  } = useForm<FormValues>({
     defaultValues: {
       job_dates: [],
       startTime: null,
@@ -40,13 +47,37 @@ export default function ShiftDetails() {
     )
   }
 
+  useEffect(() => {
+    const getJob = async () => {
+      const job = await RequestService(`jobs/${params.id}`)
+      console.log('Here is the job before setting values -->', job)
+      if (job) {
+        const jobDates = job.job_dates.map((date: string) => new Date(date))
+        setValue('job_dates', jobDates)
+        const startTimeDate = new Date()
+        startTimeDate.setHours(Math.floor(job.startTime / 100))
+        startTimeDate.setMinutes(job.startTime % 100)
+        setValue('startTime', startTimeDate)
+        const endTimeDate = new Date()
+      endTimeDate.setHours(Math.floor(job.endTime / 100))
+      endTimeDate.setMinutes(job.endTime % 100)
+      setValue('endTime', endTimeDate)
+
+        setValue('lunch_break', job.lunch_break)
+      } else {
+        console.log(job)
+      }
+    }
+    getJob()
+  }, [])
+
   const onSubmit = async (data: any) => {
     try {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      const updatedData = { ...data, id: id, startTime: startTimeMilitary, endTime: endTimeMilitary }
+      const updatedData = { ...data, startTime: startTimeMilitary, endTime: endTimeMilitary }
       console.log('Lets see Updated data -->', updatedData)
-      const response = await RequestService(`jobs/${id}`, 'PATCH', updatedData)
+      const response = await RequestService(`jobs/${params.id}`, 'PATCH', updatedData)
       if (response) {
         toast.current?.show({
           severity: 'success',
