@@ -37,7 +37,7 @@ export default function AdminFacilityDetails() {
       address: { value: string }
       city: { value: string }
       state: { value: string }
-      zip: { value: string }
+      zip: { value: number }
       company_dbas: { value: string }
     }
 
@@ -88,6 +88,7 @@ export default function AdminFacilityDetails() {
   return (
     <>
       <SubHeader data={facility} links={adminFacilitiesLinks} />
+      
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -445,7 +446,7 @@ export default function AdminFacilityDetails() {
                 </label>
                 <div className="mt-2">
                   <input
-                    type="text"
+                    type="number"
                     name="zip"
                     id="zip"
                     defaultValue={facility.zip || ''}

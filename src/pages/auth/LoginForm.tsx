@@ -1,16 +1,22 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
 import { ITokenInfo } from '../../interfaces/services.interfaces'
-
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
 import { LoginData } from '../../interfaces/Global'
 import { useAuth } from '../../contexts/AuthContext'
+import { Password } from 'primereact/password'
+import { InputText } from 'primereact/inputtext'
+
+const admin_role = process.env.REACT_APP_ADMIN_ROLE
+const client_role = process.env.REACT_APP_CLIENT_ROLE
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE
+const sales_role = process.env.REACT_APP_SALES_ROLE
 
 export default function LoginForm() {
   const [error, setError] = useState<any>()
   const [loading, setLoading] = useState(false)
+  const [value, setValue] = useState<string>('')
 
   const { setUser } = useAuth()
   const navigate = useNavigate()
@@ -26,6 +32,8 @@ export default function LoginForm() {
     }
 
     const data: any = await LoginService(body)
+
+    console.log('sales_role in login form', sales_role)
 
     try {
       if (!data) {
@@ -48,14 +56,18 @@ export default function LoginForm() {
           setLoading(false)
 
           switch (user.role) {
-            case 'client':
-              navigate('/client/dashboard')
-              break
-            case 'admin':
+            case admin_role:
               navigate('/admin/dashboard')
               break
-            case 'employee':
+            case client_role:
+              navigate('/client/dashboard')
+              break
+            case employee_role:
               navigate('/employee/dashboard')
+              break
+            case sales_role:
+              console.log('sending user to sales/dashboard', sales_role)
+              navigate('/sales/dashboard')
               break
             default:
               navigate('/login')
@@ -71,25 +83,26 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
+    <form onSubmit={handleSubmit} className="mb-6 ml-auto mr-auto sm:px-0 px-4 max-w-md space-y-4">
+      <div className="mx-auto max-w-lg text-center">
+      </div>
       <div>
         <label htmlFor="email" className="sr-only">
           Email
         </label>
 
         <div className="relative">
-          <input
+          <InputText
             required
             type="email"
             name="email"
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-            placeholder="Email*"
+            className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+            placeholder="*Email"
           />
-
           <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-zinc-400"
+              className="h-4 w-4 text-zinc-700"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor">
@@ -105,36 +118,18 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <label htmlFor="password" className="sr-only">
-          Password
-        </label>
-
-        <div className="relative">
-          <input
-            required
-            type="password"
-            name="password"
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-            placeholder="Password"
-          />
-
-          <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-zinc-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          </span>
-        </div>
+        <Password
+          inputId="password"
+          placeholder="*Password"
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          toggleMask
+          pt={{
+            panel: { className: 'hidden' },
+            input: { className: 'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500' },
+          }}
+          className="w-full"
+        />
       </div>
       {error && (
         <div className="flex items-center justify-center">
@@ -144,7 +139,7 @@ export default function LoginForm() {
       <button
         type="submit"
         className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'hover:bg-zinc-950 cursor-wait'
+          loading && 'cursor-wait hover:bg-zinc-950'
         }`}>
         {loading ? 'Logging in...' : 'Login'}
       </button>

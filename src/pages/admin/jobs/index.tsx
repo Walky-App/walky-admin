@@ -30,33 +30,52 @@ export default function AdminJobs() {
     () => [
       { Header: 'Job Title', accessor: 'title' },
       //@ts-ignore
-      { Header: 'Facility', accessor: row => row.facility?.name, Cell: ({ value }) => value || 'No Facility' },
-      { Header: 'Status', accessor: 'status' },
-      { Header: 'Salary', accessor: 'salary' },
-      //@ts-ignore
-      { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => value.join(', ') },
-      { Header: 'Employment Type', accessor: 'employment_type' },
-    ],
+      {
+        Header: 'Status',
+        accessor: (d: any) => (d.isActive ? 'Active' : 'Disabled'),
+        sortType: (a: any, b: any) => {
+          if (a.original.isActive === b.original.active) return 0
+          return a.original.isActive ? -1 : 1
+        },
+      },    //@ts-ignore
+      {
+        Header: 'Past/Present',
+        accessor: (d: any) => (d.isCompleted ? 'Past' : 'Present'),
+        sortType: (a: any, b: any) => {
+          if (a.original.isCompleted === b.original.isCompleted) return 0
+          return a.original.isCompleted ? -1 : 1
+        },
+      },    //@ts-ignore
+      { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => (Array.isArray(value) ? value.join(', ') : 'N/A') },
+      { Header: 'Vacancy', accessor: 'vacancy' },
+      {
+        Header: 'Availability',
+        accessor: (d: any) => (d.isFull ? 'Full' : 'Open'),
+        sortType: (a: any, b: any) => {
+          if (a.original.isFull === b.original.isFull) return 0
+          return a.original.isFull ? -1 : 1
+        },
+      }  ],
     [],
   )
 
   return (
     <div className="">
       <HeaderComponent title={'Jobs'} />
-      {/* <button
+      <button
         type="button"
         onClick={() => {
           navigate('/admin/jobs/new')
         }}
         className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
         Post New Job
-      </button> */}
+      </button>
       {isLoading ? (
         <div className="flex justify-center items-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
         </div>
       ) : (
-        <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
+        <GlobalTable data={memoJobsData} columns={memoJobsColumns} />
       )}
     </div>
   )

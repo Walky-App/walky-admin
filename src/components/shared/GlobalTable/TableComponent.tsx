@@ -8,7 +8,6 @@ interface ITableProps {
   getTableBodyProps: any
   rows: any
   prepareRow: any
-  showAvatar?: boolean
   allowClick?: boolean
 }
 
@@ -18,7 +17,6 @@ export default function TableComponent({
   getTableBodyProps,
   rows,
   prepareRow,
-  showAvatar,
   allowClick,
 }: ITableProps) {
   const { setModule } = useAdmin()
@@ -37,8 +35,8 @@ export default function TableComponent({
     <div className="w-full min-w-[30rem] rounded-xl bg-white p-4 shadow-[0_4px_10px_rgba(0,0,0,0.03)]">
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup: any, index: number) => (
-            <tr key={index} {...headerGroup.getHeaderGroupProps()}>
+          {headerGroups.map((headerGroup: any) => (
+            <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column: any) => (
                 <th
                   key={column.id}
@@ -64,9 +62,8 @@ export default function TableComponent({
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row: any, index: number) => {
+          {rows.map((row: any) => {
             prepareRow(row)
-
             if (allowClick) {
               return (
                 <tr className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>

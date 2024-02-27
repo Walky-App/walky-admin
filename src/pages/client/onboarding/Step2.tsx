@@ -1,144 +1,159 @@
-import * as React from 'react'
-import { useParams } from 'react-router-dom'
-import { Spinner } from 'flowbite-react'
-import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
+import {
+  FileUpload,
+  FileUploadBeforeSendEvent,
+  FileUploadErrorEvent,
+  FileUploadSelectEvent,
+  FileUploadUploadEvent,
+} from 'primereact/fileupload'
+import { FormDataContext, StepProps } from '.'
+import { Button } from 'primereact/button'
+import { useState, useRef, useContext } from 'react'
+import { Toast, ToastMessage } from 'primereact/toast'
+import { useAuth } from '../../../contexts/AuthContext'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 
-import { Menu, Transition } from '@headlessui/react'
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+export default function Step2({ step, setStep }: StepProps) {
+  const [isLoading, setIsLoading] = useState(false)
 
-import { RequestService } from '../../../services/RequestService'
-// import AdminFacilityHeaderInfo from './AdminFacilityHeader'
-import { classNames } from '../../../utils/Tailwind'
+  const { setFacilitiesArray } = useContext(FormDataContext)
 
-const statuses: any = {
-  Complete: 'text-green-700 bg-green-50 ring-green-600/20',
-  'In progress': 'text-gray-600 bg-gray-50 ring-gray-500/10',
-  Archived: 'text-yellow-800 bg-yellow-50 ring-yellow-600/20',
-}
+  const { user } = useAuth()
 
-export default function Step2() {
-  const [facility, setFacility] = React.useState<any>({})
-  const [uploading, setUploading] = React.useState(false)
-  const [files, setFiles] = React.useState<any>([])
-  const { facilityId } = useParams()
+  const toast = useRef<Toast>(null)
 
-  const filesInputRef = React.useRef<any>()
-
-  React.useMemo(() => {
-    const getFacility = async () => {
-      try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
-        setFacility(facilityFound)
-      } catch (error) {
-        console.error('Error fetching facility data:', error)
-      }
-    }
-    getFacility()
-  }, [facilityId])
-
-  const pickedHandler = (event: any) => {
-    if (event.target.files.length > 0) {
-      setFiles(event.target.files)
-    }
+  const showSavedToast = () => {
+    setIsLoading(true)
+    // @ts-ignore
+    toast.current?.show({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Changes saved successfully.',
+      life: 2000,
+    })
   }
 
-  const handleImagesUpload = async () => {
-    setUploading(true)
-    const formData = new FormData()
-    for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i])
+  const onRemove = (toastData: ToastMessage) => {
+    // @ts-ignore
+    const severity = toastData.message ? toastData.message.severity : toastData.severity
+
+    if (severity === 'success') {
+      setStep(step + 1)
     }
 
-    const updatedFacility = await RequestService(
-      `facilities/${facilityId}/licenses`,
-      'POST',
-      formData,
-      'binary',
-    )
-
-    setFacility(updatedFacility)
-    setFiles([])
-    setUploading(false)
+    setIsLoading(false)
   }
 
-  const pickImageHandler = () => {
-    filesInputRef.current.click()
+  const fileUploadRef = useRef<FileUpload>(null)
+
+  function setHeaders(event: FileUploadBeforeSendEvent) {
+    const { access_token } = GetTokenInfo()
+    event.xhr.setRequestHeader('Authorization', `Bearer ${access_token}`)
+  }
+
+  const handleSelect = async (event: FileUploadSelectEvent) => {
+    const files = event.files
+
+    const documentType = fileUploadRef.current?.props.id as string
+
+    const facilityIndex = 0 // Replace with the actual index or use the facilityId to find the index
+
+    for (const file of files) {
+      setFacilitiesArray(prevState =>
+        prevState.map((facility, index) => {
+          if (index !== facilityIndex) {
+            return facility
+          }
+
+          return {
+            ...facility,
+            [documentType]: {
+              key: file.name,
+              url: URL.createObjectURL(file),
+              timestamp: new Date().toISOString(),
+              createdBy: user?._id,
+            },
+          }
+        }),
+      )
+    }
   }
 
   return (
     <div>
-      <h3 className=''>Upload Licenses here </h3>
-      {/* <AdminFacilityHeaderInfo facility={facility} /> */}
-      <input
-        ref={filesInputRef}
-        className="hidden"
-        type="file"
-        name="new-images"
-        multiple
-        id="new-images"
-        onChange={pickedHandler}
-      />
+      <Toast ref={toast} onRemove={e => onRemove(e)}></Toast>
+      <div className="space-y-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Documents</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please upload your business license documents. Please make sure your upload is clear without any warped or
+              blur portions and shows all relevant information.
+            </p>
+          </div>
 
-      {!uploading ? (
-        <div className="flex items-center my-5">
-          {files.length === 0 ? (
-            <>
-              <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
-                <PlusCircleIcon className="h-20 w-20 text-green-500 hover:text-green-400" aria-hidden="true" />
-              </span>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleImagesUpload}
-                type="button"
-                className="inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
-                Upload {files.length} files
-                <CheckCircleIcon className="-mr-0.5 h-5 w-5" aria-hidden="true" />
-              </button>
-            </>
-          )}
-        </div>
-      ) : (
-        <Spinner color="success" size="lg" aria-label="Success spinner example" />
-      )}
-      <ul role="list" className="divide-y divide-gray-100">
-        {facility?.licenses?.map((license: any) => (
-          <li key={license._id} className="flex items-center justify-between gap-x-6 py-5">
-            <div className="min-w-0">
-              <div className="flex items-start gap-x-3">
-                <a href={license.url} target="_blank" className="hidden px-5 py-1.5 text-sm font-semibold sm:block">
-                  <p className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">{license.key}</p>
-                </a>
-                <p
-                  className={classNames(
-                    statuses['Complete'],
-                    'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
-                  )}>
-                  Approved
-                </p>
-              </div>
-              <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
-                <p className="whitespace-nowrap">
-                  Uploaded on <time dateTime={license.timestamp}>{license.timestamp}</time>
-                </p>
-                <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
-                  <circle cx={1} cy={1} r={1} />
-                </svg>
-                <p className="truncate">Created by {license.createdBy}</p>
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-6">
+              <label htmlFor="demo" className="block text-sm font-medium leading-6 text-gray-900">
+                *Upload State License:
+              </label>
+              <div className="mt-2">
+                <FileUpload
+                  id="stateLicenseDocument"
+                  name="file"
+                  ref={fileUploadRef}
+                  auto
+                  maxFileSize={1000000}
+                  accept="image/*"
+                  multiple
+                  mode="advanced"
+                  // url={`facilities/${facilityId}/licenses`}
+                  url={`facilities/licenses`}
+                  onSelect={handleSelect}
+                  onBeforeSend={setHeaders}
+                  // onUpload={uploadComplete}
+                  // onError={uploadError}
+                  emptyTemplate={<p className="m-0">Drag and drop files to here to upload.</p>}
+                />
               </div>
             </div>
-            {/* <div className="flex flex-none items-center gap-x-4 disabled">
-              <a
-                href="#"
-                target="_blank"
-                className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
-                Delete
-              </a>
-            </div> */}
-          </li>
-        ))}
-      </ul>
+
+            <div className="sm:col-span-6">
+              <label htmlFor="demo" className="block text-sm font-medium leading-6 text-gray-900">
+                *Upload City License:
+              </label>
+              <div className="mt-2">
+                <FileUpload
+                  // ref={fileUploadRef}
+                  // id="cityLicenseDocument"
+                  url="/api/upload"
+                  mode="basic"
+                  accept="image/*"
+                  maxFileSize={1000000}
+                  // onBeforeUpload={}
+                  // onSelect={beforeUploadHandler}
+                  // onBeforeSend={beforeSendHandler}
+                  // uploadHandler={handleImagesUpload}
+                  // customUpload
+                  // uploadHandler={beforeUploadHandler}
+                  // onUpload={onUploadToast}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <Button
+          severity="secondary"
+          label="Back"
+          outlined
+          onClick={() => {
+            setStep(step - 1)
+          }}
+        />
+        <Button label="Save" onClick={showSavedToast} loading={isLoading} />
+      </div>
     </div>
   )
 }
