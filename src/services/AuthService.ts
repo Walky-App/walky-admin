@@ -4,7 +4,6 @@ import { RequestService } from './RequestService'
 export const LoginService = async (body: LoginData) => {
   try {
     const response = await RequestService(`auth/login`, 'POST', body)
-    console.log('response -> ', response)
     if (response) return response
   } catch (error) {
     console.error(error)
