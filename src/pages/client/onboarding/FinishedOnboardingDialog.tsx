@@ -21,7 +21,7 @@ export default function FinishedOnboardingDialog({ visible, setVisible }: Finish
           content={
             <div className="flex flex-col rounded-lg bg-white px-8 py-5 sm:w-full">
               <div className="flex justify-center">
-                <Image src="/assets/logos/logo-horizontal-cropped_optimized.png" alt="Image" width="250" />
+                <Image src="/assets/logos/logo-horizontal-cropped.png" alt="Image" width="250" />
               </div>
               <div className="mb-3 mt-3 text-center sm:mb-5 sm:mt-5">
                 <h3 className="text-base font-semibold leading-6 text-gray-900">
