@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react' 
 import { useRef } from 'react'
 import { RequestService } from '../../../../services/RequestService'
 import { Controller, useForm } from 'react-hook-form'
@@ -11,20 +12,20 @@ import { useParams } from 'react-router-dom'
 
 //Interfaces start
 interface JobDetailsProps {
-  jobId: string | null
+  nextStep: () => void
 }
 //interfaces end
-export default function JobDetails() {
+export default function JobDetails({ nextStep }: JobDetailsProps) {
   const toast = useRef<Toast>(null)
-  const id = useParams()
-
+  const { setValue } = useForm()
+  const params = useParams()
+  const [job, setJob] = React.useState<any>({})
   const {
     control,
     formState: { errors },
     handleSubmit,
   } = useForm({
     defaultValues: {
-      base_rate: null,
       vacancy: null,
       skills: [],
       employment_type: '',
@@ -46,6 +47,22 @@ export default function JobDetails() {
     { name: 'Other' },
   ]
 
+  useEffect(() => {
+    const getJob = async () => {
+      const job = await RequestService(`jobs/${params.id}`)
+  
+      if (job) {
+        setJob(job)
+        setValue('vacancy', job.vacancy)
+        setValue('skills', job.skills)
+        setValue('employment_type', job.employment_type)
+      } else {
+        console.log(job)
+      }
+    }
+    getJob()
+  }, [])
+
   const getFormErrorMessage = (name: string) => {
     //@ts-ignore
     return errors[name] ? (
@@ -59,10 +76,15 @@ export default function JobDetails() {
   const onSubmit = async (data: any) => {
     try {
       data.skills = data.skills.map((skill: { name: string }) => skill.name)
-      const updatedData = { ...data, id: id }
-      const response = await RequestService(`jobs/${id}`, 'PATCH', updatedData)
+      const updatedData = { ...data }
+      const response = await RequestService(`jobs/${params.id}`, 'PATCH', updatedData)
+      console.log('Here is params id --> ', params.id)
+      console.log( "Here is the response -->", response )
       if (response) {
         toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Job details saved successfully' })
+        setTimeout(() => {
+          nextStep()
+        }, 3000)
       }
     } catch (error) {
       console.error(error)
