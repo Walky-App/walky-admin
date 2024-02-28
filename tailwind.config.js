@@ -6,7 +6,13 @@ module.exports = {
     './node_modules/primereact/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#0E9F6E',
+        primaryDark: '#057A55',
+      },
+    },
   },
   plugins: [require('flowbite/plugin'), require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 }
+3
