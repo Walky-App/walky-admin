@@ -13,6 +13,6 @@ module.exports = {
         primaryDarker: '#0A5F3C',
       },
     },
-    plugins: [require('flowbite/plugin'), require('@tailwindcss/forms'), require('@tailwindcss/typography')],
   },
+  plugins: [require('flowbite/plugin'), require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 }
