@@ -1,9 +1,5 @@
-import { Config } from 'tailwindcss';
-import flowbitePlugin from 'flowbite/plugin';
-import formsPlugin from '@tailwindcss/forms';
-import typographyPlugin from '@tailwindcss/typography';
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     './node_modules/flowbite-react/**/*.js',
@@ -17,8 +13,6 @@ const config: Config = {
         primaryDarker: '#0A5F3C',
       },
     },
+    plugins: [require('flowbite/plugin'), require('@tailwindcss/forms'), require('@tailwindcss/typography')],
   },
-  plugins: [flowbitePlugin, formsPlugin, typographyPlugin],
-};
-
-export default config;
+}
