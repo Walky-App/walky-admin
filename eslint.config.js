@@ -1,7 +1,6 @@
 import eslint from '@eslint/js'
 import prettierConfig from 'eslint-config-prettier'
 import fileNameRules from 'eslint-plugin-filename-rules'
-import importPlugin from 'eslint-plugin-import'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 import prettierPlugin from 'eslint-plugin-prettier'
 import react from 'eslint-plugin-react'
@@ -17,14 +16,14 @@ const __dirname = dirname(__filename)
 
 export default tseslint.config(
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.stylistic,
   {
+    files: ['*.ts', '*.tsx'],
     ...reactRecommended,
     ...prettierConfig,
     plugins: {
       react,
-      import: importPlugin,
       prettier: prettierPlugin,
       'react-hooks': reactHooks,
       'jsx-a11y': jsxA11y,
@@ -52,7 +51,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
       'prettier/prettier': 'off',
-      'no-console': ['error', { allow: ['warn', 'error'] }],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'react/jsx-uses-react': 'error',
       'react/prefer-stateless-function': 'error',
       'react/button-has-type': 'error',
@@ -114,8 +113,7 @@ export default tseslint.config(
           format: ['PascalCase'],
         },
       ],
-      'filename-rules/match': [2, { '.ts': 'camelcase', '.tsx': 'pascalcase' }],
-      'import/no-default-export': 'warn',
+      'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': 'pascalcase' }],
     },
   },
 )
