@@ -1,3 +1,4 @@
+// @ts-check
 import eslint from '@eslint/js'
 import prettierConfig from 'eslint-config-prettier'
 import fileNameRules from 'eslint-plugin-filename-rules'
@@ -19,7 +20,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   ...tseslint.configs.stylistic,
   {
-    files: ['*.ts', '*.tsx'],
+    files: ['**/*.ts', '**/*.tsx'],
     ...reactRecommended,
     ...prettierConfig,
     plugins: {
