@@ -82,7 +82,6 @@ const salesLinks = [
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
   const { user, profilePath } = useAuth()
   const navigate = useNavigate()
 
@@ -103,6 +102,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
+  const chooseLogoImage = () => {
+    const currentURL = window.location.href
+    if (currentURL.toLowerCase().includes('hydropallet')) {
+      return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
+    } else {
+      return '/assets/logos/Hemp-Temps-logo-horizontal-white_optimized.png'
+    }
+  }
+
   const SidebarComponent = () => {
     return (
       <div
@@ -111,12 +119,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         })}>
         <div className="mt-4 flex shrink-0 items-center justify-center">
           {/* Logo */}
-          <Link to={user ? `/${user.role}/dashboard` : '/'}>
-            <img
-              src="/assets/logos/Hemp-Temps-logo-horizontal-white_optimized.png"
-              alt="Hemp-Temps"
-              className="h-10 w-auto"
-            />
+          <Link to={user ? `/${role}/dashboard` : '/'}>
+            <img src={chooseLogoImage()} alt="Hemp-Temps" className="h-10 w-auto" />
           </Link>
         </div>
         <nav className="flex flex-1 flex-col">
