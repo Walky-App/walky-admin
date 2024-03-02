@@ -18,7 +18,6 @@ export default function AdminFacilityJobDetails() {
         if (facility) {
           setFacility(facility)
         } else {
-          console.log('No facility found or unexpected data structure received, setting default value.')
           setFacility({})
         }
       } catch (error) {
@@ -26,12 +25,10 @@ export default function AdminFacilityJobDetails() {
       }
 
       try {
-        console.log('Job ID:', jobId)
         const job = await RequestService(`jobs/${jobId}`)
         if (job) {
           setJob(job)
         } else {
-          console.log('No job found or unexpected data structure received.')
           setJob({})
         }
       } catch (error) {

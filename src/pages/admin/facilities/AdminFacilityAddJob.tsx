@@ -18,7 +18,6 @@ export default function AdminFacilityAddJob() {
         if (facility) {
           setFacility(facility)
         } else {
-          console.log('No facility found or unexpected data structure received, setting default value.')
           setFacility({})
         }
       } catch (error) {
