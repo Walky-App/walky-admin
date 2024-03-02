@@ -10,7 +10,7 @@ export function joinTruthyStrings(strings: (string | undefined)[], separator: st
   return strings.filter(Boolean).join(separator)
 }
 
-export default function Step4({ step, setStep }: StepProps) {
+export const Step4 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [visible, setVisible] = useState<boolean>(false)
 

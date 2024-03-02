@@ -1,12 +1,12 @@
 import { CheckIcon } from '@heroicons/react/24/solid'
 
-export default function Nav({
+export const Nav = ({
   step,
   setStep,
 }: {
   step: number
   setStep: React.Dispatch<React.SetStateAction<number>>
-}) {
+}) => {
   const steps = [
     { id: '01', name: 'Business Information', href: '#', status: 'complete' },
     { id: '02', name: 'Licenses', href: '#', status: 'current' },

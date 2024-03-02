@@ -1,17 +1,18 @@
-import React, { useState, Dispatch, SetStateAction, useRef } from 'react'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
-import Step1 from './Step1'
-import Step2 from './Step2'
-import Step3 from './Step3'
-import Step4 from './Step4'
-import WelcomeDialog from './WelcomeDialog'
-import { Steps } from 'primereact/steps'
-import { MenuItem } from 'primereact/menuitem'
-import { Toast } from 'primereact/toast'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 import { FieldErrors } from 'react-hook-form'
+import { MenuItem } from 'primereact/menuitem'
+import { Steps } from 'primereact/steps'
+import { Toast } from 'primereact/toast'
 import { TooltipOptions } from 'primereact/tooltip/tooltipoptions'
-import Step5 from './Step5'
+
+import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { Step1 } from './Step1'
+import { Step2 } from './Step2'
+import { Step3 } from './Step3'
+import { Step4 } from './Step4'
+import { Step5 } from './Step5'
+import WelcomeDialog from './WelcomeDialog'
 
 const defaultFacilityFormValues: IFacilityFormInputs = {
   user_id: '',
@@ -134,7 +135,7 @@ export const tooltipOptions: TooltipOptions = {
   },
 }
 
-export default function ClientOnboarding() {
+export const ClientOnboarding = () => {
   const user = GetTokenInfo()
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = React.useState<number>(0)

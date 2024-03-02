@@ -12,7 +12,7 @@ import { Toast, ToastMessage } from 'primereact/toast'
 import { useAuth } from '../../../contexts/AuthContext'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 
-export default function Step2({ step, setStep }: StepProps) {
+export const Step2 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const { setFacilitiesArray } = useContext(FormDataContext)
