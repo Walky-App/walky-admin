@@ -12,7 +12,7 @@ import { FormDataContext, IFacilityFormInputs, StepProps, getFormErrorMessage, t
 import { InputNumber } from 'primereact/inputnumber'
 import { RequestService } from '../../../services/RequestService'
 
-export default function Step1({ step, setStep }: StepProps) {
+export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { setFormData, defaultValues, formData, facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 

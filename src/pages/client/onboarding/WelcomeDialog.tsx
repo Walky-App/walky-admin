@@ -1,12 +1,12 @@
-import { Dialog } from 'primereact/dialog'
 import { Button } from 'primereact/button'
+import { Dialog } from 'primereact/dialog'
 
 interface WelcomeDialogProps {
   visible: boolean
   setVisible: (visible: boolean) => void
 }
 
-export default function WelcomeDialog({ visible, setVisible }: WelcomeDialogProps) {
+export const WelcomeDialog = ({ visible, setVisible }: WelcomeDialogProps) => {
   return (
     <>
       <div className="flex justify-center">
