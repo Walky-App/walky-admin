@@ -33,8 +33,6 @@ export default function LoginForm() {
 
     const data: any = await LoginService(body)
 
-    console.log('sales_role in login form', sales_role)
-
     try {
       if (!data) {
         setLoading(false)
@@ -66,7 +64,6 @@ export default function LoginForm() {
               navigate('/employee/dashboard')
               break
             case sales_role:
-              console.log('sending user to sales/dashboard', sales_role)
               navigate('/sales/dashboard')
               break
             default:
@@ -83,9 +80,8 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 ml-auto mr-auto sm:px-0 px-4 max-w-md space-y-4">
-      <div className="mx-auto max-w-lg text-center">
-      </div>
+    <form onSubmit={handleSubmit} className="mb-6 ml-auto mr-auto max-w-md space-y-4 px-4 sm:px-0">
+      <div className="mx-auto max-w-lg text-center"></div>
       <div>
         <label htmlFor="email" className="sr-only">
           Email
