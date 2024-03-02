@@ -15,7 +15,7 @@ import { IFacility } from '../../../../interfaces/Facility'
 interface BasicInfoProps {
   nextStep: () => void
 }
-export default function BasicInfo( { nextStep }: BasicInfoProps) {
+export default function BasicInfo({ nextStep }: BasicInfoProps) {
   const user = GetTokenInfo()
   const id = user?._id
   const toast = useRef<Toast>(null)
@@ -54,8 +54,6 @@ export default function BasicInfo( { nextStep }: BasicInfoProps) {
     getJob()
   }, [facilities])
 
-  
-
   const defaultValues = {
     title: '',
     description: '',
@@ -81,7 +79,6 @@ export default function BasicInfo( { nextStep }: BasicInfoProps) {
   const onSubmit = async (data: any) => {
     try {
       const requestData = { ...data }
-      console.log('Lets see the update data -->', requestData)
       const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData)
       if (response) {
         toast.current?.show({
