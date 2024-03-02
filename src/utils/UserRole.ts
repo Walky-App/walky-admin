@@ -7,7 +7,6 @@ const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export const getCurrentUserRole = () => {
   const token_info = GetTokenInfo()
-  typeof token_info.role === 'number' && console.log('client_role is a number')
 
   switch (token_info.role) {
     case admin_role:
