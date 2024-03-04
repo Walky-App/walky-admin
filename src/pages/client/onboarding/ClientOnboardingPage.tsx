@@ -7,12 +7,7 @@ import { TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import HeaderComponent from '../../../components/shared/general/HeaderComponent'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
-import { Step1 } from './Step1'
-import { Step2 } from './Step2'
-import { Step3 } from './Step3'
-import { Step4 } from './Step4'
-import { Step5 } from './Step5'
-import WelcomeDialog from './WelcomeDialog'
+import { Step1, Step2, Step3, Step4, Step5, WelcomeDialog } from './components'
 
 const defaultFacilityFormValues: IFacilityFormInputs = {
   user_id: '',
@@ -91,11 +86,17 @@ export interface FormDataContextProps {
 export const FormDataContext = React.createContext<FormDataContextProps>({
   defaultValues: defaultFacilityFormValues,
   formData: defaultFacilityFormValues,
-  setFormData: () => {},
+  setFormData: () => {
+    throw new Error('setFormData function must be overridden in FormDataContext')
+  },
   facilitiesArray: [],
-  setFacilitiesArray: () => {},
+  setFacilitiesArray: () => {
+    throw new Error('setFacilitiesArray function must be overridden in FormDataContext')
+  },
   selectedFacility: defaultFacilityFormValues,
-  setSelectedFacility: () => {},
+  setSelectedFacility: () => {
+    throw new Error('setSelectedFacility function must be overridden in FormDataContext')
+  },
 })
 
 export interface StepProps {
@@ -103,18 +104,15 @@ export interface StepProps {
   setStep: (step: number) => void
 }
 
-export function getFormErrorMessage<TFormInputs extends Record<string, any>>(
-  path: string,
-  errors: FieldErrors<TFormInputs> = {},
-) {
+export function getFormErrorMessage(path: string, errors: FieldErrors) {
   const pathParts = path.split('.')
-  let error: FieldErrors<TFormInputs> | undefined = errors
+  let error: FieldErrors = errors
 
   for (const part of pathParts) {
     if (typeof error !== 'object' || error === null) {
       return null
     }
-    error = error[part as keyof typeof error] as FieldErrors<TFormInputs>
+    error = error[part as keyof typeof error] as FieldErrors
   }
 
   if (error?.message) {
@@ -154,38 +152,53 @@ export const ClientOnboarding = () => {
     {
       label: 'Business Information',
       command: event => {
-        // @ts-ignore
+        // @ts-expect-error toast.current may be null
         toast.current?.show({ severity: 'info', summary: 'First Step', detail: event.item.label })
       },
     },
     {
       label: 'Licenses',
       command: event => {
-        // @ts-ignore
+        // @ts-expect-error toast.current may be null
+
         toast.current?.show({ severity: 'info', summary: 'Second Step', detail: event.item.label })
       },
     },
     {
       label: 'Locations',
       command: event => {
-        // @ts-ignore
+        // @ts-expect-error toast.current may be null
+
         toast.current?.show({ severity: 'info', summary: 'Third Step', detail: event.item.label })
       },
     },
     {
       label: 'Payment Information',
       command: event => {
-        // @ts-ignore
+        // @ts-expect-error toast.current may be null
+
         toast.current?.show({ severity: 'info', summary: 'Fourth Step', detail: event.item.label })
       },
     },
     {
       label: 'Terms and Conditions',
       command: event => {
-        // @ts-ignore
+        // @ts-expect-error toast.current may be null
+
         toast.current?.show({ severity: 'info', summary: 'Fifth Step', detail: event.item.label })
       },
     },
+  ]
+
+  const onboardingSteps = [
+    <React.Fragment key="step1">
+      <WelcomeDialog visible={visible} setVisible={setVisible} />
+      <Step1 step={activeIndex} setStep={setActiveIndex} />
+    </React.Fragment>,
+    <Step2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
+    <Step3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
+    <Step4 key="step4" step={activeIndex} setStep={setActiveIndex} />,
+    <Step5 key="step5" step={activeIndex} setStep={setActiveIndex} />,
   ]
 
   return (
@@ -199,28 +212,19 @@ export const ClientOnboarding = () => {
         selectedFacility,
         setSelectedFacility,
       }}>
-      <div>
-        <Toast ref={toast}></Toast>
-        <HeaderComponent title="Client Onboarding" />
-        <Steps
-          model={steps}
-          activeIndex={activeIndex}
-          onSelect={e => setActiveIndex(e.index)}
-          readOnly={true}
-          pt={{
-            label: { className: 'hidden sm:inline' },
-            menuitem: { className: 'before:top-full before:sm:top-1/2' },
-          }}
-        />
-        <div className="mt-10">
-          {activeIndex === 0 && <WelcomeDialog visible={visible} setVisible={setVisible} />}
-          {activeIndex === 0 && <Step1 step={activeIndex} setStep={setActiveIndex} />}
-          {activeIndex === 1 && <Step2 step={activeIndex} setStep={setActiveIndex} />}
-          {activeIndex === 2 && <Step3 step={activeIndex} setStep={setActiveIndex} />}
-          {activeIndex === 3 && <Step4 step={activeIndex} setStep={setActiveIndex} />}
-          {activeIndex === 4 && <Step5 step={activeIndex} setStep={setActiveIndex} />}
-        </div>
-      </div>
+      <Toast ref={toast} />
+      <HeaderComponent title="Client Onboarding" />
+      <Steps
+        model={steps}
+        activeIndex={activeIndex}
+        onSelect={e => setActiveIndex(e.index)}
+        readOnly={true}
+        pt={{
+          label: { className: 'hidden sm:inline' },
+          menuitem: { className: 'before:top-full before:sm:top-1/2' },
+        }}
+      />
+      <div className="mt-10">{onboardingSteps[activeIndex]}</div>
     </FormDataContext.Provider>
   )
 }

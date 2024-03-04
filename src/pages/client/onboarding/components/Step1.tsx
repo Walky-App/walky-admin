@@ -1,16 +1,22 @@
-import { InputText } from 'primereact/inputtext'
-import { InputMask } from 'primereact/inputmask'
-import { Dropdown } from 'primereact/dropdown'
-import { Button } from 'primereact/button'
-import { Toast, ToastMessage } from 'primereact/toast'
-
-import { classNames } from 'primereact/utils'
 import { useContext, useRef, useState } from 'react'
-import { useForm, Controller, SubmitHandler, useFieldArray } from 'react-hook-form'
-import { countries, states } from './formOptions'
-import { FormDataContext, IFacilityFormInputs, StepProps, getFormErrorMessage, tooltipOptions } from '.'
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { InputMask } from 'primereact/inputmask'
 import { InputNumber } from 'primereact/inputnumber'
-import { RequestService } from '../../../services/RequestService'
+import { InputText } from 'primereact/inputtext'
+import { Toast, ToastMessage } from 'primereact/toast'
+import { classNames } from 'primereact/utils'
+
+import { RequestService } from '../../../../services/RequestService'
+import {
+  FormDataContext,
+  getFormErrorMessage,
+  IFacilityFormInputs,
+  StepProps,
+  tooltipOptions,
+} from '../ClientOnboardingPage'
+import { countries, states } from '../formOptions'
 
 export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -19,7 +25,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
   const toast = useRef(null)
 
   const showSuccessToast = () => {
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     toast.current?.show({
       severity: 'success',
       summary: 'Success',
@@ -29,7 +35,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
   }
 
   const onRemove = (toastData: ToastMessage) => {
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
     if (severity === 'success') {
@@ -73,7 +79,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         const response = await RequestService(`facilities/${facilitiesArray[0]?._id}`, 'PATCH', data)
 
         if (response?._id) {
-          // @ts-ignore
+          // @ts-expect-error toastRef.current may be null
           toast.current?.show({
             severity: 'success',
             summary: 'Changes saved for:',
@@ -87,7 +93,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         }
       } catch (error) {
         console.error('Error adding facility:', error)
-        // @ts-ignore
+        // @ts-expect-error toastRef.current may be null
         toast.current?.show({
           severity: 'error',
           summary: 'Error saving changes',
@@ -107,7 +113,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         }
       } catch (error) {
         console.error('Error adding facility:', error)
-        // @ts-ignore
+        // @ts-expect-error toastRef.current may be null
         toast.current?.show({
           severity: 'error',
           summary: 'Error adding facility',

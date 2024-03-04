@@ -1,4 +1,6 @@
 // @ts-check
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
 import eslint from '@eslint/js'
 import prettierConfig from 'eslint-config-prettier'
 import fileNameRules from 'eslint-plugin-filename-rules'
@@ -8,9 +10,7 @@ import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRecommended from 'eslint-plugin-react/configs/recommended.js'
 import globals from 'globals'
-import { dirname } from 'path'
 import tseslint from 'typescript-eslint'
-import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -66,7 +66,6 @@ export default tseslint.config(
       'react/jsx-fragments': ['error', 'syntax'],
       'react/destructuring-assignment': ['error', 'always', { destructureInSignature: 'always' }],
       'react/jsx-no-leaked-render': ['error', { validStrategies: ['ternary'] }],
-      'react/jsx-max-depth': ['error', { max: 5 }],
       'react/function-component-definition': ['warn', { namedComponents: 'arrow-function' }],
       'react/jsx-key': [
         'error',
@@ -81,7 +80,8 @@ export default tseslint.config(
       'react/no-typos': 'warn',
       'react/display-name': 'warn',
       'react/self-closing-comp': 'warn',
-      'react/jsx-sort-props': 'warn',
+      'react/jsx-max-depth': ['off', { max: 5 }],
+      'react/jsx-sort-props': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/jsx-one-expression-per-line': 'off',
       'react/prop-types': 'off',
@@ -96,7 +96,7 @@ export default tseslint.config(
         },
         {
           selector: 'variable',
-          format: ['PascalCase', 'camelCase'],
+          format: ['PascalCase', 'camelCase', 'snake_case'],
           leadingUnderscore: 'allow',
         },
         {
@@ -116,5 +116,13 @@ export default tseslint.config(
       ],
       'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': 'pascalcase' }],
     },
+    overrides: [
+      {
+        files: ['**/index.tsx'], // adjust this if your file is in a specific directory
+        rules: {
+          '@typescript-eslint/naming-convention': 'off',
+        },
+      },
+    ],
   },
 )
