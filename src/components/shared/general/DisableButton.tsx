@@ -1,11 +1,16 @@
+import { useAdmin } from '../../../contexts/AdminContext'
 import { DisableButtonInterface } from '../../../interfaces/Global'
 import { RequestService } from '../../../services/RequestService'
 import { useNavigate } from 'react-router-dom'
 
 export default function NavigationButton({ path, status, redirect }: DisableButtonInterface) {
+  const { setCategory, setUnit, setModule } = useAdmin()
   const navigate = useNavigate()
   const handlerButton = async () => {
     await RequestService(path, 'PATCH', { is_disabled: !status })
+    setCategory(undefined)
+    setUnit(undefined)
+    setModule(undefined)
     navigate(redirect)
   }
   return (

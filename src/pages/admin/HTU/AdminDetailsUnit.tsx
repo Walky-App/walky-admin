@@ -1,5 +1,4 @@
 import { TabPanel, TabView, TabViewTabChangeEvent } from "primereact/tabview"
-import { Card } from "flowbite-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAdmin } from "../../../contexts/AdminContext"
@@ -8,9 +7,8 @@ import { RequestService } from "../../../services/RequestService"
 import HeaderComponent from "../../../components/shared/general/HeaderComponent"
 import SectionEditor from "./components/SectionEditor"
 import SectionImage from "./components/SectionImage"
-import { Badge } from "primereact/badge"
-import { Tag } from "primereact/tag"
-import { EnvelopeIcon, PencilSquareIcon, PhoneIcon, TrashIcon } from "@heroicons/react/20/solid"
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/20/solid"
+import { DisableButtonInterface } from "../../../interfaces/Global"
 
 export default function AdminDetailsUnit() {
     const { unit, setUnit, setModule } = useAdmin()
@@ -67,9 +65,12 @@ export default function AdminDetailsUnit() {
         setSelectedSection(section)
     }
 
-    const handlerSectionDelete = (sectionDelete: Section) => {
-        //const newSection = sections.filter(section => JSON.stringify(section) !== JSON.stringify(sectionDelete));
-        //setSections(newSection)
+    const handlerSectionDelete = async (sectionDelete: Section) => {
+        const response = await RequestService(`units/section/disable/${params.unitId}`, 'PATCH', { section: sectionDelete })
+
+        if (response) {
+            setSections(response.sections)
+        }
     }
 
     const handleTabChange = (index: number) => {
@@ -91,6 +92,12 @@ export default function AdminDetailsUnit() {
         setSections(response.sections)
     }
 
+    const disableButtonData: DisableButtonInterface = {
+        path: `units/disable/${unit?._id}`,
+        status: unit?.is_disabled as boolean,
+        redirect: window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))
+    }
+
     useEffect(() => {
         if (!unit) {
             fetchData()
@@ -102,6 +109,7 @@ export default function AdminDetailsUnit() {
         <div className="w-full sm:overflow-x-hidden">
             <HeaderComponent
                 title={'Unit details'}
+                disableButton={disableButtonData}
             />
             <form>
                 <div className="space-y-12">
@@ -199,7 +207,7 @@ export default function AdminDetailsUnit() {
                                                                     <PencilSquareIcon className="h-5 w-5 text-gray-400 " aria-hidden="true" />
                                                                     Edit
                                                                 </div>
-                                                                <div className="-ml-px p-2 flex w-0 flex-1 justify-center items-center" >
+                                                                <div className="-ml-px p-2 flex w-0 flex-1 justify-center items-center cursor-pointer transition-colors duration-300 ease-in-out hover:bg-red-100" onClick={() => handlerSectionDelete(section)} >
                                                                     <TrashIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                                                                     Delete
                                                                 </div>
