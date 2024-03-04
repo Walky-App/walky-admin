@@ -1,16 +1,11 @@
-import {
-  FileUpload,
-  FileUploadBeforeSendEvent,
-  FileUploadErrorEvent,
-  FileUploadSelectEvent,
-  FileUploadUploadEvent,
-} from 'primereact/fileupload'
-import { FormDataContext, StepProps } from '.'
+import { useContext, useRef, useState } from 'react'
 import { Button } from 'primereact/button'
-import { useState, useRef, useContext } from 'react'
+import { FileUpload, FileUploadBeforeSendEvent, FileUploadSelectEvent } from 'primereact/fileupload'
 import { Toast, ToastMessage } from 'primereact/toast'
-import { useAuth } from '../../../contexts/AuthContext'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+
+import { useAuth } from '../../../../contexts/AuthContext'
+import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { FormDataContext, StepProps } from '../ClientOnboardingPage'
 
 export const Step2 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -23,7 +18,6 @@ export const Step2 = ({ step, setStep }: StepProps) => {
 
   const showSavedToast = () => {
     setIsLoading(true)
-    // @ts-ignore
     toast.current?.show({
       severity: 'success',
       summary: 'Success',
@@ -33,7 +27,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
   }
 
   const onRemove = (toastData: ToastMessage) => {
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
     if (severity === 'success') {

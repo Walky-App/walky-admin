@@ -1,14 +1,10 @@
 import { useContext, useRef, useState } from 'react'
-
-import { Toast, ToastMessage } from 'primereact/toast'
 import { Button } from 'primereact/button'
-import { FormDataContext, StepProps } from '.'
-import AddFacilityDialog from './AddFacilityDialog'
 import { ConfirmDialog } from 'primereact/confirmdialog'
+import { Toast, ToastMessage } from 'primereact/toast'
 
-export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
-  return strings.filter(Boolean).join(separator)
-}
+import { FormDataContext, StepProps } from '../ClientOnboardingPage'
+import { AddFacilityDialog } from './AddFacilityDialog'
 
 export const Step4 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)

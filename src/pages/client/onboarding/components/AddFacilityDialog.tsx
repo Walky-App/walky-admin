@@ -1,24 +1,26 @@
 import { useContext } from 'react'
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
-import { InputMask } from 'primereact/inputmask'
-import { InputText } from 'primereact/inputtext'
-import { classNames } from 'primereact/utils'
-import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
-import { countries, states } from './formOptions'
-import { FormDataContext, IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '.'
 import { Dropdown } from 'primereact/dropdown'
-import { RequestService } from '../../../services/RequestService'
+import { InputMask } from 'primereact/inputmask'
 import { InputNumber } from 'primereact/inputnumber'
+import { InputText } from 'primereact/inputtext'
+import { ToastMessage } from 'primereact/toast'
+import { classNames } from 'primereact/utils'
+
+import { RequestService } from '../../../../services/RequestService'
+import { FormDataContext, getFormErrorMessage, IFacilityFormInputs, tooltipOptions } from '../ClientOnboardingPage'
+import { countries, states } from '../formOptions'
 
 interface AddFacilityDialogProps {
   visible: boolean
   setVisible: (visible: boolean) => void
-  toastRef: any
+  toastRef: React.RefObject<ToastMessage>
   values: IFacilityFormInputs
 }
 
-export default function AddFacilityDialog({ visible, setVisible, toastRef, values }: AddFacilityDialogProps) {
+export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: AddFacilityDialogProps) => {
   const { facilitiesArray, setFacilitiesArray, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
   const { corp_name, tax_id } = facilitiesArray[0]
 
@@ -47,6 +49,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
         const response = await RequestService(`facilities/${selectedFacility?._id}`, 'PATCH', data)
 
         if (response?._id) {
+          // @ts-expect-error toastRef.current may be null
           toastRef.current?.show({
             severity: 'info',
             summary: 'Changes saved for:',
@@ -60,7 +63,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
         }
       } catch (error) {
         console.error('Error adding facility:', error)
-        // @ts-ignore
+        // @ts-expect-error toastRef.current may be null
         toastRef.current?.show({ severity: 'error', summary: 'Error saving changes', detail: getValues('name') })
       }
       setVisible(false)
@@ -71,6 +74,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
         const response = await RequestService(`facilities`, 'POST', newFacilityData)
 
         if (response?._id) {
+          // @ts-expect-error toastRef.current may be null
           toastRef.current?.show({
             severity: 'info',
             summary: 'Facility Added',
@@ -82,7 +86,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
         }
       } catch (error) {
         console.error('Error adding facility:', error)
-        // @ts-ignore
+        // @ts-expect-error toastRef.current may be null
         toastRef.current?.show({ severity: 'error', summary: 'Error adding facility', detail: getValues('name') })
       }
 
@@ -95,7 +99,7 @@ export default function AddFacilityDialog({ visible, setVisible, toastRef, value
   const footerContent = (
     <div>
       <Button severity="secondary" label="Cancel" onClick={() => setVisible(false)} outlined />
-      <Button label="Save" onClick={handleSubmit(onSubmit)} autoFocus />
+      <Button label="Save" onClick={handleSubmit(onSubmit)} />
     </div>
   )
 

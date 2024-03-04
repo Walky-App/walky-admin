@@ -1,13 +1,14 @@
 import { Fragment, useContext, useRef, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
-import { cn } from '../../../utils/cn'
-import { Toast, ToastMessage } from 'primereact/toast'
 import { Button } from 'primereact/button'
-import { FormDataContext, StepProps } from '.'
-import AddFacilityDialog from './AddFacilityDialog'
+import { Toast, ToastMessage } from 'primereact/toast'
 
-export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
+import { cn } from '../../../../utils/cn'
+import { FormDataContext, StepProps } from '../ClientOnboardingPage'
+import { AddFacilityDialog } from './AddFacilityDialog'
+
+function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
   return strings.filter(Boolean).join(separator)
 }
 
@@ -21,7 +22,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
 
   const showSavedToast = () => {
     setIsLoading(true)
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     toast.current?.show({
       severity: 'success',
       summary: 'Success',
@@ -31,7 +32,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
   }
 
   const onRemove = (toastData: ToastMessage) => {
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
     if (severity === 'success') {
@@ -84,6 +85,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
                         <Menu.Item>
                           {({ active }) => (
                             <button
+                              type="button"
                               onClick={() => {
                                 setVisible(true)
                                 setSelectedFacility(facility)
