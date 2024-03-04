@@ -38,19 +38,18 @@ export default function Auth() {
   const chooseLogoImage = () => {
     const currentURL = window.location.href
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
+      return <img src="/assets/logos/Hydro-Pallet-Logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
     } else {
-      return '/assets/logos/logo-horizontal-cropped.png'
+      return <img src='/assets/logos/logo-horizontal-cropped.png' alt="hemp temps logo" className='sm:w-full xl:px-12' /> 
     }
   }
 
   return (
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
       <div className="flex flex-col gap-10 md:basis-1/2">
-        <div className="w-full">
+        <div className="px-4 w-full sm:px-0">
           <div className="flex justify-center">
-             {/* <img src={chooseLogoImage()} alt="hemp temps logo" className='w-80 p-2 sm:w-full'  /> */}
-            <img src={'/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'} alt="hemp temps logo" className='w-80 p-2 sm:w-full' />
+            {chooseLogoImage()}
           </div>
 
           {userForm === 'Login' && <LoginForm />}
