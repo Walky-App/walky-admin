@@ -8,13 +8,8 @@ import { InputNumber } from 'primereact/inputnumber'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 
-//Interfaces start
-interface JobDetailsProps {
-  jobId: string | null
-  onNext: () => void
-}
 //interfaces end
-export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
+export default function JobDetails() {
   const toast = useRef<Toast>(null)
 
   const {
@@ -23,10 +18,8 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
     handleSubmit,
   } = useForm({
     defaultValues: {
-      base_rate: null,
       vacancy: null,
       skills: [],
-      employment_type: '',
     },
   })
 
@@ -55,22 +48,21 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
     )
   }
 
-  const onSubmit = async (data: any) => {
-    try {
-      data.skills = data.skills.map((skill: { name: string }) => skill.name)
-      const updatedData = { ...data, id: jobId }
-      const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
-      if (response) {
-        toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Job details saved successfully' })
-        setTimeout(onNext, 2000)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  // const onSubmit = async (data: any) => {
+  //   try {
+  //     data.skills = data.skills.map((skill: { name: string }) => skill.name)
+  //     const updatedData = { ...data }
+  //     const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
+  //     if (response) {
+  //       toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Job details saved successfully' })
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
+    <form className="p-fluid">
       <Toast ref={toast} />
       <div className="space-y-12">
         <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -113,31 +105,7 @@ export default function JobDetails({ jobId, onNext }: JobDetailsProps) {
               </div>
             </div>
 
-            <div className="sm:col-span-3">
-              <label htmlFor="employment_type" className="block text-sm font-medium leading-6 text-gray-900">
-                Employment type:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  name="employment_type" // This references the field name in your form
-                  control={control} // Passed from useForm()
-                  rules={{ required: 'Employment type is required.' }} // Validation rules for this field
-                  render={({ field, fieldState }) => (
-                    <>
-                      <span className="p-float-label">
-                        <InputText
-                          id={field.name} // Each field should have a unique ID
-                          value={field.value} // Set the value to the field value
-                          className={classNames({ 'p-invalid': fieldState.error })} // Add 'p-invalid' class if there is an error
-                          onChange={e => field.onChange(e.target.value)} // Handle changes with field.onChange
-                        />
-                      </span>
-                      {getFormErrorMessage(field.name)}
-                    </>
-                  )}
-                />
-              </div>
-            </div>
+            
             <div className="sm:col-span-3">
               <label htmlFor="skills" className="block text-sm font-medium leading-6 text-gray-900">
                 Select Skills:

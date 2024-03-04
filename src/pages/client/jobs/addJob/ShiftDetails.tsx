@@ -7,10 +7,8 @@ import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
 import { Toast } from 'primereact/toast'
 import { useNavigate } from 'react-router-dom'
-interface ShiftDetailsProps {
-  jobId: string | null
-}
-export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
+
+export default function ShiftDetails() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
   const [endTime, setEndTime] = React.useState<Date | null>(null)
   const toast = useRef<Toast>(null)
@@ -39,29 +37,29 @@ export default function ShiftDetails({ jobId }: ShiftDetailsProps) {
     )
   }
 
-  const onSubmit = async (data: any) => {
-    try {
-      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
-      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      const updatedData = { ...data, id: jobId, startTime: startTimeMilitary, endTime: endTimeMilitary }
-      const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
-      if (response) {
-        toast.current?.show({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Congratulations! Shift details saved successfully',
-        })
-        setTimeout(() => {
-          navigate('/client/jobs')
-        }, 3000)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  // const onSubmit = async (data: any) => {
+  //   try {
+  //     const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
+  //     const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
+  //     const updatedData = { ...data, startTime: startTimeMilitary, endTime: endTimeMilitary }
+  //     const response = await RequestService(`jobs/${jobId}`, 'PATCH', updatedData)
+  //     if (response) {
+  //       toast.current?.show({
+  //         severity: 'success',
+  //         summary: 'Success',
+  //         detail: 'Congratulations! Shift details saved successfully',
+  //       })
+  //       setTimeout(() => {
+  //         navigate('/client/jobs')
+  //       }, 3000)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
+    <form className="p-fluid">
       <Toast ref={toast} />
       <div className="space-y-12">
         <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
