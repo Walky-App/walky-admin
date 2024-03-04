@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import EmptyState from '../../../components/shared/general/EmptyState'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { EmptyState } from '../../../components/shared/general/EmptyState'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
 import { Module } from '../../../interfaces/Module'
 import { RequestService } from '../../../services/RequestService'
@@ -9,7 +9,7 @@ import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 import { Category } from '../../../interfaces/Category'
 import { useAdmin } from '../../../contexts/AdminContext'
 
-export default function AdminModulesLearn() {
+export const AdminModulesLearn = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [modules, setModules] = useState<Module[]>([])
   const { setCategoryOptions } = useAdmin()
@@ -68,11 +68,11 @@ export default function AdminModulesLearn() {
   return (
     <div className="w-full sm:overflow-x-hidden">
       <HeaderComponent
-        title={'Manage Modules'}
         actionButton={{
           to: '/admin/learn/modules/new',
           text: 'New Module',
         }}
+        title='Manage Modules'
       />
       {isLoading ? (
         <div className="flex flex-col items-center justify-center h-96">
@@ -80,12 +80,12 @@ export default function AdminModulesLearn() {
         </div>
       ) : (
         <>
-          {modules.length === 0 && !isLoading && <EmptyState type="module" to="/admin/learn/modules/new" />}
-          {modules.length > 0 && !isLoading && (
+          {(modules.length === 0 && !isLoading) ? <EmptyState to="/admin/learn/modules/new" type="module" /> : null}
+          {(modules.length > 0 && !isLoading) ? (
             <div className="w-full">
-              <GlobalTable data={modules} columns={categoryColumns} allowClick />
+              <GlobalTable allowClick columns={categoryColumns} data={modules} />
             </div>
-          )}
+          ) : null}
         </>
       )}
     </div>
