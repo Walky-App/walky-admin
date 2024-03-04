@@ -120,7 +120,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <div className="mt-4 flex shrink-0 items-center justify-center">
           {/* Logo */}
           <Link to={user ? `/${role}/dashboard` : '/'}>
-            <img src={chooseLogoImage()} alt="Hemp-Temps" className="h-10 w-auto" />
+            <img src={chooseLogoImage()} alt="App Logo" className="h-10 w-auto" />
           </Link>
         </div>
         <nav className="flex flex-1 flex-col">

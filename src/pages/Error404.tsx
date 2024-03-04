@@ -13,7 +13,7 @@ export default function Error404() {
   const chooseLogoImage = () => {
     const currentURL = window.location.href
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
+      return '/assets/logos/Hydro-Pallet-Logo.png'
     } else {
       return '/assets/logos/logo-horizontal-cropped.png'
     }
