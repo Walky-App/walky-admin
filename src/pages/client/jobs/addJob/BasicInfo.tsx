@@ -10,11 +10,8 @@ import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 import { Dropdown } from 'primereact/dropdown'
 import { IFacility } from '../../../../interfaces/Facility'
-interface BasicInfoProps {
-  onJobCreated: (id: string) => void
-  onNext: () => void
-}
-export default function BasicInfo(props: BasicInfoProps) {
+
+export default function BasicInfo() {
   const user = GetTokenInfo()
   const id = user?._id
   const toast = useRef<Toast>(null)
@@ -25,7 +22,6 @@ export default function BasicInfo(props: BasicInfoProps) {
       const allFacilities = await RequestService(`facilities/byclient/${id}`)
       setFacilities(allFacilities)
     }
-
     getFacilities()
   }, [])
 
@@ -50,8 +46,6 @@ export default function BasicInfo(props: BasicInfoProps) {
     )
   }
 
-  const { onJobCreated, onNext } = props
-
   const onSubmit = async (data: any) => {
     try {
       const requestData = { ...data }
@@ -62,8 +56,6 @@ export default function BasicInfo(props: BasicInfoProps) {
           summary: 'Success',
           detail: 'Basic information submitted successfully',
         })
-        onJobCreated(response._id)
-        setTimeout(onNext, 2000)
       }
     } catch (error) {
       console.error(error)
