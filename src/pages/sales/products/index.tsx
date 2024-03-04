@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { RequestService } from '../../../services/RequestService'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { Product } from '../../../interfaces/Product'
 
@@ -50,7 +50,7 @@ export default function Products() {
       },
       { Header: 'Name', accessor: 'Name', width: '400px' },
       { Header: 'Sku', accessor: 'sku' },
-      { Header: 'Stock', accessor: 'StockTotal' , width: '30px' },
+      { Header: 'Stock', accessor: 'StockTotal', width: '30px' },
       {
         Header: 'Status',
         accessor: (d: any) => (d.isActive ? 'Active' : 'Disabled'),

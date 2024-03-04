@@ -6,7 +6,7 @@ import { FileInput } from 'flowbite-react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useAdmin } from '../../../../contexts/AdminContext';
 
-export default function SectionImage({ section, setSection, selectedSection, deleteSelectedSection }: SectionProps) {
+export const SectionImage = ({ setSection, selectedSection, deleteSelectedSection }: SectionProps) => {
     const { unit } = useAdmin()
     const [title, setTitle] = useState<string>('')
     const [image, setImage] = useState<string>('')
@@ -16,18 +16,17 @@ export default function SectionImage({ section, setSection, selectedSection, del
     const renderHeader = () => {
         return (
             <>
-                <select className="ql-header">
-                </select>
+                <select className="ql-header" />
                 <span className="ql-formats">
-                    <button className="ql-bold" aria-label="Bold"></button>
-                    <button className="ql-italic" aria-label="Italic"></button>
-                    <button className="ql-underline" aria-label="Underline"></button>
+                    <button aria-label="Bold" className="ql-bold" type='button' />
+                    <button aria-label="Italic" className="ql-italic" type='button' />
+                    <button aria-label="Underline" className="ql-underline" type='button' />
                 </span>
                 <span className="ql-formats">
-                    <select className="ql-color" ></select>
-                    <button className="ql-list" value="ordered"></button>
-                    <button className="ql-list" value="bullet"></button>
-                    <select className="ql-align"></select>
+                    <select className="ql-color" />
+                    <button className="ql-list" type='button' value="ordered" />
+                    <button className="ql-list" type='button' value="bullet" />
+                    <select className="ql-align" />
                 </span>
             </>
         );
@@ -153,50 +152,56 @@ export default function SectionImage({ section, setSection, selectedSection, del
             <div className="my-2">
                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
                     <input
-                        type="text"
-                        name="section_title"
-                        value={title}
-                        id="section_title"
-                        onChange={e => setTitle(e.target.value)}
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                        id="section_title"
+                        name="section_title"
+                        onChange={e => setTitle(e.target.value)}
                         placeholder="Section title"
+                        type="text"
+                        value={title}
                     />
                 </div>
             </div>
             <div className="card">
-                <Editor value={text} onTextChange={(e: EditorTextChangeEvent) => setText(e.htmlValue as string)}
+                <Editor
                     headerTemplate={header}
+                    onTextChange={(e: EditorTextChangeEvent) => setText(e.htmlValue as string)}
+                    value={text}
                 />
 
             </div>
 
             {imagePreview ? (
                 <div className="relative inline-block mt-4">
-                    <img src={imagePreview} alt="Preview" className="max-w-52 object-cover object-center rounded-xl shadow-xl" />
-                    <button onClick={handleRemoveImage} className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 text-white bg-red-500 hover:text-red-500 hover:bg-white transition-colors duration-300 rounded-full p-1">
-                        <XMarkIcon className=" h-4 w-4" />
+                    <img alt="Preview" className="max-w-52 object-cover object-center rounded-xl shadow-xl" src={imagePreview} />
+                    <button className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 p-1 rounded-full text-white bg-red-500 hover:text-red-500 hover:bg-white transition-colors duration-300" onClick={handleRemoveImage} type="button">
+                        <XMarkIcon className="h-4 w-4" />
                     </button>
                 </div>
-            ) : (<FileInput
-                className="mt-3"
-                accept="image/png, image/gif, image/jpeg"
-                onChange={handleImageChange}
-                id="file-upload-helper-text"
-                helperText="PNG or JPG."
-            />)}
+            ) : (
+                <FileInput
+                    accept="image/png, image/gif, image/jpeg"
+                    className="mt-3"
+                    helperText="PNG or JPG."
+                    id="file-upload-helper-text"
+                    onChange={handleImageChange}
+                />
+            )}
             <div className='flex justify-end mt-2 gap-2'>
                 {
-                    selectedSection && <button
-                        type="button"
+                    selectedSection ? <button
+                        className="rounded-md bg-gray-200 font-semibold leading-6 px-3 py-2 text-black text-sm"
                         onClick={handlerCancelEdit}
-                        className="rounded-md text-sm  px-3 py-2 font-semibold leading-6 text-black bg-gray-200">
+                        type="button"
+                    >
                         Cancel
-                    </button>
+                    </button> : null
                 }
                 <button
-                    type="button"
+                    className="rounded-md bg-green-600 font-semibold hover:bg-green-500 px-3 py-2 shadow-sm text-sm text-white"
                     onClick={handlerSection}
-                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+                    type="button"
+                >
                     {selectedSection ? 'Edit' : 'Add'}
                 </button>
             </div>

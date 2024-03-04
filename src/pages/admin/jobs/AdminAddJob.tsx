@@ -1,5 +1,5 @@
 import * as React from 'react'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { RequestService } from '../../../services/RequestService'
 
