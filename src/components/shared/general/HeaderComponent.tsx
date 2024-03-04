@@ -3,7 +3,6 @@ import { DisableButtonInterface, NavigationButtonInterface, SelectedOptionInterf
 import NavigationButton from './NavigationButton'
 import DisableButton from './DisableButton'
 import SelectedOptionWithFilter from './SelectedOptionWithFilter'
-import { states } from '../../../utils/VariablesUtils';
 
 interface Props {
   title: string

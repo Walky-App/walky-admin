@@ -22,6 +22,7 @@ import { getCurrentUserRole } from '../../utils/UserRole'
 import { LogoutService } from '../../services/AuthService'
 import { cn } from '../../utils/cn'
 import FooterComponent from './FooterComponent'
+import { useLocation } from 'react-router-dom'
 
 export interface SideBarData {
   id: number
@@ -102,8 +103,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
-  const chooseLogoImage = () => {
-    const currentURL = window.location.href
+  const ChooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
       return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
     } else {
@@ -112,6 +112,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   }
 
   const SidebarComponent = () => {
+    const { pathname } = useLocation()
     return (
       <div
         className={cn('flex grow flex-col gap-y-6 overflow-y-auto bg-zinc-900 px-6 pb-4', {
@@ -120,7 +121,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <div className="mt-4 flex shrink-0 items-center justify-center">
           {/* Logo */}
           <Link to={user ? `/${role}/dashboard` : '/'}>
-            <img src={chooseLogoImage()} alt="App Logo" className="h-10 w-auto" />
+            <img src={ChooseLogoImage(pathname)} alt="App Logo" className="h-10 w-auto" />
           </Link>
         </div>
         <nav className="flex flex-1 flex-col">

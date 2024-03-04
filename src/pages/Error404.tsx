@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 export default function Error404() {
   const { user } = useAuth()
@@ -10,21 +11,22 @@ export default function Error404() {
     if (!user) navigate('/')
   }, [user])
 
-  const chooseLogoImage = () => {
-    const currentURL = window.location.href
+  const ChooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return '/assets/logos/Hydro-Pallet-Logo.png'
+      return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
     } else {
       return '/assets/logos/logo-horizontal-cropped.png'
     }
   }
+
+  const { pathname } = useLocation()
 
   return (
     <>
       <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
         <div className="flex items-center space-x-10">
           <a href={user ? `/${user.role}/dashboard` : '/'}>
-            <img src={chooseLogoImage()} alt="Hemp-Temps" className="mr-2 h-36 w-auto" />
+            <img src={ChooseLogoImage(pathname)} alt="Hemp-Temps" className="mr-2 h-36 w-auto" />
           </a>
         </div>
         <div className="text-center">

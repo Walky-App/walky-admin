@@ -35,22 +35,22 @@ export default function Auth() {
     getImages()
   }, [])
 
-  const chooseLogoImage = () => {
-    const currentURL = window.location.href
+  const ChooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
       return <img src="/assets/logos/Hydro-Pallet-Logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
     } else {
-      return <img src='/assets/logos/logo-horizontal-cropped.png' alt="hemp temps logo" className='sm:w-full xl:px-12' /> 
+      return (
+        <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" className="sm:w-full xl:px-12" />
+      )
     }
   }
+  const { pathname } = useLocation()
 
   return (
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
       <div className="flex flex-col gap-10 md:basis-1/2">
-        <div className="px-4 w-full sm:px-0">
-          <div className="flex justify-center">
-            {chooseLogoImage()}
-          </div>
+        <div className="w-full px-4 sm:px-0">
+          <div className="flex justify-center">{ChooseLogoImage(pathname)}</div>
 
           {userForm === 'Login' && <LoginForm />}
           {userForm === 'Sign up' && <SignupForm />}
