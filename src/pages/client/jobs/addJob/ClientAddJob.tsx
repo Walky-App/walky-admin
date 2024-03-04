@@ -32,12 +32,11 @@ export default function ClientAddJob() {
 
   const defaultValues = {
     title: '',
-    description: '',
     facility_id: '',
     vacancy: null,
     job_dates: [],
-    startTime: null,
-    endTime: null,
+    start_time: null,
+    end_time: null,
     lunch_break: null,
   }
 
@@ -59,16 +58,17 @@ export default function ClientAddJob() {
 
   const onSubmit = async (data: any) => {
     try {
-      data.skills = data.skills.map((skill: { name: string }) => skill.name)
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      const requestData = { ...data, startTime: startTimeMilitary, endTime: endTimeMilitary }
+      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
+
+      console.log('Lets see Jobs data -->', requestData)
       const response = await RequestService('jobs', 'POST', requestData)
       if (response) {
         toast.current?.show({
           severity: 'success',
           summary: 'Success',
-          detail: 'Basic information submitted successfully',
+          detail: 'Job information submitted successfully',
         })
       }
     } catch (error) {
@@ -245,7 +245,7 @@ export default function ClientAddJob() {
                 </label>
                 <div className="mt-2">
                   <Controller
-                    name="startTime"
+                    name="start_time"
                     control={control}
                     rules={{ required: 'Start Time is required.' }}
                     render={({ field, fieldState }) => (
@@ -276,7 +276,7 @@ export default function ClientAddJob() {
                 </label>
                 <div className="mt-2">
                   <Controller
-                    name="endTime"
+                    name="end_time"
                     control={control}
                     rules={{ required: 'End Time is required.' }}
                     render={({ field, fieldState }) => (
