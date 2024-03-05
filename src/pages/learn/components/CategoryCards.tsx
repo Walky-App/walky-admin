@@ -12,7 +12,7 @@ interface CategoryCardsProps {
   isAdmin?: boolean
 }
 
-export default function CategoryCards({ category, filter = { search: '', selected: '' }, isLoading = true, isAdmin = false }: CategoryCardsProps) {
+export const CategoryCards = ({ category, filter = { search: '', selected: '' }, isLoading = true, isAdmin = false }: CategoryCardsProps) => {
   const { setCategory } = useAdmin()
   const navigate = useNavigate()
   const categoriesFilter = () => {
@@ -39,18 +39,18 @@ export default function CategoryCards({ category, filter = { search: '', selecte
 
 
   return (
-    <>
+    <div>
       {!isLoading ? (
-        <>
+        <div>
           {categoriesFilter().length > 0 ? (categoriesFilter().map(category => (
-            <div onClick={() => handlerSetCategory(category)} key={category._id} className='cursor-pointer'>
+            <button className='cursor-pointer' key={category._id} onClick={() => handlerSetCategory(category)} type='button'>
               <div className="mb-4 flex sm:h-32 h-auto rounded-2xl border border-zinc-100 bg-white">
                 <div className="m-3">
                   {category.image ? (
                     <img
                       alt={`Hemp Temp ${category.title} category`}
-                      src={category.image}
                       className="h-24 w-24 object-cover object-center rounded-xl"
+                      src={category.image}
                     />
                   ) : (
                     <div className="h-24 w-24 rounded-xl bg-neutral-200" />
@@ -76,11 +76,11 @@ export default function CategoryCards({ category, filter = { search: '', selecte
                         <div className="flex items-center justify-start gap-2">
                           <div className="text-right text-xs font-normal text-black">{category.progress} %</div>
                           <div className="relative h-1 w-10">
-                            <div className="w-10 h-1 left-0 top-0 absolute bg-neutral-100 rounded-2xl"></div>
+                            <div className="w-10 h-1 left-0 top-0 absolute bg-neutral-100 rounded-2xl" />
                             <div
                               className={`w-${Math.floor(
                                 category.progress / 10,
-                              )} h-1 left-0 top-0 absolute bg-black rounded-2xl`}></div>
+                              )} h-1 left-0 top-0 absolute bg-black rounded-2xl`} />
                           </div>
                         </div>
                         {category.progress === 100 ? (
@@ -93,18 +93,18 @@ export default function CategoryCards({ category, filter = { search: '', selecte
                     )
                 }
               </div>
-            </div>
+            </button>
           ))) : (
             <div className="flex flex-col items-center justify-center h-96">
               <div className="text-2xl font-semibold text-black">Your search - did not match any categories</div>
             </div>
           )}
-        </>
+        </div>
       ) : (
         <div className="flex flex-col items-center justify-center h-96">
           <div className="text-2xl font-semibold text-black">Loading ...</div>
         </div>
       )}
-    </>
+    </div>
   )
 }

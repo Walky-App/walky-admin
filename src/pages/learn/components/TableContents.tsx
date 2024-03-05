@@ -8,10 +8,11 @@ interface TableContentsProps {
 
 
 
-export default function TableContents({ header, data }: TableContentsProps) {
+export const TableContents = ({ header, data }: TableContentsProps) => {
     const [active, setActive] = useState<number | null>(null)
 
-    const handlerMenuNav = (index: number) => {
+    const handlerMenuNav = (item: NavigationButtonInterface, index: number) => {
+        scrollToElement(item.to)
         setActive(index)
     }
 
@@ -35,13 +36,15 @@ export default function TableContents({ header, data }: TableContentsProps) {
                 <ul>
                     {
                         data.map((item, index) => (
-                            <li onClick={() => handlerMenuNav(index)} key={index} className={`cursor-pointer border-l pl-2 hover:border-gray-400 ${index === active && 'border-green-500 hover:border-green-500 text-green-500'} `}>
-                                <span onClick={() => scrollToElement(item.to)}>{item.text}</span>
+                            <li key={index}>
+                                <button className={`cursor-pointer border-l pl-2 hover:border-gray-400 ${index === active && 'border-green-500 hover:border-green-500 text-green-500'} `} onClick={() => handlerMenuNav(item, index)} type="button">
+                                    item.text
+                                </button>
                             </li>
                         ))
                     }
                 </ul>
             </nav>
-        </div>
+        </div >
     );
 };
