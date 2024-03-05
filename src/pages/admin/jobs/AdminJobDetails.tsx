@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 
 export default function AdminJobDetails() {
   const { id } = useParams()
@@ -31,15 +31,11 @@ export default function AdminJobDetails() {
   }
 
   const handleUpdate = async (e: any) => {
-    console.log('formJob -->', formJob)
     e.preventDefault()
     try {
-      console.log('jobID -->', id)
       const res = await RequestService(`jobs/${id}`, 'PATCH', formJob)
       setFormJob(res)
-      console.log('formJob -->', formJob)
       setUpdateSuccess(true)
-      console.log('update success -->', updateSuccess)
       setTimeout(() => setUpdateSuccess(false), 5000)
     } catch (error) {
       console.error('Error updating job data:', error)

@@ -50,7 +50,6 @@ export default function ShiftDetails() {
   useEffect(() => {
     const getJob = async () => {
       const job = await RequestService(`jobs/${params.id}`)
-      console.log('Here is the job before setting values -->', job)
       if (job) {
         const jobDates = job.job_dates.map((date: string) => new Date(date))
         setValue('job_dates', jobDates)
@@ -76,7 +75,6 @@ export default function ShiftDetails() {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
       const updatedData = { ...data, startTime: startTimeMilitary, endTime: endTimeMilitary }
-      console.log('Lets see Updated data -->', updatedData)
       const response = await RequestService(`jobs/${params.id}`, 'PATCH', updatedData)
       if (response) {
         toast.current?.show({
