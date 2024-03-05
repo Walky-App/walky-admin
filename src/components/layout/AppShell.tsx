@@ -105,9 +105,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const ChooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
+      return <img src="/assets/logos/hydropallet-white-logo.png" className="h-8 w-auto" alt="Hydropallet Logo" />
     } else {
-      return '/assets/logos/Hemp-Temps-logo-horizontal-white_optimized.png'
+      return <img src="/assets/logos/Hemp-Temps-logo-horizontal-white.png" className="h-10 w-auto" alt="Hemp Temps Logo" />
     }
   }
 
@@ -121,7 +121,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <div className="mt-4 flex shrink-0 items-center justify-center">
           {/* Logo */}
           <Link to={user ? `/${role}/dashboard` : '/'}>
-            <img src={ChooseLogoImage(pathname)} alt="App Logo" className="h-10 w-auto" />
+           {ChooseLogoImage(pathname)}
           </Link>
         </div>
         <nav className="flex flex-1 flex-col">
@@ -199,10 +199,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       if (currentURL.toLowerCase().includes('hydropallet')) {
         return (
           <img
-            src="/assets/logos/Hydro-Pallet-Logo.png"
-            alt="Hydro Pallet Logo"
-            className="h-10 w-auto xl:hidden lg:hidden md:h-16"
-          />
+          src="/assets/logos/hydropallet-black-logo.png"
+          alt="Hydro Pallet Logo"
+          className="h-7 w-auto md:h-12 lg:hidden xl:hidden"
+        />
         )
       } else {
         return (

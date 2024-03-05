@@ -40,10 +40,10 @@ export default function Auth() {
 
   const ChooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return <img src="/assets/logos/Hydro-Pallet-Logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
+      return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
     } else {
       return (
-        <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" className="sm:w-full xl:px-12" />
+        <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="sm:w-full xl:px-12" />
       )
     }
   }
