@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom"
-import HeaderComponent from "../../../components/shared/general/HeaderComponent"
+import { HeaderComponent } from "../../../components/shared/general/HeaderComponent"
 import { useEffect } from "react"
-import FormModule from "./components/FormModule"
+import { FormModule } from "./components/FormModule"
 import { useAdmin } from "../../../contexts/AdminContext"
 import { DisableButtonInterface, NavigationButtonInterface } from "../../../interfaces/Global"
 
 
 
-export default function AdminDetailsModule() {
+export const AdminDetailsModule = () => {
     const { module, categoryOptions } = useAdmin()
     const navigate = useNavigate()
 
@@ -33,7 +33,7 @@ export default function AdminDetailsModule() {
 
     return (
         <div className="w-full sm:overflow-x-hidden">
-            <HeaderComponent title={'Update Module'} actionButton={actionButton} disableButton={disableButtonData} />
+            <HeaderComponent actionButton={actionButton} disableButton={disableButtonData} title='Update Module' />
             <FormModule action="edit" module={module} />
         </div>
     )

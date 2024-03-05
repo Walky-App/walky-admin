@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { RequestService } from '../../../services/RequestService'
 
 import JobListItem from './JobListItem'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 
 const categorysOptions = [
   { name: 'All Skills', code: 'all' },

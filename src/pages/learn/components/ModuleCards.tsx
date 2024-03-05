@@ -1,6 +1,6 @@
 import { Module } from '../../../interfaces/Module';
 import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/outline'
-import CircularProgressBar from './CircularProgressBar'
+import { CircularProgressBar } from './CircularProgressBar'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ interface ModuleCardsProps {
   isLoading: boolean
 }
 
-export default function ModuleCards({ module, filter = '', isLoading = true }: ModuleCardsProps) {
+export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCardsProps) => {
   const navigate = useNavigate()
 
   const modulesFilter = () => {
@@ -23,19 +23,19 @@ export default function ModuleCards({ module, filter = '', isLoading = true }: M
   }
 
   return (
-    <>
+    <div>
       {!isLoading ? (
-        <>
+        <div>
           {module.length !== 0 ? (
-            <>
+            <div>
               {modulesFilter().map(module => (
-                <div onClick={() => handlerSetModule(module)} key={module._id} className="mb-4 flex h-30 rounded-2xl border border-zinc-100 bg-white sm:h-32 cursor-pointer">
+                <button className="mb-4 flex h-30 rounded-2xl border border-zinc-100 bg-white sm:h-32 cursor-pointer" key={module._id} onClick={() => handlerSetModule(module)} type='button'>
                   <div className="m-3">
                     {module.image ? (
                       <img
                         alt={`Hemp Temp ${module.title} module`}
-                        src={module.image}
                         className="h-full w-36 rounded-xl"
+                        src={module.image}
                       />
                     ) : (
                       <div className="h-full w-36 rounded-xl bg-neutral-200" />
@@ -50,14 +50,14 @@ export default function ModuleCards({ module, filter = '', isLoading = true }: M
                           {secondsToTimeDescription(module.total_time)}
                         </div>
                       </div>
-                      <div className="h-1 w-1 rounded-full bg-stone-500"></div>
+                      <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
                         <NewspaperIcon className="h-5" />
                         <div className="flex items-center h-5 text-xs font-medium text-black">
                           {module.units?.length} Units
                         </div>
                       </div>
-                      <div className="h-1 w-1 rounded-full bg-stone-500"></div>
+                      <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
                         <BriefcaseIcon className="h-5" />
                         <div className="flex items-center h-5 text-xs font-medium text-black">{module.level}</div>
@@ -74,25 +74,25 @@ export default function ModuleCards({ module, filter = '', isLoading = true }: M
                       complete: 0,
                     }} />
                   </div>
-                </div>
+                </button>
               ))}
-            </>
+            </div>
           ) : (
-            <>
+            <div>
               <div className="flex flex-col items-center justify-center h-96">
                 <div className="text-2xl font-semibold text-black">No modules found</div>
                 <div className="text-sm font-normal text-stone-500">
                   We are working on the modules for you, coming soon
                 </div>
               </div>
-            </>
+            </div>
           )}
-        </>
+        </div>
       ) : (
         <div className="flex flex-col items-center justify-center h-96">
           <div className="text-2xl font-semibold text-black">Loading ...</div>
         </div>
       )}
-    </>
+    </div>
   )
 }

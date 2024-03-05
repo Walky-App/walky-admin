@@ -1,7 +1,7 @@
 import React from 'react'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { useNavigate } from 'react-router-dom'
 
 export default function AdminFacilities() {

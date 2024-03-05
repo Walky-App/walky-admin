@@ -1,9 +1,9 @@
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { AcademicCapIcon, TagIcon } from '@heroicons/react/24/outline'
 import { classNames } from '../../../utils/Tailwind'
 import { Link } from 'react-router-dom'
 
-export default function AdminDashboardLearn() {
+export const AdminDashboardLearn = () => {
   const items = [
     {
       title: 'Categories',
@@ -22,7 +22,7 @@ export default function AdminDashboardLearn() {
   ]
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title={'Manage HTU'} />
+      <HeaderComponent title='Manage HTU' />
       <ul className="grid grid-cols-1 gap-6 border-b border-gray-200 pb-6 sm:grid-cols-2">
         {items.map((item, itemIdx) => (
           <Link key={itemIdx} to={item.to}>
@@ -33,12 +33,12 @@ export default function AdminDashboardLearn() {
                     item.background,
                     'flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg',
                   )}>
-                  <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                  <item.icon aria-hidden="true" className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-900">
                     <div className="focus:outline-none">
-                      <span className="absolute inset-0" aria-hidden="true" />
+                      <span aria-hidden="true" className="absolute inset-0" />
                       <span>{item.title}</span>
                       <span aria-hidden="true"> &rarr;</span>
                     </div>
