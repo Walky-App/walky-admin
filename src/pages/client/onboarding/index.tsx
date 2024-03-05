@@ -1,5 +1,5 @@
 import React, { useState, Dispatch, SetStateAction, useRef } from 'react'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import Step1 from './Step1'
 import Step2 from './Step2'
 import Step3 from './Step3'
@@ -90,11 +90,11 @@ export interface FormDataContextProps {
 export const FormDataContext = React.createContext<FormDataContextProps>({
   defaultValues: defaultFacilityFormValues,
   formData: defaultFacilityFormValues,
-  setFormData: () => {},
+  setFormData: () => { },
   facilitiesArray: [],
-  setFacilitiesArray: () => {},
+  setFacilitiesArray: () => { },
   selectedFacility: defaultFacilityFormValues,
-  setSelectedFacility: () => {},
+  setSelectedFacility: () => { },
 })
 
 export interface StepProps {
