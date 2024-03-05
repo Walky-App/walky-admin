@@ -201,7 +201,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           <img
             src="/assets/logos/Hydro-Pallet-Logo.png"
             alt="Hydro Pallet Logo"
-            className="h-10 w-auto md:hidden xl:hidden"
+            className="h-10 w-auto xl:hidden lg:hidden md:h-16"
           />
         )
       } else {
@@ -209,7 +209,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           <img
             src="/assets/logos/logo-horizontal-cropped.png"
             alt="Hemp Temps Logo"
-            className="h-10 w-auto md:hidden xl:hidden"
+            className="h-10 w-auto xl:hidden lg:hidden md:h-16"
           />
         )
       }
