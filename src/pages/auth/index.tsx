@@ -22,8 +22,11 @@ export default function Auth() {
           'https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/8.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/9.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/9.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/8.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/14.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/15.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/20.png',
         ]
         const randomIndex = Math.floor(Math.random() * allImages.length)
 
