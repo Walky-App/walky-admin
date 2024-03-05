@@ -8,7 +8,7 @@ interface UnitDetailsCardProps {
     isAdmin?: boolean;
 }
 
-export default function UnitDetailsCard({ unit, isAdmin = false }: UnitDetailsCardProps) {
+export const UnitDetailsCard = ({ unit, isAdmin = false }: UnitDetailsCardProps) => {
     const { module } = useAdmin()
     const navigate = useNavigate()
     const handlerEditUnit = () => {
@@ -21,18 +21,18 @@ export default function UnitDetailsCard({ unit, isAdmin = false }: UnitDetailsCa
                     {unit?.title}
                 </p>
                 {
-                    isAdmin && <div className="flex justify-end text-black hover:text-green-400">
-                        <button onClick={handlerEditUnit}>
+                    isAdmin ? <div className="flex justify-end text-black hover:text-green-400">
+                        <button onClick={handlerEditUnit} type="button">
                             <PencilSquareIcon className="h-5 w-5" />
                         </button>
-                    </div>
+                    </div> : null
                 }
 
             </div>
             <div className="pt-3">
                 {
                     unit?.sections.map((item, index) => (
-                        <div key={index} id={item.title.replace(' ', '-')} className={` ${index === unit.sections.length - 1 ? 'mx-3 mb-3' : 'border-b pb-4 mb-4 mx-3'}`}>
+                        <div className={` ${index === unit.sections.length - 1 ? 'mx-3 mb-3' : 'border-b pb-4 mb-4 mx-3'}`} id={item.title.replace(' ', '-')} key={index}  >
                             <div className='mb-4 text-xs text-gray-500'>{item.title}</div>
                             <div className='p-editor-content ql-container ql-snow !border-0'>
                                 <div className='ql-editor !p-0 b-0' dangerouslySetInnerHTML={{ __html: item.body }} />

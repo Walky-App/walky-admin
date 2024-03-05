@@ -2,7 +2,7 @@ import BasicInfo from './BasicInfo'
 import JobDetails from './JobDetails'
 import ShiftDetails from './ShiftDetails'
 import { useState } from 'react'
-import TitleComponent from '../../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 import { Steps } from 'primereact/steps'
 
 export default function ClientEditJob() {
