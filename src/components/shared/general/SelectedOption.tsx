@@ -14,7 +14,7 @@ interface Props {
   value?: string
 }
 
-export default function SelectedOption({
+export const SelectedOption = ({
   selectedOptions,
   setSelectedOptions,
   defaultOption = 0,
@@ -22,7 +22,7 @@ export default function SelectedOption({
   classStyle = '',
   roundedOrientation,
   value
-}: Props) {
+}: Props) => {
   const [selected, setSelected] = useState(selectedOptions[defaultOption])
 
   const handlerSelect = (terms: any) => {

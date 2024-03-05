@@ -1,8 +1,8 @@
-import Search from './Search'
+import { Search } from './Search'
 import { DisableButtonInterface, NavigationButtonInterface, SelectedOptionInterface } from '../../../interfaces/Global'
-import NavigationButton from './NavigationButton'
-import DisableButton from './DisableButton'
-import SelectedOptionWithFilter from './SelectedOptionWithFilter'
+import { NavigationButton } from './NavigationButton'
+import { DisableButton } from './DisableButton'
+import { SelectedOptionWithFilter } from './SelectedOptionWithFilter'
 
 interface Props {
   title: string
@@ -12,12 +12,12 @@ interface Props {
   disableButton?: DisableButtonInterface
 }
 
-export default function HeaderComponent({ title, selectedOptions, search = false, actionButton, disableButton }: Props) {
+export const HeaderComponent = ({ title, selectedOptions, search = false, actionButton, disableButton }: Props) => {
   return (
     <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between mb-10">
       <h3 className="text-base font-semibold leading-6 text-gray-900">{title}</h3>
       <div className="mt-3 sm:ml-4 sm:mt-0">
-        <label htmlFor="search-header" className="sr-only">
+        <label className="sr-only" htmlFor="search-header" >
           Search
         </label>
         <div className="flex rounded-md ">
@@ -31,21 +31,21 @@ export default function HeaderComponent({ title, selectedOptions, search = false
                   <SelectedOptionWithFilter selectedOptions={selectedOptions} />
                 </div>
                 <div className="mx-3">
-                  <NavigationButton to={actionButton.to} text={actionButton.text} />
+                  <NavigationButton text={actionButton.text} to={actionButton.to} />
                 </div>
               </>
             ) : (
               <>
-                <Search searchQuery="search" roundedOrientation="rounded-l-md" />
-                <SelectedOptionWithFilter selectedOptions={selectedOptions} roundedOrientation="rounded-r-md" />
+                <Search roundedOrientation="rounded-l-md" searchQuery="search" />
+                <SelectedOptionWithFilter roundedOrientation="rounded-r-md" selectedOptions={selectedOptions} />
               </>
             )
           ) : (
             search && <Search searchQuery="search" />
           )
           }
-          {(actionButton && !search && !selectedOptions) && <NavigationButton to={actionButton.to} text={actionButton.text} disbalePlusIcon={actionButton.disbalePlusIcon} />}
-          {(disableButton && !search && !selectedOptions) && <DisableButton path={disableButton.path} status={disableButton.status} redirect={disableButton.redirect} />}
+          {(actionButton && !search && !selectedOptions) ? <NavigationButton disbalePlusIcon={actionButton.disbalePlusIcon} text={actionButton.text} to={actionButton.to} /> : null}
+          {(disableButton && !search && !selectedOptions) ? <DisableButton path={disableButton.path} redirect={disableButton.redirect} status={disableButton.status} /> : null}
         </div>
       </div>
     </div>

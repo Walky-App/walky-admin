@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { RequestService } from '../../../services/RequestService'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 
@@ -33,7 +33,6 @@ export default function Facilities() {
           let jobsResults = await Promise.all(jobsRequests)
           jobsResults = jobsResults.filter(job => job.message !== 'No jobs found')
           const allJobs = jobsResults.flat()
-          console.log('All Jobs:', allJobs)
           setJobsData(allJobs)
         } catch (error) {
           console.error('Error fetching jobs data:', error)
@@ -71,7 +70,7 @@ export default function Facilities() {
         if (a.original.isFull === b.original.isFull) return 0
         return a.original.isFull ? -1 : 1
       },
-    }  ]
+    }]
 
   return (
     <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
