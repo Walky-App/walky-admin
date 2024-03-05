@@ -38,7 +38,7 @@ export default function Auth() {
     getImages()
   }, [])
 
-  const ChooseLogoImage = (currentURL: string) => {
+  const chooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
       return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
     } else {
@@ -53,7 +53,7 @@ export default function Auth() {
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
       <div className="flex flex-col gap-10 md:basis-1/2">
         <div className="w-full px-4 sm:px-0">
-          <div className="flex justify-center">{ChooseLogoImage(pathname)}</div>
+          <div className="flex justify-center">{chooseLogoImage(pathname)}</div>
 
           {userForm === 'Login' && <LoginForm />}
           {userForm === 'Sign up' && <SignupForm />}
