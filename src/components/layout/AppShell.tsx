@@ -22,7 +22,6 @@ import { getCurrentUserRole } from '../../utils/UserRole'
 import { LogoutService } from '../../services/AuthService'
 import { cn } from '../../utils/cn'
 import FooterComponent from './FooterComponent'
-import { useLocation } from 'react-router-dom'
 
 export interface SideBarData {
   id: number
