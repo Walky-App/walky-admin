@@ -10,7 +10,7 @@ import { Toast } from 'primereact/toast'
 import { Dropdown } from 'primereact/dropdown'
 import { IFacility } from '../../../../interfaces/Facility'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
-import TitleComponent from '../../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 
 export default function ClientAddJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
@@ -42,7 +42,14 @@ export default function ClientAddJob() {
     control,
     formState: { errors },
     handleSubmit,
+    watch,
   } = useForm({ defaultValues })
+
+  const watchAllFields = watch() // This will return all form values
+
+  React.useEffect(() => {
+    console.log(watchAllFields)
+  }, [watchAllFields])
 
   const getFormErrorMessage = (name: string) => {
     //@ts-ignore
@@ -59,8 +66,6 @@ export default function ClientAddJob() {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
       const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
-
-      console.log('Lets see Jobs data -->', requestData)
       const response = await RequestService('jobs', 'POST', requestData)
       if (response) {
         toast.current?.show({
@@ -82,21 +87,6 @@ export default function ClientAddJob() {
     { title: 'Gardener', value: 'Gardener' },
     { title: 'Cultivator', value: 'Cultivator' },
     { title: 'Extractor', value: 'Extractor' },
-  ]
-
-  const skills = [
-    { name: 'Trimming' },
-    { name: 'Budtending' },
-    { name: 'Harvesting' },
-    { name: 'Packaging' },
-    { name: 'Gardening' },
-    { name: 'Cultivation' },
-    { name: 'Extraction' },
-    { name: 'Edibles' },
-    { name: 'Sales' },
-    { name: 'Security' },
-    { name: 'Delivery' },
-    { name: 'Other' },
   ]
 
   return (
@@ -197,23 +187,31 @@ export default function ClientAddJob() {
                             validate: value => value.length > 0 || 'At least one date must be selected.',
                           }}
                           render={({ field, fieldState }) => (
-                            <>
-                              <div>
-                                <Calendar
-                                  inputId={field.name}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  dateFormat="dd/mm/yy"
-                                  selectionMode="multiple"
-                                  className={classNames({ 'p-invalid': fieldState.error })}
-                                  showIcon
-                                  showButtonBar
-                                  minDate={new Date()} // Disabling past dates
-                                  inline
-                                />
-                                {getFormErrorMessage(field.name)}
-                              </div>
-                            </>
+                            <div>
+                              <Calendar
+                                inputId={field.name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                dateFormat="mm/dd/yy"
+                                selectionMode="multiple"
+                                className={classNames({ 'p-invalid': fieldState.error })}
+                                showIcon
+                                showButtonBar
+                                minDate={new Date()} // Disabling past dates
+                                inline
+                              />
+                              {field.value && field.value.length > 0 && (
+                                <div className="mt-2">
+                                  <h4>Selected Dates:</h4>
+                                  <ul className="mt-2 grid grid-cols-5 gap-2">
+                                    {field.value.map((date: Date, index: number) => (
+                                      <li key={index}>{date.toLocaleDateString()}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              {getFormErrorMessage(field.name)}
+                            </div>
                           )}
                         />
                       </div>
@@ -256,6 +254,7 @@ export default function ClientAddJob() {
                               setStartTime(e.value ?? null)
                             }}
                             timeOnly
+                            hourFormat="12"
                             showIcon
                             icon={() => <i className="pi pi-clock" />}
                             className={classNames({ 'p-invalid': fieldState.error })}
@@ -287,6 +286,7 @@ export default function ClientAddJob() {
                               setEndTime(e.value ?? null)
                             }}
                             timeOnly
+                            hourFormat="12"
                             showIcon
                             icon={() => <i className="pi pi-clock" />}
                             className={classNames({ 'p-invalid': fieldState.error })}
