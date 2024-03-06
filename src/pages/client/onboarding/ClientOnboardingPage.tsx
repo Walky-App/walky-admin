@@ -34,6 +34,7 @@ const defaultFacilityFormValues: IFacilityFormInputs = {
       email: '',
     },
   ],
+  licenses: [],
 }
 
 export interface ILicenseDocument {
@@ -69,6 +70,7 @@ export interface IFacilityFormInputs {
   company_dbas: string[]
   services: string[]
   contacts: IContact[]
+  licenses: ILicenseDocument[]
   _id?: string
 }
 
