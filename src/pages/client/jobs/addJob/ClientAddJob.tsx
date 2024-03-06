@@ -3,7 +3,6 @@ import { RequestService } from '../../../../services/RequestService'
 import { Controller, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils'
-import { TabView, TabPanel } from 'primereact/tabview'
 import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
 import { Toast } from 'primereact/toast'
@@ -176,54 +175,45 @@ export default function ClientAddJob() {
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-5">
                 <div className="card">
-                  <TabView>
-                    <TabPanel header="Calendar View">
-                      <div className="mt-2">
-                        <Controller
-                          name="job_dates"
-                          control={control}
-                          rules={{
-                            required: 'Date is required.',
-                            validate: value => value.length > 0 || 'At least one date must be selected.',
-                          }}
-                          render={({ field, fieldState }) => (
-                            <div>
-                              <Calendar
-                                inputId={field.name}
-                                value={field.value}
-                                onChange={field.onChange}
-                                dateFormat="mm/dd/yy"
-                                selectionMode="multiple"
-                                className={classNames({ 'p-invalid': fieldState.error })}
-                                showIcon
-                                showButtonBar
-                                minDate={new Date()} // Disabling past dates
-                                inline
-                              />
-                              {field.value && field.value.length > 0 && (
-                                <div className="mt-2">
-                                  <h4>Selected Dates:</h4>
-                                  <ul className="mt-2 grid grid-cols-5 gap-2">
-                                    {field.value
-                                      .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-                                      .map((date: Date, index: number) => (
-                                        <li key={index}>{date.toLocaleDateString()}</li>
-                                      ))}
-                                  </ul>
-                                </div>
-                              )}
-                              {getFormErrorMessage(field.name)}
+                  <div className="mt-2">
+                    <Controller
+                      name="job_dates"
+                      control={control}
+                      rules={{
+                        required: 'Date is required.',
+                        validate: value => value.length > 0 || 'At least one date must be selected.',
+                      }}
+                      render={({ field, fieldState }) => (
+                        <div>
+                          <Calendar
+                            inputId={field.name}
+                            value={field.value}
+                            onChange={field.onChange}
+                            dateFormat="mm/dd/yy"
+                            selectionMode="multiple"
+                            className={classNames({ 'p-invalid': fieldState.error })}
+                            showIcon
+                            showButtonBar
+                            minDate={new Date()} // Disabling past dates
+                            inline
+                          />
+                          {field.value && field.value.length > 0 && (
+                            <div className="mt-2">
+                              <h4>Selected Dates:</h4>
+                              <ul className="mt-2 grid grid-cols-5 gap-2">
+                                {field.value
+                                  .sort((a: Date, b: Date) => a.getTime() - b.getTime())
+                                  .map((date: Date, index: number) => (
+                                    <li key={index}>{date.toLocaleDateString()}</li>
+                                  ))}
+                              </ul>
                             </div>
                           )}
-                        />
-                      </div>
-                    </TabPanel>
-                    <TabPanel header="Recurring Dates">
-                      <p className="m-0">
-                        To be developed. This feature will allow you to set recurring dates for the job.{' '}
-                      </p>
-                    </TabPanel>
-                  </TabView>
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
