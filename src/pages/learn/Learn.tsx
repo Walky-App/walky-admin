@@ -1,14 +1,12 @@
-import { Suspense, useEffect, useState } from 'react'
-import CategoryCards from './components/CategoryCards'
+import { useEffect, useState } from 'react'
+import { CategoryCards } from './components/CategoryCards'
 import { Category } from '../../interfaces/Category'
 import { RequestService } from '../../services/RequestService'
 import { useSearchParams } from 'react-router-dom'
-import HeaderComponent from '../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../components/shared/general/HeaderComponent'
 import { FilterInterface } from '../../interfaces/Global'
-import { PhoneIcon } from '@heroicons/react/24/outline'
-import { EnvelopeIcon } from '@heroicons/react/20/solid'
 
-export default function Learn() {
+export const Learn = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [searchParams] = useSearchParams()
   const [filter, setFilter] = useState<FilterInterface>({ search: '', selected: '' })
@@ -33,16 +31,16 @@ export default function Learn() {
   }, [searchParams, categories])
 
   return (
-    <>
+    <div>
       <div className="w-full sm:overflow-x-hidden">
         <div className='bg-gray-100 pb-2 mb-4 border-1 rounded-xl shadow-md'>
           <div >
-            <img className="h-28 w-full object-cover object-center lg:h-32 border-1 rounded-t-xl" src={'https://www.hemptempsuniversity.com/wp-content/uploads/2019/07/htuniversity1-1-1799x1011.jpg'} alt="" />
+            <img alt="" className="h-28 w-full object-cover object-center lg:h-32 border-1 rounded-t-xl" src='https://www.hemptempsuniversity.com/wp-content/uploads/2019/07/htuniversity1-1-1799x1011.jpg' />
           </div>
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
               <div className="flex">
-                <img className="h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32" src={'https://www.hemptempsuniversity.com/wp-content/uploads/2016/05/hemptempsuniversitylogo-1-e1465278344770.png'} alt="" />
+                <img alt="" className="h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32" src='https://www.hemptempsuniversity.com/wp-content/uploads/2016/05/hemptempsuniversitylogo-1-e1465278344770.png' />
               </div>
               <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                 <div className="mt-6 min-w-0 flex-1 sm:hidden md:block">
@@ -57,7 +55,7 @@ export default function Learn() {
         </div>
 
 
-        <HeaderComponent title={'Learn'} search />
+        <HeaderComponent search title='Learn' />
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
@@ -94,6 +92,6 @@ export default function Learn() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
