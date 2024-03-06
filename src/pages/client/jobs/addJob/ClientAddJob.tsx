@@ -6,6 +6,7 @@ import { classNames } from 'primereact/utils'
 import { TabView, TabPanel } from 'primereact/tabview'
 import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
+import { Tooltip } from 'primereact/tooltip'
 import { Toast } from 'primereact/toast'
 import { Dropdown } from 'primereact/dropdown'
 import { IFacility } from '../../../../interfaces/Facility'
@@ -230,8 +231,8 @@ export default function ClientAddJob() {
           {/* Shift Details */}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Times and Dates</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide details about the shifts.</p>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Details</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide working hours, lunch break duration and number of available vacancies.</p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -321,6 +322,20 @@ export default function ClientAddJob() {
                             onBlur={field.onBlur}
                             onValueChange={e => field.onChange(e)}
                             useGrouping={false}
+                            mode="decimal"
+                            tooltip="Enter lunch break time in minutes. Set to 0 if there is no lunch break for this job."
+                            tooltipOptions={{
+                              position: 'top',
+                              showDelay: 300,
+                              hideDelay: 500,
+                              pt: {
+                                text: {
+                                  className: 'bg-green-500 max-w-lg text-sm',
+                                },
+                              },
+                            }}
+                            showButtons
+                            min={0}
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
@@ -354,6 +369,9 @@ export default function ClientAddJob() {
                             onBlur={field.onBlur}
                             onValueChange={e => field.onChange(e)}
                             useGrouping={false}
+                            mode="decimal"
+                            showButtons
+                            min={1}
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
