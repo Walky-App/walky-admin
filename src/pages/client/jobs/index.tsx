@@ -26,24 +26,21 @@ export default function Facilities() {
   }, [])
 
   React.useMemo(() => {
-    const getJobs = async () => {
-      if (facilities.length > 0) {
-        try {
-          const jobsRequests = facilities.map((facility: Facility) => RequestService(`jobs/facility/${facility._id}`))
-          let jobsResults = await Promise.all(jobsRequests)
-          jobsResults = jobsResults.filter(job => job.message !== 'No jobs found')
-          const allJobs = jobsResults.flat()
-          setJobsData(allJobs)
-        } catch (error) {
-          console.error('Error fetching jobs data:', error)
-        }
+    const getJobs = async () => { 
+      try {
+        const allJobs = await RequestService(`jobs/client/${id}`);
+        console.log('All Jobs:', allJobs);
+        setJobsData(allJobs);
+      } catch (error) {
+        console.error('Error fetching jobs data:', error);
       }
     }
-    getJobs()
-  }, [facilities])
+    getJobs();
+  }, []);
 
   const jobsColumns = [
     { Header: 'Job Title', accessor: 'title' },
+    { Header: 'Facility', accessor: 'facility.name' },
     //@ts-ignore
     {
       Header: 'Status',
@@ -61,8 +58,7 @@ export default function Facilities() {
         return a.original.isCompleted ? -1 : 1
       },
     },    //@ts-ignore
-    { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => (Array.isArray(value) ? value.join(', ') : 'N/A') },
-    { Header: 'Vacancy', accessor: 'vacancy' },
+      { Header: 'Vacancy', accessor: 'vacancy' },
     {
       Header: 'Availability',
       accessor: (d: any) => (d.isFull ? 'Full' : 'Open'),
