@@ -11,7 +11,8 @@ export default function Error404() {
     if (!user) navigate('/')
   }, [user])
 
-  const chooseLogoImage = (currentURL: string) => {
+  const chooseLogoImage = () => {
+    const currentURL = window.location.href
     if (currentURL.toLowerCase().includes('hydropallet')) {
       return '/assets/logos/hydropallet-black-logo.png'
     } else {
@@ -19,14 +20,12 @@ export default function Error404() {
     }
   }
 
-  const { pathname } = useLocation()
-
   return (
     <>
       <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
         <div className="flex items-center space-x-10">
           <a href={user ? `/${user.role}/dashboard` : '/'}>
-            <img src={chooseLogoImage(pathname)} alt="Hemp-Temps" className="mr-2 h-36 w-auto" />
+            <img src={chooseLogoImage()} alt="Hemp-Temps" className="mr-2 h-36 w-auto" />
           </a>
         </div>
         <div className="text-center">
