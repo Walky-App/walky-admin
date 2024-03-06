@@ -85,6 +85,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user, profilePath } = useAuth()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
 
   const handleLogout = () => {
     LogoutService()
@@ -103,16 +104,16 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
-  const ChooseLogoImage = (currentURL: string) => {
-    if (currentURL.toLowerCase().includes('hydropallet')) {
-      return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
-    } else {
-      return '/assets/logos/Hemp-Temps-logo-horizontal-white_optimized.png'
-    }
-  }
-
   const SidebarComponent = () => {
-    const { pathname } = useLocation()
+    const chooseSideBarLogoImage = (currentURL: string) => {
+      if (currentURL.toLowerCase().includes('hydropallet')) {
+        return <img src="/assets/logos/hydropallet-white-logo.png" className="h-8 w-auto" alt="Hydropallet Logo" />
+      } else {
+        return (
+          <img src="/assets/logos/Hemp-Temps-logo-horizontal-white.png" className="h-10 w-auto" alt="Hemp Temps Logo" />
+        )
+      }
+    }
     return (
       <div
         className={cn('flex grow flex-col gap-y-6 overflow-y-auto bg-zinc-900 px-6 pb-4', {
@@ -120,9 +121,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         })}>
         <div className="mt-4 flex shrink-0 items-center justify-center">
           {/* Logo */}
-          <Link to={user ? `/${role}/dashboard` : '/'}>
-            <img src={ChooseLogoImage(pathname)} alt="App Logo" className="h-10 w-auto" />
-          </Link>
+          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseSideBarLogoImage(pathname)}</Link>
         </div>
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -161,7 +160,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                         <li key={link.id}>
                           <span
                             className={cn(
-                              'bg-gray-900 text-gray-700 ',
+                              'bg-gray-900 text-gray-700',
                               'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                             )}>
                             <span className="h-5 w-5 text-2xl">{link.icon}</span>
@@ -180,14 +179,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                   })}
               </ul>
             </li>
-            {/* <li className="mt-auto">
-                  <a
-                    href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white">
-                    <Cog6ToothIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
-                    Settings
-                  </a>
-                </li> */}
           </ul>
         </nav>
       </div>
@@ -195,13 +186,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   }
 
   const HeaderComponent = () => {
-    const ChooseHeaderLogoImage = (currentURL: string) => {
+    const chooseHeaderLogoImage = (currentURL: string) => {
       if (currentURL.toLowerCase().includes('hydropallet')) {
         return (
           <img
-            src="/assets/logos/Hydro-Pallet-Logo.png"
+            src="/assets/logos/hydropallet-black-logo.png"
             alt="Hydro Pallet Logo"
-            className="h-10 w-auto xl:hidden lg:hidden md:h-16"
+            className="h-7 w-auto md:h-12 lg:hidden xl:hidden"
           />
         )
       } else {
@@ -209,13 +200,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           <img
             src="/assets/logos/logo-horizontal-cropped.png"
             alt="Hemp Temps Logo"
-            className="h-10 w-auto xl:hidden lg:hidden md:h-16"
+            className="h-10 w-auto md:h-16 lg:hidden xl:hidden"
           />
         )
       }
     }
-
-    const { pathname } = useLocation()
 
     return (
       <header
@@ -223,9 +212,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
         <div className="flex shrink-0 items-center justify-center">
           {/* Logo */}
-          <Link to={user ? `/${role}/dashboard` : '/'}>
-            {ChooseHeaderLogoImage(pathname)}
-          </Link>
+          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseHeaderLogoImage(pathname)}</Link>
         </div>
         <div className="flex items-center gap-x-4 lg:gap-x-6">
           <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
