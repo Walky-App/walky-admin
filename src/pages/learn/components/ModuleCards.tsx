@@ -3,6 +3,7 @@ import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/out
 import { CircularProgressBar } from './CircularProgressBar'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 import { useNavigate } from 'react-router-dom';
+import { Card } from 'primereact/card';
 
 interface ModuleCardsProps {
   module: Module[]
@@ -29,12 +30,15 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
           {module.length !== 0 ? (
             <div>
               {modulesFilter().map(module => (
-                <button className="mb-4 flex h-30 rounded-2xl border border-zinc-100 bg-white sm:h-32 cursor-pointer" key={module._id} onClick={() => handlerSetModule(module)} type='button'>
+                <Card className="cursor-pointer" key={module._id} onClick={() => handlerSetModule(module)} pt={{
+                  body: { className: 'p-0 mb-4' },
+                  content: { className: 'p-0 flex ' },
+                }}>
                   <div className="m-3">
                     {module.image ? (
                       <img
                         alt={`Hemp Temp ${module.title} module`}
-                        className="h-full w-36 rounded-xl"
+                        className="h-full w-36 rounded-xl sm:h-32 h-30"
                         src={module.image}
                       />
                     ) : (
@@ -74,7 +78,7 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                       complete: 0,
                     }} />
                   </div>
-                </button>
+                </Card>
               ))}
             </div>
           ) : (

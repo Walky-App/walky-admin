@@ -12,7 +12,7 @@ import { Unit } from '../../../interfaces/Unit';
 import { ArrowRightIcon } from "@heroicons/react/20/solid"
 
 export const Units = () => {
-    const { module, setModule } = useAdmin()
+    const { module, setModule, setUnit } = useAdmin()
     const [category, setCategory] = useState<CategoryTitle>()
     const [loading, setLoading] = useState<boolean>(true)
     const params = useParams()
@@ -34,6 +34,7 @@ export const Units = () => {
     })
 
     const handlerUnit = (unit: Unit) => {
+        setUnit(unit)
         navigate(`/learn/module/${module?._id}/unit/${unit._id}`)
     }
 
@@ -100,7 +101,7 @@ export const Units = () => {
                         <div className={`space-y-6 pb-6 ${index !== (module?.units?.length ?? 0) - 1 && 'border-l-2 border-dashed'} `}>
                             <div className="relative w-full">
                                 <div className="-ml-3.5 -top-0.5 absolute bg-white border flex h-7 justify-center rounded-full text-blue-500 w-7 z-10" />
-                                <button className="ml-6 min-h-24 max-h-24 h-24 cursor-pointer" onClick={() => handlerUnit(unit)} type="button">
+                                <button className="ml-6 min-h-24 max-h-24 h-24 cursor-pointer text-left" onClick={() => handlerUnit(unit)} type="button">
                                     <div className="flex flex-row h-auto rounded-2xl border border-zinc-100 bg-white">
                                         <div>
                                             <div className="m-2 flex flex-1 flex-row gap-3">
