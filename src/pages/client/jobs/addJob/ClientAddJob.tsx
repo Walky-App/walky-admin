@@ -170,7 +170,7 @@ export default function ClientAddJob() {
                           <div>{getFormErrorMessage(field.name)}</div>
                         </div>
                       </>
-                    )}
+                    )} 
                   />{' '}
                 </div>
               </div>
