@@ -24,17 +24,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
   const toast = useRef(null)
 
-  const showSuccessToast = () => {
-    // @ts-expect-error toastRef.current may be null
-    toast.current?.show({
-      severity: 'success',
-      summary: 'Success',
-      detail: `${getValues('name')} created successfully.`,
-      life: 2000,
-    })
-  }
-
-  const onRemove = (toastData: ToastMessage) => {
+  const onRemoveToast = (toastData: ToastMessage) => {
     // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
@@ -52,7 +42,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
     formState: { errors },
     handleSubmit,
     getValues,
-    // reset,
   } = useForm<IFacilityFormInputs>({ values })
 
   const { fields } = useFieldArray({
@@ -62,51 +51,55 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
   const onSubmit: SubmitHandler<IFacilityFormInputs> = async data => {
     setFormData(data)
+    const facilityId = facilitiesArray[0]?._id
 
-    // if (editingIndex !== null) {
-    //   // Update the facility at editingIndex
-    //   setFacilitiesArray(prevArray => [...prevArray.slice(0, editingIndex), data, ...prevArray.slice(editingIndex + 1)])
-    //   setEditingIndex(null) // Reset editingIndex
-    // } else {
-    //   // Add the new facility to the end of the facilitiesArray
-
-    //   setFacilitiesArray(prevArray => [...prevArray, data])
-    // }
-
-    if (facilitiesArray[0]?._id) {
-      setIsLoading(true)
+    setIsLoading(true)
+    if (facilityId) {
       try {
-        const response = await RequestService(`facilities/${facilitiesArray[0]?._id}`, 'PATCH', data)
+        const facilityFound = await RequestService(`facilities/${facilityId}`)
+
+        if (facilityFound) {
+          const updatedFacility = { ...facilityFound, ...data, licenses: facilitiesArray[0].licenses }
+
+          const response = await RequestService(`facilities/${facilityId}`, 'PATCH', updatedFacility)
+
+          if (response?._id) {
+            // @ts-expect-error toastRef.current may be null
+            toast.current?.show({
+              severity: 'success',
+              summary: 'Changes saved for:',
+              detail: getValues('name'),
+            })
+            setFacilitiesArray(prevArray =>
+              prevArray.map(facility => (facility._id === response._id ? response : facility)),
+            )
+          } else {
+            throw new Error('Failed to update facility')
+          }
+        } else {
+          throw new Error('Facility not found')
+        }
+      } catch (error) {
+        console.error('Error updating facility:', error)
+        // @ts-expect-error toastRef.current may be null
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Error saving changes',
+          detail: `${getValues('name')} could not be updated.`,
+        })
+      }
+    } else {
+      try {
+        const response = await RequestService(`facilities`, 'POST', data)
 
         if (response?._id) {
           // @ts-expect-error toastRef.current may be null
           toast.current?.show({
             severity: 'success',
-            summary: 'Changes saved for:',
-            detail: getValues('name'),
+            summary: 'Success',
+            detail: `${getValues('name')} created successfully.`,
+            life: 2000,
           })
-          setFacilitiesArray(prevArray =>
-            prevArray.map(facility => (facility._id === response._id ? response : facility)),
-          )
-        } else {
-          throw new Error('Failed to update facility')
-        }
-      } catch (error) {
-        console.error('Error adding facility:', error)
-        // @ts-expect-error toastRef.current may be null
-        toast.current?.show({
-          severity: 'error',
-          summary: 'Error saving changes',
-          detail: `${getValues('name')} has been added.`,
-        })
-      }
-    } else {
-      setIsLoading(true)
-      try {
-        const response = await RequestService(`facilities`, 'POST', data)
-
-        if (response?._id) {
-          showSuccessToast()
           setFacilitiesArray([response])
         } else {
           throw new Error('Failed to add facility')
@@ -120,14 +113,12 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           detail: `${getValues('name')} already exists.`,
         })
       }
-
-      // reset()
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <Toast ref={toast} onRemove={e => onRemove(e)} />
+      <Toast ref={toast} onRemove={e => onRemoveToast(e)} />
       <div className="space-y-12">
         {/* Business Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -302,23 +293,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            {/* <div className="sm:col-span-3">
-              <label htmlFor="facilityName" className="block text-sm font-medium leading-6 text-gray-900">
-                *Facility Name:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="name"
-                  rules={{ required: 'Facility Name is required' }}
-                  render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ 'p-invalid': fieldState.invalid })} />
-                  )}
-                />
-              </div>
-              {getFormErrorMessage('name', errors)}
-            </div> */}
-
             <div className="sm:col-span-3">
               <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
                 *Country:
@@ -358,19 +332,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
               </div>
               {getFormErrorMessage('address', errors)}
             </div>
-
-            {/* <div className="sm:col-span-3">
-              <label htmlFor="address2" className="block text-sm font-medium leading-6 text-gray-900">
-                Apt, Suite or Unit:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="address2"
-                  render={({ field }) => <InputText id={field.name} {...field} />}
-                />
-              </div>
-            </div> */}
 
             <div className="sm:col-span-3">
               <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
