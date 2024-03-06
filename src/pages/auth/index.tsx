@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
 import ForgotPasswordForm from './ForgotPasswordForm'
-import { useLocation } from 'react-router-dom'
 
 export default function Auth() {
   const [userForm, setUserForm] = useState('Login')
@@ -18,7 +17,6 @@ export default function Auth() {
           'https://hemptemps-prod.s3.amazonaws.com/web-images/13.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/2.png',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/3.png',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/4.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg',
@@ -38,7 +36,8 @@ export default function Auth() {
     getImages()
   }, [])
 
-  const chooseLogoImage = (currentURL: string) => {
+  const chooseLogoImage = () => {
+    const currentURL = window.location.href
     if (currentURL.toLowerCase().includes('hydropallet')) {
       return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
     } else {
@@ -47,13 +46,12 @@ export default function Auth() {
       )
     }
   }
-  const { pathname } = useLocation()
 
   return (
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
       <div className="flex flex-col gap-10 md:basis-1/2">
         <div className="w-full px-4 sm:px-0">
-          <div className="flex justify-center">{chooseLogoImage(pathname)}</div>
+          <div className="flex justify-center">{chooseLogoImage()}</div>
 
           {userForm === 'Login' && <LoginForm />}
           {userForm === 'Sign up' && <SignupForm />}

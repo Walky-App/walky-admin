@@ -85,7 +85,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user, profilePath } = useAuth()
   const navigate = useNavigate()
-  const { pathname } = useLocation()
 
   const handleLogout = () => {
     LogoutService()
@@ -105,7 +104,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
   const SidebarComponent = () => {
-    const chooseSideBarLogoImage = (currentURL: string) => {
+    const chooseSideBarLogoImage = () => {
+      const currentURL = window.location.href
       if (currentURL.toLowerCase().includes('hydropallet')) {
         return <img src="/assets/logos/hydropallet-white-logo.png" className="h-8 w-auto" alt="Hydropallet Logo" />
       } else {
@@ -121,7 +121,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         })}>
         <div className="mt-4 flex shrink-0 items-center justify-center">
           {/* Logo */}
-          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseSideBarLogoImage(pathname)}</Link>
+          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseSideBarLogoImage()}</Link>
         </div>
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -186,7 +186,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   }
 
   const HeaderComponent = () => {
-    const chooseHeaderLogoImage = (currentURL: string) => {
+    const chooseHeaderLogoImage = () => {
+      const currentURL = window.location.href
       if (currentURL.toLowerCase().includes('hydropallet')) {
         return (
           <img
@@ -212,7 +213,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
         <div className="flex shrink-0 items-center justify-center">
           {/* Logo */}
-          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseHeaderLogoImage(pathname)}</Link>
+          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseHeaderLogoImage()}</Link>
         </div>
         <div className="flex items-center gap-x-4 lg:gap-x-6">
           <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
