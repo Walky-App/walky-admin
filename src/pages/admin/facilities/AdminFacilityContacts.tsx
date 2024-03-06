@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import AdminFacilityContactModal from './AdminFacilityContactModal'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
@@ -260,13 +259,6 @@ export default function AdminFacilityContacts() {
                       </tr>
                     ))}
                   </tbody>
-                  <AdminFacilityContactModal
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    facilityId={facilityId}
-                    currentContact={currentContact}
-                    setFacilityContacts={setFacilityContacts}
-                  />
                 </table>
               ) : (
                 // No contacts found
