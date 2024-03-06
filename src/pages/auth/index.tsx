@@ -22,8 +22,11 @@ export default function Auth() {
           'https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg',
           'https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/8.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/9.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/9.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/8.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/14.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/15.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/20.png',
         ]
         const randomIndex = Math.floor(Math.random() * allImages.length)
 
@@ -35,12 +38,12 @@ export default function Auth() {
     getImages()
   }, [])
 
-  const ChooseLogoImage = (currentURL: string) => {
+  const chooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return <img src="/assets/logos/Hydro-Pallet-Logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
+      return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
     } else {
       return (
-        <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" className="sm:w-full xl:px-12" />
+        <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="sm:w-full xl:px-12" />
       )
     }
   }
@@ -50,7 +53,7 @@ export default function Auth() {
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
       <div className="flex flex-col gap-10 md:basis-1/2">
         <div className="w-full px-4 sm:px-0">
-          <div className="flex justify-center">{ChooseLogoImage(pathname)}</div>
+          <div className="flex justify-center">{chooseLogoImage(pathname)}</div>
 
           {userForm === 'Login' && <LoginForm />}
           {userForm === 'Sign up' && <SignupForm />}

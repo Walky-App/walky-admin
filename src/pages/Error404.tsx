@@ -11,9 +11,9 @@ export default function Error404() {
     if (!user) navigate('/')
   }, [user])
 
-  const ChooseLogoImage = (currentURL: string) => {
+  const chooseLogoImage = (currentURL: string) => {
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return '/assets/logos/Hydropallet_White_over_Dark_Blue.jpg'
+      return '/assets/logos/hydropallet-black-logo.png'
     } else {
       return '/assets/logos/logo-horizontal-cropped.png'
     }
@@ -26,7 +26,7 @@ export default function Error404() {
       <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
         <div className="flex items-center space-x-10">
           <a href={user ? `/${user.role}/dashboard` : '/'}>
-            <img src={ChooseLogoImage(pathname)} alt="Hemp-Temps" className="mr-2 h-36 w-auto" />
+            <img src={chooseLogoImage(pathname)} alt="Hemp-Temps" className="mr-2 h-36 w-auto" />
           </a>
         </div>
         <div className="text-center">
