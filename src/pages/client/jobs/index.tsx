@@ -10,20 +10,10 @@ export default function Facilities() {
   const navigate = useNavigate()
   const user = GetTokenInfo()
   const id = user?._id
-  const [facilities, setFacilities] = React.useState<any>([])
   const [jobsData, setJobsData] = React.useState<any>([])
   interface Facility {
     _id: string
   }
-
-  React.useEffect(() => {
-    const getFacilities = async () => {
-      const allFacilities = await RequestService(`facilities/byclient/${id}`)
-      console.log('All Facilities:', allFacilities)
-      setFacilities(allFacilities)
-    }
-    getFacilities()
-  }, [])
 
   React.useMemo(() => {
     const getJobs = async () => { 
