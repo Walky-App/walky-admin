@@ -12,7 +12,7 @@ import {
 import { Button } from 'primereact/button'
 
 import { RequestService } from '../../../services/RequestService'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 
 export default function JobDetailViewClient() {
   const [job, setJob] = useState<any>({})

@@ -1,16 +1,16 @@
-import { TabPanel, TabView, TabViewTabChangeEvent } from "primereact/tabview"
+import { TabPanel, TabView } from "primereact/tabview"
 import { useNavigate, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAdmin } from "../../../contexts/AdminContext"
 import { Section } from "../../../interfaces/Unit"
 import { RequestService } from "../../../services/RequestService"
-import HeaderComponent from "../../../components/shared/general/HeaderComponent"
-import SectionEditor from "./components/SectionEditor"
-import SectionImage from "./components/SectionImage"
+import { HeaderComponent } from "../../../components/shared/general/HeaderComponent"
+import { SectionEditor } from "./components/SectionEditor"
+import { SectionImage } from "./components/SectionImage"
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/20/solid"
 import { DisableButtonInterface } from "../../../interfaces/Global"
 
-export default function AdminDetailsUnit() {
+export const AdminDetailsUnit = () => {
     const { unit, setUnit, setModule } = useAdmin()
     const [title, setTitle] = useState<string>(unit?.title || '')
     const [time, setTime] = useState<number>(unit?.time ? unit.time / 60 : 0)
@@ -76,7 +76,7 @@ export default function AdminDetailsUnit() {
     const handleTabChange = (index: number) => {
         setActiveIndex(index);
     }
-    const handlerBeforeTabChang = (e: TabViewTabChangeEvent) => {
+    const handlerBeforeTabChang = () => {
         setSelectedSection(undefined)
     }
 
@@ -108,79 +108,81 @@ export default function AdminDetailsUnit() {
     return (
         <div className="w-full sm:overflow-x-hidden">
             <HeaderComponent
-                title={'Unit details'}
                 disableButton={disableButtonData}
+                title='Unit details'
             />
             <form>
                 <div className="space-y-12">
                     <div className=" pb-12">
                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div className="col-span-6 sm:col-span-3">
-                                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="title" >
                                     Title
                                 </label>
                                 <div className="mt-2">
                                     <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
                                         <input
-                                            type="text"
-                                            name="title"
-                                            id="title"
-                                            value={title}
-                                            onChange={e => setTitle(e.target.value)}
                                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                                            id="title"
+                                            name="title"
+                                            onChange={e => setTitle(e.target.value)}
                                             placeholder="Unit title"
+                                            type="text"
+                                            value={title}
                                         />
                                     </div>
                                 </div>
                             </div>
                             <div className="col-span-6 sm:col-span-3">
-                                <label htmlFor="reading_time" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="reading_time">
                                     Reading time
                                 </label>
                                 <div className="mt-2">
                                     <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
                                         <input
-                                            type="number"
-                                            name="reading_time"
+                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                                             id="reading_time"
                                             min={0}
-                                            value={time}
+                                            name="reading_time"
                                             onChange={e => setTime(Number(e.target.value))}
-                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                                             placeholder="x minutes"
+                                            type="number"
+                                            value={time}
                                         />
                                     </div>
                                 </div>
                             </div>
                             <div className="col-span-6 mt-6 flex items-center justify-end gap-x-6">
                                 <button
-                                    type="button"
+                                    className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200"
                                     onClick={redirectToPreviousPath}
-                                    className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200">
+                                    type="button"
+                                >
                                     Cancel
                                 </button>
                                 <button
-                                    type="button"
+                                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
                                     onClick={handleRequest}
-                                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
-                                    {'Update'}
+                                    type="button"
+                                >
+                                    Update
                                 </button>
                             </div>
                             <div className="col-span-6">
-                                <label htmlFor="section_title" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="section_title">
                                     Section management
                                 </label>
-                                <TabView activeIndex={activeIndex} onTabChange={(e) => handleTabChange(e.index)} onBeforeTabChange={handlerBeforeTabChang}>
+                                <TabView activeIndex={activeIndex} onBeforeTabChange={handlerBeforeTabChang} onTabChange={(e) => handleTabChange(e.index)} >
                                     <TabPanel header="Text">
-                                        <SectionEditor section={sections} setSection={setSections} selectedSection={selectedSection} deleteSelectedSection={deleteSelectedSection} />
+                                        <SectionEditor deleteSelectedSection={deleteSelectedSection} section={sections} selectedSection={selectedSection} setSection={setSections} />
                                     </TabPanel>
                                     <TabPanel header="Image">
-                                        <SectionImage section={sections} setSection={setSections} selectedSection={selectedSection} deleteSelectedSection={deleteSelectedSection} />
+                                        <SectionImage deleteSelectedSection={deleteSelectedSection} section={sections} selectedSection={selectedSection} setSection={setSections} />
                                     </TabPanel>
                                 </TabView>
                             </div>
                             <div className="col-span-6">
-                                <label className="block text-sm font-medium leading-6 text-gray-900 mb-4">
+                                <label className="block text-sm font-medium leading-6 text-gray-900 mb-4" htmlFor="sections">
                                     Sections
                                 </label>
                                 <div className='flex flex-wrap gap-1 justify-center'>
@@ -188,7 +190,7 @@ export default function AdminDetailsUnit() {
                                         {
                                             sections.map((section, index) => {
                                                 return (
-                                                    <div key={index} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow">
+                                                    <div className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow" key={index}>
                                                         <div className="flex w-full items-center justify-between space-x-6 p-6">
                                                             <div className="h-8 w-8 flex rounded-full bg-gray-300 justify-center items-center" >{`#${index + 1}`}</div>
                                                             <div className="flex-1 truncate">
@@ -203,14 +205,14 @@ export default function AdminDetailsUnit() {
                                                         </div>
                                                         <div>
                                                             <div className="-mt-px flex divide-x divide-gray-200">
-                                                                <div className="flex p-2 w-0 flex-1 justify-center items-center cursor-pointer transition-colors duration-300 ease-in-out hover:bg-green-100" onClick={() => handlerSectionEdit(section)}>
-                                                                    <PencilSquareIcon className="h-5 w-5 text-gray-400 " aria-hidden="true" />
+                                                                <button className="flex p-2 w-0 flex-1 justify-center items-center cursor-pointer transition-colors duration-300 ease-in-out hover:bg-green-100" onClick={() => handlerSectionEdit(section)} type="button">
+                                                                    <PencilSquareIcon aria-hidden="true" className="h-5 w-5 text-gray-400 " />
                                                                     Edit
-                                                                </div>
-                                                                <div className="-ml-px p-2 flex w-0 flex-1 justify-center items-center cursor-pointer transition-colors duration-300 ease-in-out hover:bg-red-100" onClick={() => handlerSectionDelete(section)} >
-                                                                    <TrashIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                                </button>
+                                                                <button className="-ml-px p-2 flex w-0 flex-1 justify-center items-center cursor-pointer transition-colors duration-300 ease-in-out hover:bg-red-100" onClick={() => handlerSectionDelete(section)} type="button">
+                                                                    <TrashIcon aria-hidden="true" className="h-5 w-5 text-gray-400" />
                                                                     Delete
-                                                                </div>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
