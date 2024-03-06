@@ -204,9 +204,11 @@ export default function ClientAddJob() {
                                 <div className="mt-2">
                                   <h4>Selected Dates:</h4>
                                   <ul className="mt-2 grid grid-cols-5 gap-2">
-                                    {field.value.map((date: Date, index: number) => (
-                                      <li key={index}>{date.toLocaleDateString()}</li>
-                                    ))}
+                                    {field.value
+                                      .sort((a: Date, b: Date) => a.getTime() - b.getTime())
+                                      .map((date: Date, index: number) => (
+                                        <li key={index}>{date.toLocaleDateString()}</li>
+                                      ))}
                                   </ul>
                                 </div>
                               )}
@@ -231,7 +233,9 @@ export default function ClientAddJob() {
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Details</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide working hours, lunch break duration and number of available vacancies.</p>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Please provide working hours, lunch break duration and number of available vacancies.
+              </p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
