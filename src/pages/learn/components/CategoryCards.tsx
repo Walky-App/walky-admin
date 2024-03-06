@@ -4,6 +4,7 @@ import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 import { Badge } from 'flowbite-react'
 import { FilterInterface } from '../../../interfaces/Global'
 import { useAdmin } from '../../../contexts/AdminContext'
+import { Card } from 'primereact/card'
 
 interface CategoryCardsProps {
   category: Category[]
@@ -43,8 +44,11 @@ export const CategoryCards = ({ category, filter = { search: '', selected: '' },
       {!isLoading ? (
         <div>
           {categoriesFilter().length > 0 ? (categoriesFilter().map(category => (
-            <button className='cursor-pointer' key={category._id} onClick={() => handlerSetCategory(category)} type='button'>
-              <div className="mb-4 flex sm:h-32 h-auto rounded-2xl border border-zinc-100 bg-white">
+            <Card className='cursor-pointer' key={category._id} onClick={() => handlerSetCategory(category)} pt={{
+              body: { className: 'p-0 mb-4 ' },
+              content: { className: 'p-0' },
+            }} >
+              <div className="flex sm:h-32 h-auto  ">
                 <div className="m-3">
                   {category.image ? (
                     <img
@@ -93,7 +97,7 @@ export const CategoryCards = ({ category, filter = { search: '', selected: '' },
                     )
                 }
               </div>
-            </button>
+            </Card>
           ))) : (
             <div className="flex flex-col items-center justify-center h-96">
               <div className="text-2xl font-semibold text-black">Your search - did not match any categories</div>
