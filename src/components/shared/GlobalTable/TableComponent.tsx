@@ -25,7 +25,6 @@ export default function TableComponent({
 
   const handlerClick = (row: any) => {
     if (location.pathname === '/admin/learn/modules') {
-      row.original.category = row.original.category._id
       setModule(row.original)
     }
     navigate(`${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${row.original._id}`)
@@ -47,9 +46,8 @@ export default function TableComponent({
                     <div className="text-gray-600">{column.render('Header')}</div>
                     <div className="flex flex-col">
                       <FaSortUp
-                        className={`translate-y-1/2 text-sm ${
-                          column.isSorted && !column.isSortedDesc ? 'text-green-500' : 'text-gray-300'
-                        }`}
+                        className={`translate-y-1/2 text-sm ${column.isSorted && !column.isSortedDesc ? 'text-green-500' : 'text-gray-300'
+                          }`}
                       />
                       <FaSortDown
                         className={`-translate-y-1/2 text-sm ${column.isSortedDesc ? 'text-green-500' : 'text-gray-300'}`}
