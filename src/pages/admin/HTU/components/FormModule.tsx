@@ -18,7 +18,7 @@ interface Props {
 
 export const FormModule = ({ action, module }: Props) => {
     const [title, setTitle] = useState<string>(module?.title || '')
-    const [category, setCategory] = useState<string>(module?.category || '')
+    const [category, setCategory] = useState<string>(module?.category._id || '')
     const [level, setLevel] = useState<string>(module?.level || '')
     const [description, setDescription] = useState<string>(module?.description || '')
     const [image, setImage] = useState<File | null>(null)
