@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 import { secondsToTimeDescription } from "../../../utils/FunctionUtils"
 import { Badge } from "flowbite-react"
-import { CategoryTitle } from "../../../interfaces/Category"
 import { useAdmin } from "../../../contexts/AdminContext"
 import { Module } from "../../../interfaces/Module"
 import { CircularProgressBar } from "../components/CircularProgressBar"
@@ -13,7 +12,6 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid"
 
 export const Units = () => {
     const { module, setModule, setUnit } = useAdmin()
-    const [category, setCategory] = useState<CategoryTitle>()
     const [loading, setLoading] = useState<boolean>(true)
     const params = useParams()
     const navigate = useNavigate()
@@ -22,7 +20,6 @@ export const Units = () => {
         const response: Module = await RequestService(`modules/${params.moduleId}`)
         if (response) {
             setModule(response)
-            setCategory(response.category as unknown as CategoryTitle)
         }
         setLoading(!loading)
     }
@@ -31,6 +28,7 @@ export const Units = () => {
         if (!module) {
             fecthData()
         }
+        console.log(module)
     })
 
     const handlerUnit = (unit: Unit) => {
@@ -97,7 +95,7 @@ export const Units = () => {
             </div>
             {
                 module?.units?.map((unit: Unit, index) => (
-                    <div className="flex items-center justify-center bg-white pl-6" key={unit._id} >
+                    <div className="flex items-center justify-center bg-white pl-6" key={index} >
                         <div className={`space-y-6 pb-6 ${index !== (module?.units?.length ?? 0) - 1 && 'border-l-2 border-dashed'} `}>
                             <div className="relative w-full">
                                 <div className="-ml-3.5 -top-0.5 absolute bg-white border flex h-7 justify-center rounded-full text-blue-500 w-7 z-10" />
