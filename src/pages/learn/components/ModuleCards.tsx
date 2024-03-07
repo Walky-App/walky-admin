@@ -4,6 +4,7 @@ import { CircularProgressBar } from './CircularProgressBar'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 import { useNavigate } from 'react-router-dom';
 import { Card } from 'primereact/card';
+import { useAdmin } from '../../../contexts/AdminContext';
 
 interface ModuleCardsProps {
   module: Module[]
@@ -12,6 +13,7 @@ interface ModuleCardsProps {
 }
 
 export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCardsProps) => {
+  const { setModule } = useAdmin()
   const navigate = useNavigate()
 
   const modulesFilter = () => {
@@ -20,6 +22,7 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
   }
 
   const handlerSetModule = (module: Module) => {
+    setModule(module)
     navigate(`/learn/module/${module._id}`)
   }
 
