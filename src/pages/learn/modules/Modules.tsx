@@ -37,8 +37,8 @@ export const Modules = () => {
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
-            <Suspense key={search + '-module-cards'} fallback={<div>loading...</div>}>
-              <ModuleCards module={modules} filter={search} isLoading={loading} />
+            <Suspense fallback={<div>loading...</div>} key={search + '-module-cards'} >
+              <ModuleCards filter={search} isLoading={loading} module={modules} />
             </Suspense>
           </div>
 

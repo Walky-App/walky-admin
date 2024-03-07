@@ -57,7 +57,7 @@ export const Units = () => {
                         <div className="flex flex-1 flex-col justify-evenly">
                             <div className="flex basis-1/3 flex-wrap ">
                                 <Badge color="gray" size="sm">
-                                    <p className="text-xs font-normal text-stone-500">{category?.title}</p>
+                                    <p className="text-xs font-normal text-stone-500">{module?.category?.title}</p>
                                 </Badge>
                             </div>
                             <div className="text-xl font-semibold text-black">{module?.title}</div>
