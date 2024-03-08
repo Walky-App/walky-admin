@@ -2,6 +2,7 @@ import { Fragment, useContext, useRef, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
 import { Button } from 'primereact/button'
+import { Image } from 'primereact/image'
 import { Toast, ToastMessage } from 'primereact/toast'
 
 import { cn } from '../../../../utils/cn'
@@ -65,8 +66,12 @@ export const Step3 = ({ step, setStep }: StepProps) => {
           <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
             {facilitiesArray?.map(facility => (
               <li key={facility._id} className="overflow-hidden rounded-xl border border-gray-200">
-                <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                  <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
+                <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6 h-20">
+                  {facility.images[0]?.url ? (
+                    <Image src={facility.images[0]?.url} alt="Facility logo" className="max-h-12 max-w-20" />
+                  ) : (
+                    <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
+                  )}
                   <div className="text-sm font-medium leading-6 text-gray-900">{facility.name}</div>
                   <Menu as="div" className="relative ml-auto">
                     <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
