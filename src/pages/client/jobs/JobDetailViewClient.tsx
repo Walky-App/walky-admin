@@ -35,7 +35,6 @@ export default function JobDetailViewClient() {
         const job = await RequestService(`jobs/${params.id}`)
         if (job) {
           setJob(job)
-          console.log(job)
         } else {
           console.log('No job found with the given id')
         }
@@ -171,9 +170,8 @@ export default function JobDetailViewClient() {
                       className="mb-4 px-2 py-1 text-xs"
                       label="Edit"
                       onClick={() => navigate(`/client/jobs/${id}/edit`)}
-                    />{' '}
+                    />
                   </div>
-
                   {job.title}
                 </>
               }>
