@@ -1,14 +1,8 @@
-import { Fragment, useContext, useEffect, useRef, useState } from 'react'
+import { Fragment, useContext } from 'react'
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Dropdown } from 'primereact/dropdown'
-import {
-  FileUpload,
-  FileUploadBeforeSendEvent,
-  FileUploadErrorEvent,
-  FileUploadUploadEvent,
-} from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { InputMask } from 'primereact/inputmask'
 import { InputNumber } from 'primereact/inputnumber'
@@ -16,11 +10,10 @@ import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { Panel } from 'primereact/panel'
-import { Toast, ToastMessage } from 'primereact/toast'
+import { ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../../services/RequestService'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { FormDataContext, getFormErrorMessage, IFacilityFormInputs, tooltipOptions } from '../ClientOnboardingPage'
 import { countries, services, states } from '../formOptions'
 
@@ -32,14 +25,9 @@ interface AddFacilityDialogProps {
 }
 
 export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: AddFacilityDialogProps) => {
-  const [showFileUploader, setShowFileUploader] = useState(false)
-  console.log('showFileUploader: ', showFileUploader)
   const { facilitiesArray, setFacilitiesArray, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
-  console.log('selectedFacility: ', selectedFacility)
-  const { corp_name, tax_id } = facilitiesArray[0]
 
-  const toast = useRef<Toast>(null)
-  const fileUploadRef = useRef<FileUpload>(null)
+  const { corp_name, tax_id } = facilitiesArray[0]
 
   const {
     control,
@@ -72,7 +60,6 @@ export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: Add
         }
 
         const response = await RequestService(`facilities/${selectedFacility?._id}`, 'PATCH', updatedFacility)
-        console.log('patch response: ', response)
 
         if (response?._id) {
           // @ts-expect-error toastRef.current may be null
@@ -127,39 +114,6 @@ export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: Add
       <Button label="Save" onClick={handleSubmit(onSubmit)} />
     </div>
   )
-
-  const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
-    const { access_token } = GetTokenInfo()
-    event.xhr.setRequestHeader('Authorization', `Bearer ${access_token}`)
-  }
-
-  const handleUploadSuccess = (event: FileUploadUploadEvent) => {
-    if (event.xhr.status === 200) {
-      const response: IFacilityFormInputs = JSON.parse(event.xhr.response)
-      toast.current?.show({
-        severity: 'info',
-        summary: 'File Uploaded',
-        detail: `${event.files[0].name} has been uploaded successfully.`,
-        life: 2000,
-      })
-
-      setFacilitiesArray(prevArray => prevArray.map(facility => (facility._id === response._id ? response : facility)))
-    } else {
-      console.error('Error status:', event.xhr.status)
-      console.error('Error status text:', event.xhr.statusText)
-      console.error('Error response text:', event.xhr.responseText)
-    }
-  }
-
-  const handleUploadError = (event: FileUploadErrorEvent) => {
-    console.error('Error uploading file:', event.files[0].name)
-    toast.current?.show({
-      severity: 'error',
-      summary: 'Error',
-      detail: `Error uploading ${event.files[0].name}`,
-      life: 2000,
-    })
-  }
 
   return (
     <Dialog
@@ -591,44 +545,6 @@ export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: Add
                     })}
                   </div>
                 </Panel>
-                {!showFileUploader ? (
-                  <Button
-                    className="mt-3"
-                    label="Upload more"
-                    size="small"
-                    onClick={() => setShowFileUploader(true)}
-                    icon="pi pi-plus"
-                  />
-                ) : null}
-              </div>
-            ) : null}
-
-            {showFileUploader || selectedFacility?.images.length === 0 ? (
-              <div className="sm:col-span-6">
-                <label htmlFor="facilityImages" className="block text-sm font-medium leading-6 text-gray-900">
-                  Upload Images:
-                </label>
-                <div className="mt-2">
-                  <FileUpload
-                    id="facilityImages"
-                    name="files"
-                    ref={fileUploadRef}
-                    maxFileSize={2000000}
-                    accept="image/*"
-                    multiple={true}
-                    mode="advanced"
-                    url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${selectedFacility?._id}/images`}
-                    onBeforeSend={handleBeforeSend}
-                    onUpload={handleUploadSuccess}
-                    onError={handleUploadError}
-                    emptyTemplate={
-                      <p>
-                        Drag and drop <u>Facility Image</u> files to upload. Max file size: 2MB
-                      </p>
-                    }
-                    previewWidth={200}
-                  />
-                </div>
               </div>
             ) : null}
           </div>

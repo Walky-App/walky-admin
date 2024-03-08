@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
+import { createContext, Dispatch, Fragment, SetStateAction, useRef, useState } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { MenuItem } from 'primereact/menuitem'
 import { Steps } from 'primereact/steps'
@@ -93,7 +93,7 @@ export interface FormDataContextProps {
 }
 
 // Initialize the context with the defined shape and default value
-export const FormDataContext = React.createContext<FormDataContextProps>({
+export const FormDataContext = createContext<FormDataContextProps>({
   defaultValues: defaultFacilityFormValues,
   formData: defaultFacilityFormValues,
   setFormData: () => {
@@ -146,7 +146,7 @@ export const tooltipOptions: TooltipOptions = {
 export const ClientOnboarding = () => {
   const user = GetTokenInfo()
   const [visible, setVisible] = useState<boolean>(true)
-  const [activeIndex, setActiveIndex] = React.useState<number>(0)
+  const [activeIndex, setActiveIndex] = useState<number>(0)
   const [formData, setFormData] = useState<IFacilityFormInputs>({
     ...defaultFacilityFormValues,
     user_id: user?._id || '',
@@ -155,7 +155,6 @@ export const ClientOnboarding = () => {
   const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
 
   const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
-  console.log('facilitiesArray: ', facilitiesArray)
 
   const toast = useRef(null)
 
@@ -168,10 +167,9 @@ export const ClientOnboarding = () => {
       },
     },
     {
-      label: 'Licenses',
+      label: 'Documents and Images',
       command: event => {
         // @ts-expect-error toast.current may be null
-
         toast.current?.show({ severity: 'info', summary: 'Second Step', detail: event.item.label })
       },
     },
@@ -179,7 +177,6 @@ export const ClientOnboarding = () => {
       label: 'Locations',
       command: event => {
         // @ts-expect-error toast.current may be null
-
         toast.current?.show({ severity: 'info', summary: 'Third Step', detail: event.item.label })
       },
     },
@@ -187,7 +184,6 @@ export const ClientOnboarding = () => {
       label: 'Payment Information',
       command: event => {
         // @ts-expect-error toast.current may be null
-
         toast.current?.show({ severity: 'info', summary: 'Fourth Step', detail: event.item.label })
       },
     },
@@ -195,17 +191,16 @@ export const ClientOnboarding = () => {
       label: 'Terms and Conditions',
       command: event => {
         // @ts-expect-error toast.current may be null
-
         toast.current?.show({ severity: 'info', summary: 'Fifth Step', detail: event.item.label })
       },
     },
   ]
 
   const onboardingSteps = [
-    <React.Fragment key="step1">
+    <Fragment key="step1">
       <WelcomeDialog visible={visible} setVisible={setVisible} />
       <Step1 step={activeIndex} setStep={setActiveIndex} />
-    </React.Fragment>,
+    </Fragment>,
     <Step2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
     <Step3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
     <Step4 key="step4" step={activeIndex} setStep={setActiveIndex} />,
