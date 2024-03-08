@@ -4,6 +4,8 @@ import { BookmarkIcon as BookmarkIconSolid, BriefcaseIcon, CreditCardIcon, MapPi
 import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outline'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Rating } from 'primereact/rating'
+import { Tag } from 'primereact/tag'
 
 import 'primeicons/primeicons.css'
 
@@ -51,18 +53,31 @@ export default function JobDetailViewClient() {
     earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date))))
     latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date))))
   }
+
+  const footer = (
+    <div className="flex justify-end">
+      <Button label="Accept" className="mr-3 mt-3" />
+      <Button label="Reject" severity="secondary" className="mt-3" />
+    </div>
+  )
+  const header = <div>This is the header</div>
   return (
     <>
       <HeaderComponent title="Job Details" />
       <div className="flex items-start justify-between">
         {job && 'start_time' in job && 'end_time' in job && 'job_dates' in job ? (
-          <div className='w-1/2'>
+          <div className="w-1/2">
             <Card
               title={
                 <>
                   <div className="flex items-center justify-between">
                     <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
-                    <Button className="px-2 py-1 text-xs mb-4" label="Edit" onClick={() => navigate(`/client/jobs/${id}/edit`)} />                  </div>
+                    <Button
+                      className="mb-4 px-2 py-1 text-xs"
+                      label="Edit"
+                      onClick={() => navigate(`/client/jobs/${id}/edit`)}
+                    />{' '}
+                  </div>
 
                   {job.title}
                 </>
@@ -88,7 +103,9 @@ export default function JobDetailViewClient() {
                 <div className="flex items-start gap-2">
                   {job.isActive === true ? <i className="pi pi-check"></i> : <i className="pi pi-times-circle"></i>}
                   <div className="mt-0.5 flex flex-col gap-1">
-                    <span className="text-xs font-medium text-black">Active</span>
+                    <span className="text-xs font-medium text-black">
+                      {job.isActive === true ? 'Active' : 'Disabled'}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -98,12 +115,14 @@ export default function JobDetailViewClient() {
                     <i className="pi pi-calendar-times"></i>
                   )}
                   <div className="mt-0.5 flex flex-col gap-1">
-                    <span className="text-xs font-medium text-black">Live</span>
+                    <span className="text-xs font-medium text-black">
+                      {job.isCompleted === false ? 'Live' : 'Archived'}
+                    </span>
                   </div>
                 </div>
                 <div className="mt-0.5 flex items-start gap-2">
-                  <BriefcaseIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
-                  <div className="text-xs font-medium text-black">Open</div>
+                  {job.isFull === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
+                  <div className="text-xs font-medium text-black">{job.isFull === false ? 'Open' : 'Full'}</div>
                 </div>
               </div>
               {/* Divider */}
@@ -138,10 +157,78 @@ export default function JobDetailViewClient() {
           <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
         )}
       </div>
-      <Card></Card>
-      <Card></Card>
-      <Card></Card>
-      <Card></Card>
+      {/* Accept All Card */}
+
+      <Card className="md:w-25rem mb-4 mt-4">
+        <div className="flex justify-start">
+          <i className="pi pi-info-circle text-3xl"></i>
+        </div>
+        <div className="flex justify-center">
+          <p className="w-3/4">
+            You can reject the workers within X hours of the worker accepted the job. If no reject is done in X hours
+            then worker is automatically accepted and then the contract is created automatically. you and applicant both
+            are notified about the contract.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <Button label="Accept All" className="mt-3" />
+        </div>
+      </Card>
+      {/* Applicant Card */}
+      <Card
+        title="Dolores Smith"
+        subTitle={
+          <>
+            <Rating value={5} readOnly cancel={false} className='mb-3'/>
+            <Tag severity="success" value="Harvesting" className='mr-1'/>
+            <Tag severity="success" value="Trimming" className='mr-1'/>
+            <Tag severity="success" value="Packaging" className='mr-1'/>
+          </>
+        }
+        footer={footer}
+        className="md:w-25rem mb-3 mt-3">
+        <p className="m-0">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
+          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+          neque quas!
+        </p>
+      </Card>
+      <Card
+        title="Richard Johnson"
+        subTitle={
+          <>
+            <Rating value={4} readOnly cancel={false} className='mb-3'/>
+            <Tag severity="success" value="Harvesting" className='mr-1'/>
+            <Tag severity="success" value="Trimming" className='mr-1'/>
+          </>
+        }
+        footer={footer}
+        className="md:w-25rem mb-3 mt-3">
+        <p className="m-0">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
+          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+          neque quas!
+        </p>
+      </Card>
+      <Card
+        title="Michael Creed"
+        subTitle={
+          <>
+            <Rating value={3} readOnly cancel={false} className='mb-3'/>
+            <Tag severity="success" value="Harvesting" className='mr-1'/>
+            <Tag severity="success" value="Trimming" className='mr-1'/>
+            <Tag severity="success" value="Packaging" className='mr-1'/>
+          </>
+        }
+        footer={footer}
+        className="md:w-25rem mb-3 mt-3">
+        <p className="m-0">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
+          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+          neque quas!
+        </p>
+      </Card>
+      
     </>
   )
 }
