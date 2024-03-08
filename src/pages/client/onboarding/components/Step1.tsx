@@ -1,26 +1,16 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
-import {
-  FileUpload,
-  FileUploadBeforeSendEvent,
-  FileUploadErrorEvent,
-  FileUploadSelectEvent,
-  FileUploadUploadEvent,
-} from 'primereact/fileupload'
-import { Image } from 'primereact/image'
 import { InputMask } from 'primereact/inputmask'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
-import { Panel } from 'primereact/panel'
 import { Toast, ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../../services/RequestService'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import {
   FormDataContext,
   getFormErrorMessage,
@@ -31,24 +21,10 @@ import {
 import { countries, services, states } from '../formOptions'
 
 export const Step1 = ({ step, setStep }: StepProps) => {
-  const [showFileUploader, setShowFileUploader] = useState(true)
-
-  const [selectedImages, setSelectedImages] = useState<File[]>([])
-
   const [isLoading, setIsLoading] = useState(false)
   const { setFormData, defaultValues, formData, facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 
   const toast = useRef(null)
-  const fileUploadRef = useRef<FileUpload>(null)
-  console.log('fileUploadRef: ', fileUploadRef)
-  const fileUploadUrlRef = useRef('')
-  console.log('fileUploadUrlRef: ', fileUploadUrlRef)
-  const uploadErrorRef = useRef(false)
-  console.log('uploadErrorRef: ', uploadErrorRef)
-
-  useEffect(() => {
-    setShowFileUploader(facilitiesArray[0]?.images.length > 2 ? false : true)
-  }, [facilitiesArray])
 
   const onRemoveToast = (toastData: ToastMessage) => {
     // @ts-expect-error toastRef.current may be null
@@ -79,22 +55,12 @@ export const Step1 = ({ step, setStep }: StepProps) => {
     setFormData(data)
     setIsLoading(true)
 
-    const existingFacilityId = facilitiesArray[0]?._id
+    let facilityId = facilitiesArray[0]?._id
 
-    const uploadFiles = (facilityId: string): void => {
-      if (selectedImages && selectedImages.length > 0) {
-        fileUploadUrlRef.current = `${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/images`
-
-        fileUploadRef.current?.upload()
-      }
-    }
-
-    let facilityId
-
-    if (existingFacilityId) {
+    if (facilityId) {
       // Existing facility, PATCH operation
       try {
-        const facilityFound = await RequestService(`facilities/${existingFacilityId}`)
+        const facilityFound = await RequestService(`facilities/${facilityId}`)
 
         if (facilityFound) {
           const updatedFacility = {
@@ -104,24 +70,21 @@ export const Step1 = ({ step, setStep }: StepProps) => {
             images: facilitiesArray[0].images,
           }
 
-          const response = await RequestService(`facilities/${existingFacilityId}`, 'PATCH', updatedFacility)
+          const response = await RequestService(`facilities/${facilityId}`, 'PATCH', updatedFacility)
 
           if (response?._id) {
             facilityId = response._id
 
-            uploadFiles(facilityId)
+            // @ts-expect-error toastRef.current may be null
+            toast.current?.show({
+              severity: 'success',
+              summary: 'Changes saved for:',
+              detail: getValues('name'),
+            })
 
-            if (uploadErrorRef.current === false) {
-              // @ts-expect-error toastRef.current may be null
-              toast.current?.show({
-                severity: 'success',
-                summary: 'Changes saved for:',
-                detail: getValues('name'),
-              })
-              setFacilitiesArray(prevArray =>
-                prevArray.map(facility => (facility._id === response._id ? response : facility)),
-              )
-            }
+            setFacilitiesArray(prevArray =>
+              prevArray.map(facility => (facility._id === response._id ? response : facility)),
+            )
           } else {
             throw new Error('Failed to update facility')
           }
@@ -145,18 +108,14 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         if (response?._id) {
           facilityId = response._id
 
-          uploadFiles(facilityId)
-
-          if (uploadErrorRef.current === false) {
-            // @ts-expect-error toastRef.current may be null
-            toast.current?.show({
-              severity: 'success',
-              summary: 'Success',
-              detail: `${getValues('name')} created successfully.`,
-              life: 2000,
-            })
-            setFacilitiesArray([response])
-          }
+          // @ts-expect-error toastRef.current may be null
+          toast.current?.show({
+            severity: 'success',
+            summary: 'Success',
+            detail: `${getValues('name')} created successfully.`,
+            life: 2000,
+          })
+          setFacilitiesArray([response])
         } else {
           throw new Error('Failed to add facility')
         }
@@ -169,47 +128,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           detail: `${getValues('name')} already exists.`,
         })
       }
-    }
-  }
-
-  const handleFileSelect = (event: FileUploadSelectEvent) => {
-    const files = event.files
-    setSelectedImages(prevFiles => [...prevFiles, ...files])
-
-    console.log('files: ', files)
-  }
-
-  const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
-    const { access_token } = GetTokenInfo()
-    event.xhr.setRequestHeader('Authorization', `Bearer ${access_token}`)
-  }
-
-  const handleUploadError = (event: FileUploadErrorEvent) => {
-    uploadErrorRef.current = true
-    console.error('Error uploading file:', event.files[0]?.name)
-    // @ts-expect-error toastRef.current may be null
-    toast.current?.show({
-      severity: 'error',
-      summary: 'Error',
-      detail: `Error uploading ${event.files[0]?.name}`,
-      life: 2000,
-    })
-  }
-
-  const handleUploadSuccess = (event: FileUploadUploadEvent) => {
-    if (event.xhr.status === 200) {
-      const data: IFacilityFormInputs = JSON.parse(event.xhr.response)
-      // @ts-expect-error toastRef.current may be null
-      toast.current?.show({
-        severity: 'info',
-        summary: 'File Uploaded',
-        detail: `${event.files[0].name} has been uploaded successfully.`,
-        life: 2000,
-      })
-    } else {
-      console.error('Error status:', event.xhr.status)
-      console.error('Error status text:', event.xhr.statusText)
-      console.error('Error response text:', event.xhr.responseText)
     }
   }
 

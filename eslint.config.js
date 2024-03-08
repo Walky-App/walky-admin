@@ -116,13 +116,11 @@ export default tseslint.config(
       ],
       'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': 'pascalcase' }],
     },
-    overrides: [
-      {
-        files: ['**/index.tsx'], // adjust this if your file is in a specific directory
-        rules: {
-          '@typescript-eslint/naming-convention': 'off',
-        },
-      },
-    ],
+  },
+  {
+    files: ['**/index.tsx'], // adjust this if your file is in a specific directory
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
+    },
   },
 )
