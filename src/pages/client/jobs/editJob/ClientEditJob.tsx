@@ -1,17 +1,17 @@
 import React, { useEffect, useRef } from 'react'
-import { useParams } from 'react-router-dom'
-import { RequestService } from '../../../../services/RequestService'
-import { useNavigate } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from 'primereact/button'
-import { classNames } from 'primereact/utils'
-import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
-import { Toast } from 'primereact/toast'
 import { Dropdown } from 'primereact/dropdown'
-import { IFacility } from '../../../../interfaces/Facility'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { InputNumber } from 'primereact/inputnumber'
+import { Toast } from 'primereact/toast'
+import { classNames } from 'primereact/utils'
+
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
+import { IFacility } from '../../../../interfaces/Facility'
+import { RequestService } from '../../../../services/RequestService'
+import { GetTokenInfo } from '../../../../utils/TokenUtils'
 
 export default function ClientEditJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
@@ -22,11 +22,10 @@ export default function ClientEditJob() {
   const id = user?._id
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<IFacility[]>()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getFacilities = async () => {
-      console.log('id for fetching all facilities', id)
       const allFacilitiesByClient = await RequestService(`facilities/byclient/${id}`)
       setFacilities(allFacilitiesByClient)
     }
@@ -35,12 +34,12 @@ export default function ClientEditJob() {
   }, [])
 
   function militaryToStandardDate(time: any, date: any) {
-    const hours = Math.floor(time / 100);
-    const minutes = time % 100;
-    const dateObj = new Date(date);
-    dateObj.setHours(hours);
-    dateObj.setMinutes(minutes);
-    return dateObj;
+    const hours = Math.floor(time / 100)
+    const minutes = time % 100
+    const dateObj = new Date(date)
+    dateObj.setHours(hours)
+    dateObj.setMinutes(minutes)
+    return dateObj
   }
 
   useEffect(() => {
@@ -58,9 +57,7 @@ export default function ClientEditJob() {
         const endTime = militaryToStandardDate(job.end_time, jobDates[0])
         setValue('start_time', startTime)
         setValue('end_time', endTime)
-      } else {
-        console.log(job)
-      }
+      } 
     }
     getJob()
   }, [facilities])
@@ -101,25 +98,24 @@ export default function ClientEditJob() {
 
   const onSubmit = async (data: any) => {
     try {
-      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null;
-      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null;
-      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary };
-      const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData);
-      console.log('After Submit response -->', response);
+      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
+      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
+      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
+      const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData)
       if (response) {
         toast.current?.show({
           severity: 'success',
           summary: 'Success',
           detail: 'Job information updated successfully',
-        });
+        })
         setTimeout(() => {
-          navigate(`/client/jobs/${params.id}`);
-        }, 3000);
+          navigate(`/client/jobs/${params.id}`)
+        }, 3000)
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   const options = [
     { title: 'Harvester', value: 'Harvester' },
@@ -208,7 +204,7 @@ export default function ClientEditJob() {
                           <div>{getFormErrorMessage(field.name)}</div>
                         </div>
                       </>
-                    )} 
+                    )}
                   />{' '}
                 </div>
               </div>
