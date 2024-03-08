@@ -302,12 +302,12 @@ export default function JobDetailViewClient() {
                           type="button"
                           className="relative mr-3 inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                           Accept
-                        </button>{' '}
+                        </button>
                         <button
                           type="button"
-                          className="relative inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                          className="relative inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
                           Reject
-                        </button>{' '}
+                        </button>
                       </div>
                       <ChevronRightIcon className="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
                     </div>
@@ -345,12 +345,13 @@ export default function JobDetailViewClient() {
                           </a>
                         </p>
                         <p className="mt-1 text-sm text-gray-500">
-                          I am enjoying working at this facility. The staff is very friendly and the work environment is very good.
+                          I am enjoying working at this facility. The staff is very friendly and the work environment is
+                          very good.
                         </p>
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-x-4">
-                    <Tag severity="success" value="Accepted"></Tag>
+                      <Tag severity="success" value="Accepted"></Tag>
                     </div>
                   </li>
                 ))}
