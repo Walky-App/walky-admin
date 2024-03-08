@@ -46,15 +46,12 @@ export default function ClientEditJob() {
   useEffect(() => {
     const getJob = async () => {
       const job = await RequestService(`jobs/${params.id}`)
-      console.log('Here is the job before setting values -->', job)
       if (job) {
         setJob(job)
         setValue('title', job.title)
         setValue('facility_id', job.facility._id)
         setValue('vacancy', job.vacancy)
         setValue('lunch_break', job.lunch_break)
-        //@ts-ignore
-        //@ts-ignore
         const jobDates = job.job_dates.map((dateString: string) => new Date(dateString))
         setValue('job_dates', jobDates)
         const startTime = militaryToStandardDate(job.start_time, jobDates[0])
@@ -107,7 +104,8 @@ export default function ClientEditJob() {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null;
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null;
       const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary };
-      const response = await RequestService('jobs', 'PATCH', requestData);
+      const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData);
+      console.log('After Submit response -->', response);
       if (response) {
         toast.current?.show({
           severity: 'success',
