@@ -25,6 +25,7 @@ const defaultFacilityFormValues: IFacilityFormInputs = {
   corp_name: '',
   company_dbas: [],
   services: [],
+  images: [],
   contacts: [
     {
       first_name: '',
@@ -42,7 +43,6 @@ export interface ILicenseDocument {
   url: string
   key: string
   timestamp: string
-  // createdBy: string
 }
 
 export interface IContact {
@@ -51,6 +51,13 @@ export interface IContact {
   role: string
   phone_number: string
   email: string
+}
+
+export interface IImage {
+  id: number
+  url: string
+  key: string
+  timestamp: string
 }
 
 export interface IFacilityFormInputs {
@@ -69,6 +76,7 @@ export interface IFacilityFormInputs {
   corp_name: string
   company_dbas: string[]
   services: string[]
+  images: IImage[]
   contacts: IContact[]
   licenses: ILicenseDocument[]
   _id?: string
@@ -147,6 +155,7 @@ export const ClientOnboarding = () => {
   const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
 
   const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
+  console.log('facilitiesArray: ', facilitiesArray)
 
   const toast = useRef(null)
 

@@ -19,6 +19,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
 
   const facilityId = facilitiesArray[0]?._id
   const toast = useRef<Toast>(null)
+  const fileUploadRef = useRef<FileUpload>(null)
 
   useEffect(() => {
     setShowFileUploader(facilitiesArray[0]?.licenses.length < 2)
@@ -34,7 +35,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
     })
   }
 
-  const onRemove = (toastData: ToastMessage) => {
+  const onRemoveToast = (toastData: ToastMessage) => {
     // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
@@ -45,25 +46,12 @@ export const Step2 = ({ step, setStep }: StepProps) => {
     setIsLoading(false)
   }
 
-  const fileUploadRef = useRef<FileUpload>(null)
-
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
     const { access_token } = GetTokenInfo()
     event.xhr.setRequestHeader('Authorization', `Bearer ${access_token}`)
-
-    // Save this for document type handling in the backend:
-    // const documentType = fileUploadRef.current?.props.id as string
-    // const data = event.formData
-
-    // data.set('documentType', documentType)
-
-    // data.forEach((value, key) => {
-    //   console.log('key: ', key)
-    //   console.log('value: ', value)
-    // })
   }
 
-  const handleUpload = (event: FileUploadUploadEvent) => {
+  const handleUploadSuccess = (event: FileUploadUploadEvent) => {
     if (event.xhr.status === 200) {
       const data: IFacilityFormInputs = JSON.parse(event.xhr.response)
       toast.current?.show({
@@ -100,7 +88,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
 
   return (
     <div>
-      <Toast ref={toast} onRemove={e => onRemove(e)} />
+      <Toast ref={toast} onRemove={e => onRemoveToast(e)} />
       <div className="space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
@@ -137,62 +125,32 @@ export const Step2 = ({ step, setStep }: StepProps) => {
             ) : null}
 
             {showFileUploader ? (
-              <>
-                <div className="sm:col-span-6">
-                  <label htmlFor="stateLicenseDocument" className="block text-sm font-medium leading-6 text-gray-900">
-                    Upload State License:
-                  </label>
-                  <div className="mt-2">
-                    <FileUpload
-                      id="stateLicenseDocument"
-                      name="files"
-                      ref={fileUploadRef}
-                      maxFileSize={1000000}
-                      disabled={false}
-                      accept="application/pdf"
-                      multiple={false}
-                      mode="advanced"
-                      url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`}
-                      onBeforeSend={handleBeforeSend}
-                      onUpload={handleUpload}
-                      onError={handleUploadError}
-                      emptyTemplate={
-                        <p>
-                          Drag and drop <u>State License</u> PDF files to upload. Max size: 1MB
-                        </p>
-                      }
-                      previewWidth={200}
-                    />
-                  </div>
+              <div className="sm:col-span-6">
+                <label htmlFor="stateLicenseDocument" className="block text-sm font-medium leading-6 text-gray-900">
+                  Upload Licenses:
+                </label>
+                <div className="mt-2">
+                  <FileUpload
+                    id="stateLicenseDocument"
+                    name="files"
+                    ref={fileUploadRef}
+                    maxFileSize={1000000}
+                    accept="application/pdf, image/*"
+                    multiple={true}
+                    mode="advanced"
+                    url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`}
+                    onBeforeSend={handleBeforeSend}
+                    onUpload={handleUploadSuccess}
+                    onError={handleUploadError}
+                    emptyTemplate={
+                      <p>
+                        Drag and drop <u>State License</u> PDF files to upload. Max size: 1MB
+                      </p>
+                    }
+                    previewWidth={200}
+                  />
                 </div>
-
-                <div className="sm:col-span-6">
-                  <label htmlFor="demo" className="block text-sm font-medium leading-6 text-gray-900">
-                    Upload City License:
-                  </label>
-                  <div className="mt-2">
-                    <FileUpload
-                      id="cityLicenseDocument"
-                      name="files"
-                      ref={fileUploadRef}
-                      maxFileSize={1000000}
-                      disabled={false}
-                      accept="application/pdf"
-                      multiple={false}
-                      mode="advanced"
-                      url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`}
-                      onBeforeSend={handleBeforeSend}
-                      onUpload={handleUpload}
-                      onError={handleUploadError}
-                      emptyTemplate={
-                        <p>
-                          Drag and drop <u>City License</u> PDF files to upload. Max size: 1MB
-                        </p>
-                      }
-                    />
-                  </div>
-                </div>
-              </>
+              </div>
             ) : null}
           </div>
         </div>
@@ -207,7 +165,11 @@ export const Step2 = ({ step, setStep }: StepProps) => {
             setStep(step - 1)
           }}
         />
-        <Button label={facilitiesArray[0]?.licenses.length ? "Save" : "Skip for now"} onClick={showSavedToast} loading={isLoading} />
+        <Button
+          label={facilitiesArray[0]?.licenses.length ? 'Save' : 'Skip for now'}
+          onClick={showSavedToast}
+          loading={isLoading}
+        />
       </div>
     </div>
   )
