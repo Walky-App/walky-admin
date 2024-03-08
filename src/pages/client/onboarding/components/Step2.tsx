@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { use, useContext, useEffect, useRef, useState } from 'react'
 import { Button } from 'primereact/button'
 import {
   FileUpload,
@@ -6,6 +6,7 @@ import {
   FileUploadErrorEvent,
   FileUploadUploadEvent,
 } from 'primereact/fileupload'
+import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
 import { Toast, ToastMessage } from 'primereact/toast'
 
@@ -90,6 +91,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
     <div>
       <Toast ref={toast} onRemove={e => onRemoveToast(e)} />
       <div className="space-y-12">
+        {/* Business License Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Documents</h2>
@@ -144,7 +146,77 @@ export const Step2 = ({ step, setStep }: StepProps) => {
                     onError={handleUploadError}
                     emptyTemplate={
                       <p>
-                        Drag and drop <u>State License</u> PDF files to upload. Max size: 1MB
+                        Drag and drop <u>State and/or City License</u> PDF files to upload. Max size: 1MB
+                      </p>
+                    }
+                    previewWidth={200}
+                  />
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Facility Images */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Images</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please upload your business license documents. Please make sure your upload is clear without any warped or
+              blur portions and shows all relevant information.
+            </p>
+          </div>
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            {facilitiesArray[0]?.images.length > 0 ? (
+              <div className="sm:col-span-6">
+                <Panel header="Uploaded Images">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
+                    {facilitiesArray[0]?.images.map((image) => {
+                      const fileName = image.key.split('/').pop()
+                      return (
+                        <div key={image.timestamp} className="flex w-full sm:w-auto flex-col items-center justify-center">
+                          <Image src={image.url} alt={fileName} preview pt={{ image: { className: 'h-16 w-auto' } }} />
+                          <p className="cursor-default px-5 py-1.5 text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">
+                            {fileName}
+                          </p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </Panel>
+                {!showFileUploader ? (
+                  <Button
+                    className="mt-3"
+                    label="Upload more"
+                    size="small"
+                    onClick={() => setShowFileUploader(true)}
+                    icon="pi pi-plus"
+                  />
+                ) : null}
+              </div>
+            ) : null}
+
+            {showFileUploader ? (
+              <div className="sm:col-span-6">
+                <label htmlFor="facilityImages" className="block text-sm font-medium leading-6 text-gray-900">
+                  Upload Images:
+                </label>
+                <div className="mt-2">
+                  <FileUpload
+                    id="facilityImages"
+                    name="files"
+                    ref={fileUploadRef}
+                    maxFileSize={2000000}
+                    accept="image/*"
+                    multiple={true}
+                    mode="advanced"
+                    url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/images`}
+                    onBeforeSend={handleBeforeSend}
+                    onUpload={handleUploadSuccess}
+                    onError={handleUploadError}
+                    emptyTemplate={
+                      <p>
+                        Drag and drop <u>Facility Image</u> files to upload. Max file size: 2MB
                       </p>
                     }
                     previewWidth={200}
@@ -166,7 +238,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
           }}
         />
         <Button
-          label={facilitiesArray[0]?.licenses.length ? 'Save' : 'Skip for now'}
+          label={facilitiesArray[0]?.licenses.length || facilitiesArray[0]?.images.length ? 'Save' : 'Skip for now'}
           onClick={showSavedToast}
           loading={isLoading}
         />

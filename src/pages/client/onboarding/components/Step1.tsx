@@ -28,9 +28,7 @@ import {
   StepProps,
   tooltipOptions,
 } from '../ClientOnboardingPage'
-import { countries, states } from '../formOptions'
-
-const services = ['Trimming', 'Harvesting', 'Packaging', 'Budtending', 'Gardening', 'General Labor', 'Other']
+import { countries, services, states } from '../formOptions'
 
 export const Step1 = ({ step, setStep }: StepProps) => {
   const [showFileUploader, setShowFileUploader] = useState(true)
@@ -113,7 +111,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
             uploadFiles(facilityId)
 
-            if (uploadErrorRef.current) {
+            if (uploadErrorRef.current === false) {
               // @ts-expect-error toastRef.current may be null
               toast.current?.show({
                 severity: 'success',
@@ -149,7 +147,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
           uploadFiles(facilityId)
 
-          if (uploadErrorRef.current) {
+          if (uploadErrorRef.current === false) {
             // @ts-expect-error toastRef.current may be null
             toast.current?.show({
               severity: 'success',
@@ -687,82 +685,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Facility Images */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-          <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Images</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Upload any images of your facility.</p>
-          </div>
-
-          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            {facilitiesArray[0]?.images.length > 0 ? (
-              <div className="sm:col-span-6">
-                <Panel header="Uploaded Images">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
-                    {facilitiesArray[0]?.images.map((image, index) => {
-                      const fileName = image.key.split('/').pop()
-                      return (
-                        <div key={image.timestamp} className="flex w-full flex-col items-center justify-center">
-                          <Image src={image.url} alt={fileName} preview pt={{ image: { className: 'h-16 w-auto' } }} />
-                          <p className="cursor-default px-5 py-1.5 text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">
-                            {fileName}
-                          </p>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </Panel>
-                {!showFileUploader ? (
-                  <Button
-                    className="mt-3"
-                    label="Upload more"
-                    size="small"
-                    onClick={() => setShowFileUploader(true)}
-                    icon="pi pi-plus"
-                  />
-                ) : null}
-              </div>
-            ) : null}
-
-            {showFileUploader ? (
-              <div className="sm:col-span-6">
-                <label htmlFor="stateLicenseDocument" className="block text-sm font-medium leading-6 text-gray-900">
-                  Upload Images:
-                </label>
-                <div className="mt-2">
-                  <FileUpload
-                    id="facilityImages"
-                    name="files"
-                    ref={fileUploadRef}
-                    maxFileSize={10000000}
-                    accept="image/*"
-                    multiple={true}
-                    mode="advanced"
-                    url={fileUploadUrlRef.current}
-                    onSelect={handleFileSelect}
-                    onBeforeSend={handleBeforeSend}
-                    onError={handleUploadError}
-                    onUpload={handleUploadSuccess}
-                    emptyTemplate={
-                      <p>
-                        Drag and drop <u>Facility Image</u> files to upload. Max size: 10MB
-                      </p>
-                    }
-                    previewWidth={200}
-                    pt={{
-                      uploadButton: {
-                        root: {
-                          className: 'hidden',
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-            ) : null}
-          </div>
         </div>
       </div>
 
