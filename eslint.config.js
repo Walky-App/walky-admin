@@ -91,7 +91,7 @@ export default tseslint.config(
         'warn',
         {
           selector: 'default',
-          format: ['camelCase'],
+          format: ['camelCase', 'PascalCase'],
           leadingUnderscore: 'allow',
         },
         {
