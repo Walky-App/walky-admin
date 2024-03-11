@@ -1,9 +1,9 @@
 import React, { useRef } from 'react'
 import { RequestService } from '../../../../services/RequestService'
+import { useNavigate } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils'
-import { TabView, TabPanel } from 'primereact/tabview'
 import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
 import { Toast } from 'primereact/toast'
@@ -19,6 +19,7 @@ export default function ClientAddJob() {
   const id = user?._id
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<IFacility[]>()
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const getFacilities = async () => {
@@ -63,21 +64,24 @@ export default function ClientAddJob() {
 
   const onSubmit = async (data: any) => {
     try {
-      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
-      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
-      const response = await RequestService('jobs', 'POST', requestData)
+      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null;
+      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null;
+      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary };
+      const response = await RequestService('jobs', 'POST', requestData);
       if (response) {
         toast.current?.show({
           severity: 'success',
           summary: 'Success',
           detail: 'Job information submitted successfully',
-        })
+        });
+        setTimeout(() => {
+          navigate('/client/jobs');
+        }, 3000);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const options = [
     { title: 'Harvester', value: 'Harvester' },
@@ -87,6 +91,14 @@ export default function ClientAddJob() {
     { title: 'Gardener', value: 'Gardener' },
     { title: 'Cultivator', value: 'Cultivator' },
     { title: 'Extractor', value: 'Extractor' },
+  ]
+
+  const lunchTimes = [
+    { label: '0 minutes', value: 0 },
+    { label: '15 minutes', value: 25 },
+    { label: '30 minutes', value: 50 },
+    { label: '45 minutes', value: 75 },
+    { label: '60 minutes', value: 100 },
   ]
 
   return (
@@ -158,7 +170,7 @@ export default function ClientAddJob() {
                           <div>{getFormErrorMessage(field.name)}</div>
                         </div>
                       </>
-                    )}
+                    )} 
                   />{' '}
                 </div>
               </div>
@@ -176,52 +188,45 @@ export default function ClientAddJob() {
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-5">
                 <div className="card">
-                  <TabView>
-                    <TabPanel header="Calendar View">
-                      <div className="mt-2">
-                        <Controller
-                          name="job_dates"
-                          control={control}
-                          rules={{
-                            required: 'Date is required.',
-                            validate: value => value.length > 0 || 'At least one date must be selected.',
-                          }}
-                          render={({ field, fieldState }) => (
-                            <div>
-                              <Calendar
-                                inputId={field.name}
-                                value={field.value}
-                                onChange={field.onChange}
-                                dateFormat="mm/dd/yy"
-                                selectionMode="multiple"
-                                className={classNames({ 'p-invalid': fieldState.error })}
-                                showIcon
-                                showButtonBar
-                                minDate={new Date()} // Disabling past dates
-                                inline
-                              />
-                              {field.value && field.value.length > 0 && (
-                                <div className="mt-2">
-                                  <h4>Selected Dates:</h4>
-                                  <ul className="mt-2 grid grid-cols-5 gap-2">
-                                    {field.value.map((date: Date, index: number) => (
-                                      <li key={index}>{date.toLocaleDateString()}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                              {getFormErrorMessage(field.name)}
+                  <div className="mt-2">
+                    <Controller
+                      name="job_dates"
+                      control={control}
+                      rules={{
+                        required: 'Date is required.',
+                        validate: value => value.length > 0 || 'At least one date must be selected.',
+                      }}
+                      render={({ field, fieldState }) => (
+                        <div>
+                          <Calendar
+                            inputId={field.name}
+                            value={field.value}
+                            onChange={field.onChange}
+                            dateFormat="mm/dd/yy"
+                            selectionMode="multiple"
+                            className={classNames({ 'p-invalid': fieldState.error })}
+                            showIcon
+                            showButtonBar
+                            minDate={new Date()} // Disabling past dates
+                            inline
+                          />
+                          {field.value && field.value.length > 0 && (
+                            <div className="mt-2">
+                              <h4>Selected Dates:</h4>
+                              <ul className="mt-2 grid grid-cols-5 gap-2">
+                                {field.value
+                                  .sort((a: Date, b: Date) => a.getTime() - b.getTime())
+                                  .map((date: Date, index: number) => (
+                                    <li key={index}>{date.toLocaleDateString()}</li>
+                                  ))}
+                              </ul>
                             </div>
                           )}
-                        />
-                      </div>
-                    </TabPanel>
-                    <TabPanel header="Recurring Dates">
-                      <p className="m-0">
-                        To be developed. This feature will allow you to set recurring dates for the job.{' '}
-                      </p>
-                    </TabPanel>
-                  </TabView>
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -230,8 +235,10 @@ export default function ClientAddJob() {
           {/* Shift Details */}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Details</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide working hours, lunch break duration and number of available vacancies.</p>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours and Vacancies</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Please provide working hours, lunch break duration and number of available vacancies.
+              </p>
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -300,7 +307,7 @@ export default function ClientAddJob() {
               </div>
               <div className="sm:col-span-3">
                 <label htmlFor="lunch_break" className="block text-sm font-medium leading-6 text-gray-900">
-                  Lunch Break (in minutes):
+                  Lunch Break:
                 </label>
                 <div className="mt-2">
                   <Controller
@@ -314,28 +321,16 @@ export default function ClientAddJob() {
                     render={({ field, fieldState }) => (
                       <>
                         <div>
-                          <InputNumber
+                          <Dropdown
                             id={field.name}
                             inputRef={field.ref}
                             value={field.value}
-                            onBlur={field.onBlur}
-                            onValueChange={e => field.onChange(e)}
-                            useGrouping={false}
-                            mode="decimal"
-                            tooltip="Enter lunch break time in minutes. Set to 0 if there is no lunch break for this job."
-                            tooltipOptions={{
-                              position: 'top',
-                              showDelay: 300,
-                              hideDelay: 500,
-                              pt: {
-                                text: {
-                                  className: 'bg-green-500 max-w-lg text-sm',
-                                },
-                              },
-                            }}
-                            showButtons
-                            min={0}
-                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
+                            onChange={e => field.onChange(e.value)}
+                            options={lunchTimes}
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Select lunch break duration"
+                            className={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
                         {getFormErrorMessage(field.name)}
