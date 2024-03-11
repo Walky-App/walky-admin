@@ -155,208 +155,237 @@ export default function JobDetailViewClient() {
       lastSeenDateTime: '2023-01-23T13:23Z',
     },
   ]
+
   return (
     <>
       <HeaderComponent title="Job Details" />
-      <div className="flex items-start justify-between">
-        {job && 'start_time' in job && 'end_time' in job && 'job_dates' in job ? (
-          <div className="w-1/2">
-            <Card
-              title={
-                <>
-                  <div className="flex items-center justify-between">
-                    <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
-                    <Button
-                      className="mb-4 px-2 py-1 text-xs"
-                      label="Edit"
-                      onClick={() => navigate(`/client/jobs/${id}/edit`)}
-                    />
-                  </div>
-                  {job.title}
-                </>
-              }>
-              {/* Job Facility */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-col items-start justify-start gap-1">
-                  <div className="flex items-center">
-                    <i className="pi pi-building"></i>
-                    <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
-                  </div>
-                  <div className="flex items-center">
-                    <i className="pi pi-map-marker"></i>
-                    <div className="ml-2 text-sm font-normal text-black">
-                      {job.facility.address}, {job.facility.city}, {job.facility.state}, {job.facility.zip}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="md:col-span-3">
+          <div>
+            {job && 'start_time' in job && 'end_time' in job && 'job_dates' in job ? (
+              <div>
+                <Card
+                  title={
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
+                      </div>
+                      {job.title}
+                    </>
+                  }>
+                  {/* Job Facility */}
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-col items-start justify-start gap-1">
+                      <div className="flex items-center">
+                        <i className="pi pi-building"></i>
+                        <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
+                      </div>
+                      <div className="flex items-center">
+                        <i className="pi pi-map-marker"></i>
+                        <div className="ml-2 text-sm font-normal text-black">
+                          {job.facility.address}, {job.facility.city}, {job.facility.state}, {job.facility.zip}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                  {/* Divider */}
+                  <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-start gap-2">
+                      {job.isActive === true ? <i className="pi pi-check"></i> : <i className="pi pi-times-circle"></i>}
+                      <div className="mt-0.5 flex flex-col gap-1">
+                        <span className="text-xs font-medium text-black">
+                          {job.isActive === true ? 'Active' : 'Disabled'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      {job.isCompleted === false ? (
+                        <i className="pi pi-calendar"></i>
+                      ) : (
+                        <i className="pi pi-calendar-times"></i>
+                      )}
+                      <div className="mt-0.5 flex flex-col gap-1">
+                        <span className="text-xs font-medium text-black">
+                          {job.isCompleted === false ? 'Live' : 'Archived'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-0.5 flex items-start gap-2">
+                      {job.isFull === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
+                      <div className="text-xs font-medium text-black">{job.isFull === false ? 'Open' : 'Full'}</div>
+                    </div>
+                  </div>
+                  {/* Divider */}
+                  <hr className="mt-3 h-px w-full bg-zinc-100" />
+                  <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Job Dates</div>
+                      <div className="text-xs font-normal text-black">
+                        {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Job Time</div>
+                      <div className="text-xs font-normal text-black">
+                        {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Job Card Footer */}
+                  <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
+                    <div className="flex flex-wrap items-center justify-start gap-1">
+                      <div className="text-balance text-xs font-normal text-stone-500">
+                        Last update on {new Date(job.createdAt).toLocaleDateString()}
+                      </div>
+                      <div className="h-1 w-1 rounded-full bg-stone-500" />
+                      <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
+                    </div>
+                  </div>
+                </Card>
               </div>
-              {/* Divider */}
-              <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
-              <div className="flex flex-wrap gap-8">
-                <div className="flex items-start gap-2">
-                  {job.isActive === true ? <i className="pi pi-check"></i> : <i className="pi pi-times-circle"></i>}
-                  <div className="mt-0.5 flex flex-col gap-1">
-                    <span className="text-xs font-medium text-black">
-                      {job.isActive === true ? 'Active' : 'Disabled'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  {job.isCompleted === false ? (
-                    <i className="pi pi-calendar"></i>
-                  ) : (
-                    <i className="pi pi-calendar-times"></i>
-                  )}
-                  <div className="mt-0.5 flex flex-col gap-1">
-                    <span className="text-xs font-medium text-black">
-                      {job.isCompleted === false ? 'Live' : 'Archived'}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-0.5 flex items-start gap-2">
-                  {job.isFull === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
-                  <div className="text-xs font-medium text-black">{job.isFull === false ? 'Open' : 'Full'}</div>
-                </div>
-              </div>
-              {/* Divider */}
-              <hr className="mt-3 h-px w-full bg-zinc-100" />
-              <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
-                <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                  <div className="text-xs font-normal text-stone-500">Job Dates</div>
-                  <div className="text-xs font-normal text-black">
-                    {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
-                  </div>
-                </div>
-                <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                  <div className="text-xs font-normal text-stone-500">Job Time</div>
-                  <div className="text-xs font-normal text-black">
-                    {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
-                  </div>
-                </div>
-              </div>
-              {/* Job Card Footer */}
-              <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
-                <div className="flex flex-wrap items-center justify-start gap-1">
-                  <div className="text-balance text-xs font-normal text-stone-500">
-                    Last update on {new Date(job.createdAt).toLocaleDateString()}
-                  </div>
-                  <div className="h-1 w-1 rounded-full bg-stone-500" />
-                  <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
-                </div>
-              </div>
-            </Card>
+            ) : (
+              <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
+            )}
           </div>
-        ) : (
-          <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
-        )}
-      </div>
-      <div className="card mt-5">
-        <TabView>
-          <TabPanel header="Applicants">
-            <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-              <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                <div className="ml-4">
-                  <p className="mt-1 text-sm text-gray-500">
-                    You can reject the workers within X hours of the worker accepted the job. If no reject is done in X
-                    hours then worker is automatically accepted and then the contract is created automatically. you and
-                    applicant both are notified about the contract.
-                  </p>
-                </div>
-                <div className="ml-4 mt-4 flex-shrink-0">
-                  <button
-                    type="button"
-                    className="relative inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    Accept All
-                  </button>
-                </div>
-              </div>
-              <ul className="divide-y divide-gray-100">
-                {people.map(person => (
-                  <li key={person.email} className="relative flex justify-between gap-x-6 py-5">
-                    <div className="flex min-w-0 gap-x-4">
-                      <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
-                      <div className="min-w-0 flex-auto">
-                        <p className="text-sm font-semibold leading-6 text-gray-900">
-                          <a href={person.href}>
-                            <span className="absolute inset-x-0 -top-px bottom-0" />
-                            {person.name}
-                          </a>
-                          <Rating value={3} readOnly cancel={false} />
-                        </p>
-                        <p className="mt-1 flex text-xs leading-5 text-gray-500">
-                          <a href={`mailto:${person.email}`} className="relative truncate hover:underline">
-                            {person.email}
-                          </a>
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">
-                          I would like to apply for this job as soon as possible. But I am not able to work on weekends.
-                          I am a hard worker and I am very punctual.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-x-4">
-                      <div className="hidden sm:flex sm:flex-row sm:items-end">
-                        <button
-                          type="button"
-                          className="relative mr-3 inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                          Accept
-                        </button>
-                        <button
-                          type="button"
-                          className="relative inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                          Reject
-                        </button>
-                      </div>
-                      <ChevronRightIcon className="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
-                    </div>
-                  </li>
-                ))}
+        </div>
+
+        {/* Control Buttons */}
+        <div className="md:col-span-1">
+          <div className="flew-row flex md:flex-col">
+            <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
+              <ul className="w-full divide-y divide-gray-200">
+                <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                  <Button className="w-full" label="Edit Job" onClick={() => navigate(`/client/jobs/${id}/edit`)} />
+                  <Button
+                    className="w-full"
+                    label="Close Job"
+                    severity="secondary"
+                    onClick={() => navigate(`/client/jobs/${id}/edit`)}
+                  />
+                </li>
+
+                <li className="flex items-center justify-center px-6 py-4">
+                  <Button
+                    className="w-full"
+                    label="Cancel Job"
+                    severity='warning'
+                    outlined
+                    onClick={() => navigate(`/client/jobs/${id}/edit`)}
+                  />
+                </li>
               </ul>
             </div>
-          </TabPanel>
-          <TabPanel header="Workers">
-            <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-              <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                <div className="ml-4 mt-4">
-                  <p className="mt-1 text-sm text-gray-500">
-                    This is the list of all workers who have been accepted for this job.
-                  </p>
+          </div>
+        </div>
+        {/* Control Buttons end */}
+        <div className="md:col-span-3">
+          <TabView>
+            <TabPanel header="Applicants">
+              <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                  <div className="ml-4">
+                    <p className="mt-1 text-sm text-gray-500">
+                      You can reject the workers within X hours of the worker accepted the job. If no reject is done in
+                      X hours then worker is automatically accepted and then the contract is created automatically. you
+                      and applicant both are notified about the contract.
+                    </p>
+                  </div>
+                  <div className="ml-4 mt-4 flex-shrink-0">
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      Accept All
+                    </button>
+                  </div>
                 </div>
-                <div className="ml-4 mt-4 flex-shrink-0"></div>
-              </div>
-              <ul className="divide-y divide-gray-100">
-                {workers.map(person => (
-                  <li key={person.email} className="relative flex justify-between gap-x-6 py-5">
-                    <div className="flex min-w-0 gap-x-4">
-                      <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
-                      <div className="min-w-0 flex-auto">
-                        <p className="text-sm font-semibold leading-6 text-gray-900">
-                          <a href={person.href}>
-                            <span className="absolute inset-x-0 -top-px bottom-0" />
-                            {person.name}
-                          </a>
-                          <Rating value={3} readOnly cancel={false} />
-                        </p>
-                        <p className="mt-1 flex text-xs leading-5 text-gray-500">
-                          <a href={`mailto:${person.email}`} className="relative truncate hover:underline">
-                            {person.email}
-                          </a>
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">
-                          I am enjoying working at this facility. The staff is very friendly and the work environment is
-                          very good.
-                        </p>
+                <ul className="divide-y divide-gray-100">
+                  {people.map(person => (
+                    <li key={person.email} className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
+                      <div className="flex min-w-0 gap-x-4">
+                        <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
+                        <div className="min-w-0 flex-auto">
+                          <p className="text-sm font-semibold leading-6 text-gray-900">
+                            <a href={person.href}>
+                              <span className="absolute inset-x-0 -top-px bottom-0" />
+                              {person.name}
+                            </a>
+                            <Rating value={3} readOnly cancel={false} />
+                          </p>
+                          <p className="mt-1 flex text-xs leading-5 text-gray-500">
+                            <a href={`mailto:${person.email}`} className="relative truncate hover:underline">
+                              {person.email}
+                            </a>
+                          </p>
+                          <p className="mt-1 text-sm text-gray-500">
+                            I would like to apply for this job as soon as possible. But I am not able to work on
+                            weekends. I am a hard worker and I am very punctual.
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-x-4">
-                      <Tag severity="success" value="Accepted"></Tag>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </TabPanel>
-        </TabView>
+                      <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
+                        <div className="flex flex-row items-end">
+                          <button
+                            type="button"
+                            className="relative mr-3 inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Accept
+                          </button>
+                          <button
+                            type="button"
+                            className="relative mr-3 inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </TabPanel>
+            <TabPanel header="Workers">
+              <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                  <div className="ml-4 mt-4">
+                    <p className="mt-1 text-sm text-gray-500">
+                      This is the list of all workers who have been accepted for this job.
+                    </p>
+                  </div>
+                  <div className="ml-4 mt-4 flex-shrink-0"></div>
+                </div>
+                <ul className="divide-y divide-gray-100">
+                  {workers.map(person => (
+                    <li key={person.email} className="relative flex justify-between gap-x-6 py-5">
+                      <div className="flex min-w-0 gap-x-4">
+                        <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
+                        <div className="min-w-0 flex-auto">
+                          <p className="text-sm font-semibold leading-6 text-gray-900">
+                            <a href={person.href}>
+                              <span className="absolute inset-x-0 -top-px bottom-0" />
+                              {person.name}
+                            </a>
+                            <Rating value={3} readOnly cancel={false} />
+                          </p>
+                          <p className="mt-1 flex text-xs leading-5 text-gray-500">
+                            <a href={`mailto:${person.email}`} className="relative truncate hover:underline">
+                              {person.email}
+                            </a>
+                          </p>
+                          <p className="mt-1 text-sm text-gray-500">
+                            I am enjoying working at this facility. The staff is very friendly and the work environment
+                            is very good.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-x-4">
+                        <Tag severity="success" value="Accepted"></Tag>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </TabPanel>
+          </TabView>
+        </div>
       </div>
     </>
   )
