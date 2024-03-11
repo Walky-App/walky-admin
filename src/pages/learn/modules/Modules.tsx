@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import { Module } from '../../../interfaces/Module'
+import { Module } from '../../../interfaces/module'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { ModuleCards } from '../components/ModuleCards'

@@ -5,7 +5,7 @@ import { SelectedOptionInterface } from '../../../interfaces/Global'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { FormModule } from './components/FormModule'
-import { Category } from '../../../interfaces/Category'
+import { Category } from '../../../interfaces/category'
 
 export const AdminAddModule = () => {
   const [categories, setCategories] = useState<SelectedOptionInterface[]>([

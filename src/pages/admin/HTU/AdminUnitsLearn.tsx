@@ -3,10 +3,10 @@ import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/out
 import { secondsToTimeDescription } from "../../../utils/FunctionUtils"
 import { Badge } from "flowbite-react"
 import { useEffect, useState } from "react"
-import { Module } from "../../../interfaces/Module"
+import { Module } from "../../../interfaces/module"
 import { RequestService } from "../../../services/RequestService"
 import { useNavigate, useParams } from "react-router-dom"
-import { CategoryTitle } from "../../../interfaces/Category"
+import { CategoryTitle } from "../../../interfaces/category"
 import { Bars2Icon, PlusIcon } from "@heroicons/react/20/solid"
 import { Unit } from '../../../interfaces/unit';
 import { TabPanel, TabView } from "primereact/tabview"

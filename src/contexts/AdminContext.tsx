@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useContext, useState } from 'react'
-import { Category } from '../interfaces/Category'
-import { Module } from '../interfaces/Module'
+import { Category } from '../interfaces/category'
+import { Module } from '../interfaces/module'
 import { SelectedOptionInterface } from '../interfaces/Global'
 import { Assessment, Unit } from '../interfaces/unit'
 
