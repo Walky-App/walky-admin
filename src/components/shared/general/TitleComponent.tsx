@@ -4,7 +4,7 @@ interface Props {
 
 export const TitleComponent = ({ title }: Props) => {
   return (
-    <div className="w-screen">
+    <div className="w-full">
       <div className="border-b border-gray-200 w-full">
         <h3 className="text-base font-semibold leading-6 text-gray-900 pb-2">{title}</h3>
       </div>

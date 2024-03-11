@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavigationButtonInterface } from "../../../interfaces/Global";
+import { useAdmin } from "../../../contexts/AdminContext";
+import { Section } from "../../../interfaces/Unit";
 
 interface TableContentsProps {
     header: string,
-    data: NavigationButtonInterface[]
 }
 
-
-
-export const TableContents = ({ header, data }: TableContentsProps) => {
+export const TableContents = ({ header }: TableContentsProps) => {
     const [active, setActive] = useState<number | null>(null)
+    const [dataContents, setDataContents] = useState<NavigationButtonInterface[]>([])
+    const { unit } = useAdmin()
 
     const handlerMenuNav = (item: NavigationButtonInterface, index: number) => {
         scrollToElement(item.to)
@@ -27,6 +28,19 @@ export const TableContents = ({ header, data }: TableContentsProps) => {
         }
     };
 
+    useEffect(() => {
+        if (unit) {
+            const data: NavigationButtonInterface[] = unit.sections.map((item: Section) => {
+                return {
+                    to: `${item.title.replace(' ', '-')}`,
+                    text: item.title
+                }
+            });
+            setDataContents(data)
+        }
+    }, [unit])
+
+
     return (
         <div>
             <div>
@@ -35,10 +49,10 @@ export const TableContents = ({ header, data }: TableContentsProps) => {
             <nav>
                 <ul>
                     {
-                        data.map((item, index) => (
+                        dataContents.map((item, index) => (
                             <li key={index}>
                                 <button className={`cursor-pointer border-l pl-2 hover:border-gray-400 ${index === active && 'border-green-500 hover:border-green-500 text-green-500'} `} onClick={() => handlerMenuNav(item, index)} type="button">
-                                    item.text
+                                    {item.text}
                                 </button>
                             </li>
                         ))
