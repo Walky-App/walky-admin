@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/20/solid'
 
 import { RequestService } from '../../../services/RequestService'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 
 export default function JobDetailView() {
   const [job, setJob] = useState<any>({})

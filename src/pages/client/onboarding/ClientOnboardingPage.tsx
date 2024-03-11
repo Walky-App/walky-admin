@@ -1,11 +1,13 @@
-import { createContext, Dispatch, Fragment, SetStateAction, useRef, useState } from 'react'
-import { FieldErrors } from 'react-hook-form'
-import { MenuItem } from 'primereact/menuitem'
+import { createContext, type Dispatch, Fragment, type SetStateAction, useRef, useState } from 'react'
+
+import { type FieldErrors } from 'react-hook-form'
+
+import { type MenuItem } from 'primereact/menuitem'
 import { Steps } from 'primereact/steps'
 import { Toast } from 'primereact/toast'
-import { TooltipOptions } from 'primereact/tooltip/tooltipoptions'
+import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { Step1, Step2, Step3, Step4, Step5, WelcomeDialog } from './components'
 

@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RequestService } from '../../../services/RequestService'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { useNavigate } from 'react-router-dom'

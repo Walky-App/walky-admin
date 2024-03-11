@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { useState } from 'react';
 import { RequestService } from '../../../services/RequestService';
 import { useAdmin } from '../../../contexts/AdminContext';
@@ -7,14 +7,14 @@ import { Unit } from '../../../interfaces/Unit';
 
 
 
-export default function AdminAddUnit() {
-    const { unit, setUnit, setModule } = useAdmin()
+export const AdminAddUnit = () => {
+    const { setUnit, setModule } = useAdmin()
     const [title, setTitle] = useState<string>('')
     const [time, setTime] = useState<number>(0)
     const params = useParams()
     const navigate = useNavigate()
 
-    const redirectToPreviousPath = (unitId: string = '') => {
+    const redirectToPreviousPath = (unitId = '') => {
         const currentPath = window.location.pathname;
         const newPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
         if (unitId === '') {
@@ -55,43 +55,43 @@ export default function AdminAddUnit() {
     return (
         <div className="w-full sm:overflow-x-hidden">
             <HeaderComponent
-                title={'Create Unit'}
+                title='Create Unit'
             />
             <form>
                 <div className="space-y-12">
                     <div className=" pb-12">
                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div className="col-span-6 sm:col-span-3">
-                                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="title">
                                     Title
                                 </label>
                                 <div className="mt-2">
                                     <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
                                         <input
-                                            type="text"
-                                            name="title"
-                                            id="title"
-                                            onChange={e => setTitle(e.target.value)}
                                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                                            id="title"
+                                            name="title"
+                                            onChange={e => setTitle(e.target.value)}
                                             placeholder="Unit title"
+                                            type="text"
                                         />
                                     </div>
                                 </div>
                             </div>
                             <div className="col-span-6 sm:col-span-3">
-                                <label htmlFor="reading_time" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="reading_time" >
                                     Reading time
                                 </label>
                                 <div className="mt-2">
                                     <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
                                         <input
-                                            type="number"
-                                            name="reading_time"
+                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                                             id="reading_time"
                                             min={0}
+                                            name="reading_time"
                                             onChange={e => setTime(Number(e.target.value))}
-                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                                             placeholder="x minutes"
+                                            type="number"
                                         />
                                     </div>
                                 </div>
@@ -99,15 +99,17 @@ export default function AdminAddUnit() {
                         </div>
                         <div className="mt-6 flex items-center justify-end gap-x-6">
                             <button
-                                type="button"
+                                className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200"
                                 onClick={() => redirectToPreviousPath()}
-                                className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200">
+                                type="button"
+                            >
                                 Cancel
                             </button>
                             <button
-                                type="button"
+                                className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
                                 onClick={handleRequest}
-                                className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+                                type="button"
+                            >
                                 Create
                             </button>
                         </div>

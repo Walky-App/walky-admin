@@ -1,8 +1,9 @@
+import { CategoryTitle } from './Category'
 import { Documents, TagsInterface } from './Global'
 import { Unit } from './Unit'
 
 export interface Module extends Documents {
-  category: string
+  category: CategoryTitle
   description: string
   image: string
   is_disabled?: boolean

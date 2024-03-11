@@ -1,28 +1,20 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useAdmin } from "../../../contexts/AdminContext"
 import { useParams } from "react-router-dom"
 import { RequestService } from "../../../services/RequestService"
-import TableContents from "../components/TableContents"
-import { NavigationButtonInterface } from "../../../interfaces/Global"
-import UnitDetailsCard from "../components/UnitDetailsCard"
+import { TableContents } from "../components/TableContents"
+import { UnitDetailsCard } from "../components/UnitDetailsCard"
 import { Unit } from "../../../interfaces/Unit"
 
-export default function UnitDetail() {
+export const UnitDetail = () => {
     const { unit, setUnit } = useAdmin()
-    const [dataContents, setDataContents] = useState<NavigationButtonInterface[]>([])
     const params = useParams()
 
     const fetchData = async () => {
         const response = await RequestService(`units/${params.unitId}`)
         if (response) {
             setUnit(response)
-            const data: NavigationButtonInterface[] = response.sections.map((item: any) => {
-                return {
-                    to: `${item.title.replace(' ', '-')}`,
-                    text: item.title
-                }
-            })
-            setDataContents(data)
+
         }
     }
 
@@ -34,7 +26,7 @@ export default function UnitDetail() {
     })
 
     return (
-        <>
+        <div>
             <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
                 {/*left content*/}
                 <div className="col-span-4 md:col-span-2 order-2 md:order-1 ">
@@ -51,16 +43,16 @@ export default function UnitDetail() {
                             Take the assessment to unlock the next unit.
                         </div>
                         <div className="flex justify-center mt-3">
-                            <button disabled className="rounded-md bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-sm">
+                            <button className="rounded-md bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-sm" disabled type="button">
                                 Resume Assessment
                             </button>
                         </div>
                     </div>
                     <div className="m-3">
-                        <TableContents header={'Topics'} data={dataContents} />
+                        <TableContents header='Topics' />
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
