@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
+
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 
-import { StepProps } from '../ClientOnboardingPage'
+import { type StepProps } from '../ClientOnboardingPage'
 import { FinishOnboardingDialog } from './FinishOnboardingDialog'
 
 export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
