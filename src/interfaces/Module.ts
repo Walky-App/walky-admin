@@ -1,5 +1,5 @@
 import { Documents, TagsInterface } from './Global'
-import { Unit } from './Unit'
+import { Unit } from './unit'
 
 export interface Module extends Documents {
   category: string

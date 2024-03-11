@@ -8,9 +8,10 @@ import { RequestService } from "../../../services/RequestService"
 import { useNavigate, useParams } from "react-router-dom"
 import { CategoryTitle } from "../../../interfaces/Category"
 import { Bars2Icon, PlusIcon } from "@heroicons/react/20/solid"
-import { Unit } from '../../../interfaces/Unit';
+import { Unit } from '../../../interfaces/unit';
 import { TabPanel, TabView } from "primereact/tabview"
 import { UnitDetailsCard } from "../../learn/components/UnitDetailsCard"
+import { EmptyState } from "../../../components/shared/general/EmptyState"
 
 export const AdminUnitsLearn = () => {
     const { module, setModule, setUnit, unit } = useAdmin()
@@ -121,7 +122,15 @@ export const AdminUnitsLearn = () => {
                                     <UnitDetailsCard isAdmin unit={unit as Unit} />
                                 </TabPanel>
                                 <TabPanel header="Assessment Detail">
-                                    Coming soon
+                                    {(unit?.assessments) ? <div className="w-full">
+                                        <button
+                                            className="text-sm font-semibold leading-6 text-gray-900"
+                                            onClick={() => { navigate(`/admin/learn/modules/${params.moduleId}/units/${unit._id}/assessment/${unit.assessments._id}`) }}
+                                            type="button"
+                                        >
+                                            Assessment
+                                        </button>
+                                    </div> : <EmptyState to={`/admin/learn/modules/${params.moduleId}/units/${unit._id}/assessment`} type="assessment" />}
                                 </TabPanel>
                             </TabView>
                         </div> : null
