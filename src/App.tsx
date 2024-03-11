@@ -17,8 +17,9 @@ import NewPasswordForm from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import Signup from './pages/auth/SignupForm'
 
-/** Employee Pages */
 import EmployeeProfile from './pages/employees/EmployeeProfile'
+
+/** Employee Pages */
 import EmployeeDashboard from './pages/employees/dashboard'
 import EmployeeJobs from './pages/employees/jobs'
 import JobDetailView from './pages/employees/jobs/JobDetailView'
@@ -43,8 +44,9 @@ import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage
 
 /** Sales Pages */
 import SalesDashboard from './pages/sales/dashboard'
-import Products from './pages/sales/products'
+import { ProductList as Products } from './pages/sales/products'
 import ProductDetail from './pages/sales/products/ProductDetail'
+import { ProductCategories } from './pages/sales/products/ProductCategories'
 
 // Not yet implemented
 // import SalesProfile from './pages/sales/profile/SalesProfile'
@@ -171,6 +173,9 @@ export const App = () => {
                   <Route element={<AdminAddUnit />} path="/admin/learn/modules/:moduleId/units/new" />
                   <Route element={<AdminDetailsUnit />} path="/admin/learn/modules/:moduleId/units/:unitId" />
                   <Route element={<AdminAddModule />} path="/admin/learn/modules/new" />
+                  <Route element={<Products />} path="/admin/products" />
+                  <Route element={<ProductCategories />} path="/admin/products/categories" />
+                  <Route element={<ProductDetail />} path="/admin/products/:id" />
                 </Route>
               </Route>
             </Route>
