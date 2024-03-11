@@ -292,11 +292,7 @@ export default function JobDetailViewClient() {
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0">
-                    <button
-                      type="button"
-                      className="relative inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                      Accept All
-                    </button>
+                    <Button label='Accept All' size='small'/>
                   </div>
                 </div>
                 <ul className="divide-y divide-gray-100">
@@ -325,16 +321,10 @@ export default function JobDetailViewClient() {
                       </div>
                       <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                         <div className="flex flex-row items-end">
-                          <button
-                            type="button"
-                            className="relative mr-3 inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Accept
-                          </button>
-                          <button
-                            type="button"
-                            className="relative mr-3 inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Reject
-                          </button>
+                          <Button size='small' label='Accept'/>
+                          <Button size='small' label='Reject' severity='secondary' className='ml-2'/>
+                          
+                          
                         </div>
                       </div>
                     </li>
