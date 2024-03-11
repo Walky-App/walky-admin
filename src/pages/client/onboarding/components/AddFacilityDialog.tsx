@@ -1,5 +1,7 @@
 import { Fragment, useContext } from 'react'
-import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+
+import { Controller, type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Dropdown } from 'primereact/dropdown'
@@ -8,13 +10,13 @@ import { InputMask } from 'primereact/inputmask'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
-import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
+import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
 import { Panel } from 'primereact/panel'
-import { ToastMessage } from 'primereact/toast'
+import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../../services/RequestService'
-import { FormDataContext, getFormErrorMessage, IFacilityFormInputs, tooltipOptions } from '../ClientOnboardingPage'
+import { FormDataContext, type IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '../ClientOnboardingPage'
 import { countries, services, states } from '../formOptions'
 
 interface AddFacilityDialogProps {

@@ -1,17 +1,18 @@
 import { useContext, useRef, useState } from 'react'
+
 import { Button } from 'primereact/button'
 import {
   FileUpload,
-  FileUploadBeforeSendEvent,
-  FileUploadErrorEvent,
-  FileUploadUploadEvent,
+  type FileUploadBeforeSendEvent,
+  type FileUploadErrorEvent,
+  type FileUploadUploadEvent,
 } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
-import { Toast, ToastMessage } from 'primereact/toast'
+import { Toast, type ToastMessage } from 'primereact/toast'
 
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
-import { FormDataContext, IFacilityFormInputs, StepProps } from '../ClientOnboardingPage'
+import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
 
 export const Step2 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
