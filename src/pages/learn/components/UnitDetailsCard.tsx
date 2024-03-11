@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAdmin } from "../../../contexts/AdminContext";
-import { Unit } from "../../../interfaces/Unit";
+import { Unit } from "../../../interfaces/unit";
 import { PencilSquareIcon } from "@heroicons/react/20/solid";
 
 interface UnitDetailsCardProps {

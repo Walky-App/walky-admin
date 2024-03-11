@@ -74,6 +74,8 @@ import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 import { AdminAddUnit } from './pages/admin/HTU/AdminAddUnit'
 import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
+import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
+import { AdminDetailsAssessment } from './pages/admin/HTU/AdminDetailsAssessment'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -102,7 +104,7 @@ export const App = () => {
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
                 <Route element={<Units />} path="/learn/module/:moduleId" />
                 <Route element={<UnitDetail />} path="/learn/module/:moduleId/unit/:unitId" />
-                <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
+                <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientProfile />} path="/client/profile" />
@@ -158,6 +160,8 @@ export const App = () => {
                   <Route element={<AdminUnitsLearn />} path="/admin/learn/modules/:moduleId/units" />
                   <Route element={<AdminAddUnit />} path="/admin/learn/modules/:moduleId/units/new" />
                   <Route element={<AdminDetailsUnit />} path="/admin/learn/modules/:moduleId/units/:unitId" />
+                  <Route element={<AdminAddAssessment />} path="/admin/learn/modules/:moduleId/units/:unitId/assessment" />
+                  <Route element={<AdminDetailsAssessment />} path="/admin/learn/modules/:moduleId/units/:unitId/assessment/:assessmentId" />
                   <Route element={<AdminAddModule />} path="/admin/learn/modules/new" />
                 </Route>
               </Route>

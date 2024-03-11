@@ -5,7 +5,7 @@ import { RequestService } from "../../../services/RequestService"
 import { TableContents } from "../components/TableContents"
 import { NavigationButtonInterface } from "../../../interfaces/Global"
 import { UnitDetailsCard } from "../components/UnitDetailsCard"
-import { Unit } from "../../../interfaces/Unit"
+import { Unit } from "../../../interfaces/unit"
 
 export const UnitDetail = () => {
     const { unit, setUnit } = useAdmin()

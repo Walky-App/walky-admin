@@ -1,5 +1,5 @@
 import { Editor, EditorTextChangeEvent } from "primereact/editor";
-import { SectionProps, Section, Unit } from '../../../../interfaces/Unit';
+import { SectionProps, Section, Unit } from '../../../../interfaces/unit';
 import { useEffect, useState } from "react";
 import { RequestService } from "../../../../services/RequestService";
 import { useAdmin } from "../../../../contexts/AdminContext";

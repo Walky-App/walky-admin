@@ -8,7 +8,7 @@ import { CategoryTitle } from "../../../interfaces/Category"
 import { useAdmin } from "../../../contexts/AdminContext"
 import { Module } from "../../../interfaces/Module"
 import { CircularProgressBar } from "../components/CircularProgressBar"
-import { Unit } from '../../../interfaces/Unit';
+import { Unit } from '../../../interfaces/unit';
 import { ArrowRightIcon } from "@heroicons/react/20/solid"
 
 export const Units = () => {
