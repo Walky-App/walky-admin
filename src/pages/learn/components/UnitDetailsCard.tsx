@@ -22,8 +22,12 @@ export const UnitDetailsCard = ({ unit, isAdmin = false }: UnitDetailsCardProps)
                 </p>
                 {
                     isAdmin ? <div className="flex justify-end text-black hover:text-green-400">
-                        <button onClick={handlerEditUnit} type="button">
-                            <PencilSquareIcon className="h-5 w-5" />
+                        <button
+                            className="rounded-md bg-green-600 px-3 py-2 h-9 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                            onClick={handlerEditUnit}
+                            type="button"
+                        >
+                            Edit
                         </button>
                     </div> : null
                 }
