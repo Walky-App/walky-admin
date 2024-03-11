@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { ReactNode, createContext, useContext, useState } from 'react'
 import { Category } from '../interfaces/Category'
 import { Module } from '../interfaces/Module'
 import { SelectedOptionInterface } from '../interfaces/Global'
@@ -30,7 +30,11 @@ const AdminContext = createContext<AdminContextType>({
   setAssessment: () => { },
 })
 
-const AdminProvider = ({ children }: any) => {
+interface AdminProviderProps {
+  children: ReactNode;
+}
+
+const AdminProvider = ({ children }: AdminProviderProps) => {
   const [category, setCategory] = useState<Category>()
   const [module, setModule] = useState<Module>()
   const [unit, setUnit] = useState<Unit>()
