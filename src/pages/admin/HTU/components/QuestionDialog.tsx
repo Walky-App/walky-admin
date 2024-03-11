@@ -17,14 +17,16 @@ interface QuestionDialogProps {
     show: (severity: "success" | "info" | "warn" | "error" | undefined, summary: string, detail: string) => void
 }
 
+interface IAnswer {
+    code: number
+    value: string
+}
+
 export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQuestion, action, show }: QuestionDialogProps) => {
     const { setUnit, setAssessment } = useAdmin()
     const [header, setHeader] = useState<string>(selectedQuestion?.header || '')
     const [options, setOptions] = useState<string[]>(selectedQuestion?.options || [])
-    const [answer, setAnswer] = useState<{
-        code: number
-        value: string
-    }>({ code: 0, value: 'No select' })
+    const [answer, setAnswer] = useState<IAnswer>({ code: 0, value: 'No select' })
     const params = useParams()
 
     useEffect(() => {
@@ -44,10 +46,7 @@ export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQues
         setOptions(newOptions)
     }
 
-    const handleAddAnswer = (button: {
-        code: number
-        value: string
-    }) => {
+    const handleAddAnswer = (button: IAnswer) => {
         setAnswer({ code: button.code, value: button.value });
     }
 

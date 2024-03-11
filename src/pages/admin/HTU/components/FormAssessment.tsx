@@ -152,9 +152,9 @@ export const FormAssessment = ({ action }: Props) => {
                 visible={visible}
             />
             <ConfirmDialog />
-            <div className="">
-                <div className=" pb-12">
-                    <div className=" grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div>
+                <div className="pb-12">
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-3">
                             <div className="mt-2">
                                 <Controller
