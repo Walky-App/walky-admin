@@ -1,28 +1,20 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useAdmin } from "../../../contexts/AdminContext"
 import { useParams } from "react-router-dom"
 import { RequestService } from "../../../services/RequestService"
 import { TableContents } from "../components/TableContents"
-import { NavigationButtonInterface } from "../../../interfaces/Global"
 import { UnitDetailsCard } from "../components/UnitDetailsCard"
 import { Unit } from "../../../interfaces/unit"
 
 export const UnitDetail = () => {
     const { unit, setUnit } = useAdmin()
-    const [dataContents, setDataContents] = useState<NavigationButtonInterface[]>([])
     const params = useParams()
 
     const fetchData = async () => {
         const response = await RequestService(`units/${params.unitId}`)
         if (response) {
             setUnit(response)
-            const data: NavigationButtonInterface[] = response.sections.map((item: Unit) => {
-                return {
-                    to: `${item.title.replace(' ', '-')}`,
-                    text: item.title
-                }
-            })
-            setDataContents(data)
+
         }
     }
 
@@ -57,7 +49,7 @@ export const UnitDetail = () => {
                         </div>
                     </div>
                     <div className="m-3">
-                        <TableContents data={dataContents} header='Topics' />
+                        <TableContents header='Topics' />
                     </div>
                 </div>
             </div>

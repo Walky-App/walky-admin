@@ -1,17 +1,21 @@
 import { Fragment, useContext, useRef, useState } from 'react'
+
+import { Button } from 'primereact/button'
+import { Image } from 'primereact/image'
+import { Toast, type ToastMessage } from 'primereact/toast'
+
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
-import { cn } from '../../../utils/cn'
-import { Toast, ToastMessage } from 'primereact/toast'
-import { Button } from 'primereact/button'
-import { FormDataContext, StepProps } from '.'
-import AddFacilityDialog from './AddFacilityDialog'
 
-export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
+import { cn } from '../../../../utils/cn'
+import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
+import { AddFacilityDialog } from './AddFacilityDialog'
+
+function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
   return strings.filter(Boolean).join(separator)
 }
 
-export default function Step3({ step, setStep }: StepProps) {
+export const Step3 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -21,7 +25,7 @@ export default function Step3({ step, setStep }: StepProps) {
 
   const showSavedToast = () => {
     setIsLoading(true)
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     toast.current?.show({
       severity: 'success',
       summary: 'Success',
@@ -31,7 +35,7 @@ export default function Step3({ step, setStep }: StepProps) {
   }
 
   const onRemove = (toastData: ToastMessage) => {
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
     if (severity === 'success') {
@@ -49,7 +53,7 @@ export default function Step3({ step, setStep }: StepProps) {
         toastRef={toast}
         values={selectedFacility || defaultValues}
       />
-      <Toast ref={toast} onRemove={e => onRemove(e)}></Toast>
+      <Toast ref={toast} onRemove={e => onRemove(e)} />
 
       {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -64,8 +68,12 @@ export default function Step3({ step, setStep }: StepProps) {
           <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
             {facilitiesArray?.map(facility => (
               <li key={facility._id} className="overflow-hidden rounded-xl border border-gray-200">
-                <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                  <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
+                <div className="flex h-20 items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                  {facility.images[0]?.url ? (
+                    <Image src={facility.images[0]?.url} alt="Facility logo" className="max-h-12 max-w-20" />
+                  ) : (
+                    <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
+                  )}
                   <div className="text-sm font-medium leading-6 text-gray-900">{facility.name}</div>
                   <Menu as="div" className="relative ml-auto">
                     <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
@@ -84,6 +92,7 @@ export default function Step3({ step, setStep }: StepProps) {
                         <Menu.Item>
                           {({ active }) => (
                             <button
+                              type="button"
                               onClick={() => {
                                 setVisible(true)
                                 setSelectedFacility(facility)
