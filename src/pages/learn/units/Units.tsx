@@ -16,7 +16,7 @@ export const Units = () => {
     const params = useParams()
     const navigate = useNavigate()
 
-    const fecthData = async () => {
+    const fetchData = async () => {
         const response: Module = await RequestService(`modules/${params.moduleId}`)
         if (response) {
             setModule(response)
@@ -26,7 +26,7 @@ export const Units = () => {
 
     useEffect(() => {
         if (!module) {
-            fecthData()
+            fetchData()
         }
         console.log(module)
     })

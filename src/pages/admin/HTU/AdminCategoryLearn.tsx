@@ -28,7 +28,7 @@ export const AdminCategoryLearn = () => {
     },
   ]
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const response: Category[] = await RequestService('categories')
     if (response.length !== 0) {
       setCategories(response)
@@ -38,7 +38,7 @@ export const AdminCategoryLearn = () => {
 
   useEffect(() => {
     if (categories.length === 0) {
-      fecthData()
+      fetchData()
     }
 
     setFilter({

@@ -152,86 +152,84 @@ export const FormAssessment = ({ action }: Props) => {
                 visible={visible}
             />
             <ConfirmDialog />
-            <div>
-                <div className="pb-12">
-                    <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div className="sm:col-span-3">
-                            <div className="mt-2">
-                                <Controller
-                                    control={control}
-                                    name="time"
-                                    render={({ field, fieldState }) => (
-                                        <>
-                                            <label className={classNames({ 'p-error': errors.time }, 'ml-1')} htmlFor={field.name} >
-                                                Assessment times*
-                                                <span className="p-float-label ml-1 pt-1">
-                                                    <InputNumber
-                                                        className={classNames({ 'p-invalid': fieldState.error })}
-                                                        onValueChange={(e) => field.onChange(e.target.value)}
-                                                        suffix=" minutes"
-                                                        value={Number(field.value)}
-                                                    />
-                                                </span>
-                                            </label>
-                                            {getFormErrorMessage(field.name)}
-                                        </>
-                                    )}
-                                    rules={{ required: 'Assessment time is required.' }}
-                                />
-                            </div>
+            <div className="pb-12">
+                <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div className="sm:col-span-3">
+                        <div className="mt-2">
+                            <Controller
+                                control={control}
+                                name="time"
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className={classNames({ 'p-error': errors.time }, 'ml-1')} htmlFor={field.name} >
+                                            Assessment times*
+                                            <span className="p-float-label ml-1 pt-1">
+                                                <InputNumber
+                                                    className={classNames({ 'p-invalid': fieldState.error })}
+                                                    onValueChange={(e) => field.onChange(e.target.value)}
+                                                    suffix=" minutes"
+                                                    value={Number(field.value)}
+                                                />
+                                            </span>
+                                        </label>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                                rules={{ required: 'Assessment time is required.' }}
+                            />
                         </div>
-                        <div className="sm:col-span-3">
-                            <div className="mt-2">
-                                <Controller
-                                    control={control}
-                                    name="min_score"
-                                    render={({ field, fieldState }) => (
-                                        <>
-                                            <label className={classNames({ 'p-error': errors.time }, 'ml-1')} htmlFor={field.name} >
-                                                Min Score*
-                                                <span className="p-float-label ml-1 pt-1">
-                                                    <InputNumber
-                                                        className={classNames({ 'p-invalid': fieldState.error })}
-                                                        max={100}
-                                                        maxLength={5}
-                                                        onValueChange={(e) => field.onChange(e.target.value)}
-                                                        prefix="% "
-                                                        value={Number(field.value)}
-                                                    />
-                                                </span>
-                                            </label>
-                                            {getFormErrorMessage(field.name)}
-                                        </>
-                                    )}
-                                    rules={{ required: 'Min score is required.' }}
-                                />
-                            </div>
+                    </div>
+                    <div className="sm:col-span-3">
+                        <div className="mt-2">
+                            <Controller
+                                control={control}
+                                name="min_score"
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className={classNames({ 'p-error': errors.time }, 'ml-1')} htmlFor={field.name} >
+                                            Min Score*
+                                            <span className="p-float-label ml-1 pt-1">
+                                                <InputNumber
+                                                    className={classNames({ 'p-invalid': fieldState.error })}
+                                                    max={100}
+                                                    maxLength={5}
+                                                    onValueChange={(e) => field.onChange(e.target.value)}
+                                                    prefix="% "
+                                                    value={Number(field.value)}
+                                                />
+                                            </span>
+                                        </label>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                                rules={{ required: 'Min score is required.' }}
+                            />
                         </div>
-                        <div className="col-span-full">
-                            <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="description" >
-                                Questions
-                            </label>
-                            <div className="flex flex-col h-auto mt-3">
-                                <button className="mx-3 flex flex-row justify-center rounded-2xl border bg-green-600 p-3 text-left text-sm text-white hover:bg-green-500 " onClick={handlerSetAssessment} type="button">
-                                    <PlusIcon className="h-5 w-5" />
-                                    <div>Add Questions</div>
-                                </button>
+                    </div>
+                    <div className="col-span-full">
+                        <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="description" >
+                            Questions
+                        </label>
+                        <div className="flex flex-col h-auto mt-3">
+                            <button className="mx-3 flex flex-row justify-center rounded-2xl border bg-green-600 p-3 text-left text-sm text-white hover:bg-green-500 " onClick={handlerSetAssessment} type="button">
+                                <PlusIcon className="h-5 w-5" />
+                                <div>Add Questions</div>
+                            </button>
 
-                                {
-                                    questions.map((question) => {
-                                        return (
-                                            <div className='mt-3 border-2 border-gray-200 rounded-lg flex p-2 shadow-md' key={question._id}>
-                                                <div className="flex flex-1 items-center">{question.header}</div>
-                                                <div className="flex">
-                                                    <button className="p-2 hover:text-green-400" onClick={() => handlerEditQuestion(question)} type="button"><PencilIcon className="w-5 h-5" /></button>
-                                                    <button className="p-2 hover:text-red-600" onClick={() => handlerDeleteQuestion(question)} type="button"><TrashIcon className="w-5 h-5" /></button>
-                                                </div>
+                            {
+                                questions.map((question) => {
+                                    return (
+                                        <div className='mt-3 border-2 border-gray-200 rounded-lg flex p-2 shadow-md' key={question._id}>
+                                            <div className="flex flex-1 items-center">{question.header}</div>
+                                            <div className="flex">
+                                                <button className="p-2 hover:text-green-400" onClick={() => handlerEditQuestion(question)} type="button"><PencilIcon className="w-5 h-5" /></button>
+                                                <button className="p-2 hover:text-red-600" onClick={() => handlerDeleteQuestion(question)} type="button"><TrashIcon className="w-5 h-5" /></button>
                                             </div>
-                                        );
-                                    })
-                                }
+                                        </div>
+                                    );
+                                })
+                            }
 
-                            </div>
                         </div>
                     </div>
                 </div>

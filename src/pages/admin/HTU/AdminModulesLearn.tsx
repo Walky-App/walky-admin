@@ -41,7 +41,7 @@ export const AdminModulesLearn = () => {
     },
   ]
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const responseModule: Module[] = await RequestService('modules')
     if (responseModule.length !== 0) {
       setModules(responseModule)
@@ -61,7 +61,7 @@ export const AdminModulesLearn = () => {
 
   useEffect(() => {
     if (categories.length === 1 && (modules.length === 0)) {
-      fecthData()
+      fetchData()
     }
   }, [modules, categories])
 
