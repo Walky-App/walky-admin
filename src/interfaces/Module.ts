@@ -1,5 +1,5 @@
-import { CategoryTitle } from './Category'
 import { Documents, TagsInterface } from './Global'
+import { CategoryTitle } from './category'
 import { Unit } from './unit'
 
 export interface Module extends Documents {

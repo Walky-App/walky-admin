@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CategoryCards } from './components/CategoryCards'
-import { Category } from '../../interfaces/Category'
+import { Category } from '../../interfaces/category'
 import { RequestService } from '../../services/RequestService'
 import { useSearchParams } from 'react-router-dom'
 import { HeaderComponent } from '../../components/shared/general/HeaderComponent'

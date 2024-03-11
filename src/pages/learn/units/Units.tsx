@@ -5,7 +5,7 @@ import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/out
 import { secondsToTimeDescription } from "../../../utils/FunctionUtils"
 import { Badge } from "flowbite-react"
 import { useAdmin } from "../../../contexts/AdminContext"
-import { Module } from "../../../interfaces/Module"
+import { Module } from "../../../interfaces/module"
 import { CircularProgressBar } from "../components/CircularProgressBar"
 import { Unit } from '../../../interfaces/unit';
 import { ArrowRightIcon } from "@heroicons/react/20/solid"

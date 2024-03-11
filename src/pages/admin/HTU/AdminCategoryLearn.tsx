@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { Category } from '../../../interfaces/Category'
+import { Category } from '../../../interfaces/category'
 import { FilterInterface, SelectedOptionInterface } from '../../../interfaces/Global'
 import { RequestService } from '../../../services/RequestService'
 import { useSearchParams } from 'react-router-dom'
