@@ -1,9 +1,10 @@
 import { useContext, useRef, useState } from 'react'
+
 import { Button } from 'primereact/button'
 import { ConfirmDialog } from 'primereact/confirmdialog'
-import { Toast, ToastMessage } from 'primereact/toast'
+import { Toast, type ToastMessage } from 'primereact/toast'
 
-import { FormDataContext, StepProps } from '../ClientOnboardingPage'
+import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { AddFacilityDialog } from './AddFacilityDialog'
 
 export const Step4 = ({ step, setStep }: StepProps) => {

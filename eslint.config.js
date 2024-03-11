@@ -1,7 +1,4 @@
 // @ts-check
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import eslint from '@eslint/js'
 import prettierConfig from 'eslint-config-prettier'
 import fileNameRules from 'eslint-plugin-filename-rules'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
@@ -10,7 +7,11 @@ import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRecommended from 'eslint-plugin-react/configs/recommended.js'
 import globals from 'globals'
+import { dirname } from 'path'
 import tseslint from 'typescript-eslint'
+import { fileURLToPath } from 'url'
+
+import eslint from '@eslint/js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -114,13 +115,20 @@ export default tseslint.config(
           format: ['PascalCase'],
         },
       ],
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        {
+          fixStyle: 'inline-type-imports',
+        },
+      ],
       'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': 'pascalcase' }],
     },
   },
   {
-    files: ['**/index.tsx'], // adjust this if your file is in a specific directory
+    files: ['**/index.tsx', '**/index.ts'],
     rules: {
       '@typescript-eslint/naming-convention': 'off',
+      'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': 'camelcase' }],
     },
   },
 )
