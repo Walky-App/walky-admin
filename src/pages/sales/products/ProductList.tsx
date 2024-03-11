@@ -16,7 +16,7 @@ const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
   <img alt={alt} className="h-32 w-32  object-cover" src={src} />
 )
 
-const Products = () => {
+export const ProductList = () => {
   const [productsData, setProductsData] = React.useState<IProduct[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [visible, setVisible] = React.useState<boolean>(false)
@@ -111,4 +111,4 @@ const Products = () => {
     </div>
   )
 }
-export default Products
+

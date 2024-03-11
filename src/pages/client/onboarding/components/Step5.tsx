@@ -1,15 +1,16 @@
 import { useRef, useState } from 'react'
 
-import { Toast, ToastMessage } from 'primereact/toast'
 import { Button } from 'primereact/button'
-import { StepProps } from '.'
-import FinishedOnboardingDialog from './FinishedOnboardingDialog'
+import { Toast } from 'primereact/toast'
+
+import { type StepProps } from '../ClientOnboardingPage'
+import { FinishOnboardingDialog } from './FinishOnboardingDialog'
 
 export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
   return strings.filter(Boolean).join(separator)
 }
 
-export default function Step5({ step, setStep }: StepProps) {
+export const Step5 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -17,7 +18,7 @@ export default function Step5({ step, setStep }: StepProps) {
 
   const showSavedToast = () => {
     setIsLoading(true)
-    // @ts-ignore
+    // @ts-expect-error toast.current may be null
     toast.current?.show({
       severity: 'success',
       summary: 'Success',
@@ -33,9 +34,8 @@ export default function Step5({ step, setStep }: StepProps) {
 
   return (
     <div className="space-y-12">
-      <FinishedOnboardingDialog visible={visible} setVisible={setVisible} />
-      <Toast ref={toast} onRemove={onRemove}></Toast>
-
+      <FinishOnboardingDialog visible={visible} setVisible={setVisible} />
+      <Toast ref={toast} onRemove={onRemove} />
       {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
         <div>

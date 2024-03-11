@@ -1,11 +1,65 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
-/** Utilities Pages */
-import Layout from './components/layout/'
+import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
+
 import { AdminProvider } from './contexts/AdminContext'
 import { AuthProvider } from './contexts/AuthContext'
+
+/** Utilities Pages */
+import Layout from './components/layout/'
+
+/** Error Pages */
+import Error404 from './pages/Error404'
+
+/** Auth Pages */
+import Auth from './pages/auth'
+import NewPasswordForm from './pages/auth/NewPasswordForm'
+import ResetSuccess from './pages/auth/ResetSuccess'
+import Signup from './pages/auth/SignupForm'
+
+import EmployeeProfile from './pages/employees/EmployeeProfile'
+
+/** Employee Pages */
+import EmployeeDashboard from './pages/employees/dashboard'
+import EmployeeJobs from './pages/employees/jobs'
+import JobDetailView from './pages/employees/jobs/JobDetailView'
+
+/** Learn Pages */
+import { Learn } from './pages/learn/Learn'
+import { Modules } from './pages/learn/modules/Modules'
+import { UnitDetail } from './pages/learn/units/UnitDetail'
+import { Units } from './pages/learn/units/Units'
+
+/** Client Pages */
+import ClientProfile from './pages/client/ClientProfile'
+import ClientDashboard from './pages/client/dashboard'
+import Facilities from './pages/client/facilities'
+import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
+import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
+import Jobs from './pages/client/jobs'
+import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
+import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
+import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
+import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
+
+/** Sales Pages */
+import SalesDashboard from './pages/sales/dashboard'
+import { ProductList as Products } from './pages/sales/products'
+import ProductDetail from './pages/sales/products/ProductDetail'
+import { ProductCategories } from './pages/sales/products/ProductCategories'
+
+// Not yet implemented
+// import SalesProfile from './pages/sales/profile/SalesProfile'
+
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
+
+import AdminProfile from './pages/admin/profile/AdminProfile'
+
+import AdminUsers from './pages/admin/users'
+import AdminInviteUser from './pages/admin/users/AdminInviteUser'
+import AdminUserDetails from './pages/admin/users/AdminUserDetails'
+
 import AdminFacilities from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
@@ -17,6 +71,7 @@ import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityIn
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
 import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
+
 import { AdminAddCategory } from './pages/admin/HTU/AdminAddCategory'
 import { AdminAddModule } from './pages/admin/HTU/AdminAddModule'
 import { AdminAddUnit } from './pages/admin/HTU/AdminAddUnit'
@@ -27,52 +82,17 @@ import { AdminDetailsModule } from './pages/admin/HTU/AdminDetailsModule'
 import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
 import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
+
 import AdminJobs from './pages/admin/jobs'
 import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
-import AdminProfile from './pages/admin/profile/AdminProfile'
-import AdminUsers from './pages/admin/users'
-import AdminInviteUser from './pages/admin/users/AdminInviteUser'
-import AdminUserDetails from './pages/admin/users/AdminUserDetails'
-/** Auth Pages */
-import Auth from './pages/auth'
-import NewPasswordForm from './pages/auth/NewPasswordForm'
-import ResetSuccess from './pages/auth/ResetSuccess'
-import Signup from './pages/auth/SignupForm'
-import ClientProfile from './pages/client/ClientProfile'
-import ClientDashboard from './pages/client/dashboard'
-import Facilities from './pages/client/facilities'
-import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
-import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
-import Jobs from './pages/client/jobs'
-import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
-import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
-import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
-/** Client Pages */
-import ClientOnboarding from './pages/client/onboarding'
-/** Employee Pages */
-import EmployeeDashboard from './pages/employees/dashboard'
-import EmployeeProfile from './pages/employees/EmployeeProfile'
-import EmployeeJobs from './pages/employees/jobs'
-import JobDetailView from './pages/employees/jobs/JobDetailView'
-import Error404 from './pages/Error404'
-/** Learn Pages */
-import { Learn } from './pages/learn/Learn'
-import { Modules } from './pages/learn/modules/Modules'
-import { UnitDetail } from './pages/learn/units/UnitDetail'
-import { Units } from './pages/learn/units/Units'
-/** Sales Pages */
-import SalesDashboard from './pages/sales/dashboard'
-import ProductDetail from './pages/sales/products/ProductDetail'
-// import SalesProfile from './pages/sales/profile/SalesProfile'
-import Products from './pages/sales/products/ProductList'
-import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
-import { ProductCategories } from './pages/sales/products/ProductCategories'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
-// const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
+
+//Not yet implemented
+// const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 
 export const App = () => {
   return (
