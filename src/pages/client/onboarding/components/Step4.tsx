@@ -1,16 +1,13 @@
 import { useContext, useRef, useState } from 'react'
 
-import { Toast, ToastMessage } from 'primereact/toast'
 import { Button } from 'primereact/button'
-import { FormDataContext, StepProps } from '.'
-import AddFacilityDialog from './AddFacilityDialog'
 import { ConfirmDialog } from 'primereact/confirmdialog'
+import { Toast, type ToastMessage } from 'primereact/toast'
 
-export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
-  return strings.filter(Boolean).join(separator)
-}
+import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
+import { AddFacilityDialog } from './AddFacilityDialog'
 
-export default function Step4({ step, setStep }: StepProps) {
+export const Step4 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [visible, setVisible] = useState<boolean>(false)
 
@@ -20,7 +17,7 @@ export default function Step4({ step, setStep }: StepProps) {
 
   const showSavedToast = () => {
     setIsLoading(true)
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     toast.current?.show({
       severity: 'success',
       summary: 'Success',
@@ -30,7 +27,7 @@ export default function Step4({ step, setStep }: StepProps) {
   }
 
   const onRemove = (toastData: ToastMessage) => {
-    // @ts-ignore
+    // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
     if (severity === 'success') {
@@ -49,7 +46,7 @@ export default function Step4({ step, setStep }: StepProps) {
         values={selectedFacility || defaultValues}
       />
       <ConfirmDialog />
-      <Toast ref={toast} onRemove={e => onRemove(e)}></Toast>
+      <Toast ref={toast} onRemove={e => onRemove(e)} />
 
       {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 ">

@@ -1,3 +1,5 @@
+export const services = ['Trimming', 'Harvesting', 'Packaging', 'Budtending', 'Gardening', 'General Labor', 'Other']
+
 export const countries = [
   { label: 'United States', value: 'US' },
   { label: 'Canada', value: 'CA' },

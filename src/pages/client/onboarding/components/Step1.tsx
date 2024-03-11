@@ -1,35 +1,35 @@
-import { InputText } from 'primereact/inputtext'
-import { InputMask } from 'primereact/inputmask'
-import { Dropdown } from 'primereact/dropdown'
-import { Button } from 'primereact/button'
-import { Toast, ToastMessage } from 'primereact/toast'
-
-import { classNames } from 'primereact/utils'
 import { useContext, useRef, useState } from 'react'
-import { useForm, Controller, SubmitHandler, useFieldArray } from 'react-hook-form'
-import { countries, states } from './formOptions'
-import { FormDataContext, IFacilityFormInputs, StepProps, getFormErrorMessage, tooltipOptions } from '.'
-import { InputNumber } from 'primereact/inputnumber'
-import { RequestService } from '../../../services/RequestService'
 
-export default function Step1({ step, setStep }: StepProps) {
+import { Controller, type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { InputMask } from 'primereact/inputmask'
+import { InputNumber } from 'primereact/inputnumber'
+import { InputText } from 'primereact/inputtext'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
+import { Toast, type ToastMessage } from 'primereact/toast'
+import { classNames } from 'primereact/utils'
+
+import { RequestService } from '../../../../services/RequestService'
+import {
+  FormDataContext,
+  type IFacilityFormInputs,
+  type StepProps,
+  getFormErrorMessage,
+  tooltipOptions,
+} from '../ClientOnboardingPage'
+import { countries, services, states } from '../formOptions'
+
+export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { setFormData, defaultValues, formData, facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 
   const toast = useRef(null)
 
-  const showSuccessToast = () => {
-    // @ts-ignore
-    toast.current?.show({
-      severity: 'success',
-      summary: 'Success',
-      detail: `${getValues('name')} created successfully.`,
-      life: 2000,
-    })
-  }
-
-  const onRemove = (toastData: ToastMessage) => {
-    // @ts-ignore
+  const onRemoveToast = (toastData: ToastMessage) => {
+    // @ts-expect-error toastRef.current may be null
     const severity = toastData.message ? toastData.message.severity : toastData.severity
 
     if (severity === 'success') {
@@ -46,7 +46,6 @@ export default function Step1({ step, setStep }: StepProps) {
     formState: { errors },
     handleSubmit,
     getValues,
-    // reset,
   } = useForm<IFacilityFormInputs>({ values })
 
   const { fields } = useFieldArray({
@@ -56,72 +55,87 @@ export default function Step1({ step, setStep }: StepProps) {
 
   const onSubmit: SubmitHandler<IFacilityFormInputs> = async data => {
     setFormData(data)
+    setIsLoading(true)
 
-    // if (editingIndex !== null) {
-    //   // Update the facility at editingIndex
-    //   setFacilitiesArray(prevArray => [...prevArray.slice(0, editingIndex), data, ...prevArray.slice(editingIndex + 1)])
-    //   setEditingIndex(null) // Reset editingIndex
-    // } else {
-    //   // Add the new facility to the end of the facilitiesArray
+    let facilityId = facilitiesArray[0]?._id
 
-    //   setFacilitiesArray(prevArray => [...prevArray, data])
-    // }
-
-    if (facilitiesArray[0]?._id) {
-      setIsLoading(true)
+    if (facilityId) {
+      // Existing facility, PATCH operation
       try {
-        const response = await RequestService(`facilities/${facilitiesArray[0]?._id}`, 'PATCH', data)
+        const facilityFound = await RequestService(`facilities/${facilityId}`)
 
-        if (response?._id) {
-          // @ts-ignore
-          toast.current?.show({
-            severity: 'success',
-            summary: 'Changes saved for:',
-            detail: getValues('name'),
-          })
-          setFacilitiesArray(prevArray =>
-            prevArray.map(facility => (facility._id === response._id ? response : facility)),
-          )
+        if (facilityFound) {
+          const updatedFacility = {
+            ...facilityFound,
+            ...data,
+            licenses: facilitiesArray[0].licenses,
+            images: facilitiesArray[0].images,
+          }
+
+          const response = await RequestService(`facilities/${facilityId}`, 'PATCH', updatedFacility)
+
+          if (response?._id) {
+            facilityId = response._id
+
+            // @ts-expect-error toastRef.current may be null
+            toast.current?.show({
+              severity: 'success',
+              summary: 'Changes saved for:',
+              detail: getValues('name'),
+            })
+
+            setFacilitiesArray(prevArray =>
+              prevArray.map(facility => (facility._id === response._id ? response : facility)),
+            )
+          } else {
+            throw new Error('Failed to update facility')
+          }
         } else {
-          throw new Error('Failed to update facility')
+          throw new Error('Facility not found')
         }
       } catch (error) {
-        console.error('Error adding facility:', error)
-        // @ts-ignore
+        console.error('Error updating facility:', error)
+        // @ts-expect-error toastRef.current may be null
         toast.current?.show({
           severity: 'error',
           summary: 'Error saving changes',
-          detail: `${getValues('name')} has been added.`,
+          detail: `${getValues('name')} could not be updated.`,
         })
       }
     } else {
-      setIsLoading(true)
+      // New facility, POST operation
       try {
         const response = await RequestService(`facilities`, 'POST', data)
 
         if (response?._id) {
-          showSuccessToast()
+          facilityId = response._id
+
+          // @ts-expect-error toastRef.current may be null
+          toast.current?.show({
+            severity: 'success',
+            summary: 'Success',
+            detail: `${getValues('name')} created successfully.`,
+            life: 2000,
+          })
           setFacilitiesArray([response])
         } else {
           throw new Error('Failed to add facility')
         }
       } catch (error) {
         console.error('Error adding facility:', error)
-        // @ts-ignore
+        // @ts-expect-error toastRef.current may be null
         toast.current?.show({
           severity: 'error',
           summary: 'Error adding facility',
           detail: `${getValues('name')} already exists.`,
         })
       }
-
-      // reset()
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <Toast ref={toast} onRemove={e => onRemove(e)} />
+      <Toast ref={toast} onRemove={e => onRemoveToast(e)} />
       <div className="space-y-12">
         {/* Business Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -254,7 +268,7 @@ export default function Step1({ step, setStep }: StepProps) {
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="sqft" className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="notes" className="block text-sm font-medium leading-6 text-gray-900">
                 *Facility Square Footage:
               </label>
               <div className="mt-2">
@@ -283,6 +297,55 @@ export default function Step1({ step, setStep }: StepProps) {
               </div>
               {getFormErrorMessage('sqft', errors)}
             </div>
+
+            <div className="sm:col-span-6">
+              <label htmlFor="services" className="block text-sm font-medium leading-6 text-gray-900">
+                *Services:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  control={control}
+                  name="services"
+                  rules={{ required: 'At least one Serivce is required' }}
+                  render={({ field, fieldState }) => (
+                    <MultiSelect
+                      id={field.name}
+                      {...field}
+                      value={field.value}
+                      options={services}
+                      display="chip"
+                      onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
+                      placeholder="Select Services"
+                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                    />
+                  )}
+                />
+                {getFormErrorMessage('services', errors)}
+              </div>
+            </div>
+
+            <div className="sm:col-span-6">
+              <label htmlFor="sqft" className="block text-sm font-medium leading-6 text-gray-900">
+                Facility notes:
+              </label>
+              <div className="mt-2">
+                <Controller
+                  control={control}
+                  name="notes"
+                  rules={{ required: false }}
+                  render={({ field, fieldState }) => (
+                    <InputTextarea
+                      id={field.name}
+                      {...field}
+                      rows={4}
+                      cols={30}
+                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                    />
+                  )}
+                />
+              </div>
+              {getFormErrorMessage('notes', errors)}
+            </div>
           </div>
         </div>
 
@@ -296,23 +359,6 @@ export default function Step1({ step, setStep }: StepProps) {
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            {/* <div className="sm:col-span-3">
-              <label htmlFor="facilityName" className="block text-sm font-medium leading-6 text-gray-900">
-                *Facility Name:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="name"
-                  rules={{ required: 'Facility Name is required' }}
-                  render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ 'p-invalid': fieldState.invalid })} />
-                  )}
-                />
-              </div>
-              {getFormErrorMessage('name', errors)}
-            </div> */}
-
             <div className="sm:col-span-3">
               <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
                 *Country:
@@ -352,19 +398,6 @@ export default function Step1({ step, setStep }: StepProps) {
               </div>
               {getFormErrorMessage('address', errors)}
             </div>
-
-            {/* <div className="sm:col-span-3">
-              <label htmlFor="address2" className="block text-sm font-medium leading-6 text-gray-900">
-                Apt, Suite or Unit:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="address2"
-                  render={({ field }) => <InputText id={field.name} {...field} />}
-                />
-              </div>
-            </div> */}
 
             <div className="sm:col-span-3">
               <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
