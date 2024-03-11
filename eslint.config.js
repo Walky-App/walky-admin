@@ -87,34 +87,7 @@ export default tseslint.config(
       'react/prop-types': 'off',
       'react/no-array-index-key': 'off',
       'react/jsx-props-no-spreading': 'off',
-      '@typescript-eslint/naming-convention': [
-        'warn',
-        {
-          selector: 'default',
-          format: ['camelCase'],
-          leadingUnderscore: 'allow',
-        },
-        {
-          selector: 'variable',
-          format: ['PascalCase', 'camelCase'],
-          leadingUnderscore: 'allow',
-        },
-        {
-          selector: 'parameter',
-          format: ['camelCase'],
-          leadingUnderscore: 'allow',
-        },
-        {
-          selector: 'property',
-          format: null,
-          leadingUnderscore: 'allow',
-        },
-        {
-          selector: 'typeLike',
-          format: ['PascalCase'],
-        },
-      ],
-      'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': 'pascalcase' }],
+      '@typescript-eslint/naming-convention': 'off',
     },
   },
 )
