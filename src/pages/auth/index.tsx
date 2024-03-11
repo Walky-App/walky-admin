@@ -11,19 +11,20 @@ export default function Auth() {
     const getImages = async () => {
       try {
         const allImages = [
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/1.png",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/10.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/11.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/12.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/13.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/2.png",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/3.png",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/4.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/8.jpg",
-          "https://hemptemps-prod.s3.amazonaws.com/web-images/9.jpg"
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/1.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/10.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/12.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/13.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/2.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/3.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/9.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/8.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/14.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/15.png',
+          'https://hemptemps-prod.s3.amazonaws.com/web-images/20.png',
         ]
         const randomIndex = Math.floor(Math.random() * allImages.length)
 
@@ -35,19 +36,28 @@ export default function Auth() {
     getImages()
   }, [])
 
+  const chooseLogoImage = () => {
+    const currentURL = window.location.href
+    if (currentURL.toLowerCase().includes('hydropallet')) {
+      return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
+    } else {
+      return (
+        <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="sm:w-full xl:px-12" />
+      )
+    }
+  }
+
   return (
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
       <div className="flex flex-col gap-10 md:basis-1/2">
-        <div className="w-full">
-          <div className="flex justify-center">
-            <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" height={300} />
-          </div>
-         
+        <div className="w-full px-4 sm:px-0">
+          <div className="flex justify-center">{chooseLogoImage()}</div>
+
           {userForm === 'Login' && <LoginForm />}
           {userForm === 'Sign up' && <SignupForm />}
           {userForm === 'Forgot Password' && <ForgotPasswordForm />}
 
-          <div className="flex mr-center flex-col items-center justify-center gap-2">
+          <div className="mr-center flex flex-col items-center justify-center gap-2">
             {userForm === 'Login' && (
               <a
                 className="font-medium underline hover:text-green-700"

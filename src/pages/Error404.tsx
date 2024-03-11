@@ -1,22 +1,31 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useEffect } from 'react'
+import { getCurrentUserRole } from '../utils/UserRole'
 
 export default function Error404() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const role = getCurrentUserRole()
 
   useEffect(() => {
-    if (!user) navigate('/')
+    if (!user) navigate('/Error404')
   }, [user])
+
+  const chooseLogoImage = () => {
+    const currentURL = window.location.href
+    if (currentURL.toLowerCase().includes('hydropallet')) {
+      return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hyrdopallet Logo" className="h-30 mr-2 w-auto" />
+    } else {
+      return <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp-Temps Logo" className="mr-2 h-36 w-auto" />
+    }
+  }
 
   return (
     <>
       <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
         <div className="flex items-center space-x-10">
-          <a href={user ? `/${user.role}/dashboard` : '/'}>
-            <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp-Temps" className="h-36 w-auto mr-2" />
-          </a>
+          <a href={user ? `/${role}/dashboard` : '/'}>{chooseLogoImage()}</a>
         </div>
         <div className="text-center">
           <p className="text-5xl font-semibold text-green-700">404</p>
@@ -24,7 +33,7 @@ export default function Error404() {
           <p className="mt-6 text-base leading-7 text-gray-600">Sorry, we couldn’t find the page you’re looking for.</p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <a
-              href={user ? `/${user.role}/dashboard` : '/'}
+              href={user ? `/${role}/dashboard` : '/'}
               className="rounded-md bg-green-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
               Go back home
             </a>

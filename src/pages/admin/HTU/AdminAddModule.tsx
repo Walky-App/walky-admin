@@ -3,11 +3,11 @@ import { RequestService } from '../../../services/RequestService'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
 
 
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
-import FormModule from './components/FormModule'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { FormModule } from './components/FormModule'
 import { Category } from '../../../interfaces/Category'
 
-export default function AdminAddModule() {
+export const AdminAddModule = () => {
   const [categories, setCategories] = useState<SelectedOptionInterface[]>([
     {
       name: 'Select',
@@ -26,7 +26,7 @@ export default function AdminAddModule() {
         }
       })
       setCategories([...categories, ...categoriesMap])
-      setIsLoading(false)
+      setIsLoading(!isLoading)
     }
   }
 
@@ -38,7 +38,7 @@ export default function AdminAddModule() {
 
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title={'Create Module'} />
+      <HeaderComponent title='Create Module' />
       <FormModule action="add" />
     </div>
   )

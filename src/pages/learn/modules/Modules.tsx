@@ -1,13 +1,13 @@
-import { Suspense, lazy, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { Module } from '../../../interfaces/Module'
 import { CheckIcon } from '@heroicons/react/20/solid'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
-import ModuleCards from '../components/ModuleCards'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { ModuleCards } from '../components/ModuleCards'
 import { PencilIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 
-export default function Modules() {
+export const Modules = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const params = useParams()
   const [searchParams] = useSearchParams()
@@ -31,14 +31,14 @@ export default function Modules() {
   }, [searchParams, modules])
 
   return (
-    <>
+    <div>
       <div className="w-full sm:overflow-x-hidden">
-        <HeaderComponent title={'Categories'} search />
+        <HeaderComponent search title='Categories' />
 
         <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
           <div className="col-span-4 md:col-span-2 order-2 md:order-1">
-            <Suspense key={search + '-module-cards'} fallback={<div>loading...</div>}>
-              <ModuleCards module={modules} filter={search} isLoading={loading} />
+            <Suspense fallback={<div>loading...</div>} key={search + '-module-cards'} >
+              <ModuleCards filter={search} isLoading={loading} module={modules} />
             </Suspense>
           </div>
 
@@ -88,6 +88,6 @@ export default function Modules() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
