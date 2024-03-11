@@ -1,12 +1,14 @@
 import { Fragment, useContext, useRef, useState } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
+
 import { Button } from 'primereact/button'
 import { Image } from 'primereact/image'
-import { Toast, ToastMessage } from 'primereact/toast'
+import { Toast, type ToastMessage } from 'primereact/toast'
+
+import { Menu, Transition } from '@headlessui/react'
+import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
 
 import { cn } from '../../../../utils/cn'
-import { FormDataContext, StepProps } from '../ClientOnboardingPage'
+import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { AddFacilityDialog } from './AddFacilityDialog'
 
 function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
@@ -51,7 +53,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
         toastRef={toast}
         values={selectedFacility || defaultValues}
       />
-      <Toast ref={toast} onRemove={e => onRemove(e)}></Toast>
+      <Toast ref={toast} onRemove={e => onRemove(e)} />
 
       {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -66,7 +68,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
           <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
             {facilitiesArray?.map(facility => (
               <li key={facility._id} className="overflow-hidden rounded-xl border border-gray-200">
-                <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6 h-20">
+                <div className="flex h-20 items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                   {facility.images[0]?.url ? (
                     <Image src={facility.images[0]?.url} alt="Facility logo" className="max-h-12 max-w-20" />
                   ) : (

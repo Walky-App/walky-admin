@@ -1,21 +1,23 @@
 import { useContext, useRef, useState } from 'react'
-import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+
+import { Controller, type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputMask } from 'primereact/inputmask'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
-import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
-import { Toast, ToastMessage } from 'primereact/toast'
+import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
+import { Toast, type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../../services/RequestService'
 import {
   FormDataContext,
+  type IFacilityFormInputs,
+  type StepProps,
   getFormErrorMessage,
-  IFacilityFormInputs,
-  StepProps,
   tooltipOptions,
 } from '../ClientOnboardingPage'
 import { countries, services, states } from '../formOptions'
