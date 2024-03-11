@@ -116,7 +116,7 @@ export const App = () => {
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
                 <Route element={<Units />} path="/learn/module/:moduleId" />
                 <Route element={<UnitDetail />} path="/learn/module/:moduleId/unit/:unitId" />
-                <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
+                <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientProfile />} path="/client/profile" />
