@@ -14,7 +14,7 @@ export const Modules = () => {
   const [search, setSearch] = useState('')
   const [modules, setModules] = useState<Module[]>([])
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const response = await RequestService(`modules/category/${params.categoryId}`)
     if (response.length !== 0) {
       setModules(response)
@@ -24,7 +24,7 @@ export const Modules = () => {
 
   useEffect(() => {
     if (modules.length === 0) {
-      fecthData()
+      fetchData()
     }
 
     setSearch(searchParams.get('search') || '')

@@ -12,7 +12,7 @@ export const Learn = () => {
   const [filter, setFilter] = useState<FilterInterface>({ search: '', selected: '' })
   const [categories, setCategories] = useState<Category[]>([])
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const response: Category[] = await RequestService('categories')
     if (response.length !== 0) {
       setCategories(response)
@@ -22,7 +22,7 @@ export const Learn = () => {
 
   useEffect(() => {
     if (categories.length === 0) {
-      fecthData()
+      fetchData()
     }
     setFilter({
       search: searchParams.get('search') || '',

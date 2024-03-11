@@ -13,7 +13,7 @@ import { TabPanel, TabView } from "primereact/tabview"
 import { UnitDetailsCard } from "../../learn/components/UnitDetailsCard"
 import { EmptyState } from "../../../components/shared/general/EmptyState"
 import { FaClipboardCheck, FaClock } from "react-icons/fa"
-import { FaCheckToSlot, FaFileLines } from "react-icons/fa6"
+import { FaFileLines } from "react-icons/fa6"
 
 export const AdminUnitsLearn = () => {
     const { module, setModule, setUnit, unit } = useAdmin()
@@ -22,7 +22,7 @@ export const AdminUnitsLearn = () => {
     const navigate = useNavigate()
 
 
-    const fecthData = async () => {
+    const fetchData = async () => {
         const responseModule: Module = await RequestService(`modules/${params.moduleId}`)
         if (responseModule) {
             setModule(responseModule)
@@ -41,7 +41,7 @@ export const AdminUnitsLearn = () => {
 
     useEffect(() => {
         if (!module) {
-            fecthData()
+            fetchData()
         }
     })
 
