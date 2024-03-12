@@ -16,7 +16,6 @@ import { Checkbox } from 'primereact/checkbox'
 
 export default function AdminProfile() {
   const [formUser, setFormUser] = useState<IUser>({} as IUser)
-  const [updateSuccess, setUpdateSuccess] = useState(false)
   const { user } = useAuth()
 
   const toast = useRef<Toast>(null)
@@ -73,12 +72,9 @@ export default function AdminProfile() {
           detail: 'User information updated successfully',
           life: 3000,
         })
-      } else {
-        throw new Error('Failed to update user')
       }
     } catch (error) {
       console.error('Error updating user:', error)
-      setUpdateSuccess(false)
     }
   }
 
