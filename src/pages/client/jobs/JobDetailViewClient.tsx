@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ChevronRightIcon } from '@heroicons/react/20/solid'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Rating } from 'primereact/rating'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
+import { Toast } from 'primereact/toast'
+import { Tooltip } from 'primereact/tooltip'
 
 import 'primeicons/primeicons.css'
 
@@ -19,6 +20,7 @@ export default function JobDetailViewClient() {
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
+  const toast = useRef<Toast>(null)
 
   function convertToStandardTime(militaryTime: number) {
     const militaryTimeString = militaryTime.toString().padStart(4, '0')
@@ -44,7 +46,7 @@ export default function JobDetailViewClient() {
     }
 
     getJob()
-  }, [])
+  }, [job.isActive, job.isCompleted, params.id])
 
   let earliestDate, latestDate
 
@@ -116,8 +118,8 @@ export default function JobDetailViewClient() {
 
   const workers = [
     {
-      name: 'Michael Foster',
-      email: 'michael.foster@example.com',
+      name: 'Richard Summers',
+      email: 'richard.summers@example.com',
       role: 'Co-Founder / CTO',
       imageUrl:
         'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
@@ -126,8 +128,8 @@ export default function JobDetailViewClient() {
       lastSeenDateTime: '2023-01-23T13:23Z',
     },
     {
-      name: 'Dries Vincent',
-      email: 'dries.vincent@example.com',
+      name: 'Trevor Philips',
+      email: 'trevor.philips@example.com',
       role: 'Business Relations',
       imageUrl:
         'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
@@ -135,8 +137,8 @@ export default function JobDetailViewClient() {
       lastSeen: null,
     },
     {
-      name: 'Leslie Alexander',
-      email: 'leslie.alexander@example.com',
+      name: 'Anna Bella',
+      email: 'anna.bella@example.com',
       role: 'Co-Founder / CEO',
       imageUrl:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
@@ -145,8 +147,8 @@ export default function JobDetailViewClient() {
       lastSeenDateTime: '2023-01-23T13:23Z',
     },
     {
-      name: 'Courtney Henry',
-      email: 'courtney.henry@example.com',
+      name: 'Michelle Smith',
+      email: 'michelle.smith@example.com',
       role: 'Designer',
       imageUrl:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
@@ -158,6 +160,7 @@ export default function JobDetailViewClient() {
 
   return (
     <>
+      <Toast ref={toast} />
       <HeaderComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="md:col-span-3">
@@ -251,28 +254,108 @@ export default function JobDetailViewClient() {
         </div>
 
         {/* Control Buttons */}
+        <Tooltip content="Close this job" />
+
         <div className="md:col-span-1">
           <div className="flew-row flex md:flex-col">
             <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
               <ul className="w-full divide-y divide-gray-200">
                 <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                   <Button className="w-full" label="Edit Job" onClick={() => navigate(`/client/jobs/${id}/edit`)} />
-                  <Button
-                    className="w-full"
-                    label="Close Job"
-                    severity="secondary"
-                    onClick={() => navigate(`/client/jobs/${id}/edit`)}
-                  />
+                  {!job.isActive ? (
+                    <Button
+                      className="w-full"
+                      label="Reopen Job"
+                      severity="secondary"
+                      onClick={async () => {
+                        try {
+                          const requestData = { isActive: true }
+                          const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
+                          if (response) {
+                            setJob((prevJob: any) => ({ ...prevJob, isActive: true }))
+                            toast.current?.show({
+                              severity: 'success',
+                              summary: 'Success',
+                              detail: 'Job reopened successfully',
+                            })
+                          }
+                        } catch (error) {
+                          console.error(error)
+                        }
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      className="w-full"
+                      label="Close Job"
+                      severity="secondary"
+                      onClick={async () => {
+                        try {
+                          const requestData = { isActive: false }
+                          const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
+                          if (response) {
+                            setJob((prevJob: any) => ({ ...prevJob, isActive: false }))
+                            toast.current?.show({
+                              severity: 'success',
+                              summary: 'Success',
+                              detail: 'Job closed successfully',
+                            })
+                          }
+                        } catch (error) {
+                          console.error(error)
+                        }
+                      }}
+                    />
+                  )}
                 </li>
 
                 <li className="flex items-center justify-center px-6 py-4">
-                  <Button
-                    className="w-full"
-                    label="Cancel Job"
-                    severity='warning'
-                    outlined
-                    onClick={() => navigate(`/client/jobs/${id}/edit`)}
-                  />
+                  {!job.isCompleted ? (
+                    <Button
+                      className="w-full"
+                      label="Cancel Job"
+                      severity="warning"
+                      outlined
+                      onClick={async () => {
+                        try {
+                          const requestData = { isCompleted: true }
+                          const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
+                          if (response) {
+                            setJob((prevJob: any) => ({ ...prevJob, isCompleted: true }))
+                            toast.current?.show({
+                              severity: 'success',
+                              summary: 'Success',
+                              detail: 'Job cancelled successfully',
+                            })
+                          }
+                        } catch (error) {
+                          console.error(error)
+                        }
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      className="w-full"
+                      label="Relist Job"
+                      severity="warning"
+                      onClick={async () => {
+                        try {
+                          const requestData = { isCompleted: false }
+                          const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
+                          if (response) {
+                            setJob((prevJob: any) => ({ ...prevJob, isCompleted: false }))
+                            toast.current?.show({
+                              severity: 'success',
+                              summary: 'Success',
+                              detail: 'Job relisted successfully',
+                            })
+                          }
+                        } catch (error) {
+                          console.error(error)
+                        }
+                      }}
+                    />
+                  )}
                 </li>
               </ul>
             </div>
@@ -292,7 +375,7 @@ export default function JobDetailViewClient() {
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0">
-                    <Button label='Accept All' size='small'/>
+                    <Button label="Accept All" size="small" />
                   </div>
                 </div>
                 <ul className="divide-y divide-gray-100">
@@ -321,10 +404,8 @@ export default function JobDetailViewClient() {
                       </div>
                       <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                         <div className="flex flex-row items-end">
-                          <Button size='small' label='Accept'/>
-                          <Button size='small' label='Reject' severity='secondary' className='ml-2'/>
-                          
-                          
+                          <Button size="small" label="Accept" />
+                          <Button size="small" label="Reject" severity="secondary" className="ml-2" />
                         </div>
                       </div>
                     </li>
