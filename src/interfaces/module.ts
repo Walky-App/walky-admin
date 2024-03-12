@@ -1,6 +1,6 @@
-import { Documents, TagsInterface } from './Global'
-import { CategoryTitle } from './category'
-import { Unit } from './unit'
+import type { Documents, TagsInterface } from './Global'
+import type { CategoryTitle } from './category'
+import type { Unit } from './unit'
 
 export interface Module extends Documents {
   category: CategoryTitle
