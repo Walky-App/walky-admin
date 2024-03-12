@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
-import { Module } from '../../../interfaces/Module'
+import { Module } from '../../../interfaces/module'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { ModuleCards } from '../components/ModuleCards'
@@ -14,7 +14,7 @@ export const Modules = () => {
   const [search, setSearch] = useState('')
   const [modules, setModules] = useState<Module[]>([])
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const response = await RequestService(`modules/category/${params.categoryId}`)
     if (response.length !== 0) {
       setModules(response)
@@ -24,7 +24,7 @@ export const Modules = () => {
 
   useEffect(() => {
     if (modules.length === 0) {
-      fecthData()
+      fetchData()
     }
 
     setSearch(searchParams.get('search') || '')

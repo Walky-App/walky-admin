@@ -1,4 +1,4 @@
-import { Section, SectionProps, Unit } from '../../../../interfaces/Unit'
+import { Section, SectionProps, Unit } from '../../../../interfaces/unit'
 import { ChangeEvent, useEffect, useState } from 'react';
 import { RequestService } from '../../../../services/RequestService';
 import { Editor, EditorTextChangeEvent } from 'primereact/editor';

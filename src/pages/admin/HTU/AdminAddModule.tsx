@@ -5,7 +5,7 @@ import { SelectedOptionInterface } from '../../../interfaces/Global'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { FormModule } from './components/FormModule'
-import { Category } from '../../../interfaces/Category'
+import { Category } from '../../../interfaces/category'
 
 export const AdminAddModule = () => {
   const [categories, setCategories] = useState<SelectedOptionInterface[]>([
@@ -16,7 +16,7 @@ export const AdminAddModule = () => {
   ])
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const response: Category[] = await RequestService('categories')
     if (response.length !== 0) {
       const categoriesMap = response.map(object => {
@@ -32,7 +32,7 @@ export const AdminAddModule = () => {
 
   useEffect(() => {
     if (categories.length === 1) {
-      fecthData()
+      fetchData()
     }
   }, [categories])
 

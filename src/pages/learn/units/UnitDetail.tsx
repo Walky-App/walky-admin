@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"
 import { RequestService } from "../../../services/RequestService"
 import { TableContents } from "../components/TableContents"
 import { UnitDetailsCard } from "../components/UnitDetailsCard"
-import { Unit } from "../../../interfaces/Unit"
+import { Unit } from "../../../interfaces/unit"
 
 export const UnitDetail = () => {
     const { unit, setUnit } = useAdmin()
