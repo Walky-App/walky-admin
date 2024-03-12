@@ -329,6 +329,7 @@ export default function ClientEditJob() {
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
+              {totalHours !== 0 && <div>Total hours: {totalHours}</div>}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
