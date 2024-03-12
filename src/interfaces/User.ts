@@ -1,22 +1,23 @@
 export interface IUser {
   _id: string
   access_token: string
-  role: string
-  first_name: string
-  last_name: string
-  avatar?: string
   active: boolean
   address?: string
-  created_at: string
-  email: string
-  phone?: string
-  updated_at: string
+  avatar?: string
+  birth_date?: Date
   city?: string
   country?: string
+  created_at: string
+  email: string
+  first_name: string
   gender?: string
+  last_name: string
   notifications?: string[]
+  phone_number?: string
+  role: string
   role_id?: string
   state: string
+  updated_at: string
   verified: boolean
   zip?: string
 }
