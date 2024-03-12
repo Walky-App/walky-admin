@@ -23,13 +23,18 @@ export default function JobDetailViewClient() {
   const toast = useRef<Toast>(null)
 
   function convertToStandardTime(militaryTime: number) {
-    const militaryTimeString = militaryTime.toString().padStart(4, '0')
-    const hours = Number(militaryTimeString.slice(0, -2))
-    const minutes = Number(militaryTimeString.slice(-2))
-    const standardHours = ((hours + 11) % 12) + 1
-    const amPm = hours >= 12 ? 'pm' : 'am'
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
+    if (militaryTime == null) {
+      // Handle null input, for example, return a placeholder or an error message
+      return 'Time not set';
+    }
+    const militaryTimeString = militaryTime.toString().padStart(4, '0');
+    const hours = Number(militaryTimeString.slice(0, -2));
+    const minutes = Number(militaryTimeString.slice(-2));
+    const standardHours = ((hours + 11) % 12) + 1;
+    const amPm = hours >= 12 ? 'pm' : 'am';
+    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`;
   }
+  
 
   useEffect(() => {
     const getJob = async () => {
