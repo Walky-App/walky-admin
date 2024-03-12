@@ -1,52 +1,87 @@
-import { useMemo, useState } from 'react'
-import { RequestService } from '../../../services/RequestService'
-
-import { GetTokenInfo } from '../../../utils/TokenUtils'
-import UploadAvatar from '../../../components/shared/forms/UploadAvatar'
+import React, { useMemo, useState, useRef, useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import { Toast } from 'primereact/toast'
+import { classNames } from 'primereact/utils'
+import UploadAvatar from '../../../components/shared/forms/UploadAvatar'
+import { RequestService } from '../../../services/RequestService'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { Calendar } from 'primereact/calendar'
+import { useAuth } from '../../../contexts/AuthContext'
+import { IUser } from '../../../interfaces/User'
+import { InputMask } from 'primereact/inputmask'
+import { tooltipOptions } from '../../client/onboarding'
+import { Dropdown } from 'primereact/dropdown'
+import { TriStateCheckbox } from 'primereact/tristatecheckbox'
 
 export default function AdminProfile() {
-  const [formUser, setFormUser] = useState<any>({})
+  const [formUser, setFormUser] = useState<IUser>({} as IUser)
+  console.log('formUser: ', formUser)
   const [updateSuccess, setUpdateSuccess] = useState(false)
+  const { user } = useAuth()
+  console.log('user: ', user)
 
-  useMemo(() => {
-    const { _id } = GetTokenInfo()
+  const toast = useRef<Toast>(null)
 
+  const defaultValues = {
+    first_name: formUser?.first_name,
+    last_name: formUser?.last_name,
+    email: formUser?.email,
+    gender: formUser?.gender,
+    birth_date: formUser?.birth_date,
+    phone_number: formUser?.phone_number,
+    address: formUser?.address,
+    city: formUser?.city,
+    state: formUser?.state,
+    zip: formUser?.zip,
+    notifications: formUser?.notifications,
+  }
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    watch,
+    reset,
+  } = useForm({ defaultValues })
+
+  useEffect(() => {
     const getUser = async () => {
-      const userFound = await RequestService(`users/${_id}`)
+      const userFound = await RequestService(`users/${user?._id}`)
       setFormUser(userFound)
+      reset(userFound) // Reset form values when userFound is updated
     }
     getUser()
-  }, [])
+  }, [user, reset])
 
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const watchAllFields = watch()
+  console.log('watchAllFields: ', watchAllFields)
 
-    const target = e.target as any
+  const getFormErrorMessage = (name: string) => {
+    //@ts-ignore
+    return errors[name] ? (
+      //@ts-ignore
+      <small className="p-error">{errors[name].message}</small>
+    ) : (
+      <small className="p-error">&nbsp;</small>
+    )
+  }
 
-    const formData = {
-      first_name: target.first_name.value,
-      last_name: target.last_name.value,
-      email: target.email.value,
-      gender: target.gender.value,
-      birth_date: target.birth_date.value,
-      phone_number: target.phone_number.value,
-      address: target.address.value,
-      city: target.city.value,
-      state: target.state.value,
-      zip: target.zip.value,
-      notifications: [
-        target.notification_email?.checked ? target.notification_email.name : '',
-        target.notification_sms?.checked ? target.notification_sms.name : '',
-      ],
-    }
-
+  const onSubmit = async (data: any) => {
     try {
-      const response = await RequestService(`users/${formUser._id}`, 'PATCH', formData)
-      if (response && response._id) {
+      const response = await RequestService(`users/${user?._id}`, 'PATCH', data)
+      if (response._id) {
         setFormUser(response)
-        setUpdateSuccess(true)
-        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'User information updated successfully',
+        })
+        setTimeout(() => {
+          setUpdateSuccess(false) // Hide message after 5 seconds
+        }, 5000)
       } else {
         throw new Error('Failed to update user')
       }
@@ -56,6 +91,12 @@ export default function AdminProfile() {
     }
   }
 
+  const genderOptions = [
+    { title: 'Male', value: 'Male' },
+    { title: 'Female', value: 'Female' },
+    { title: 'Other', value: 'Other' },
+  ]
+
   return (
     <>
       <div className="mb-12 w-full border-b border-gray-200 pb-5 ">
@@ -63,7 +104,7 @@ export default function AdminProfile() {
       </div>
 
       {formUser.role && (
-        <form onSubmit={handleUpdate}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-12">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
@@ -72,11 +113,11 @@ export default function AdminProfile() {
                   This information will be displayed publicly so be careful what you share.
                 </p>
               </div>
-
               <div className="">
                 <UploadAvatar formUser={formUser} setFormUser={setFormUser} />
               </div>
             </div>
+
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
@@ -91,66 +132,109 @@ export default function AdminProfile() {
                     First name
                   </label>
                   <div className="mt-2">
-                    <input
-                      value={formUser.first_name}
-                      type="text"
-                      disabled
+                    <Controller
                       name="first_name"
-                      id="first_name"
-                      autoComplete="given-name"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'First name is required' }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
+                            <InputText
+                              disabled
+                              id={field.name}
+                              value={field.value}
+                              name="first_name"
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('first_name')}
+                        </>
+                      )}
                     />
                   </div>
-                </div>
 
-                <div className="sm:col-span-3">
-                  <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
-                    Last name
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      value={formUser.last_name}
-                      type="text"
-                      disabled
-                      name="last_name"
-                      id="last_name"
-                      autoComplete="family-name"
-                      className="block  w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                    />
+                  <div className="sm:col-span-3">
+                    <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
+                      Last name
+                    </label>
+                    <div className="mt-2">
+                      <Controller
+                        name="last_name"
+                        control={control}
+                        rules={{ required: 'Last name is required' }}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <span>
+                            <InputText
+                                disabled
+                                value={field.value}
+                                name="last_name"
+                                className={classNames({ 'p-invalid': fieldState.error })}
+                                onChange={e => field.onChange(e.target.value)}
+                              />
+                              <label htmlFor={field.name}></label>
+                            </span>
+                            {getFormErrorMessage('last_name')}
+                          </>
+                        )}
+                      />{' '}
+                    </div>
                   </div>
-                </div>
 
-                <div className="sm:col-span-4">
-                  <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                    Email address
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      disabled
-                      value={formUser.email}
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                    />
+                  <div className="sm:col-span-4">
+                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                      Email address
+                    </label>
+                    <div className="mt-2">
+                      <Controller
+                        name="email"
+                        control={control}
+                        rules={{ required: 'Email is required' }}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <span>
+                              <InputText
+                                disabled
+                                value={field.value}
+                                name="email"
+                                className={classNames({ 'p-invalid': fieldState.error })}
+                                onChange={e => field.onChange(e.target.value)}
+                              />
+                              <label htmlFor={field.name}></label>
+                            </span>
+                            {getFormErrorMessage('email')}
+                          </>
+                        )}
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="sm:col-span-2 sm:col-start-1">
-                  <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
-                    Birthday
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="date"
-                      defaultValue={
-                        formUser.birth_date ? new Date(formUser.birth_date).toISOString().split('T')[0] : ''
-                      }
-                      name="birth_date"
-                      id="birth_date"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                    />
+                  <div className="sm:col-span-2 sm:col-start-1">
+                    <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
+                      Birthday
+                    </label>
+                    <div className="mt-2">
+                      <Controller
+                        name="birth_date"
+                        control={control}
+                        rules={{ required: 'Birth date is required' }}
+                        render={({ field, fieldState }) => (
+                          <div>
+                            <Calendar
+                              inputId={field.name}
+                              value={field.value ? new Date(field.value) : undefined}
+                              onChange={field.onChange}
+                              dateFormat="mm/dd/yy"
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                              showIcon
+                            />
+                            {getFormErrorMessage(field.name)}
+                          </div>
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -159,16 +243,25 @@ export default function AdminProfile() {
                     Gender
                   </label>
                   <div className="mt-2">
-                    <select
-                      defaultValue={formUser.gender}
+                    <Controller
                       name="gender"
-                      id="gender"
-                      autoComplete="gender"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
+                      control={control}
+                      rules={{ required: 'Gender is required.' }}
+                      render={({ field, fieldState }) => (
+                        <div>
+                          <Dropdown
+                            id={field.name}
+                            value={field.value}
+                            optionLabel="title"
+                            options={genderOptions}
+                            focusInputRef={field.ref}
+                            onChange={e => field.onChange(e.value)}
+                            className={classNames({ 'p-invalid': fieldState.error })}
+                          />
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
+                    />
                   </div>
                 </div>
 
@@ -177,17 +270,30 @@ export default function AdminProfile() {
                     Phone number
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.phone_number}
-                      type="number"
+                    <Controller
+                      control={control}
                       name="phone_number"
-                      id="phone_number"
-                      autoComplete="phone_number"
-                      pattern="\d{10}"
-                      placeholder="10-digit phone-number"
-                      title="Enter a valid US phone number (e.g. 9876543210)"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      rules={{
+                        required: 'Mobile Number is required',
+                        pattern: {
+                          value: /^\(\d{3}\) \d{3}-\d{4}$/,
+                          message: 'Invalid Mobile Number. E.g. (123) 456-7890',
+                        },
+                      }}
+                      render={({ field, fieldState }) => (
+                        <InputMask
+                          id={field.name}
+                          {...field}
+                          mask="(999) 999-9999"
+                          slotChar="x"
+                          tooltip="E.g. (281) 330-8004"
+                          tooltipOptions={tooltipOptions}
+                          className={classNames({ 'p-invalid': fieldState.invalid })}
+                        />
+                      )}
                     />
+
+                    {getFormErrorMessage('phone_number')}
                   </div>
                 </div>
               </div>
@@ -207,13 +313,25 @@ export default function AdminProfile() {
                     Street address
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.address}
-                      type="text"
+                    <Controller
                       name="address"
-                      id="address"
-                      autoComplete="address"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'Address is required' }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
+                            <InputText
+                              id={field.name}
+                              value={field.value}
+                              name="address"
+                              className={classNames({ 'p-invalid': fieldState.error})}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('address')}
+                        </>
+                      )}
                     />
                   </div>
                 </div>
@@ -223,13 +341,25 @@ export default function AdminProfile() {
                     City
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.city}
-                      type="text"
+                   <Controller
                       name="city"
-                      id="city"
-                      autoComplete="city"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'City is required' }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
+                            <InputText
+                              id={field.name}
+                              value={field.value}
+                              name="city"
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('city')}
+                        </>
+                      )}
                     />
                   </div>
                 </div>
@@ -239,13 +369,25 @@ export default function AdminProfile() {
                     State / Province
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.state}
-                      type="text"
+                  <Controller
                       name="state"
-                      id="state"
-                      autoComplete="state"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'State is required' }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
+                            <InputText
+                              id={field.name}
+                              value={field.value}
+                              name="state"
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('state')}
+                        </>
+                      )}
                     />
                   </div>
                 </div>
@@ -255,13 +397,25 @@ export default function AdminProfile() {
                     ZIP / Postal code
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.zip}
-                      type="text"
+                   <Controller
                       name="zip"
-                      id="zip"
-                      autoComplete="zip"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'ZIP is required' }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
+                            <InputText
+                              id={field.name}
+                              value={field.value}
+                              name="zip"
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('zip')}
+                        </>
+                      )}
                     />
                   </div>
                 </div>
@@ -282,12 +436,24 @@ export default function AdminProfile() {
                   <div className="mt-6 space-y-6">
                     <div className="relative flex gap-x-3">
                       <div className="flex h-6 items-center">
-                        <input
-                          defaultChecked={formUser.notifications?.includes('notification_email')}
-                          id="notification_email"
-                          name="notification_email"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                        <Controller
+                          name="notifications"
+                          control={control}
+                          render={({ field }) => (
+                            <>
+                              <TriStateCheckbox
+                                value={field.value?.includes('notification_email')}
+                                onChange={e => {
+                                  const value = field.value || []; // Initialize as empty array if undefined
+                                  if (e.checked) {
+                                    field.onChange([...value, 'notification_email']); // Use spread operator to add new value
+                                  } else {
+                                    field.onChange(value.filter((item: string) => item !== 'notification_email'));
+                                  }
+                                }}
+                              />
+                            </>
+                          )}
                         />
                       </div>
                       <div className="text-sm leading-6">
@@ -299,12 +465,24 @@ export default function AdminProfile() {
                     </div>
                     <div className="relative flex gap-x-3">
                       <div className="flex h-6 items-center">
-                        <input
-                          defaultChecked={formUser.notifications?.includes('notification_sms')}
-                          id="notification_sms"
-                          name="notification_sms"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                        <Controller
+                          name="notifications"
+                          control={control}
+                          render={({ field }) => (
+                            <>
+                              <TriStateCheckbox
+                                value={field.value?.includes('notification_sms')}
+                                onChange={e => {
+                                  const value = field.value || []; // Initialize as empty array if undefined
+                                  if (e.checked) {
+                                    field.onChange([...value, 'notification_sms']); // Use spread operator to add new value
+                                  } else {
+                                    field.onChange(value.filter((item: string) => item !== 'notification_sms'));
+                                  }
+                                }}
+                              />
+                            </>
+                          )}
                         />
                       </div>
                       <div className="text-sm leading-6">
@@ -321,26 +499,7 @@ export default function AdminProfile() {
           </div>
 
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            {updateSuccess && (
-              <div className="rounded-md bg-green-50 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-green-800">Profile updated successfully</p>
-                  </div>
-                  <div className="ml-auto pl-3">
-                    <div className="-mx-1.5 -my-1.5"></div>
-                  </div>
-                </div>
-              </div>
-            )}
-            <button
-              type="submit"
-              className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-              Update
-            </button>
+            <Button type="submit" label="Submit" />
           </div>
         </form>
       )}
