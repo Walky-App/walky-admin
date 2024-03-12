@@ -5,9 +5,9 @@ import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/out
 import { secondsToTimeDescription } from "../../../utils/FunctionUtils"
 import { Badge } from "flowbite-react"
 import { useAdmin } from "../../../contexts/AdminContext"
-import { Module } from "../../../interfaces/Module"
+import { Module } from "../../../interfaces/module"
 import { CircularProgressBar } from "../components/CircularProgressBar"
-import { Unit } from '../../../interfaces/Unit';
+import { Unit } from '../../../interfaces/unit';
 import { ArrowRightIcon } from "@heroicons/react/20/solid"
 
 export const Units = () => {
@@ -16,7 +16,7 @@ export const Units = () => {
     const params = useParams()
     const navigate = useNavigate()
 
-    const fecthData = async () => {
+    const fetchData = async () => {
         const response: Module = await RequestService(`modules/${params.moduleId}`)
         if (response) {
             setModule(response)
@@ -26,7 +26,7 @@ export const Units = () => {
 
     useEffect(() => {
         if (!module) {
-            fecthData()
+            fetchData()
         }
         console.log(module)
     })

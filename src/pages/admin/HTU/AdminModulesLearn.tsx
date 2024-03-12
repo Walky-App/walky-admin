@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
-import { Module } from '../../../interfaces/Module'
+import { Module } from '../../../interfaces/module'
 import { RequestService } from '../../../services/RequestService'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
-import { Category } from '../../../interfaces/Category'
+import { Category } from '../../../interfaces/category'
 import { useAdmin } from '../../../contexts/AdminContext'
 
 export const AdminModulesLearn = () => {
@@ -41,7 +41,7 @@ export const AdminModulesLearn = () => {
     },
   ]
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const responseModule: Module[] = await RequestService('modules')
     if (responseModule.length !== 0) {
       setModules(responseModule)
@@ -61,7 +61,7 @@ export const AdminModulesLearn = () => {
 
   useEffect(() => {
     if (categories.length === 1 && (modules.length === 0)) {
-      fecthData()
+      fetchData()
     }
   }, [modules, categories])
 
