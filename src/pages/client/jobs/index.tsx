@@ -48,6 +48,10 @@ export default function Facilities() {
         return a.original.isCompleted ? -1 : 1
       },
     },    //@ts-ignore
+    {
+      Header: 'Total Hours',
+      accessor: 'total_hours',
+    },    //@ts-ignore
       { Header: 'Vacancy', accessor: 'vacancy' },
     {
       Header: 'Availability',

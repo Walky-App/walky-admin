@@ -234,6 +234,18 @@ export default function JobDetailViewClient() {
                         {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
                       </div>
                     </div>
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Lunch Break</div>
+                      <div className="text-xs font-normal text-black">
+                        {job.lunch_break === 0 ? 'No' : job.lunch_break} Minutes
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Total Hours</div>
+                      <div className="text-xs font-normal text-black">
+                        {job.total_hours} Hours
+                      </div>
+                    </div>
                   </div>
                   {/* Job Card Footer */}
                   <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
