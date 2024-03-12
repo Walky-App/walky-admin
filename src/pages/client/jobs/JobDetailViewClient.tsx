@@ -237,14 +237,12 @@ export default function JobDetailViewClient() {
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                       <div className="text-xs font-normal text-stone-500">Lunch Break</div>
                       <div className="text-xs font-normal text-black">
-                        {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'} 
+                        {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                       <div className="text-xs font-normal text-stone-500">Total Hours</div>
-                      <div className="text-xs font-normal text-black">
-                        {job.total_hours} Hours
-                      </div>
+                      <div className="text-xs font-normal text-black">{job.total_hours} Hours</div>
                     </div>
                   </div>
                   {/* Job Card Footer */}
@@ -311,55 +309,6 @@ export default function JobDetailViewClient() {
                               severity: 'success',
                               summary: 'Success',
                               detail: 'Job closed successfully',
-                            })
-                          }
-                        } catch (error) {
-                          console.error(error)
-                        }
-                      }}
-                    />
-                  )}
-                </li>
-
-                <li className="flex items-center justify-center px-6 py-4">
-                  {!job.isCompleted ? (
-                    <Button
-                      className="w-full"
-                      label="Cancel Job"
-                      severity="warning"
-                      outlined
-                      onClick={async () => {
-                        try {
-                          const requestData = { isCompleted: true }
-                          const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
-                          if (response) {
-                            setJob((prevJob: any) => ({ ...prevJob, isCompleted: true }))
-                            toast.current?.show({
-                              severity: 'success',
-                              summary: 'Success',
-                              detail: 'Job cancelled successfully',
-                            })
-                          }
-                        } catch (error) {
-                          console.error(error)
-                        }
-                      }}
-                    />
-                  ) : (
-                    <Button
-                      className="w-full"
-                      label="Relist Job"
-                      severity="warning"
-                      onClick={async () => {
-                        try {
-                          const requestData = { isCompleted: false }
-                          const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
-                          if (response) {
-                            setJob((prevJob: any) => ({ ...prevJob, isCompleted: false }))
-                            toast.current?.show({
-                              severity: 'success',
-                              summary: 'Success',
-                              detail: 'Job relisted successfully',
                             })
                           }
                         } catch (error) {

@@ -1,10 +1,11 @@
 import React, { useRef } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, set, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { InputNumber } from 'primereact/inputnumber'
+import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
@@ -16,6 +17,7 @@ import { GetTokenInfo } from '../../../../utils/TokenUtils'
 export default function ClientAddJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
   const [endTime, setEndTime] = React.useState<Date | null>(null)
+  const [totalHours, setTotalHours] = React.useState(0)
   const user = GetTokenInfo()
   const id = user?._id
   const toast = useRef<Toast>(null)
@@ -38,6 +40,7 @@ export default function ClientAddJob() {
     start_time: null,
     end_time: null,
     lunch_break: null,
+    job_tips: [],
   }
 
   const {
@@ -47,11 +50,29 @@ export default function ClientAddJob() {
     watch,
   } = useForm({ defaultValues })
 
+  const lunchBreak = watch('lunch_break')
+
   const watchAllFields = watch() // This will return all form values
 
   React.useEffect(() => {
     console.log(watchAllFields)
   }, [watchAllFields])
+
+  React.useEffect(() => {
+    if (startTime && endTime) {
+      let startHours = startTime.getHours() + startTime.getMinutes() / 60
+      let endHours = endTime.getHours() + endTime.getMinutes() / 60
+
+      if (endHours <= startHours) {
+        // Adjust for cases where the end time is past midnight
+        endHours += 24
+      }
+
+      const lunchBreakHours = lunchBreak ? lunchBreak / 60 : 0
+      const totalHoursCalc = endHours - startHours - lunchBreakHours
+      setTotalHours(Math.round(totalHoursCalc * 100) / 100) // Update totalHours state
+    }
+  }, [startTime, endTime, lunchBreak])
 
   const getFormErrorMessage = (name: string) => {
     //@ts-ignore
@@ -78,9 +99,10 @@ export default function ClientAddJob() {
         }
         const lunchBreakHours = data.lunch_break / 60
         const totalHours = endHours - startHours - lunchBreakHours
-        requestData.total_hours = Math.round(totalHours * 100) / 100 // Rounds to two decimal places
+        requestData.total_hours = Math.round(totalHours * 100) / 100
+        setTotalHours(requestData.total_hours)
       }
-      
+
       const response = await RequestService('jobs', 'POST', requestData)
       if (response) {
         toast.current?.show({
@@ -115,6 +137,24 @@ export default function ClientAddJob() {
     { label: '60 minutes', value: 60 },
   ]
 
+  const jobTips = [
+    { label: 'Change Required Upon Entry', value: 'Change Required Upon Entry' },
+    { label: 'Lunch Included', value: 'Lunch Included' },
+    { label: 'Lunch Room Available', value: 'Lunch Room Available' },
+    { label: 'Lunch Will Be Off-Premise', value: 'Lunch Will Be Off-Premise' },
+    { label: 'Pack a Lunch', value: 'Pack a Lunch' },
+    { label: 'Parking on Street', value: 'Parking on Street' },
+    { label: 'Parking Onsite', value: 'Parking Onsite' },
+    { label: 'Required Identification', value: 'Required Identification' },
+    { label: 'Special Equipment', value: 'Special Equipment' },
+    { label: 'No gas stations nearby', value: 'No gas stations nearby' },
+    { label: 'Water is provided', value: 'Water is provided' },
+    { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
+    { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
+    { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
+    { label: 'Labcoat Provided', value: 'Labcoat Provided' },
+    { label: 'Hear / Beard net required', value: 'Hear / Beard net required' },
+  ]
   return (
     <>
       <TitleComponent title={'Add a new job'} />
@@ -139,7 +179,7 @@ export default function ClientAddJob() {
                   <Controller
                     name="title"
                     control={control}
-                    rules={{ required: 'Facility is required.' }}
+                    rules={{ required: 'Job Title is required.' }}
                     render={({ field, fieldState }) => (
                       <>
                         <div>
@@ -148,6 +188,7 @@ export default function ClientAddJob() {
                             value={field.value}
                             optionLabel="title"
                             options={options}
+                            filter
                             focusInputRef={field.ref}
                             onChange={e => field.onChange(e.value)}
                             className={classNames({ 'p-invalid': fieldState.error })}
@@ -177,6 +218,7 @@ export default function ClientAddJob() {
                             value={field.value}
                             optionLabel="name"
                             options={facilities}
+                            filter
                             focusInputRef={field.ref}
                             onChange={e => field.onChange(e.value)}
                             className={classNames({ 'p-invalid': fieldState.error })}
@@ -249,10 +291,11 @@ export default function ClientAddJob() {
           {/* Shift Details */}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours and Vacancies</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Vacancies and Tips</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
+              {totalHours !== 0 && <div>Total hours: {totalHours}</div>}{' '}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -387,6 +430,34 @@ export default function ClientAddJob() {
                       </>
                     )}
                   />
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                  Job tips:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    name="job_tips"
+                    control={control}
+                    rules={{ required: 'Value is required.' }}
+                    render={({ field }) => (
+                      <MultiSelect
+                        id={field.name}
+                        name="value"
+                        value={field.value}
+                        options={jobTips}
+                        filter
+                        onChange={e => field.onChange(e.value)}
+                        optionLabel="label"
+                        placeholder="Select Job Tips"
+                        maxSelectedLabels={8}
+                        className="md:w-20rem w-full"
+                      />
+                    )}
+                  />
+
+                  {getFormErrorMessage('value')}
                 </div>
               </div>
             </div>
