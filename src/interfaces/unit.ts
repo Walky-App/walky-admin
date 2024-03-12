@@ -1,4 +1,4 @@
-import { Documents } from './Global'
+import type { Documents } from './Global'
 
 export interface Section {
   _id?: string
