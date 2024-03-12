@@ -237,7 +237,7 @@ export default function JobDetailViewClient() {
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                       <div className="text-xs font-normal text-stone-500">Lunch Break</div>
                       <div className="text-xs font-normal text-black">
-                        {job.lunch_break === 0 ? 'No' : job.lunch_break} Minutes
+                        {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'} 
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
