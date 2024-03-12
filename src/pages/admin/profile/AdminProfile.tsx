@@ -18,7 +18,6 @@ export default function AdminProfile() {
   const [formUser, setFormUser] = useState<IUser>({} as IUser)
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const { user } = useAuth()
-  console.log('user: ', user)
 
   const toast = useRef<Toast>(null)
 
@@ -72,10 +71,8 @@ export default function AdminProfile() {
           severity: 'success',
           summary: 'Success',
           detail: 'User information updated successfully',
+          life: 3000,
         })
-        setTimeout(() => {
-          setUpdateSuccess(false) // Hide message after 5 seconds
-        }, 5000)
       } else {
         throw new Error('Failed to update user')
       }
@@ -176,7 +173,7 @@ export default function AdminProfile() {
                           {getFormErrorMessage('last_name')}
                         </>
                       )}
-                    />{' '}
+                    />
                   </div>
                 </div>
 
@@ -429,12 +426,12 @@ export default function AdminProfile() {
                     <Controller
                       name="zip"
                       control={control}
-                      rules={{ 
+                      rules={{
                         required: 'ZIP is required',
                         pattern: {
                           value: /^\d{5}$/,
-                          message: 'ZIP should be exactly 5 digits'
-                        }
+                          message: 'ZIP should be exactly 5 digits',
+                        },
                       }}
                       render={({ field, fieldState }) => (
                         <>
