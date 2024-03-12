@@ -6,6 +6,7 @@ import { Toast, type ToastMessage } from 'primereact/toast'
 
 import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { AddFacilityDialog } from './AddFacilityDialog'
+import { AddPaymentMethodCard } from './PaymentMethodCard'
 
 export const Step4 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -49,32 +50,19 @@ export const Step4 = ({ step, setStep }: StepProps) => {
       <Toast ref={toast} onRemove={e => onRemove(e)} />
 
       {/* Do you have more locations to add?  */}
-      <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 ">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
         <div>
           <h2 className="text-base font-semibold leading-7 text-gray-900">Payment Information</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Please enter your payment information (like credit card, billing address, Bank account number) in the
-            provided space below.
-          </p>
+          <p className="mt-1 text-sm leading-6 text-gray-600">Please choose a payment method.</p>
         </div>
-
-        <div className="sm:col-span-full">
-          <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 xl:gap-x-8">
-            <li className="overflow-hidden rounded-xl border border-gray-200">
-              {/* Card Header */}
-              <div className="flex h-full flex-col items-center justify-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                <Button icon="pi pi-plus" rounded aria-label="Add" /*  onClick={() => setVisible(true)} */ />
-                <div className="mt-4 text-lg font-semibold leading-6 text-gray-900">Billing Methods</div>
-                <p className="mt-1 text-sm font-semibold leading-6 text-gray-900">
-                  You have not set up any billing methods yet.
-                </p>
-                <p className="text-center text-sm leading-6 text-gray-600">
-                  Your billing method will charged only when your available balance from HempTemp earnings is not
-                  sufficient to pay for your monthly membership and/or connects.
-                </p>
-              </div>
-            </li>
-          </ul>
+        <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+          <div className="sm:col-span-full">
+            <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 xl:gap-x-8">
+              <li className="overflow-hidden rounded-xl border border-gray-200">
+                <AddPaymentMethodCard />
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
