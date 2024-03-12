@@ -34,7 +34,7 @@ export const ImportUpdateModal = ({ visible, setVisible }: WelcomeDialogProps) =
         visible={visible}>
         <p className="m-0 mb-5">
           Use this template file to import or update products - &nbsp;
-          <a className='text-green-600 hover:text-green-400' href="/assets/import-template.csv">
+          <a className='text-green-600 hover:text-green-400' href="/assets/importer-template.csv">
             import-template.csv
           </a>
         </p>
