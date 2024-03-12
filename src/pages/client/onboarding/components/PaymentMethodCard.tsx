@@ -10,9 +10,6 @@ export const AddPaymentMethodCard: React.FC = () => {
       <div className="flex flex-col gap-6">
         <div className="flex h-14 flex-col gap-3">
           <div className="text-xl font-semibold text-black">Add Payment Method</div>
-          <div className="text-sm font-normal leading-tight text-black">
-            Please enter your business address information below.
-          </div>
         </div>
         <div className="inline-flex gap-5">
           {paymentMethods.map((method, index) => (
