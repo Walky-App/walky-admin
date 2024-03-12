@@ -10,6 +10,7 @@ export interface IUser {
   created_at: string
   email: string
   first_name: string
+  middle_name?: string
   gender?: string
   last_name: string
   notifications?: string[]
@@ -19,5 +20,5 @@ export interface IUser {
   state: string
   updated_at: string
   verified: boolean
-  zip?: string
+  zip?: number
 }

@@ -1,20 +1,19 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 import UploadAvatar from '../../../components/shared/forms/UploadAvatar'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { Calendar } from 'primereact/calendar'
 import { useAuth } from '../../../contexts/AuthContext'
 import { IUser } from '../../../interfaces/User'
 import { InputMask } from 'primereact/inputmask'
 import { tooltipOptions } from '../../client/onboarding'
 import { Dropdown } from 'primereact/dropdown'
-import { TriStateCheckbox } from 'primereact/tristatecheckbox'
+import { Checkbox } from 'primereact/checkbox'
+import { InputNumber } from 'primereact/inputnumber'
 
 export default function AdminProfile() {
   const [formUser, setFormUser] = useState<IUser>({} as IUser)
@@ -27,6 +26,7 @@ export default function AdminProfile() {
 
   const defaultValues = {
     first_name: formUser?.first_name,
+    middle_name: formUser?.middle_name,
     last_name: formUser?.last_name,
     email: formUser?.email,
     gender: formUser?.gender,
@@ -127,6 +127,7 @@ export default function AdminProfile() {
               </div>
 
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+                {/* First Name */}
                 <div className="sm:col-span-3">
                   <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
                     First name
@@ -144,7 +145,7 @@ export default function AdminProfile() {
                               id={field.name}
                               value={field.value}
                               name="first_name"
-                              className={classNames({ 'p-invalid': fieldState.error })}
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                               onChange={e => field.onChange(e.target.value)}
                             />
                             <label htmlFor={field.name}></label>
@@ -154,91 +155,68 @@ export default function AdminProfile() {
                       )}
                     />
                   </div>
+                </div>
 
-                  <div className="sm:col-span-3">
-                    <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Last name
-                    </label>
-                    <div className="mt-2">
-                      <Controller
-                        name="last_name"
-                        control={control}
-                        rules={{ required: 'Last name is required' }}
-                        render={({ field, fieldState }) => (
-                          <>
-                            <span>
+                {/* Last Name */}
+                <div className="sm:col-span-3">
+                  <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
+                    Last name
+                  </label>
+                  <div className="mt-2">
+                    <Controller
+                      name="last_name"
+                      control={control}
+                      rules={{ required: 'Last name is required' }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
                             <InputText
-                                disabled
-                                value={field.value}
-                                name="last_name"
-                                className={classNames({ 'p-invalid': fieldState.error })}
-                                onChange={e => field.onChange(e.target.value)}
-                              />
-                              <label htmlFor={field.name}></label>
-                            </span>
-                            {getFormErrorMessage('last_name')}
-                          </>
-                        )}
-                      />{' '}
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-4">
-                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                      Email address
-                    </label>
-                    <div className="mt-2">
-                      <Controller
-                        name="email"
-                        control={control}
-                        rules={{ required: 'Email is required' }}
-                        render={({ field, fieldState }) => (
-                          <>
-                            <span>
-                              <InputText
-                                disabled
-                                value={field.value}
-                                name="email"
-                                className={classNames({ 'p-invalid': fieldState.error })}
-                                onChange={e => field.onChange(e.target.value)}
-                              />
-                              <label htmlFor={field.name}></label>
-                            </span>
-                            {getFormErrorMessage('email')}
-                          </>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
-                      Birthday
-                    </label>
-                    <div className="mt-2">
-                      <Controller
-                        name="birth_date"
-                        control={control}
-                        rules={{ required: 'Birth date is required' }}
-                        render={({ field, fieldState }) => (
-                          <div>
-                            <Calendar
-                              inputId={field.name}
-                              value={field.value ? new Date(field.value) : undefined}
-                              onChange={field.onChange}
-                              dateFormat="mm/dd/yy"
-                              className={classNames({ 'p-invalid': fieldState.error })}
-                              showIcon
+                              disabled
+                              value={field.value}
+                              name="last_name"
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                              onChange={e => field.onChange(e.target.value)}
                             />
-                            {getFormErrorMessage(field.name)}
-                          </div>
-                        )}
-                      />
-                    </div>
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('last_name')}
+                        </>
+                      )}
+                    />{' '}
                   </div>
                 </div>
 
-                <div className="sm:col-span-2">
+                {/* Middle Name */}
+                <div className="sm:col-span-3">
+                  <label htmlFor="middle_name" className="block text-sm font-medium leading-6 text-gray-900">
+                    Middle Name
+                  </label>
+                  <div className="mt-2">
+                    <Controller
+                      name="middle_name"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
+                            <InputText
+                              disabled
+                              id={field.name}
+                              value={field.value}
+                              name="middle_name"
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('middle_name')}
+                        </>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Gender */}
+                <div className="sm:col-span-3">
                   <label htmlFor="gender" className="block text-sm font-medium leading-6 text-gray-900">
                     Gender
                   </label>
@@ -256,7 +234,7 @@ export default function AdminProfile() {
                             options={genderOptions}
                             focusInputRef={field.ref}
                             onChange={e => field.onChange(e.value)}
-                            className={classNames({ 'p-invalid': fieldState.error })}
+                            className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                           />
                           {getFormErrorMessage(field.name)}
                         </div>
@@ -265,7 +243,37 @@ export default function AdminProfile() {
                   </div>
                 </div>
 
-                <div className="sm:col-span-2">
+                {/* Email */}
+                <div className="sm:col-span-3">
+                  <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                    Email address
+                  </label>
+                  <div className="mt-2">
+                    <Controller
+                      name="email"
+                      control={control}
+                      rules={{ required: 'Email is required' }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span>
+                            <InputText
+                              disabled
+                              value={field.value}
+                              name="email"
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                            <label htmlFor={field.name}></label>
+                          </span>
+                          {getFormErrorMessage('email')}
+                        </>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Phone Number */}
+                <div className="sm:col-span-3">
                   <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
                     Phone number
                   </label>
@@ -288,12 +296,39 @@ export default function AdminProfile() {
                           slotChar="x"
                           tooltip="E.g. (281) 330-8004"
                           tooltipOptions={tooltipOptions}
-                          className={classNames({ 'p-invalid': fieldState.invalid })}
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                         />
                       )}
                     />
 
                     {getFormErrorMessage('phone_number')}
+                  </div>
+                </div>
+
+                {/* Birthday */}
+                <div className="sm:col-span-6 sm:col-start-1">
+                  <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
+                    Birthday
+                  </label>
+                  <div className="mt-2">
+                    <Controller
+                      name="birth_date"
+                      control={control}
+                      rules={{ required: 'Birth date is required' }}
+                      render={({ field, fieldState }) => (
+                        <div>
+                          <Calendar
+                            inputId={field.name}
+                            value={field.value ? new Date(field.value) : undefined}
+                            onChange={field.onChange}
+                            dateFormat="mm/dd/yy"
+                            className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                            showIcon
+                          />
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
+                    />
                   </div>
                 </div>
               </div>
@@ -324,7 +359,7 @@ export default function AdminProfile() {
                               id={field.name}
                               value={field.value}
                               name="address"
-                              className={classNames({ 'p-invalid': fieldState.error})}
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                               onChange={e => field.onChange(e.target.value)}
                             />
                             <label htmlFor={field.name}></label>
@@ -341,7 +376,7 @@ export default function AdminProfile() {
                     City
                   </label>
                   <div className="mt-2">
-                   <Controller
+                    <Controller
                       name="city"
                       control={control}
                       rules={{ required: 'City is required' }}
@@ -352,7 +387,7 @@ export default function AdminProfile() {
                               id={field.name}
                               value={field.value}
                               name="city"
-                              className={classNames({ 'p-invalid': fieldState.error })}
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                               onChange={e => field.onChange(e.target.value)}
                             />
                             <label htmlFor={field.name}></label>
@@ -369,7 +404,7 @@ export default function AdminProfile() {
                     State / Province
                   </label>
                   <div className="mt-2">
-                  <Controller
+                    <Controller
                       name="state"
                       control={control}
                       rules={{ required: 'State is required' }}
@@ -380,7 +415,7 @@ export default function AdminProfile() {
                               id={field.name}
                               value={field.value}
                               name="state"
-                              className={classNames({ 'p-invalid': fieldState.error })}
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                               onChange={e => field.onChange(e.target.value)}
                             />
                             <label htmlFor={field.name}></label>
@@ -397,19 +432,20 @@ export default function AdminProfile() {
                     ZIP / Postal code
                   </label>
                   <div className="mt-2">
-                   <Controller
+                    <Controller
                       name="zip"
                       control={control}
                       rules={{ required: 'ZIP is required' }}
                       render={({ field, fieldState }) => (
                         <>
                           <span>
-                            <InputText
+                            <InputNumber
                               id={field.name}
                               value={field.value}
+                              useGrouping={false}
                               name="zip"
-                              className={classNames({ 'p-invalid': fieldState.error })}
-                              onChange={e => field.onChange(e.target.value)}
+                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                              onChange={e => field.onChange(e.value)}
                             />
                             <label htmlFor={field.name}></label>
                           </span>
@@ -441,14 +477,15 @@ export default function AdminProfile() {
                           control={control}
                           render={({ field }) => (
                             <>
-                              <TriStateCheckbox
-                                value={field.value?.includes('notification_email')}
+                              <Checkbox
+                                inputId="notification_email"
+                                checked={field.value?.includes('notification_email') || false}
                                 onChange={e => {
-                                  const value = field.value || []; // Initialize as empty array if undefined
+                                  const value = field.value || [] // Initialize as empty array if undefined
                                   if (e.checked) {
-                                    field.onChange([...value, 'notification_email']); // Use spread operator to add new value
+                                    field.onChange([...value, 'notification_email']) // Use spread operator to add new value
                                   } else {
-                                    field.onChange(value.filter((item: string) => item !== 'notification_email'));
+                                    field.onChange(value.filter((item: string) => item !== 'notification_email'))
                                   }
                                 }}
                               />
@@ -470,14 +507,15 @@ export default function AdminProfile() {
                           control={control}
                           render={({ field }) => (
                             <>
-                              <TriStateCheckbox
-                                value={field.value?.includes('notification_sms')}
+                              <Checkbox
+                                inputId="notification_sms"
+                                checked={field.value?.includes('notification_sms') || false}
                                 onChange={e => {
-                                  const value = field.value || []; // Initialize as empty array if undefined
+                                  const value = field.value || [] // Initialize as empty array if undefined
                                   if (e.checked) {
-                                    field.onChange([...value, 'notification_sms']); // Use spread operator to add new value
+                                    field.onChange([...value, 'notification_sms']) // Use spread operator to add new value
                                   } else {
-                                    field.onChange(value.filter((item: string) => item !== 'notification_sms'));
+                                    field.onChange(value.filter((item: string) => item !== 'notification_sms'))
                                   }
                                 }}
                               />
@@ -497,10 +535,12 @@ export default function AdminProfile() {
               </div>
             </div>
           </div>
-
-          <div className="mt-6 flex items-center justify-end gap-x-6">
-            <Button type="submit" label="Submit" />
-          </div>
+          <>
+            <Toast ref={toast} />
+            <div className="mt-6 flex items-center justify-end gap-x-6">
+              <Button type="submit" label="Submit" />
+            </div>
+          </>
         </form>
       )}
     </>
