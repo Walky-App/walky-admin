@@ -1,16 +1,17 @@
 import React, { useRef } from 'react'
-import { RequestService } from '../../../../services/RequestService'
-import { useNavigate } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
-import { classNames } from 'primereact/utils'
-import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
-import { Toast } from 'primereact/toast'
 import { Dropdown } from 'primereact/dropdown'
-import { IFacility } from '../../../../interfaces/Facility'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { InputNumber } from 'primereact/inputnumber'
+import { Toast } from 'primereact/toast'
+import { classNames } from 'primereact/utils'
+
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
+import { IFacility } from '../../../../interfaces/Facility'
+import { RequestService } from '../../../../services/RequestService'
+import { GetTokenInfo } from '../../../../utils/TokenUtils'
 
 export default function ClientAddJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
@@ -19,7 +20,7 @@ export default function ClientAddJob() {
   const id = user?._id
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<IFacility[]>()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   React.useEffect(() => {
     const getFacilities = async () => {
@@ -64,24 +65,37 @@ export default function ClientAddJob() {
 
   const onSubmit = async (data: any) => {
     try {
-      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null;
-      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null;
-      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary };
-      const response = await RequestService('jobs', 'POST', requestData);
+      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
+      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
+      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
+
+      if (startTime && endTime && data.lunch_break !== null) {
+        let startHours = startTime.getHours() + startTime.getMinutes() / 60
+        let endHours = endTime.getHours() + endTime.getMinutes() / 60
+
+        if (endHours <= startHours) {
+          endHours += 24
+        }
+        const lunchBreakHours = data.lunch_break / 60
+        const totalHours = endHours - startHours - lunchBreakHours
+        requestData.total_hours = Math.round(totalHours * 100) / 100 // Rounds to two decimal places
+      }
+      
+      const response = await RequestService('jobs', 'POST', requestData)
       if (response) {
         toast.current?.show({
           severity: 'success',
           summary: 'Success',
           detail: 'Job information submitted successfully',
-        });
+        })
         setTimeout(() => {
-          navigate('/client/jobs');
-        }, 3000);
+          navigate('/client/jobs')
+        }, 3000)
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   const options = [
     { title: 'Harvester', value: 'Harvester' },
@@ -95,10 +109,10 @@ export default function ClientAddJob() {
 
   const lunchTimes = [
     { label: '0 minutes', value: 0 },
-    { label: '15 minutes', value: 25 },
-    { label: '30 minutes', value: 50 },
-    { label: '45 minutes', value: 75 },
-    { label: '60 minutes', value: 100 },
+    { label: '15 minutes', value: 15 },
+    { label: '30 minutes', value: 30 },
+    { label: '45 minutes', value: 45 },
+    { label: '60 minutes', value: 60 },
   ]
 
   return (
@@ -170,7 +184,7 @@ export default function ClientAddJob() {
                           <div>{getFormErrorMessage(field.name)}</div>
                         </div>
                       </>
-                    )} 
+                    )}
                   />{' '}
                 </div>
               </div>
