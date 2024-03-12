@@ -20,5 +20,5 @@ export interface IUser {
   state: string
   updated_at: string
   verified: boolean
-  zip?: number
+  zip?: string
 }
