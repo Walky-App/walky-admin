@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -13,11 +13,9 @@ import { InputMask } from 'primereact/inputmask'
 import { tooltipOptions } from '../../client/onboarding'
 import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
-import { InputNumber } from 'primereact/inputnumber'
 
 export default function AdminProfile() {
   const [formUser, setFormUser] = useState<IUser>({} as IUser)
-  console.log('formUser: ', formUser)
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const { user } = useAuth()
   console.log('user: ', user)
@@ -43,7 +41,6 @@ export default function AdminProfile() {
     control,
     formState: { errors },
     handleSubmit,
-    watch,
     reset,
   } = useForm({ defaultValues })
 
@@ -55,9 +52,6 @@ export default function AdminProfile() {
     }
     getUser()
   }, [user, reset])
-
-  const watchAllFields = watch()
-  console.log('watchAllFields: ', watchAllFields)
 
   const getFormErrorMessage = (name: string) => {
     //@ts-ignore
@@ -435,21 +429,28 @@ export default function AdminProfile() {
                     <Controller
                       name="zip"
                       control={control}
-                      rules={{ required: 'ZIP is required' }}
+                      rules={{ 
+                        required: 'ZIP is required',
+                        pattern: {
+                          value: /^\d{5}$/,
+                          message: 'ZIP should be exactly 5 digits'
+                        }
+                      }}
                       render={({ field, fieldState }) => (
                         <>
                           <span>
-                            <InputNumber
+                            <InputMask
                               id={field.name}
-                              value={field.value}
-                              useGrouping={false}
-                              name="zip"
+                              {...field}
+                              mask="99999"
+                              slotChar="x"
+                              tooltip="E.g. 33065"
+                              tooltipOptions={tooltipOptions}
                               className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.value)}
                             />
                             <label htmlFor={field.name}></label>
                           </span>
-                          {getFormErrorMessage('zip')}
+                          {fieldState.error && <p className="error">{fieldState.error.message}</p>}
                         </>
                       )}
                     />
