@@ -45,8 +45,12 @@ export default function AdminJobs() {
           if (a.original.isCompleted === b.original.isCompleted) return 0
           return a.original.isCompleted ? -1 : 1
         },
-      },    //@ts-ignore
-      { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => (Array.isArray(value) ? value.join(', ') : 'N/A') },
+      },  
+      {
+        Header: 'Total Hours',
+        accessor: 'total_hours',
+      },
+        //@ts-ignore
       { Header: 'Vacancy', accessor: 'vacancy' },
       {
         Header: 'Availability',
