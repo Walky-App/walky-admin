@@ -40,6 +40,14 @@ export default function AdminFacilities() {
           return a.original.active ? -1 : 1
         },
       },
+      {
+        Header: 'Approval Status',
+        accessor: (d: any) => (d.isApproved ? 'Approved' : 'Pending'),
+        sortType: (a: any, b: any) => {
+          if (a.original.isApproved === b.original.isApproved) return 0
+          return a.original.active ? -1 : 1
+        },
+      },
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
       { Header: 'Zip', accessor: 'zip' },

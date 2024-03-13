@@ -1,10 +1,10 @@
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { RequestService } from '../../../services/RequestService'
 import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
+import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
-import { useNavigate } from 'react-router-dom'
 
 export default function Facilities() {
   const navigate = useNavigate()
@@ -21,7 +21,26 @@ export default function Facilities() {
     getFacilities()
   }, [])
 
+  function Avatar({ src, alt = 'avatar' }: { src: any; alt?: any }) {
+    return <img src={src} alt={alt} className="h-32 w-32  object-cover" />
+  }
+
   const facilitiesColumns = [
+    {
+      Header: 'Image',
+
+      width: '150px',
+      Cell: ({ row, value }: any) => {
+        return (
+          <div className="flex items-center gap-2">
+            {row.original.images && row.original.images.length > 0 && (
+              <Avatar src={row.original.images[0].url} alt={`${value}'s Avatar`} />
+            )}
+            <div>{value}</div>
+          </div>
+        )
+      },
+    },
     { Header: 'Name', accessor: 'name' },
     { Header: 'Address', accessor: 'address' },
     { Header: 'Phone Number', accessor: 'phone_number' },
