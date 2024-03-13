@@ -4,7 +4,7 @@ import { ChangeEvent, useState } from "react"
 import { XMarkIcon } from "@heroicons/react/20/solid"
 import { TagsInterface } from "../../../../interfaces/Global"
 import { TagsArray } from "./TagsArray"
-import { Category } from "../../../../interfaces/Category"
+import { Category } from "../../../../interfaces/category"
 import { getModifiedProperties } from "../../../../utils/FunctionUtils"
 import { RequestService } from "../../../../services/RequestService"
 

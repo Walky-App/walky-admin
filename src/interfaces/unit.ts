@@ -1,4 +1,4 @@
-import { Documents } from './Global'
+import type { Documents } from './Global'
 
 export interface Section {
   _id?: string
@@ -18,20 +18,19 @@ export interface Assessment {
   _id?: string
   time: number
   min_score: number
-  question?: [
-    {
-      _id: string
-      header: string
-      options: string[]
-      answers: string[]
-    },
-  ]
+  questions?: Questions[]
 }
 
+export interface Questions {
+  _id?: string
+  header: string
+  options: string[]
+  answer: string
+}
 export interface Unit extends Documents {
   sections: Section[]
   title: string
   is_disabled: boolean
   time: number
-  assessments: Assessment[]
+  assessments: Assessment
 }
