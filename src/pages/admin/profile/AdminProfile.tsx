@@ -1,21 +1,51 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useState, useRef, useEffect } from 'react'
+
+import { Controller, type SubmitHandler, useForm, FieldErrors } from 'react-hook-form'
+
 import { Button } from 'primereact/button'
+import { Calendar } from 'primereact/calendar'
+import { Checkbox } from 'primereact/checkbox'
+import { Dropdown } from 'primereact/dropdown'
+import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
-import UploadAvatar from '../../../components/shared/forms/UploadAvatar'
-import { RequestService } from '../../../services/RequestService'
-import { Calendar } from 'primereact/calendar'
-import { useAuth } from '../../../contexts/AuthContext'
-import { IUser } from '../../../interfaces/User'
-import { InputMask } from 'primereact/inputmask'
-import { tooltipOptions } from '../../client/onboarding'
-import { Dropdown } from 'primereact/dropdown'
-import { Checkbox } from 'primereact/checkbox'
 
-export default function AdminProfile() {
-  const [formUser, setFormUser] = useState<IUser>({} as IUser)
+import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
+import { useAuth } from '../../../contexts/AuthContext'
+import { RequestService } from '../../../services/RequestService'
+import { tooltipOptions } from '../../client/onboarding/ClientOnboardingPage'
+
+interface IUserFormValues {
+  first_name?: string
+  middle_name?: string
+  last_name?: string
+  email?: string
+  gender?: string
+  birth_date?: Date
+  phone_number?: string
+  address?: string
+  city?: string
+  state?: string
+  zip?: string
+  notifications?: string[]
+}
+
+export const AdminProfile = () => {
+  const [formUser, setFormUser] = useState<IUserFormValues>({
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    email: '',
+    gender: '',
+    birth_date: new Date(),
+    phone_number: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: '',
+    notifications: [],
+  })
   const { user } = useAuth()
 
   const toast = useRef<Toast>(null)
@@ -43,25 +73,34 @@ export default function AdminProfile() {
   } = useForm({ defaultValues })
 
   useEffect(() => {
+    if (!user) return
     const getUser = async () => {
       const userFound = await RequestService(`users/${user?._id}`)
       setFormUser(userFound)
-      reset(userFound) // Reset form values when userFound is updated
+      reset(userFound)
     }
     getUser()
   }, [user, reset])
 
-  const getFormErrorMessage = (name: string) => {
-    //@ts-ignore
-    return errors[name] ? (
-      //@ts-ignore
-      <small className="p-error">{errors[name].message}</small>
-    ) : (
-      <small className="p-error">&nbsp;</small>
-    )
+  function getFormErrorMessage(path: string, errors: FieldErrors) {
+    const pathParts = path.split('.')
+    let error: FieldErrors = errors
+
+    for (const part of pathParts) {
+      if (typeof error !== 'object' || error === null) {
+        return null
+      }
+      error = error[part as keyof typeof error] as FieldErrors
+    }
+
+    if (error?.message) {
+      return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
+    }
+
+    return null
   }
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<IUserFormValues> = async data => {
     try {
       const response = await RequestService(`users/${user?._id}`, 'PATCH', data)
       if (response._id) {
@@ -90,7 +129,7 @@ export default function AdminProfile() {
         <h3 className="text-base font-semibold leading-6 text-gray-900">Your Profile Details</h3>
       </div>
 
-      {formUser.role && (
+      {user?.role ? (
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-12">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -100,8 +139,8 @@ export default function AdminProfile() {
                   This information will be displayed publicly so be careful what you share.
                 </p>
               </div>
-              <div className="">
-                <UploadAvatar formUser={formUser} setFormUser={setFormUser} />
+              <div>
+                <UploadAvatar formUser={user} setFormUser={setFormUser} />
               </div>
             </div>
 
@@ -113,7 +152,7 @@ export default function AdminProfile() {
                 </p>
               </div>
 
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
                 {/* First Name */}
                 <div className="sm:col-span-3">
                   <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
@@ -125,23 +164,18 @@ export default function AdminProfile() {
                       control={control}
                       rules={{ required: 'First name is required' }}
                       render={({ field, fieldState }) => (
-                        <>
-                          <span>
-                            <InputText
-                              disabled
-                              id={field.name}
-                              value={field.value}
-                              name="first_name"
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {getFormErrorMessage('first_name')}
-                        </>
+                        <InputText
+                          disabled
+                          id={field.name}
+                          value={field.value}
+                          name="first_name"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('first_name', errors)}
                 </div>
 
                 {/* Last Name */}
@@ -155,22 +189,17 @@ export default function AdminProfile() {
                       control={control}
                       rules={{ required: 'Last name is required' }}
                       render={({ field, fieldState }) => (
-                        <>
-                          <span>
-                            <InputText
-                              disabled
-                              value={field.value}
-                              name="last_name"
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {getFormErrorMessage('last_name')}
-                        </>
+                        <InputText
+                          disabled
+                          value={field.value}
+                          name="last_name"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('last_name', errors)}
                 </div>
 
                 {/* Middle Name */}
@@ -183,23 +212,18 @@ export default function AdminProfile() {
                       name="middle_name"
                       control={control}
                       render={({ field, fieldState }) => (
-                        <>
-                          <span>
-                            <InputText
-                              disabled
-                              id={field.name}
-                              value={field.value}
-                              name="middle_name"
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {getFormErrorMessage('middle_name')}
-                        </>
+                        <InputText
+                          disabled
+                          id={field.name}
+                          value={field.value}
+                          name="middle_name"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('middle_name', errors)}
                 </div>
 
                 {/* Gender */}
@@ -223,11 +247,11 @@ export default function AdminProfile() {
                             onChange={e => field.onChange(e.value)}
                             className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                           />
-                          {getFormErrorMessage(field.name)}
                         </div>
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('gender', errors)}
                 </div>
 
                 {/* Email */}
@@ -241,22 +265,17 @@ export default function AdminProfile() {
                       control={control}
                       rules={{ required: 'Email is required' }}
                       render={({ field, fieldState }) => (
-                        <>
-                          <span>
-                            <InputText
-                              disabled
-                              value={field.value}
-                              name="email"
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {getFormErrorMessage('email')}
-                        </>
+                        <InputText
+                          disabled
+                          value={field.value}
+                          name="email"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('email', errors)}
                 </div>
 
                 {/* Phone Number */}
@@ -287,12 +306,11 @@ export default function AdminProfile() {
                         />
                       )}
                     />
-
-                    {getFormErrorMessage('phone_number')}
                   </div>
                 </div>
 
                 {/* Birthday */}
+                {getFormErrorMessage('phone_number', errors)}
                 <div className="sm:col-span-6 sm:col-start-1">
                   <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
                     Birthday
@@ -312,11 +330,11 @@ export default function AdminProfile() {
                             className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
                             showIcon
                           />
-                          {getFormErrorMessage(field.name)}
                         </div>
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('birth_date', errors)}
                 </div>
               </div>
             </div>
@@ -340,22 +358,17 @@ export default function AdminProfile() {
                       control={control}
                       rules={{ required: 'Address is required' }}
                       render={({ field, fieldState }) => (
-                        <>
-                          <span>
-                            <InputText
-                              id={field.name}
-                              value={field.value}
-                              name="address"
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {getFormErrorMessage('address')}
-                        </>
+                        <InputText
+                          id={field.name}
+                          value={field.value}
+                          name="address"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('address', errors)}
                 </div>
 
                 <div className="sm:col-span-2 sm:col-start-1">
@@ -368,22 +381,17 @@ export default function AdminProfile() {
                       control={control}
                       rules={{ required: 'City is required' }}
                       render={({ field, fieldState }) => (
-                        <>
-                          <span>
-                            <InputText
-                              id={field.name}
-                              value={field.value}
-                              name="city"
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {getFormErrorMessage('city')}
-                        </>
+                        <InputText
+                          id={field.name}
+                          value={field.value}
+                          name="city"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('city', errors)}
                 </div>
 
                 <div className="sm:col-span-2">
@@ -396,22 +404,17 @@ export default function AdminProfile() {
                       control={control}
                       rules={{ required: 'State is required' }}
                       render={({ field, fieldState }) => (
-                        <>
-                          <span>
-                            <InputText
-                              id={field.name}
-                              value={field.value}
-                              name="state"
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {getFormErrorMessage('state')}
-                        </>
+                        <InputText
+                          id={field.name}
+                          value={field.value}
+                          name="state"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
                       )}
                     />
                   </div>
+                  {getFormErrorMessage('state', errors)}
                 </div>
 
                 <div className="sm:col-span-2">
@@ -431,19 +434,16 @@ export default function AdminProfile() {
                       }}
                       render={({ field, fieldState }) => (
                         <>
-                          <span>
-                            <InputMask
-                              id={field.name}
-                              {...field}
-                              mask="99999"
-                              slotChar="x"
-                              tooltip="E.g. 33065"
-                              tooltipOptions={tooltipOptions}
-                              className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                            />
-                            <label htmlFor={field.name}></label>
-                          </span>
-                          {fieldState.error && <p className="error">{fieldState.error.message}</p>}
+                          <InputMask
+                            id={field.name}
+                            {...field}
+                            mask="99999"
+                            slotChar="x"
+                            tooltip="E.g. 33065"
+                            tooltipOptions={tooltipOptions}
+                            className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          />
+                          {fieldState.error ? <p className="error">{fieldState.error.message}</p> : null}
                         </>
                       )}
                     />
@@ -470,20 +470,18 @@ export default function AdminProfile() {
                           name="notifications"
                           control={control}
                           render={({ field }) => (
-                            <>
-                              <Checkbox
-                                inputId="notification_email"
-                                checked={field.value?.includes('notification_email') || false}
-                                onChange={e => {
-                                  const value = field.value || [] // Initialize as empty array if undefined
-                                  if (e.checked) {
-                                    field.onChange([...value, 'notification_email']) // Use spread operator to add new value
-                                  } else {
-                                    field.onChange(value.filter((item: string) => item !== 'notification_email'))
-                                  }
-                                }}
-                              />
-                            </>
+                            <Checkbox
+                              inputId="notification_email"
+                              checked={field.value?.includes('notification_email') || false}
+                              onChange={e => {
+                                const value = field.value || [] // Initialize as empty array if undefined
+                                if (e.checked) {
+                                  field.onChange([...value, 'notification_email']) // Use spread operator to add new value
+                                } else {
+                                  field.onChange(value.filter((item: string) => item !== 'notification_email'))
+                                }
+                              }}
+                            />
                           )}
                         />
                       </div>
@@ -500,20 +498,18 @@ export default function AdminProfile() {
                           name="notifications"
                           control={control}
                           render={({ field }) => (
-                            <>
-                              <Checkbox
-                                inputId="notification_sms"
-                                checked={field.value?.includes('notification_sms') || false}
-                                onChange={e => {
-                                  const value = field.value || [] // Initialize as empty array if undefined
-                                  if (e.checked) {
-                                    field.onChange([...value, 'notification_sms']) // Use spread operator to add new value
-                                  } else {
-                                    field.onChange(value.filter((item: string) => item !== 'notification_sms'))
-                                  }
-                                }}
-                              />
-                            </>
+                            <Checkbox
+                              inputId="notification_sms"
+                              checked={field.value?.includes('notification_sms') || false}
+                              onChange={e => {
+                                const value = field.value || [] // Initialize as empty array if undefined
+                                if (e.checked) {
+                                  field.onChange([...value, 'notification_sms']) // Use spread operator to add new value
+                                } else {
+                                  field.onChange(value.filter((item: string) => item !== 'notification_sms'))
+                                }
+                              }}
+                            />
                           )}
                         />
                       </div>
@@ -529,14 +525,12 @@ export default function AdminProfile() {
               </div>
             </div>
           </div>
-          <>
-            <Toast ref={toast} />
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              <Button type="submit" label="Submit" />
-            </div>
-          </>
+          <Toast ref={toast} />
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <Button type="submit" label="Submit" />
+          </div>
         </form>
-      )}
+      ) : null}
     </>
   )
 }
