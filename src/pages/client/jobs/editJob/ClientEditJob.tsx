@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Controller, set, useForm } from 'react-hook-form'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { InputNumber } from 'primereact/inputnumber'
+import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
@@ -16,6 +17,7 @@ import { GetTokenInfo } from '../../../../utils/TokenUtils'
 export default function ClientEditJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
   const [endTime, setEndTime] = React.useState<Date | null>(null)
+  const [totalHours, setTotalHours] = React.useState(0)
   const [job, setJob] = React.useState<any>({})
   const params = useParams()
   const user = GetTokenInfo()
@@ -23,13 +25,14 @@ export default function ClientEditJob() {
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<IFacility[]>()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isAdmin = location.pathname.includes('/admin')
 
   useEffect(() => {
     const getFacilities = async () => {
       const allFacilitiesByClient = await RequestService(`facilities/byclient/${id}`)
       setFacilities(allFacilitiesByClient)
     }
-
     getFacilities()
   }, [])
 
@@ -57,7 +60,8 @@ export default function ClientEditJob() {
         const endTime = militaryToStandardDate(job.end_time, jobDates[0])
         setValue('start_time', startTime)
         setValue('end_time', endTime)
-      } 
+        setValue('job_tips', job.job_tips)
+      }
     }
     getJob()
   }, [facilities])
@@ -70,6 +74,7 @@ export default function ClientEditJob() {
     start_time: job.start_time,
     end_time: job.end_time,
     lunch_break: job.lunch_break,
+    job_tips: job.job_tips,
   }
 
   const {
@@ -81,10 +86,27 @@ export default function ClientEditJob() {
   } = useForm({ defaultValues })
 
   const watchAllFields = watch() // This will return all form values
+  const lunchBreak = watch('lunch_break')
 
   React.useEffect(() => {
     console.log(watchAllFields)
   }, [watchAllFields])
+
+  React.useEffect(() => {
+    if (startTime && endTime) {
+      let startHours = startTime.getHours() + startTime.getMinutes() / 60
+      let endHours = endTime.getHours() + endTime.getMinutes() / 60
+
+      if (endHours <= startHours) {
+        // Adjust for cases where the end time is past midnight
+        endHours += 24
+      }
+
+      const lunchBreakHours = lunchBreak ? lunchBreak / 60 : 0
+      const totalHoursCalc = endHours - startHours - lunchBreakHours
+      setTotalHours(Math.round(totalHoursCalc * 100) / 100) // Update totalHours state
+    }
+  }, [startTime, endTime, lunchBreak])
 
   const getFormErrorMessage = (name: string) => {
     //@ts-ignore
@@ -101,6 +123,21 @@ export default function ClientEditJob() {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
       const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
+
+      // Calculating total hours and sending with payload
+      if (startTime && endTime && data.lunch_break !== null) {
+        let startHours = startTime.getHours() + startTime.getMinutes() / 60
+        let endHours = endTime.getHours() + endTime.getMinutes() / 60
+
+        if (endHours <= startHours) {
+          endHours += 24
+        }
+        const lunchBreakHours = data.lunch_break / 60
+        const totalHours = endHours - startHours - lunchBreakHours
+        requestData.total_hours = Math.round(totalHours * 100) / 100
+        setTotalHours(requestData.total_hours)
+      }
+
       const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData)
       if (response) {
         toast.current?.show({
@@ -109,8 +146,8 @@ export default function ClientEditJob() {
           detail: 'Job information updated successfully',
         })
         setTimeout(() => {
-          navigate(`/client/jobs/${params.id}`)
-        }, 3000)
+    navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
+  }, 3000)
       }
     } catch (error) {
       console.error(error)
@@ -129,10 +166,29 @@ export default function ClientEditJob() {
 
   const lunchTimes = [
     { label: '0 minutes', value: 0 },
-    { label: '15 minutes', value: 25 },
-    { label: '30 minutes', value: 50 },
-    { label: '45 minutes', value: 75 },
-    { label: '60 minutes', value: 100 },
+    { label: '15 minutes', value: 15 },
+    { label: '30 minutes', value: 30 },
+    { label: '45 minutes', value: 45 },
+    { label: '60 minutes', value: 60 },
+  ]
+
+  const jobTips = [
+    { label: 'Change Required Upon Entry', value: 'Change Required Upon Entry' },
+    { label: 'Lunch Included', value: 'Lunch Included' },
+    { label: 'Lunch Room Available', value: 'Lunch Room Available' },
+    { label: 'Lunch Will Be Off-Premise', value: 'Lunch Will Be Off-Premise' },
+    { label: 'Pack a Lunch', value: 'Pack a Lunch' },
+    { label: 'Parking on Street', value: 'Parking on Street' },
+    { label: 'Parking Onsite', value: 'Parking Onsite' },
+    { label: 'Required Identification', value: 'Required Identification' },
+    { label: 'Special Equipment', value: 'Special Equipment' },
+    { label: 'No gas stations nearby', value: 'No gas stations nearby' },
+    { label: 'Water is provided', value: 'Water is provided' },
+    { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
+    { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
+    { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
+    { label: 'Labcoat Provided', value: 'Labcoat Provided' },
+    { label: 'Hear / Beard net required', value: 'Hear / Beard net required' },
   ]
 
   return (
@@ -273,6 +329,7 @@ export default function ClientEditJob() {
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
+              {totalHours !== 0 && <div>Total hours: {totalHours}</div>}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -407,6 +464,34 @@ export default function ClientEditJob() {
                       </>
                     )}
                   />
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                  Job tips:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    name="job_tips"
+                    control={control}
+                    rules={{ required: 'Value is required.' }}
+                    render={({ field }) => (
+                      <MultiSelect
+                        id={field.name}
+                        name="value"
+                        value={field.value}
+                        options={jobTips}
+                        filter
+                        onChange={e => field.onChange(e.value)}
+                        optionLabel="label"
+                        placeholder="Select Job Tips"
+                        maxSelectedLabels={8}
+                        className="md:w-20rem w-full"
+                      />
+                    )}
+                  />
+
+                  {getFormErrorMessage('value')}
                 </div>
               </div>
             </div>

@@ -72,7 +72,7 @@ export const TagsArray = ({ tags, setTags, optional = false }: Props) => {
               closeButton:
                 'z-0 appearance-none outline-none select-none transition-opacity opacity-70 hover:opacity-100 cursor-pointer active:opacity-disabled tap-highlight-transparent text-large',
             }}
-            key={index}
+            key={`tag-${index}`}
             onClose={() => handleClose(chips)}
             variant="bordered"
           >
