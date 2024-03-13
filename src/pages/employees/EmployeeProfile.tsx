@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { RequestService } from '../../services/RequestService'
 
 import { GetTokenInfo } from '../../utils/TokenUtils'
-import UploadAvatar from '../../components/shared/forms/UploadAvatar'
+import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string

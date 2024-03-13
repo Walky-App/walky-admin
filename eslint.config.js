@@ -54,6 +54,7 @@ export default tseslint.config(
       ...jsxA11y.configs.recommended.rules,
       'prettier/prettier': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      '@typescript-eslint/ban-ts-comment': 'warn',
       'react/jsx-uses-react': 'error',
       'react/prefer-stateless-function': 'error',
       'react/button-has-type': 'error',

@@ -1,8 +1,5 @@
-import { Fragment, useState, useMemo } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Dialog, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { type Dispatch, Fragment, type SetStateAction, useState } from 'react'
+
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
 import {
   FaBusinessTime,
@@ -16,12 +13,67 @@ import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
 import { MdSchool } from 'react-icons/md'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+
+import { Dialog, Menu, Transition } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import { useAuth } from '../../contexts/AuthContext'
-import { getCurrentUserRole } from '../../utils/UserRole'
 import { LogoutService } from '../../services/AuthService'
+import { getCurrentUserRole } from '../../utils/UserRole'
 import { cn } from '../../utils/cn'
 import FooterComponent from './FooterComponent'
+
+interface INavLink {
+  id: number
+  name: string
+  href: string
+  icon?: JSX.Element
+  disabled?: boolean
+}
+
+const adminLinks: INavLink[] = [
+  { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
+  { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
+  { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
+  { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
+  { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
+  { id: 6, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
+  { id: 7, name: 'Messages', href: '/admin/messages', icon: <IoMdMail />, disabled: true },
+]
+
+const clientLinks: INavLink[] = [
+  { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase /> },
+  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
+  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
+  {
+    id: 4,
+    name: 'Timesheets',
+    href: '/dashboard/timesheets',
+    icon: <BsFillFileEarmarkSpreadsheetFill />,
+    disabled: true,
+  },
+  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
+  { id: 6, name: 'Messages', href: '/dashboard/messages', icon: <IoMdMail />, disabled: true },
+  { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
+  { id: 8, name: 'HTU', href: '/learn', icon: <MdSchool /> },
+]
+
+const employeeLinks: INavLink[] = [
+  { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+  { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
+  { id: 2, disabled: true, name: 'My Jobs', href: '/employee/jobs/mine', icon: <FaBusinessTime /> },
+  { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+]
+
+const salesLinks: INavLink[] = [
+  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
+  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
+  { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
+  { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: true },
+  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
+]
 
 export interface SideBarData {
   id: number
@@ -40,278 +92,9 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
-const adminLinks = [
-  { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
-  { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
-  { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
-  { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
-  { id: 2, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
-  { id: 3, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
-  { id: 5, name: 'Messages', href: '/admin/messages', icon: <IoMdMail />, disabled: true },
-]
-
-const clientLinks = [
-  { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase /> },
-  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
-  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
-  {
-    id: 4,
-    name: 'Timesheets',
-    href: '/dashboard/timesheets',
-    icon: <BsFillFileEarmarkSpreadsheetFill />,
-    disabled: true,
-  },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-  { id: 6, name: 'Messages', href: '/dashboard/messages', icon: <IoMdMail />, disabled: true },
-  { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
-  { id: 8, name: 'HTU', href: '/learn', icon: <MdSchool /> },
-]
-
-const employeeLinks = [
-  { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
-  { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-  { id: 2, disabled: true, name: 'My Jobs', href: '/employee/jobs/mine', icon: <FaBusinessTime /> },
-  { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-]
-
-const salesLinks = [
-  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
-  { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
-  { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: true },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-]
-
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { user, profilePath } = useAuth()
-  const navigate = useNavigate()
 
-  const handleLogout = () => {
-    LogoutService()
-    navigate('/login')
-  }
-
-  const role = getCurrentUserRole()
-
-  const links = useMemo(() => {
-    if (role === 'admin') return adminLinks
-    if (role === 'client') return clientLinks
-    if (role === 'employee') return employeeLinks
-    if (role === 'sales') return salesLinks
-    return []
-  }, [role])
-
-  const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
-
-  const SidebarComponent = () => {
-    const chooseSideBarLogoImage = () => {
-      const currentURL = window.location.href
-      if (currentURL.toLowerCase().includes('hydropallet')) {
-        return <img src="/assets/logos/hydropallet-white-logo.png" className="h-8 w-auto" alt="Hydropallet Logo" />
-      } else {
-        return (
-          <img src="/assets/logos/Hemp-Temps-logo-horizontal-white.png" className="h-10 w-auto" alt="Hemp Temps Logo" />
-        )
-      }
-    }
-    return (
-      <div
-        className={cn('flex grow flex-col gap-y-6 overflow-y-auto bg-zinc-900 px-6 pb-4', {
-          'ring-1 ring-white/10': sidebarOpen,
-        })}>
-        <div className="mt-4 flex shrink-0 items-center justify-center">
-          {/* Logo */}
-          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseSideBarLogoImage()}</Link>
-        </div>
-        <nav className="flex flex-1 flex-col">
-          <ul role="list" className="flex flex-1 flex-col gap-y-7">
-            <li>
-              <ul role="list" className="-mx-2 space-y-1">
-                {user?.role &&
-                  links.map(link => (
-                    <li key={link.id}>
-                      {!link.disabled && (
-                        <NavLink
-                          to={link.href}
-                          onClick={() => setSidebarOpen(false)}
-                          className={({ isActive }) =>
-                            cn(
-                              isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                            )
-                          }>
-                          <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                          {link.name}
-                        </NavLink>
-                      )}
-                    </li>
-                  ))}
-              </ul>
-            </li>
-            <li>
-              <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
-              <ul role="list" className="-mx-2 mt-2 space-y-1">
-                {user?.role &&
-                  links.map(link => {
-                    let unread = 3
-
-                    if (link.disabled) {
-                      return (
-                        <li key={link.id}>
-                          <span
-                            className={cn(
-                              'bg-gray-900 text-gray-700',
-                              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                            )}>
-                            <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                            {link.name}
-                            {link.name === 'Messages' && unread > 0 && (
-                              <span className="ms-3 inline-flex h-3 w-3 items-center justify-center rounded-full bg-green-100/10 p-3 text-sm font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
-                                {unread}
-                              </span>
-                            )}
-                          </span>
-                        </li>
-                      )
-                    } else {
-                      return null
-                    }
-                  })}
-              </ul>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    )
-  }
-
-  const HeaderComponent = () => {
-    const chooseHeaderLogoImage = () => {
-      const currentURL = window.location.href
-      if (currentURL.toLowerCase().includes('hydropallet')) {
-        return (
-          <img
-            src="/assets/logos/hydropallet-black-logo.png"
-            alt="Hydro Pallet Logo"
-            className="h-7 w-auto md:h-12 lg:hidden xl:hidden"
-          />
-        )
-      } else {
-        return (
-          <img
-            src="/assets/logos/logo-horizontal-cropped.png"
-            alt="Hemp Temps Logo"
-            className="h-10 w-auto md:h-16 lg:hidden xl:hidden"
-          />
-        )
-      }
-    }
-
-    return (
-      <header
-        id="header-shell"
-        className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-        <div className="flex shrink-0 items-center justify-center">
-          {/* Logo */}
-          <Link to={user ? `/${role}/dashboard` : '/'}>{chooseHeaderLogoImage()}</Link>
-        </div>
-        <div className="flex items-center gap-x-4 lg:gap-x-6">
-          <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
-            <span className="sr-only">View notifications</span>
-            <BellIcon className="h-6 w-6" aria-hidden="true" />
-          </button>
-
-          {/* Profile dropdown */}
-          <Menu as="div" className="relative">
-            <Menu.Button className="-m-1.5 flex items-center p-1.5">
-              <span className="sr-only">Open user menu</span>
-              <span className="sr-only">Open user menu</span>
-              {user && user.avatar ? (
-                <img className="h-8 w-8 rounded-full" src={user.avatar} alt="" />
-              ) : (
-                <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
-                  <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                </span>
-              )}
-              <span className="hidden lg:flex lg:items-center">
-                {user?.first_name ? (
-                  <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
-                    Hi, {user.first_name}
-                  </span>
-                ) : null}
-                <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-              </span>
-            </Menu.Button>
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95">
-              <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                {userNavigation.map(item => (
-                  <Menu.Item key={item.name}>
-                    {({ active }) => (
-                      <Link
-                        to={item.href}
-                        className={cn(active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900')}>
-                        {item.name}
-                      </Link>
-                    )}
-                  </Menu.Item>
-                ))}
-                <Menu.Item>
-                  {({ active }) => (
-                    <span
-                      onClick={handleLogout}
-                      className={cn(active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900')}>
-                      Sign out
-                    </span>
-                  )}
-                </Menu.Item>
-              </Menu.Items>
-            </Transition>
-          </Menu>
-
-          {/* Responsive Separator */}
-          <div className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
-
-          <div className="flex gap-x-4 self-stretch lg:justify-end lg:gap-x-6">
-            {/* Search Form *OPTIONAL* */}
-            {/* <form className="relative flex flex-1" action="#" method="GET">
-            <label htmlFor="search-field" className="sr-only">
-            Search
-            </label>
-            <MagnifyingGlassIcon
-            className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
-            aria-hidden="true"
-            />
-            <input
-            id="search-field"
-            className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-            placeholder="Search..."
-            type="search"
-            name="search"
-            />
-          </form> */}
-
-            {/* Separator */}
-            <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true" />
-
-            <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
-              <span className="sr-only">Open sidebar</span>
-              <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-            </button>
-          </div>
-        </div>
-      </header>
-    )
-  }
   return (
     <div>
       {/* Responsive sidebar for mobile */}
@@ -354,7 +137,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                   </div>
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <SidebarComponent />
+                <SidebarComponent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
               </Dialog.Panel>
             </Transition.Child>
           </div>
@@ -364,13 +147,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-60 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <SidebarComponent />
+        <SidebarComponent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       </div>
 
       {/* App Side */}
       <div className="lg:pl-60">
         {/* Header */}
-        <HeaderComponent />
+        <HeaderComponent setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content */}
         <main className="py-10">
@@ -383,5 +166,258 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         </div>
       </div>
     </div>
+  )
+}
+
+const chooseSideBarLogoImage = () => {
+  const currentURL = window.location.href
+  if (currentURL.toLowerCase().includes('hydropallet')) {
+    return <img src="/assets/logos/hydropallet-white-logo.png" className="h-8 w-auto" alt="Hydropallet Logo" />
+  } else {
+    return (
+      <img src="/assets/logos/Hemp-Temps-logo-horizontal-white.png" className="h-10 w-auto" alt="Hemp Temps Logo" />
+    )
+  }
+}
+
+const chooseHeaderLogoImage = () => {
+  const currentURL = window.location.href
+  if (currentURL.toLowerCase().includes('hydropallet')) {
+    return (
+      <img
+        src="/assets/logos/hydropallet-black-logo.png"
+        alt="Hydro Pallet Logo"
+        className="h-7 w-auto md:h-12 lg:hidden xl:hidden"
+      />
+    )
+  } else {
+    return (
+      <img
+        src="/assets/logos/logo-horizontal-cropped.png"
+        alt="Hemp Temps Logo"
+        className="h-10 w-auto md:h-16 lg:hidden xl:hidden"
+      />
+    )
+  }
+}
+
+interface SidebarComponentProps {
+  sidebarOpen: boolean
+  setSidebarOpen: Dispatch<SetStateAction<boolean>>
+}
+
+const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarComponentProps) => {
+  const { user } = useAuth()
+  const role = getCurrentUserRole()
+
+  const getLinksByRole = () => {
+    switch (role) {
+      case 'admin':
+        return adminLinks
+      case 'client':
+        return clientLinks
+      case 'employee':
+        return employeeLinks
+      case 'sales':
+        return salesLinks
+      default:
+        return []
+    }
+  }
+
+  const links = getLinksByRole()
+
+  return (
+    <div
+      className={cn('flex grow flex-col gap-y-6 overflow-y-auto bg-zinc-900 px-6 pb-4', {
+        'ring-1 ring-white/10': sidebarOpen,
+      })}>
+      <div className="mt-4 flex shrink-0 items-center justify-center">
+        {/* Logo */}
+        <Link to={user ? `/${role}/dashboard` : '/'}>{chooseSideBarLogoImage()}</Link>
+      </div>
+      <nav className="flex flex-1 flex-col">
+        <ul className="flex flex-1 flex-col gap-y-7">
+          <li>
+            <ul className="-mx-2 space-y-1">
+              {user?.role
+                ? links?.map(link => (
+                    <li key={link.id}>
+                      {!link.disabled ? (
+                        <NavLink
+                          to={link.href}
+                          onClick={() => setSidebarOpen(false)}
+                          className={({ isActive }) =>
+                            cn(
+                              isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                            )
+                          }>
+                          <span className="h-5 w-5 text-2xl">{link.icon}</span>
+                          {link.name}
+                        </NavLink>
+                      ) : null}
+                    </li>
+                  ))
+                : null}
+            </ul>
+          </li>
+          <li>
+            <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
+            <ul className="-mx-2 mt-2 space-y-1">
+              {user?.role
+                ? links?.map(link => {
+                    const unread = 3
+
+                    if (link.disabled) {
+                      return (
+                        <li key={link.id}>
+                          <span
+                            className={cn(
+                              'bg-gray-900 text-gray-700',
+                              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                            )}>
+                            <span className="h-5 w-5 text-2xl">{link.icon}</span>
+                            {link.name}
+                            {link.name === 'Messages' && unread > 0 ? (
+                              <span className="ms-3 inline-flex h-3 w-3 items-center justify-center rounded-full bg-green-100/10 p-3 text-sm font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
+                                {unread}
+                              </span>
+                            ) : null}
+                          </span>
+                        </li>
+                      )
+                    } else {
+                      return null
+                    }
+                  })
+                : null}
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  )
+}
+
+interface HeaderComponentProps {
+  setSidebarOpen: Dispatch<SetStateAction<boolean>>
+}
+
+const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
+  const { user, profilePath } = useAuth()
+  const role = getCurrentUserRole()
+
+  const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
+
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    LogoutService()
+    navigate('/login')
+  }
+  return (
+    <header
+      id="header-shell"
+      className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+      <div className="flex shrink-0 items-center justify-center">
+        {/* Logo */}
+        <Link to={user ? `/${role}/dashboard` : '/'}>{chooseHeaderLogoImage()}</Link>
+      </div>
+      <div className="flex items-center gap-x-4 lg:gap-x-6">
+        <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+          <span className="sr-only">View notifications</span>
+          <BellIcon className="h-6 w-6" aria-hidden="true" />
+        </button>
+
+        {/* Profile dropdown */}
+        <Menu as="div" className="relative">
+          <Menu.Button className="-m-1.5 flex items-center p-1.5">
+            <span className="sr-only">Open user menu</span>
+            <span className="sr-only">Open user menu</span>
+            {user && user.avatar ? (
+              <img className="h-8 w-8 rounded-full" src={user.avatar} alt="avatar" />
+            ) : (
+              <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </span>
+            )}
+            <span className="hidden lg:flex lg:items-center">
+              {user?.first_name ? (
+                <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+                  Hi, {user.first_name}
+                </span>
+              ) : null}
+              <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+            </span>
+          </Menu.Button>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95">
+            <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+              {userNavigation.map(item => (
+                <Menu.Item key={item.name}>
+                  {({ active }) => (
+                    <Link
+                      to={item.href}
+                      className={cn(active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900')}>
+                      {item.name}
+                    </Link>
+                  )}
+                </Menu.Item>
+              ))}
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className={cn(active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900')}>
+                    Sign out
+                  </button>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition>
+        </Menu>
+
+        {/* Responsive Separator */}
+        <div className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
+
+        <div className="flex gap-x-4 self-stretch lg:justify-end lg:gap-x-6">
+          {/* Search Form *OPTIONAL* */}
+          {/* <form className="relative flex flex-1" action="#" method="GET">
+          <label htmlFor="search-field" className="sr-only">
+          Search
+          </label>
+          <MagnifyingGlassIcon
+          className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+          aria-hidden="true"
+          />
+          <input
+          id="search-field"
+          className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+          placeholder="Search..."
+          type="search"
+          name="search"
+          />
+        </form> */}
+
+          {/* Separator */}
+          <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true" />
+
+          <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
+            <span className="sr-only">Open sidebar</span>
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </header>
   )
 }
