@@ -167,7 +167,7 @@ export const FormUnit = () => {
                                     {
                                         sections.map((section, index) => {
                                             return (
-                                                <Card className='w-1/5' key={index} >
+                                                <Card className='w-1/5' key={`unit-section-${index}`} >
                                                     <p className="m-0">
                                                         #{index + 1} {section.title}
                                                     </p>
