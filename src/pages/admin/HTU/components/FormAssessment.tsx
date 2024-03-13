@@ -223,7 +223,7 @@ export const FormAssessment = ({ action }: Props) => {
                                             <div className="flex flex-1 items-center">{question.header}</div>
                                             <div className="flex">
                                                 <button className="p-2 hover:text-green-400" onClick={() => handlerEditQuestion(question)} type="button"><PencilIcon className="w-5 h-5" /></button>
-                                                <button className="p-2 hover:text-red-600" onClick={() => handlerDeleteQuestion(question)} type="button"><TrashIcon className="w-5 h-5" /></button>
+                                                <button className="p-2 hover:text-red-600" type="button"><TrashIcon className="w-5 h-5" /></button>
                                             </div>
                                         </div>
                                     );
