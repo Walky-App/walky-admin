@@ -1,20 +1,21 @@
 import { useEffect } from "react"
 import { useAdmin } from "../../../contexts/AdminContext"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { RequestService } from "../../../services/RequestService"
 import { TableContents } from "../components/TableContents"
 import { UnitDetailsCard } from "../components/UnitDetailsCard"
-import { Unit } from "../../../interfaces/unit"
+import type { Unit } from "../../../interfaces/unit"
 
 export const UnitDetail = () => {
     const { unit, setUnit } = useAdmin()
     const params = useParams()
 
+    const navigate = useNavigate()
+
     const fetchData = async () => {
         const response = await RequestService(`units/${params.unitId}`)
         if (response) {
             setUnit(response)
-
         }
     }
 
@@ -43,8 +44,8 @@ export const UnitDetail = () => {
                             Take the assessment to unlock the next unit.
                         </div>
                         <div className="flex justify-center mt-3">
-                            <button className="rounded-md bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-sm" disabled type="button">
-                                Resume Assessment
+                            <button className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500" disabled={unit?.assessments ? false : true} onClick={() => { navigate(`/learn/module/${params.moduleId}/unit/${params.unitId}/assesment`) }} type="button">
+                                Take Assessment
                             </button>
                         </div>
                     </div>
@@ -53,6 +54,6 @@ export const UnitDetail = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

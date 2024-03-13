@@ -29,6 +29,7 @@ import { Learn } from './pages/learn/Learn'
 import { Modules } from './pages/learn/modules/Modules'
 import { UnitDetail } from './pages/learn/units/UnitDetail'
 import { Units } from './pages/learn/units/Units'
+import { Assessment } from './pages/learn/assessment/Assessment'
 
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
@@ -118,6 +119,7 @@ export const App = () => {
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
                 <Route element={<Units />} path="/learn/module/:moduleId" />
                 <Route element={<UnitDetail />} path="/learn/module/:moduleId/unit/:unitId" />
+                <Route element={<Assessment />} path="/learn/module/:moduleId/unit/:unitId/assesment" />
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
@@ -163,8 +165,9 @@ export const App = () => {
                   <Route element={<AdminFacilityImages />} path="/admin/facilities/:facilityId/images" />
                   <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
-                  <Route element={<AdminAddJob />} path="/admin/jobs/new" />
-                  <Route element={<AdminJobDetails />} path="/admin/jobs/:id" />
+                  <Route element={<ClientAddJob />} path="/admin/jobs/new" />
+                  <Route element={<JobDetailViewClient />} path="/admin/jobs/:id" />
+                  <Route element={<ClientEditJob />} path="/admin/jobs/:id/edit" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
                   <Route element={<AdminDetailsCategory />} path="/admin/learn/categories/:categoryId" />
