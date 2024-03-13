@@ -10,7 +10,7 @@ import { Calendar } from 'primereact/calendar'
 import { useAuth } from '../../../contexts/AuthContext'
 import { IUser } from '../../../interfaces/User'
 import { InputMask } from 'primereact/inputmask'
-import { tooltipOptions } from '../../client/onboarding'
+import { tooltipOptions } from '../../client/onboarding/ClientOnboardingPage'
 import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
 
