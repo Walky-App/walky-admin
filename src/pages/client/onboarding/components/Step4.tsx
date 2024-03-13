@@ -6,7 +6,8 @@ import { Toast, type ToastMessage } from 'primereact/toast'
 
 import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { AddFacilityDialog } from './AddFacilityDialog'
-import { AddPaymentMethodCard } from './PaymentMethodCard'
+import { AddPaymentMethodsCard } from './PaymentMethodCard'
+
 
 export const Step4 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -59,7 +60,7 @@ export const Step4 = ({ step, setStep }: StepProps) => {
           <div className="sm:col-span-full">
             <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 xl:gap-x-8">
               <li className="overflow-hidden rounded-xl border border-gray-200">
-                <AddPaymentMethodCard />
+                <AddPaymentMethodsCard />
               </li>
             </ul>
           </div>
