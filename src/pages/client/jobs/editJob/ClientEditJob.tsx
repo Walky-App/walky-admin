@@ -25,13 +25,12 @@ export default function ClientEditJob() {
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<IFacility[]>()
   const navigate = useNavigate()
-
+  
   useEffect(() => {
     const getFacilities = async () => {
       const allFacilitiesByClient = await RequestService(`facilities/byclient/${id}`)
       setFacilities(allFacilitiesByClient)
     }
-
     getFacilities()
   }, [])
 
