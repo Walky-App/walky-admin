@@ -41,7 +41,7 @@ export const FormAssessment = ({ action }: Props) => {
     }
 
     useEffect(() => {
-        if (!assessment) {
+        if (!assessment && action === 'update') {
             navigate(`/admin/learn/modules/${params.moduleId}/units`)
         }
     })
