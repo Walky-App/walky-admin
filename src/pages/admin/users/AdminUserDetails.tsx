@@ -31,19 +31,18 @@ export default function AdminUserDetails() {
     }))
   }
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, notificationType: string) => {
-    const isChecked = e.target.checked;
-    
+    const isChecked = e.target.checked
+
     setFormUser((prevFormUser: any) => {
-      const notificationsSet = new Set(prevFormUser.notifications);
+      const notificationsSet = new Set(prevFormUser.notifications)
       if (isChecked) {
-        notificationsSet.add(notificationType);
+        notificationsSet.add(notificationType)
       } else {
-        notificationsSet.delete(notificationType);
+        notificationsSet.delete(notificationType)
       }
-      return { ...prevFormUser, notifications: Array.from(notificationsSet) };
-    });
-  };
-  
+      return { ...prevFormUser, notifications: Array.from(notificationsSet) }
+    })
+  }
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -131,6 +130,25 @@ export default function AdminUserDetails() {
                     />
                   </div>
                 </div>
+
+                {formUser.role === "6473" && (
+                  <div className="sm:col-span-3">
+                    <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
+                      Onboarding Status
+                    </label>
+                    <div className="mt-2">
+                      <select
+                        id="status"
+                        name="active"
+                        value={formUser.isOnboarded.toString()}
+                        onChange={handleInputChange}
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                        <option value="true">Approved</option>
+                        <option value="false">Pending</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
 
                 <div className="sm:col-span-3">
                   <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
@@ -313,49 +331,48 @@ export default function AdminUserDetails() {
               </div>
 
               <div className="max-w-2xl space-y-10 md:col-span-2">
-  <fieldset>
-    <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
-    <div className="mt-6 space-y-6">
-      <div className="relative flex gap-x-3">
-        <div className="flex h-6 items-center">
-          <input
-            checked={formUser.notifications?.includes('notification_email')}
-            onChange={e => handleCheckboxChange(e, 'notification_email')}
-            id="notification_email"
-            name="notification_email"
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-          />
-        </div>
-        <div className="text-sm leading-6">
-          <label htmlFor="notification_email" className="font-medium text-gray-900">
-            Email Notifications
-          </label>
-          <p className="text-gray-500">Get notified when someone posts a comment on a posting.</p>
-        </div>
-      </div>
-      <div className="relative flex gap-x-3">
-        <div className="flex h-6 items-center">
-          <input
-            checked={formUser.notifications?.includes('notification_sms')}
-            onChange={e => handleCheckboxChange(e, 'notification_sms')}
-            id="notification_sms"
-            name="notification_sms"
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-          />
-        </div>
-        <div className="text-sm leading-6">
-          <label htmlFor="notification_sms" className="font-medium text-gray-900">
-            SMS Push Notifications
-          </label>
-          <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
-        </div>
-      </div>
-    </div>
-  </fieldset>
-</div>
-
+                <fieldset>
+                  <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
+                  <div className="mt-6 space-y-6">
+                    <div className="relative flex gap-x-3">
+                      <div className="flex h-6 items-center">
+                        <input
+                          checked={formUser.notifications?.includes('notification_email')}
+                          onChange={e => handleCheckboxChange(e, 'notification_email')}
+                          id="notification_email"
+                          name="notification_email"
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                        />
+                      </div>
+                      <div className="text-sm leading-6">
+                        <label htmlFor="notification_email" className="font-medium text-gray-900">
+                          Email Notifications
+                        </label>
+                        <p className="text-gray-500">Get notified when someone posts a comment on a posting.</p>
+                      </div>
+                    </div>
+                    <div className="relative flex gap-x-3">
+                      <div className="flex h-6 items-center">
+                        <input
+                          checked={formUser.notifications?.includes('notification_sms')}
+                          onChange={e => handleCheckboxChange(e, 'notification_sms')}
+                          id="notification_sms"
+                          name="notification_sms"
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                        />
+                      </div>
+                      <div className="text-sm leading-6">
+                        <label htmlFor="notification_sms" className="font-medium text-gray-900">
+                          SMS Push Notifications
+                        </label>
+                        <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
             </div>
           </div>
 

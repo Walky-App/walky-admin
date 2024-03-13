@@ -30,6 +30,7 @@ export default function AdminFacilityDetails() {
       corp_name: { value: string }
       name: { value: string }
       active: { value: boolean }
+      isApproved: { value: boolean }
       phone_number: { value: string }
       sqft: { value: number }
       notes: { value: string }
@@ -37,7 +38,7 @@ export default function AdminFacilityDetails() {
       address: { value: string }
       city: { value: string }
       state: { value: string }
-      zip: { value: string }
+      zip: { value: number }
       company_dbas: { value: string }
     }
 
@@ -57,6 +58,7 @@ export default function AdminFacilityDetails() {
       corp_name: target.corp_name.value,
       name: target.name.value,
       active: target.active.value,
+      isApproved: target.isApproved.value,
       phone_number: target.phone_number.value,
       sqft: target.sqft.value,
       notes: target.notes.value,
@@ -88,6 +90,7 @@ export default function AdminFacilityDetails() {
   return (
     <>
       <SubHeader data={facility} links={adminFacilitiesLinks} />
+      
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -181,6 +184,25 @@ export default function AdminFacilityDetails() {
                       className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                       <option value="true">Active</option>
                       <option value="false">Disabled</option>
+                    </select>
+                  )}
+                </div>
+              </div>
+
+              <div className="sm:col-span-3">
+                <label htmlFor="approval_status" className="block text-sm font-medium leading-6 text-gray-900">
+                  Approval Status
+                </label>
+                <div className="mt-2">
+                  {facility && (
+                    <select
+                      key={facility.isApproved ? 'Approved' : 'Pending'}
+                      id="approval_status"
+                      name="isApproved"
+                      defaultValue={facility.isApproved ? 'true' : 'false'}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Approved</option>
+                      <option value="false">Pending</option>
                     </select>
                   )}
                 </div>
@@ -445,7 +467,7 @@ export default function AdminFacilityDetails() {
                 </label>
                 <div className="mt-2">
                   <input
-                    type="text"
+                    type="number"
                     name="zip"
                     id="zip"
                     defaultValue={facility.zip || ''}

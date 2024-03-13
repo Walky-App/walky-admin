@@ -3,11 +3,11 @@ import { RequestService } from '../../../services/RequestService'
 import { SelectedOptionInterface } from '../../../interfaces/Global'
 
 
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
-import FormModule from './components/FormModule'
-import { Category } from '../../../interfaces/Category'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { FormModule } from './components/FormModule'
+import { Category } from '../../../interfaces/category'
 
-export default function AdminAddModule() {
+export const AdminAddModule = () => {
   const [categories, setCategories] = useState<SelectedOptionInterface[]>([
     {
       name: 'Select',
@@ -16,7 +16,7 @@ export default function AdminAddModule() {
   ])
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const response: Category[] = await RequestService('categories')
     if (response.length !== 0) {
       const categoriesMap = response.map(object => {
@@ -26,19 +26,19 @@ export default function AdminAddModule() {
         }
       })
       setCategories([...categories, ...categoriesMap])
-      setIsLoading(false)
+      setIsLoading(!isLoading)
     }
   }
 
   useEffect(() => {
     if (categories.length === 1) {
-      fecthData()
+      fetchData()
     }
   }, [categories])
 
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title={'Create Module'} />
+      <HeaderComponent title='Create Module' />
       <FormModule action="add" />
     </div>
   )

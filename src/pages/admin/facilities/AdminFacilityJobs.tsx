@@ -20,7 +20,6 @@ export default function AdminFacilityJobs() {
         if (facility) {
           setFacility(facility)
         } else {
-          console.log('No facility found or unexpected data structure received, setting default value.')
           setFacility({})
         }
       } catch (error) {
@@ -33,7 +32,6 @@ export default function AdminFacilityJobs() {
         if (facilityJobs && Array.isArray(facilityJobs)) {
           setFacilityJobs(facilityJobs)
         } else {
-          console.log('No facility jobs found or unexpected data structure received, setting default value.')
           setFacilityJobs([])
         }
       } catch (error) {
@@ -73,7 +71,7 @@ export default function AdminFacilityJobs() {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
           </div>
         ) : facilityJobs.length > 0 ? (
-          <GlobalTable data={facilityJobs} columns={memoFacilityJobsColumns} />
+          <GlobalTable data={facilityJobs} columns={memoFacilityJobsColumns} allowClick />
         ) : (
           <div className="text-left">
             <h2 className="text-3xl font-semibold text-gray-900">No jobs found for this facility</h2>

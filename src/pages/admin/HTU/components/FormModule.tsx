@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom"
 import { FileInput } from "flowbite-react"
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useState } from "react"
 import { XMarkIcon } from "@heroicons/react/20/solid"
 import { SelectedOptionInterface, TagsInterface } from "../../../../interfaces/Global"
-import TagsArray from "./TagsArray"
-import { Category } from "../../../../interfaces/Category"
-import { Module } from "../../../../interfaces/Module"
-import SelectedOption from "../../../../components/shared/general/SelectedOption"
+import { TagsArray } from "./TagsArray"
+import { Category } from "../../../../interfaces/category"
+import { Module } from "../../../../interfaces/module"
+import { SelectedOption } from "../../../../components/shared/general/SelectedOption"
 import { getModifiedProperties } from "../../../../utils/FunctionUtils"
 import { RequestService } from "../../../../services/RequestService"
 import { useAdmin } from "../../../../contexts/AdminContext"
@@ -16,9 +16,9 @@ interface Props {
     module?: Module
 }
 
-export default function FormModule({ action, module }: Props) {
+export const FormModule = ({ action, module }: Props) => {
     const [title, setTitle] = useState<string>(module?.title || '')
-    const [category, setCategory] = useState<string>(module?.category || '')
+    const [category, setCategory] = useState<string>(module?.category._id || '')
     const [level, setLevel] = useState<string>(module?.level || '')
     const [description, setDescription] = useState<string>(module?.description || '')
     const [image, setImage] = useState<File | null>(null)
@@ -100,7 +100,6 @@ export default function FormModule({ action, module }: Props) {
             const method = action === 'add' ? 'POST' : 'PATCH'
             const response = await RequestService(url, method, formData, 'form-data')
             if (response) {
-                console.log('Data and image uploaded successfully')
                 navigate('/admin/learn/modules')
             } else {
                 console.error('Error uploading data and image')
@@ -121,26 +120,26 @@ export default function FormModule({ action, module }: Props) {
                 <div className=" pb-12">
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
-                            <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="title" >
                                 Title
                             </label>
                             <div className="mt-2">
                                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
                                     <input
-                                        type="text"
-                                        name="title"
-                                        id="title"
-                                        value={title}
-                                        onChange={e => setTitle(e.target.value)}
                                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                                        id="title"
+                                        name="title"
+                                        onChange={e => setTitle(e.target.value)}
                                         placeholder="module title"
+                                        type="text"
+                                        value={title}
                                     />
                                 </div>
                             </div>
                         </div>
 
                         <div className="sm:col-span-3">
-                            <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="title" >
                                 Category
                             </label>
                             <div className="mt-2">
@@ -154,7 +153,7 @@ export default function FormModule({ action, module }: Props) {
                         </div>
 
                         <div className="sm:col-span-3">
-                            <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="title" >
                                 Level
                             </label>
                             <div className="mt-2">
@@ -168,44 +167,44 @@ export default function FormModule({ action, module }: Props) {
                         </div>
 
                         <div className="col-span-full">
-                            <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="description" >
                                 Description
                             </label>
                             <div className="mt-2">
                                 <textarea
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                                     id="description"
                                     name="description"
-                                    rows={3}
-                                    value={description}
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                                     onChange={e => setDescription(e.target.value)}
                                     placeholder="module description"
+                                    rows={3}
+                                    value={description}
                                 />
                             </div>
                         </div>
 
                         <div className="col-span-full">
-                            <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="cover-photo" >
                                 Module photo
                             </label>
                             {imagePreview ? (
                                 <div className="relative inline-block">
-                                    <img src={imagePreview} alt="Preview" className="max-w-52 object-cover object-center rounded-xl shadow-xl" />
-                                    <button onClick={handleRemoveImage} className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 text-white bg-red-500 hover:text-red-500 hover:bg-white transition-colors duration-300 rounded-full p-1">
+                                    <img alt="Preview" className="max-w-52 object-cover object-center rounded-xl shadow-xl" src={imagePreview} />
+                                    <button className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 text-white bg-red-500 hover:text-red-500 hover:bg-white transition-colors duration-300 rounded-full p-1" onClick={handleRemoveImage} type="button" >
                                         <XMarkIcon className=" h-4 w-4" />
                                     </button>
                                 </div>
                             ) : (<FileInput
-                                className="mt-3"
                                 accept="image/png, image/gif, image/jpeg"
-                                onChange={handleImageChange}
-                                id="file-upload-helper-text"
+                                className="mt-3"
                                 helperText="PNG or JPG."
+                                id="file-upload-helper-text"
+                                onChange={handleImageChange}
                             />)}
                         </div>
 
                         <div className="col-span-full">
-                            <TagsArray tags={tags} setTags={setTags} optional />
+                            <TagsArray optional setTags={setTags} tags={tags} />
                         </div>
                     </div>
                 </div>
@@ -213,17 +212,17 @@ export default function FormModule({ action, module }: Props) {
 
             <div className="mt-6 flex items-center justify-end gap-x-6">
                 <button
+                    className="text-sm font-semibold leading-6 text-gray-900"
+                    onClick={() => { navigate('/admin/learn/modules') }}
                     type="button"
-                    onClick={() => {
-                        navigate('/admin/learn/modules')
-                    }}
-                    className="text-sm font-semibold leading-6 text-gray-900">
+                >
                     Cancel
                 </button>
                 <button
-                    type="button"
+                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     onClick={handleRequest}
-                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    type="button"
+                >
                     {action === 'add' ? 'Create' : 'Update'}
                 </button>
             </div>
