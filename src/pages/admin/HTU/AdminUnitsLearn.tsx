@@ -16,7 +16,7 @@ import { FaClipboardCheck, FaClock } from "react-icons/fa"
 import { FaFileLines } from "react-icons/fa6"
 
 export const AdminUnitsLearn = () => {
-    const { module, setModule, setUnit, unit } = useAdmin()
+    const { module, setModule, setUnit, unit, setAssessment } = useAdmin()
     const [category, setCategory] = useState<CategoryTitle>()
     const params = useParams()
     const navigate = useNavigate()
@@ -44,6 +44,16 @@ export const AdminUnitsLearn = () => {
             fetchData()
         }
     })
+
+    const handleEditAssessment = () => {
+        setAssessment(unit?.assessments)
+        navigate(`/admin/learn/modules/${params.moduleId}/units/${unit?._id}/assessment/${unit?.assessments._id}`)
+    }
+
+    const handleNewAssessment = () => {
+        setAssessment(undefined)
+        navigate(`/admin/learn/modules/${params.moduleId}/units/${unit?._id}/assessment`)
+    }
 
     return (
         <div>
@@ -129,7 +139,7 @@ export const AdminUnitsLearn = () => {
                                             <div className="flex flex-1 justify-end">
                                                 <button
                                                     className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
-                                                    onClick={() => { navigate(`/admin/learn/modules/${params.moduleId}/units/${unit._id}/assessment/${unit.assessments._id}`) }}
+                                                    onClick={() => { handleEditAssessment() }}
                                                     type="button"
                                                 >
                                                     Edit
@@ -185,7 +195,29 @@ export const AdminUnitsLearn = () => {
 
                                                 })
                                             }
-                                        </div> : <EmptyState to={`/admin/learn/modules/${params.moduleId}/units/${unit._id}/assessment`} type="assessment" />}
+                                        </div> :
+                                        <div className="text-center">
+                                            <svg
+                                                aria-hidden="true"
+                                                className="mx-auto h-12 w-12 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    vectorEffect="non-scaling-stroke"
+                                                />
+                                            </svg>
+                                            <h3 className="mt-2 text-sm font-semibold text-gray-900">No assessment</h3>
+                                            <p className="mt-1 text-sm text-gray-500">Get started by creating a new assessment.</p>
+                                            <div className="mt-6">
+                                                <button className='rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500' onClick={() => { handleNewAssessment() }} type="button" >New assessment</button>
+                                            </div>
+                                        </div>}
                                 </TabPanel>
                             </TabView>
                         </div> : null
