@@ -29,6 +29,7 @@ import { Learn } from './pages/learn/Learn'
 import { Modules } from './pages/learn/modules/Modules'
 import { UnitDetail } from './pages/learn/units/UnitDetail'
 import { Units } from './pages/learn/units/Units'
+import { Assessment } from './pages/learn/assessment/Assessment'
 
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
@@ -118,6 +119,7 @@ export const App = () => {
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
                 <Route element={<Units />} path="/learn/module/:moduleId" />
                 <Route element={<UnitDetail />} path="/learn/module/:moduleId/unit/:unitId" />
+                <Route element={<Assessment />} path="/learn/module/:moduleId/unit/:unitId/assesment" />
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
