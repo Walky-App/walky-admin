@@ -29,6 +29,8 @@ export default function AdminJobs() {
   const memoJobsColumns = React.useMemo(
     () => [
       { Header: 'Job Title', accessor: 'title' },
+      { Header: 'Facility', accessor: 'facility.name' },
+      { Header: 'Created By', accessor: 'created_by' },
       //@ts-ignore
       {
         Header: 'Status',
