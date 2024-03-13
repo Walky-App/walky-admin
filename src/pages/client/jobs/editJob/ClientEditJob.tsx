@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react'
 import { Controller, set, useForm } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { InputNumber } from 'primereact/inputnumber'
+import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
@@ -12,7 +13,6 @@ import { TitleComponent } from '../../../../components/shared/general/TitleCompo
 import { IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
-import { MultiSelect } from 'primereact/multiselect'
 
 export default function ClientEditJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
@@ -25,7 +25,9 @@ export default function ClientEditJob() {
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<IFacility[]>()
   const navigate = useNavigate()
-  
+  const location = useLocation()
+  const isAdmin = location.pathname.includes('/admin')
+
   useEffect(() => {
     const getFacilities = async () => {
       const allFacilitiesByClient = await RequestService(`facilities/byclient/${id}`)
@@ -59,7 +61,7 @@ export default function ClientEditJob() {
         setValue('start_time', startTime)
         setValue('end_time', endTime)
         setValue('job_tips', job.job_tips)
-      } 
+      }
     }
     getJob()
   }, [facilities])
@@ -106,7 +108,6 @@ export default function ClientEditJob() {
     }
   }, [startTime, endTime, lunchBreak])
 
-
   const getFormErrorMessage = (name: string) => {
     //@ts-ignore
     return errors[name] ? (
@@ -145,8 +146,8 @@ export default function ClientEditJob() {
           detail: 'Job information updated successfully',
         })
         setTimeout(() => {
-          navigate(`/client/jobs/${params.id}`)
-        }, 3000)
+    navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
+  }, 3000)
       }
     } catch (error) {
       console.error(error)
