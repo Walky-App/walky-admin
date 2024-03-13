@@ -1,8 +1,10 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button } from 'primereact/button'
+
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
-import { useNavigate } from 'react-router-dom'
 
 export default function AdminJobs() {
   const [jobsData, setJobsData] = React.useState<any>([])
@@ -29,13 +31,39 @@ export default function AdminJobs() {
   const memoJobsColumns = React.useMemo(
     () => [
       { Header: 'Job Title', accessor: 'title' },
+      { Header: 'Facility', accessor: 'facility.name' },
+      { Header: 'Created By', accessor: 'created_by' },
       //@ts-ignore
-      { Header: 'Facility', accessor: row => row.facility?.name, Cell: ({ value }) => value || 'No Facility' },
-      { Header: 'Status', accessor: 'status' },
-      { Header: 'Salary', accessor: 'salary' },
+      {
+        Header: 'Status',
+        accessor: (d: any) => (d.isActive ? 'Active' : 'Disabled'),
+        sortType: (a: any, b: any) => {
+          if (a.original.isActive === b.original.active) return 0
+          return a.original.isActive ? -1 : 1
+        },
+      }, //@ts-ignore
+      {
+        Header: 'Past/Present',
+        accessor: (d: any) => (d.isCompleted ? 'Past' : 'Present'),
+        sortType: (a: any, b: any) => {
+          if (a.original.isCompleted === b.original.isCompleted) return 0
+          return a.original.isCompleted ? -1 : 1
+        },
+      },
+      {
+        Header: 'Total Hours',
+        accessor: 'total_hours',
+      },
       //@ts-ignore
-      { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => value.join(', ') },
-      { Header: 'Employment Type', accessor: 'employment_type' },
+      { Header: 'Vacancy', accessor: 'vacancy' },
+      {
+        Header: 'Availability',
+        accessor: (d: any) => (d.isFull ? 'Full' : 'Open'),
+        sortType: (a: any, b: any) => {
+          if (a.original.isFull === b.original.isFull) return 0
+          return a.original.isFull ? -1 : 1
+        },
+      },
     ],
     [],
   )
@@ -43,20 +71,19 @@ export default function AdminJobs() {
   return (
     <div className="">
       <HeaderComponent title={'Jobs'} />
-      {/* <button
-        type="button"
+      <Button
+        label="Add Job"
         onClick={() => {
           navigate('/admin/jobs/new')
         }}
-        className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        Post New Job
-      </button> */}
+        size="small"
+      />
       {isLoading ? (
-        <div className="flex justify-center items-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+        <div className="flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
         </div>
       ) : (
-        <GlobalTable data={memoJobsData} columns={memoJobsColumns} />
+        <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
       )}
     </div>
   )

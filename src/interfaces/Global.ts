@@ -18,6 +18,13 @@ export interface SelectedOptionInterface {
 export interface NavigationButtonInterface {
   to: string
   text: string
+  disbalePlusIcon?: boolean
+}
+
+export interface DisableButtonInterface {
+  path: string
+  status: boolean
+  redirect: string
 }
 
 export interface TagsInterface {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { RequestService } from '../../../services/RequestService'
 
@@ -11,40 +11,41 @@ export default function AdminAddJob() {
 
     const target = e.target as typeof e.target & {
       created_by: { value: string }
-      company: { value: string }
-      facility_id: { value: string }
+      facility: { value: string }
       title: { value: string }
-      salary: { value: string }
       description: { value: string }
       skills: { value: string }
       employment_type: { value: string }
-      shift_days: { value: string }
-      shift_times: { value: string }
-      shift_dates: { value: string }
+      startTime: { value: number }
+      endTime: { value: number }
+      job_dates: { value: string }
+      isActive: { value: string }
+      isCompleted: { value: string }
+      isFull: { value: string }
     }
 
     const formData = {
       created_by: target.created_by.value,
-      company: target.company.value,
-      facility_id: target.facility_id.value,
+      facility: target.facility.value,
       title: target.title.value,
-      salary: target.salary.value,
       description: target.description.value,
       skills: target.skills.value.split(','),
       employment_type: target.employment_type.value,
-      shift_days: target.shift_days.value.split(',').map(Number),
-      shift_times: target.shift_times.value.split(','),
-      shift_dates: target.shift_dates.value.split(','),
-      status: 'active',
+      startTime: target.startTime.value,
+      endTime: target.endTime.value,
+      job_dates: target.job_dates.value.split(','),
+      isActive: target.isActive.value === 'Active' ? true : false,
+      isCompleted: target.isCompleted.value === 'Completed' ? true : false,
+      isFull: target.isFull.value === 'Full' ? true : false,
     }
 
     try {
       const response = await RequestService(`jobs`, 'POST', formData)
-      if (response.ok) {
+      if (response) {
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
       } else {
-        throw new Error('Job posted successfully')
+        throw new Error('Job posting failed')
       }
     } catch (error) {
       console.error('Error posting job:', error)
@@ -76,23 +77,11 @@ export default function AdminAddJob() {
                     type="text"
                     name="title"
                     id="job-title"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="company-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Company
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="company"
-                    id="company"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
+
               <div className="sm:col-span-3">
                 <label htmlFor="created_by" className="block text-sm font-medium leading-6 text-gray-900">
                   Created By
@@ -102,54 +91,54 @@ export default function AdminAddJob() {
                     type="text"
                     name="created_by"
                     id="email"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label htmlFor="facility-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Facility ID*
+                <label htmlFor="facility" className="block text-sm font-medium leading-6 text-gray-900">
+                  Facility
                 </label>
                 <div className="mt-2">
                   <input
                     type="text"
-                    name="facility_id"
-                    id="facility-id"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="salary" className="block text-sm font-medium leading-6 text-gray-900">
-                  Salary*
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="salary"
-                    id="salary"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    name="facility"
+                    id="facility"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-3">
                 <label htmlFor="employment-type" className="block text-sm font-medium leading-6 text-gray-900">
-                  employment_type
+                  Employment Type
                 </label>
                 <div className="mt-2">
                   <input
                     type="text"
                     name="employment_type"
                     id="employment-type"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
+                  Vacancies
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="number"
+                    name="vacancy"
+                    id="vacancy"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               {/* Skills Input */}
               <div className="sm:col-span-3">
                 <label htmlFor="skills" className="block text-sm font-medium leading-6 text-gray-900">
-                  Skills*
+                  Skills
                 </label>
                 <div className="mt-2">
                   <input
@@ -157,160 +146,115 @@ export default function AdminAddJob() {
                     name="skills"
                     id="skills"
                     placeholder="Enter skills separated by commas"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
 
-              {/* Shift Days Input */}
+              {/* Status Selectors */}
+
               <div className="sm:col-span-3">
-                <label htmlFor="shift_days" className="block text-sm font-medium leading-6 text-gray-900">
-                  Shift Days
+                <label htmlFor="isCompleted" className="block text-sm font-medium leading-6 text-gray-900">
+                  Completion Status
                 </label>
                 <div className="mt-2">
-                  <input
-                    type="text"
-                    name="shift_days"
-                    id="shift-days"
-                    placeholder="e.g., 1,4"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                  />
+                  <select
+                    id="isCompleted"
+                    name="isCompleted"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                    <option value="true">Completed</option>
+                    <option value="false">Ongoing</option>
+                  </select>
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="isFull" className="block text-sm font-medium leading-6 text-gray-900">
+                  Availability Status
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="isFull"
+                    name="isFull"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                    <option value="true">Full</option>
+                    <option value="false">Available</option>
+                  </select>
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="isActive" className="block text-sm font-medium leading-6 text-gray-900">
+                  Current Status
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="isActive"
+                    name="isActive"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                    <option value="true">Active</option>
+                    <option value="false">Disabled</option>
+                  </select>
                 </div>
               </div>
 
               {/* Shift Times Input */}
               <div className="sm:col-span-3">
-                <label htmlFor="shift_times" className="block text-sm font-medium leading-6 text-gray-900">
-                  Shift Times
+                <label htmlFor="startTime" className="block text-sm font-medium leading-6 text-gray-900">
+                  Start Time
                 </label>
                 <div className="mt-2">
                   <input
                     type="text"
-                    name="shift_times"
-                    id="shift-times"
-                    placeholder="e.g., 8:00,19:00"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    name="startTime"
+                    id="start-time"
+                    placeholder="military time, e.g., 0800, 1300"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="endTime" className="block text-sm font-medium leading-6 text-gray-900">
+                  End Time
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    name="endTime"
+                    id="end-time"
+                    placeholder="military time, e.g., 0800, 1300"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="shift_dates" className="block text-sm font-medium leading-6 text-gray-900">
-                  Shift Dates
+                <label htmlFor="job_dates" className="block text-sm font-medium leading-6 text-gray-900">
+                  Job Dates
                 </label>
                 <div className="mt-2">
                   <input
                     type="text"
-                    name="shift_dates"
-                    id="shift-dates"
+                    name="job_dates"
+                    id="job-dates"
                     placeholder="e.g., 2024-01-31,2024-02-20"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               <div className="col-span-full">
-                <label htmlFor="about" className="block text-sm font-medium leading-6 text-gray-900">
-                  description
+                <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
+                  Description
                 </label>
                 <div className="mt-2">
                   <textarea
                     id="description"
                     name="description"
                     rows={3}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                     defaultValue={''}
                   />
                 </div>
 
-                <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the Job.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* section two */}
-
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Location</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Please provide the address information below.</p>
-            </div>
-
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                  Country
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="country"
-                    name="country"
-                    autoComplete="country-name"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>Mexico</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Street Address
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="address"
-                    id="address"
-                    autoComplete="address-line1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2 sm:col-start-1">
-                <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-                  City
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="city"
-                    id="city"
-                    autoComplete="address-level2"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
-                  State / Province
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="state"
-                    id="state"
-                    autoComplete="address-level1"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
-                  ZIP / Postal code
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="zip"
-                    id="zip"
-                    autoComplete="postal-code"
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
+                <p className="mt-3 text-sm leading-6 text-gray-600">Provide the necessary information about the job.</p>
               </div>
             </div>
           </div>

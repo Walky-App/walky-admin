@@ -1,15 +1,20 @@
-import { createContext, useContext, useState } from 'react'
-import { Category } from '../interfaces/Category'
-import { Module } from '../interfaces/Module'
+import { ReactNode, createContext, useContext, useState } from 'react'
+import { Category } from '../interfaces/category'
+import { Module } from '../interfaces/module'
 import { SelectedOptionInterface } from '../interfaces/Global'
+import { Assessment, Unit } from '../interfaces/unit'
 
 interface AdminContextType {
   category: Category | undefined,
-  setCategory: (user: Category) => void
+  setCategory: (user: Category | undefined) => void
   categoryOptions: SelectedOptionInterface[],
   setCategoryOptions: (options: SelectedOptionInterface[]) => void
   module: Module | undefined,
-  setModule: (user: Module) => void
+  setModule: (user: Module | undefined) => void
+  unit: Unit | undefined,
+  setUnit: (user: Unit | undefined) => void
+  assessment: Assessment | undefined,
+  setAssessment: (user: Assessment | undefined) => void
 }
 
 const AdminContext = createContext<AdminContextType>({
@@ -19,14 +24,24 @@ const AdminContext = createContext<AdminContextType>({
   setCategoryOptions: () => { },
   module: undefined,
   setModule: () => { },
+  unit: undefined,
+  setUnit: () => { },
+  assessment: undefined,
+  setAssessment: () => { },
 })
 
-const AdminProvider = ({ children }: any) => {
+interface AdminProviderProps {
+  children: ReactNode;
+}
+
+const AdminProvider = ({ children }: AdminProviderProps) => {
   const [category, setCategory] = useState<Category>()
   const [module, setModule] = useState<Module>()
+  const [unit, setUnit] = useState<Unit>()
+  const [assessment, setAssessment] = useState<Assessment>()
   const [categoryOptions, setCategoryOptions] = useState<SelectedOptionInterface[]>([])
 
-  return <AdminContext.Provider value={{ category, setCategory, module, setModule, categoryOptions, setCategoryOptions }}>{children}</AdminContext.Provider>
+  return <AdminContext.Provider value={{ category, setCategory, module, setModule, unit, setUnit, categoryOptions, setCategoryOptions, assessment, setAssessment }}>{children}</AdminContext.Provider>
 }
 
 const useAdmin = () => useContext(AdminContext)

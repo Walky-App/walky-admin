@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { RequestService } from '../../../services/RequestService'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import TitleComponent from '../../../components/shared/general/TitleComponent'
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 
 export default function AdminJobDetails() {
   const { id } = useParams()
@@ -31,15 +31,11 @@ export default function AdminJobDetails() {
   }
 
   const handleUpdate = async (e: any) => {
-    console.log('formJob -->', formJob)
     e.preventDefault()
     try {
-      console.log('jobID -->', id)
       const res = await RequestService(`jobs/${id}`, 'PATCH', formJob)
       setFormJob(res)
-      console.log('formJob -->', formJob)
       setUpdateSuccess(true)
-      console.log('update success -->', updateSuccess)
       setTimeout(() => setUpdateSuccess(false), 5000)
     } catch (error) {
       console.error('Error updating job data:', error)
@@ -75,21 +71,6 @@ export default function AdminJobDetails() {
                     name="title"
                     id="job-title"
                     value={formJob.title || ''}
-                    onChange={handleInputChange}
-                    className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="company-id" className="block text-sm font-medium leading-6 text-gray-900">
-                  Company
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="company"
-                    id="company"
-                    value={formJob.company || ''}
                     onChange={handleInputChange}
                     className="px-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 focus:outline-none sm:text-sm sm:leading-6"
                   />

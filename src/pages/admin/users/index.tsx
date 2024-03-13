@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
-import HeaderComponent from '../../../components/shared/general/HeaderComponent'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { useNavigate } from 'react-router-dom'
 
 export default function AdminUsers() {
@@ -66,7 +66,7 @@ export default function AdminUsers() {
           <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
         </div>
       ) : (
-        <GlobalTable data={memoUsersData} columns={memoUsersColumns} />
+        <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
       )}
     </div>
   )
