@@ -75,8 +75,6 @@ const salesLinks: INavLink[] = [
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
 ]
 
-const role = getCurrentUserRole()
-
 export interface SideBarData {
   id: number
   name: string
@@ -210,6 +208,7 @@ interface SidebarComponentProps {
 
 const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarComponentProps) => {
   const { user } = useAuth()
+  const role = getCurrentUserRole()
 
   const getLinksByRole = () => {
     switch (role) {
@@ -307,6 +306,7 @@ interface HeaderComponentProps {
 
 const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
+  const role = getCurrentUserRole()
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
