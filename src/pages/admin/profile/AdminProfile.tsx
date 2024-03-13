@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 
-import { Controller, type SubmitHandler, useForm, FieldErrors } from 'react-hook-form'
+import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
 
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
