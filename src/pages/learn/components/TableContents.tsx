@@ -50,7 +50,7 @@ export const TableContents = ({ header }: TableContentsProps) => {
                 <ul>
                     {
                         dataContents.map((item, index) => (
-                            <li key={index}>
+                            <li key={`content-item-${index}`}>
                                 <button className={`cursor-pointer border-l pl-2 hover:border-gray-400 ${index === active && 'border-green-500 hover:border-green-500 text-green-500'} `} onClick={() => handlerMenuNav(item, index)} type="button">
                                     {item.text}
                                 </button>

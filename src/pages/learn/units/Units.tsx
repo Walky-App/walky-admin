@@ -5,9 +5,9 @@ import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/out
 import { secondsToTimeDescription } from "../../../utils/FunctionUtils"
 import { Badge } from "flowbite-react"
 import { useAdmin } from "../../../contexts/AdminContext"
-import { Module } from "../../../interfaces/module"
+import type { Module } from "../../../interfaces/module"
 import { CircularProgressBar } from "../components/CircularProgressBar"
-import { Unit } from '../../../interfaces/unit';
+import type { Unit } from '../../../interfaces/unit';
 import { ArrowRightIcon } from "@heroicons/react/20/solid"
 
 export const Units = () => {
@@ -28,7 +28,6 @@ export const Units = () => {
         if (!module) {
             fetchData()
         }
-        console.log(module)
     })
 
     const handlerUnit = (unit: Unit) => {
@@ -95,7 +94,7 @@ export const Units = () => {
             </div>
             {
                 module?.units?.map((unit: Unit, index) => (
-                    <div className="flex items-center justify-center bg-white pl-6" key={index} >
+                    <div className="flex items-center justify-center bg-white pl-6" key={`unit-${index}`}>
                         <div className={`space-y-6 pb-6 ${index !== (module?.units?.length ?? 0) - 1 && 'border-l-2 border-dashed'} `}>
                             <div className="relative w-full">
                                 <div className="-ml-3.5 -top-0.5 absolute bg-white border flex h-7 justify-center rounded-full text-blue-500 w-7 z-10" />
