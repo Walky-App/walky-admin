@@ -1,10 +1,11 @@
 import React, { useRef } from 'react'
 import { Controller, set, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { InputNumber } from 'primereact/inputnumber'
+import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
@@ -23,16 +24,33 @@ export default function ClientAddJob() {
   const toast = useRef<Toast>(null)
   const [facilities, setFacilities] = React.useState<IFacility[]>()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isAdmin = location.pathname.includes('/admin')
+
+  interface DefaultValues {
+    title: string
+    facility_id: string
+    vacancy: null
+    job_dates: never[]
+    start_time: null
+    end_time: null
+    lunch_break: null
+    job_tips: never[]
+    created_by?: string // Add this line
+  }
 
   React.useEffect(() => {
     const getFacilities = async () => {
-      const allFacilities = await RequestService(`facilities/byclient/${id}`)
+      // Check the pathname in the URL to decide which endpoint to call
+      const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/byclient/${id}`
+      const allFacilities = await RequestService(endpoint)
       setFacilities(allFacilities)
     }
-    getFacilities()
-  }, [])
 
-  const defaultValues = {
+    getFacilities()
+  }, [location.pathname, id])
+
+  let defaultValues: DefaultValues = {
     title: '',
     facility_id: '',
     vacancy: null,
@@ -41,6 +59,10 @@ export default function ClientAddJob() {
     end_time: null,
     lunch_break: null,
     job_tips: [],
+  }
+
+  if (isAdmin) {
+    defaultValues = { ...defaultValues, created_by: '' }
   }
 
   const {
@@ -110,8 +132,9 @@ export default function ClientAddJob() {
           summary: 'Success',
           detail: 'Job information submitted successfully',
         })
+        console.log('Here is job data -->', requestData)
         setTimeout(() => {
-          navigate('/client/jobs')
+          navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
         }, 3000)
       }
     } catch (error) {
@@ -162,6 +185,44 @@ export default function ClientAddJob() {
       <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
         <Toast ref={toast} />
         <div className="space-y-12">
+          {isAdmin && (
+            <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+              <div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Admin Panel</h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Please select the email of the client which you are posting a job for.
+                </p>
+              </div>
+
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                <div className="sm:col-span-3">
+                  <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
+                    Created By:
+                  </label>
+                  <div className="mt-2">
+                    <Controller
+                      name="created_by"
+                      control={control}
+                      rules={{ required: "Client's email is required" }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <span className="p-float-label">
+                            <InputText
+                              id={field.name}
+                              value={field.value}
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                          </span>
+                          {getFormErrorMessage(field.name)}
+                        </>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
