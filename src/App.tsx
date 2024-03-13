@@ -46,8 +46,8 @@ import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage
 /** Sales Pages */
 import SalesDashboard from './pages/sales/dashboard'
 import { ProductList as Products } from './pages/sales/products'
-import ProductDetail from './pages/sales/products/ProductDetail'
 import { ProductCategories } from './pages/sales/products/ProductCategories'
+import ProductDetail from './pages/sales/products/ProductDetail'
 
 // Not yet implemented
 // import SalesProfile from './pages/sales/profile/SalesProfile'
@@ -55,7 +55,7 @@ import { ProductCategories } from './pages/sales/products/ProductCategories'
 /** Admin Pages */
 import AdminDashboard from './pages/admin/dashboard'
 
-import AdminProfile from './pages/admin/profile/AdminProfile'
+import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import AdminUsers from './pages/admin/users'
 import AdminInviteUser from './pages/admin/users/AdminInviteUser'
@@ -73,22 +73,22 @@ import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDe
 import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
 
+import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
 import { AdminAddCategory } from './pages/admin/HTU/AdminAddCategory'
 import { AdminAddModule } from './pages/admin/HTU/AdminAddModule'
 import { AdminAddUnit } from './pages/admin/HTU/AdminAddUnit'
 import { AdminCategoryLearn } from './pages/admin/HTU/AdminCategoryLearn'
 import { AdminDashboardLearn } from './pages/admin/HTU/AdminDashboardLearn'
+import { AdminDetailsAssessment } from './pages/admin/HTU/AdminDetailsAssessment'
 import { AdminDetailsCategory } from './pages/admin/HTU/AdminDetailsCategory'
 import { AdminDetailsModule } from './pages/admin/HTU/AdminDetailsModule'
 import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
-import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
-import { AdminDetailsAssessment } from './pages/admin/HTU/AdminDetailsAssessment'
 import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
+
 import AdminJobs from './pages/admin/jobs'
 import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
-
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -177,8 +177,14 @@ export const App = () => {
                   <Route element={<AdminUnitsLearn />} path="/admin/learn/modules/:moduleId/units" />
                   <Route element={<AdminAddUnit />} path="/admin/learn/modules/:moduleId/units/new" />
                   <Route element={<AdminDetailsUnit />} path="/admin/learn/modules/:moduleId/units/:unitId" />
-                  <Route element={<AdminAddAssessment />} path="/admin/learn/modules/:moduleId/units/:unitId/assessment" />
-                  <Route element={<AdminDetailsAssessment />} path="/admin/learn/modules/:moduleId/units/:unitId/assessment/:assessmentId" />
+                  <Route
+                    element={<AdminAddAssessment />}
+                    path="/admin/learn/modules/:moduleId/units/:unitId/assessment"
+                  />
+                  <Route
+                    element={<AdminDetailsAssessment />}
+                    path="/admin/learn/modules/:moduleId/units/:unitId/assessment/:assessmentId"
+                  />
                   <Route element={<AdminAddModule />} path="/admin/learn/modules/new" />
                   <Route element={<Products />} path="/admin/products" />
                   <Route element={<ProductCategories />} path="/admin/products/categories" />

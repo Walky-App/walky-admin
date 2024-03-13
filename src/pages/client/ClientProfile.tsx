@@ -3,7 +3,7 @@ import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { RequestService } from '../../services/RequestService'
 import { GetTokenInfo } from '../../utils/TokenUtils'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import UploadAvatar from '../../components/shared/forms/UploadAvatar'
+import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 
 export default function ClientProfile() {
   const [formUser, setFormUser] = useState<any>({})
