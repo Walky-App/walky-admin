@@ -45,6 +45,8 @@ const adminLinks = [
   { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
   { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
   { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
+  { id: 2, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
+  { id: 3, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
   { id: 5, name: 'Messages', href: '/admin/messages', icon: <IoMdMail />, disabled: true },
 ]
 

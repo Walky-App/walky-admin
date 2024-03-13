@@ -1,4 +1,4 @@
-import { Module } from '../../../interfaces/Module';
+import { Module } from '../../../interfaces/module';
 import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 import { CircularProgressBar } from './CircularProgressBar'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'

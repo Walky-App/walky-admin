@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { Category } from '../../../interfaces/Category'
+import { Category } from '../../../interfaces/category'
 import { FilterInterface, SelectedOptionInterface } from '../../../interfaces/Global'
 import { RequestService } from '../../../services/RequestService'
 import { useSearchParams } from 'react-router-dom'
@@ -28,7 +28,7 @@ export const AdminCategoryLearn = () => {
     },
   ]
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     const response: Category[] = await RequestService('categories')
     if (response.length !== 0) {
       setCategories(response)
@@ -38,7 +38,7 @@ export const AdminCategoryLearn = () => {
 
   useEffect(() => {
     if (categories.length === 0) {
-      fecthData()
+      fetchData()
     }
 
     setFilter({

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavigationButtonInterface } from "../../../interfaces/Global";
 import { useAdmin } from "../../../contexts/AdminContext";
-import { Section } from "../../../interfaces/Unit";
+import { Section } from "../../../interfaces/unit";
 
 interface TableContentsProps {
     header: string,
