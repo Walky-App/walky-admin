@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Rating } from 'primereact/rating'
@@ -21,20 +21,21 @@ export default function JobDetailViewClient() {
   const params = useParams()
   const id = params.id
   const toast = useRef<Toast>(null)
+  const location = useLocation()
+  const isAdmin = location.pathname.includes('/admin')
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
       // Handle null input, for example, return a placeholder or an error message
-      return 'Time not set';
+      return 'Time not set'
     }
-    const militaryTimeString = militaryTime.toString().padStart(4, '0');
-    const hours = Number(militaryTimeString.slice(0, -2));
-    const minutes = Number(militaryTimeString.slice(-2));
-    const standardHours = ((hours + 11) % 12) + 1;
-    const amPm = hours >= 12 ? 'pm' : 'am';
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`;
+    const militaryTimeString = militaryTime.toString().padStart(4, '0')
+    const hours = Number(militaryTimeString.slice(0, -2))
+    const minutes = Number(militaryTimeString.slice(-2))
+    const standardHours = ((hours + 11) % 12) + 1
+    const amPm = hours >= 12 ? 'pm' : 'am'
+    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
   }
-  
 
   useEffect(() => {
     const getJob = async () => {
@@ -276,7 +277,11 @@ export default function JobDetailViewClient() {
             <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
               <ul className="w-full divide-y divide-gray-200">
                 <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                  <Button className="w-full" label="Edit Job" onClick={() => navigate(`/client/jobs/${id}/edit`)} />
+                  <Button
+                    className="w-full"
+                    label="Edit Job"
+                    onClick={() => navigate(`/${isAdmin ? 'admin' : 'client'}/jobs/${id}/edit`)}
+                  />{' '}
                   {!job.isActive ? (
                     <Button
                       className="w-full"
