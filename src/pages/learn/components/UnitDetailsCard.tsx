@@ -36,7 +36,7 @@ export const UnitDetailsCard = ({ unit, isAdmin = false }: UnitDetailsCardProps)
             <div className="pt-3">
                 {
                     unit?.sections.map((item, index) => (
-                        <div className={` ${index === unit.sections.length - 1 ? 'mx-3 mb-3' : 'border-b pb-4 mb-4 mx-3'}`} id={item.title.replace(' ', '-')} key={index}  >
+                        <div className={` ${index === unit.sections.length - 1 ? 'mx-3 mb-3' : 'border-b pb-4 mb-4 mx-3'}`} id={item.title.replace(' ', '-')} key={`unit-card-${index}`}  >
                             <div className='mb-4 text-xs text-gray-500'>{item.title}</div>
                             <div className='p-editor-content ql-container ql-snow !border-0'>
                                 <div className='ql-editor !p-0 b-0' dangerouslySetInnerHTML={{ __html: item.body }} />

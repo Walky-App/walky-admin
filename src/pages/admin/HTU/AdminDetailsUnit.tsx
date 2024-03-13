@@ -190,7 +190,7 @@ export const AdminDetailsUnit = () => {
                                         {
                                             sections.map((section, index) => {
                                                 return (
-                                                    <div className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow" key={index}>
+                                                    <div className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow" key={`unit-details-${index}`}>
                                                         <div className="flex w-full items-center justify-between space-x-6 p-6">
                                                             <div className="h-8 w-8 flex rounded-full bg-gray-300 justify-center items-center" >{`#${index + 1}`}</div>
                                                             <div className="flex-1 truncate">
