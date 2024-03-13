@@ -132,7 +132,6 @@ export default function ClientAddJob() {
           summary: 'Success',
           detail: 'Job information submitted successfully',
         })
-        console.log('Here is job data -->', requestData)
         setTimeout(() => {
           navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
         }, 3000)
