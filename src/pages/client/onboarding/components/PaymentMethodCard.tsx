@@ -1,4 +1,4 @@
-export const AddPaymentMethodCard: React.FC = () => {
+export const AddPaymentMethodsCard: React.FC = () => {
   const paymentMethods: { name: string; label: string; icon: string }[] = [
     { name: 'Credit Card', label: 'Credit Card', icon: 'pi pi-credit-card' },
     { name: 'Bank Account', label: 'Bank Account', icon: 'pi pi-briefcase' },
