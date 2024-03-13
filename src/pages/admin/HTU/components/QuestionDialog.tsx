@@ -26,7 +26,7 @@ export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQues
     const { setUnit, setAssessment } = useAdmin()
     const [header, setHeader] = useState<string>(selectedQuestion?.header || '')
     const [options, setOptions] = useState<string[]>(selectedQuestion?.options || [])
-    const [answer, setAnswer] = useState<IAnswer>({ code: 0, value: 'No select' })
+    const [answer, setAnswer] = useState<IAnswer>({ code: 99, value: 'No select' })
     const params = useParams()
 
     useEffect(() => {
@@ -92,7 +92,7 @@ export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQues
     const clearStates = () => {
         setHeader('')
         setOptions([])
-        setAnswer({ code: 0, value: 'No select' })
+        setAnswer({ code: 99, value: 'No select' })
     }
 
     const handleDisableControl = () => {

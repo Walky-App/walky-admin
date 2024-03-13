@@ -124,7 +124,7 @@ export const AdminUnitsLearn = () => {
                                     <UnitDetailsCard isAdmin unit={unit as Unit} />
                                 </TabPanel>
                                 <TabPanel header="Assessment Detail">
-                                    {(unit?.assessments) ?
+                                    {(unit?.assessments && (unit?.assessments?.questions?.length ?? 0) > 0) ?
                                         <div className="w-full">
                                             <div className="flex flex-1 justify-end">
                                                 <button
@@ -155,29 +155,29 @@ export const AdminUnitsLearn = () => {
                                                                 <div className="text-sm font-semibold leading-6 text-gray-900">{question.header}</div>
                                                             </div>
                                                             <div className="ml-4 text-sm">
-                                                                <div className="">
+                                                                <div className="gap-2">
                                                                     <span className="font-bold">
                                                                         A)
                                                                     </span>
-                                                                    Valor 1
+                                                                    {question.options[0]}
                                                                 </div>
-                                                                <div className="">
+                                                                <div className="gap-2">
                                                                     <span className="font-bold">
                                                                         B)
                                                                     </span>
-                                                                    Valor 2
+                                                                    {question.options[1]}
                                                                 </div>
-                                                                <div className="">
+                                                                <div className="gap-2">
                                                                     <span className="font-bold">
                                                                         C)
                                                                     </span>
-                                                                    Valor 3
+                                                                    {question.options[2]}
                                                                 </div>
-                                                                <div className="">
+                                                                <div className="gap-2">
                                                                     <span className="font-bold">
                                                                         D)
                                                                     </span>
-                                                                    Valor 4
+                                                                    {question.options[3]}
                                                                 </div>
                                                             </div>
                                                         </div>
