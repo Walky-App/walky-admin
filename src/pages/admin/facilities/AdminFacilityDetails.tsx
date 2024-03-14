@@ -421,7 +421,7 @@ export const AdminFacilityDetails = () => {
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
+              <div className="sm:col-span-5">
                 <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
                   Street Address
                 </label>
