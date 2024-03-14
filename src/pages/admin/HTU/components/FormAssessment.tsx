@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Controller, useForm } from "react-hook-form"
 import { classNames } from "primereact/utils"
-import { Toast } from "primereact/toast"
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid"
 import { QuestionDialog } from "./QuestionDialog"
 import { Questions } from "../../../../interfaces/unit"
@@ -10,6 +9,7 @@ import { InputNumber } from "primereact/inputnumber"
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog"
 import { RequestService } from "../../../../services/RequestService"
 import { useAdmin } from "../../../../contexts/AdminContext"
+import useStore from "../../../../store/useUtils"
 
 
 
@@ -18,6 +18,7 @@ interface Props {
 }
 
 export const FormAssessment = ({ action }: Props) => {
+    const { showToast } = useStore();
     const { setUnit, assessment } = useAdmin()
     const [visible, setVisible] = useState(false)
     const [questions, setQuestions] = useState<Questions[]>(assessment?.questions || [])
@@ -25,15 +26,6 @@ export const FormAssessment = ({ action }: Props) => {
     const [actionDialog, setActionDialog] = useState<'create' | 'update'>('create')
     const navigate = useNavigate()
     const params = useParams()
-
-
-    const toast = useRef<Toast>(null);
-
-    const show = (severity: "success" | "info" | "warn" | "error" | undefined, summary: string, detail: string) => {
-        if (toast.current) {
-            toast.current.show({ severity, summary, detail });
-        }
-    };
 
     const defaultValues = {
         time: assessment?.time || 0,
@@ -54,12 +46,12 @@ export const FormAssessment = ({ action }: Props) => {
 
     const onSubmit = async (data: { time: number, min_score: number }) => {
         if (data.time === 0 || data.min_score === 0) {
-            show('error', 'Error', 'Please fill all the required fields')
+            showToast('error', 'Error', 'Please fill all the required fields')
             return
         }
 
         if (questions.length === 0) {
-            show('error', 'Error', 'Please add at least one question')
+            showToast('error', 'Error', 'Please add at least one question')
             return
         }
 
@@ -76,30 +68,30 @@ export const FormAssessment = ({ action }: Props) => {
             try {
                 const response = await RequestService(`units/assessment`, 'POST', bodyRequest)
                 if (response.message === 'Unit not found') {
-                    show('error', 'Error', 'Unit not found')
+                    showToast('error', 'Error', 'Unit not found')
                     return
                 }
                 if (response) {
-                    show('success', 'Assessment created', 'Assessment created successfully')
+                    showToast('success', 'Assessment created', 'Assessment created successfully')
                     setUnit(response)
                     navigate(`/admin/learn/modules/${params.moduleId}/units/${params.unitId}/assessment/${response.assessments?._id}`)
                 }
             } catch (error) {
-                show('error', 'Error', 'An error occurred')
+                showToast('error', 'Error', 'An error occurred')
             }
         } else {
             try {
                 const response = await RequestService(`units/assessment`, 'PATCH', bodyRequest)
                 if (response.message === 'Unit not found') {
-                    show('error', 'Error', 'Unit not found')
+                    showToast('error', 'Error', 'Unit not found')
                     return
                 }
                 if (response) {
-                    show('success', 'Assessment updated', 'Assessment updated successfully')
+                    showToast('success', 'Assessment updated', 'Assessment updated successfully')
                     setUnit(response)
                 }
             } catch (error) {
-                show('error', 'Error', 'An error occurred')
+                showToast('error', 'Error', 'An error occurred')
             }
         }
     }
@@ -132,7 +124,7 @@ export const FormAssessment = ({ action }: Props) => {
             accept: () => {
                 const newQuestions = questions.filter((item) => item.header !== question.header)
                 setQuestions(newQuestions)
-                show('success', 'Question deleted', 'Question deleted successfully')
+                showToast('success', 'Question deleted', 'Question deleted successfully')
             },
             reject: () => {
                 // Add your reject logic here
@@ -142,13 +134,11 @@ export const FormAssessment = ({ action }: Props) => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <Toast position="bottom-right" ref={toast} />
             <QuestionDialog
                 action={actionDialog}
                 selectedQuestion={selectedQuestion}
                 setQuestions={setQuestions}
                 setVisible={setVisible}
-                show={show}
                 visible={visible}
             />
             <ConfirmDialog />
