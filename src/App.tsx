@@ -26,10 +26,10 @@ import JobDetailView from './pages/employees/jobs/JobDetailView'
 
 /** Learn Pages */
 import { Learn } from './pages/learn/Learn'
+import { Assessment } from './pages/learn/assessment/Assessment'
 import { Modules } from './pages/learn/modules/Modules'
 import { UnitDetail } from './pages/learn/units/UnitDetail'
 import { Units } from './pages/learn/units/Units'
-import { Assessment } from './pages/learn/assessment/Assessment'
 
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
@@ -66,7 +66,7 @@ import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
-import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
+import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityInternalNotes'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
