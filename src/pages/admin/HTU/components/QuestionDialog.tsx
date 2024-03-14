@@ -7,6 +7,7 @@ import { Questions } from '../../../../interfaces/unit'
 import { RequestService } from '../../../../services/RequestService'
 import { useParams } from 'react-router-dom'
 import { useAdmin } from '../../../../contexts/AdminContext'
+import useStore from '../../../../store/useUtils'
 
 interface QuestionDialogProps {
     visible: boolean
@@ -14,7 +15,6 @@ interface QuestionDialogProps {
     setQuestions: (questions: Questions[]) => void
     selectedQuestion?: Questions
     action: 'create' | 'update'
-    show: (severity: "success" | "info" | "warn" | "error" | undefined, summary: string, detail: string) => void
 }
 
 interface IAnswer {
@@ -22,7 +22,8 @@ interface IAnswer {
     value: string
 }
 
-export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQuestion, action, show }: QuestionDialogProps) => {
+export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQuestion, action }: QuestionDialogProps) => {
+    const { showToast } = useStore();
     const { setUnit, setAssessment } = useAdmin()
     const [header, setHeader] = useState<string>(selectedQuestion?.header || '')
     const [options, setOptions] = useState<string[]>(selectedQuestion?.options || [])
@@ -65,7 +66,7 @@ export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQues
             setAssessment(response.assessments)
             setQuestions(response.assessments.questions)
             setUnit(response)
-            show('success', 'Question added', 'The question has been added successfully')
+            showToast('success', 'Question added', 'The question has been added successfully')
             setVisible(false)
             clearStates()
         } else {
@@ -74,12 +75,12 @@ export const QuestionDialog = ({ visible, setVisible, setQuestions, selectedQues
                 setAssessment(response.assessments)
                 setQuestions(response.assessments.questions)
                 setUnit(response)
-                show('success', 'Question updated', 'The question has been updated successfully')
+                showToast('success', 'Question updated', 'The question has been updated successfully')
                 setVisible(false)
                 clearStates()
             } else {
                 setAnswer({ code: 99, value: 'No select' })
-                show('error', 'Error', 'The answer must be one of the options')
+                showToast('error', 'Error', 'The answer must be one of the options')
             }
         }
 
