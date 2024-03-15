@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useContext, useState } from 'react'
 import { Category } from '../interfaces/category'
 import { Module } from '../interfaces/module'
-import { SelectedOptionInterface } from '../interfaces/Global'
+import { SelectedOptionInterface } from '../interfaces/global'
 import { Assessment, Unit } from '../interfaces/unit'
 
 interface AdminContextType {

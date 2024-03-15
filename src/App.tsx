@@ -6,7 +6,7 @@ import { AdminProvider } from './contexts/AdminContext'
 import { AuthProvider } from './contexts/AuthContext'
 
 /** Utilities Pages */
-import Layout from './components/layout/'
+import { Layout } from './components/layout/'
 
 /** Error Pages */
 import Error404 from './pages/Error404'
