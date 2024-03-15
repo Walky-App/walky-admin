@@ -2,11 +2,11 @@ import { Outlet } from 'react-router-dom'
 import { AppShell } from './AppShell'
 import { Toast } from 'primereact/toast'
 import { useEffect, useRef } from 'react';
-import useStore from '../../store/useUtils';
+import { useUtils } from '../../store/useUtils';
 
 export const Layout = () => {
   const toastRef = useRef<Toast>(null);
-  const { setToast } = useStore();
+  const { toastPosition, setToast } = useUtils();
 
   useEffect(() => {
     setToast(toastRef);
@@ -14,8 +14,7 @@ export const Layout = () => {
 
   return (
     <>
-
-      <Toast position="bottom-right" ref={toastRef} />
+      <Toast position={toastPosition} ref={toastRef} />
       <AppShell>
         <Outlet />
       </AppShell>

@@ -3,7 +3,7 @@ import { HeaderComponent } from "../../../components/shared/general/HeaderCompon
 import { useEffect } from "react"
 import { FormCategory } from "./components/FormCategory"
 import { useAdmin } from "../../../contexts/AdminContext"
-import { DisableButtonInterface } from '../../../interfaces/Global';
+import { DisableButtonInterface } from '../../../interfaces/global';
 
 
 

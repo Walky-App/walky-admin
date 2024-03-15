@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { Category } from '../../../interfaces/category'
 import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 import { Badge } from 'flowbite-react'
-import { FilterInterface } from '../../../interfaces/Global'
+import { FilterInterface } from '../../../interfaces/global'
 import { useAdmin } from '../../../contexts/AdminContext'
 import { Card } from 'primereact/card'
 

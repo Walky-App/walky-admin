@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { SelectedOption } from '../../../../components/shared/general/SelectedOption'
 import { states } from '../../../../utils/VariablesUtils'
 import { Chip } from '@nextui-org/chip'
-import { TagsInterface } from '../../../../interfaces/Global'
+import { TagsInterface } from '../../../../interfaces/global'
 
 interface Props {
   tags: TagsInterface[]

@@ -4,7 +4,7 @@ import { Category } from '../../interfaces/category'
 import { RequestService } from '../../services/RequestService'
 import { useSearchParams } from 'react-router-dom'
 import { HeaderComponent } from '../../components/shared/general/HeaderComponent'
-import { FilterInterface } from '../../interfaces/Global'
+import { FilterInterface } from '../../interfaces/global'
 
 export const Learn = () => {
   const [loading, setLoading] = useState<boolean>(true)

@@ -9,7 +9,7 @@ import { InputNumber } from "primereact/inputnumber"
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog"
 import { RequestService } from "../../../../services/RequestService"
 import { useAdmin } from "../../../../contexts/AdminContext"
-import useStore from "../../../../store/useUtils"
+import { useUtils } from "../../../../store/useUtils"
 
 
 
@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const FormAssessment = ({ action }: Props) => {
-    const { showToast } = useStore();
+    const { showToast } = useUtils();
     const { setUnit, assessment } = useAdmin()
     const [visible, setVisible] = useState(false)
     const [questions, setQuestions] = useState<Questions[]>(assessment?.questions || [])
@@ -46,12 +46,12 @@ export const FormAssessment = ({ action }: Props) => {
 
     const onSubmit = async (data: { time: number, min_score: number }) => {
         if (data.time === 0 || data.min_score === 0) {
-            showToast('error', 'Error', 'Please fill all the required fields')
+            showToast({ severity: 'error', detail: 'Error', summary: 'Please fill all the required fields' })
             return
         }
 
         if (questions.length === 0) {
-            showToast('error', 'Error', 'Please add at least one question')
+            showToast({ severity: 'error', detail: 'Error', summary: 'Please add at least one question' })
             return
         }
 
@@ -68,30 +68,30 @@ export const FormAssessment = ({ action }: Props) => {
             try {
                 const response = await RequestService(`units/assessment`, 'POST', bodyRequest)
                 if (response.message === 'Unit not found') {
-                    showToast('error', 'Error', 'Unit not found')
+                    showToast({ severity: 'error', detail: 'Error', summary: 'Unit not found' })
                     return
                 }
                 if (response) {
-                    showToast('success', 'Assessment created', 'Assessment created successfully')
+                    showToast({ severity: 'success', detail: 'Assessment created', summary: 'Assessment created successfully' })
                     setUnit(response)
                     navigate(`/admin/learn/modules/${params.moduleId}/units/${params.unitId}/assessment/${response.assessments?._id}`)
                 }
             } catch (error) {
-                showToast('error', 'Error', 'An error occurred')
+                showToast({ severity: 'error', detail: 'Error', summary: 'An error occurred' })
             }
         } else {
             try {
                 const response = await RequestService(`units/assessment`, 'PATCH', bodyRequest)
                 if (response.message === 'Unit not found') {
-                    showToast('error', 'Error', 'Unit not found')
+                    showToast({ severity: 'error', detail: 'Error', summary: 'Unit not found' })
                     return
                 }
                 if (response) {
-                    showToast('success', 'Assessment updated', 'Assessment updated successfully')
+                    showToast({ severity: 'success', detail: 'Assessment updated', summary: 'Assessment updated successfully' })
                     setUnit(response)
                 }
             } catch (error) {
-                showToast('error', 'Error', 'An error occurred')
+                showToast({ severity: 'error', detail: 'Error', summary: 'An error occurred' })
             }
         }
     }
@@ -124,7 +124,7 @@ export const FormAssessment = ({ action }: Props) => {
             accept: () => {
                 const newQuestions = questions.filter((item) => item.header !== question.header)
                 setQuestions(newQuestions)
-                showToast('success', 'Question deleted', 'Question deleted successfully')
+                showToast({ severity: 'success', detail: 'Question deleted', summary: 'Question deleted successfully' })
             },
             reject: () => {
                 // Add your reject logic here
@@ -219,7 +219,6 @@ export const FormAssessment = ({ action }: Props) => {
                                     );
                                 })
                             }
-
                         </div>
                     </div>
                 </div>
