@@ -1,4 +1,4 @@
-import { ITokenInfo } from '../interfaces/services.interfaces'
+import { ITokenInfo } from '../interfaces/services'
 
 export const GetTokenInfo = () => {
   const ls_data = JSON.parse(localStorage.getItem('ht_usr') as string)

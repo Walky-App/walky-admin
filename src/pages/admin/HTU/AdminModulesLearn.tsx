@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { SelectedOptionInterface } from '../../../interfaces/Global'
+import { SelectedOptionInterface } from '../../../interfaces/global'
 import { Module } from '../../../interfaces/module'
 import { RequestService } from '../../../services/RequestService'
 import GlobalTable from '../../../components/shared/GlobalTable'
