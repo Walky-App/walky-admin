@@ -3,57 +3,16 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { AutoComplete } from 'primereact/autocomplete'
+import { useDebouncedCallback } from 'use-debounce'
 
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility, type IAddressDetails, type IAddress } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-interface IAddressDetails {
-  address_components: {
-    long_name: string
-    short_name: string
-    types: string[]
-  }[]
-  formatted_address: string
-  geometry: {
-    location: {
-      lat: number
-      lng: number
-    }
-    viewport: {
-      northeast: {
-        lat: number
-        lng: number
-      }
-      southwest: {
-        lat: number
-        lng: number
-      }
-    }
-  }
-  name: string
-  place_id: string
-}
-
-interface IAddress {
-  description: string
-  id: string
-
-  matched_substrings: unknown[]
-  place_id: string
-  reference: string
-  structured_formatting: {
-    main_text: string
-    main_text_matched_substrings: unknown[]
-    secondary_text: string
-  }
-  terms: unknown[]
-  types: string[]
-  unformatted_address: string
-}
+const googleApiKey = process.env.REACT_APP_GOOGLE_API_KEY
 
 export const AdminFacilityDetails = () => {
   const { facilityId } = useParams()
@@ -93,7 +52,7 @@ export const AdminFacilityDetails = () => {
     getAddressDetails()
   }, [selectedAddresses])
 
-  const searchAddress = async (event: { query: string }) => {
+  const searchAddress = useDebouncedCallback(async (event: { query: string }) => {
     try {
       const response = await RequestService(`geo/autosuggest?input=${event.query}`)
       setPredictions(response)
@@ -101,7 +60,7 @@ export const AdminFacilityDetails = () => {
     } catch (error) {
       console.error('Error fetching address predictions:', error)
     }
-  }
+  }, 500)
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -153,6 +112,12 @@ export const AdminFacilityDetails = () => {
       return city?.long_name
     }
 
+    const getLatLong = () => {
+      const lat = addressForForm?.current?.geometry.location.lat
+      const lng = addressForForm?.current?.geometry.location.lng
+      return [lat, lng]
+    }
+
     const formValues = {
       tax_id: target.tax_id.value,
       corp_name: target.corp_name.value,
@@ -167,6 +132,7 @@ export const AdminFacilityDetails = () => {
       state: getState(),
       zip: getPostalCode(),
       company_dbas: companyDbas,
+      location_pin: getLatLong(),
       services,
     }
 
@@ -207,6 +173,18 @@ export const AdminFacilityDetails = () => {
                     alt="Missing Facility"
                   />
                 </div>
+              ) : null}
+
+              {facility.location_pin[0] && facility.location_pin[1] ? (
+                <iframe
+                  title="facility-map"
+                  width="95%"
+                  height="450"
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://www.google.com/maps/embed/v1/place?key=${googleApiKey}&q=${facility.location_pin[0]},${facility.location_pin[1]}`}
+                />
               ) : null}
             </div>
 

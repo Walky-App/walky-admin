@@ -1,3 +1,4 @@
+/* eslint-disable filename-rules/match */
 export interface IFacility {
     _id: string
     corp_name: string
@@ -34,3 +35,47 @@ export interface IFacility {
     account_info: string[]
     invoices: string[]
   }
+
+export interface IAddressDetails {
+  address_components: {
+    long_name: string
+    short_name: string
+    types: string[]
+  }[]
+  formatted_address: string
+  geometry: {
+    location: {
+      lat: number
+      lng: number
+    }
+    viewport: {
+      northeast: {
+        lat: number
+        lng: number
+      }
+      southwest: {
+        lat: number
+        lng: number
+      }
+    }
+  }
+  name: string
+  place_id: string
+}
+
+export interface IAddress {
+  description: string
+  id: string
+
+  matched_substrings: unknown[]
+  place_id: string
+  reference: string
+  structured_formatting: {
+    main_text: string
+    main_text_matched_substrings: unknown[]
+    secondary_text: string
+  }
+  terms: unknown[]
+  types: string[]
+  unformatted_address: string
+}
