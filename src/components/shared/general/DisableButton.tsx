@@ -1,5 +1,5 @@
 import { useAdmin } from '../../../contexts/AdminContext'
-import { DisableButtonInterface } from '../../../interfaces/Global'
+import { DisableButtonInterface } from '../../../interfaces/global'
 import { RequestService } from '../../../services/RequestService'
 import { useNavigate } from 'react-router-dom'
 

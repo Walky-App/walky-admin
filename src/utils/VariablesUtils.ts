@@ -1,4 +1,4 @@
-import { SelectedOptionInterface } from '../interfaces/Global'
+import { SelectedOptionInterface } from '../interfaces/global'
 
 interface CountriesSelectedOptionInterface extends SelectedOptionInterface {
   region: string

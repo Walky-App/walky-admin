@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavigationButtonInterface } from "../../../interfaces/Global";
+import { NavigationButtonInterface } from "../../../interfaces/global";
 import { useAdmin } from "../../../contexts/AdminContext";
 import { Section } from "../../../interfaces/unit";
 
