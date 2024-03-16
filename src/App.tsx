@@ -18,11 +18,11 @@ import ResetSuccess from './pages/auth/ResetSuccess'
 import Signup from './pages/auth/SignupForm'
 
 /** Employee Pages */
-import { EmployeeProfile } from './pages/employees/EmployeeProfile'
-import EmployeeDashboard from './pages/employees/dashboard'
-import EmployeeJobs from './pages/employees/jobs'
-import JobDetailView from './pages/employees/jobs/JobDetailView'
-import { EmployeeOnboarding } from './pages/employees/onboarding/EmployeeOnboardingPage'
+import { EmployeeProfile } from './pages/employee/EmployeeProfile'
+import EmployeeDashboard from './pages/employee/dashboard'
+import EmployeeJobs from './pages/employee/jobs'
+import JobDetailView from './pages/employee/jobs/JobDetailView'
+import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 
 /** Learn Pages */
 import { Learn } from './pages/learn/Learn'
