@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
-
-import { AutoComplete } from 'primereact/autocomplete'
-import { useDebouncedCallback } from 'use-debounce'
 
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility, type IAddressDetails, type IAddress } from '../../../interfaces/Facility'
+import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
@@ -18,49 +16,29 @@ export const AdminFacilityDetails = () => {
   const { facilityId } = useParams()
   const [facility, setFacility] = useState<IFacility>()
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
-  const [predictions, setPredictions] = useState<IAddress[]>([])
-  const [selectedAddresses, setSelectedAddresses] = useState(null)
-  const [filteredAddresses, setFilteredAddresses] = useState<IAddress[]>([])
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
+  const [currentAddress, setCurrentAddress] = useState<string>()
 
-  const addressForForm = useRef<IAddressDetails>()
+  const { zip, state, city, location_pin, address } = moreAddressDetails || {
+    zip: undefined,
+    state: undefined,
+    city: undefined,
+    location_pin: undefined,
+    address: undefined,
+  }
 
   useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
         setFacility(facilityFound)
+        setCurrentAddress(facilityFound?.address)
       } catch (error) {
         console.error('Error fetching facility data:', error)
       }
     }
     getFacility()
-  }, [facilityId])
-
-  useEffect(() => {
-    const getAddressId = (address: string) => {
-      const addressDetails = predictions.find((item: IAddress) => item.description === address)
-      return addressDetails?.place_id
-    }
-
-    const getAddressDetails = async () => {
-      if (selectedAddresses) {
-        const place_id = getAddressId(selectedAddresses)
-        const response = await RequestService(`geo/addressdetails?id=${place_id}`)
-        addressForForm.current = response
-      }
-    }
-    getAddressDetails()
-  }, [selectedAddresses])
-
-  const searchAddress = useDebouncedCallback(async (event: { query: string }) => {
-    try {
-      const response = await RequestService(`geo/autosuggest?input=${event.query}`)
-      setPredictions(response)
-      setFilteredAddresses(response.map((item: IAddress) => item.description))
-    } catch (error) {
-      console.error('Error fetching address predictions:', error)
-    }
-  }, 500)
+  }, [facilityId, updateSuccess])
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -91,33 +69,6 @@ export const AdminFacilityDetails = () => {
       .map(dba => dba.trim())
       .filter(dba => dba)
 
-    const getPostalCode = () => {
-      const postalCode = addressForForm?.current?.address_components.find((item: { types: string[] }) =>
-        item.types.includes('postal_code'),
-      )
-      return postalCode?.long_name
-    }
-
-    const getState = () => {
-      const state = addressForForm?.current?.address_components.find((item: { types: string[] }) =>
-        item.types.includes('administrative_area_level_1'),
-      )
-      return state?.short_name
-    }
-
-    const getCity = () => {
-      const city = addressForForm?.current?.address_components.find((item: { types: string[] }) =>
-        item.types.includes('locality'),
-      )
-      return city?.long_name
-    }
-
-    const getLatLong = () => {
-      const lat = addressForForm?.current?.geometry.location.lat
-      const lng = addressForForm?.current?.geometry.location.lng
-      return [lat, lng]
-    }
-
     const formValues = {
       tax_id: target.tax_id.value,
       corp_name: target.corp_name.value,
@@ -127,13 +78,13 @@ export const AdminFacilityDetails = () => {
       phone_number: target.phone_number.value,
       sqft: target.sqft.value,
       notes: target.notes.value,
-      address: addressForForm?.current?.name,
-      city: getCity(),
-      state: getState(),
-      zip: getPostalCode(),
+      address: address,
+      city: city,
+      state: state,
+      zip: zip,
       company_dbas: companyDbas,
-      location_pin: getLatLong(),
-      services,
+      location_pin: location_pin,
+      services: services,
     }
 
     try {
@@ -480,14 +431,9 @@ export const AdminFacilityDetails = () => {
                 </label>
                 <div className="mt-2">
                   <span className="p-fluid">
-                    <AutoComplete
-                      name="address"
-                      placeholder={facility.address}
-                      value={selectedAddresses}
-                      suggestions={filteredAddresses}
-                      completeMethod={searchAddress}
-                      onChange={e => setSelectedAddresses(e.value)}
-                      forceSelection
+                    <AddressAutoComplete
+                      setMoreAddressDetails={setMoreAddressDetails}
+                      currentAddress={currentAddress || ''}
                     />
                   </span>
                 </div>
