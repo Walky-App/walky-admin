@@ -1,4 +1,4 @@
-import { LoginData } from '../interfaces/Global'
+import { LoginData } from '../interfaces/global'
 import { RequestService } from './RequestService'
 
 export const LoginService = async (body: LoginData) => {

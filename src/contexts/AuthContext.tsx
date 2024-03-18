@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 import { IUser } from '../interfaces/User'
-import { ITokenInfo } from '../interfaces/services.interfaces'
+import { ITokenInfo } from '../interfaces/services'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -17,9 +17,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: undefined,
-  setUser: () => {},
+  setUser: () => { },
   profilePath: '',
-  setProfilePath: () => {},
+  setProfilePath: () => { },
 })
 
 const AuthProvider = ({ children }: any) => {
