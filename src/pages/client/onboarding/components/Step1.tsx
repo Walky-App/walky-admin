@@ -314,6 +314,8 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       value={field.value}
                       options={services}
                       display="chip"
+                      selectAll
+                      selectAllLabel="Select All"
                       onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
                       placeholder="Select Services"
                       className={classNames({ 'p-invalid': fieldState.invalid })}
