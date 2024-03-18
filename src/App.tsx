@@ -87,8 +87,9 @@ import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
 import AdminJobs from './pages/admin/jobs'
-import AdminAddJob from './pages/admin/jobs/AdminAddJob'
-import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
+
+// import AdminAddJob from './pages/admin/jobs/AdminAddJob'
+// import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
