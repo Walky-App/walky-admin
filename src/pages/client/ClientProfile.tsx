@@ -1,60 +1,128 @@
-import { useEffect, useState , useMemo} from 'react'
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import { useEffect, useState, useMemo, useRef, use } from 'react'
+
+import { Controller, FieldErrors, SubmitHandler, useForm } from 'react-hook-form'
+
+import { Button } from 'primereact/button'
+import { Calendar } from 'primereact/calendar'
+import { Checkbox } from 'primereact/checkbox'
+import { Dropdown } from 'primereact/dropdown'
+import { InputMask } from 'primereact/inputmask'
+import { InputText } from 'primereact/inputtext'
+import { Toast } from 'primereact/toast'
+import { classNames } from 'primereact/utils'
+
+import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
+import { useAuth } from '../../contexts/AuthContext'
 import { RequestService } from '../../services/RequestService'
 import { GetTokenInfo } from '../../utils/TokenUtils'
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
+import { tooltipOptions } from './onboarding/ClientOnboardingPage'
+
+interface IUserFormValues {
+  first_name?: string
+  middle_name?: string
+  last_name?: string
+  email?: string
+  gender?: string
+  birth_date?: Date
+  phone_number?: string
+  address?: string
+  city?: string
+  state?: string
+  zip?: string
+  notifications?: string[]
+}
 
 export default function ClientProfile() {
-  const [formUser, setFormUser] = useState<any>({})
-  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
+  const [formUser, setFormUser] = useState<IUserFormValues>({
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    email: '',
+    gender: '',
+    birth_date: new Date(),
+    phone_number: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: '',
+    notifications: [],
+  })
 
-  useMemo(() => {
-    const { _id } = GetTokenInfo()
+  const { user } = useAuth()
+  const toast = useRef<Toast>(null)
 
+  const defaultValues = {
+    first_name: formUser?.first_name,
+    middle_name: formUser?.middle_name,
+    last_name: formUser?.last_name,
+    email: formUser?.email,
+    gender: formUser?.gender,
+    birth_date: formUser?.birth_date,
+    phone_number: formUser?.phone_number,
+    address: formUser?.address,
+    city: formUser?.city,
+    state: formUser?.state,
+    zip: formUser?.zip,
+    notifications: formUser?.notifications,
+  }
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm({ defaultValues })
+
+  useEffect(() => {
+    if (!user) return
     const getUser = async () => {
-      const userFound = await RequestService(`users/${_id}`)
+      const userFound = await RequestService(`users/${user?._id}`)
       setFormUser(userFound)
+      reset(userFound)
     }
     getUser()
-  }, [])
+  }, [user, reset])
 
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  function getFormErrorMessage(path: string, errors: FieldErrors) {
+    const pathParts = path.split('.')
+    let error: FieldErrors = errors
 
-    const target = e.target as any
-
-    const formData = {
-      first_name: target.first_name.value,
-      last_name: target.last_name.value,
-      email: target.email.value,
-      gender: target.gender.value,
-      birth_date: target.birth_date.value,
-      phone_number: target.phone_number.value,
-      address: target.address.value,
-      city: target.city.value,
-      state: target.state.value,
-      zip: target.zip.value,
-      notifications: [
-        target.notification_email?.checked ? target.notification_email.name : '',
-        target.notification_sms?.checked ? target.notification_sms.name : '',
-      ],
+    for (const part of pathParts) {
+      if (typeof error !== 'object' || error === null) {
+        return null
+      }
+      error = error[part as keyof typeof error] as FieldErrors
     }
 
+    if (error?.message) {
+      return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
+    }
+
+    return null
+  }
+
+  const onSubmit: SubmitHandler<IUserFormValues> = async data => {
     try {
-      const response = await RequestService(`users/${formUser._id}`, 'PATCH', formData)
-      if (response && response._id) {
+      const response = await RequestService(`users/${user?._id}`, 'PATCH', data)
+      if (response._id) {
         setFormUser(response)
-        setUpdateSuccess(true)
-        setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
-      } else {
-        throw new Error('Failed to update user')
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'User information updated successfully',
+          life: 3000,
+        })
       }
     } catch (error) {
       console.error('Error updating user:', error)
-      setUpdateSuccess(false)
     }
   }
+
+  const genderOptions = [
+    { title: 'Male', value: 'Male' },
+    { title: 'Female', value: 'Female' },
+    { title: 'Other', value: 'Other' },
+  ]
 
   return (
     <>
@@ -62,8 +130,8 @@ export default function ClientProfile() {
         <h3 className="text-base font-semibold leading-6 text-gray-900">Your Profile Details</h3>
       </div>
 
-      {formUser.role && (
-        <form onSubmit={handleUpdate}>
+      {user?.role ? (
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-12">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
@@ -72,11 +140,11 @@ export default function ClientProfile() {
                   This information will be displayed publicly so be careful what you share.
                 </p>
               </div>
-
-              <div className="">
-                <UploadAvatar formUser={formUser} setFormUser={setFormUser} />
+              <div>
+                <UploadAvatar formUser={user} setFormUser={setFormUser} />
               </div>
             </div>
+
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
@@ -85,110 +153,189 @@ export default function ClientProfile() {
                 </p>
               </div>
 
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                {/* First Name */}
                 <div className="sm:col-span-3">
                   <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
                     First name
                   </label>
                   <div className="mt-2">
-                    <input
-                      value={formUser.first_name}
-                      type="text"
-                      disabled
+                    <Controller
                       name="first_name"
-                      id="first_name"
-                      autoComplete="given-name"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'First name is required' }}
+                      render={({ field, fieldState }) => (
+                        <InputText
+                          disabled
+                          id={field.name}
+                          value={field.value}
+                          name="first_name"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      )}
                     />
                   </div>
+                  {getFormErrorMessage('first_name', errors)}
                 </div>
 
+                {/* Last Name */}
                 <div className="sm:col-span-3">
                   <label htmlFor="last_name" className="block text-sm font-medium leading-6 text-gray-900">
                     Last name
                   </label>
                   <div className="mt-2">
-                    <input
-                      value={formUser.last_name}
-                      type="text"
-                      disabled
+                    <Controller
                       name="last_name"
-                      id="last_name"
-                      autoComplete="family-name"
-                      className="block  w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'Last name is required' }}
+                      render={({ field, fieldState }) => (
+                        <InputText
+                          disabled
+                          value={field.value}
+                          name="last_name"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      )}
                     />
                   </div>
+                  {getFormErrorMessage('last_name', errors)}
                 </div>
 
-                <div className="sm:col-span-4">
-                  <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                    Email address
+                {/* Middle Name */}
+                <div className="sm:col-span-3">
+                  <label htmlFor="middle_name" className="block text-sm font-medium leading-6 text-gray-900">
+                    Middle Name
                   </label>
                   <div className="mt-2">
-                    <input
-                      disabled
-                      value={formUser.email}
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      className="block w-full rounded-md border-0 bg-slate-100 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                    <Controller
+                      name="middle_name"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <InputText
+                          disabled
+                          id={field.name}
+                          value={field.value}
+                          name="middle_name"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      )}
                     />
                   </div>
+                  {getFormErrorMessage('middle_name', errors)}
                 </div>
 
-                <div className="sm:col-span-2 sm:col-start-1">
-                  <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
-                    Birthday
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="date"
-                      defaultValue={
-                        formUser.birth_date ? new Date(formUser.birth_date).toISOString().split('T')[0] : ''
-                      }
-                      name="birth_date"
-                      id="birth_date"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
+                {/* Gender */}
+                <div className="sm:col-span-3">
                   <label htmlFor="gender" className="block text-sm font-medium leading-6 text-gray-900">
                     Gender
                   </label>
                   <div className="mt-2">
-                    <select
-                      defaultValue={formUser.gender}
+                    <Controller
                       name="gender"
-                      id="gender"
-                      autoComplete="gender"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
+                      control={control}
+                      rules={{ required: 'Gender is required.' }}
+                      render={({ field, fieldState }) => (
+                        <div>
+                          <Dropdown
+                            id={field.name}
+                            value={field.value}
+                            optionLabel="title"
+                            options={genderOptions}
+                            focusInputRef={field.ref}
+                            onChange={e => field.onChange(e.value)}
+                            className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          />
+                        </div>
+                      )}
+                    />
                   </div>
+                  {getFormErrorMessage('gender', errors)}
                 </div>
 
-                <div className="sm:col-span-2">
+                {/* Email */}
+                <div className="sm:col-span-3">
+                  <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                    Email address
+                  </label>
+                  <div className="mt-2">
+                    <Controller
+                      name="email"
+                      control={control}
+                      rules={{ required: 'Email is required' }}
+                      render={({ field, fieldState }) => (
+                        <InputText
+                          disabled
+                          value={field.value}
+                          name="email"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      )}
+                    />
+                  </div>
+                  {getFormErrorMessage('email', errors)}
+                </div>
+
+                {/* Phone Number */}
+                <div className="sm:col-span-3">
                   <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
                     Phone number
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.phone_number}
-                      type="tel"
+                    <Controller
+                      control={control}
                       name="phone_number"
-                      id="phone_number"
-                      autoComplete="phone_number"
-                      pattern="\d{10}"
-                      placeholder="10-digit phone-number"
-                      title="Enter a valid US phone number (e.g. 9876543210)"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      rules={{
+                        required: 'Mobile Number is required',
+                        pattern: {
+                          value: /^\(\d{3}\) \d{3}-\d{4}$/,
+                          message: 'Invalid Mobile Number. E.g. (123) 456-7890',
+                        },
+                      }}
+                      render={({ field, fieldState }) => (
+                        <InputMask
+                          id={field.name}
+                          {...field}
+                          mask="(999) 999-9999"
+                          slotChar="x"
+                          tooltip="E.g. (281) 330-8004"
+                          tooltipOptions={tooltipOptions}
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                        />
+                      )}
                     />
                   </div>
+                </div>
+
+                {/* Birthday */}
+                {getFormErrorMessage('phone_number', errors)}
+                <div className="sm:col-span-6 sm:col-start-1">
+                  <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
+                    Birthday
+                  </label>
+                  <div className="mt-2">
+                    <Controller
+                      name="birth_date"
+                      control={control}
+                      rules={{ required: 'Birth date is required' }}
+                      render={({ field, fieldState }) => (
+                        <div>
+                          <Calendar
+                            inputId={field.name}
+                            value={field.value ? new Date(field.value) : undefined}
+                            onChange={field.onChange}
+                            dateFormat="mm/dd/yy"
+                            className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                            showIcon
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
+                  {getFormErrorMessage('birth_date', errors)}
                 </div>
               </div>
             </div>
@@ -207,15 +354,22 @@ export default function ClientProfile() {
                     Street address
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.address}
-                      type="text"
+                    <Controller
                       name="address"
-                      id="address"
-                      autoComplete="address"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'Address is required' }}
+                      render={({ field, fieldState }) => (
+                        <InputText
+                          id={field.name}
+                          value={field.value}
+                          name="address"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      )}
                     />
                   </div>
+                  {getFormErrorMessage('address', errors)}
                 </div>
 
                 <div className="sm:col-span-2 sm:col-start-1">
@@ -223,15 +377,22 @@ export default function ClientProfile() {
                     City
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.city}
-                      type="text"
+                    <Controller
                       name="city"
-                      id="city"
-                      autoComplete="city"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'City is required' }}
+                      render={({ field, fieldState }) => (
+                        <InputText
+                          id={field.name}
+                          value={field.value}
+                          name="city"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      )}
                     />
                   </div>
+                  {getFormErrorMessage('city', errors)}
                 </div>
 
                 <div className="sm:col-span-2">
@@ -239,15 +400,22 @@ export default function ClientProfile() {
                     State / Province
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.state}
-                      type="text"
+                    <Controller
                       name="state"
-                      id="state"
-                      autoComplete="state"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{ required: 'State is required' }}
+                      render={({ field, fieldState }) => (
+                        <InputText
+                          id={field.name}
+                          value={field.value}
+                          name="state"
+                          className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          onChange={e => field.onChange(e.target.value)}
+                        />
+                      )}
                     />
                   </div>
+                  {getFormErrorMessage('state', errors)}
                 </div>
 
                 <div className="sm:col-span-2">
@@ -255,13 +423,30 @@ export default function ClientProfile() {
                     ZIP / Postal code
                   </label>
                   <div className="mt-2">
-                    <input
-                      defaultValue={formUser.zip}
-                      type="text"
+                    <Controller
                       name="zip"
-                      id="zip"
-                      autoComplete="zip"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                      control={control}
+                      rules={{
+                        required: 'ZIP is required',
+                        pattern: {
+                          value: /^\d{5}$/,
+                          message: 'ZIP should be exactly 5 digits',
+                        },
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <InputMask
+                            id={field.name}
+                            {...field}
+                            mask="99999"
+                            slotChar="x"
+                            tooltip="E.g. 33065"
+                            tooltipOptions={tooltipOptions}
+                            className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                          />
+                          {fieldState.error ? <p className="error">{fieldState.error.message}</p> : null}
+                        </>
+                      )}
                     />
                   </div>
                 </div>
@@ -282,12 +467,23 @@ export default function ClientProfile() {
                   <div className="mt-6 space-y-6">
                     <div className="relative flex gap-x-3">
                       <div className="flex h-6 items-center">
-                        <input
-                          defaultChecked={formUser.notifications?.includes('notification_email')}
-                          id="notification_email"
-                          name="notification_email"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                        <Controller
+                          name="notifications"
+                          control={control}
+                          render={({ field }) => (
+                            <Checkbox
+                              inputId="notification_email"
+                              checked={field.value?.includes('notification_email') || false}
+                              onChange={e => {
+                                const value = field.value || [] // Initialize as empty array if undefined
+                                if (e.checked) {
+                                  field.onChange([...value, 'notification_email']) // Use spread operator to add new value
+                                } else {
+                                  field.onChange(value.filter((item: string) => item !== 'notification_email'))
+                                }
+                              }}
+                            />
+                          )}
                         />
                       </div>
                       <div className="text-sm leading-6">
@@ -299,12 +495,23 @@ export default function ClientProfile() {
                     </div>
                     <div className="relative flex gap-x-3">
                       <div className="flex h-6 items-center">
-                        <input
-                          defaultChecked={formUser.notifications?.includes('notification_sms')}
-                          id="notification_sms"
-                          name="notification_sms"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                        <Controller
+                          name="notifications"
+                          control={control}
+                          render={({ field }) => (
+                            <Checkbox
+                              inputId="notification_sms"
+                              checked={field.value?.includes('notification_sms') || false}
+                              onChange={e => {
+                                const value = field.value || [] // Initialize as empty array if undefined
+                                if (e.checked) {
+                                  field.onChange([...value, 'notification_sms']) // Use spread operator to add new value
+                                } else {
+                                  field.onChange(value.filter((item: string) => item !== 'notification_sms'))
+                                }
+                              }}
+                            />
+                          )}
                         />
                       </div>
                       <div className="text-sm leading-6">
@@ -319,31 +526,12 @@ export default function ClientProfile() {
               </div>
             </div>
           </div>
-
+          <Toast ref={toast} />
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            {updateSuccess && (
-              <div className="rounded-md bg-green-50 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-green-800">Profile updated successfully</p>
-                  </div>
-                  <div className="ml-auto pl-3">
-                    <div className="-mx-1.5 -my-1.5"></div>
-                  </div>
-                </div>
-              </div>
-            )}
-            <button
-              type="submit"
-              className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-              Update
-            </button>
+            <Button type="submit" label="Submit" />
           </div>
         </form>
-      )}
+      ) : null}
     </>
   )
 }
