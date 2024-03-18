@@ -1,5 +1,5 @@
 import { PlusIcon } from '@heroicons/react/20/solid'
-import { NavigationButtonInterface } from '../../../interfaces/Global'
+import { NavigationButtonInterface } from '../../../interfaces/global'
 import { useNavigate } from 'react-router-dom'
 
 export const NavigationButton = ({ to, text, disbalePlusIcon = false }: NavigationButtonInterface) => {

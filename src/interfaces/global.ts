@@ -1,3 +1,5 @@
+import type { ToastProps } from 'primereact/toast'
+
 export interface Documents {
   __v?: number
   _id: string
@@ -35,4 +37,11 @@ export interface TagsInterface {
 export interface FilterInterface {
   search: string
   selected: string
+}
+
+export interface IToastParameters {
+  severity: 'success' | 'info' | 'warn' | 'error'
+  summary: string
+  detail: string
+  position?: ToastProps['position']
 }
