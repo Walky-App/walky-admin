@@ -55,6 +55,10 @@ export default tseslint.config(
       'prettier/prettier': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       '@typescript-eslint/ban-ts-comment': 'warn',
+      '@typescript-eslint/strict-boolean-expressions': [
+        'warn',
+        { allowString: true, allowNumber: true, allowNullableObject: true },
+      ],
       'react/jsx-uses-react': 'error',
       'react/prefer-stateless-function': 'error',
       'react/button-has-type': 'error',
