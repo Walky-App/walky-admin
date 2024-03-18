@@ -474,9 +474,9 @@ export default function ClientProfile() {
                               inputId="notification_email"
                               checked={field.value?.includes('notification_email') || false}
                               onChange={e => {
-                                const value = field.value || [] // Initialize as empty array if undefined
+                                const value = field.value || [] 
                                 if (e.checked) {
-                                  field.onChange([...value, 'notification_email']) // Use spread operator to add new value
+                                  field.onChange([...value, 'notification_email']) 
                                 } else {
                                   field.onChange(value.filter((item: string) => item !== 'notification_email'))
                                 }
@@ -502,9 +502,9 @@ export default function ClientProfile() {
                               inputId="notification_sms"
                               checked={field.value?.includes('notification_sms') || false}
                               onChange={e => {
-                                const value = field.value || [] // Initialize as empty array if undefined
+                                const value = field.value || []
                                 if (e.checked) {
-                                  field.onChange([...value, 'notification_sms']) // Use spread operator to add new value
+                                  field.onChange([...value, 'notification_sms'])
                                 } else {
                                   field.onChange(value.filter((item: string) => item !== 'notification_sms'))
                                 }
