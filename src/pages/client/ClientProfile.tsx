@@ -14,7 +14,6 @@ import { classNames } from 'primereact/utils'
 import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { RequestService } from '../../services/RequestService'
-import { GetTokenInfo } from '../../utils/TokenUtils'
 import { tooltipOptions } from './onboarding/ClientOnboardingPage'
 
 interface IUserFormValues {
