@@ -15,6 +15,7 @@ import { classNames } from 'primereact/utils'
 import { type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
+import { countries, services, states } from '../../../../utils/formOptions'
 import {
   FormDataContext,
   type IFacilityFormInputs,
@@ -22,7 +23,6 @@ import {
   getFormErrorMessage,
   tooltipOptions,
 } from '../ClientOnboardingPage'
-import { countries, services, states } from '../formOptions'
 
 export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)

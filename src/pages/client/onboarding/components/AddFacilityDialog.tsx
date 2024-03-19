@@ -16,8 +16,8 @@ import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
+import { countries, services, states } from '../../../../utils/formOptions'
 import { FormDataContext, type IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '../ClientOnboardingPage'
-import { countries, services, states } from '../formOptions'
 
 interface AddFacilityDialogProps {
   visible: boolean
