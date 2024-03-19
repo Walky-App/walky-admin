@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import {
@@ -9,8 +9,10 @@ import {
 } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
-import { Toast, type ToastMessage } from 'primereact/toast'
+import { type ToastMessage } from 'primereact/toast'
 
+import { type IToastData } from '../../../../interfaces/global'
+import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
 
@@ -19,28 +21,40 @@ export const Step2 = ({ step, setStep }: StepProps) => {
   const { facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 
   const facilityId = facilitiesArray[0]?._id
-  const toast = useRef<Toast>(null)
   const fileUploadRef = useRef<FileUpload>(null)
 
-  const showSavedToast = () => {
+  const { setRemoveToastCallback, showToast } = useUtils()
+
+  const handleRemoveToast = useCallback(
+    (toastData: ToastMessage | IToastData) => {
+      let severity
+      if ('message' in toastData) {
+        severity = toastData.message.severity
+      } else {
+        severity = toastData.severity
+      }
+
+      if (severity === 'success') {
+        setIsLoading(false)
+        setStep(step + 1)
+      }
+    },
+    [setStep, step],
+  )
+
+  useEffect(() => {
+    setRemoveToastCallback(handleRemoveToast)
+  }, [handleRemoveToast, setRemoveToastCallback])
+
+  const handleSaveButton = () => {
     setIsLoading(true)
-    toast.current?.show({
+
+    showToast({
       severity: 'success',
       summary: 'Success',
       detail: 'Changes saved successfully.',
       life: 2000,
     })
-  }
-
-  const onRemoveToast = (toastData: ToastMessage) => {
-    // @ts-expect-error toastRef.current may be null
-    const severity = toastData.message ? toastData.message.severity : toastData.severity
-
-    if (severity === 'success') {
-      setStep(step + 1)
-    }
-
-    setIsLoading(false)
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -51,12 +65,14 @@ export const Step2 = ({ step, setStep }: StepProps) => {
   const handleUploadSuccess = (event: FileUploadUploadEvent) => {
     if (event.xhr.status === 200) {
       const data: IFacilityFormInputs = JSON.parse(event.xhr.response)
-      toast.current?.show({
+
+      showToast({
         severity: 'info',
         summary: 'File Uploaded',
         detail: `${event.files[0].name} has been uploaded successfully.`,
         life: 2000,
       })
+
       setFacilitiesArray(prevState =>
         prevState.map((facility, index) => {
           if (index !== 0) {
@@ -75,7 +91,8 @@ export const Step2 = ({ step, setStep }: StepProps) => {
 
   const handleUploadError = (event: FileUploadErrorEvent) => {
     console.error('Error uploading file:', event.files[0].name)
-    toast.current?.show({
+
+    showToast({
       severity: 'error',
       summary: 'Error',
       detail: `Error uploading ${event.files[0].name}`,
@@ -84,8 +101,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
   }
 
   return (
-    <div>
-      <Toast ref={toast} onRemove={e => onRemoveToast(e)} />
+    <>
       <div className="space-y-12">
         {/* Business License Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -215,10 +231,10 @@ export const Step2 = ({ step, setStep }: StepProps) => {
         />
         <Button
           label={facilitiesArray[0]?.licenses.length || facilitiesArray[0]?.images.length ? 'Save' : 'Skip for now'}
-          onClick={showSavedToast}
+          onClick={handleSaveButton}
           loading={isLoading}
         />
       </div>
-    </div>
+    </>
   )
 }
