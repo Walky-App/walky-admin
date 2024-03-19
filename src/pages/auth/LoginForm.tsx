@@ -32,6 +32,7 @@ export default function LoginForm() {
     }
 
     const data: any = await LoginService(body)
+    console.log('data: ', data);
 
     try {
       if (!data) {
