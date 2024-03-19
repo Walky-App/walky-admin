@@ -1,20 +1,23 @@
+import { useEffect, useRef } from 'react'
+
 import { Outlet } from 'react-router-dom'
-import { AppShell } from './AppShell'
+
 import { Toast } from 'primereact/toast'
-import { useEffect, useRef } from 'react';
-import { useUtils } from '../../store/useUtils';
+
+import { useUtils } from '../../store/useUtils'
+import { AppShell } from './AppShell'
 
 export const Layout = () => {
-  const toastRef = useRef<Toast>(null);
-  const { toastPosition, setToast } = useUtils();
+  const toastRef = useRef<Toast>(null)
+  const { toastPosition, setToast, onRemoveToast } = useUtils()
 
   useEffect(() => {
-    setToast(toastRef);
-  }, []);
+    setToast(toastRef)
+  }, [setToast])
 
   return (
     <>
-      <Toast position={toastPosition} ref={toastRef} />
+      <Toast ref={toastRef} position={toastPosition} onRemove={e => onRemoveToast(e)} />
       <AppShell>
         <Outlet />
       </AppShell>
