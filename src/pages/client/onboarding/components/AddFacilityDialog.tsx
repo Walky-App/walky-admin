@@ -12,22 +12,23 @@ import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
 import { Panel } from 'primereact/panel'
-import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../../services/RequestService'
+import { useUtils } from '../../../../store/useUtils'
+import { countries, services, states } from '../../../../utils/formOptions'
 import { FormDataContext, type IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '../ClientOnboardingPage'
-import { countries, services, states } from '../formOptions'
 
 interface AddFacilityDialogProps {
   visible: boolean
   setVisible: (visible: boolean) => void
-  toastRef: React.RefObject<ToastMessage>
   values: IFacilityFormInputs
 }
 
-export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: AddFacilityDialogProps) => {
+export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDialogProps) => {
   const { facilitiesArray, setFacilitiesArray, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
+
+  const { showToast } = useUtils()
 
   const { corp_name, tax_id } = facilitiesArray[0]
 
@@ -64,12 +65,12 @@ export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: Add
         const response = await RequestService(`facilities/${selectedFacility?._id}`, 'PATCH', updatedFacility)
 
         if (response?._id) {
-          // @ts-expect-error toastRef.current may be null
-          toastRef.current?.show({
+          showToast({
             severity: 'info',
             summary: 'Changes saved for:',
             detail: getValues('name'),
           })
+
           setFacilitiesArray(prevArray =>
             prevArray.map(facility => (facility._id === response._id ? response : facility)),
           )
@@ -89,13 +90,8 @@ export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: Add
         const response = await RequestService(`facilities`, 'POST', newFacilityData)
 
         if (response?._id) {
-          console.log('post response: ', response)
-          // @ts-expect-error toastRef.current may be null
-          toastRef.current?.show({
-            severity: 'info',
-            summary: 'Facility Added',
-            detail: getValues('name'),
-          })
+          showToast({ severity: 'info', summary: 'Facility Added', detail: getValues('name') })
+
           setFacilitiesArray(prevState => [...prevState, response])
         } else {
           throw new Error('Failed to add facility')
@@ -119,11 +115,10 @@ export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: Add
 
   return (
     <Dialog
-      header="Add Facility Information"
+      header={selectedFacility?._id ?? '' ? 'Edit Facility Information' : 'Add Facility Information'}
       visible={visible}
       draggable={false}
       blockScroll
-      // style={{ width: '50vw' }}
       breakpoints={{ '960px': '75vw', '641px': '100vw' }}
       onHide={() => setVisible(false)}
       footer={footerContent}>
@@ -229,6 +224,8 @@ export const AddFacilityDialog = ({ visible, setVisible, toastRef, values }: Add
                     value={field.value}
                     options={services}
                     display="chip"
+                    selectAll
+                    selectAllLabel="Select All"
                     onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
                     placeholder="Select Services"
                     className={classNames({ 'p-invalid': fieldState.invalid }, 'w-full')}
