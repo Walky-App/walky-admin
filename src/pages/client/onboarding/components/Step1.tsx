@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
@@ -9,10 +9,12 @@ import { InputNumber } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
-import { Toast, type ToastMessage } from 'primereact/toast'
+import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
+import { type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
+import { useUtils } from '../../../../store/useUtils'
 import {
   FormDataContext,
   type IFacilityFormInputs,
@@ -24,22 +26,33 @@ import { countries, services, states } from '../formOptions'
 
 export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
+
   const { setFormData, defaultValues, formData, facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 
-  const toast = useRef(null)
+  const { setRemoveToastCallback, showToast } = useUtils()
 
-  const onRemoveToast = (toastData: ToastMessage) => {
-    // @ts-expect-error toastRef.current may be null
-    const severity = toastData.message ? toastData.message.severity : toastData.severity
+  const handleRemoveToast = useCallback(
+    (toastData: ToastMessage | IToastData) => {
+      let severity
+      if ('message' in toastData) {
+        severity = toastData.message.severity
+      } else {
+        severity = toastData.severity
+      }
 
-    if (severity === 'success') {
-      setStep(step + 1)
-    }
+      if (severity === 'success') {
+        setIsLoading(false)
+        setStep(step + 1)
+      }
+    },
+    [setStep, step],
+  )
 
-    setIsLoading(false)
-  }
+  useEffect(() => {
+    setRemoveToastCallback(handleRemoveToast)
+  }, [handleRemoveToast, setRemoveToastCallback])
 
-  const values = formData || defaultValues
+  const values = formData !== null ? formData : defaultValues
 
   const {
     control,
@@ -59,12 +72,12 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
     let facilityId = facilitiesArray[0]?._id
 
-    if (facilityId) {
+    if (facilityId != null) {
       // Existing facility, PATCH operation
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
 
-        if (facilityFound) {
+        if (facilityFound !== null) {
           const updatedFacility = {
             ...facilityFound,
             ...data,
@@ -74,11 +87,10 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
           const response = await RequestService(`facilities/${facilityId}`, 'PATCH', updatedFacility)
 
-          if (response?._id) {
+          if (response?._id !== null) {
             facilityId = response._id
 
-            // @ts-expect-error toastRef.current may be null
-            toast.current?.show({
+            showToast({
               severity: 'success',
               summary: 'Changes saved for:',
               detail: getValues('name'),
@@ -95,8 +107,8 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         }
       } catch (error) {
         console.error('Error updating facility:', error)
-        // @ts-expect-error toastRef.current may be null
-        toast.current?.show({
+
+        showToast({
           severity: 'error',
           summary: 'Error saving changes',
           detail: `${getValues('name')} could not be updated.`,
@@ -107,24 +119,24 @@ export const Step1 = ({ step, setStep }: StepProps) => {
       try {
         const response = await RequestService(`facilities`, 'POST', data)
 
-        if (response?._id) {
+        if (response?._id !== null) {
           facilityId = response._id
 
-          // @ts-expect-error toastRef.current may be null
-          toast.current?.show({
+          showToast({
             severity: 'success',
             summary: 'Success',
             detail: `${getValues('name')} created successfully.`,
             life: 2000,
           })
+
           setFacilitiesArray([response])
         } else {
           throw new Error('Failed to add facility')
         }
       } catch (error) {
         console.error('Error adding facility:', error)
-        // @ts-expect-error toastRef.current may be null
-        toast.current?.show({
+
+        showToast({
           severity: 'error',
           summary: 'Error adding facility',
           detail: `${getValues('name')} already exists.`,
@@ -135,7 +147,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <Toast ref={toast} onRemove={e => onRemoveToast(e)} />
       <div className="space-y-12">
         {/* Business Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">

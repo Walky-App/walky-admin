@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import { InputTextarea } from 'primereact/inputtextarea'
-import { Toast } from 'primereact/toast'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
+import { useUtils } from '../../../../store/useUtils'
 import { type StepProps } from '../ClientOnboardingPage'
 import { FinishOnboardingDialog } from './FinishOnboardingDialog'
 
@@ -19,12 +19,21 @@ export const Step5 = ({ step, setStep }: StepProps) => {
     'https://app.getaccept.com/v/46ygvhewmmgm/8gkzzyzbrmjdd5/a/9bc9875eacee8b30a1b8c1eb2d6a268a',
   )
 
-  const toast = useRef(null)
+  const { setRemoveToastCallback, showToast } = useUtils()
 
-  const showSavedToast = () => {
+  const handleRemoveToast = useCallback(() => {
+    setIsLoading(false)
+    setVisible(true)
+  }, [setIsLoading, setVisible])
+
+  useEffect(() => {
+    setRemoveToastCallback(handleRemoveToast)
+  }, [handleRemoveToast, setRemoveToastCallback])
+
+  const handleSaveButton = () => {
     setIsLoading(true)
-    // @ts-expect-error toast.current may be null
-    toast.current?.show({
+
+    showToast({
       severity: 'success',
       summary: 'Success',
       detail: 'Changes saved successfully.',
@@ -32,15 +41,10 @@ export const Step5 = ({ step, setStep }: StepProps) => {
     })
   }
 
-  const onRemove = () => {
-    setIsLoading(false)
-    setVisible(true)
-  }
-
   return (
     <div className="space-y-12">
       <FinishOnboardingDialog visible={visible} setVisible={setVisible} />
-      <Toast ref={toast} onRemove={onRemove} />
+
       {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-4">
         <div className="sm:col-span-1">
@@ -68,7 +72,7 @@ export const Step5 = ({ step, setStep }: StepProps) => {
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
-        <Button label="Finish" onClick={showSavedToast} loading={isLoading} />
+        <Button label="Finish" onClick={handleSaveButton} loading={isLoading} />
       </div>
     </div>
   )

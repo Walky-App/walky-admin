@@ -1,26 +1,40 @@
 import type { MutableRefObject } from 'react'
 
-import type { Toast, ToastProps } from 'primereact/toast'
+import type { Toast, ToastMessage, ToastProps } from 'primereact/toast'
 import { create } from 'zustand'
 
 import type { IToastParameters } from '../interfaces/global'
+
+type ToastCallback = (toastData: ToastMessage) => void
 
 interface State {
   toast: MutableRefObject<Toast | null>
   toastPosition: ToastProps['position']
   setToast: (ref: MutableRefObject<Toast | null>) => void
-  showToast: ({ severity, detail, summary, position }: IToastParameters) => void
+  showToast: (options: IToastParameters) => void
+  onRemoveToast: ToastCallback
+  setRemoveToastCallback: (callback: ToastCallback) => void
+  removeToastCallback?: ToastCallback
 }
 
 export const useUtils = create<State>(set => ({
   toast: {} as MutableRefObject<Toast>,
   toastPosition: 'bottom-right',
   setToast: ref => set({ toast: ref }),
-  showToast: ({ severity, detail, summary, position = 'bottom-right' }) => {
+  showToast: ({ position = 'bottom-right', ...options }) => {
     set(state => {
       state.toastPosition = position
-      state.toast.current?.show({ severity, detail, summary })
+      state.toast.current?.show(options)
       return state
     })
+  },
+  onRemoveToast: (toastData: ToastMessage) => {
+    set(state => {
+      state.removeToastCallback?.(toastData)
+      return state
+    })
+  },
+  setRemoveToastCallback: (callback: ToastCallback) => {
+    set({ removeToastCallback: callback })
   },
 }))
