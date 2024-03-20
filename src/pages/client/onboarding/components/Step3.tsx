@@ -1,12 +1,13 @@
-import { Fragment, useContext, useRef, useState } from 'react'
+import { Fragment, useCallback, useContext, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
-import { Image } from 'primereact/image'
-import { Toast, type ToastMessage } from 'primereact/toast'
+import { type ToastMessage } from 'primereact/toast'
 
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
 
+import { type IToastData } from '../../../../interfaces/global'
+import { useUtils } from '../../../../store/useUtils'
 import { cn } from '../../../../utils/cn'
 import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { AddFacilityDialog } from './AddFacilityDialog'
@@ -21,12 +22,33 @@ export const Step3 = ({ step, setStep }: StepProps) => {
 
   const { facilitiesArray, defaultValues, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
 
-  const toast = useRef(null)
+  const { setRemoveToastCallback, showToast } = useUtils()
 
-  const showSavedToast = () => {
+  const handleRemoveToast = useCallback(
+    (toastData: ToastMessage | IToastData) => {
+      let severity
+      if ('message' in toastData) {
+        severity = toastData.message.severity
+      } else {
+        severity = toastData.severity
+      }
+
+      if (severity === 'success') {
+        setIsLoading(false)
+        setStep(step + 1)
+      }
+    },
+    [setStep, step],
+  )
+
+  useEffect(() => {
+    setRemoveToastCallback(handleRemoveToast)
+  }, [handleRemoveToast, setRemoveToastCallback])
+
+  const handleSaveButton = () => {
     setIsLoading(true)
-    // @ts-expect-error toastRef.current may be null
-    toast.current?.show({
+
+    showToast({
       severity: 'success',
       summary: 'Success',
       detail: 'Changes saved successfully.',
@@ -34,26 +56,9 @@ export const Step3 = ({ step, setStep }: StepProps) => {
     })
   }
 
-  const onRemove = (toastData: ToastMessage) => {
-    // @ts-expect-error toastRef.current may be null
-    const severity = toastData.message ? toastData.message.severity : toastData.severity
-
-    if (severity === 'success') {
-      setStep(step + 1)
-    }
-
-    setIsLoading(false)
-  }
-
   return (
     <div className="space-y-12">
-      <AddFacilityDialog
-        visible={visible}
-        setVisible={setVisible}
-        toastRef={toast}
-        values={selectedFacility || defaultValues}
-      />
-      <Toast ref={toast} onRemove={e => onRemove(e)} />
+      <AddFacilityDialog visible={visible} setVisible={setVisible} values={selectedFacility || defaultValues} />
 
       {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -70,9 +75,16 @@ export const Step3 = ({ step, setStep }: StepProps) => {
               <li key={facility._id} className="overflow-hidden rounded-xl border border-gray-200">
                 <div className="flex h-20 items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                   {facility.images[0]?.url ? (
-                    <Image src={facility.images[0]?.url} alt="Facility logo" className="max-h-12 max-w-20" />
+                    <img
+                      src={facility.images[0]?.url}
+                      alt={facility.name}
+                      className="max-h-12 min-w-12 max-w-20 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
+                    />
                   ) : (
-                    <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
+                    <PhotoIcon
+                      className="h-12 w-12 flex-none rounded-lg bg-white object-cover text-gray-300 ring-1 ring-gray-900/10"
+                      aria-hidden="true"
+                    />
                   )}
                   <div className="text-sm font-medium leading-6 text-gray-900">{facility.name}</div>
                   <Menu as="div" className="relative ml-auto">
@@ -155,7 +167,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
-        <Button label="Save" onClick={showSavedToast} loading={isLoading} />
+        <Button label="Save" onClick={handleSaveButton} loading={isLoading} />
       </div>
     </div>
   )
