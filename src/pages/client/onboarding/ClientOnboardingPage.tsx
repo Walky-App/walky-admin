@@ -148,7 +148,7 @@ export const tooltipOptions: TooltipOptions = {
 export const ClientOnboarding = () => {
   const user = GetTokenInfo()
   const [visible, setVisible] = useState<boolean>(true)
-  const [activeIndex, setActiveIndex] = useState<number>(0)
+  const [activeIndex, setActiveIndex] = useState<number>(4)
   const [formData, setFormData] = useState<IFacilityFormInputs>({
     ...defaultFacilityFormValues,
     user_id: user?._id || '',
