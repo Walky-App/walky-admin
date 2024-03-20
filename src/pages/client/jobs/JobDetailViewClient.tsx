@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
+
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { ProgressSpinner } from 'primereact/progressspinner'
 import { Rating } from 'primereact/rating'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
 import { Toast } from 'primereact/toast'
 import { Tooltip } from 'primereact/tooltip'
 
-import 'primeicons/primeicons.css'
-
-import { ProgressSpinner } from 'primereact/progressspinner'
-
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { RequestService } from '../../../services/RequestService'
+
+import 'primeicons/primeicons.css'
 
 export default function JobDetailViewClient() {
   const [job, setJob] = useState<any>({})
@@ -43,9 +44,7 @@ export default function JobDetailViewClient() {
         const job = await RequestService(`jobs/${params.id}`)
         if (job) {
           setJob(job)
-        } else {
-          console.log('No job found with the given id')
-        }
+        } 
       } catch (error) {
         console.error('Error fetching job:', error)
       }
@@ -60,67 +59,6 @@ export default function JobDetailViewClient() {
     earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date))))
     latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date))))
   }
-
-  const people = [
-    {
-      name: 'Leslie Alexander',
-      email: 'leslie.alexander@example.com',
-      role: 'Co-Founder / CEO',
-      imageUrl:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-      lastSeen: '3h ago',
-      lastSeenDateTime: '2023-01-23T13:23Z',
-    },
-    {
-      name: 'Michael Foster',
-      email: 'michael.foster@example.com',
-      role: 'Co-Founder / CTO',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-      lastSeen: '3h ago',
-      lastSeenDateTime: '2023-01-23T13:23Z',
-    },
-    {
-      name: 'Dries Vincent',
-      email: 'dries.vincent@example.com',
-      role: 'Business Relations',
-      imageUrl:
-        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-      lastSeen: null,
-    },
-    {
-      name: 'Lindsay Walton',
-      email: 'lindsay.walton@example.com',
-      role: 'Front-end Developer',
-      imageUrl:
-        'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-      lastSeen: '3h ago',
-      lastSeenDateTime: '2023-01-23T13:23Z',
-    },
-    {
-      name: 'Courtney Henry',
-      email: 'courtney.henry@example.com',
-      role: 'Designer',
-      imageUrl:
-        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-      lastSeen: '3h ago',
-      lastSeenDateTime: '2023-01-23T13:23Z',
-    },
-    {
-      name: 'Tom Cook',
-      email: 'tom.cook@example.com',
-      role: 'Director of Product',
-      imageUrl:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-      lastSeen: null,
-    },
-  ]
 
   const workers = [
     {
@@ -173,6 +111,7 @@ export default function JobDetailViewClient() {
           <div>
             {job && 'start_time' in job && 'end_time' in job && 'job_dates' in job ? (
               <div>
+                {/* Job Card Start*/}
                 <Card
                   title={
                     <>
@@ -262,6 +201,7 @@ export default function JobDetailViewClient() {
                     </div>
                   </div>
                 </Card>
+                {/* Job Card End*/}
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
@@ -334,6 +274,7 @@ export default function JobDetailViewClient() {
         </div>
         {/* Control Buttons end */}
         <div className="md:col-span-3">
+          {/* Applicants and Workers Tab View */}
           <TabView>
             <TabPanel header="Applicants">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
@@ -350,38 +291,43 @@ export default function JobDetailViewClient() {
                   </div>
                 </div>
                 <ul className="divide-y divide-gray-100">
-                  {people.map(person => (
-                    <li key={person.email} className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
-                      <div className="flex min-w-0 gap-x-4">
-                        <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
-                        <div className="min-w-0 flex-auto">
-                          <p className="text-sm font-semibold leading-6 text-gray-900">
-                            <a href={person.href}>
-                              <span className="absolute inset-x-0 -top-px bottom-0" />
-                              {person.name}
-                            </a>
-                            <Rating value={3} readOnly cancel={false} />
-                          </p>
-                          <p className="mt-1 flex text-xs leading-5 text-gray-500">
-                            <a href={`mailto:${person.email}`} className="relative truncate hover:underline">
-                              {person.email}
-                            </a>
-                          </p>
-                          <p className="mt-1 text-sm text-gray-500">
-                            I would like to apply for this job as soon as possible. But I am not able to work on
-                            weekends. I am a hard worker and I am very punctual.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
-                        <div className="flex flex-row items-end">
-                          <Button size="small" label="Accept" />
-                          <Button size="small" label="Reject" severity="secondary" className="ml-2" />
-                        </div>
-                      </div>
-                    </li>
-                  ))}
+                  {job?.applicants && job.applicants.length > 0 ? (
+                    job.applicants.map((applicant?: any) => {
+                      console.log('Applicant:', applicant)
+
+                      return (
+                        <li className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
+                          <div className="flex min-w-0 gap-x-4">
+                            <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={applicant.user.avatar} alt="" />
+                            <div className="min-w-0 flex-auto">
+                              <p className="text-sm font-semibold leading-6 text-gray-900">
+                                <a href={applicant.user.href}>
+                                  <span className="absolute inset-x-0 -top-px bottom-0" />
+                                  {applicant.user.first_name} {applicant.user.last_name}
+                                </a>
+                                <Rating value={3} readOnly cancel={false} />
+                              </p>
+                              <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                              <p className="mt-1 text-sm text-gray-500">
+                                I would like to apply for this job as soon as possible. But I am not able to work on
+                                weekends. I am a hard worker and I am very punctual.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
+                            <div className="flex flex-row items-end">
+                              <Button size="small" label="Accept" />
+                              <Button size="small" label="Reject" severity="secondary" className="ml-2" />
+                            </div>
+                          </div>
+                        </li>
+                      )
+                    })
+                  ) : (
+                    <p>No new applicants for this job</p>
+                  )}
                 </ul>
+                
               </div>
             </TabPanel>
             <TabPanel header="Workers">

@@ -4,31 +4,47 @@ import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 
-import {
-  BriefcaseIcon,
-  StarIcon,
-  MapPinIcon,
-  CreditCardIcon,
-  BookmarkIcon,
-  CheckCircleIcon,
-  UserGroupIcon,
-} from '@heroicons/react/20/solid'
+import { MapPinIcon, BookmarkIcon, CheckCircleIcon, UserGroupIcon } from '@heroicons/react/20/solid'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { IFacility } from '../../../interfaces/Facility'
+
+interface IApplicant {
+  user: string;
+  is_approved: boolean;
+  is_working: boolean;
+}
+interface Job {
+  uid: string;
+  created_by: string;
+  facility: IFacility;
+  title: string;
+  start_time: number;
+  end_time: number;
+  total_hours: number;
+  lunch_break: number;
+  job_dates: string[];
+  job_tips: string[];
+  vacancy: number;
+  applicants: IApplicant[];
+  dnr: { email: string; reason: string }[];
+  is_completed: boolean;
+  is_full: boolean;
+  is_active: boolean;
+}
 
 export default function JobDetailView() {
-  const [job, setJob] = useState<any>({})
+  const [job, setJob] = useState<Job | null>(null);
   const params = useParams()
   const user = GetTokenInfo()
 
-  
   let earliestDate, latestDate
   // Get the earliest and latest date from the job_dates array
   if (job && job.job_dates) {
-    earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date))))
-    latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date))))
+    earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date).getTime())))
+    latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date).getTime())))
   }
 
   //convert military time to standard time
@@ -45,16 +61,13 @@ export default function JobDetailView() {
     return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
   }
 
-  
   useEffect(() => {
     const getJob = async () => {
       const job = await RequestService(`jobs/${params.id}`)
-
       if (job) {
         setJob(job)
       } else {
-        console.log(job)
-      }
+        console.error('Job not found')}
     }
     getJob()
   }, [])
@@ -65,20 +78,12 @@ export default function JobDetailView() {
         user: userId,
         is_approved: false,
         is_working: false,
-      };
-      console.log('applicant -->', applicant);
-      const response = await RequestService(`jobs/${params.id}/apply`, 'POST', applicant);
-      console.log('response -->', response)
-  
-      if (response.status === 200) {
-        console.log('Application successful');
-      } else {
-        console.log('Application failed', response.data);
       }
+      await RequestService(`jobs/${params.id}/apply`, 'POST', applicant)
     } catch (error) {
-      console.error('Error applying to job:', error);
+      console.error(error);
     }
-  };
+  }
 
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
@@ -93,7 +98,7 @@ export default function JobDetailView() {
                   <div className="relative h-6 w-6">
                     <UserGroupIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                   </div>
-                  <div className="text-xs font-normal text-stone-500">1 / {job.vacancy}</div>
+                  <div className="text-xs font-normal text-stone-500">1 / {job?.vacancy}</div>
                 </div>
                 <div className="flex items-center justify-start gap-1">
                   <div className="relative h-6 w-6">
@@ -140,6 +145,7 @@ export default function JobDetailView() {
                 <div className="text-xs font-normal text-stone-500">Job Dates</div>
                 <div className="text-sm font-medium text-black">
                   {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
+                  <p>{job?.job_dates ? job?.job_dates.length : 0} Days total</p>
                 </div>
               </div>
               <div className="h-14 w-px bg-zinc-100" />
@@ -147,30 +153,67 @@ export default function JobDetailView() {
                 <div className="text-xs font-normal text-stone-500">Job Time</div>
                 <div className="text-sm font-medium text-black">
                   {' '}
-                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                  {/* {convertToStandardTime(job?.start_time)} - {convertToStandardTime(job?.end_time)} */}
                 </div>
               </div>
             </div>
+            <section className="mt-12">
+              <h2 className="text-base font-semibold leading-6 text-gray-900">Work Days Schedule</h2>
+              <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                <li className="py-4 sm:flex">
+                  <time dateTime="2022-01-19" className="w-28 flex-none">
+                    Thu, Mar 13
+                  </time>
+                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
+                  <p className="flex-none sm:ml-6">
+                    <time dateTime="2022-01-13T14:30">5:30 AM</time> - <time dateTime="2022-01-13T16:30">3:30 PM</time>
+                  </p>
+                </li>
+                <li className="py-4 sm:flex">
+                  <time dateTime="2022-01-20" className="w-28 flex-none">
+                    Fri, Mar 14
+                  </time>
+                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
+                  <time dateTime="2022-01-13T14:30">5:30 AM</time> - <time dateTime="2022-01-13T16:30">3:30 PM</time>
+                </li>
+                <li className="py-4 sm:flex">
+                  <time dateTime="2022-01-20" className="w-28 flex-none">
+                    Fri, Mar 15
+                  </time>
+                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
+                  <time dateTime="2022-01-13T14:30">5:30 AM</time> - <time dateTime="2022-01-13T16:30">3:30 PM</time>
+                </li>
+                <li className="py-4 sm:flex">
+                  <time dateTime="2022-01-18" className="w-28 flex-none">
+                    Mon, Mar 17
+                  </time>
+                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
+                  <p className="flex-none sm:ml-6">
+                    <time dateTime="2022-01-17T10:00">5:30 AM</time> - <time dateTime="2022-01-17T10:15">3:30 PM</time>
+                  </p>
+                </li>
+              </ol>
+            </section>
           </div>
         </div>
 
         {/* rightside */}
         <div className="ml-10 flex h-[308px] w-[362px] flex-col items-center justify-evenly rounded-2xl border border-zinc-100 bg-white text-center">
           <div className="flex h-12 w-[298px] items-center justify-center rounded-lg bg-neutral-900">
-          <Button label="Apply now" onClick={() => applyForJob(user._id)} style={{ width: '100%', height: '100%' }} />
+            <Button label="Apply now" onClick={() => applyForJob(user._id)} style={{ width: '100%', height: '100%' }} />
           </div>
           <div className="inline-flex items-center gap-1">
             <div className="text-xs font-normal text-stone-500">Posted 3 mins ago</div>
             <div className="h-1 w-1 rounded-full bg-stone-500" />
-            <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
+            <div className="text-xs font-normal text-stone-500">#{job?.uid}</div>
           </div>
           <div className="h-px w-[80%] bg-zinc-100" />
           <div className="left-[74px] top-[150px] text-xs font-normal text-black">
             Know someone who would be great fit?
           </div>
-          <div className="w-[298px] h-12 px-4 py-3.5 left-[32px] top-[180px] rounded-lg border border-neutral-900 justify-center items-center gap-2 inline-flex">
-            <div className="text-center text-neutral-900 text-sm font-normal leading-tight">Share Opportunity</div>
-          </div>  
+          <div className="left-[32px] top-[180px] inline-flex h-12 w-[298px] items-center justify-center gap-2 rounded-lg border border-neutral-900 px-4 py-3.5">
+            <div className="text-center text-sm font-normal leading-tight text-neutral-900">Share Opportunity</div>
+          </div>
           <div className="mt-3 inline-flex items-center gap-2">
             <div className="relative h-6 w-6">
               <CheckCircleIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
