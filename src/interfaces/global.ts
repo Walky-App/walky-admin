@@ -1,3 +1,5 @@
+import type { ToastMessage, ToastMessageOptions, ToastProps } from 'primereact/toast'
+
 export interface Documents {
   __v?: number
   _id: string
@@ -35,4 +37,12 @@ export interface TagsInterface {
 export interface FilterInterface {
   search: string
   selected: string
+}
+
+export interface IToastParameters extends ToastMessageOptions {
+  position?: ToastProps['position']
+}
+
+export interface IToastData extends ToastMessage {
+  message: ToastMessage
 }

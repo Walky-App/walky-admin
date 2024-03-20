@@ -1,4 +1,4 @@
-import type { Documents, TagsInterface } from './Global'
+import type { Documents, TagsInterface } from './global'
 
 export interface Category extends Documents {
   description: string

@@ -2,59 +2,43 @@ import React, { useState, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { AutoComplete } from 'primereact/autocomplete'
-
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-interface IAddress {
-  description: string
-  id: string
-
-  matched_substrings: unknown[]
-  place_id: string
-  reference: string
-  structured_formatting: {
-    main_text: string
-    main_text_matched_substrings: unknown[]
-    secondary_text: string
-  }
-  terms: unknown[]
-  types: string[]
-  unformatted_address: string
-}
+const googleApiKey = process.env.REACT_APP_GOOGLE_API_KEY
 
 export const AdminFacilityDetails = () => {
   const { facilityId } = useParams()
   const [facility, setFacility] = useState<IFacility>()
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
-  const [selectedAddresses, setSelectedAddresses] = useState(null)
-  const [filteredAddresses, setFilteredAddresses] = useState<IAddress[]>([])
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
+  const [currentAddress, setCurrentAddress] = useState<string>()
+
+  const { zip, state, city, location_pin, address } = moreAddressDetails || {
+    zip: undefined,
+    state: undefined,
+    city: undefined,
+    location_pin: undefined,
+    address: undefined,
+  }
 
   useEffect(() => {
     const getFacility = async () => {
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
         setFacility(facilityFound)
+        setCurrentAddress(facilityFound?.address)
       } catch (error) {
         console.error('Error fetching facility data:', error)
       }
     }
     getFacility()
-  }, [facilityId])
-
-  const searchAddress = async (event: { query: string }) => {
-    try {
-      const response = await RequestService(`geo?address=${event.query}`)
-      setFilteredAddresses(response.map((item: IAddress) => item.description))
-    } catch (error) {
-      console.error('Error fetching address predictions:', error)
-    }
-  }
+  }, [facilityId, updateSuccess])
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -94,10 +78,13 @@ export const AdminFacilityDetails = () => {
       phone_number: target.phone_number.value,
       sqft: target.sqft.value,
       notes: target.notes.value,
-      country: target.country.value,
-      address: target.address.value,
+      address: address,
+      city: city,
+      state: state,
+      zip: zip,
       company_dbas: companyDbas,
-      services,
+      location_pin: location_pin,
+      services: services,
     }
 
     try {
@@ -137,6 +124,18 @@ export const AdminFacilityDetails = () => {
                     alt="Missing Facility"
                   />
                 </div>
+              ) : null}
+
+              {facility.location_pin[0] && facility.location_pin[1] ? (
+                <iframe
+                  title="facility-map"
+                  width="95%"
+                  height="450"
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://www.google.com/maps/embed/v1/place?key=${googleApiKey}&q=${facility.location_pin[0]},${facility.location_pin[1]}`}
+                />
               ) : null}
             </div>
 
@@ -414,10 +413,15 @@ export const AdminFacilityDetails = () => {
 
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Address</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Business address information of this particular facility.
+                Business address information of this particular facility
               </p>
+              {facility?.address ? (
+                <h2>
+                  {facility.address}, {facility.city}, {facility.state}, {facility.zip}
+                </h2>
+              ) : null}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
@@ -427,13 +431,9 @@ export const AdminFacilityDetails = () => {
                 </label>
                 <div className="mt-2">
                   <span className="p-fluid">
-                    <AutoComplete
-                      name="address"
-                      value={selectedAddresses}
-                      suggestions={filteredAddresses}
-                      completeMethod={searchAddress}
-                      onChange={e => setSelectedAddresses(e.value)}
-                      forceSelection
+                    <AddressAutoComplete
+                      setMoreAddressDetails={setMoreAddressDetails}
+                      currentAddress={currentAddress || ''}
                     />
                   </span>
                 </div>
