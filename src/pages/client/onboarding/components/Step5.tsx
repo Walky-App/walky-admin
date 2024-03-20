@@ -1,9 +1,13 @@
+//eslint-disable
 import { useCallback, useEffect, useState } from 'react'
 
+// import { set } from 'react-hook-form'
+
 import { Button } from 'primereact/button'
-import { InputTextarea } from 'primereact/inputtextarea'
+// import { InputTextarea } from 'primereact/inputtextarea'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
+import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { type StepProps } from '../ClientOnboardingPage'
 import { FinishOnboardingDialog } from './FinishOnboardingDialog'
@@ -15,9 +19,9 @@ export function joinTruthyStrings(strings: (string | undefined)[], separator: st
 export const Step5 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [documentUrl, setDocumentUrl] = useState(
-    'https://app.getaccept.com/v/46ygvhewmmgm/8gkzzyzbrmjdd5/a/9bc9875eacee8b30a1b8c1eb2d6a268a',
-  )
+  const [documentUrl, setDocumentUrl] = useState('')
+  const [accessToken, setAccessToken] = useState('')
+  const [documentId, setDocumentId] = useState('')
 
   const { setRemoveToastCallback, showToast } = useUtils()
 
@@ -41,6 +45,37 @@ export const Step5 = ({ step, setStep }: StepProps) => {
     })
   }
 
+  const handleGetAcceptAuth = async () => {
+    const body = {
+      email: 'jonathans199@gmail.com',
+      first_name: 'Piotr',
+      last_name: 'Sanchez',
+      role: 'signer',
+      order_num: 1,
+      company_name: 'Company Test Inc.',
+      company_number: '556677-8899',
+      mobile: '+13057428820',
+    }
+
+    const response = await RequestService('/getaccept', 'POST', body)
+
+    const data = await response.json()
+    setAccessToken(data.access_token)
+  }
+
+  const handleDocumentStatus = async () => {
+    const response = await fetch(`https://api.getaccept.com/v1/documents/${documentId}/status`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+
+    const data = await response.json()
+    console.log('data', data)
+  }
+
   return (
     <div className="space-y-12">
       <FinishOnboardingDialog visible={visible} setVisible={setVisible} />
@@ -50,14 +85,10 @@ export const Step5 = ({ step, setStep }: StepProps) => {
         <div className="sm:col-span-1">
           <h2 className="text-base font-semibold leading-7 text-gray-900">Terms and Conditions</h2>
           <p className="mt-1 text-sm leading-6 text-gray-600">Please read the terms & conditions of HempTemps.</p>
-          <br />
-          <strong className="block text-sm font-medium text-gray-700">*Testing only*</strong>
-          <InputTextarea
-            value={documentUrl}
-            onChange={e => setDocumentUrl(e.target.value)}
-            placeholder="Document URL"
-            rows={7}
-          />
+
+          <Button type="button" onClick={handleGetAcceptAuth}>
+            Generate Doc
+          </Button>
         </div>
 
         <div className="grid max-w-full grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-3">
