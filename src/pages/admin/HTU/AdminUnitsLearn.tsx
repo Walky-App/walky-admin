@@ -1,229 +1,234 @@
-import { useAdmin } from "../../../contexts/AdminContext"
+import { useEffect, useRef, useState } from 'react'
+
+import { FaClipboardCheck, FaClock } from 'react-icons/fa'
+import { FaFileLines } from 'react-icons/fa6'
+import { useNavigate, useParams } from 'react-router-dom'
+
+import { Badge } from 'flowbite-react'
+import { TabPanel, TabView } from 'primereact/tabview'
+
+import { Bars2Icon, PlusIcon } from '@heroicons/react/20/solid'
 import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/outline'
-import { secondsToTimeDescription } from "../../../utils/FunctionUtils"
-import { Badge } from "flowbite-react"
-import { useEffect, useState } from "react"
-import { Module } from "../../../interfaces/module"
-import { RequestService } from "../../../services/RequestService"
-import { useNavigate, useParams } from "react-router-dom"
-import { CategoryTitle } from "../../../interfaces/category"
-import { Bars2Icon, PlusIcon } from "@heroicons/react/20/solid"
-import { Unit } from '../../../interfaces/unit';
-import { TabPanel, TabView } from "primereact/tabview"
-import { UnitDetailsCard } from "../../learn/components/UnitDetailsCard"
-import { EmptyState } from "../../../components/shared/general/EmptyState"
-import { FaClipboardCheck, FaClock } from "react-icons/fa"
-import { FaFileLines } from "react-icons/fa6"
+
+import { useAdmin } from '../../../contexts/AdminContext'
+import type { CategoryTitle } from '../../../interfaces/category'
+import type { Module } from '../../../interfaces/module'
+import type { Unit } from '../../../interfaces/unit'
+import { RequestService } from '../../../services/RequestService'
+import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
+import { UnitDetailsCard } from '../../learn/components/UnitDetailsCard'
 
 export const AdminUnitsLearn = () => {
-    const { module, setModule, setUnit, unit, setAssessment } = useAdmin()
-    const [category, setCategory] = useState<CategoryTitle>()
-    const params = useParams()
-    const navigate = useNavigate()
+  const tabRef = useRef<TabView>(null)
+  const { module, setModule, setUnit, unit, setAssessment } = useAdmin()
+  const [category, setCategory] = useState<CategoryTitle>()
+  const params = useParams()
+  const navigate = useNavigate()
 
-
-    const fetchData = async () => {
-        const responseModule: Module = await RequestService(`modules/${params.moduleId}`)
-        if (responseModule) {
-            setModule(responseModule)
-            setCategory(responseModule.category as unknown as CategoryTitle)
-        }
+  const fetchData = async () => {
+    const responseModule: Module = await RequestService(`modules/${params.moduleId}`)
+    if (responseModule) {
+      setModule(responseModule)
+      setCategory(responseModule.category as unknown as CategoryTitle)
     }
+  }
 
-    const handlerCreateUnit = () => {
-        navigate(`/admin/learn/modules/${module?._id}/units/new`)
+  const handlerCreateUnit = () => {
+    navigate(`/admin/learn/modules/${module?._id}/units/new`)
+  }
+
+  const handlerSelectUnit = (unit: Unit) => {
+    tabRef.current?.reset()
+    setUnit(unit)
+  }
+
+  useEffect(() => {
+    if (!module) {
+      fetchData()
     }
+  })
 
-    const handlerSelectUnit = (unit: Unit) => {
-        setUnit(unit)
-    }
+  const handleEditAssessment = () => {
+    setAssessment(unit?.assessments)
+    navigate(`/admin/learn/modules/${params.moduleId}/units/${unit?._id}/assessment/${unit?.assessments._id}`)
+  }
 
+  const handleNewAssessment = () => {
+    setAssessment(undefined)
+    navigate(`/admin/learn/modules/${params.moduleId}/units/${unit?._id}/assessment`)
+  }
 
-    useEffect(() => {
-        if (!module) {
-            fetchData()
-        }
-    })
-
-    const handleEditAssessment = () => {
-        setAssessment(unit?.assessments)
-        navigate(`/admin/learn/modules/${params.moduleId}/units/${unit?._id}/assessment/${unit?.assessments._id}`)
-    }
-
-    const handleNewAssessment = () => {
-        setAssessment(undefined)
-        navigate(`/admin/learn/modules/${params.moduleId}/units/${unit?._id}/assessment`)
-    }
-
-    return (
-        <div>
-            <div className="mb-4 flex flex-col h-auto rounded-2xl border border-zinc-100 bg-white" key={module?._id}>
-                <div className="flex-row flex">
-                    <div className="m-3">
-                        {module?.image ? (
-                            <img
-                                alt={`Hemp Temp ${module?.title} module`}
-                                className="h-full w-36 rounded-xl"
-                                src={module?.image}
-                            />
-                        ) : (
-                            <div className="h-full w-36 rounded-xl bg-neutral-200" />
-                        )}
-                    </div>
-                    <div className="m-3 flex flex-1 flex-col justify-center gap-3">
-                        <div className="flex basis-1/3 flex-wrap ">
-
-                            <Badge color="gray" size="sm">
-                                <p className="text-xs font-normal text-stone-500">{category?.title}</p>
-                            </Badge>
-
-                        </div>
-                        <div className="text-xl font-semibold text-black">{module?.title}</div>
-                        <div className="inline-flex h-5 w-full items-center justify-start gap-2">
-                            <div className="flex items-center justify-start gap-1">
-                                <ClockIcon className="h-5" />
-                                <div className="flex items-center h-5 text-xs font-medium text-black">
-                                    {secondsToTimeDescription(module?.total_time as number)}
-                                </div>
-                            </div>
-                            <div className="h-1 w-1 rounded-full bg-stone-500" />
-                            <div className="flex items-center justify-start gap-1">
-                                <NewspaperIcon className="h-5" />
-                                <div className="flex items-center h-5 text-xs font-medium text-black">
-                                    {module?.units?.length} Units
-                                </div>
-                            </div>
-                            <div className="h-1 w-1 rounded-full bg-stone-500" />
-                            <div className="flex items-center justify-start gap-1">
-                                <BriefcaseIcon className="h-5" />
-                                <div className="flex items-center h-5 text-xs font-medium text-black">{module?.level}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="m-3 h-auto text-xs font-normal text-stone-500">
-                    {module?.description}
-                </div>
+  return (
+    <div>
+      <div className="mb-4 flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white" key={module?._id}>
+        <div className="flex flex-row">
+          <div className="m-3">
+            {module?.image ? (
+              <img alt={`Hemp Temp ${module?.title} module`} className="h-full w-36 rounded-xl" src={module?.image} />
+            ) : (
+              <div className="h-full w-36 rounded-xl bg-neutral-200" />
+            )}
+          </div>
+          <div className="m-3 flex flex-1 flex-col justify-center gap-3">
+            <div className="flex basis-1/3 flex-wrap ">
+              <Badge color="gray" size="sm">
+                <p className="text-xs font-normal text-stone-500">{category?.title}</p>
+              </Badge>
             </div>
-
-            <div className="mt-4 grid grid-cols-5 gap-6">
-                <div className="col-span-2 ">
-                    <div className="flex flex-col h-auto rounded-2xl border border-zinc-100 bg-white">
-                        <button className="flex flex-row justify-center p-3 text-left text-sm bg-gray-300 rounded-t-2xl border " onClick={handlerCreateUnit} type="button"> <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" /> Create Unit</button>
-                        {
-                            module?.units?.map((unit, index) => {
-                                return (
-                                    <button className={`flex flex-row justify-between p-3 text-left text-sm border-b border-zinc-100 hover:bg-gray-100  ${index === (module?.units?.length ?? 0) - 1 ? 'rounded-b-2xl' : ''}`} key={unit._id} onClick={() => { handlerSelectUnit(unit) }} type="button">
-                                        <div className="flex flex-row gap-3 items-center">
-                                            <Bars2Icon className="h-5 w-5" />
-                                            <div>{unit.title}</div>
-                                        </div>
-                                    </button>
-                                )
-                            })
-                        }
-                    </div>
+            <div className="text-xl font-semibold text-black">{module?.title}</div>
+            <div className="inline-flex h-5 w-full items-center justify-start gap-2">
+              <div className="flex items-center justify-start gap-1">
+                <ClockIcon className="h-5" />
+                <div className="flex h-5 items-center text-xs font-medium text-black">
+                  {secondsToTimeDescription(module?.total_time as number)}
                 </div>
-
-                {/*right content*/}
-                <div className="col-span-3 ">
-                    {
-                        unit ? <div className=" h-auto border border-zinc-100 bg-white">
-                            <TabView>
-                                <TabPanel header="Unit Detail">
-                                    <UnitDetailsCard isAdmin unit={unit as Unit} />
-                                </TabPanel>
-                                <TabPanel header="Assessment Detail">
-                                    {(unit?.assessments && (unit?.assessments?.questions?.length ?? 0) > 0) ?
-                                        <div className="w-full">
-                                            <div className="flex flex-1 justify-end">
-                                                <button
-                                                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
-                                                    onClick={() => { handleEditAssessment() }}
-                                                    type="button"
-                                                >
-                                                    Edit
-                                                </button>
-                                            </div>
-                                            <div className="flex flex-row justify-between">
-                                                <div className="flex flex-row basis-1/3">
-                                                    <FaClock className="h-5 w-5 pr-1" /> {unit.assessments?.time} mins
-                                                </div>
-                                                <div className="flex flex-row basis-1/3">
-                                                    <FaClipboardCheck className="h-5 w-5 pr-1" /> score min {unit.assessments.min_score} %
-                                                </div>
-                                                <div className="flex flex-row basis-1/3 pr-1">
-                                                    <FaFileLines className="h-5 w-5" /> {unit?.assessments?.questions?.length} questions
-                                                </div>
-                                            </div>
-                                            <p className="py-3 text-xs text-gray-500">Questions</p>
-                                            {
-                                                unit.assessments.questions?.map((question, index) => {
-                                                    return (
-                                                        <div className={`flex flex-col ${index === (unit.assessments.questions?.length ?? 1) - 1 ? '' : 'border-b'} border-zinc-100 gap-2 mb-2 pb-4`} key={question._id} >
-                                                            <div className="flex flex-row basis-1/3">
-                                                                <div className="text-sm font-semibold leading-6 text-gray-900">{question.header}</div>
-                                                            </div>
-                                                            <div className="ml-4 text-sm">
-                                                                <div className="gap-2">
-                                                                    <span className="font-bold">
-                                                                        A)
-                                                                    </span>
-                                                                    {question.options[0]}
-                                                                </div>
-                                                                <div className="gap-2">
-                                                                    <span className="font-bold">
-                                                                        B)
-                                                                    </span>
-                                                                    {question.options[1]}
-                                                                </div>
-                                                                <div className="gap-2">
-                                                                    <span className="font-bold">
-                                                                        C)
-                                                                    </span>
-                                                                    {question.options[2]}
-                                                                </div>
-                                                                <div className="gap-2">
-                                                                    <span className="font-bold">
-                                                                        D)
-                                                                    </span>
-                                                                    {question.options[3]}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    )
-
-                                                })
-                                            }
-                                        </div> :
-                                        <div className="text-center">
-                                            <svg
-                                                aria-hidden="true"
-                                                className="mx-auto h-12 w-12 text-gray-400"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    vectorEffect="non-scaling-stroke"
-                                                />
-                                            </svg>
-                                            <h3 className="mt-2 text-sm font-semibold text-gray-900">No assessment</h3>
-                                            <p className="mt-1 text-sm text-gray-500">Get started by creating a new assessment.</p>
-                                            <div className="mt-6">
-                                                <button className='rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500' onClick={() => { handleNewAssessment() }} type="button" >New assessment</button>
-                                            </div>
-                                        </div>}
-                                </TabPanel>
-                            </TabView>
-                        </div> : null
-                    }
+              </div>
+              <div className="h-1 w-1 rounded-full bg-stone-500" />
+              <div className="flex items-center justify-start gap-1">
+                <NewspaperIcon className="h-5" />
+                <div className="flex h-5 items-center text-xs font-medium text-black">
+                  {module?.units?.length} Units
                 </div>
+              </div>
+              <div className="h-1 w-1 rounded-full bg-stone-500" />
+              <div className="flex items-center justify-start gap-1">
+                <BriefcaseIcon className="h-5" />
+                <div className="flex h-5 items-center text-xs font-medium text-black">{module?.level}</div>
+              </div>
             </div>
-        </div >
-    )
+          </div>
+        </div>
+        <div className="m-3 h-auto text-xs font-normal text-stone-500">{module?.description}</div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-5 gap-6">
+        <div className="col-span-2 ">
+          <div className="flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white">
+            <button
+              className="flex flex-row justify-center rounded-t-2xl border bg-gray-300 p-3 text-left text-sm "
+              onClick={handlerCreateUnit}
+              type="button">
+              {' '}
+              <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" /> Create Unit
+            </button>
+            {module?.units?.map((unit, index) => {
+              return (
+                <button
+                  className={`flex flex-row justify-between border-b border-zinc-100 p-3 text-left text-sm hover:bg-gray-100  ${index === (module?.units?.length ?? 0) - 1 ? 'rounded-b-2xl' : ''}`}
+                  key={unit._id}
+                  onClick={() => {
+                    handlerSelectUnit(unit)
+                  }}
+                  type="button">
+                  <div className="flex flex-row items-center gap-3">
+                    <Bars2Icon className="h-5 w-5" />
+                    <div>{unit.title}</div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/*right content*/}
+        <div className="col-span-3 ">
+          {unit ? (
+            <div className=" h-auto border border-zinc-100 bg-white">
+              <TabView ref={tabRef}>
+                <TabPanel header="Unit Detail">
+                  <UnitDetailsCard isAdmin unit={unit as Unit} />
+                </TabPanel>
+                <TabPanel header="Assessment Detail">
+                  {unit?.assessments && (unit?.assessments?.questions?.length ?? 0) > 0 ? (
+                    <div className="w-full">
+                      <div className="flex flex-1 justify-end">
+                        <button
+                          className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                          onClick={() => {
+                            handleEditAssessment()
+                          }}
+                          type="button">
+                          Edit
+                        </button>
+                      </div>
+                      <div className="flex flex-row justify-between">
+                        <div className="flex basis-1/3 flex-row">
+                          <FaClock className="h-5 w-5 pr-1" /> {unit.assessments?.time} mins
+                        </div>
+                        <div className="flex basis-1/3 flex-row">
+                          <FaClipboardCheck className="h-5 w-5 pr-1" /> score min {unit.assessments.min_score} %
+                        </div>
+                        <div className="flex basis-1/3 flex-row pr-1">
+                          <FaFileLines className="h-5 w-5" /> {unit?.assessments?.questions?.length} questions
+                        </div>
+                      </div>
+                      <p className="py-3 text-xs text-gray-500">Questions</p>
+                      {unit.assessments.questions?.map((question, index) => {
+                        return (
+                          <div
+                            className={`flex flex-col ${index === (unit.assessments.questions?.length ?? 1) - 1 ? '' : 'border-b'} mb-2 gap-2 border-zinc-100 pb-4`}
+                            key={question._id}>
+                            <div className="flex basis-1/3 flex-row">
+                              <div className="text-sm font-semibold leading-6 text-gray-900">{question.header}</div>
+                            </div>
+                            <div className="ml-4 text-sm">
+                              <div className="gap-2">
+                                <span className="font-bold">A)</span>
+                                {question.options[0]}
+                              </div>
+                              <div className="gap-2">
+                                <span className="font-bold">B)</span>
+                                {question.options[1]}
+                              </div>
+                              <div className="gap-2">
+                                <span className="font-bold">C)</span>
+                                {question.options[2]}
+                              </div>
+                              <div className="gap-2">
+                                <span className="font-bold">D)</span>
+                                {question.options[3]}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <svg
+                        aria-hidden="true"
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </svg>
+                      <h3 className="mt-2 text-sm font-semibold text-gray-900">No assessment</h3>
+                      <p className="mt-1 text-sm text-gray-500">Get started by creating a new assessment.</p>
+                      <div className="mt-6">
+                        <button
+                          className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                          onClick={() => {
+                            handleNewAssessment()
+                          }}
+                          type="button">
+                          New assessment
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </TabPanel>
+              </TabView>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
 }

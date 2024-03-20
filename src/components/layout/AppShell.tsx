@@ -23,7 +23,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { LogoutService } from '../../services/AuthService'
 import { getCurrentUserRole } from '../../utils/UserRole'
 import { cn } from '../../utils/cn'
-import FooterComponent from './FooterComponent'
+import { FooterComponent } from './FooterComponent'
 
 interface INavLink {
   id: number

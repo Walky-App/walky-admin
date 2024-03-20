@@ -8,6 +8,7 @@
     "@hello-pangea/dnd": "^16.5.0",
     "@heroicons/react": "^2.1.1",
     "@nextui-org/chip": "^2.0.25",
+    "@react-google-maps/api": "^2.19.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -40,9 +41,20 @@
     "format": "npx prettier . --write",
     "format:check": "npx prettier . --check",
     "prepare": "husky",
-    "lint": "eslint .",
-    "lint:fix": "eslint .' --fix",
+    "lint:all": "eslint",
+    "lint:fix": "eslint --fix",
+    "lint:staged": "lint-staged",
     "precommit": "npm run lint:fix && npm run format"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "npm run lint:fix",
+    "*.{js,jsx}": "npm run lint:fix",
+    "*": "prettier --ignore-unknown --write"
   },
   "eslintConfig": {
     "extends": [

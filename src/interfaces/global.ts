@@ -1,4 +1,4 @@
-import type { ToastProps } from 'primereact/toast'
+import type { ToastMessage, ToastMessageOptions, ToastProps } from 'primereact/toast'
 
 export interface Documents {
   __v?: number
@@ -39,9 +39,10 @@ export interface FilterInterface {
   selected: string
 }
 
-export interface IToastParameters {
-  severity: 'success' | 'info' | 'warn' | 'error'
-  summary: string
-  detail: string
+export interface IToastParameters extends ToastMessageOptions {
   position?: ToastProps['position']
+}
+
+export interface IToastData extends ToastMessage {
+  message: ToastMessage
 }
