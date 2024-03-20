@@ -8,8 +8,13 @@ import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { PolygonMap } from './PolygonMap'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const FacilityDetailsForm = ({ facility, setFacility }: { facility: IFacility; setFacility: any }) => {
+export const FacilityDetailsForm = ({
+  facility,
+  setFacility,
+}: {
+  facility: IFacility
+  setFacility: React.Dispatch<React.SetStateAction<IFacility | undefined>>
+}) => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
   const [locationPolygon, setLocationPolygon] = useState<[number, number][]>(facility.location_polygon || [])
@@ -416,31 +421,29 @@ export const FacilityDetailsForm = ({ facility, setFacility }: { facility: IFaci
           </div>
         </div>
 
-        {facility.location_polygon[0].length ? (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please update the facility boundaries by dragging the polygon on the map.
-              </p>
-            </div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please update the facility boundaries by dragging the polygon on the map.
+            </p>
+          </div>
 
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">
-                <div className="mt-2">
-                  <span className="p-fluid">
-                    <PolygonMap
-                      locationPolygon={locationPolygon}
-                      locationPin={facility.location_pin}
-                      containerStyle={{ width: '100%', height: '450px' }}
-                      setLocationPolygon={setLocationPolygon}
-                    />
-                  </span>
-                </div>
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-5">
+              <div className="mt-2">
+                <span className="p-fluid">
+                  <PolygonMap
+                    locationPolygon={locationPolygon}
+                    locationPin={facility.location_pin}
+                    containerStyle={{ width: '100%', height: '450px' }}
+                    setLocationPolygon={setLocationPolygon}
+                  />
+                </span>
               </div>
             </div>
           </div>
-        ) : null}
+        </div>
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
