@@ -33,7 +33,7 @@ export default function JobListItem({ job }: any) {
     const amPm = hours >= 12 ? 'pm' : 'am'
     return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
   }
-  
+
   return (
     <li
       key={job.company_id}
@@ -72,6 +72,18 @@ export default function JobListItem({ job }: any) {
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-xs font-normal text-stone-500">Job Time</div>
+                <div className="text-xs font-normal text-black">
+                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                </div>{' '}
+              </div>
+              <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                <div className="text-xs font-normal text-stone-500">Hours per Day</div>
+                <div className="text-xs font-normal text-black">
+                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                </div>{' '}
+              </div>
+              <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                <div className="text-xs font-normal text-stone-500">Number of Days</div>
                 <div className="text-xs font-normal text-black">
                   {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
                 </div>{' '}
