@@ -306,11 +306,11 @@ export default function ClientProfile() {
                         />
                       )}
                     />
+                     {getFormErrorMessage('phone_number', errors)}
                   </div>
                 </div>
 
                 {/* Birthday */}
-                {getFormErrorMessage('phone_number', errors)}
                 <div className="sm:col-span-6 sm:col-start-1">
                   <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
                     Birthday
