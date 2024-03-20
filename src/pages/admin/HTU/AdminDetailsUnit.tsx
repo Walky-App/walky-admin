@@ -8,7 +8,7 @@ import { HeaderComponent } from "../../../components/shared/general/HeaderCompon
 import { SectionEditor } from "./components/SectionEditor"
 import { SectionImage } from "./components/SectionImage"
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/20/solid"
-import { DisableButtonInterface } from "../../../interfaces/Global"
+import { DisableButtonInterface } from "../../../interfaces/global"
 
 export const AdminDetailsUnit = () => {
     const { unit, setUnit, setModule } = useAdmin()

@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { BarsArrowUpIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
-import { SelectedOptionInterface } from '../../../interfaces/Global'
+import { SelectedOptionInterface } from '../../../interfaces/global'
 import { classNames } from '../../../utils/Tailwind'
 
 interface Props {

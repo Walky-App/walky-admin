@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { ITokenInfo } from '../../interfaces/services.interfaces'
+import { ITokenInfo } from '../../interfaces/services'
 
 import { SetToken } from '../../utils/TokenUtils'
 import { useAuth } from '../../contexts/AuthContext'
@@ -182,9 +182,8 @@ export default function Signup() {
           <button
             disabled={loading}
             type="submit"
-            className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-              loading && 'cursor-wait hover:bg-zinc-950'
-            }`}>
+            className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${loading && 'cursor-wait hover:bg-zinc-950'
+              }`}>
             {loading ? 'Signing up...' : 'Signup'}
           </button>
         </div>
