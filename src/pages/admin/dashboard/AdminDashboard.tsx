@@ -12,23 +12,21 @@
   }
   ```
 */
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 import { Link } from 'react-router-dom'
 
-import { Dialog, Menu, Transition } from '@headlessui/react'
+import {  Menu, Transition } from '@headlessui/react'
 import {
   BanknotesIcon,
+  BriefcaseIcon,
   BuildingOfficeIcon,
-  CheckCircleIcon,
-  ChevronDownIcon,
   ChevronRightIcon,
   EllipsisHorizontalIcon,
-  MagnifyingGlassIcon,
+  InformationCircleIcon,
+  UserCircleIcon,
 } from '@heroicons/react/20/solid'
 import {
-  Bars3CenterLeftIcon,
-  BellIcon,
   ClockIcon,
   CogIcon,
   CreditCardIcon,
@@ -38,11 +36,10 @@ import {
   ScaleIcon,
   ShieldCheckIcon,
   UserGroupIcon,
-  XMarkIcon,
 } from '@heroicons/react/24/outline'
 
 import { useAuth } from '../../../contexts/AuthContext'
-import { StatsDisplay } from './StatsDisplay'
+import { RequestService } from '../../../services/RequestService'
 
 const statuses = {
   Paid: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -84,12 +81,7 @@ const secondaryNavigation = [
   { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
   { name: 'Privacy', href: '#', icon: ShieldCheckIcon },
 ]
-const cards = [
-  { name: 'Users', href: '#', icon: ScaleIcon, amount: '$30,659.45' },
-  { name: 'Facilities', href: '#', icon: ShieldCheckIcon, amount: '$30,659.45' },
-  { name: 'Jobs', href: '#', icon: CheckCircleIcon, amount: '$30,659.45' },
-  // More items...
-]
+
 const transactions = [
   {
     id: 1,
@@ -114,9 +106,33 @@ function classNames(...classes: string[]) {
 }
 
 export const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [counts, setCounts] = useState<any>({})
   const { user } = useAuth()
   console.log('user', user)
+
+  useEffect(() => {
+    const getCounts = async () => {
+      try {
+        const response = await RequestService('/dashboard')
+        console.log('response', response)
+        setCounts({
+          facilities: response.facilities,
+          jobs: response.jobs,
+          users: response.users,
+        })
+      } catch (error) {
+        console.error('error', error)
+      }
+    }
+    getCounts()
+  }, [])
+
+  const cards = [
+    { name: 'Users', href: '#', icon: UserCircleIcon, amount: counts.users },
+    { name: 'Facilities', href: '#', icon: InformationCircleIcon, amount: counts.facilities },
+    { name: 'Jobs', href: '#', icon: BriefcaseIcon, amount: counts.jobs },
+    // More items...
+  ]
 
   return (
     <div className="min-h-full">
@@ -196,7 +212,7 @@ export const AdminDashboard = () => {
                   </div>
                   <div className="bg-gray-50 px-5 py-3">
                     <div className="text-sm">
-                      <a href={card.href} className="font-medium text-cyan-700 hover:text-cyan-900">
+                      <a href={card.href} className="font-medium text-green-500 hover:text-green-900">
                         View all
                       </a>
                     </div>

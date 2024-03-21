@@ -5,6 +5,7 @@ import { GetTokenInfo } from '../../utils/TokenUtils'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 
+// eslint-disable-next-line react/function-component-definition
 export default function ClientProfile() {
   const [formUser, setFormUser] = useState<any>({})
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
@@ -62,8 +63,7 @@ export default function ClientProfile() {
         <h3 className="text-base font-semibold leading-6 text-gray-900">Your Profile Details</h3>
       </div>
 
-      {formUser.role && (
-        <form onSubmit={handleUpdate}>
+      {formUser.role ? <form onSubmit={handleUpdate}>
           <div className="space-y-12">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
@@ -321,8 +321,7 @@ export default function ClientProfile() {
           </div>
 
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            {updateSuccess && (
-              <div className="rounded-md bg-green-50 p-4">
+            {updateSuccess ? <div className="rounded-md bg-green-50 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
                     <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
@@ -334,16 +333,14 @@ export default function ClientProfile() {
                     <div className="-mx-1.5 -my-1.5"></div>
                   </div>
                 </div>
-              </div>
-            )}
+              </div> : null}
             <button
               type="submit"
               className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
               Update
             </button>
           </div>
-        </form>
-      )}
+        </form> : null}
     </>
   )
 }
