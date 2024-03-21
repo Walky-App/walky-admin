@@ -67,7 +67,7 @@ export const PolygonMap = ({
 
   return (
     <>
-      <Button type="button" onClick={generateNewPolygon}>
+      <Button className="mb-5" type="button" onClick={generateNewPolygon}>
         Generate New Polygon
       </Button>
       <br />
