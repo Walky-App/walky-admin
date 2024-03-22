@@ -1,45 +1,21 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 import { Fragment, useEffect, useState } from 'react'
 
-import { Link } from 'react-router-dom'
-
-import {  Menu, Transition } from '@headlessui/react'
+import { Menu, Transition } from '@headlessui/react'
 import {
   BanknotesIcon,
   BriefcaseIcon,
   BuildingOfficeIcon,
+  CheckCircleIcon,
   ChevronRightIcon,
   EllipsisHorizontalIcon,
   InformationCircleIcon,
   UserCircleIcon,
 } from '@heroicons/react/20/solid'
-import {
-  ClockIcon,
-  CogIcon,
-  CreditCardIcon,
-  DocumentChartBarIcon,
-  HomeIcon,
-  QuestionMarkCircleIcon,
-  ScaleIcon,
-  ShieldCheckIcon,
-  UserGroupIcon,
-} from '@heroicons/react/24/outline'
 
 import { useAuth } from '../../../contexts/AuthContext'
 import { RequestService } from '../../../services/RequestService'
+import { Button } from 'primereact/button'
+import { useNavigate } from 'react-router-dom'
 
 const statuses = {
   Paid: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -68,20 +44,6 @@ const clients = [
   },
 ]
 
-const navigation = [
-  { name: 'Home', href: '#', icon: HomeIcon, current: true },
-  { name: 'History', href: '#', icon: ClockIcon, current: false },
-  { name: 'Balances', href: '#', icon: ScaleIcon, current: false },
-  { name: 'Cards', href: '#', icon: CreditCardIcon, current: false },
-  { name: 'Recipients', href: '#', icon: UserGroupIcon, current: false },
-  { name: 'Reports', href: '#', icon: DocumentChartBarIcon, current: false },
-]
-const secondaryNavigation = [
-  { name: 'Settings', href: '#', icon: CogIcon },
-  { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
-  { name: 'Privacy', href: '#', icon: ShieldCheckIcon },
-]
-
 const transactions = [
   {
     id: 1,
@@ -108,13 +70,12 @@ function classNames(...classes: string[]) {
 export const AdminDashboard = () => {
   const [counts, setCounts] = useState<any>({})
   const { user } = useAuth()
-  console.log('user', user)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getCounts = async () => {
       try {
         const response = await RequestService('/dashboard')
-        console.log('response', response)
         setCounts({
           facilities: response.facilities,
           jobs: response.jobs,
@@ -128,19 +89,18 @@ export const AdminDashboard = () => {
   }, [])
 
   const cards = [
-    { name: 'Users', href: '#', icon: UserCircleIcon, amount: counts.users },
-    { name: 'Facilities', href: '#', icon: InformationCircleIcon, amount: counts.facilities },
-    { name: 'Jobs', href: '#', icon: BriefcaseIcon, amount: counts.jobs },
+    { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: counts.users },
+    { name: 'Facilities', href: '/admin/facilities', icon: InformationCircleIcon, amount: counts.facilities },
+    { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon, amount: counts.jobs },
     // More items...
   ]
 
   return (
     <div className="min-h-full">
-      {/* Static sidebar for desktop */}
       <main className="flex-1 pb-8">
-        {/* Page header */}
-        <div className="bg-white shadow">
-          <div className="px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
+        {/* Dashboard header */}
+
+          <div className="px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8 bg-white shadow">
             <div className="py-6 md:flex md:items-center md:justify-between">
               <div className="min-w-0 flex-1">
                 {/* Profile */}
@@ -148,11 +108,7 @@ export const AdminDashboard = () => {
                   <img className="hidden h-16 w-16 rounded-full sm:block" src={user?.avatar} alt="avatar" />
                   <div>
                     <div className="flex items-center">
-                      <img
-                        className="h-16 w-16 rounded-full sm:hidden"
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
-                        alt=""
-                      />
+                      <img className="h-16 w-16 rounded-full sm:hidden" src={user?.avatar} alt="avatar" />
                       <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
                         Welcome Back, {user?.first_name}
                       </h1>
@@ -164,29 +120,32 @@ export const AdminDashboard = () => {
                         {user?.email}
                       </dd>
                       <dt className="sr-only">Account status</dt>
-                      {/* <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
-                          <CheckCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400" aria-hidden="true" />
-                          Verified account
-                        </dd> */}
+                      <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
+                        <CheckCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400" aria-hidden="true" />
+                        Verified account
+                      </dd>
                     </dl>
                   </div>
                 </div>
               </div>
               <div className="mt-6 flex space-x-3 md:ml-4 md:mt-0">
-                <Link
-                  to={'/admin/facilities'}
-                  className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  Facilities
-                </Link>
-                <Link
-                  to={'/admin/jobs'}
-                  className="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600">
-                  Jobs
-                </Link>
+                <Button
+                 label= "Facilities"
+                 severity='secondary'
+                 outlined
+                 size='small'
+                 onClick={() => navigate('/admin/facilities')}
+                 />
+                <Button 
+                label= "Jobs"
+                size='small'
+                onClick={() => navigate('/admin/jobs')}
+                />
+                
               </div>
             </div>
           </div>
-        </div>
+
 
         <div className="mt-8">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -354,96 +313,97 @@ export const AdminDashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* Recent client list*/}
+          <div className="mx-auto mt-8 max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium leading-6 text-gray-900">
+                  Recent clients</h2>
+                <a href="#" className="text-sm font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                  View all<span className="sr-only">, clients</span>
+                </a>
+              </div>
+              <ul role="list" className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
+                {clients.map(client => (
+                  <li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
+                    <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                      <img
+                        src={client.imageUrl}
+                        alt={client.name}
+                        className="h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
+                      />
+                      <div className="text-sm font-medium leading-6 text-gray-900">{client.name}</div>
+                      <Menu as="div" className="relative ml-auto">
+                        <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
+                          <span className="sr-only">Open options</span>
+                          <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+                        </Menu.Button>
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95">
+                          <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <a
+                                  href="#"
+                                  className={classNames(
+                                    active ? 'bg-gray-50' : '',
+                                    'block px-3 py-1 text-sm leading-6 text-gray-900',
+                                  )}>
+                                  View<span className="sr-only">, {client.name}</span>
+                                </a>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <a
+                                  href="#"
+                                  className={classNames(
+                                    active ? 'bg-gray-50' : '',
+                                    'block px-3 py-1 text-sm leading-6 text-gray-900',
+                                  )}>
+                                  Edit<span className="sr-only">, {client.name}</span>
+                                </a>
+                              )}
+                            </Menu.Item>
+                          </Menu.Items>
+                        </Transition>
+                      </Menu>
+                    </div>
+                    <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                      <div className="flex justify-between gap-x-4 py-3">
+                        <dt className="text-gray-500">Last invoice</dt>
+                        <dd className="text-gray-700">
+                          <time dateTime={client.lastInvoice.dateTime}>{client.lastInvoice.date}</time>
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-x-4 py-3">
+                        <dt className="text-gray-500">Amount</dt>
+                        <dd className="flex items-start gap-x-2">
+                          <div className="font-medium text-gray-900">{client.lastInvoice.amount}</div>
+                          <div
+                            className={classNames(
+                              statuses[client.lastInvoice.status as keyof typeof statuses], // Add type assertion to keyof typeof statuses
+                              'rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
+                            )}>
+                            {client.lastInvoice.status}
+                          </div>
+                        </dd>
+                      </div>
+                    </dl>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </main>
-
-      {/* Recent client list*/}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Recent clients</h2>
-            <a href="#" className="text-sm font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-              View all<span className="sr-only">, clients</span>
-            </a>
-          </div>
-          <ul role="list" className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
-            {clients.map(client => (
-              <li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
-                <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                  <img
-                    src={client.imageUrl}
-                    alt={client.name}
-                    className="h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
-                  />
-                  <div className="text-sm font-medium leading-6 text-gray-900">{client.name}</div>
-                  <Menu as="div" className="relative ml-auto">
-                    <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
-                      <span className="sr-only">Open options</span>
-                      <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-                    </Menu.Button>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95">
-                      <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? 'bg-gray-50' : '',
-                                'block px-3 py-1 text-sm leading-6 text-gray-900',
-                              )}>
-                              View<span className="sr-only">, {client.name}</span>
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? 'bg-gray-50' : '',
-                                'block px-3 py-1 text-sm leading-6 text-gray-900',
-                              )}>
-                              Edit<span className="sr-only">, {client.name}</span>
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                </div>
-                <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                  <div className="flex justify-between gap-x-4 py-3">
-                    <dt className="text-gray-500">Last invoice</dt>
-                    <dd className="text-gray-700">
-                      <time dateTime={client.lastInvoice.dateTime}>{client.lastInvoice.date}</time>
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-x-4 py-3">
-                    <dt className="text-gray-500">Amount</dt>
-                    <dd className="flex items-start gap-x-2">
-                      <div className="font-medium text-gray-900">{client.lastInvoice.amount}</div>
-                      <div
-                        className={classNames(
-                          statuses[client.lastInvoice.status as keyof typeof statuses], // Add type assertion to keyof typeof statuses
-                          'rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
-                        )}>
-                        {client.lastInvoice.status}
-                      </div>
-                    </dd>
-                  </div>
-                </dl>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
     </div>
   )
 }
