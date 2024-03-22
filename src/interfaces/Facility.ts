@@ -1,5 +1,6 @@
 /* eslint-disable filename-rules/match */
 export interface IFacility {
+  images: boolean
   _id: string
   corp_name: string
   name: string
