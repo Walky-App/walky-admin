@@ -17,13 +17,6 @@ import NewPasswordForm from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import Signup from './pages/auth/SignupForm'
 
-/** Employee Pages */
-import { EmployeeProfile } from './pages/employee/EmployeeProfile'
-import EmployeeDashboard from './pages/employee/dashboard'
-import EmployeeJobs from './pages/employee/jobs'
-import JobDetailView from './pages/employee/jobs/JobDetailView'
-import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
-
 /** Learn Pages */
 import { Learn } from './pages/learn/Learn'
 import { Assessment } from './pages/learn/assessment/Assessment'
@@ -34,7 +27,7 @@ import { Units } from './pages/learn/units/Units'
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
 import ClientDashboard from './pages/client/dashboard'
-import Facilities from './pages/client/facilities'
+import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
 import Jobs from './pages/client/jobs'
@@ -53,7 +46,7 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 // import SalesProfile from './pages/sales/profile/SalesProfile'
 
 /** Admin Pages */
-import AdminDashboard from './pages/admin/dashboard'
+import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
@@ -61,7 +54,7 @@ import AdminUsers from './pages/admin/users'
 import AdminInviteUser from './pages/admin/users/AdminInviteUser'
 import AdminUserDetails from './pages/admin/users/AdminUserDetails'
 
-import AdminFacilities from './pages/admin/facilities'
+import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
@@ -87,6 +80,13 @@ import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
 import AdminJobs from './pages/admin/jobs'
+
+/** Employee Pages */
+import { EmployeeProfile } from './pages/employee/EmployeeProfile'
+import EmployeeDashboard from './pages/employee/dashboard'
+import EmployeeJobs from './pages/employee/jobs'
+import JobDetailView from './pages/employee/jobs/JobDetailView'
+import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 
 // import AdminAddJob from './pages/admin/jobs/AdminAddJob'
 // import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
@@ -126,7 +126,7 @@ export const App = () => {
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientProfile />} path="/client/profile" />
-                  <Route element={<Facilities />} path="/client/facilities" />
+                  <Route element={<ClientFacilities />} path="/client/facilities" />
                   <Route element={<ClientAddFacility />} path="/client/facilities/new" />
                   <Route element={<ClientFacilityDetails />} path="/client/facilities/:facilityId" />
                   <Route element={<Jobs />} path="/client/jobs" />
