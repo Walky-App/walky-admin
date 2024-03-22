@@ -31,6 +31,7 @@ interface IUserFormValues {
   notifications?: string[]
 }
 
+// eslint-disable-next-line react/function-component-definition
 export default function ClientProfile() {
   const [formUser, setFormUser] = useState<IUserFormValues>({
     first_name: '',
@@ -306,7 +307,7 @@ export default function ClientProfile() {
                         />
                       )}
                     />
-                     {getFormErrorMessage('phone_number', errors)}
+                    {getFormErrorMessage('phone_number', errors)}
                   </div>
                 </div>
 
@@ -474,9 +475,9 @@ export default function ClientProfile() {
                               inputId="notification_email"
                               checked={field.value?.includes('notification_email') || false}
                               onChange={e => {
-                                const value = field.value || [] 
+                                const value = field.value || []
                                 if (e.checked) {
-                                  field.onChange([...value, 'notification_email']) 
+                                  field.onChange([...value, 'notification_email'])
                                 } else {
                                   field.onChange(value.filter((item: string) => item !== 'notification_email'))
                                 }
