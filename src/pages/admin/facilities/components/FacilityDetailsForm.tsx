@@ -397,11 +397,7 @@ export const FacilityDetailsForm = ({
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Business address information of this particular facility
             </p>
-            {facility?.address ? (
-              <h2>
-                {facility.address}, {facility.city}, {facility.state}, {facility.zip}
-              </h2>
-            ) : null}
+            {facility?.address ? <h2>{facility.address}</h2> : null}
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
