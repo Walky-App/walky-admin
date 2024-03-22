@@ -35,18 +35,18 @@ export default function Facilities() {
     //@ts-ignore
     {
       Header: 'Status',
-      accessor: (d: any) => (d.isActive ? 'Active' : 'Disabled'),
+      accessor: (d: any) => (d.is_active ? 'Active' : 'Disabled'),
       sortType: (a: any, b: any) => {
-        if (a.original.isActive === b.original.active) return 0
-        return a.original.isActive ? -1 : 1
+        if (a.original.is_active === b.original.active) return 0
+        return a.original.is_active ? -1 : 1
       },
     }, //@ts-ignore
     {
       Header: 'Past/Present',
-      accessor: (d: any) => (d.isCompleted ? 'Past' : 'Present'),
+      accessor: (d: any) => (d.is_completed ? 'Past' : 'Present'),
       sortType: (a: any, b: any) => {
-        if (a.original.isCompleted === b.original.isCompleted) return 0
-        return a.original.isCompleted ? -1 : 1
+        if (a.original.is_completed === b.original.is_completed) return 0
+        return a.original.is_completed ? -1 : 1
       },
     }, //@ts-ignore
     {
@@ -56,10 +56,10 @@ export default function Facilities() {
     { Header: 'Vacancy', accessor: 'vacancy' },
     {
       Header: 'Availability',
-      accessor: (d: any) => (d.isFull ? 'Full' : 'Open'),
+      accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
       sortType: (a: any, b: any) => {
-        if (a.original.isFull === b.original.isFull) return 0
-        return a.original.isFull ? -1 : 1
+        if (a.original.is_full === b.original.is_full) return 0
+        return a.original.is_full ? -1 : 1
       },
     },
   ]
