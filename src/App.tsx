@@ -53,7 +53,7 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 // import SalesProfile from './pages/sales/profile/SalesProfile'
 
 /** Admin Pages */
-import AdminDashboard from './pages/admin/dashboard'
+import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
