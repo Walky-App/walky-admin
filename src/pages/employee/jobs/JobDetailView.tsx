@@ -7,50 +7,49 @@ import { Button } from 'primereact/button'
 import { MapPinIcon, BookmarkIcon, CheckCircleIcon, UserGroupIcon } from '@heroicons/react/20/solid'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
-import { IFacility } from '../../../interfaces/Facility'
+import { useUtils } from '../../../store/useUtils'
 
 interface IApplicant {
-  user: string;
-  is_approved: boolean;
-  is_working: boolean;
+  user: string
+  is_approved: boolean
+  is_working: boolean
 }
 interface Job {
-  uid: string;
-  created_by: string;
-  facility: IFacility;
-  title: string;
-  start_time: number;
-  end_time: number;
-  total_hours: number;
-  lunch_break: number;
-  job_dates: string[];
-  job_tips: string[];
-  vacancy: number;
-  applicants: IApplicant[];
-  dnr: { email: string; reason: string }[];
-  is_completed: boolean;
-  is_full: boolean;
-  is_active: boolean;
+  uid: string
+  created_by: string
+  facility: IFacility
+  title: string
+  start_time: number
+  end_time: number
+  total_hours: number
+  lunch_break: number
+  job_dates: string[]
+  job_tips: string[]
+  vacancy: number
+  applicants: IApplicant[]
+  dnr: { email: string; reason: string }[]
+  is_completed: boolean
+  is_full: boolean
+  is_active: boolean
 }
 
 export default function JobDetailView() {
-  const [job, setJob] = useState<Job | null>(null);
+  const [job, setJob] = useState<Job | null>(null)
+  const { showToast } = useUtils()
   const params = useParams()
   const user = GetTokenInfo()
 
   let earliestDate, latestDate
-  // Get the earliest and latest date from the job_dates array
   if (job && job.job_dates) {
     earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date).getTime())))
     latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date).getTime())))
   }
 
-  //convert military time to standard time
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
-      // Handle null input, for example, return a placeholder or an error message
       return 'Time not set'
     }
     const militaryTimeString = militaryTime.toString().padStart(4, '0')
@@ -67,7 +66,8 @@ export default function JobDetailView() {
       if (job) {
         setJob(job)
       } else {
-        console.error('Job not found')}
+        console.error('Job not found')
+      }
     }
     getJob()
   }, [])
@@ -80,8 +80,9 @@ export default function JobDetailView() {
         is_working: false,
       }
       await RequestService(`jobs/${params.id}/apply`, 'POST', applicant)
+      showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for the job' })
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -153,7 +154,7 @@ export default function JobDetailView() {
                 <div className="text-xs font-normal text-stone-500">Job Time</div>
                 <div className="text-sm font-medium text-black">
                   {' '}
-                  {/* {convertToStandardTime(job?.start_time)} - {convertToStandardTime(job?.end_time)} */}
+                  {convertToStandardTime(job?.start_time || 0)} - {convertToStandardTime(job?.end_time || 0)}
                 </div>
               </div>
             </div>

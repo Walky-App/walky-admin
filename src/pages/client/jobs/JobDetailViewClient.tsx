@@ -8,22 +8,24 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { Rating } from 'primereact/rating'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
-import { Toast } from 'primereact/toast'
 import { Tooltip } from 'primereact/tooltip'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { RequestService } from '../../../services/RequestService'
+import { useUtils } from '../../../store/useUtils'
 
 import 'primeicons/primeicons.css'
+import { set } from 'react-hook-form'
 
 export default function JobDetailViewClient() {
   const [job, setJob] = useState<any>({})
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
-  const toast = useRef<Toast>(null)
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
+  const { showToast } = useUtils()
+  const [acceptCount, setAcceptCount] = useState(0);
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
@@ -44,20 +46,59 @@ export default function JobDetailViewClient() {
         const job = await RequestService(`jobs/${params.id}`)
         if (job) {
           setJob(job)
-        } 
+        }
       } catch (error) {
         console.error('Error fetching job:', error)
       }
     }
 
     getJob()
-  }, [job.isActive, job.isCompleted, params.id])
+  }, [job.is_active, job.is_completed, params.id, acceptCount ])
 
   let earliestDate, latestDate
 
   if (job && job.job_dates) {
     earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date))))
     latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date))))
+  }
+
+  const handleAccept = async (user_id: string) => {
+    try {
+      const requestData = { user_id }
+      const response = await RequestService(`jobs/${id}/accept`, 'PATCH', requestData)
+      if (response) {
+        const updatedApplicants = job.applicants.map((applicant: any) => {
+          if (applicant.id === user_id) {
+            return { ...applicant, is_approved: true }
+          }
+          return applicant
+        })
+        setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
+        showToast({ severity: 'success', summary: 'Applicant Accepted', detail: 'Applicant has been accepted' })
+        setAcceptCount(prevCount => prevCount + 1);
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleReject = async (user_id: string) => {
+    try {
+      const requestData = { user_id }
+      const response = await RequestService(`jobs/${id}/reject`, 'PATCH', requestData)
+      if (response) {
+        const updatedApplicants = job.applicants.map((applicant: any) => {
+          if (applicant.id === user_id) {
+            return { ...applicant, is_approved: false }
+          }
+          return applicant
+        })
+        setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
+        showToast({ severity: 'success', summary: 'Applicant Rejected', detail: 'Applicant has been rejected' })
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const workers = [
@@ -104,7 +145,6 @@ export default function JobDetailViewClient() {
 
   return (
     <>
-      <Toast ref={toast} />
       <HeaderComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="md:col-span-3">
@@ -140,28 +180,32 @@ export default function JobDetailViewClient() {
                   <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-start gap-2">
-                      {job.isActive === true ? <i className="pi pi-check"></i> : <i className="pi pi-times-circle"></i>}
+                      {job.is_active === true ? (
+                        <i className="pi pi-check"></i>
+                      ) : (
+                        <i className="pi pi-times-circle"></i>
+                      )}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
-                          {job.isActive === true ? 'Active' : 'Disabled'}
+                          {job.is_active === true ? 'Active' : 'Disabled'}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
-                      {job.isCompleted === false ? (
+                      {job.is_completed === false ? (
                         <i className="pi pi-calendar"></i>
                       ) : (
                         <i className="pi pi-calendar-times"></i>
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
-                          {job.isCompleted === false ? 'Live' : 'Archived'}
+                          {job.is_completed === false ? 'Live' : 'Archived'}
                         </span>
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
-                      {job.isFull === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
-                      <div className="text-xs font-medium text-black">{job.isFull === false ? 'Open' : 'Full'}</div>
+                      {job.is_full === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
+                      <div className="text-xs font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
                   {/* Divider */}
@@ -222,22 +266,18 @@ export default function JobDetailViewClient() {
                     label="Edit Job"
                     onClick={() => navigate(`/${isAdmin ? 'admin' : 'client'}/jobs/${id}/edit`)}
                   />{' '}
-                  {!job.isActive ? (
+                  {!job.is_active ? (
                     <Button
                       className="w-full"
                       label="Reopen Job"
                       severity="secondary"
                       onClick={async () => {
                         try {
-                          const requestData = { isActive: true }
+                          const requestData = { is_active: true }
                           const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
                           if (response) {
-                            setJob((prevJob: any) => ({ ...prevJob, isActive: true }))
-                            toast.current?.show({
-                              severity: 'success',
-                              summary: 'Success',
-                              detail: 'Job reopened successfully',
-                            })
+                            setJob((prevJob: any) => ({ ...prevJob, is_active: true }))
+                            showToast({ severity: 'success', summary: 'Job Reopened', detail: 'Job has been reopened' })
                           }
                         } catch (error) {
                           console.error(error)
@@ -251,15 +291,11 @@ export default function JobDetailViewClient() {
                       severity="secondary"
                       onClick={async () => {
                         try {
-                          const requestData = { isActive: false }
+                          const requestData = { is_active: false }
                           const response = await RequestService(`jobs/${id}`, 'PATCH', requestData)
                           if (response) {
-                            setJob((prevJob: any) => ({ ...prevJob, isActive: false }))
-                            toast.current?.show({
-                              severity: 'success',
-                              summary: 'Success',
-                              detail: 'Job closed successfully',
-                            })
+                            setJob((prevJob: any) => ({ ...prevJob, is_active: false }))
+                            showToast({ severity: 'success', summary: 'Job Closed', detail: 'Job has been closed' })
                           }
                         } catch (error) {
                           console.error(error)
@@ -276,61 +312,60 @@ export default function JobDetailViewClient() {
         <div className="md:col-span-3">
           {/* Applicants and Workers Tab View */}
           <TabView>
-            <TabPanel header="Applicants">
+            <TabPanel header="Pending">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-                <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                  <div className="ml-4">
-                    <p className="mt-1 text-sm text-gray-500">
-                      You can reject the workers within X hours of the worker accepted the job. If no reject is done in
-                      X hours then worker is automatically accepted and then the contract is created automatically. you
-                      and applicant both are notified about the contract.
-                    </p>
+                {job?.applicants && job.applicants.length > 0 ? (
+                  <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                    <div className="ml-4">
+                      <p className="mt-1 text-sm text-gray-500">
+                        You can reject the workers within X hours of the worker accepted the job. If no reject is done
+                        in X hours then worker is automatically accepted and then the contract is created automatically.
+                        you and applicant both are notified about the contract.
+                      </p>
+                    </div>
+                    <div className="ml-4 mt-4 flex-shrink-0">
+                      <Button label="Accept All" size="small" />
+                    </div>
                   </div>
-                  <div className="ml-4 mt-4 flex-shrink-0">
-                    <Button label="Accept All" size="small" />
-                  </div>
-                </div>
+                ) : null}
                 <ul className="divide-y divide-gray-100">
                   {job?.applicants && job.applicants.length > 0 ? (
-                    job.applicants.map((applicant?: any) => {
-                      console.log('Applicant:', applicant)
-
-                      return (
-                        <li className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
+                    job.applicants
+                      .filter((applicant: any) => applicant.is_approved === false)
+                      .map((applicant: any) => {
+                        return (
+                          <li key={applicant.user._id} className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
                           <div className="flex min-w-0 gap-x-4">
-                            <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={applicant.user.avatar} alt="" />
-                            <div className="min-w-0 flex-auto">
-                              <p className="text-sm font-semibold leading-6 text-gray-900">
-                                <a href={applicant.user.href}>
+                              <img
+                                className="h-12 w-12 flex-none rounded-full bg-gray-50"
+                                src={applicant.user.avatar}
+                                alt=""
+                              />
+                              <div className="min-w-0 flex-auto">
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
-                                  {applicant.user.first_name} {applicant.user.last_name}
-                                </a>
-                                <Rating value={3} readOnly cancel={false} />
-                              </p>
-                              <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
-                              <p className="mt-1 text-sm text-gray-500">
-                                I would like to apply for this job as soon as possible. But I am not able to work on
-                                weekends. I am a hard worker and I am very punctual.
-                              </p>
+                                  {applicant.user.first_name} {applicant.user.last_name[0]}.
+                                </p>
+                                  <Rating value={3} readOnly cancel={false} />
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                              </div>
                             </div>
-                          </div>
-                          <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
-                            <div className="flex flex-row items-end">
-                              <Button size="small" label="Accept" />
-                              <Button size="small" label="Reject" severity="secondary" className="ml-2" />
+                            <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
+                              <div className="flex flex-row items-end">
+                                <Button size="small" label="Accept" onClick={() => {handleAccept(applicant.user._id)}}/>
+                                <Button size="small" label="Reject" severity="secondary" className="ml-2" />
+                              </div>
                             </div>
-                          </div>
-                        </li>
-                      )
-                    })
+                          </li>
+                        )
+                      })
                   ) : (
-                    <p>No new applicants for this job</p>
+                    <p>There are no new applicants for this job.</p>
                   )}
                 </ul>
-                
               </div>
             </TabPanel>
-            <TabPanel header="Workers">
+            <TabPanel header="Accepted">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4 mt-4">
@@ -341,34 +376,38 @@ export default function JobDetailViewClient() {
                   <div className="ml-4 mt-4 flex-shrink-0"></div>
                 </div>
                 <ul className="divide-y divide-gray-100">
-                  {workers.map(person => (
-                    <li key={person.email} className="relative flex justify-between gap-x-6 py-5">
-                      <div className="flex min-w-0 gap-x-4">
-                        <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
-                        <div className="min-w-0 flex-auto">
-                          <p className="text-sm font-semibold leading-6 text-gray-900">
-                            <a href={person.href}>
-                              <span className="absolute inset-x-0 -top-px bottom-0" />
-                              {person.name}
-                            </a>
-                            <Rating value={3} readOnly cancel={false} />
-                          </p>
-                          <p className="mt-1 flex text-xs leading-5 text-gray-500">
-                            <a href={`mailto:${person.email}`} className="relative truncate hover:underline">
-                              {person.email}
-                            </a>
-                          </p>
-                          <p className="mt-1 text-sm text-gray-500">
-                            I am enjoying working at this facility. The staff is very friendly and the work environment
-                            is very good.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-x-4">
-                        <Tag severity="success" value="Accepted"></Tag>
-                      </div>
-                    </li>
-                  ))}
+                  {job?.applicants ? (
+                    job.applicants
+                      .filter((applicant: any) => applicant.is_approved === true)
+                      .map((applicant?: any) => {
+                        return (
+                          <li key={applicant.user._id} className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
+                          <div className="flex min-w-0 gap-x-4">
+                              <img
+                                className="h-12 w-12 flex-none rounded-full bg-gray-50"
+                                src={applicant.user.avatar}
+                                alt=""
+                              />
+                              <div className="min-w-0 flex-auto">
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                  <span className="absolute inset-x-0 -top-px bottom-0" />
+                                  {applicant.user.first_name} {applicant.user.last_name[0]}.
+                                  <Rating value={3} readOnly cancel={false} />
+                                </p>
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                              </div>
+                            </div>
+                            <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
+                              <div className="flex flex-row items-end">
+                                <Tag value="Accepted" severity="success" />
+                              </div>
+                            </div>
+                          </li>
+                        )
+                      })
+                  ) : (
+                    <p>There are no new applicants for this job.</p>
+                  )}
                 </ul>
               </div>
             </TabPanel>
