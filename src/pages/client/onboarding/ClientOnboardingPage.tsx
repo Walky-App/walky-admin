@@ -141,6 +141,8 @@ export interface FormDataContextProps {
   setSelectedFacility: Dispatch<SetStateAction<IFacilityFormInputs | undefined>>
   documentData: IGetAcceptDocumentDetails | null
   setDocumentData: Dispatch<SetStateAction<IGetAcceptDocumentDetails | null>>
+  prevDocRecipient: IGetAcceptRecipient | null
+  setPrevDocRecipient: Dispatch<SetStateAction<IGetAcceptRecipient | null>>
 }
 
 // Initialize the context with the defined shape and default value
@@ -161,6 +163,10 @@ export const FormDataContext = createContext<FormDataContextProps>({
   documentData: null,
   setDocumentData: () => {
     throw new Error('setDocumentId function must be overridden in FormDataContext')
+  },
+  prevDocRecipient: null,
+  setPrevDocRecipient: () => {
+    throw new Error('setPrevDocRecipient function must be overridden in FormDataContext')
   },
 })
 
@@ -206,11 +212,10 @@ export const ClientOnboarding = () => {
     ...defaultFacilityFormValues,
     user_id: user?._id || '',
   })
-  const [documentData, setDocumentData] = useState<IGetAcceptDocumentDetails | null>(null)
-
   const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
-
   const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
+  const [documentData, setDocumentData] = useState<IGetAcceptDocumentDetails | null>(null)
+  const [prevDocRecipient, setPrevDocRecipient] = useState<IGetAcceptRecipient | null>(null)
 
   const toast = useRef(null)
 
@@ -275,6 +280,8 @@ export const ClientOnboarding = () => {
         setSelectedFacility,
         documentData,
         setDocumentData,
+        prevDocRecipient,
+        setPrevDocRecipient,
       }}>
       <Toast ref={toast} />
       <HeaderComponent title="Client Onboarding" />

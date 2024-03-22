@@ -2,6 +2,7 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
+import { Skeleton } from 'primereact/skeleton'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
 import { RequestService } from '../../../../services/RequestService'
@@ -20,15 +21,14 @@ export const Step5 = ({ step, setStep }: StepProps) => {
 
   const { documentData } = useContext(FormDataContext)
 
-  // const documentUrl = documentData.document_url
-  // console.log('documentData: ', documentData);
-
   const { setRemoveToastCallback, showToast } = useUtils()
 
   useEffect(() => {
+    const documentId = documentData?.id
+
     const getDocumentRecipients = async () => {
       try {
-        const response = await RequestService(`/getaccept/${documentUrl}/recipients`, 'GET')
+        const response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
         if (response.error) {
           throw response.error
         } else {
@@ -76,7 +76,13 @@ export const Step5 = ({ step, setStep }: StepProps) => {
           <div className="sm:col-span-5">
             <ul className="grid-cols-full grid auto-rows-fr gap-x-6 gap-y-8 xl:gap-x-8">
               <li className="overflow-hidden rounded-xl border border-gray-200">
-                {documentUrl ? <GetAcceptIframe documentUrl={documentUrl} className="h-dvh w-full" /> : null}
+                {documentUrl ? (
+                  <GetAcceptIframe documentUrl={documentUrl} className="h-dvh w-full" />
+                ) : (
+                  <div className="flex h-dvh items-center justify-center">
+                    <Skeleton shape="rectangle" size="100%" />
+                  </div>
+                )}
               </li>
             </ul>
           </div>
