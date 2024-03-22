@@ -84,6 +84,53 @@ export interface IFacilityFormInputs {
   _id?: string
 }
 
+export interface IGetAcceptRecipient {
+  email: string
+  first_name: string
+  last_name: string
+  fullname?: string
+  mobile?: string
+  thumb_url?: string
+  role?: string
+  company_name?: string
+  company_number?: string
+  order_num?: string
+}
+
+export interface IGetAcceptDocumentDetails {
+  id: string
+  name: string
+  external_id: string
+  value: number
+  type: string
+  tags: string
+  company_name: string
+  company_id: string
+  company_logo_url: string
+  is_selfsign: boolean
+  is_signing_biometric: boolean
+  is_signing_initials: boolean
+  is_private: boolean
+  status: string
+  send_date: string
+  sign_date: string | null
+  user_id: string
+  email_send_template_id: string
+  email_send_subject: string
+  email_send_message: string
+  is_signing: boolean
+  is_signing_order: boolean
+  is_video: boolean
+  expiration_date: string
+  is_scheduled_sending: boolean
+  scheduled_sending_time: string
+  is_reminder_sending: boolean
+  video_id: number
+  thumb_url: string
+  preview_url: string
+  recipients: IGetAcceptRecipient[]
+}
+
 export interface FormDataContextProps {
   defaultValues: IFacilityFormInputs
   formData: IFacilityFormInputs
@@ -92,9 +139,12 @@ export interface FormDataContextProps {
   setFacilitiesArray: Dispatch<SetStateAction<IFacilityFormInputs[]>>
   selectedFacility: IFacilityFormInputs | undefined
   setSelectedFacility: Dispatch<SetStateAction<IFacilityFormInputs | undefined>>
+  documentData: IGetAcceptDocumentDetails | null
+  setDocumentData: Dispatch<SetStateAction<IGetAcceptDocumentDetails | null>>
+  prevDocRecipient: IGetAcceptRecipient | null
+  setPrevDocRecipient: Dispatch<SetStateAction<IGetAcceptRecipient | null>>
 }
 
-// Initialize the context with the defined shape and default value
 export const FormDataContext = createContext<FormDataContextProps>({
   defaultValues: defaultFacilityFormValues,
   formData: defaultFacilityFormValues,
@@ -108,6 +158,14 @@ export const FormDataContext = createContext<FormDataContextProps>({
   selectedFacility: defaultFacilityFormValues,
   setSelectedFacility: () => {
     throw new Error('setSelectedFacility function must be overridden in FormDataContext')
+  },
+  documentData: null,
+  setDocumentData: () => {
+    throw new Error('setDocumentId function must be overridden in FormDataContext')
+  },
+  prevDocRecipient: null,
+  setPrevDocRecipient: () => {
+    throw new Error('setPrevDocRecipient function must be overridden in FormDataContext')
   },
 })
 
@@ -153,10 +211,10 @@ export const ClientOnboarding = () => {
     ...defaultFacilityFormValues,
     user_id: user?._id || '',
   })
-
   const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
-
   const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
+  const [documentData, setDocumentData] = useState<IGetAcceptDocumentDetails | null>(null)
+  const [prevDocRecipient, setPrevDocRecipient] = useState<IGetAcceptRecipient | null>(null)
 
   const toast = useRef(null)
 
@@ -219,6 +277,10 @@ export const ClientOnboarding = () => {
         setFacilitiesArray,
         selectedFacility,
         setSelectedFacility,
+        documentData,
+        setDocumentData,
+        prevDocRecipient,
+        setPrevDocRecipient,
       }}>
       <Toast ref={toast} />
       <HeaderComponent title="Client Onboarding" />

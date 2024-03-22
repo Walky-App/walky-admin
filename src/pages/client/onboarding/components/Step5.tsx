@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
-import { InputTextarea } from 'primereact/inputtextarea'
+import { Skeleton } from 'primereact/skeleton'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
+import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { type StepProps } from '../ClientOnboardingPage'
+import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { FinishOnboardingDialog } from './FinishOnboardingDialog'
 
 export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
@@ -15,11 +16,29 @@ export function joinTruthyStrings(strings: (string | undefined)[], separator: st
 export const Step5 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [documentUrl, setDocumentUrl] = useState(
-    'https://app.getaccept.com/v/46ygvhewmmgm/8gkzzyzbrmjdd5/a/9bc9875eacee8b30a1b8c1eb2d6a268a',
-  )
+  const [documentUrl, setDocumentUrl] = useState('')
+
+  const { documentData } = useContext(FormDataContext)
 
   const { setRemoveToastCallback, showToast } = useUtils()
+
+  useEffect(() => {
+    const documentId = documentData?.id
+
+    const getDocumentRecipients = async () => {
+      try {
+        const response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
+        if (response.error) {
+          throw response.error
+        } else {
+          setDocumentUrl(response.document_url)
+        }
+      } catch (error) {
+        console.error('Error fetching document recipients:', error)
+      }
+    }
+    getDocumentRecipients()
+  }, [documentData])
 
   const handleRemoveToast = useCallback(() => {
     setIsLoading(false)
@@ -50,21 +69,19 @@ export const Step5 = ({ step, setStep }: StepProps) => {
         <div className="sm:col-span-1">
           <h2 className="text-base font-semibold leading-7 text-gray-900">Terms and Conditions</h2>
           <p className="mt-1 text-sm leading-6 text-gray-600">Please read the terms & conditions of HempTemps.</p>
-          <br />
-          <strong className="block text-sm font-medium text-gray-700">*Testing only*</strong>
-          <InputTextarea
-            value={documentUrl}
-            onChange={e => setDocumentUrl(e.target.value)}
-            placeholder="Document URL"
-            rows={7}
-          />
         </div>
 
         <div className="grid max-w-full grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-3">
           <div className="sm:col-span-5">
             <ul className="grid-cols-full grid auto-rows-fr gap-x-6 gap-y-8 xl:gap-x-8">
               <li className="overflow-hidden rounded-xl border border-gray-200">
-                {documentUrl ? <GetAcceptIframe documentUrl={documentUrl} className="h-dvh w-full" /> : null}
+                {documentUrl ? (
+                  <GetAcceptIframe documentUrl={documentUrl} className="h-dvh w-full" />
+                ) : (
+                  <div className="flex h-dvh items-center justify-center">
+                    <Skeleton shape="rectangle" size="100%" />
+                  </div>
+                )}
               </li>
             </ul>
           </div>
