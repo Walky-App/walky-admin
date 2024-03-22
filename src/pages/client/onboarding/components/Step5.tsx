@@ -1,4 +1,3 @@
-//eslint-disable
 import { useCallback, useContext, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
