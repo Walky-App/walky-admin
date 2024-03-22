@@ -122,7 +122,7 @@ export default function JobDetailView() {
                 </div>
                 <div className="h-1 w-1 rounded-full bg-stone-500" />
 
-                <div className=" rounded-full bg-stone-500" />
+                <div className="rounded-full bg-stone-500" />
               </div>
             </div>
             <div className="flex flex-col items-start justify-start gap-3">
@@ -136,7 +136,7 @@ export default function JobDetailView() {
                   />
                 </div>
                 <div className="inline-flex flex-col items-start justify-start gap-2">
-                  <div className=" text-base font-semibold text-black">{job?.facility?.name}</div>
+                  <div className="text-base font-semibold text-black">{job?.facility?.name}</div>
                 </div>
               </div>
               <div className="h-px w-[520px] bg-zinc-100" />
