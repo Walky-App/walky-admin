@@ -188,7 +188,7 @@ export default function ClientEditJob() {
     { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
     { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
     { label: 'Labcoat Provided', value: 'Labcoat Provided' },
-    { label: 'Hear / Beard net required', value: 'Hear / Beard net required' },
+    { label: 'Head / Beard net required', value: 'Head / Beard net required' },
   ]
 
   return (

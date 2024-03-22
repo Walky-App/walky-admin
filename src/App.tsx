@@ -6,7 +6,7 @@ import { AdminProvider } from './contexts/AdminContext'
 import { AuthProvider } from './contexts/AuthContext'
 
 /** Utilities Pages */
-import Layout from './components/layout/'
+import { Layout } from './components/layout/'
 
 /** Error Pages */
 import Error404 from './pages/Error404'
@@ -17,12 +17,12 @@ import NewPasswordForm from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import Signup from './pages/auth/SignupForm'
 
-import EmployeeProfile from './pages/employees/EmployeeProfile'
-
 /** Employee Pages */
-import EmployeeDashboard from './pages/employees/dashboard'
-import EmployeeJobs from './pages/employees/jobs'
-import JobDetailView from './pages/employees/jobs/JobDetailView'
+import { EmployeeProfile } from './pages/employee/EmployeeProfile'
+import EmployeeDashboard from './pages/employee/dashboard'
+import EmployeeJobs from './pages/employee/jobs'
+import JobDetailView from './pages/employee/jobs/JobDetailView'
+import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 
 /** Learn Pages */
 import { Learn } from './pages/learn/Learn'
@@ -87,8 +87,9 @@ import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
 import AdminJobs from './pages/admin/jobs'
-import AdminAddJob from './pages/admin/jobs/AdminAddJob'
-import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
+
+// import AdminAddJob from './pages/admin/jobs/AdminAddJob'
+// import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -110,6 +111,7 @@ export const App = () => {
             <Route element={<Signup />} path="/invite/:email/:role" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
+                <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
                 <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ITokenInfo } from '../../interfaces/services.interfaces'
+import { ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
-import { LoginData } from '../../interfaces/Global'
+import { LoginData } from '../../interfaces/global'
 import { useAuth } from '../../contexts/AuthContext'
 import { Password } from 'primereact/password'
 import { InputText } from 'primereact/inputtext'
@@ -135,9 +135,8 @@ export default function LoginForm() {
       )}
       <button
         type="submit"
-        className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'cursor-wait hover:bg-zinc-950'
-        }`}>
+        className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${loading && 'cursor-wait hover:bg-zinc-950'
+          }`}>
         {loading ? 'Logging in...' : 'Login'}
       </button>
     </form>
