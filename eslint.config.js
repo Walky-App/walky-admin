@@ -53,6 +53,13 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
       'prettier/prettier': 'off',
+      'jsx-a11y/aria-role': [
+        2,
+        {
+          allowedInvalidRoles: ['text'],
+          ignoreNonDOM: true,
+        },
+      ],
       'no-console': ['error', { allow: ['warn', 'error'] }],
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/strict-boolean-expressions': [

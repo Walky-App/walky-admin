@@ -1,9 +1,14 @@
-import { ITokenInfo } from '../interfaces/services'
+import { type ITokenInfo } from '../interfaces/services'
 
 export const GetTokenInfo = () => {
   const ls_data = JSON.parse(localStorage.getItem('ht_usr') as string)
 
-  const { _id, access_token, role, first_name } = ls_data
+  const {
+    _id,
+    access_token,
+    role,
+    first_name,
+  }: { _id: string; access_token: string; role: string; first_name: string } = ls_data
     ? ls_data
     : { _id: '', access_token: '', role: '', first_name: '' }
   return { _id, access_token, role, first_name }
