@@ -145,7 +145,6 @@ export interface FormDataContextProps {
   setPrevDocRecipient: Dispatch<SetStateAction<IGetAcceptRecipient | null>>
 }
 
-// Initialize the context with the defined shape and default value
 export const FormDataContext = createContext<FormDataContextProps>({
   defaultValues: defaultFacilityFormValues,
   formData: defaultFacilityFormValues,
