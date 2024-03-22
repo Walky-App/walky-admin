@@ -14,8 +14,6 @@ import { HeaderComponent } from '../../../components/shared/general/HeaderCompon
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 
-import 'primeicons/primeicons.css'
-
 export default function JobDetailViewClient() {
   const [job, setJob] = useState<any>({})
   const navigate = useNavigate()
@@ -28,7 +26,6 @@ export default function JobDetailViewClient() {
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
-      // Handle null input, for example, return a placeholder or an error message
       return 'Time not set'
     }
     const militaryTimeString = militaryTime.toString().padStart(4, '0')
@@ -310,7 +307,7 @@ export default function JobDetailViewClient() {
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                               <div className="flex flex-row items-end">
                                 <Button size="small" label="Accept" onClick={() => {handleAccept(applicant.user._id)}}/>
-                                <Button size="small" label="Reject" severity="secondary" className="ml-2" />
+                                <Button size="small" label="Reject" severity="secondary" className="ml-2"  onClick={() => {handleReject(applicant.user._id)}}/>
                               </div>
                             </div>
                           </li>
