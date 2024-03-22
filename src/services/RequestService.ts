@@ -1,4 +1,4 @@
-import { IRequestService } from '../interfaces/services.interfaces'
+import { IRequestService } from '../interfaces/services'
 import { GetTokenInfo } from '../utils/TokenUtils'
 
 export const RequestService: IRequestService = async (

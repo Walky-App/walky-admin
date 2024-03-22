@@ -1,5 +1,5 @@
 import { Search } from './Search'
-import { DisableButtonInterface, NavigationButtonInterface, SelectedOptionInterface } from '../../../interfaces/Global'
+import { DisableButtonInterface, NavigationButtonInterface, SelectedOptionInterface } from '../../../interfaces/global'
 import { NavigationButton } from './NavigationButton'
 import { DisableButton } from './DisableButton'
 import { SelectedOptionWithFilter } from './SelectedOptionWithFilter'
