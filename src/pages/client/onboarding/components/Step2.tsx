@@ -11,7 +11,7 @@ import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
 import { type ToastMessage } from 'primereact/toast'
 
-import { type IToastData } from '../../../../interfaces/global'
+import { type IToastParameters, type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
@@ -24,8 +24,10 @@ import {
 
 export const Step2 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [prevDocRecipient, setPrevDocRecipient] = useState<IGetAcceptRecipient | null>(null)
-  const { facilitiesArray, setFacilitiesArray, setDocumentData } = useContext(FormDataContext)
+  const [toastData, setToastData] = useState<IToastParameters | null>(null)
+  const [requestLoading, setRequestLoading] = useState(false)
+  const { facilitiesArray, setFacilitiesArray, setDocumentData, prevDocRecipient, setPrevDocRecipient } =
+    useContext(FormDataContext)
 
   const facilityId = facilitiesArray[0]?._id
   const fileUploadRef = useRef<FileUpload>(null)
@@ -37,13 +39,13 @@ export const Step2 = ({ step, setStep }: StepProps) => {
       email: facilitiesArray[0]?.contacts[0].email,
       first_name: facilitiesArray[0]?.contacts[0].first_name,
       last_name: facilitiesArray[0]?.contacts[0].last_name,
-      company_name: facilitiesArray[0]?.name,
+      company_name: facilitiesArray[0]?.corp_name,
       company_number: facilitiesArray[0]?.phone_number,
       mobile: facilitiesArray[0]?.contacts[0].phone_number,
     }
 
-    // Compare new docRecipient with the previous one
     if (JSON.stringify(docRecipient) !== JSON.stringify(prevDocRecipient)) {
+      setRequestLoading(true)
       const sendDocumentFromTemplate = async () => {
         const body = {
           name: 'HempTemps Client Agreement',
@@ -65,15 +67,16 @@ export const Step2 = ({ step, setStep }: StepProps) => {
           }
         } catch (error) {
           console.error('Error sending document:', error)
+        } finally {
+          setRequestLoading(false)
         }
       }
 
       sendDocumentFromTemplate()
 
-      // Update prevDocRecipient with the new docRecipient
       setPrevDocRecipient(docRecipient)
     }
-  }, [facilitiesArray, prevDocRecipient, setDocumentData])
+  }, [facilitiesArray, prevDocRecipient, setDocumentData, setPrevDocRecipient])
 
   const handleRemoveToast = useCallback(
     (toastData: ToastMessage | IToastData) => {
@@ -96,10 +99,16 @@ export const Step2 = ({ step, setStep }: StepProps) => {
     setRemoveToastCallback(handleRemoveToast)
   }, [handleRemoveToast, setRemoveToastCallback])
 
+  useEffect(() => {
+    if (!requestLoading && toastData) {
+      showToast(toastData)
+      setToastData(null)
+    }
+  }, [requestLoading, toastData, showToast])
+
   const handleSaveButton = () => {
     setIsLoading(true)
-
-    showToast({
+    setToastData({
       severity: 'success',
       summary: 'Success',
       detail: 'Changes saved successfully.',
