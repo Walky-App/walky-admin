@@ -1,5 +1,9 @@
 import { Fragment, useEffect, useState } from 'react'
 
+import { useNavigate } from 'react-router-dom'
+
+import { Button } from 'primereact/button'
+
 import { Menu, Transition } from '@headlessui/react'
 import {
   BanknotesIcon,
@@ -14,8 +18,6 @@ import {
 
 import { useAuth } from '../../../contexts/AuthContext'
 import { RequestService } from '../../../services/RequestService'
-import { Button } from 'primereact/button'
-import { useNavigate } from 'react-router-dom'
 
 const statuses = {
   Paid: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -67,8 +69,14 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+interface ICounts {
+  facilities: string
+  jobs: string
+  users: string
+}
+
 export const AdminDashboard = () => {
-  const [counts, setCounts] = useState<any>({})
+  const [counts, setCounts] = useState<ICounts | null>()
   const { user } = useAuth()
   const navigate = useNavigate()
 
@@ -89,9 +97,9 @@ export const AdminDashboard = () => {
   }, [])
 
   const cards = [
-    { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: counts.users },
-    { name: 'Facilities', href: '/admin/facilities', icon: InformationCircleIcon, amount: counts.facilities },
-    { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon, amount: counts.jobs },
+    { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: counts?.users },
+    { name: 'Facilities', href: '/admin/facilities', icon: InformationCircleIcon, amount: counts?.facilities },
+    { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon, amount: counts?.jobs },
     // More items...
   ]
 
@@ -100,52 +108,46 @@ export const AdminDashboard = () => {
       <main className="flex-1 pb-8">
         {/* Dashboard header */}
 
-          <div className="px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8 bg-white shadow">
-            <div className="py-6 md:flex md:items-center md:justify-between">
-              <div className="min-w-0 flex-1">
-                {/* Profile */}
-                <div className="flex items-center">
-                  <img className="hidden h-16 w-16 rounded-full sm:block" src={user?.avatar} alt="avatar" />
-                  <div>
-                    <div className="flex items-center">
-                      <img className="h-16 w-16 rounded-full sm:hidden" src={user?.avatar} alt="avatar" />
-                      <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
-                        Welcome Back, {user?.first_name}
-                      </h1>
-                    </div>
-                    <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
-                      <dt className="sr-only">Company</dt>
-                      <dd className="flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6">
-                        <BuildingOfficeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                        {user?.email}
-                      </dd>
-                      <dt className="sr-only">Account status</dt>
-                      <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
-                        <CheckCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400" aria-hidden="true" />
-                        Verified account
-                      </dd>
-                    </dl>
+        <div className="bg-white px-4 shadow sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
+          <div className="py-6 md:flex md:items-center md:justify-between">
+            <div className="min-w-0 flex-1">
+              {/* Profile */}
+              <div className="flex items-center">
+                <img className="hidden h-16 w-16 rounded-full sm:block" src={user?.avatar} alt="avatar" />
+                <div>
+                  <div className="flex items-center">
+                    <img className="h-16 w-16 rounded-full sm:hidden" src={user?.avatar} alt="avatar" />
+                    <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
+                      Welcome Back, {user?.first_name}
+                    </h1>
                   </div>
+                  <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
+                    <dt className="sr-only">Company</dt>
+                    <dd className="flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6">
+                      <BuildingOfficeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                      {user?.email}
+                    </dd>
+                    <dt className="sr-only">Account status</dt>
+                    <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
+                      <CheckCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400" aria-hidden="true" />
+                      Verified account
+                    </dd>
+                  </dl>
                 </div>
               </div>
-              <div className="mt-6 flex space-x-3 md:ml-4 md:mt-0">
-                <Button
-                 label= "Facilities"
-                 severity='secondary'
-                 outlined
-                 size='small'
-                 onClick={() => navigate('/admin/facilities')}
-                 />
-                <Button 
-                label= "Jobs"
-                size='small'
-                onClick={() => navigate('/admin/jobs')}
-                />
-                
-              </div>
+            </div>
+            <div className="mt-6 flex space-x-3 md:ml-4 md:mt-0">
+              <Button
+                label="Facilities"
+                severity="secondary"
+                outlined
+                size="small"
+                onClick={() => navigate('/admin/facilities')}
+              />
+              <Button label="Jobs" size="small" onClick={() => navigate('/admin/jobs')} />
             </div>
           </div>
-
+        </div>
 
         <div className="mt-8">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -214,16 +216,8 @@ export const AdminDashboard = () => {
               className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3"
               aria-label="Pagination">
               <div className="flex flex-1 justify-between">
-                <a
-                  href="#"
-                  className="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  Previous
-                </a>
-                <a
-                  href="#"
-                  className="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  Next
-                </a>
+                <Button label="Previous" severity="secondary" outlined size="small" />
+                <Button label="Next" severity="secondary" outlined size="small" />
               </div>
             </nav>
           </div>
@@ -297,16 +291,8 @@ export const AdminDashboard = () => {
                       </p>
                     </div>
                     <div className="flex flex-1 justify-between gap-x-3 sm:justify-end">
-                      <a
-                        href="#"
-                        className="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
-                        Previous
-                      </a>
-                      <a
-                        href="#"
-                        className="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
-                        Next
-                      </a>
+                      <Button label="Previous" severity="secondary" outlined size="small" />
+                      <Button label="Edit" severity="secondary" outlined size="small" />
                     </div>
                   </nav>
                 </div>
@@ -318,13 +304,10 @@ export const AdminDashboard = () => {
           <div className="mx-auto mt-8 max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">
-                  Recent clients</h2>
-                <a href="#" className="text-sm font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                  View all<span className="sr-only">, clients</span>
-                </a>
+                <h2 className="text-lg font-medium leading-6 text-gray-900">Recent clients</h2>
+                <Button text label="View all" severity="success" outlined size="small" />
               </div>
-              <ul role="list" className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
+              <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
                 {clients.map(client => (
                   <li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
                     <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
@@ -350,26 +333,24 @@ export const AdminDashboard = () => {
                           <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                             <Menu.Item>
                               {({ active }) => (
-                                <a
-                                  href="#"
+                                <Button
                                   className={classNames(
                                     active ? 'bg-gray-50' : '',
                                     'block px-3 py-1 text-sm leading-6 text-gray-900',
-                                  )}>
-                                  View<span className="sr-only">, {client.name}</span>
-                                </a>
+                                  )}
+                                  label={`View, ${client.name}`}
+                                />
                               )}
                             </Menu.Item>
                             <Menu.Item>
                               {({ active }) => (
-                                <a
-                                  href="#"
+                                <Button
                                   className={classNames(
                                     active ? 'bg-gray-50' : '',
                                     'block px-3 py-1 text-sm leading-6 text-gray-900',
-                                  )}>
-                                  Edit<span className="sr-only">, {client.name}</span>
-                                </a>
+                                  )}
+                                  label={`Edit, ${client.name}`}
+                                />
                               )}
                             </Menu.Item>
                           </Menu.Items>
