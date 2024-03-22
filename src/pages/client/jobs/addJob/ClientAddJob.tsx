@@ -175,7 +175,7 @@ export default function ClientAddJob() {
     { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
     { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
     { label: 'Labcoat Provided', value: 'Labcoat Provided' },
-    { label: 'Hear / Beard net required', value: 'Hear / Beard net required' },
+    { label: 'Head / Beard net required', value: 'Head / Beard net required' },
   ]
 
   return (
@@ -356,7 +356,7 @@ export default function ClientAddJob() {
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
-              {totalHours !== 0 && <div>Total hours: {totalHours}</div>}
+              {totalHours !== 0 && <div className="text-base font-semibold leading-7 text-gray-900">Total Hours: {totalHours}</div>}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
