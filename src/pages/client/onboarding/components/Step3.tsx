@@ -125,9 +125,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
                   <div className="flex justify-between gap-x-4 py-3">
                     <dt className="text-gray-500">Address</dt>
                     <dd className="flex items-start gap-x-2">
-                      <div className="font-medium text-gray-900">
-                        {joinTruthyStrings([facility.address, facility.city, facility.state, facility.zip], ', ')}
-                      </div>
+                      <div className="font-medium text-gray-900">{facility.address}</div>
                     </dd>
                   </div>
                   <div className="flex justify-between gap-x-4 py-3">
