@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { ProgressBar } from 'primereact/progressbar'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { useAdmin } from '../../../contexts/AdminContext'
+import type { IAssessmentResponse } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
 import { cn } from '../../../utils/cn'
 import { Timer } from '../components/Timer'
+import { AssessmentResponse } from './AssessmentResponse'
 
 interface IAssessment {
   _id: string
@@ -25,7 +27,13 @@ export const Assessment = () => {
   const [selectAnswer, setSelectAnswer] = useState<IAssessment>({ _id: '', answer: '', code: 99 })
   const params = useParams()
   const [finishAssessment, setFinishAssessment] = useState(false)
-  const navigate = useNavigate()
+  const [validatorResponse, setValidatorResponse] = useState<IAssessmentResponse>({
+    correctQuestions: 0,
+    minimumScore: 0,
+    incorrectQuestions: 0,
+    passAssessment: false,
+    percentageAssessment: 0,
+  })
 
   const fetchData = async () => {
     const response = await RequestService(`units/${params.unitId}`)
@@ -40,7 +48,7 @@ export const Assessment = () => {
     }
   })
 
-  const handlerControllerQuestion = () => {
+  const handlerControllerQuestion = async () => {
     if (indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1) {
       //submit
       confirmDialog({
@@ -52,7 +60,14 @@ export const Assessment = () => {
         rejectClassName: 'p-button-danger',
         style: { width: '50vw' },
         breakpoints: { '1100px': '75vw', '960px': '100vw' },
-        accept: () => {
+        accept: async () => {
+          const assessmentData = [...(assessmentArray ?? [])]
+          assessmentData.push(selectAnswer)
+          const response: IAssessmentResponse = await RequestService(`units/assessment/validator`, 'POST', {
+            userAnswers: assessmentData,
+            unitId: params.unitId,
+          })
+          setValidatorResponse(response)
           setFinishAssessment(true)
         },
       })
@@ -136,20 +151,7 @@ export const Assessment = () => {
           </div>
         </div>
       ) : (
-        <div className="rounded-md border-2 border-gray-300">
-          <div className="flex h-96 flex-col items-center justify-center">
-            <div className="text-3xl font-semibold text-green-600">Assessment submitted successfully</div>
-            <div className="text-3xl font-semibold text-gray-500">Coming soon</div>
-            <button
-              className="mt-4 hover:text-green-600"
-              onClick={() => {
-                navigate(`/learn/module/${params.moduleId}/unit/${params.unitId}`)
-              }}
-              type="button">
-              Go back to unit
-            </button>
-          </div>
-        </div>
+        <AssessmentResponse validatorResponse={validatorResponse} />
       )}
     </div>
   )
