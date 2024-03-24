@@ -7,7 +7,7 @@ import { App } from './App'
 
 import './index.css'
 import 'primeicons/primeicons.css'
-import 'primereact/resources/themes/mdc-light-indigo/theme.css'
+import './theme/theme.css'
 import 'quill/dist/quill.core.css'
 
 const container = document.getElementById('root')
