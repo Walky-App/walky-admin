@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react'
-import LoginForm from './LoginForm'
-import SignupForm from './SignupForm'
-import ForgotPasswordForm from './ForgotPasswordForm'
 
-export default function Auth() {
+import ForgotPasswordForm from './ForgotPasswordForm'
+import { LoginForm } from './LoginForm'
+import SignupForm from './SignupForm'
+
+export const Auth = () => {
   const [userForm, setUserForm] = useState('Login')
   const [heroImage, setHeroImage] = useState<string>('')
 
@@ -38,7 +39,9 @@ export default function Auth() {
   const chooseLogoImage = () => {
     const currentURL = window.location.href
     if (currentURL.toLowerCase().includes('hydropallet')) {
-      return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
+      return (
+        <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
+      )
     } else {
       return (
         <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="sm:w-full xl:px-12" />
@@ -52,29 +55,29 @@ export default function Auth() {
         <div className="w-full px-4 sm:px-0">
           <div className="flex justify-center">{chooseLogoImage()}</div>
 
-          {userForm === 'Login' && <LoginForm />}
-          {userForm === 'Sign up' && <SignupForm />}
-          {userForm === 'Forgot Password' && <ForgotPasswordForm />}
+          {userForm === 'Login' ? <LoginForm /> : null}
+          {userForm === 'Sign up' ? <SignupForm /> : null}
+          {userForm === 'Forgot Password' ? <ForgotPasswordForm /> : null}
 
           <div className="mr-center flex flex-col items-center justify-center gap-2">
-            {userForm === 'Login' && (
-              <a
+            {userForm === 'Login' ? (
+              <button
+                type="button"
                 className="font-medium underline hover:text-green-700"
-                href="#"
                 onClick={() => setUserForm('Forgot Password')}>
                 Forgot your password?
-              </a>
-            )}
+              </button>
+            ) : null}
 
             <p className="text-sm text-zinc-500">
-              {userForm !== 'Login' && (
+              {userForm !== 'Login' ? (
                 <div>
                   Already have an account? &nbsp;
-                  <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Login')}>
+                  <button type="button" className="underline hover:text-green-700" onClick={() => setUserForm('Login')}>
                     Login
-                  </a>
+                  </button>
                 </div>
-              )}
+              ) : null}
             </p>
           </div>
         </div>
