@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Dialog } from 'primereact/dialog'
+import { Dropdown } from 'primereact/dropdown'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { Rating } from 'primereact/rating'
 import { TabPanel, TabView } from 'primereact/tabview'
@@ -22,7 +26,11 @@ export default function JobDetailViewClient() {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
-  const [acceptCount, setAcceptCount] = useState(0);
+  const [acceptCount, setAcceptCount] = useState(0)
+  const [visible, setVisible] = useState(false)
+  const [rejectionReason, setRejectionReason] = useState<any>(null)
+  const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
+  const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
@@ -49,7 +57,7 @@ export default function JobDetailViewClient() {
     }
 
     getJob()
-  }, [job.is_active, job.is_completed, params.id, acceptCount ])
+  }, [job.is_active, job.is_completed, params.id, acceptCount, rejectionReason, lastRejectedApplicantId, lastReinstatedApplicantId])
 
   let earliestDate, latestDate
 
@@ -71,17 +79,45 @@ export default function JobDetailViewClient() {
         })
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Accepted', detail: 'Applicant has been accepted' })
-        setAcceptCount(prevCount => prevCount + 1);
+        setAcceptCount(prevCount => prevCount + 1)
       }
     } catch (error) {
       console.error(error)
     }
   }
 
-  const handleReject = async (user_id: string) => {
+  const handleAcceptAll = async () => {
     try {
-      const requestData = { user_id }
-      const response = await RequestService(`jobs/${id}/reject`, 'PATCH', requestData)
+      const response = await RequestService(`jobs/${id}/acceptAll`, 'PATCH')
+      if (response) {
+        const updatedApplicants = job.applicants.map((applicant: any) => {
+          return { ...applicant, is_approved: true }
+        })
+        setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
+        showToast({
+          severity: 'success',
+          summary: 'All Applicants Accepted',
+          detail: 'All applicants have been accepted',
+        })
+        setAcceptCount(prevCount => prevCount + 1)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const rejectionReasons = [
+    { name: 'Not enough experience', value: 'Not enough experience' },
+    { name: 'Not enough qualifications', value: 'Not enough qualifications' },
+    { name: 'Previous bad experience', value: 'Previous bad experience' },
+    { name: 'Too expensive', value: 'Too expensive' },
+    { name: 'Low ratings', value: 'Low ratings' },
+  ]
+
+  const handleReject = async (user_id: string, rejectionReason: string) => {
+    try {
+      const requestData = { user_id, rejection_reason: rejectionReason }
+      const response = await RequestService(`jobs/${id}/reject`, 'POST', requestData)
       if (response) {
         const updatedApplicants = job.applicants.map((applicant: any) => {
           if (applicant.id === user_id) {
@@ -91,6 +127,28 @@ export default function JobDetailViewClient() {
         })
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Rejected', detail: 'Applicant has been rejected' })
+        setVisible(false)
+        setLastRejectedApplicantId(user_id)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleReinstate = async (user_id: string) => {
+    try {
+      const requestData = { user_id }
+      const response = await RequestService(`jobs/${id}/reinstate`, 'PATCH', requestData)
+      if (response) {
+        const updatedApplicants = job.applicants.map((applicant: any) => {
+          if (applicant.id === user_id) {
+            return { ...applicant, is_approved: false, rejection_reason: '' }
+          }
+          return applicant
+        })
+        setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
+        showToast({ severity: 'success', summary: 'Applicant Reinstated', detail: 'Applicant has been reinstated' })
+        setLastReinstatedApplicantId(user_id)
       }
     } catch (error) {
       console.error(error)
@@ -119,11 +177,11 @@ export default function JobDetailViewClient() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
                       <div className="flex items-center">
-                        <i className="pi pi-building"></i>
+                        <i className="pi pi-building" />
                         <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
                       </div>
                       <div className="flex items-center">
-                        <i className="pi pi-map-marker"></i>
+                        <i className="pi pi-map-marker" />
                         <div className="ml-2 text-sm font-normal text-black">
                           {job.facility.address}, {job.facility.city}, {job.facility.state}, {job.facility.zip}
                         </div>
@@ -135,9 +193,9 @@ export default function JobDetailViewClient() {
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-start gap-2">
                       {job.is_active === true ? (
-                        <i className="pi pi-check"></i>
+                        <i className="pi pi-check" />
                       ) : (
-                        <i className="pi pi-times-circle"></i>
+                        <i className="pi pi-times-circle" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
@@ -147,9 +205,9 @@ export default function JobDetailViewClient() {
                     </div>
                     <div className="flex items-start gap-2">
                       {job.is_completed === false ? (
-                        <i className="pi pi-calendar"></i>
+                        <i className="pi pi-calendar" />
                       ) : (
-                        <i className="pi pi-calendar-times"></i>
+                        <i className="pi pi-calendar-times" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
@@ -158,7 +216,7 @@ export default function JobDetailViewClient() {
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
-                      {job.is_full === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
+                      {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                       <div className="text-xs font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
@@ -268,28 +326,29 @@ export default function JobDetailViewClient() {
           <TabView>
             <TabPanel header="Pending">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-                {job?.applicants && job.applicants.length > 0 ? (
-                  <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                    <div className="ml-4">
-                      <p className="mt-1 text-sm text-gray-500">
-                        You can reject the workers within X hours of the worker accepted the job. If no reject is done
-                        in X hours then worker is automatically accepted and then the contract is created automatically.
-                        you and applicant both are notified about the contract.
-                      </p>
-                    </div>
-                    <div className="ml-4 mt-4 flex-shrink-0">
-                      <Button label="Accept All" size="small" />
-                    </div>
+                <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                  <div className="ml-4">
+                    <p className="mt-1 text-sm text-gray-500">
+                      You can reject the applicants within X hours of the worker accepted the job. If no reject is done
+                      in X hours then worker is automatically accepted and then the contract is created automatically.
+                      you and applicant both are notified about the contract.
+                    </p>
                   </div>
-                ) : null}
+                  <div className="ml-4 mt-4 flex-shrink-0">
+                    {job.applicants && job.applicants.some((applicant: any) => !applicant.is_approved && applicant.rejection_reason === '') ? <Button label="Accept All" size="small" onClick={handleAcceptAll} /> : null}
+                  </div>
+                </div>
+
                 <ul className="divide-y divide-gray-100">
                   {job?.applicants && job.applicants.length > 0 ? (
                     job.applicants
-                      .filter((applicant: any) => applicant.is_approved === false)
+                      .filter((applicant: any) => applicant.is_approved === false && applicant.rejection_reason === '')
                       .map((applicant: any) => {
                         return (
-                          <li key={applicant.user._id} className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
-                          <div className="flex min-w-0 gap-x-4">
+                          <li
+                            key={applicant.user._id}
+                            className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
+                            <div className="flex min-w-0 gap-x-4">
                               <img
                                 className="h-12 w-12 flex-none rounded-full bg-gray-50"
                                 src={applicant.user.avatar}
@@ -300,14 +359,64 @@ export default function JobDetailViewClient() {
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                 </p>
-                                  <Rating value={3} readOnly cancel={false} />
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                                <Rating value={3} readOnly cancel={false} />
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                               <div className="flex flex-row items-end">
-                                <Button size="small" label="Accept" onClick={() => {handleAccept(applicant.user._id)}}/>
-                                <Button size="small" label="Reject" severity="secondary" className="ml-2"  onClick={() => {handleReject(applicant.user._id)}}/>
+                                <Button
+                                  size="small"
+                                  label="Accept"
+                                  onClick={() => {
+                                    handleAccept(applicant.user._id)
+                                  }}
+                                />
+                                <Button
+                                  size="small"
+                                  label="Reject"
+                                  severity="secondary"
+                                  className="ml-2"
+                                  onClick={() => setVisible(true)}
+                                />
+
+                                <Dialog
+                                  header={
+                                    <div className="align-items-center justify-content-center inline-flex gap-2">
+                                      <Avatar image={applicant.user.avatar} shape="circle" />
+                                      <span className="white-space-nowrap font-bold">
+                                        {applicant.user.first_name} {applicant.user.last_name[0]}.
+                                      </span>
+                                      <Rating value={3} readOnly cancel={false} />
+                                    </div>
+                                  }
+                                  visible={visible}
+                                  style={{ width: '50vw' }}
+                                  onHide={() => setVisible(false)}
+                                  footer={
+                                    <Button
+                                      size="small"
+                                      label="Reject Applicant"
+                                      severity="secondary"
+                                      className="ml-2"
+                                      onClick={() => {
+                                        handleReject(applicant.user._id, rejectionReason)
+                                      }}
+                                    />
+                                  }>
+                                  <p>
+                                    Please select a reason for rejecting this applicant. Note that the employee would
+                                    not be able to apply for this job again.
+                                  </p>
+                                  <Dropdown
+                                    value={rejectionReason}
+                                    onChange={e => setRejectionReason(e.value)}
+                                    options={rejectionReasons}
+                                    optionLabel="name"
+                                    placeholder="Select a Rejection Reason"
+                                    className="md:w-14rem mb-4 mt-4 w-full"
+                                  />
+                                </Dialog>
                               </div>
                             </div>
                           </li>
@@ -319,24 +428,27 @@ export default function JobDetailViewClient() {
                 </ul>
               </div>
             </TabPanel>
-            <TabPanel header="Accepted">
+            <TabPanel header="Rejected">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4 mt-4">
                     <p className="mt-1 text-sm text-gray-500">
-                      This is the list of all workers who have been accepted for this job.
+                      This is the list of all applicants who have been rejected. You can reinstate them if you wish by
+                      clicking on the Cancel button. This action will move the applicant back to the pending list.
                     </p>
                   </div>
-                  <div className="ml-4 mt-4 flex-shrink-0"></div>
+                  <div className="ml-4 mt-4 flex-shrink-0" />
                 </div>
                 <ul className="divide-y divide-gray-100">
                   {job?.applicants ? (
                     job.applicants
-                      .filter((applicant: any) => applicant.is_approved === true)
+                      .filter((applicant: any) => applicant.is_approved === false && applicant.rejection_reason !== '')
                       .map((applicant?: any) => {
                         return (
-                          <li key={applicant.user._id} className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
-                          <div className="flex min-w-0 gap-x-4">
+                          <li
+                            key={applicant.user._id}
+                            className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
+                            <div className="flex min-w-0 gap-x-4">
                               <img
                                 className="h-12 w-12 flex-none rounded-full bg-gray-50"
                                 src={applicant.user.avatar}
@@ -346,15 +458,80 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
+                                  <Tag className='ml-2 mb-2' value="Rejected" severity="danger" />
                                   <Rating value={3} readOnly cancel={false} />
+                                  Reason for rejection: {applicant.rejection_reason}
                                 </p>
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                               <div className="flex flex-row items-end">
-                                <Tag value="Accepted" severity="success" />
+                                <Button
+                                  size="small"
+                                  label="Cancel"
+                                  severity='secondary'
+                                  onClick={() => {
+                                    handleReinstate(applicant.user._id)
+                                  }}
+                                />
                               </div>
+                            </div>
+                          </li>
+                        )
+                      })
+                  ) : (
+                    <p>There are no rejected applicants.</p>
+                  )}
+                </ul>
+              </div>
+            </TabPanel>
+            <TabPanel header="Accepted">
+              <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                  <div className="ml-4 mt-4">
+                    <p className="mt-1 text-sm text-gray-500">
+                      This is the list of all workers who have been accepted for this job. You can cancel their
+                      acceptance by click on the Cancel button. This action will move the worker back to the pending
+                      list.
+                    </p>
+                  </div>
+                  <div className="ml-4 mt-4 flex-shrink-0" />
+                </div>
+                <ul className="divide-y divide-gray-100">
+                  {job?.applicants ? (
+                    job.applicants
+                      .filter((applicant: any) => applicant.is_approved === true)
+                      .map((applicant?: any) => {
+                        return (
+                          <li
+                            key={applicant.user._id}
+                            className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
+                            <div className="flex min-w-0 gap-x-4">
+                              <img
+                                className="h-12 w-12 flex-none rounded-full bg-gray-50"
+                                src={applicant.user.avatar}
+                                alt=""
+                              />
+                              <div className="min-w-0 flex-auto">
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                  <span className="absolute inset-x-0 -top-px bottom-0" />
+                                  {applicant.user.first_name} {applicant.user.last_name[0]}.
+                                  <Tag className='ml-2 mb-2' value="Accepted" severity="success" />
+                                  <Rating value={3} readOnly cancel={false} />
+                                </p>
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
+                              </div>
+                            </div>
+                            <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
+                              <div className="flex flex-row items-end" />
+                              <Button
+                                size="small"
+                                label="Cancel"
+                                severity='secondary'
+                                onClick={() => {
+                                  handleReinstate(applicant.user._id)
+                                }}/>
                             </div>
                           </li>
                         )

@@ -16,7 +16,7 @@ export const FacilityDetailsForm = ({
   setFacility: React.Dispatch<React.SetStateAction<IFacility | undefined>>
 }) => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
-  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [locationPolygon, setLocationPolygon] = useState<[number, number][]>(facility.location_polygon || [])
 
   const { zip, state, city, location_pin, address } = moreAddressDetails || {
@@ -55,6 +55,8 @@ export const FacilityDetailsForm = ({
       .split(',')
       .map(dba => dba.trim())
       .filter(dba => dba)
+
+    locationPolygon.push(locationPolygon[0]) // close the polygon with same as first point
 
     const formValues = {
       tax_id: target.tax_id.value,
@@ -397,11 +399,7 @@ export const FacilityDetailsForm = ({
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Business address information of this particular facility
             </p>
-            {facility?.address ? (
-              <h2>
-                {facility.address}, {facility.city}, {facility.state}, {facility.zip}
-              </h2>
-            ) : null}
+            {facility?.address ? <h2>{facility.address}</h2> : null}
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">

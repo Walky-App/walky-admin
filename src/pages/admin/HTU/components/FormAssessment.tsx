@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { confirmDialog } from 'primereact/confirmdialog'
 import { InputNumber } from 'primereact/inputnumber'
 import { classNames } from 'primereact/utils'
 
@@ -120,7 +120,7 @@ export const FormAssessment = ({ action }: Props) => {
     setVisible(true)
   }
 
-  const handlerDeleteQuestion = async (question: Questions) => {
+  const handlerDeleteQuestion = (question: Questions) => {
     confirmDialog({
       message: 'Are you sure you want to proceed?',
       header: 'Delete question',
@@ -136,10 +136,7 @@ export const FormAssessment = ({ action }: Props) => {
         })
         setQuestions(response.assessments.questions)
         showToast({ severity: 'success', detail: 'Question deleted', summary: 'Question deleted successfully' })
-      },
-      reject: () => {
-        // Add your reject logic here
-      },
+      }
     })
   }
 
@@ -152,7 +149,6 @@ export const FormAssessment = ({ action }: Props) => {
         setVisible={setVisible}
         visible={visible}
       />
-      <ConfirmDialog />
       <div className="pb-12">
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-3">

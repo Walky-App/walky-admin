@@ -12,10 +12,11 @@ import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect
 import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
+import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
 import { type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { countries, services, states } from '../../../../utils/formOptions'
+import { services } from '../../../../utils/formOptions'
 import {
   FormDataContext,
   type IFacilityFormInputs,
@@ -27,7 +28,15 @@ import {
 export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const { setFormData, defaultValues, formData, facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
+  const {
+    setFormData,
+    defaultValues,
+    formData,
+    facilitiesArray,
+    setFacilitiesArray,
+    moreAddressDetails,
+    setMoreAddressDetails,
+  } = useContext(FormDataContext)
 
   const { setRemoveToastCallback, showToast } = useUtils()
 
@@ -59,7 +68,33 @@ export const Step1 = ({ step, setStep }: StepProps) => {
     formState: { errors },
     handleSubmit,
     getValues,
+    setValue,
   } = useForm<IFacilityFormInputs>({ values })
+
+  useEffect(() => {
+    if (moreAddressDetails) {
+      if (moreAddressDetails.zip) {
+        setValue('zip', moreAddressDetails.zip)
+      }
+      if (moreAddressDetails.state) {
+        setValue('state', moreAddressDetails.state)
+      }
+      if (moreAddressDetails.city) {
+        setValue('city', moreAddressDetails.city)
+      }
+      if (moreAddressDetails.location_pin) {
+        setValue('location_pin', moreAddressDetails.location_pin)
+      }
+      if (moreAddressDetails.address) {
+        setValue('address', moreAddressDetails.address)
+      }
+      if (moreAddressDetails.country) {
+        setValue('country', moreAddressDetails.country)
+      }
+
+      setMoreAddressDetails(undefined)
+    }
+  }, [moreAddressDetails, setMoreAddressDetails, setValue])
 
   const { fields } = useFieldArray({
     control,
@@ -372,32 +407,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            <div className="sm:col-span-3">
-              <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                *Country:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="country"
-                  rules={{ required: 'Country is required' }}
-                  render={({ field, fieldState }) => (
-                    <Dropdown
-                      id={field.name}
-                      {...field}
-                      filter
-                      options={countries}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
-                    />
-                  )}
-                />
-              </div>
-              {getFormErrorMessage('country', errors)}
-            </div>
-
-            <div className="sm:col-span-3">
+            <div className="sm:col-span-6">
               <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
-                *Address:
+                *Street Address:
               </label>
               <div className="mt-2">
                 <Controller
@@ -405,76 +417,18 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   name="address"
                   rules={{ required: 'Address is required' }}
                   render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ 'p-invalid': fieldState.invalid })} />
+                    <AddressAutoComplete
+                      controlled
+                      setMoreAddressDetails={setMoreAddressDetails}
+                      currentAddress={field.value}
+                      onChange={field.onChange}
+                      value={field.value}
+                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                    />
                   )}
                 />
               </div>
               {getFormErrorMessage('address', errors)}
-            </div>
-
-            <div className="sm:col-span-3">
-              <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-                *City:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="city"
-                  rules={{ required: 'City is required' }}
-                  render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ 'p-invalid': fieldState.invalid })} />
-                  )}
-                />
-              </div>
-              {getFormErrorMessage('city', errors)}
-            </div>
-
-            <div className="sm:col-span-3">
-              <label htmlFor="state" className="block text-sm font-medium leading-6 text-gray-900">
-                *State:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="state"
-                  rules={{ required: 'State is required' }}
-                  render={({ field, fieldState }) => (
-                    <Dropdown
-                      id={field.name}
-                      {...field}
-                      filter
-                      options={states}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
-                    />
-                  )}
-                />
-              </div>
-              {getFormErrorMessage('state', errors)}
-            </div>
-
-            <div className="sm:col-span-3">
-              <label htmlFor="postalCode" className="block text-sm font-medium leading-6 text-gray-900">
-                *Postal Code:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="zip"
-                  rules={{ required: 'Postal Code is required' }}
-                  render={({ field, fieldState }) => (
-                    <InputMask
-                      id={field.name}
-                      {...field}
-                      mask="99999"
-                      slotChar="x"
-                      tooltip="E.g. 90210"
-                      tooltipOptions={{ position: 'bottom' }}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
-                    />
-                  )}
-                />
-              </div>
-              {getFormErrorMessage('zip', errors)}
             </div>
           </div>
         </div>
