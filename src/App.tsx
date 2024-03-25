@@ -9,7 +9,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { Layout } from './components/layout/'
 
 /** Error Pages */
-import Error404 from './pages/Error404'
+import { Error404 } from './pages/Error404'
 
 /** Auth Pages */
 import { Auth } from './pages/auth'
@@ -26,7 +26,7 @@ import { Units } from './pages/learn/units/Units'
 
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
-import ClientDashboard from './pages/client/dashboard'
+import { ClientDashboard } from './pages/client/dashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
@@ -37,7 +37,7 @@ import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
 /** Sales Pages */
-import SalesDashboard from './pages/sales/dashboard'
+import { SalesDashboard } from './pages/sales/dashboard'
 import { ProductList as Products } from './pages/sales/products'
 import { ProductCategories } from './pages/sales/products/ProductCategories'
 import ProductDetail from './pages/sales/products/ProductDetail'
@@ -83,7 +83,7 @@ import AdminJobs from './pages/admin/jobs'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
-import EmployeeDashboard from './pages/employee/dashboard'
+import { EmployeeDashboard } from './pages/employee/dashboard'
 import EmployeeJobs from './pages/employee/jobs'
 import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
