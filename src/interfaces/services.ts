@@ -1,4 +1,4 @@
-export type IRequestService = (path: string, method?: string, body?: unknown, dataType?: string) => Promise<unknown>
+export type IRequestService = (path: string, method?: string, body?: never, dataType?: string) => Promise<never>
 
 export interface ITokenInfo {
   _id: string
