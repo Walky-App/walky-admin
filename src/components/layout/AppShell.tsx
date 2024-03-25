@@ -61,8 +61,8 @@ const clientLinks: INavLink[] = [
 ]
 
 const employeeLinks: INavLink[] = [
-  { id: 2, name: 'My Jobs', href: '/employee/jobs/mine', icon: <FaBusinessTime /> },
-  { id: 1, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+  { id: 1, name: 'My Jobs', href: '/employee/jobs/mine', icon: <FaBusinessTime /> },
+  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
   { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
 ]
