@@ -48,7 +48,7 @@ export const Assessment = () => {
     }
   })
 
-  const handlerControllerQuestion = async () => {
+  const handlerControllerQuestion = () => {
     if (indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1) {
       //submit
       confirmDialog({
