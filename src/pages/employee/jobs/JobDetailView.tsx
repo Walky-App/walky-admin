@@ -7,10 +7,10 @@ import { Button } from 'primereact/button'
 import { MapPinIcon, BookmarkIcon, CheckCircleIcon, UserGroupIcon } from '@heroicons/react/20/solid'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { useUtils } from '../../../store/useUtils'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 interface IApplicant {
   user: string
@@ -36,7 +36,7 @@ interface Job {
   is_active: boolean
 }
 
-export default function JobDetailView() {
+export const JobDetailView = () => {
   const [job, setJob] = useState<Job | null>(null)
   const { showToast } = useUtils()
   const params = useParams()
