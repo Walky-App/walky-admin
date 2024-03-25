@@ -7,6 +7,7 @@ import { Steps } from 'primereact/steps'
 import { Toast } from 'primereact/toast'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
+import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { Step1, Step2, Step3, Step4, Step5, WelcomeDialog } from './components'
@@ -19,6 +20,7 @@ const defaultFacilityFormValues: IFacilityFormInputs = {
   city: '',
   state: '',
   zip: '',
+  location_pin: [],
   tax_id: '',
   phone_number: '',
   notes: '',
@@ -71,6 +73,7 @@ export interface IFacilityFormInputs {
   state: string
   zip: string
   tax_id: string
+  location_pin: number[]
   phone_number: string
   notes: string
   active: boolean
@@ -143,6 +146,8 @@ export interface FormDataContextProps {
   setDocumentData: Dispatch<SetStateAction<IGetAcceptDocumentDetails | null>>
   prevDocRecipient: IGetAcceptRecipient | null
   setPrevDocRecipient: Dispatch<SetStateAction<IGetAcceptRecipient | null>>
+  moreAddressDetails: IAddressAutoComplete | undefined
+  setMoreAddressDetails: Dispatch<SetStateAction<IAddressAutoComplete | undefined>>
 }
 
 export const FormDataContext = createContext<FormDataContextProps>({
@@ -166,6 +171,10 @@ export const FormDataContext = createContext<FormDataContextProps>({
   prevDocRecipient: null,
   setPrevDocRecipient: () => {
     throw new Error('setPrevDocRecipient function must be overridden in FormDataContext')
+  },
+  moreAddressDetails: undefined,
+  setMoreAddressDetails: () => {
+    throw new Error('setMoreAddressDetails function must be overridden in FormDataContext')
   },
 })
 
@@ -203,6 +212,15 @@ export const tooltipOptions: TooltipOptions = {
   },
 }
 
+const defaultMoreAddressDetails: IAddressAutoComplete = {
+  zip: undefined,
+  state: undefined,
+  city: undefined,
+  location_pin: undefined,
+  address: undefined,
+  country: undefined,
+}
+
 export const ClientOnboarding = () => {
   const user = GetTokenInfo()
   const [visible, setVisible] = useState<boolean>(true)
@@ -211,6 +229,9 @@ export const ClientOnboarding = () => {
     ...defaultFacilityFormValues,
     user_id: user?._id || '',
   })
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
+    defaultMoreAddressDetails,
+  )
   const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
   const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
   const [documentData, setDocumentData] = useState<IGetAcceptDocumentDetails | null>(null)
@@ -281,6 +302,8 @@ export const ClientOnboarding = () => {
         setDocumentData,
         prevDocRecipient,
         setPrevDocRecipient,
+        moreAddressDetails,
+        setMoreAddressDetails,
       }}>
       <Toast ref={toast} />
       <HeaderComponent title="Client Onboarding" />
