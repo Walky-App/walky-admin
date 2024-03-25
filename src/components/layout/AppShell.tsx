@@ -24,6 +24,7 @@ import { LogoutService } from '../../services/AuthService'
 import { getCurrentUserRole } from '../../utils/UserRole'
 import { cn } from '../../utils/cn'
 import { FooterComponent } from './FooterComponent'
+import { LogosPack } from './LogosPack'
 
 interface INavLink {
   id: number
@@ -169,38 +170,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   )
 }
 
-const chooseSideBarLogoImage = () => {
-  const currentURL = window.location.href
-  if (currentURL.toLowerCase().includes('hydropallet')) {
-    return <img src="/assets/logos/hydropallet-white-logo.png" className="h-8 w-auto" alt="Hydropallet Logo" />
-  } else {
-    return (
-      <img src="/assets/logos/Hemp-Temps-logo-horizontal-white.png" className="h-10 w-auto" alt="Hemp Temps Logo" />
-    )
-  }
-}
-
-const chooseHeaderLogoImage = () => {
-  const currentURL = window.location.href
-  if (currentURL.toLowerCase().includes('hydropallet')) {
-    return (
-      <img
-        src="/assets/logos/hydropallet-black-logo.png"
-        alt="Hydro Pallet Logo"
-        className="h-7 w-auto md:h-12 lg:hidden xl:hidden"
-      />
-    )
-  } else {
-    return (
-      <img
-        src="/assets/logos/logo-horizontal-cropped.png"
-        alt="Hemp Temps Logo"
-        className="h-10 w-auto md:h-16 lg:hidden xl:hidden"
-      />
-    )
-  }
-}
-
 interface SidebarComponentProps {
   sidebarOpen: boolean
   setSidebarOpen: Dispatch<SetStateAction<boolean>>
@@ -234,13 +203,13 @@ const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarComponentProps
       })}>
       <div className="mt-4 flex shrink-0 items-center justify-center">
         {/* Logo */}
-        <Link to={user ? `/${role}/dashboard` : '/'}>{chooseSideBarLogoImage()}</Link>
+        <Link to={user ? `/${role}/dashboard` : '/'}>{LogosPack('sidebar')}</Link>
       </div>
       <nav className="flex flex-1 flex-col">
         <ul className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul className="-mx-2 space-y-1">
-              {user?.role
+              {user?.role != null
                 ? links?.map(link => (
                     <li key={link.id}>
                       {!link.disabled ? (
@@ -322,7 +291,7 @@ const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
       className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
       <div className="flex shrink-0 items-center justify-center">
         {/* Logo */}
-        <Link to={user ? `/${role}/dashboard` : '/'}>{chooseHeaderLogoImage()}</Link>
+        <Link to={user ? `/${role}/dashboard` : '/'}>{LogosPack('header')}</Link>
       </div>
       <div className="flex items-center gap-x-4 lg:gap-x-6">
         <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
