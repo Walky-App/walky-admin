@@ -29,6 +29,7 @@ export default function JobDetailViewClient() {
   const [visible, setVisible] = useState(false)
   const [rejectionReason, setRejectionReason] = useState<any>(null)
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
+  const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
@@ -55,7 +56,7 @@ export default function JobDetailViewClient() {
     }
 
     getJob()
-  }, [job.is_active, job.is_completed, params.id, acceptCount, rejectionReason, lastRejectedApplicantId])
+  }, [job.is_active, job.is_completed, params.id, acceptCount, rejectionReason, lastRejectedApplicantId, lastReinstatedApplicantId])
 
   let earliestDate, latestDate
 
@@ -77,6 +78,26 @@ export default function JobDetailViewClient() {
         })
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Accepted', detail: 'Applicant has been accepted' })
+        setAcceptCount(prevCount => prevCount + 1)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleAcceptAll = async () => {
+    try {
+      const response = await RequestService(`jobs/${id}/acceptAll`, 'PATCH')
+      if (response) {
+        const updatedApplicants = job.applicants.map((applicant: any) => {
+          return { ...applicant, is_approved: true }
+        })
+        setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
+        showToast({
+          severity: 'success',
+          summary: 'All Applicants Accepted',
+          detail: 'All applicants have been accepted',
+        })
         setAcceptCount(prevCount => prevCount + 1)
       }
     } catch (error) {
@@ -126,6 +147,7 @@ export default function JobDetailViewClient() {
         })
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Reinstated', detail: 'Applicant has been reinstated' })
+        setLastReinstatedApplicantId(user_id)
       }
     } catch (error) {
       console.error(error)
@@ -303,20 +325,21 @@ export default function JobDetailViewClient() {
           <TabView>
             <TabPanel header="Pending">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-                {job?.applicants && job.applicants.length > 0 ? (
-                  <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                    <div className="ml-4">
-                      <p className="mt-1 text-sm text-gray-500">
-                        You can reject the applicants within X hours of the worker accepted the job. If no reject is
-                        done in X hours then worker is automatically accepted and then the contract is created
-                        automatically. you and applicant both are notified about the contract.
-                      </p>
-                    </div>
-                    <div className="ml-4 mt-4 flex-shrink-0">
-                      <Button label="Accept All" size="small" />
-                    </div>
+                <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                  <div className="ml-4">
+                    <p className="mt-1 text-sm text-gray-500">
+                      You can reject the applicants within X hours of the worker accepted the job. If no reject is done
+                      in X hours then worker is automatically accepted and then the contract is created automatically.
+                      you and applicant both are notified about the contract.
+                    </p>
                   </div>
-                ) : null}
+                  <div className="ml-4 mt-4 flex-shrink-0">
+                    {job.applicants && job.applicants.some((applicant: any) => !applicant.is_approved && applicant.rejection_reason === '') && (
+                      <Button label="Accept All" size="small" onClick={handleAcceptAll} />
+                    )}
+                  </div>
+                </div>
+
                 <ul className="divide-y divide-gray-100">
                   {job?.applicants && job.applicants.length > 0 ? (
                     job.applicants
@@ -411,7 +434,8 @@ export default function JobDetailViewClient() {
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4 mt-4">
                     <p className="mt-1 text-sm text-gray-500">
-                      This is the list of all applicants who have been rejected. You can reinstate them if you wish by clicking on the  Cancel button. This action will move the applicant back to the pending list.
+                      This is the list of all applicants who have been rejected. You can reinstate them if you wish by
+                      clicking on the Cancel button. This action will move the applicant back to the pending list.
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0"></div>
@@ -435,6 +459,7 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
+                                  <Tag className='ml-2 mb-2' value="Rejected" severity="danger" />
                                   <Rating value={3} readOnly cancel={false} />
                                   Reason for rejection: {applicant.rejection_reason}
                                 </p>
@@ -443,12 +468,12 @@ export default function JobDetailViewClient() {
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                               <div className="flex flex-row items-end">
-                                <Tag value="Rejected" severity="warning" />
                                 <Button
                                   size="small"
-                                  label="Back to Pending"
+                                  label="Cancel"
+                                  severity='secondary'
                                   onClick={() => {
-                                    handleAccept(applicant.user._id)
+                                    handleReinstate(applicant.user._id)
                                   }}
                                 />
                               </div>
@@ -467,7 +492,9 @@ export default function JobDetailViewClient() {
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4 mt-4">
                     <p className="mt-1 text-sm text-gray-500">
-                      This is the list of all workers who have been accepted for this job. You can cancel their acceptance by click on the Cancel button. This action will move the worker back to the pending list.
+                      This is the list of all workers who have been accepted for this job. You can cancel their
+                      acceptance by click on the Cancel button. This action will move the worker back to the pending
+                      list.
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0"></div>
@@ -491,6 +518,7 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
+                                  <Tag className='ml-2 mb-2' value="Accepted" severity="success" />
                                   <Rating value={3} readOnly cancel={false} />
                                 </p>
                                 <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
@@ -498,8 +526,14 @@ export default function JobDetailViewClient() {
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                               <div className="flex flex-row items-end">
-                                <Tag value="Accepted" severity="success" />
                               </div>
+                              <Button
+                                size="small"
+                                label="Cancel"
+                                severity='secondary'
+                                onClick={() => {
+                                  handleReinstate(applicant.user._id)
+                                }}/>
                             </div>
                           </li>
                         )
