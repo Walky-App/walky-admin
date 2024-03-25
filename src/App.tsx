@@ -85,7 +85,7 @@ import AdminJobs from './pages/admin/jobs'
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import EmployeeDashboard from './pages/employee/dashboard'
 import EmployeeJobs from './pages/employee/jobs'
-import JobDetailView from './pages/employee/jobs/JobDetailView'
+import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 
 // import AdminAddJob from './pages/admin/jobs/AdminAddJob'
