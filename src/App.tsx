@@ -12,7 +12,7 @@ import { Layout } from './components/layout/'
 import Error404 from './pages/Error404'
 
 /** Auth Pages */
-import Auth from './pages/auth'
+import { Auth } from './pages/auth'
 import NewPasswordForm from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import Signup from './pages/auth/SignupForm'
@@ -85,7 +85,7 @@ import AdminJobs from './pages/admin/jobs'
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import EmployeeDashboard from './pages/employee/dashboard'
 import EmployeeJobs from './pages/employee/jobs'
-import JobDetailView from './pages/employee/jobs/JobDetailView'
+import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 
 // import AdminAddJob from './pages/admin/jobs/AdminAddJob'

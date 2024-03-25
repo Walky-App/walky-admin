@@ -34,9 +34,7 @@ export const PolygonMap = ({
       const nextPath = (polygonRef.current as google.maps.Polygon)
         .getPath()
         .getArray()
-        .map(latLng => {
-          return { lat: latLng.lat(), lng: latLng.lng() }
-        })
+        .map(latLng => ({ lat: latLng.lat(), lng: latLng.lng() }))
       setLocationPolygon(nextPath.map(coord => [coord.lat, coord.lng]))
     }
   }, [setLocationPolygon])
