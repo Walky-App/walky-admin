@@ -8,6 +8,7 @@ import { Password } from 'primereact/password'
 
 import { useAuth } from '../../contexts/AuthContext'
 import { type LoginData } from '../../interfaces/global'
+import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
@@ -18,7 +19,7 @@ const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE
 const sales_role = process.env.REACT_APP_SALES_ROLE
 
 export const LoginForm = () => {
-  const [error, setError] = useState<any>()
+  const [error, setError] = useState<Error>()
   const [loading, setLoading] = useState(false)
   const [value, setValue] = useState<string>('')
 
@@ -28,21 +29,21 @@ export const LoginForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     await setLoading(true)
-    const form = event.target as any
+    const form = event.target as HTMLFormElement
 
     const body: LoginData = {
       email: form.email.value,
       password: form.password.value,
     }
 
-    const data: any = await LoginService(body)
+    const data: ILoginData = await LoginService(body)
 
     try {
       if (!data) {
         setLoading(false)
-        return setError('Email/Password invalid')
+        return setError(new Error('Email/Password invalid'))
       } else {
-        const { access_token, user }: any = data
+        const { access_token, user }: ILoginData = data
 
         if (user && access_token) {
           const data: ITokenInfo = {
@@ -135,7 +136,7 @@ export const LoginForm = () => {
       </div>
       {error ? (
         <div className="flex items-center justify-center">
-          <p className="text-sm text-red-500">{error}</p>
+          <p className="text-sm text-red-500">{String(error)}</p>
         </div>
       ) : null}
       <button
