@@ -1,9 +1,13 @@
 import { useState, useMemo } from 'react'
-import LoginForm from './LoginForm'
-import SignupForm from './SignupForm'
-import ForgotPasswordForm from './ForgotPasswordForm'
 
-export default function Auth() {
+import { Button } from 'primereact/button'
+
+import { LogosPack } from '../../components/layout/LogosPack'
+import { ForgotPassword } from './ForgotPasswordForm'
+import { LoginForm } from './LoginForm'
+import SignupForm from './SignupForm'
+
+export const Auth = () => {
   const [userForm, setUserForm] = useState('Login')
   const [heroImage, setHeroImage] = useState<string>('')
 
@@ -35,47 +39,33 @@ export default function Auth() {
     getImages()
   }, [])
 
-  const chooseLogoImage = () => {
-    const currentURL = window.location.href
-    if (currentURL.toLowerCase().includes('hydropallet')) {
-      return <img src="/assets/logos/hydropallet-black-logo.png" alt="Hydropallet Logo" className="sm:w-full xl:px-12" />
-    } else {
-      return (
-        <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="sm:w-full xl:px-12" />
-      )
-    }
-  }
-
   return (
     <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
       <div className="flex flex-col gap-10 md:basis-1/2">
         <div className="w-full px-4 sm:px-0">
-          <div className="flex justify-center">{chooseLogoImage()}</div>
+          <div className="flex justify-center">{LogosPack('login')}</div>
 
-          {userForm === 'Login' && <LoginForm />}
-          {userForm === 'Sign up' && <SignupForm />}
-          {userForm === 'Forgot Password' && <ForgotPasswordForm />}
+          {userForm === 'Login' ? <LoginForm /> : null}
+          {userForm === 'Sign up' ? <SignupForm /> : null}
+          {userForm === 'Forgot Password' ? <ForgotPassword /> : null}
 
           <div className="mr-center flex flex-col items-center justify-center gap-2">
-            {userForm === 'Login' && (
-              <a
+            {userForm === 'Login' ? (
+              <Button
+                text
                 className="font-medium underline hover:text-green-700"
-                href="#"
                 onClick={() => setUserForm('Forgot Password')}>
                 Forgot your password?
-              </a>
-            )}
+              </Button>
+            ) : null}
 
-            <p className="text-sm text-zinc-500">
-              {userForm !== 'Login' && (
-                <div>
-                  Already have an account? &nbsp;
-                  <a className="underline hover:text-green-700" href="#" onClick={() => setUserForm('Login')}>
-                    Login
-                  </a>
-                </div>
-              )}
-            </p>
+            <div className="text-sm text-zinc-500">
+              {userForm !== 'Login' ? (
+                <Button text className="underline hover:text-green-700" onClick={() => setUserForm('Login')}>
+                  Already have an account? &nbsp; Login
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="flex justify-center">
