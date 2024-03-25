@@ -129,14 +129,14 @@ export const FormAssessment = ({ action }: Props) => {
       acceptClassName: 'p-button-danger',
       style: { width: '50vw' },
       breakpoints: { '1100px': '75vw', '960px': '100vw' },
-      accept: () => {
-        const newQuestions = questions.filter(item => item.header !== question.header)
-        setQuestions(newQuestions)
+      accept: async () => {
+        const response = await RequestService(`units/assessment/question`, 'DELETE', {
+          questionId: question._id,
+          unitId: params.unitId,
+        })
+        setQuestions(response.assessments.questions)
         showToast({ severity: 'success', detail: 'Question deleted', summary: 'Question deleted successfully' })
-      },
-      reject: () => {
-        // Add your reject logic here
-      },
+      }
     })
   }
 
