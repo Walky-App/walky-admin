@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react'
 
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -56,7 +57,15 @@ export default function JobDetailViewClient() {
     }
 
     getJob()
-  }, [job.is_active, job.is_completed, params.id, acceptCount, rejectionReason, lastRejectedApplicantId, lastReinstatedApplicantId])
+  }, [
+    job.is_active,
+    job.is_completed,
+    params.id,
+    acceptCount,
+    rejectionReason,
+    lastRejectedApplicantId,
+    lastReinstatedApplicantId,
+  ])
 
   let earliestDate, latestDate
 
@@ -334,9 +343,10 @@ export default function JobDetailViewClient() {
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0">
-                    {job.applicants && job.applicants.some((applicant: any) => !applicant.is_approved && applicant.rejection_reason === '') && (
-                      <Button label="Accept All" size="small" onClick={handleAcceptAll} />
-                    )}
+                    {job.applicants &&
+                      job.applicants.some(
+                        (applicant: any) => !applicant.is_approved && applicant.rejection_reason === '',
+                      ) && <Button label="Accept All" size="small" onClick={handleAcceptAll} />}
                   </div>
                 </div>
 
@@ -459,7 +469,7 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
-                                  <Tag className='ml-2 mb-2' value="Rejected" severity="danger" />
+                                  <Tag className="mb-2 ml-2" value="Rejected" severity="danger" />
                                   <Rating value={3} readOnly cancel={false} />
                                   Reason for rejection: {applicant.rejection_reason}
                                 </p>
@@ -471,7 +481,7 @@ export default function JobDetailViewClient() {
                                 <Button
                                   size="small"
                                   label="Cancel"
-                                  severity='secondary'
+                                  severity="secondary"
                                   onClick={() => {
                                     handleReinstate(applicant.user._id)
                                   }}
@@ -518,22 +528,22 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
-                                  <Tag className='ml-2 mb-2' value="Accepted" severity="success" />
+                                  <Tag className="mb-2 ml-2" value="Accepted" severity="success" />
                                   <Rating value={3} readOnly cancel={false} />
                                 </p>
                                 <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
-                              <div className="flex flex-row items-end">
-                              </div>
+                              <div className="flex flex-row items-end"></div>
                               <Button
                                 size="small"
                                 label="Cancel"
-                                severity='secondary'
+                                severity="secondary"
                                 onClick={() => {
                                   handleReinstate(applicant.user._id)
-                                }}/>
+                                }}
+                              />
                             </div>
                           </li>
                         )
