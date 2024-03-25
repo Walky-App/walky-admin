@@ -194,21 +194,21 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
-              <label htmlFor="tax_id" className="block text-sm font-medium leading-6 text-gray-900">
-                *Tax ID:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="tax_id"
-                  rules={{
-                    required: 'Tax ID is required',
-                    pattern: {
-                      value: /^\d{2}-\d{7}$/,
-                      message: 'Invalid Tax ID. E.g. 12-3456789',
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
+              <Controller
+                control={control}
+                name="tax_id"
+                rules={{
+                  required: 'Tax ID is required',
+                  pattern: {
+                    value: /^\d{2}-\d{7}$/,
+                    message: 'Invalid Tax ID. E.g. 12-3456789',
+                  },
+                }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Tax ID:
+                    </label>
                     <InputMask
                       id={field.name}
                       {...field}
@@ -216,88 +216,90 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       slotChar="x"
                       tooltip="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions."
                       tooltipOptions={tooltipOptions}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
-                  )}
-                />
-              </div>
+                  </>
+                )}
+              />
               {getFormErrorMessage('tax_id', errors)}
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="corp_name" className="block text-sm font-medium leading-6 text-gray-900">
-                *Corporate Name:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="corp_name"
-                  rules={{ required: 'Corporate Name is required' }}
-                  render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ 'p-invalid': fieldState.invalid })} />
-                  )}
-                />
-              </div>
+              <Controller
+                control={control}
+                name="corp_name"
+                rules={{ required: 'Corporate Name is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Corporate Name:
+                    </label>
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                    />
+                  </>
+                )}
+              />
               {getFormErrorMessage('corp_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="company_dbas" className="block text-sm font-medium leading-6 text-gray-900">
-                *Company DBAs:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="company_dbas"
-                  rules={{ required: 'Company DBAs is required' }}
-                  render={({ field, fieldState }) => (
+              <Controller
+                control={control}
+                name="company_dbas"
+                rules={{ required: 'Company DBAs is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Company DBAs:
+                    </label>
                     <InputText
                       id={field.name}
                       value={field.value.join(', ')}
                       onChange={e => field.onChange(e.target.value.split(', '))}
                       tooltip="Enter company DBAs separated by comma"
                       tooltipOptions={tooltipOptions}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
-                  )}
-                />
-              </div>
+                  </>
+                )}
+              />
               {getFormErrorMessage('company_dbas', errors)}
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                *Facility Name:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="name"
-                  rules={{ required: 'Facility Name is required' }}
-                  render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ 'p-invalid': fieldState.invalid })} />
-                  )}
-                />
-              </div>
+              <Controller
+                control={control}
+                name="name"
+                rules={{ required: 'Facility Name is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Facility Name:
+                    </label>
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                    />
+                  </>
+                )}
+              />
               {getFormErrorMessage('name', errors)}
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="phone_number" className="block text-sm font-medium leading-6 text-gray-900">
-                *Facility Phone Number:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="phone_number"
-                  rules={{
-                    required: 'Mobile Number is required',
-                    pattern: {
-                      value: /^\(\d{3}\) \d{3}-\d{4}$/,
-                      message: 'Invalid Mobile Number. E.g. (123) 456-7890',
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
+              <Controller
+                control={control}
+                name="phone_number"
+                rules={{ required: 'Mobile Number is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Facility Phone Number:
+                    </label>
                     <InputMask
                       id={field.name}
                       {...field}
@@ -305,30 +307,30 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       slotChar="x"
                       tooltip="E.g. (281) 330-8004"
                       tooltipOptions={tooltipOptions}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
-                  )}
-                />
-              </div>
+                  </>
+                )}
+              />
               {getFormErrorMessage('phone_number', errors)}
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="notes" className="block text-sm font-medium leading-6 text-gray-900">
-                *Facility Square Footage:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="sqft"
-                  rules={{
-                    required: 'Facility Square Footage is required',
-                    pattern: {
-                      value: /^\d+$/,
-                      message: 'Invalid Facility Square Footage. It should be a number.',
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
+              <Controller
+                control={control}
+                name="sqft"
+                rules={{
+                  required: 'Facility Square Footage is required',
+                  pattern: {
+                    value: /^\d+$/,
+                    message: 'Invalid Facility Square Footage. It should be a number.',
+                  },
+                }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Facility Square Footage:
+                    </label>
                     <InputNumber
                       id={field.name}
                       {...field}
@@ -336,24 +338,24 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       min={0}
                       tooltip="E.g. 10000"
                       tooltipOptions={tooltipOptions}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
-                  )}
-                />
-              </div>
+                  </>
+                )}
+              />
               {getFormErrorMessage('sqft', errors)}
             </div>
 
             <div className="sm:col-span-6">
-              <label htmlFor="services" className="block text-sm font-medium leading-6 text-gray-900">
-                *Services:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="services"
-                  rules={{ required: 'At least one Serivce is required' }}
-                  render={({ field, fieldState }) => (
+              <Controller
+                control={control}
+                name="services"
+                rules={{ required: 'At least one Serivce is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Services:
+                    </label>
                     <MultiSelect
                       id={field.name}
                       {...field}
@@ -364,34 +366,34 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       selectAllLabel="Select All"
                       onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
                       placeholder="Select Services"
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
-                  )}
-                />
-                {getFormErrorMessage('services', errors)}
-              </div>
+                  </>
+                )}
+              />
+              {getFormErrorMessage('services', errors)}
             </div>
 
             <div className="sm:col-span-6">
-              <label htmlFor="sqft" className="block text-sm font-medium leading-6 text-gray-900">
-                Facility notes:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="notes"
-                  rules={{ required: false }}
-                  render={({ field, fieldState }) => (
+              <Controller
+                control={control}
+                name="notes"
+                rules={{ required: false }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      Facility notes:
+                    </label>
                     <InputTextarea
                       id={field.name}
                       {...field}
                       rows={4}
                       cols={30}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
-                  )}
-                />
-              </div>
+                  </>
+                )}
+              />
               {getFormErrorMessage('notes', errors)}
             </div>
           </div>
@@ -408,26 +410,26 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-6">
-              <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
-                *Street Address:
-              </label>
-              <div className="mt-2">
-                <Controller
-                  control={control}
-                  name="address"
-                  rules={{ required: 'Address is required' }}
-                  render={({ field, fieldState }) => (
+              <Controller
+                control={control}
+                name="address"
+                rules={{ required: 'Address is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                      *Street Address:
+                    </label>
                     <AddressAutoComplete
                       controlled
                       setMoreAddressDetails={setMoreAddressDetails}
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid })}
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
-                  )}
-                />
-              </div>
+                  </>
+                )}
+              />
               {getFormErrorMessage('address', errors)}
             </div>
           </div>
@@ -443,91 +445,85 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           {fields.map((field, index) => (
             <div key={field.id} className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label
-                  htmlFor={`contacts.${index}.first_name`}
-                  className="block text-sm font-medium leading-6 text-gray-900">
-                  *First Name:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    control={control}
-                    name={`contacts.${index}.first_name`}
-                    rules={{ required: 'First Name is required' }}
-                    render={({ field, fieldState }) => (
+                <Controller
+                  control={control}
+                  name={`contacts.${index}.first_name`}
+                  rules={{ required: 'First Name is required' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        *First Name:
+                      </label>
                       <InputText
                         id={field.name}
                         {...field}
-                        className={classNames({ 'p-invalid': fieldState.invalid })}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
-                    )}
-                  />
-                </div>
+                    </>
+                  )}
+                />
                 {getFormErrorMessage(`contacts.${index}.first_name`, errors)}
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  htmlFor={`contacts.${index}.last_name`}
-                  className="block text-sm font-medium leading-6 text-gray-900">
-                  *Last Name:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    control={control}
-                    name={`contacts.${index}.last_name`}
-                    rules={{ required: 'Last Name is required' }}
-                    render={({ field, fieldState }) => (
+                <Controller
+                  control={control}
+                  name={`contacts.${index}.last_name`}
+                  rules={{ required: 'Last Name is required' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        *Last Name:
+                      </label>
                       <InputText
                         id={field.name}
                         {...field}
-                        className={classNames({ 'p-invalid': fieldState.invalid })}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
-                    )}
-                  />
-                </div>
+                    </>
+                  )}
+                />
                 {getFormErrorMessage(`contacts.${index}.last_name`, errors)}
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor={`contacts.${index}.role`} className="block text-sm font-medium leading-6 text-gray-900">
-                  *Role:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    control={control}
-                    name={`contacts.${index}.role`}
-                    rules={{ required: 'Role is required' }}
-                    render={({ field, fieldState }) => (
+                <Controller
+                  control={control}
+                  name={`contacts.${index}.role`}
+                  rules={{ required: 'Role is required' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        *Role:
+                      </label>
                       <Dropdown
                         id={field.name}
                         {...field}
                         filter
                         options={['Owner', 'AP', 'Onsite', 'Security', 'Other']}
-                        className={classNames({ 'p-invalid': fieldState.invalid })}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
-                    )}
-                  />
-                </div>
+                    </>
+                  )}
+                />
                 {getFormErrorMessage(`contacts.${index}.role`, errors)}
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor={`contacts.${index}.phone_number`}
-                  className="block text-sm font-medium leading-6 text-gray-900">
-                  *Phone Number:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    control={control}
-                    name={`contacts.${index}.phone_number`}
-                    rules={{
-                      required: 'Mobile Number is required',
-                      pattern: {
-                        value: /^\(\d{3}\) \d{3}-\d{4}$/,
-                        message: 'Invalid Mobile Number. E.g. (123) 456-7890',
-                      },
-                    }}
-                    render={({ field, fieldState }) => (
+                <Controller
+                  control={control}
+                  name={`contacts.${index}.phone_number`}
+                  rules={{
+                    required: 'Mobile Number is required',
+                    pattern: {
+                      value: /^\(\d{3}\) \d{3}-\d{4}$/,
+                      message: 'Invalid Mobile Number. E.g. (123) 456-7890',
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        *Phone Number:
+                      </label>
                       <InputMask
                         id={field.name}
                         {...field}
@@ -535,39 +531,37 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                         slotChar="x"
                         tooltip="E.g. (281) 330-8004"
                         tooltipOptions={tooltipOptions}
-                        className={classNames({ 'p-invalid': fieldState.invalid })}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
-                    )}
-                  />
-                </div>
+                    </>
+                  )}
+                />
                 {getFormErrorMessage(`contacts.${index}.phone_number`, errors)}
               </div>
               <div className="sm:col-span-3">
-                <label
-                  htmlFor={`contacts.${index}.email`}
-                  className="block text-sm font-medium leading-6 text-gray-900">
-                  *Email:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    control={control}
-                    name={`contacts.${index}.email`}
-                    rules={{
-                      required: 'Email is required',
-                      pattern: {
-                        value: /\S+@\S+\.\S+/,
-                        message: 'Invalid email',
-                      },
-                    }}
-                    render={({ field, fieldState }) => (
+                <Controller
+                  control={control}
+                  name={`contacts.${index}.email`}
+                  rules={{
+                    required: 'Email is required',
+                    pattern: {
+                      value: /\S+@\S+\.\S+/,
+                      message: 'Invalid email',
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        *Email:
+                      </label>
                       <InputText
                         id={field.name}
                         {...field}
-                        className={classNames({ 'p-invalid': fieldState.invalid })}
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
-                    )}
-                  />
-                </div>
+                    </>
+                  )}
+                />
                 {getFormErrorMessage(`contacts.${index}.email`, errors)}
               </div>
             </div>
