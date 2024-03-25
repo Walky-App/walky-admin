@@ -34,3 +34,11 @@ export interface Unit extends Documents {
   time: number
   assessments: Assessment
 }
+
+export interface IAssessmentResponse {
+  percentageAssessment: number
+  minimumScore: number
+  passAssessment: boolean
+  correctQuestions: number
+  incorrectQuestions: number
+}
