@@ -111,7 +111,6 @@ export const JobDetailView = () => {
                   {/* Job Facility */}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
-                      
                       <div className="flex items-center">
                         <i className="pi pi-map-marker"></i>
                         <div className="ml-2 text-sm font-normal text-black">
@@ -208,10 +207,10 @@ export const JobDetailView = () => {
                             <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
                             <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
                           </p>
-                          <p className="mt-2 ml-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                          <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                             Lunch: {job.lunch_break} minutes
                           </p>
-                          <p className='text-green-500'>Confirmed</p>
+                          <p className="text-green-500">Confirmed</p>
                         </li>
                       )
                     })}
@@ -238,11 +237,7 @@ export const JobDetailView = () => {
                 </li>
                 <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                   <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                  <Button
-                    label="Share Opportunity"
-                    severity="secondary"
-                    style={{ width: '100%', height: '100%' }}
-                  />
+                  <Button label="Share Opportunity" severity="secondary" style={{ width: '100%', height: '100%' }} />
                 </li>
               </ul>
             </div>
