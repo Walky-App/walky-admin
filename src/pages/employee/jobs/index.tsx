@@ -15,6 +15,7 @@ const jobTitleOptions = [
   { name: 'Harvester', code: 'Harvester' },
   { name: 'Gardener', code: 'Gardener' },
   { name: 'Cultivator', code: 'Cultivator' },
+  { name: 'Extractor', code: 'Extractor' },
 ]
 
 export default function Jobs() {
