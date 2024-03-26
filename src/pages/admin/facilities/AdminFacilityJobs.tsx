@@ -1,13 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useMemo } from 'react'
+
 import { useNavigate, useParams } from 'react-router-dom'
+
 import GlobalTable from '../../../components/shared/GlobalTable'
-import { RequestService } from '../../../services/RequestService'
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { type IFacility } from '../../../interfaces/Facility'
+import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-export default function AdminFacilityJobs() {
+export const AdminFacilityJobs = () => {
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<any>({})
+  const [facility, setFacility] = useState<IFacility>()
   const [facilityJobs, setFacilityJobs] = useState<any>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -19,8 +23,6 @@ export default function AdminFacilityJobs() {
         const facility = await RequestService(`facilities/${facilityId}`)
         if (facility) {
           setFacility(facility)
-        } else {
-          setFacility({})
         }
       } catch (error) {
         console.error('Error fetching facility data:', error)
@@ -49,8 +51,11 @@ export default function AdminFacilityJobs() {
       { Header: 'Job Title', accessor: 'title' },
       { Header: 'Status', accessor: 'status' },
       { Header: 'Salary', accessor: 'salary' },
-      //@ts-ignore
-      { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => value.join(', ') },
+      {
+        Header: 'Skills',
+        accessor: 'skills',
+        Cell: ({ value }: { value: string[] }) => (value ? value.join(', ') : ''),
+      },
       { Header: 'Employment Type', accessor: 'employment_type' },
     ],
     [],
@@ -58,7 +63,7 @@ export default function AdminFacilityJobs() {
 
   return (
     <>
-      <SubHeader data={facility} links={adminFacilitiesLinks} />
+      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
       <div>
         <button
           type="button"
@@ -68,7 +73,7 @@ export default function AdminFacilityJobs() {
         </button>
         {isLoading ? (
           <div className="flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600" />
           </div>
         ) : facilityJobs.length > 0 ? (
           <GlobalTable data={facilityJobs} columns={memoFacilityJobsColumns} allowClick />
