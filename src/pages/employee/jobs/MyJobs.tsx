@@ -11,12 +11,12 @@ const categorysOptions = [
   { name: 'Trimmer', code: 'Trimmer' },
 ]
 
-export const EmployeeJobs = () => {
+export const EmployeeMyJobs = () => {
   const [jobs, setJobs] = useState([])
 
   useEffect(() => {
     const getJobs = async () => {
-      const allJobs = await RequestService('jobs')
+      const allJobs = await RequestService('jobs/byemployee')
 
       if (allJobs) {
         setJobs(allJobs)
