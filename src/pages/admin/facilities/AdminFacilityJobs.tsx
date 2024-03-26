@@ -1,11 +1,14 @@
+/* eslint-disable */
 import { useState, useEffect, useMemo } from 'react'
+
 import { useNavigate, useParams } from 'react-router-dom'
+
 import GlobalTable from '../../../components/shared/GlobalTable'
-import { RequestService } from '../../../services/RequestService'
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-export default function AdminFacilityJobs() {
+export const AdminFacilityJobs = () => {
   const { facilityId } = useParams()
   const [facility, setFacility] = useState<any>({})
   const [facilityJobs, setFacilityJobs] = useState<any>([])
@@ -50,7 +53,7 @@ export default function AdminFacilityJobs() {
       { Header: 'Status', accessor: 'status' },
       { Header: 'Salary', accessor: 'salary' },
       //@ts-ignore
-      { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => value.join(', ') },
+      { Header: 'Skills', accessor: 'skills', Cell: ({ value }) => (value ? value.join(', ') : '') },
       { Header: 'Employment Type', accessor: 'employment_type' },
     ],
     [],
