@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as React from 'react'
 import { useState, useEffect } from 'react'
 
@@ -7,12 +6,13 @@ import { useParams } from 'react-router-dom'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { clientFacilitiesLink } from './clientSubHeaderLinks'
 
 export const ClientFacilityDetails = () => {
   const { facilityId } = useParams()
-  const [facility, setFacility] = React.useState<any>([])
+  const [facility, setFacility] = React.useState<IFacility>()
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
 
   useEffect(() => {
@@ -43,10 +43,8 @@ export const ClientFacilityDetails = () => {
     }
 
     const services = Array.from(e.currentTarget.services)
-      //@ts-ignore
-      .filter((input: HTMLInputElement) => input.checked)
-      //@ts-ignore
-      .map((input: HTMLInputElement) => input.value)
+      .filter((input: unknown) => (input as HTMLInputElement).checked)
+      .map((input: unknown) => (input as HTMLInputElement).value)
 
     const companyDbas = target.company_dbas.value
       .split(',')
@@ -118,7 +116,6 @@ export const ClientFacilityDetails = () => {
                     type="text"
                     name="tax_id"
                     id="tax-id"
-                    autoComplete="tax-id"
                     defaultValue={facility.tax_id || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
@@ -196,7 +193,6 @@ export const ClientFacilityDetails = () => {
                     type="text"
                     name="phone_number"
                     id="phone-number"
-                    autoComplete="phone-number"
                     defaultValue={facility.phone_number || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
@@ -213,7 +209,6 @@ export const ClientFacilityDetails = () => {
                     name="sqft"
                     id="sqft"
                     min="0"
-                    autoComplete="sqft"
                     defaultValue={facility.sqft || ''}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
@@ -402,7 +397,6 @@ export const ClientFacilityDetails = () => {
                     name="address"
                     id="address"
                     defaultValue={facility.address || ''}
-                    autoComplete="address"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
                 </div>

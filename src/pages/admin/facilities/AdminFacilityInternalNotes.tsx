@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { useState, useEffect, FormEvent, useCallback } from 'react'
+import { useState, useEffect, type FormEvent, useCallback } from 'react'
 
 import { useParams } from 'react-router-dom'
 
@@ -7,16 +6,18 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { useAuth } from '../../../contexts/AuthContext'
+import { type IFacility } from '../../../interfaces/Facility'
+import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityInternalNotes = () => {
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<any>({})
-  const [internalNotes, setInternalNotes] = useState<any[]>([])
+  const [facility, setFacility] = useState<IFacility>()
+  const [internalNotes, setInternalNotes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [updateSuccess, setUpdateSuccess] = useState(false)
-  const [userFound, setUserFound] = useState<any>({})
+  const [userFound, setUserFound] = useState<IUser>()
 
   const { user } = useAuth()
 
@@ -69,7 +70,7 @@ export const AdminFacilityInternalNotes = () => {
     }
     const internalNote = {
       note: target.note.value,
-      createdBy: userFound.email,
+      createdBy: userFound?.email,
     }
     try {
       await RequestService(`facilities/${facilityId}/internal_notes`, 'POST', internalNote)
@@ -84,7 +85,7 @@ export const AdminFacilityInternalNotes = () => {
 
   return (
     <>
-      <SubHeader data={facility} links={adminFacilitiesLinks} />
+      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
       <div className="flex w-full flex-col items-center p-4">
         <form onSubmit={handleAddInternalNote} className="w-full">
           <div className="mb-4 max-w-md">
@@ -123,7 +124,7 @@ export const AdminFacilityInternalNotes = () => {
         </form>
         {isLoading ? (
           <div className="flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600" />
           </div>
         ) : internalNotes.length === 0 ? (
           <div className="flex h-96 items-center justify-center">
@@ -153,20 +154,22 @@ export const AdminFacilityInternalNotes = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {internalNotes.map(singleNote => (
-                      <tr key={singleNote._id}>
-                        <td
-                          className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                          style={{ wordWrap: 'break-word', maxWidth: '250px' }}>
-                          {singleNote.note}
-                        </td>
-                        <td className="px-3 py-4 text-sm text-gray-500">{singleNote.createdBy}</td>
-                        <td className="px-3 py-4 text-sm text-gray-500">
-                          {new Date(singleNote.createdAt).toLocaleDateString()}{' '}
-                          {new Date(singleNote.createdAt).toLocaleTimeString()}
-                        </td>
-                      </tr>
-                    ))}
+                    {internalNotes.map(
+                      (singleNote: { _id: string; note: string; createdBy: string; createdAt: string }) => (
+                        <tr key={singleNote._id}>
+                          <td
+                            className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                            style={{ wordWrap: 'break-word', maxWidth: '250px' }}>
+                            {singleNote.note}
+                          </td>
+                          <td className="px-3 py-4 text-sm text-gray-500">{singleNote.createdBy}</td>
+                          <td className="px-3 py-4 text-sm text-gray-500">
+                            {new Date(singleNote.createdAt).toLocaleDateString()}
+                            {new Date(singleNote.createdAt).toLocaleTimeString()}
+                          </td>
+                        </tr>
+                      ),
+                    )}
                   </tbody>
                 </table>
               </div>
