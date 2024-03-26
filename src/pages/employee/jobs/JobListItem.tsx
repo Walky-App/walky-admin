@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState } from 'react'
 
 import { Link } from 'react-router-dom'
@@ -78,15 +79,11 @@ export default function JobListItem({ job }: any) {
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-xs font-normal text-stone-500">Hours per Day</div>
-                <div className="text-xs font-normal text-black">
-                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
-                </div>{' '}
+                <div className="text-xs font-normal text-black">{job.total_hours}</div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-xs font-normal text-stone-500">Number of Days</div>
-                <div className="text-xs font-normal text-black">
-                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
-                </div>{' '}
+                <div className="text-xs font-normal text-black">{job.job_dates.length}</div>
               </div>
             </div>
           </div>
@@ -95,7 +92,9 @@ export default function JobListItem({ job }: any) {
         {/* Job Card Footer */}
         <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
           <div className="flex flex-wrap items-center justify-start gap-1">
-            <div className="text-balance text-xs font-normal text-stone-500">Posted 3 mins ago </div>
+            <div className="text-balance text-xs font-normal text-stone-500">
+              Posted on {new Date(job.createdAt).toLocaleDateString()}{' '}
+            </div>
             <div className="h-1 w-1 rounded-full bg-stone-500" />
             <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
           </div>

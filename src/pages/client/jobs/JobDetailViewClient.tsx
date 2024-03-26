@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react'
 
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -14,6 +15,7 @@ import { Tag } from 'primereact/tag'
 import { Tooltip } from 'primereact/tooltip'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 
@@ -56,7 +58,15 @@ export default function JobDetailViewClient() {
     }
 
     getJob()
-  }, [job.is_active, job.is_completed, params.id, acceptCount, rejectionReason, lastRejectedApplicantId, lastReinstatedApplicantId])
+  }, [
+    job.is_active,
+    job.is_completed,
+    params.id,
+    acceptCount,
+    rejectionReason,
+    lastRejectedApplicantId,
+    lastReinstatedApplicantId,
+  ])
 
   let earliestDate, latestDate
 
@@ -176,11 +186,11 @@ export default function JobDetailViewClient() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
                       <div className="flex items-center">
-                        <i className="pi pi-building"></i>
+                        <i className="pi pi-building" />
                         <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
                       </div>
                       <div className="flex items-center">
-                        <i className="pi pi-map-marker"></i>
+                        <i className="pi pi-map-marker" />
                         <div className="ml-2 text-sm font-normal text-black">
                           {job.facility.address}, {job.facility.city}, {job.facility.state}, {job.facility.zip}
                         </div>
@@ -191,11 +201,7 @@ export default function JobDetailViewClient() {
                   <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-start gap-2">
-                      {job.is_active === true ? (
-                        <i className="pi pi-check"></i>
-                      ) : (
-                        <i className="pi pi-times-circle"></i>
-                      )}
+                      {job.is_active === true ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
                           {job.is_active === true ? 'Active' : 'Disabled'}
@@ -204,9 +210,9 @@ export default function JobDetailViewClient() {
                     </div>
                     <div className="flex items-start gap-2">
                       {job.is_completed === false ? (
-                        <i className="pi pi-calendar"></i>
+                        <i className="pi pi-calendar" />
                       ) : (
-                        <i className="pi pi-calendar-times"></i>
+                        <i className="pi pi-calendar-times" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
@@ -215,7 +221,7 @@ export default function JobDetailViewClient() {
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
-                      {job.is_full === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
+                      {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                       <div className="text-xs font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
@@ -257,6 +263,33 @@ export default function JobDetailViewClient() {
                   </div>
                 </Card>
                 {/* Job Card End*/}
+                <section className="mt-12">
+                  <h2 className="text-base font-semibold leading-6 text-gray-900">
+                    Schedule ({job.job_dates.length} days)
+                  </h2>
+                  <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                    {job.job_dates.map((date: string, index: number) => {
+                      const dateObj = new Date(date)
+                      const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                      const formattedDate = dateObj.toLocaleDateString()
+                      return (
+                        <li key={index} className="py-4 sm:flex">
+                          <time dateTime={date} className="w-28 flex-none">
+                            {dayOfWeek}, {formattedDate}
+                          </time>
+                          <p className="flex-none sm:ml-6">
+                            <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                            <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                          </p>
+                          <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                            Lunch: {job.lunch_break} minutes
+                          </p>
+                          <p className="text-green-500">Confirmed</p>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </section>
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
@@ -334,9 +367,12 @@ export default function JobDetailViewClient() {
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0">
-                    {job.applicants && job.applicants.some((applicant: any) => !applicant.is_approved && applicant.rejection_reason === '') && (
+                    {job.applicants &&
+                    job.applicants.some(
+                      (applicant: any) => !applicant.is_approved && applicant.rejection_reason === '',
+                    ) ? (
                       <Button label="Accept All" size="small" onClick={handleAcceptAll} />
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
@@ -361,7 +397,7 @@ export default function JobDetailViewClient() {
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                 </p>
                                 <Rating value={3} readOnly cancel={false} />
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
@@ -438,7 +474,7 @@ export default function JobDetailViewClient() {
                       clicking on the Cancel button. This action will move the applicant back to the pending list.
                     </p>
                   </div>
-                  <div className="ml-4 mt-4 flex-shrink-0"></div>
+                  <div className="ml-4 mt-4 flex-shrink-0" />
                 </div>
                 <ul className="divide-y divide-gray-100">
                   {job?.applicants ? (
@@ -459,11 +495,11 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
-                                  <Tag className='ml-2 mb-2' value="Rejected" severity="danger" />
+                                  <Tag className="mb-2 ml-2" value="Rejected" severity="danger" />
                                   <Rating value={3} readOnly cancel={false} />
                                   Reason for rejection: {applicant.rejection_reason}
                                 </p>
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
@@ -471,7 +507,7 @@ export default function JobDetailViewClient() {
                                 <Button
                                   size="small"
                                   label="Cancel"
-                                  severity='secondary'
+                                  severity="secondary"
                                   onClick={() => {
                                     handleReinstate(applicant.user._id)
                                   }}
@@ -497,7 +533,7 @@ export default function JobDetailViewClient() {
                       list.
                     </p>
                   </div>
-                  <div className="ml-4 mt-4 flex-shrink-0"></div>
+                  <div className="ml-4 mt-4 flex-shrink-0" />
                 </div>
                 <ul className="divide-y divide-gray-100">
                   {job?.applicants ? (
@@ -518,22 +554,22 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
-                                  <Tag className='ml-2 mb-2' value="Accepted" severity="success" />
+                                  <Tag className="mb-2 ml-2" value="Accepted" severity="success" />
                                   <Rating value={3} readOnly cancel={false} />
                                 </p>
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500"></p>
+                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
-                              <div className="flex flex-row items-end">
-                              </div>
+                              <div className="flex flex-row items-end" />
                               <Button
                                 size="small"
                                 label="Cancel"
-                                severity='secondary'
+                                severity="secondary"
                                 onClick={() => {
                                   handleReinstate(applicant.user._id)
-                                }}/>
+                                }}
+                              />
                             </div>
                           </li>
                         )
