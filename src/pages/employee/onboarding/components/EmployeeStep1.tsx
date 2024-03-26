@@ -144,8 +144,8 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         {/* Contact Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Business Contact Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information below.</p>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Information</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information.</p>
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -296,10 +296,8 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         {/* Home Address */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please provide your business address information below.
-            </p>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your address information.</p>
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -311,7 +309,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Street Address:
+                      *Address:
                     </label>
                     <AddressAutoComplete
                       controlled
