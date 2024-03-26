@@ -57,7 +57,7 @@ export const PolygonMap = ({
   )
 
   const onUnmount = useCallback(() => {
-    (listenersRef.current as google.maps.MapsEventListener[]).forEach(lis => lis.remove())
+    ;(listenersRef.current as google.maps.MapsEventListener[]).forEach(lis => lis.remove())
     polygonRef.current = null
   }, [])
 
