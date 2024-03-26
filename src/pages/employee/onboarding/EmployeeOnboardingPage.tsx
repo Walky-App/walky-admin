@@ -128,7 +128,7 @@ export const EmployeeOnboarding = () => {
 
   const steps: MenuItem[] = [
     {
-      label: 'Employee Information',
+      label: 'Contact Information',
     },
     {
       label: 'Documents and Certificates',
