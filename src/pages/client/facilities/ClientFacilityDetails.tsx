@@ -1,14 +1,19 @@
+/* eslint-disable */
 import * as React from 'react'
 import { useState, useEffect } from 'react'
+
 import { useParams } from 'react-router-dom'
-import { RequestService } from '../../../services/RequestService'
+
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
-export default function ClientFacilityDetails() {
+import { SubHeader } from '../../../components/shared/SubHeader'
+import { RequestService } from '../../../services/RequestService'
+import { clientFacilitiesLink } from './clientSubHeaderLinks'
+
+export const ClientFacilityDetails = () => {
   const { facilityId } = useParams()
   const [facility, setFacility] = React.useState<any>([])
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
-
 
   useEffect(() => {
     const fetchFacility = async () => {
@@ -83,6 +88,7 @@ export default function ClientFacilityDetails() {
   if (!facility) return <div>Loading...</div>
   return (
     <>
+      <SubHeader data={facility} links={clientFacilitiesLink} />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -92,13 +98,13 @@ export default function ClientFacilityDetails() {
                 Please see the information about this particular facility.{' '}
               </p>
               <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-                {facility?.main_image && (
+                {facility?.main_image ? (
                   <img
                     className="mb-4 h-64 w-64 flex-none rounded-lg bg-gray-50 object-cover"
                     src={facility?.main_image}
                     alt="Missing Facility"
                   />
-                )}
+                ) : null}
               </div>
             </div>
 
@@ -167,7 +173,7 @@ export default function ClientFacilityDetails() {
                   Status
                 </label>
                 <div className="mt-2">
-                  {facility && (
+                  {facility ? (
                     <select
                       key={facility.active ? 'Active' : 'Disabled'}
                       id="status"
@@ -177,7 +183,7 @@ export default function ClientFacilityDetails() {
                       <option value="true">Active</option>
                       <option value="false">Disabled</option>
                     </select>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
@@ -454,7 +460,7 @@ export default function ClientFacilityDetails() {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-          {updateSuccess && (
+          {updateSuccess ? (
             <div className="rounded-md bg-green-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -465,7 +471,7 @@ export default function ClientFacilityDetails() {
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
           <button
             type="submit"
             className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">

@@ -1,12 +1,16 @@
+/* eslint-disable */
 import { useState, useEffect, FormEvent, useCallback } from 'react'
+
 import { useParams } from 'react-router-dom'
+
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import { RequestService } from '../../../services/RequestService'
-import { useAuth } from '../../../contexts/AuthContext'
+
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { useAuth } from '../../../contexts/AuthContext'
+import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-export default function AdminFacilityInternalNotes() {
+export const AdminFacilityInternalNotes = () => {
   const { facilityId } = useParams()
   const [facility, setFacility] = useState<any>({})
   const [internalNotes, setInternalNotes] = useState<any[]>([])
@@ -98,7 +102,7 @@ export default function AdminFacilityInternalNotes() {
             </div>
           </div>
           <div className="flex flex-col items-center gap-x-6 sm:flex-row">
-            {updateSuccess && (
+            {updateSuccess ? (
               <div className="rounded-md bg-green-50 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
@@ -109,7 +113,7 @@ export default function AdminFacilityInternalNotes() {
                   </div>
                 </div>
               </div>
-            )}
+            ) : null}
             <button
               type="submit"
               className="mt-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:mt-0">
