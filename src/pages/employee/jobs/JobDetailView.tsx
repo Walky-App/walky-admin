@@ -111,14 +111,11 @@ export const JobDetailView = () => {
                   {/* Job Facility */}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
-                      <div className="flex items-center">
-                        <i className="pi pi-building"></i>
-                        <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
-                      </div>
+                      
                       <div className="flex items-center">
                         <i className="pi pi-map-marker"></i>
                         <div className="ml-2 text-sm font-normal text-black">
-                          {job.facility.address}, {job.facility.city}, {job.facility.state}, {job.facility.zip}
+                          {job.facility.city}, {job.facility.state}, {job.facility.zip}
                         </div>
                       </div>
                     </div>
