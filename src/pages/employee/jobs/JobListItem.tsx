@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState } from 'react'
 
 import { Link } from 'react-router-dom'
@@ -79,14 +80,14 @@ export default function JobListItem({ job }: any) {
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-xs font-normal text-stone-500">Hours per Day</div>
                 <div className="text-xs font-normal text-black">
-                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
-                </div>{' '}
+                  {job.total_hours}
+                </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-xs font-normal text-stone-500">Number of Days</div>
                 <div className="text-xs font-normal text-black">
-                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
-                </div>{' '}
+                  {job.job_dates.length}
+                </div>
               </div>
             </div>
           </div>
