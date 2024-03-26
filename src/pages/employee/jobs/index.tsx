@@ -30,8 +30,6 @@ export default function Jobs() {
 
       if (allJobs) {
         setJobs(allJobs)
-      } else {
-        console.log('No jobs')
       }
     }
     getJobs()
@@ -69,11 +67,11 @@ export default function Jobs() {
         value={dates}
         onChange={e => {
           setDates(e.value)
-          console.log(e.value)
         }}
         selectionMode="range"
         showButtonBar
         numberOfMonths={2}
+        placeholder='Select Date Range'
         readOnlyInput
         className="w-full sm:w-auto"
       />
