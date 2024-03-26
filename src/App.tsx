@@ -29,7 +29,6 @@ import ClientProfile from './pages/client/ClientProfile'
 import { ClientDashboard } from './pages/client/dashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
-import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
 import Jobs from './pages/client/jobs'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
@@ -61,9 +60,9 @@ import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
 import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
-import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityInternalNotes'
+import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
-import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
+import { AdminFacilityJobs } from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
 
 import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
@@ -130,7 +129,16 @@ export const App = () => {
                   <Route element={<ClientProfile />} path="/client/profile" />
                   <Route element={<ClientFacilities />} path="/client/facilities" />
                   <Route element={<ClientAddFacility />} path="/client/facilities/new" />
-                  <Route element={<ClientFacilityDetails />} path="/client/facilities/:facilityId" />
+                  <Route element={<AdminFacilityDetails />} path="/client/facilities/:facilityId" />
+                  <Route element={<AdminFacilityContacts />} path="/client/facilities/:facilityId/contacts" />
+                  <Route element={<AdminFacilityImages />} path="/client/facilities/:facilityId/images" />
+                  <Route element={<AdminFacilityJobs />} path="/client/facilities/:facilityId/jobs" />
+                  <Route
+                    element={<AdminFacilityInternalNotes />}
+                    path="/client/facilities/:facilityId/internal_notes"
+                  />
+                  <Route element={<AdminFacilityLicenses />} path="/client/facilities/:facilityId/licenses" />
+                  <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<Jobs />} path="/client/jobs" />
                   <Route element={<ClientAddJob />} path="/client/jobs/new" />
                   <Route element={<ClientEditJob />} path="/client/jobs/:id/edit" />
