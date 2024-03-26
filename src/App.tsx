@@ -84,8 +84,9 @@ import AdminJobs from './pages/admin/jobs'
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import EmployeeDashboard from './pages/employee/dashboard'
-import EmployeeJobs from './pages/employee/jobs'
+import { EmployeeJobs } from './pages/employee/jobs'
 import { JobDetailView } from './pages/employee/jobs/JobDetailView'
+import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 
 // import AdminAddJob from './pages/admin/jobs/AdminAddJob'
@@ -114,6 +115,7 @@ export const App = () => {
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
                 <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
+                <Route element={<EmployeeMyJobs />} path="/employee/myjobs" />
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />
                 <Route element={<EmployeeProfile />} path="/employee/profile" />
                 {/* LMS Module */}
