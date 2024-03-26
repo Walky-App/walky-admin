@@ -25,6 +25,6 @@ export interface IJob {
   is_full: boolean
   is_active: { type: boolean }
   feedback: [{ email: string; rating: number; comment: string }]
-  clock_in_restriction: [{ start: number; end: number }] // array of objects with in and out time
-  clock_out_restriction: [{ start: number; end: number }] // array of objects with in and out time
+  clock_in_restriction: [{ start: number; end: number }]
+  clock_out_restriction: [{ start: number; end: number }]
 }
