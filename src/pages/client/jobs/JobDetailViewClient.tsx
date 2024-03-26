@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react'
 
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { type IFacility } from '../../../interfaces/Facility'
 
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
@@ -16,6 +15,7 @@ import { Tag } from 'primereact/tag'
 import { Tooltip } from 'primereact/tooltip'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 
@@ -201,11 +201,7 @@ export default function JobDetailViewClient() {
                   <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-start gap-2">
-                      {job.is_active === true ? (
-                        <i className="pi pi-check" />
-                      ) : (
-                        <i className="pi pi-times-circle" />
-                      )}
+                      {job.is_active === true ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
                           {job.is_active === true ? 'Active' : 'Disabled'}
@@ -285,10 +281,10 @@ export default function JobDetailViewClient() {
                             <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
                             <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
                           </p>
-                          <p className="mt-2 ml-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                          <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                             Lunch: {job.lunch_break} minutes
                           </p>
-                          <p className='text-green-500'>Confirmed</p>
+                          <p className="text-green-500">Confirmed</p>
                         </li>
                       )
                     })}
@@ -371,7 +367,12 @@ export default function JobDetailViewClient() {
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0">
-                    {job.applicants && job.applicants.some((applicant: any) => !applicant.is_approved && applicant.rejection_reason === '') ? <Button label="Accept All" size="small" onClick={handleAcceptAll} /> : null}
+                    {job.applicants &&
+                    job.applicants.some(
+                      (applicant: any) => !applicant.is_approved && applicant.rejection_reason === '',
+                    ) ? (
+                      <Button label="Accept All" size="small" onClick={handleAcceptAll} />
+                    ) : null}
                   </div>
                 </div>
 

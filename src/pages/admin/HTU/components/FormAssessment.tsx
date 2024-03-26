@@ -136,7 +136,7 @@ export const FormAssessment = ({ action }: Props) => {
         })
         setQuestions(response.assessments.questions)
         showToast({ severity: 'success', detail: 'Question deleted', summary: 'Question deleted successfully' })
-      }
+      },
     })
   }
 
