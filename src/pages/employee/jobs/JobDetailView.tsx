@@ -1,10 +1,11 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
-
-import { MapPinIcon, BookmarkIcon, CheckCircleIcon, UserGroupIcon } from '@heroicons/react/20/solid'
+import { Card } from 'primereact/card'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
@@ -34,6 +35,8 @@ interface Job {
   is_completed: boolean
   is_full: boolean
   is_active: boolean
+  createdAt: Date
+  updatedAt: Date
 }
 
 export const JobDetailView = () => {
@@ -90,138 +93,157 @@ export const JobDetailView = () => {
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
       <HeaderComponent title="Job Detail" />
-      <div className="flex align-bottom">
-        <div className="w-2/3 rounded-2xl  border border-zinc-100 bg-white">
-          <div className="inline-flex flex-col items-start justify-start gap-6 p-20">
-            <div className="flex flex-col items-start justify-start gap-4 self-stretch">
-              <div className="inline-flex items-start justify-between self-stretch">
-                <div className="flex items-center justify-start gap-1">
-                  <div className="relative h-6 w-6">
-                    <UserGroupIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="md:col-span-3">
+          <div>
+            {job ? (
+              <div>
+                {/* Job Card Start*/}
+                <Card
+                  title={
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
+                      </div>
+                      {job.title}
+                    </>
+                  }>
+                  {/* Job Facility */}
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-col items-start justify-start gap-1">
+                      <div className="flex items-center">
+                        <i className="pi pi-map-marker"></i>
+                        <div className="ml-2 text-sm font-normal text-black">
+                          {job.facility.city}, {job.facility.state}, {job.facility.zip}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-xs font-normal text-stone-500">1 / {job?.vacancy}</div>
-                </div>
-                <div className="flex items-center justify-start gap-1">
-                  <div className="relative h-6 w-6">
-                    <BookmarkIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
+                  {/* Divider */}
+                  <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-start gap-2">
+                      {job.is_active === true ? (
+                        <i className="pi pi-check"></i>
+                      ) : (
+                        <i className="pi pi-times-circle"></i>
+                      )}
+                      <div className="mt-0.5 flex flex-col gap-1">
+                        <span className="text-xs font-medium text-black">
+                          {job.is_active === true ? 'Active' : 'Disabled'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      {job.is_completed === false ? (
+                        <i className="pi pi-calendar"></i>
+                      ) : (
+                        <i className="pi pi-calendar-times"></i>
+                      )}
+                      <div className="mt-0.5 flex flex-col gap-1">
+                        <span className="text-xs font-medium text-black">
+                          {job.is_completed === false ? 'Live' : 'Archived'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-0.5 flex items-start gap-2">
+                      {job.is_full === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
+                      <div className="text-xs font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
+                    </div>
                   </div>
-                  <div className="text-sm font-normal leading-tight text-stone-500">Save Job</div>
-                </div>
+                  {/* Divider */}
+                  <hr className="mt-3 h-px w-full bg-zinc-100" />
+                  <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Job Dates</div>
+                      <div className="text-xs font-normal text-black">
+                        {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Job Time</div>
+                      <div className="text-xs font-normal text-black">
+                        {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Lunch Break</div>
+                      <div className="text-xs font-normal text-black">
+                        {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-xs font-normal text-stone-500">Total Hours per day</div>
+                      <div className="text-xs font-normal text-black">{job.total_hours} hours </div>
+                    </div>
+                  </div>
+                  {/* Job Card Footer */}
+                  <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
+                    <div className="flex flex-wrap items-center justify-start gap-1">
+                      <div className="text-balance text-xs font-normal text-stone-500">
+                        Last update on {new Date(job.createdAt).toLocaleDateString()}
+                      </div>
+                      <div className="h-1 w-1 rounded-full bg-stone-500" />
+                      <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
+                    </div>
+                  </div>
+                </Card>
+                {/* Job Card End*/}
+                <section className="mt-12">
+                  <h2 className="text-base font-semibold leading-6 text-gray-900">
+                    Schedule ({job.job_dates.length} days)
+                  </h2>
+                  <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                    {job.job_dates.map((date, index) => {
+                      const dateObj = new Date(date)
+                      const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                      const formattedDate = dateObj.toLocaleDateString()
+                      return (
+                        <li key={index} className="py-4 sm:flex">
+                          <time dateTime={date} className="w-28 flex-none">
+                            {dayOfWeek}, {formattedDate}
+                          </time>
+                          <p className="flex-none sm:ml-6">
+                            <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                            <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                          </p>
+                          <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                            Lunch: {job.lunch_break} minutes
+                          </p>
+                          <p className="text-green-500">Confirmed</p>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </section>
               </div>
-              <div className="text-2xl font-bold text-black">{job?.title}</div>
-              <div className="inline-flex items-center justify-start gap-3">
-                <div className="flex items-center justify-start gap-1">
-                  <div className="relative h-6 w-6">
-                    <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-black">{job?.facility?.city}</span>
-                    <span className="text-sm font-normal leading-tight text-black"> </span>
-                    <span className="text-sm font-normal leading-tight text-stone-500">(4.2 mi)</span>
-                  </div>
-                </div>
-                <div className="h-1 w-1 rounded-full bg-stone-500" />
+            ) : (
+              <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
+            )}
+          </div>
+        </div>
 
-                <div className="rounded-full bg-stone-500" />
-              </div>
-            </div>
-            <div className="flex flex-col items-start justify-start gap-3">
-              <div className="h-px w-[520px] bg-zinc-100" />
-              <div className="inline-flex items-center justify-start gap-3">
-                <div className="relative h-12 w-12">
-                  <img
-                    className="left-0 top-0 h-12 w-12 rounded-full"
-                    src="https://randomuser.me/api/portraits/women/3.jpg"
-                    alt="Rounded avatar"
+        {/* Control Buttons */}
+        <div className="md:col-span-1">
+          <div className="flew-row flex md:flex-col">
+            <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
+              <ul className="w-full divide-y divide-gray-200">
+                <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                  <Button
+                    label="Apply now"
+                    onClick={() => applyForJob(user._id)}
+                    style={{ width: '100%', height: '100%' }}
                   />
-                </div>
-                <div className="inline-flex flex-col items-start justify-start gap-2">
-                  <div className="text-base font-semibold text-black">{job?.facility?.name}</div>
-                </div>
-              </div>
-              <div className="h-px w-[520px] bg-zinc-100" />
+                </li>
+                <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                  <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
+                  <Button label="Share Opportunity" severity="secondary" style={{ width: '100%', height: '100%' }} />
+                </li>
+              </ul>
             </div>
-            <div className="inline-flex items-start justify-start gap-5">
-              <div className="inline-flex flex-col items-start justify-start gap-2">
-                <div className="text-xs font-normal text-stone-500">Job Dates</div>
-                <div className="text-sm font-medium text-black">
-                  {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
-                  <p>{job?.job_dates ? job?.job_dates.length : 0} Days total</p>
-                </div>
-              </div>
-              <div className="h-14 w-px bg-zinc-100" />
-              <div className="inline-flex flex-col items-start justify-start gap-2">
-                <div className="text-xs font-normal text-stone-500">Job Time</div>
-                <div className="text-sm font-medium text-black">
-                  {' '}
-                  {convertToStandardTime(job?.start_time || 0)} - {convertToStandardTime(job?.end_time || 0)}
-                </div>
-              </div>
-            </div>
-            <section className="mt-12">
-              <h2 className="text-base font-semibold leading-6 text-gray-900">Work Days Schedule</h2>
-              <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
-                <li className="py-4 sm:flex">
-                  <time dateTime="2022-01-19" className="w-28 flex-none">
-                    Thu, Mar 13
-                  </time>
-                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
-                  <p className="flex-none sm:ml-6">
-                    <time dateTime="2022-01-13T14:30">5:30 AM</time> - <time dateTime="2022-01-13T16:30">3:30 PM</time>
-                  </p>
-                </li>
-                <li className="py-4 sm:flex">
-                  <time dateTime="2022-01-20" className="w-28 flex-none">
-                    Fri, Mar 14
-                  </time>
-                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
-                  <time dateTime="2022-01-13T14:30">5:30 AM</time> - <time dateTime="2022-01-13T16:30">3:30 PM</time>
-                </li>
-                <li className="py-4 sm:flex">
-                  <time dateTime="2022-01-20" className="w-28 flex-none">
-                    Fri, Mar 15
-                  </time>
-                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
-                  <time dateTime="2022-01-13T14:30">5:30 AM</time> - <time dateTime="2022-01-13T16:30">3:30 PM</time>
-                </li>
-                <li className="py-4 sm:flex">
-                  <time dateTime="2022-01-18" className="w-28 flex-none">
-                    Mon, Mar 17
-                  </time>
-                  <p className="mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">8 hours</p>
-                  <p className="flex-none sm:ml-6">
-                    <time dateTime="2022-01-17T10:00">5:30 AM</time> - <time dateTime="2022-01-17T10:15">3:30 PM</time>
-                  </p>
-                </li>
-              </ol>
-            </section>
           </div>
         </div>
-
-        {/* rightside */}
-        <div className="ml-10 flex h-[308px] w-[362px] flex-col items-center justify-evenly rounded-2xl border border-zinc-100 bg-white text-center">
-          <div className="flex h-12 w-[298px] items-center justify-center rounded-lg bg-neutral-900">
-            <Button label="Apply now" onClick={() => applyForJob(user._id)} style={{ width: '100%', height: '100%' }} />
-          </div>
-          <div className="inline-flex items-center gap-1">
-            <div className="text-xs font-normal text-stone-500">Posted 3 mins ago</div>
-            <div className="h-1 w-1 rounded-full bg-stone-500" />
-            <div className="text-xs font-normal text-stone-500">#{job?.uid}</div>
-          </div>
-          <div className="h-px w-[80%] bg-zinc-100" />
-          <div className="left-[74px] top-[150px] text-xs font-normal text-black">
-            Know someone who would be great fit?
-          </div>
-          <div className="left-[32px] top-[180px] inline-flex h-12 w-[298px] items-center justify-center gap-2 rounded-lg border border-neutral-900 px-4 py-3.5">
-            <div className="text-center text-sm font-normal leading-tight text-neutral-900">Share Opportunity</div>
-          </div>
-          <div className="mt-3 inline-flex items-center gap-2">
-            <div className="relative h-6 w-6">
-              <CheckCircleIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
-            </div>
-            <div className="text-sm font-normal leading-tight text-black">Hurray! You got tip on this job.</div>
-          </div>
-        </div>
+        {/* Control Buttons end */}
       </div>
     </div>
   )

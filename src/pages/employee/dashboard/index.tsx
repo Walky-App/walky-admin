@@ -1,16 +1,5 @@
-import { TaskList, ClassList, CalendarWidget, MessagesWidget } from './widgets'
+import { AdminDashboard } from '../../admin/dashboard/AdminDashboard'
 
-export default function EmployeeDashboard() {
-  return (
-    <>
-      <div className="w-full sm:w-1/2">
-        <TaskList />
-        <ClassList />
-      </div>
-      <div className="w-full sm:w-1/2">
-        <CalendarWidget />
-        <MessagesWidget />
-      </div>
-    </>
-  )
+export const EmployeeDashboard = () => {
+  return <AdminDashboard />
 }

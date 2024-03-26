@@ -2,9 +2,8 @@ import { useState } from 'react'
 
 import { RequestService } from '../../services/RequestService'
 
-export default function ForgotPassword({ setUserForm }: any) {
+export const ForgotPassword = () => {
   const [form, setForm] = useState({})
-  const [error, setError] = useState<any>()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -14,7 +13,6 @@ export default function ForgotPassword({ setUserForm }: any) {
     const response = await RequestService('auth/reset', 'POST', form)
 
     if (response) {
-      setUserForm('Login')
       setLoading(false)
     }
   }
@@ -57,7 +55,7 @@ export default function ForgotPassword({ setUserForm }: any) {
       <button
         type="submit"
         className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'hover:bg-zinc-950 cursor-wait'
+          loading && 'cursor-wait hover:bg-zinc-950'
         }`}>
         {loading ? 'Reseting password...' : 'Submit'}
       </button>
