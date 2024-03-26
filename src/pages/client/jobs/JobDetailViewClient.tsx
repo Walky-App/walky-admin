@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable */
 import { useEffect, useState } from 'react'
 
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { type IFacility } from '../../../interfaces/Facility'
 
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
@@ -57,7 +58,15 @@ export default function JobDetailViewClient() {
     }
 
     getJob()
-  }, [job.is_active, job.is_completed, params.id, acceptCount, rejectionReason, lastRejectedApplicantId, lastReinstatedApplicantId])
+  }, [
+    job.is_active,
+    job.is_completed,
+    params.id,
+    acceptCount,
+    rejectionReason,
+    lastRejectedApplicantId,
+    lastReinstatedApplicantId,
+  ])
 
   let earliestDate, latestDate
 
@@ -258,6 +267,33 @@ export default function JobDetailViewClient() {
                   </div>
                 </Card>
                 {/* Job Card End*/}
+                <section className="mt-12">
+                  <h2 className="text-base font-semibold leading-6 text-gray-900">
+                    Schedule ({job.job_dates.length} days)
+                  </h2>
+                  <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                    {job.job_dates.map((date: string, index: number) => {
+                      const dateObj = new Date(date)
+                      const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                      const formattedDate = dateObj.toLocaleDateString()
+                      return (
+                        <li key={index} className="py-4 sm:flex">
+                          <time dateTime={date} className="w-28 flex-none">
+                            {dayOfWeek}, {formattedDate}
+                          </time>
+                          <p className="flex-none sm:ml-6">
+                            <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                            <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                          </p>
+                          <p className="mt-2 ml-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                            Lunch: {job.lunch_break} minutes
+                          </p>
+                          <p className='text-green-500'>Confirmed</p>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </section>
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
@@ -458,7 +494,7 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
-                                  <Tag className='ml-2 mb-2' value="Rejected" severity="danger" />
+                                  <Tag className="mb-2 ml-2" value="Rejected" severity="danger" />
                                   <Rating value={3} readOnly cancel={false} />
                                   Reason for rejection: {applicant.rejection_reason}
                                 </p>
@@ -470,7 +506,7 @@ export default function JobDetailViewClient() {
                                 <Button
                                   size="small"
                                   label="Cancel"
-                                  severity='secondary'
+                                  severity="secondary"
                                   onClick={() => {
                                     handleReinstate(applicant.user._id)
                                   }}
@@ -517,7 +553,7 @@ export default function JobDetailViewClient() {
                                 <p className="text-sm font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
-                                  <Tag className='ml-2 mb-2' value="Accepted" severity="success" />
+                                  <Tag className="mb-2 ml-2" value="Accepted" severity="success" />
                                   <Rating value={3} readOnly cancel={false} />
                                 </p>
                                 <p className="mt-1 flex text-xs leading-5 text-gray-500" />
@@ -528,10 +564,11 @@ export default function JobDetailViewClient() {
                               <Button
                                 size="small"
                                 label="Cancel"
-                                severity='secondary'
+                                severity="secondary"
                                 onClick={() => {
                                   handleReinstate(applicant.user._id)
-                                }}/>
+                                }}
+                              />
                             </div>
                           </li>
                         )
