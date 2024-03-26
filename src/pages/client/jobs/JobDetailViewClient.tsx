@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { type IFacility } from '../../../interfaces/Facility'
 
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
@@ -266,6 +267,33 @@ export default function JobDetailViewClient() {
                   </div>
                 </Card>
                 {/* Job Card End*/}
+                <section className="mt-12">
+                  <h2 className="text-base font-semibold leading-6 text-gray-900">
+                    Schedule ({job.job_dates.length} days)
+                  </h2>
+                  <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                    {job.job_dates.map((date: string, index: number) => {
+                      const dateObj = new Date(date)
+                      const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                      const formattedDate = dateObj.toLocaleDateString()
+                      return (
+                        <li key={index} className="py-4 sm:flex">
+                          <time dateTime={date} className="w-28 flex-none">
+                            {dayOfWeek}, {formattedDate}
+                          </time>
+                          <p className="flex-none sm:ml-6">
+                            <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                            <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                          </p>
+                          <p className="mt-2 ml-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                            Lunch: {job.lunch_break} minutes
+                          </p>
+                          <p className='text-green-500'>Confirmed</p>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </section>
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
