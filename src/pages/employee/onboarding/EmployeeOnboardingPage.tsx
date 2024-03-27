@@ -1,113 +1,74 @@
-import { createContext, type Dispatch, Fragment, type SetStateAction, useRef, useState } from 'react'
+import { createContext, type Dispatch, Fragment, type SetStateAction, useState, useEffect } from 'react'
 
 import { type FieldErrors } from 'react-hook-form'
 
 import { type MenuItem } from 'primereact/menuitem'
 import { Steps } from 'primereact/steps'
-import { Toast } from 'primereact/toast'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
+import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { type IUserDocument, type IUser } from '../../../interfaces/User'
+import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
-import { WelcomeDialog, Step3, Step4, Step5, Step2, Step1 } from '../../client/onboarding/components'
+import { EmployeeStep1, EmployeeStep2, EmployeeWelcomeDialog } from './components'
 
-const defaultFacilityFormValues: IFacilityFormInputs = {
-  user_id: '',
-  name: '',
-  country: '',
+const defaultUserValues: IUserFormInputs = {
+  _id: '',
+  first_name: '',
+  last_name: '',
+  middle_name: '',
+  gender: '',
+  phone_number: '',
+  email: '',
   address: '',
   city: '',
   state: '',
   zip: '',
-  tax_id: '',
-  phone_number: '',
-  notes: '',
-  active: false,
-  sqft: undefined,
-  corp_name: '',
-  company_dbas: [],
-  services: [],
-  images: [],
-  contacts: [
-    {
-      first_name: '',
-      last_name: '',
-      role: '',
-      phone_number: '',
-      email: '',
-    },
-  ],
-  licenses: [],
+  country: '',
+  documents: [],
 }
 
-export interface ILicenseDocument {
-  id: number
-  url: string
-  key: string
-  timestamp: string
-}
-
-export interface IContact {
+export interface IUserFormInputs {
+  _id: string
   first_name: string
   last_name: string
-  role: string
+  middle_name: string
+  gender: string
   phone_number: string
   email: string
-}
-
-export interface IImage {
-  id: number
-  url: string
-  key: string
-  timestamp: string
-}
-
-export interface IFacilityFormInputs {
-  user_id: string
-  name: string
-  country: string
   address: string
   city: string
   state: string
   zip: string
-  tax_id: string
-  phone_number: string
-  notes: string
-  active: boolean
-  sqft: number | undefined
-  corp_name: string
-  company_dbas: string[]
-  services: string[]
-  images: IImage[]
-  contacts: IContact[]
-  licenses: ILicenseDocument[]
-  _id?: string
+  country: string
+  documents: IUserDocument[]
 }
 
 export interface FormDataContextProps {
-  defaultValues: IFacilityFormInputs
-  formData: IFacilityFormInputs
-  setFormData: Dispatch<SetStateAction<IFacilityFormInputs>>
-  facilitiesArray: IFacilityFormInputs[]
-  setFacilitiesArray: Dispatch<SetStateAction<IFacilityFormInputs[]>>
-  selectedFacility: IFacilityFormInputs | undefined
-  setSelectedFacility: Dispatch<SetStateAction<IFacilityFormInputs | undefined>>
+  defaultValues: IUserFormInputs
+  formData: IUserFormInputs
+  setFormData: Dispatch<SetStateAction<IUserFormInputs>>
+  currentUser: IUser | undefined
+  setCurrentUser: Dispatch<SetStateAction<IUser | undefined>>
+  moreAddressDetails: IAddressAutoComplete | undefined
+  setMoreAddressDetails: Dispatch<SetStateAction<IAddressAutoComplete | undefined>>
 }
 
 // Initialize the context with the defined shape and default value
 export const FormDataContext = createContext<FormDataContextProps>({
-  defaultValues: defaultFacilityFormValues,
-  formData: defaultFacilityFormValues,
+  defaultValues: defaultUserValues,
+  formData: defaultUserValues,
   setFormData: () => {
     throw new Error('setFormData function must be overridden in FormDataContext')
   },
-  facilitiesArray: [],
-  setFacilitiesArray: () => {
-    throw new Error('setFacilitiesArray function must be overridden in FormDataContext')
+  currentUser: undefined,
+  setCurrentUser: () => {
+    throw new Error('setCurrentUser function must be overridden in FormDataContext')
   },
-  selectedFacility: defaultFacilityFormValues,
-  setSelectedFacility: () => {
-    throw new Error('setSelectedFacility function must be overridden in FormDataContext')
+  moreAddressDetails: undefined,
+  setMoreAddressDetails: () => {
+    throw new Error('setMoreAddressDetails function must be overridden in FormDataContext')
   },
 })
 
@@ -128,7 +89,7 @@ export function getFormErrorMessage(path: string, errors: FieldErrors) {
   }
 
   if (error?.message) {
-    return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
+    return <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>
   }
 
   return null
@@ -145,82 +106,92 @@ export const tooltipOptions: TooltipOptions = {
   },
 }
 
+const defaultMoreAddressDetails: IAddressAutoComplete = {
+  zip: undefined,
+  state: undefined,
+  city: undefined,
+  location_pin: undefined,
+  address: undefined,
+  country: undefined,
+}
+
 export const EmployeeOnboarding = () => {
-  const user = GetTokenInfo()
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
-  const [formData, setFormData] = useState<IFacilityFormInputs>({
-    ...defaultFacilityFormValues,
-    user_id: user?._id || '',
+  const [formData, setFormData] = useState<IUserFormInputs>({
+    ...defaultUserValues,
   })
-
-  const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
-
-  const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
-
-  const toast = useRef(null)
+  const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined)
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
+    defaultMoreAddressDetails,
+  )
 
   const steps: MenuItem[] = [
     {
-      label: 'Business Information',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'First Step', detail: event.item.label })
-      },
+      label: 'Contact Information',
     },
     {
-      label: 'Documents and Images',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Second Step', detail: event.item.label })
-      },
+      label: 'Documents and Certificates',
     },
     {
       label: 'Locations',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Third Step', detail: event.item.label })
-      },
     },
     {
       label: 'Payment Information',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Fourth Step', detail: event.item.label })
-      },
     },
     {
       label: 'Terms and Conditions',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Fifth Step', detail: event.item.label })
-      },
     },
   ]
 
   const onboardingSteps = [
     <Fragment key="step1">
-      <WelcomeDialog visible={visible} setVisible={setVisible} />
-      <Step1 step={activeIndex} setStep={setActiveIndex} />
+      <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
+      <EmployeeStep1 step={activeIndex} setStep={setActiveIndex} />
     </Fragment>,
-    <Step2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
-    <Step3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
-    <Step4 key="step4" step={activeIndex} setStep={setActiveIndex} />,
-    <Step5 key="step5" step={activeIndex} setStep={setActiveIndex} />,
+    <EmployeeStep2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
+    // <Step3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
+    // <Step4 key="step4" step={activeIndex} setStep={setActiveIndex} />,
+    // <Step5 key="step5" step={activeIndex} setStep={setActiveIndex} />,
   ]
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { _id } = GetTokenInfo()
+      try {
+        const response = await RequestService(`users/${_id}`)
+        setCurrentUser(response)
+        setFormData(prevFormData => ({
+          ...prevFormData,
+          _id: response._id,
+          first_name: response.first_name,
+          last_name: response.last_name,
+          middle_name: response.middle_name,
+          gender: response.gender,
+          email: response.email,
+          phone_number: response.phone_number,
+          address: response.address,
+          documents: response.documents,
+        }))
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+
+    getUser()
+  }, [])
 
   return (
     <FormDataContext.Provider
       value={{
         formData,
         setFormData,
-        defaultValues: defaultFacilityFormValues,
-        facilitiesArray,
-        setFacilitiesArray,
-        selectedFacility,
-        setSelectedFacility,
+        defaultValues: defaultUserValues,
+        currentUser,
+        setCurrentUser,
+        moreAddressDetails,
+        setMoreAddressDetails,
       }}>
-      <Toast ref={toast} />
       <HeaderComponent title="Client Onboarding" />
       <Steps
         model={steps}
@@ -228,7 +199,7 @@ export const EmployeeOnboarding = () => {
         onSelect={e => setActiveIndex(e.index)}
         readOnly={true}
         pt={{
-          label: { className: 'hidden sm:inline' },
+          label: { className: 'hidden xl:inline' },
           menuitem: { className: 'before:top-full before:sm:top-1/2' },
         }}
       />
