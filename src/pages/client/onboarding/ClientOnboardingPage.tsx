@@ -313,7 +313,7 @@ export const ClientOnboarding = () => {
         onSelect={e => setActiveIndex(e.index)}
         readOnly={true}
         pt={{
-          label: { className: 'hidden sm:inline' },
+          label: { className: 'hidden xl:inline' },
           menuitem: { className: 'before:top-full before:sm:top-1/2' },
         }}
       />
