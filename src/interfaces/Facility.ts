@@ -1,41 +1,48 @@
 /* eslint-disable filename-rules/match */
-export interface IFacility {
-  images: boolean
+export interface IFacilityImage {
+  url: string
+  key: string
+  timestamp: string
   _id: string
-  corp_name: string
-  name: string
-  tax_id: string
-  phone_number: string
-  company_dbas: string[]
-  isApproved: boolean
-  contacts: string[]
-  country: string
-  address: string
-  zip: string
-  city: string
-  state: string
-  city_license: string
-  state_license: string
+}
+export interface IFacility {
+  _id: string
+  account_info: string[]
   active: boolean
-  sqft: number
-  services: string[]
+  address: string
+  city: string
+  city_license: string
+  company_dbas: string[]
+  contacts: string[]
+  contract_url: string[]
+  contracts: string[]
+  corp_name: string
+  country: string
+  createdAt: string
+  entrance_image: string
+  entrance_pin: number[]
+  history: string[]
+  images: IFacilityImage[]
+  internal_notes: string[]
+  invoices: string[]
+  isApproved: boolean
   jobs: string[]
   location_pin: number[]
   location_polygon: [number, number][]
-  contract_url: string[]
-  entrance_image: string
-  main_image: string
   logo_url: string
-  contracts: string[]
-  onsite_map: string
-  entrance_pin: number[]
-  parking_details: string
-  notes: string
-  internal_notes: string[]
+  main_image: string
   messages: string[]
-  history: string[]
-  account_info: string[]
-  invoices: string[]
+  name: string
+  notes: string
+  onsite_map: string
+  parking_details: string
+  phone_number: string
+  services: string[]
+  sqft: number
+  state: string
+  state_license: string
+  tax_id: string
+  zip: string
 }
 
 export interface IAddressDetails {
