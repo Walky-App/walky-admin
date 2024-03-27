@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 import { type ITokenInfo } from '../interfaces/services'
-import { IUser } from '../interfaces/user'
+import { type IUser } from '../interfaces/user'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
