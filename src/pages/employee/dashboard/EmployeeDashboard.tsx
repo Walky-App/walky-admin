@@ -23,7 +23,7 @@ export interface ITransaction {
 //   users: string
 // }
 
-export const ClientDashboard = () => {
+export const EmployeeDashboard = () => {
   // const [counts, setCounts] = useState<ICounts | null>()
   // const [facilities, setFacilities] = useState<IFacility[]>([])
 
@@ -118,13 +118,13 @@ export const ClientDashboard = () => {
       <main className="flex-1 pb-8">
         <DashboardHeader>
           <Button
-            label="Facilities"
+            label="My Jobs"
             severity="secondary"
             outlined
             size="small"
-            onClick={() => navigate('/client/facilities')}
+            onClick={() => navigate('/employee/myjobs')}
           />
-          <Button label="My Jobs" size="small" onClick={() => navigate('/client/jobs')} />
+          <Button label="Jobs" size="small" onClick={() => navigate('/employee/jobs')} />
         </DashboardHeader>
 
         {/* <div className="mt-8"> */}

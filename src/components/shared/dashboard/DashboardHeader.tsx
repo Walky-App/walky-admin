@@ -1,15 +1,13 @@
-import { useNavigate } from 'react-router-dom'
-
-import { Button } from 'primereact/button'
-
 import { BuildingOfficeIcon, CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { useAuth } from '../../../contexts/AuthContext'
 
-export const DashboardHeader = () => {
-  const { user } = useAuth()
+interface DashboardHeaderProps {
+  children?: React.ReactNode
+}
 
-  const navigate = useNavigate()
+export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ children }) => {
+  const { user } = useAuth()
 
   return (
     <div className="bg-white px-4 shadow sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
@@ -40,16 +38,7 @@ export const DashboardHeader = () => {
             </div>
           </div>
         </div>
-        <div className="mt-6 flex space-x-3 md:ml-4 md:mt-0">
-          <Button
-            label="Facilities"
-            severity="secondary"
-            outlined
-            size="small"
-            onClick={() => navigate('/admin/facilities')}
-          />
-          <Button label="Jobs" size="small" onClick={() => navigate('/admin/jobs')} />
-        </div>
+        <div className="mt-6 flex space-x-3 md:ml-4 md:mt-0">{children}</div>
       </div>
     </div>
   )
