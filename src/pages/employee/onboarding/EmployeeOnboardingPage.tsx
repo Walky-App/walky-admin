@@ -8,7 +8,7 @@ import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { type IUserDocument, type IUser } from '../../../interfaces/user'
+import { type IUserDocument, type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { EmployeeStep1, EmployeeStep2, EmployeeWelcomeDialog } from './components'
