@@ -10,8 +10,8 @@ import {
 import { Panel } from 'primereact/panel'
 import { type ToastMessage } from 'primereact/toast'
 
+import { type IUser } from '../../../../interfaces/User'
 import { type IToastData } from '../../../../interfaces/global'
-import { type IUser } from '../../../../interfaces/user'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { FormDataContext, type StepProps } from '../EmployeeOnboardingPage'
