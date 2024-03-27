@@ -106,10 +106,10 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
         {/* User Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Documents</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Documents and Certificates</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please upload your business license documents. Please make sure your upload is clear without any warped or
-              blur portions and shows all relevant information.
+              Please upload your documents and/or certificates. Please make sure your upload is clear without any warped
+              or blur portions and shows all relevant information.
             </p>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -148,7 +148,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
                   onError={handleUploadError}
                   emptyTemplate={
                     <p>
-                      Drag and drop <u>Documents and/or prior certification</u> PDF or image files to upload. Max size:
+                      Drag and drop <u>Documents and/or prior certifications</u> PDF or image files to upload. Max size:
                       1MB
                     </p>
                   }
