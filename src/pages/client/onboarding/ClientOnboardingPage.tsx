@@ -195,7 +195,7 @@ export function getFormErrorMessage(path: string, errors: FieldErrors) {
   }
 
   if (error?.message) {
-    return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
+    return <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>
   }
 
   return null
@@ -313,7 +313,7 @@ export const ClientOnboarding = () => {
         onSelect={e => setActiveIndex(e.index)}
         readOnly={true}
         pt={{
-          label: { className: 'hidden sm:inline' },
+          label: { className: 'hidden xl:inline' },
           menuitem: { className: 'before:top-full before:sm:top-1/2' },
         }}
       />
