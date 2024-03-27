@@ -6,10 +6,14 @@ import { Button } from 'primereact/button'
 
 import { BriefcaseIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 
-import { DashboardHeader } from '../../../components/shared/dashboard/DashboardHeader'
-import { RecentActivityTable } from '../../../components/shared/dashboard/RecentActivityTable'
-import { type IRecentInfoCard, RecentInfoCards } from '../../../components/shared/dashboard/RecentInfoCards'
-import { type IStatCard, StatCards } from '../../../components/shared/dashboard/StatCards'
+import {
+  type IStatCard,
+  type IRecentInfoCard,
+  DashboardHeader,
+  StatCards,
+  RecentActivityTable,
+  RecentInfoCards,
+} from '../../../components/shared/dashboard'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 
