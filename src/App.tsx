@@ -26,7 +26,7 @@ import { Units } from './pages/learn/units/Units'
 
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
-import { ClientDashboard } from './pages/client/dashboard'
+import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'

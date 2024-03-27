@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
-
-import { Button } from 'primereact/button'
-
+// import { Button } from 'primereact/button'
 import { BriefcaseIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 
 import { DashboardHeader } from '../../../components/shared/dashboard/DashboardHeader'
 import { RecentActivityTable } from '../../../components/shared/dashboard/RecentActivityTable'
-import { type IRecentInfoCard, RecentInfoCards } from '../../../components/shared/dashboard/RecentInfoCards'
+// import { type IRecentInfoCard, RecentInfoCards } from '../../../components/shared/dashboard/RecentInfoCards'
 import { type IStatCard, StatCards } from '../../../components/shared/dashboard/StatCards'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
+
+// import { useNavigate } from 'react-router-dom'
 
 export type Status = string
 
@@ -32,11 +31,11 @@ interface ICounts {
   users: string
 }
 
-export const AdminDashboard = () => {
+export const ClientDashboard = () => {
   const [counts, setCounts] = useState<ICounts | null>()
   const [facilities, setFacilities] = useState<IFacility[]>([])
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   useEffect(() => {
     const getCounts = async () => {
@@ -86,41 +85,41 @@ export const AdminDashboard = () => {
     },
   ]
 
-  const facilitiesData: IRecentInfoCard[] = [
-    {
-      id: 1,
-      name: facilities[0]?.name,
-      imageUrl: facilities[0]?.images[0]?.url,
-      data: {
-        date: new Date(facilities[0]?.createdAt).toLocaleDateString(),
-        dateTime: facilities[0]?.createdAt,
-        address: facilities[0]?.address,
-        status: facilities[0]?.isApproved ? 'Approved' : 'Pending',
-      },
-    },
-    {
-      id: 2,
-      name: facilities[1]?.name,
-      imageUrl: facilities[1]?.images[1]?.url,
-      data: {
-        date: new Date(facilities[1]?.createdAt).toLocaleDateString(),
-        dateTime: facilities[1]?.createdAt,
-        address: facilities[1]?.address,
-        status: facilities[1]?.isApproved ? 'Approved' : 'Pending',
-      },
-    },
-    {
-      id: 3,
-      name: facilities[2]?.name,
-      imageUrl: facilities[2]?.images[2]?.url,
-      data: {
-        date: new Date(facilities[2]?.createdAt).toLocaleDateString(),
-        dateTime: facilities[2]?.createdAt,
-        address: facilities[2]?.address,
-        status: facilities[2]?.isApproved ? 'Approved' : 'Pending',
-      },
-    },
-  ]
+  // const facilitiesData: IRecentInfoCard[] = [
+  //   {
+  //     id: 1,
+  //     name: facilities[0]?.name,
+  //     imageUrl: facilities[0]?.images[0]?.url,
+  //     data: {
+  //       date: new Date(facilities[0]?.createdAt).toLocaleDateString(),
+  //       dateTime: facilities[0]?.createdAt,
+  //       address: facilities[0]?.address,
+  //       status: facilities[0]?.isApproved ? 'Approved' : 'Pending',
+  //     },
+  //   },
+  //   {
+  //     id: 2,
+  //     name: facilities[1]?.name,
+  //     imageUrl: facilities[1]?.images[1]?.url,
+  //     data: {
+  //       date: new Date(facilities[1]?.createdAt).toLocaleDateString(),
+  //       dateTime: facilities[1]?.createdAt,
+  //       address: facilities[1]?.address,
+  //       status: facilities[1]?.isApproved ? 'Approved' : 'Pending',
+  //     },
+  //   },
+  //   {
+  //     id: 3,
+  //     name: facilities[2]?.name,
+  //     imageUrl: facilities[2]?.images[2]?.url,
+  //     data: {
+  //       date: new Date(facilities[2]?.createdAt).toLocaleDateString(),
+  //       dateTime: facilities[2]?.createdAt,
+  //       address: facilities[2]?.address,
+  //       status: facilities[2]?.isApproved ? 'Approved' : 'Pending',
+  //     },
+  //   },
+  // ]
 
   return (
     <div className="min-h-full">
@@ -143,7 +142,7 @@ export const AdminDashboard = () => {
           <RecentActivityTable transactions={transactionsData} />
 
           {/* Recent client list*/}
-          <div className="mx-auto mt-8 max-w-6xl px-4 sm:px-6 lg:px-8">
+          {/* <div className="mx-auto mt-8 max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-medium leading-6 text-gray-900">Recently added</h2>
@@ -151,7 +150,7 @@ export const AdminDashboard = () => {
               </div>
               <RecentInfoCards items={facilitiesData} />
             </div>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>
