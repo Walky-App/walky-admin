@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 import JobListItem from './JobListItem'
 
 const categorysOptions = [
@@ -14,9 +15,11 @@ const categorysOptions = [
 export const EmployeeMyJobs = () => {
   const [jobs, setJobs] = useState([])
 
+  const { _id } = GetTokenInfo()
+
   useEffect(() => {
     const getJobs = async () => {
-      const allJobs = await RequestService('jobs/byemployee')
+      const allJobs = await RequestService(`jobs/byemployee/${_id}`)
 
       if (allJobs) {
         setJobs(allJobs)
@@ -27,7 +30,7 @@ export const EmployeeMyJobs = () => {
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
-      <HeaderComponent title="Jobs" search selectedOptions={categorysOptions} />
+      <HeaderComponent title="My Jobs" search selectedOptions={categorysOptions} />
       <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
         {jobs?.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
       </ul>
