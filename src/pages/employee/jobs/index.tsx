@@ -18,23 +18,57 @@ const jobTitleOptions = [
   { name: 'Cultivator', code: 'Cultivator' },
   { name: 'Extractor', code: 'Extractor' },
 ]
+const rangeOptions = [
+  { name: '5 miles', code: 5 },
+  { name: '10 miles', code: 10 },
+  { name: '15 miles', code: 15 },
+  { name: '20 miles', code: 20 },
+  { name: '30 miles', code: 30 },
+  { name: '50 miles', code: 50 },
+]
 
 export const EmployeeJobs = () => {
-  const [jobs, setJobs] = useState<IJob[]>()
+  const [jobs, setJobs] = useState<any>()
   const [selectedJobTitle, setSelectedJobTitle] = useState<any>(null)
   const [displayedJobs, setDisplayedJobs] = useState<any>([])
   const [dates, setDates] = useState<any>(null)
+  const [latitude, setLatitude] = useState<number>()
+  const [longitude, setLongitude] = useState<number>()
+  const [error, setError] = useState<string>()
+  const [selectedRange, setSelectedRange] = useState<any>(null)
+
+  useEffect(() => {
+    const getLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setLatitude(position.coords.latitude)
+          setLongitude(position.coords.longitude)
+        },
+        error => {
+          setError(error.message)
+        },
+      )
+    }
+
+    getLocation()
+  }, [])
+  console.log('lat:', latitude, 'long:', longitude)
 
   useEffect(() => {
     const getJobs = async () => {
-      const allJobs = await RequestService('jobs')
-
+      if (typeof longitude !== 'number' || typeof latitude !== 'number' || isNaN(longitude) || isNaN(latitude)) {
+        console.error('Invalid coordinates: ', { longitude, latitude })
+        return
+      }
+      const fromCoordinates = [longitude, latitude]
+      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
       if (allJobs) {
         setJobs(allJobs)
       }
     }
     getJobs()
-  }, [])
+    console.log(jobs)
+  }, [latitude, longitude])
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])] as IJob[]
@@ -49,33 +83,49 @@ export const EmployeeJobs = () => {
         })
       })
     }
+    if (selectedRange) {
+      filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange.code)
+    }
     setDisplayedJobs(filteredJobs)
-  }, [selectedJobTitle, dates, jobs])
+  }, [selectedJobTitle, dates, jobs, selectedRange])
 
   return (
     <>
       <HeaderComponent title="Jobs" />
-      <div className="mb-4 flex flex-col justify-between sm:flex-row">
-        <Dropdown
-          value={selectedJobTitle}
-          onChange={e => setSelectedJobTitle(e.value)}
-          options={jobTitleOptions}
-          optionLabel="name"
-          placeholder="Select Job Title"
-          className="md:w-14rem mb-4 w-full sm:mb-0 sm:mr-4"
-        />
-        <Calendar
-          value={dates}
-          onChange={e => {
-            setDates(e.value)
-          }}
-          selectionMode="range"
-          showButtonBar
-          numberOfMonths={2}
-          placeholder="Select Date Range"
-          readOnlyInput
-          className="w-full sm:w-auto"
-        />
+      <div className="-mx-3 flex flex-wrap">
+        <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
+          <Dropdown
+            value={selectedJobTitle}
+            onChange={e => setSelectedJobTitle(e.value)}
+            filter
+            options={jobTitleOptions}
+            optionLabel="name"
+            placeholder="Select Job Title"
+            className="w-full"
+          />
+        </div>
+        <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
+          <Calendar
+            value={dates}
+            onChange={e => setDates(e.value)}
+            selectionMode="range"
+            showButtonBar
+            numberOfMonths={2}
+            placeholder="Select Date Range"
+            readOnlyInput
+            className="w-full"
+          />
+        </div>
+        <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
+          <Dropdown
+            value={selectedRange}
+            onChange={e => setSelectedRange(e.value)}
+            options={rangeOptions}
+            optionLabel="name"
+            placeholder="Select Range"
+            className="w-full"
+          />
+        </div>
       </div>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">

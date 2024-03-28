@@ -27,4 +27,7 @@ export interface IJob {
   feedback: [{ email: string; rating: number; comment: string }]
   clock_in_restriction: [{ start: number; end: number }]
   clock_out_restriction: [{ start: number; end: number }]
+  distance: number
+  createdAt: Date
+  updatedAt: Date
 }
