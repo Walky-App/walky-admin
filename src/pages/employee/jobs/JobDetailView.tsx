@@ -5,50 +5,68 @@ import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
-import { ProgressSpinner } from 'primereact/progressspinner'
+import { Skeleton } from 'primereact/skeleton'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IJob } from '../../../interfaces/job'
+import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 
-interface IApplicant {
-  user: string
-  is_approved: boolean
-  is_working: boolean
-}
-interface Job {
-  uid: string
-  created_by: string
-  facility: IFacility
-  title: string
-  start_time: number
-  end_time: number
-  total_hours: number
-  lunch_break: number
-  job_dates: string[]
-  job_tips: string[]
-  vacancy: number
-  applicants: IApplicant[]
-  dnr: { email: string; reason: string }[]
-  is_completed: boolean
-  is_full: boolean
-  is_active: boolean
-  createdAt: Date
-  updatedAt: Date
-}
-
 export const JobDetailView = () => {
-  const [job, setJob] = useState<Job | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [job, setJob] = useState<IJob | null>(null)
+  console.log('job: ', job)
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [isClockedIn, setIsClockedIn] = useState(false)
+  const [timesheets, setTimesheets] = useState<ITimeSheet | null>(null)
+  console.log('timesheet: ', timesheets)
   const { showToast } = useUtils()
-  const params = useParams()
+  const { id } = useParams()
   const user = GetTokenInfo()
 
+  const [latitude, setLatitude] = useState<number>()
+  const [longitude, setLongitude] = useState<number>()
+  const [error, setError] = useState<string>()
+
+  useEffect(() => {
+    let isMounted = true // This flag is used to prevent state updates after unmount
+
+    const getLocation = () => {
+      if (!navigator.geolocation) {
+        setError('Geolocation is not supported by your browser')
+        console.error(error)
+        return
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          if (isMounted) {
+            setLatitude(position.coords.latitude)
+            setLongitude(position.coords.longitude)
+          }
+        },
+        error => {
+          if (isMounted) {
+            setError(error.message)
+          }
+        },
+      )
+    }
+
+    getLocation()
+
+    return () => {
+      isMounted = false // Prevent state updates after the component has unmounted
+    }
+  }, [error])
+
   let earliestDate, latestDate
-  if (job && job.job_dates) {
-    earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date).getTime())))
-    latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date).getTime())))
+
+  if (job) {
+    const dateTimes = job.job_dates.map(dateString => new Date(dateString).getTime())
+    ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
   }
 
   function convertToStandardTime(militaryTime: number) {
@@ -64,16 +82,99 @@ export const JobDetailView = () => {
   }
 
   useEffect(() => {
-    const getJob = async () => {
-      const job = await RequestService(`jobs/${params.id}`)
-      if (job) {
-        setJob(job)
-      } else {
-        console.error('Job not found')
+    if (job?.applicants[0]?.is_approved === true) {
+      const timer = setInterval(() => {
+        setCurrentDate(new Date())
+      }, 1000)
+
+      return () => {
+        clearInterval(timer)
       }
     }
+  }, [job?.applicants])
+
+  useEffect(() => {
+    const getJob = async () => {
+      const job = await RequestService(`jobs/${id}`)
+      if (job) {
+        setJob(job)
+        setIsLoading(false)
+      } else {
+        console.error('Job not found')
+        setIsLoading(false)
+      }
+    }
+
     getJob()
-  }, [])
+  }, [id])
+
+  useEffect(() => {
+    if (job?.applicants[0]?.is_approved === true) {
+      const getCurrentJobTimeSheet = async () => {
+        try {
+          const response = await RequestService(`timesheets/employee/${user._id}?job_id=${job?._id}`)
+          if (response) {
+            setTimesheets(response)
+          }
+        } catch (error) {
+          console.error('Failed to fetch timesheet:', error)
+          setTimesheets(null)
+        }
+      }
+
+      if (user._id && job?._id) {
+        getCurrentJobTimeSheet()
+      }
+    }
+  }, [user._id, job?._id, job?.applicants, isClockedIn])
+
+  const clockIn = async () => {
+    try {
+      const body = {
+        job_id: job?._id,
+        timeSheet_id: user._id,
+        location: [latitude, longitude],
+      }
+      const timeSheet = await RequestService(`timesheets/clock-in`, 'POST', body)
+      console.log('clock-in timeSheet: ', timeSheet)
+      setIsClockedIn(true)
+
+      const createdAt = new Date(timeSheet?.createdAt)
+      const formattedTime = createdAt.toLocaleTimeString()
+
+      showToast({
+        severity: 'info',
+        summary: 'Clocked in at',
+        detail: formattedTime,
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const clockOut = async () => {
+    try {
+      const body = {
+        job_id: job?._id,
+        timeSheet_id: user._id,
+        location: [latitude, longitude],
+      }
+      const timeSheet = await RequestService(`timesheets/clock-out`, 'POST', body)
+      console.log('clock-out timeSheet: ', timeSheet)
+      setIsClockedIn(false)
+
+      const createdAt = new Date(timeSheet?.createdAt)
+      const formattedTime = createdAt.toLocaleTimeString()
+
+      showToast({
+        severity: 'info',
+        summary: 'Clocked out at',
+        detail: formattedTime,
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const applyForJob = async (userId: string) => {
     try {
@@ -82,7 +183,7 @@ export const JobDetailView = () => {
         is_approved: false,
         is_working: false,
       }
-      await RequestService(`jobs/${params.id}/apply`, 'POST', applicant)
+      await RequestService(`jobs/${id}/apply`, 'POST', applicant)
       showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for the job' })
     } catch (error) {
       console.error(error)
@@ -112,7 +213,7 @@ export const JobDetailView = () => {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
                       <div className="flex items-center">
-                        <i className="pi pi-map-marker"></i>
+                        <i className="pi pi-map-marker" />
                         <div className="ml-2 text-sm font-normal text-black">
                           {job.facility.city}, {job.facility.state}, {job.facility.zip}
                         </div>
@@ -123,22 +224,16 @@ export const JobDetailView = () => {
                   <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-start gap-2">
-                      {job.is_active === true ? (
-                        <i className="pi pi-check"></i>
-                      ) : (
-                        <i className="pi pi-times-circle"></i>
-                      )}
+                      {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-xs font-medium text-black">
-                          {job.is_active === true ? 'Active' : 'Disabled'}
-                        </span>
+                        <span className="text-xs font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
                       {job.is_completed === false ? (
-                        <i className="pi pi-calendar"></i>
+                        <i className="pi pi-calendar" />
                       ) : (
-                        <i className="pi pi-calendar-times"></i>
+                        <i className="pi pi-calendar-times" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
                         <span className="text-xs font-medium text-black">
@@ -147,7 +242,7 @@ export const JobDetailView = () => {
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
-                      {job.is_full === false ? <i className="pi pi-briefcase"></i> : <i className="pi pi-ban"></i>}
+                      {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                       <div className="text-xs font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
@@ -200,12 +295,12 @@ export const JobDetailView = () => {
                       const formattedDate = dateObj.toLocaleDateString()
                       return (
                         <li key={index} className="py-4 sm:flex">
-                          <time dateTime={date} className="w-28 flex-none">
+                          <time dateTime={formattedDate} className="w-28 flex-none">
                             {dayOfWeek}, {formattedDate}
                           </time>
                           <p className="flex-none sm:ml-6">
-                            <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                            <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                            <time dateTime={formattedDate}>{convertToStandardTime(job.start_time)}</time> -
+                            <time dateTime={formattedDate}>{convertToStandardTime(job.end_time)}</time>
                           </p>
                           <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                             Lunch: {job.lunch_break} minutes
@@ -218,32 +313,62 @@ export const JobDetailView = () => {
                 </section>
               </div>
             ) : (
-              <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
+              <Skeleton shape="rectangle" height="150px" />
             )}
           </div>
         </div>
-
-        {/* Control Buttons */}
-        <div className="md:col-span-1">
-          <div className="flew-row flex md:flex-col">
-            <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
-              <ul className="w-full divide-y divide-gray-200">
-                <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                  <Button
-                    label="Apply now"
-                    onClick={() => applyForJob(user._id)}
-                    style={{ width: '100%', height: '100%' }}
-                  />
-                </li>
-                <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                  <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                  <Button label="Share Opportunity" severity="secondary" style={{ width: '100%', height: '100%' }} />
-                </li>
-              </ul>
+        {isLoading ? (
+          <Skeleton shape="rectangle" height="150px" />
+        ) : job?.applicants[0]?.is_approved === true ? (
+          <div className="md:col-span-1">
+            <div className="flew-row flex md:flex-col">
+              <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
+                <ul className="w-full divide-y divide-gray-200">
+                  <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
+                    <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
+                    <p className="text-sm font-medium">
+                      {currentDate.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </li>
+                  {isClockedIn ? (
+                    <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                      <Button label="Clock Out" severity="danger" onClick={() => clockOut()} className="w-full" />
+                    </li>
+                  ) : (
+                    <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                      <Button label="Clock In" severity="success" onClick={() => clockIn()} className="w-full" />
+                    </li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-        {/* Control Buttons end */}
+        ) : (
+          <div className="md:col-span-1">
+            <div className="flew-row flex md:flex-col">
+              <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
+                <ul className="w-full divide-y divide-gray-200">
+                  <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                    <Button
+                      label="Apply now"
+                      onClick={() => applyForJob(user._id)}
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </li>
+                  <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                    <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
+                    <Button label="Share Opportunity" severity="secondary" style={{ width: '100%', height: '100%' }} />
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
