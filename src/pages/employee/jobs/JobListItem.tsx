@@ -55,7 +55,7 @@ export default function JobListItem({ job }: any) {
                 <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                 <div className="mt-0.5 flex flex-col gap-1">
                   <span className="text-xs font-medium text-black">{job?.facility?.city}</span>
-                  <span className="text-xs font-normal text-stone-500">(4.2 mi)</span>
+                  <span className="text-xs font-normal text-stone-500">{job.distance} miles</span>
                 </div>
               </div>
             </div>
