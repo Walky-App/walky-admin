@@ -1,4 +1,4 @@
-import type { Documents } from './Global'
+import type { Documents } from './global'
 
 export interface Section {
   _id?: string
@@ -33,4 +33,12 @@ export interface Unit extends Documents {
   is_disabled: boolean
   time: number
   assessments: Assessment
+}
+
+export interface IAssessmentResponse {
+  percentageAssessment: number
+  minimumScore: number
+  passAssessment: boolean
+  correctQuestions: number
+  incorrectQuestions: number
 }

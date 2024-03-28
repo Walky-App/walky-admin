@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { RequestService } from '../../../services/RequestService'
-import { SelectedOptionInterface } from '../../../interfaces/Global'
+import { SelectedOptionInterface } from '../../../interfaces/global'
 
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'

@@ -6,37 +6,29 @@ import { AdminProvider } from './contexts/AdminContext'
 import { AuthProvider } from './contexts/AuthContext'
 
 /** Utilities Pages */
-import Layout from './components/layout/'
+import { Layout } from './components/layout/'
 
 /** Error Pages */
-import Error404 from './pages/Error404'
+import { Error404 } from './pages/Error404'
 
 /** Auth Pages */
-import Auth from './pages/auth'
+import { Auth } from './pages/auth'
 import NewPasswordForm from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import Signup from './pages/auth/SignupForm'
 
-import EmployeeProfile from './pages/employees/EmployeeProfile'
-
-/** Employee Pages */
-import EmployeeDashboard from './pages/employees/dashboard'
-import EmployeeJobs from './pages/employees/jobs'
-import JobDetailView from './pages/employees/jobs/JobDetailView'
-
 /** Learn Pages */
 import { Learn } from './pages/learn/Learn'
+import { Assessment } from './pages/learn/assessment/Assessment'
 import { Modules } from './pages/learn/modules/Modules'
 import { UnitDetail } from './pages/learn/units/UnitDetail'
 import { Units } from './pages/learn/units/Units'
-import { Assessment } from './pages/learn/assessment/Assessment'
 
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
-import ClientDashboard from './pages/client/dashboard'
-import Facilities from './pages/client/facilities'
+import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
+import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
-import ClientFacilityDetails from './pages/client/facilities/ClientFacilityDetails'
 import Jobs from './pages/client/jobs'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 import ClientAddJob from './pages/client/jobs/addJob/ClientAddJob'
@@ -44,7 +36,7 @@ import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
 /** Sales Pages */
-import SalesDashboard from './pages/sales/dashboard'
+import { SalesDashboard } from './pages/sales/dashboard'
 import { ProductList as Products } from './pages/sales/products'
 import { ProductCategories } from './pages/sales/products/ProductCategories'
 import ProductDetail from './pages/sales/products/ProductDetail'
@@ -53,7 +45,7 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 // import SalesProfile from './pages/sales/profile/SalesProfile'
 
 /** Admin Pages */
-import AdminDashboard from './pages/admin/dashboard'
+import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
@@ -61,16 +53,16 @@ import AdminUsers from './pages/admin/users'
 import AdminInviteUser from './pages/admin/users/AdminInviteUser'
 import AdminUserDetails from './pages/admin/users/AdminUserDetails'
 
-import AdminFacilities from './pages/admin/facilities'
+import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
-import AdminFacilityDetails from './pages/admin/facilities/AdminFacilityDetails'
+import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
-import AdminFacilityInternalNotes from './pages/admin/facilities/AdminFacilityInternalNotes'
+import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
-import AdminFacilityJobs from './pages/admin/facilities/AdminFacilityJobs'
+import { AdminFacilityJobs } from './pages/admin/facilities/AdminFacilityJobs'
 import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
 
 import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
@@ -87,8 +79,17 @@ import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
 import AdminJobs from './pages/admin/jobs'
-import AdminAddJob from './pages/admin/jobs/AdminAddJob'
-import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
+
+/** Employee Pages */
+import { EmployeeProfile } from './pages/employee/EmployeeProfile'
+import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
+import { EmployeeJobs } from './pages/employee/jobs'
+import { JobDetailView } from './pages/employee/jobs/JobDetailView'
+import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
+import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
+
+// import AdminAddJob from './pages/admin/jobs/AdminAddJob'
+// import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -110,8 +111,10 @@ export const App = () => {
             <Route element={<Signup />} path="/invite/:email/:role" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
+                <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
                 <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
+                <Route element={<EmployeeMyJobs />} path="/employee/myjobs" />
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />
                 <Route element={<EmployeeProfile />} path="/employee/profile" />
                 {/* LMS Module */}
@@ -124,9 +127,18 @@ export const App = () => {
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientProfile />} path="/client/profile" />
-                  <Route element={<Facilities />} path="/client/facilities" />
+                  <Route element={<ClientFacilities />} path="/client/facilities" />
                   <Route element={<ClientAddFacility />} path="/client/facilities/new" />
-                  <Route element={<ClientFacilityDetails />} path="/client/facilities/:facilityId" />
+                  <Route element={<AdminFacilityDetails />} path="/client/facilities/:facilityId" />
+                  <Route element={<AdminFacilityContacts />} path="/client/facilities/:facilityId/contacts" />
+                  <Route element={<AdminFacilityImages />} path="/client/facilities/:facilityId/images" />
+                  <Route element={<AdminFacilityJobs />} path="/client/facilities/:facilityId/jobs" />
+                  <Route
+                    element={<AdminFacilityInternalNotes />}
+                    path="/client/facilities/:facilityId/internal_notes"
+                  />
+                  <Route element={<AdminFacilityLicenses />} path="/client/facilities/:facilityId/licenses" />
+                  <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<Jobs />} path="/client/jobs" />
                   <Route element={<ClientAddJob />} path="/client/jobs/new" />
                   <Route element={<ClientEditJob />} path="/client/jobs/:id/edit" />
