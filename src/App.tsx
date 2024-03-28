@@ -26,7 +26,7 @@ import { Units } from './pages/learn/units/Units'
 
 /** Client Pages */
 import ClientProfile from './pages/client/ClientProfile'
-import { ClientDashboard } from './pages/client/dashboard'
+import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
@@ -82,7 +82,7 @@ import AdminJobs from './pages/admin/jobs'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
-import { EmployeeDashboard } from './pages/employee/dashboard'
+import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
 import { EmployeeJobs } from './pages/employee/jobs'
 import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
