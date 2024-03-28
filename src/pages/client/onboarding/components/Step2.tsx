@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import {
@@ -9,38 +9,111 @@ import {
 } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
-import { Toast, type ToastMessage } from 'primereact/toast'
+import { type ToastMessage } from 'primereact/toast'
 
+import { type IToastParameters, type IToastData } from '../../../../interfaces/global'
+import { RequestService } from '../../../../services/RequestService'
+import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
-import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
+import {
+  FormDataContext,
+  type IGetAcceptRecipient,
+  type IFacilityFormInputs,
+  type StepProps,
+} from '../ClientOnboardingPage'
 
 export const Step2 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
+  const [toastData, setToastData] = useState<IToastParameters | null>(null)
+  const [requestLoading, setRequestLoading] = useState(false)
+  const { facilitiesArray, setFacilitiesArray, setDocumentData, prevDocRecipient, setPrevDocRecipient } =
+    useContext(FormDataContext)
 
   const facilityId = facilitiesArray[0]?._id
-  const toast = useRef<Toast>(null)
   const fileUploadRef = useRef<FileUpload>(null)
 
-  const showSavedToast = () => {
+  const { setRemoveToastCallback, showToast } = useUtils()
+
+  useEffect(() => {
+    const docRecipient: IGetAcceptRecipient = {
+      email: facilitiesArray[0]?.contacts[0].email,
+      first_name: facilitiesArray[0]?.contacts[0].first_name,
+      last_name: facilitiesArray[0]?.contacts[0].last_name,
+      company_name: facilitiesArray[0]?.corp_name,
+      company_number: facilitiesArray[0]?.phone_number,
+      mobile: facilitiesArray[0]?.contacts[0].phone_number,
+    }
+
+    if (JSON.stringify(docRecipient) !== JSON.stringify(prevDocRecipient)) {
+      setRequestLoading(true)
+      const sendDocumentFromTemplate = async () => {
+        const body = {
+          name: 'HempTemps Client Agreement',
+          type: 'sales',
+          template_id: '5vy2kbjyevk8',
+          email: docRecipient.email,
+          first_name: docRecipient.first_name,
+          last_name: docRecipient.last_name,
+          company_name: docRecipient.company_name,
+          company_number: docRecipient.company_number,
+          mobile: docRecipient.mobile,
+        }
+        try {
+          const response = await RequestService('getaccept', 'POST', body)
+          if (response.error) {
+            throw response.error
+          } else {
+            setDocumentData(response)
+          }
+        } catch (error) {
+          console.error('Error sending document:', error)
+        } finally {
+          setRequestLoading(false)
+        }
+      }
+
+      sendDocumentFromTemplate()
+
+      setPrevDocRecipient(docRecipient)
+    }
+  }, [facilitiesArray, prevDocRecipient, setDocumentData, setPrevDocRecipient])
+
+  const handleRemoveToast = useCallback(
+    (toastData: ToastMessage | IToastData) => {
+      let severity
+      if ('message' in toastData) {
+        severity = toastData.message.severity
+      } else {
+        severity = toastData.severity
+      }
+
+      if (severity === 'success') {
+        setIsLoading(false)
+        setStep(step + 1)
+      }
+    },
+    [setStep, step],
+  )
+
+  useEffect(() => {
+    setRemoveToastCallback(handleRemoveToast)
+  }, [handleRemoveToast, setRemoveToastCallback])
+
+  useEffect(() => {
+    if (!requestLoading && toastData) {
+      showToast(toastData)
+      setToastData(null)
+    }
+  }, [requestLoading, toastData, showToast])
+
+  const handleSaveButton = () => {
     setIsLoading(true)
-    toast.current?.show({
+    setToastData({
       severity: 'success',
       summary: 'Success',
       detail: 'Changes saved successfully.',
       life: 2000,
     })
-  }
-
-  const onRemoveToast = (toastData: ToastMessage) => {
-    // @ts-expect-error toastRef.current may be null
-    const severity = toastData.message ? toastData.message.severity : toastData.severity
-
-    if (severity === 'success') {
-      setStep(step + 1)
-    }
-
-    setIsLoading(false)
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -51,12 +124,14 @@ export const Step2 = ({ step, setStep }: StepProps) => {
   const handleUploadSuccess = (event: FileUploadUploadEvent) => {
     if (event.xhr.status === 200) {
       const data: IFacilityFormInputs = JSON.parse(event.xhr.response)
-      toast.current?.show({
+
+      showToast({
         severity: 'info',
         summary: 'File Uploaded',
         detail: `${event.files[0].name} has been uploaded successfully.`,
         life: 2000,
       })
+
       setFacilitiesArray(prevState =>
         prevState.map((facility, index) => {
           if (index !== 0) {
@@ -75,7 +150,8 @@ export const Step2 = ({ step, setStep }: StepProps) => {
 
   const handleUploadError = (event: FileUploadErrorEvent) => {
     console.error('Error uploading file:', event.files[0].name)
-    toast.current?.show({
+
+    showToast({
       severity: 'error',
       summary: 'Error',
       detail: `Error uploading ${event.files[0].name}`,
@@ -84,8 +160,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
   }
 
   return (
-    <div>
-      <Toast ref={toast} onRemove={e => onRemoveToast(e)} />
+    <>
       <div className="space-y-12">
         {/* Business License Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -215,10 +290,10 @@ export const Step2 = ({ step, setStep }: StepProps) => {
         />
         <Button
           label={facilitiesArray[0]?.licenses.length || facilitiesArray[0]?.images.length ? 'Save' : 'Skip for now'}
-          onClick={showSavedToast}
+          onClick={handleSaveButton}
           loading={isLoading}
         />
       </div>
-    </div>
+    </>
   )
 }

@@ -1,13 +1,14 @@
-import { useContext, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import { ConfirmDialog } from 'primereact/confirmdialog'
-import { Toast, type ToastMessage } from 'primereact/toast'
+import { type ToastMessage } from 'primereact/toast'
 
+import { type IToastData } from '../../../../interfaces/global'
+import { useUtils } from '../../../../store/useUtils'
 import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { AddFacilityDialog } from './AddFacilityDialog'
 import { AddPaymentMethodsCard } from './PaymentMethodCard'
-
 
 export const Step4 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -15,12 +16,33 @@ export const Step4 = ({ step, setStep }: StepProps) => {
 
   const { defaultValues, selectedFacility } = useContext(FormDataContext)
 
-  const toast = useRef(null)
+  const { setRemoveToastCallback, showToast } = useUtils()
 
-  const showSavedToast = () => {
+  const handleRemoveToast = useCallback(
+    (toastData: ToastMessage | IToastData) => {
+      let severity
+      if ('message' in toastData) {
+        severity = toastData.message.severity
+      } else {
+        severity = toastData.severity
+      }
+
+      if (severity === 'success') {
+        setIsLoading(false)
+        setStep(step + 1)
+      }
+    },
+    [setStep, step],
+  )
+
+  useEffect(() => {
+    setRemoveToastCallback(handleRemoveToast)
+  }, [handleRemoveToast, setRemoveToastCallback])
+
+  const handleSaveButton = () => {
     setIsLoading(true)
-    // @ts-expect-error toastRef.current may be null
-    toast.current?.show({
+
+    showToast({
       severity: 'success',
       summary: 'Success',
       detail: 'Changes saved successfully.',
@@ -28,27 +50,11 @@ export const Step4 = ({ step, setStep }: StepProps) => {
     })
   }
 
-  const onRemove = (toastData: ToastMessage) => {
-    // @ts-expect-error toastRef.current may be null
-    const severity = toastData.message ? toastData.message.severity : toastData.severity
-
-    if (severity === 'success') {
-      setStep(step + 1)
-    }
-
-    setIsLoading(false)
-  }
-
   return (
     <div className="space-y-12">
-      <AddFacilityDialog
-        visible={visible}
-        setVisible={setVisible}
-        toastRef={toast}
-        values={selectedFacility || defaultValues}
-      />
+      <AddFacilityDialog visible={visible} setVisible={setVisible} values={selectedFacility || defaultValues} />
+
       <ConfirmDialog />
-      <Toast ref={toast} onRemove={e => onRemove(e)} />
 
       {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -68,7 +74,7 @@ export const Step4 = ({ step, setStep }: StepProps) => {
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
-        <Button label="Save" onClick={showSavedToast} loading={isLoading} />
+        <Button label="Save" onClick={handleSaveButton} loading={isLoading} />
       </div>
     </div>
   )

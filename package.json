@@ -8,6 +8,7 @@
     "@hello-pangea/dnd": "^16.5.0",
     "@heroicons/react": "^2.1.1",
     "@nextui-org/chip": "^2.0.25",
+    "@react-google-maps/api": "^2.19.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -30,20 +31,30 @@
     "react-scripts": "5.0.1",
     "react-table": "^7.8.0",
     "use-debounce": "10.0.0",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.5.2"
   },
   "scripts": {
-    "deploy-prod": "npm run build && firebase deploy",
-    "deploy-st": "npm run build && firebase hosting:channel:deploy staging",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "format": "npx prettier . --write",
     "format:check": "npx prettier . --check",
     "prepare": "husky",
-    "lint": "eslint .",
-    "lint:fix": "eslint .' --fix",
+    "lint:all": "eslint",
+    "lint:fix": "eslint --fix",
+    "lint:staged": "lint-staged",
     "precommit": "npm run lint:fix && npm run format"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "npm run lint:fix",
+    "*.{js,jsx}": "npm run lint:fix",
+    "*": "prettier --ignore-unknown --write"
   },
   "eslintConfig": {
     "extends": [
