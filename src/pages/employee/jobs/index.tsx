@@ -20,21 +20,46 @@ const jobTitleOptions = [
 ]
 
 export const EmployeeJobs = () => {
-  const [jobs, setJobs] = useState<IJob[]>()
+  const [jobs, setJobs] = useState<any>()
   const [selectedJobTitle, setSelectedJobTitle] = useState<any>(null)
   const [displayedJobs, setDisplayedJobs] = useState<any>([])
   const [dates, setDates] = useState<any>(null)
+  const [latitude, setLatitude] = useState<number>()
+  const [longitude, setLongitude] = useState<number>()
+  const [error, setError] = useState<string>()
+
+  useEffect(() => {
+    const getLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setLatitude(position.coords.latitude)
+          setLongitude(position.coords.longitude)
+        },
+        error => {
+          setError(error.message)
+        },
+      )
+    }
+
+    getLocation()
+  }, [])
+  console.log('lat:', latitude, 'long:', longitude)
 
   useEffect(() => {
     const getJobs = async () => {
-      const allJobs = await RequestService('jobs')
-
+      if (typeof longitude !== 'number' || typeof latitude !== 'number' || isNaN(longitude) || isNaN(latitude)) {
+        console.error('Invalid coordinates: ', { longitude, latitude });
+        return;
+      }
+      const fromCoordinates = [longitude, latitude];
+      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
       if (allJobs) {
         setJobs(allJobs)
       }
     }
     getJobs()
-  }, [])
+    console.log(jobs)
+  }, [latitude, longitude])
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])] as IJob[]
