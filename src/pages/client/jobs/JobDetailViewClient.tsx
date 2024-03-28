@@ -465,6 +465,7 @@ export default function JobDetailViewClient() {
                 </ul>
               </div>
             </TabPanel>
+
             <TabPanel header="Rejected">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
@@ -523,6 +524,7 @@ export default function JobDetailViewClient() {
                 </ul>
               </div>
             </TabPanel>
+
             <TabPanel header="Accepted">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
