@@ -1,5 +1,9 @@
 import React from 'react'
 
+import { useNavigate } from 'react-router-dom'
+
+import { Button } from 'primereact/button'
+
 export interface IStatCard {
   name: string
   href: string
@@ -24,6 +28,8 @@ export const StatCards: React.FC<StatCardsProps> = ({ cards }) => {
 type CardProps = IStatCard
 
 const Card: React.FC<CardProps> = ({ name, amount, href, icon: Icon }) => {
+  const navigate = useNavigate()
+
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow">
       <div className="p-5">
@@ -42,11 +48,7 @@ const Card: React.FC<CardProps> = ({ name, amount, href, icon: Icon }) => {
         </div>
       </div>
       <div className="bg-gray-50 px-5 py-3">
-        <div className="text-sm">
-          <a href={href} className="font-medium text-green-500 hover:text-green-900">
-            View all
-          </a>
-        </div>
+        <Button label="View All" link size="small" onClick={() => navigate(href)} className="p-0" />
       </div>
     </div>
   )
