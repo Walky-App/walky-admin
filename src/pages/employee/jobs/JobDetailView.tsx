@@ -15,9 +15,10 @@ import { useUtils } from '../../../store/useUtils'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 interface IApplicant {
-  user: string
+  user: any
   is_approved: boolean
   is_working: boolean
+  rejection_reason: string
 }
 interface Job {
   uid: string
@@ -91,6 +92,11 @@ export const JobDetailView = () => {
     }
   }
 
+  job?.applicants.forEach(applicant => {
+    console.log('Applicant User:', applicant.user)
+    console.log('Current User ID:', user._id)
+  })
+
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
@@ -104,8 +110,11 @@ export const JobDetailView = () => {
                 <Card
                   title={
                     <>
-                      <div className="flex items-center justify-between">
-                        <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
+                      <div className="flex items-center">
+                        <i className="pi pi-users" />
+                        <div className="ml-1 text-xs font-normal text-stone-500">
+                          {job.applicants.length} / {job.vacancy} Applicants
+                        </div>
                       </div>
                       {job.title}
                     </>
@@ -113,6 +122,18 @@ export const JobDetailView = () => {
                   {/* Job Facility */}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
+                      {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) && (
+                        <>
+                          <div className="flex items-center">
+                            <i className="pi pi-building" />
+                            <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
+                          </div>
+                          <div className="flex items-center">
+                            <i className="pi pi-directions" />
+                            <div className="ml-2 text-sm font-normal text-black">{job.facility.address}</div>
+                          </div>
+                        </>
+                      )}
                       <div className="flex items-center">
                         <i className="pi pi-map-marker"></i>
                         <div className="ml-2 text-sm font-normal text-black">
@@ -191,6 +212,7 @@ export const JobDetailView = () => {
                   </div>
                 </Card>
                 {/* Job Card End*/}
+
                 <ToggleButton
                   checked={checked}
                   onChange={e => setChecked(e.value)}
@@ -242,12 +264,23 @@ export const JobDetailView = () => {
             <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
               <ul className="w-full divide-y divide-gray-200">
                 <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                  <Button
-                    label="Apply now"
-                    onClick={() => applyForJob(user._id)}
-                    style={{ width: '100%', height: '100%' }}
-                  />
+                  {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                    <p>You have been accepted!</p>
+                  ) : job?.applicants.some(
+                      applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
+                    ) ? (
+                    <p>We are sorry. It was not a match. Please apply later.</p>
+                  ) : job?.applicants.some(applicant => applicant.user._id === user._id) ? (
+                    <p>Your application is pending. Please wait for response.</p>
+                  ) : (
+                    <Button
+                      label="Apply now"
+                      onClick={() => applyForJob(user._id)}
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  )}
                 </li>
+
                 <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                   <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
                   <Button label="Share Opportunity" severity="secondary" style={{ width: '100%', height: '100%' }} />
