@@ -92,11 +92,6 @@ export const JobDetailView = () => {
     }
   }
 
-  job?.applicants.forEach(applicant => {
-    console.log('Applicant User:', applicant.user)
-    console.log('Current User ID:', user._id)
-  })
-
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
