@@ -8,6 +8,7 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Skeleton } from 'primereact/skeleton'
 import { TabPanel, TabView } from 'primereact/tabview'
+import { ToggleButton } from 'primereact/togglebutton'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
@@ -18,11 +19,13 @@ import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [isApplyForJobLoading, setIsApplyForJobLoading] = useState(false)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isClockedIn, setIsClockedIn] = useState(false)
   const [timesheet, setTimesheet] = useState<ITimeSheet | null>(null)
+  const [checked, setChecked] = useState(true)
   const { showToast } = useUtils()
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -114,11 +117,12 @@ export const JobDetailView = () => {
         console.error('Failed to fetch job:', error)
       } finally {
         setIsLoading(false)
+        setIsApplyForJobLoading(false)
       }
     }
 
     getJob()
-  }, [id])
+  }, [id, job?.applicants])
 
   const getCurrentJobTimeSheet = useCallback(async () => {
     const { access_token } = GetTokenInfo()
@@ -200,6 +204,7 @@ export const JobDetailView = () => {
         is_working: false,
       }
       await RequestService(`jobs/${id}/apply`, 'POST', applicant)
+      setIsApplyForJobLoading(true)
       showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for the job' })
     } catch (error) {
       console.error(error)
@@ -268,8 +273,11 @@ export const JobDetailView = () => {
                 <Card
                   title={
                     <>
-                      <div className="flex items-center justify-between">
-                        <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
+                      <div className="flex items-center">
+                        <i className="pi pi-users" />
+                        <div className="ml-1 text-xs font-normal text-stone-500">
+                          {job.applicants.length} / {job.vacancy} Applicants
+                        </div>
                       </div>
                       {job.title}
                     </>
@@ -277,6 +285,18 @@ export const JobDetailView = () => {
                   {/* Job Facility */}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
+                      {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                        <>
+                          <div className="flex items-center">
+                            <i className="pi pi-building" />
+                            <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
+                          </div>
+                          <div className="flex items-center">
+                            <i className="pi pi-directions" />
+                            <div className="ml-2 text-sm font-normal text-black">{job.facility.address}</div>
+                          </div>
+                        </>
+                      ) : null}
                       <div className="flex items-center">
                         <i className="pi pi-map-marker" />
                         <div className="ml-2 text-sm font-normal text-black">
@@ -349,33 +369,47 @@ export const JobDetailView = () => {
                   </div>
                 </Card>
                 {/* Job Card End*/}
+
                 <TabView className="mt-4">
                   <TabPanel header="Schedule">
-                    <section className="mt-4">
-                      <h2 className="text-base font-semibold leading-6 text-gray-900">({job.job_dates.length} days)</h2>
-                      <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
-                        {job.job_dates.map((date, index) => {
-                          const dateObj = new Date(date)
-                          const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
-                          const formattedDate = dateObj.toLocaleDateString()
-                          return (
-                            <li key={index} className="py-4 sm:flex">
-                              <time dateTime={formattedDate} className="w-28 flex-none">
-                                {dayOfWeek}, {formattedDate}
-                              </time>
-                              <p className="flex-none sm:ml-6">
-                                <time dateTime={formattedDate}>{convertToStandardTime(job.start_time)}</time> -
-                                <time dateTime={formattedDate}>{convertToStandardTime(job.end_time)}</time>
-                              </p>
-                              <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                                Lunch: {job.lunch_break} minutes
-                              </p>
-                              <p className="text-green-500">Confirmed</p>
-                            </li>
-                          )
-                        })}
-                      </ol>
-                    </section>
+                    <ToggleButton
+                      checked={checked}
+                      onChange={e => setChecked(e.value)}
+                      onLabel="Close Schedule"
+                      offLabel="Open Schedule"
+                      onIcon="pi pi-times"
+                      offIcon="pi pi-check"
+                      className="w-8rem mt-2"
+                    />
+                    {checked ? (
+                      <section className="mt-12">
+                        <h2 className="text-base font-semibold leading-6 text-gray-900">
+                          Schedule ({job.job_dates.length} days)
+                        </h2>
+                        <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                          {job.job_dates.map((date, index) => {
+                            const dateObj = new Date(date)
+                            const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                            const formattedDate = dateObj.toLocaleDateString()
+                            return (
+                              <li key={index} className="py-4 sm:flex">
+                                <time dateTime={date} className="w-28 flex-none">
+                                  {dayOfWeek}, {formattedDate}
+                                </time>
+                                <p className="flex-none sm:ml-6">
+                                  <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                                  <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                                </p>
+                                <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                                  Lunch: {job.lunch_break} minutes
+                                </p>
+                                <p className="text-green-500">Confirmed</p>
+                              </li>
+                            )
+                          })}
+                        </ol>
+                      </section>
+                    ) : null}
                   </TabPanel>
                   <TabPanel header="Timesheet">
                     <section className="mt-4">
@@ -460,19 +494,27 @@ export const JobDetailView = () => {
               <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
                 <ul className="w-full divide-y divide-gray-200">
                   <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                    <Button
-                      label={job?.applicants[0]?.user._id === user?._id ? 'Already Applied' : 'Apply Now'}
-                      onClick={() => applyForJob(user._id)}
-                      className="w-full"
-                      disabled={job?.applicants[0]?.user._id === user?._id}
-                    />
-                    {job?.applicants[0]?.user._id === user?._id ? (
-                      <p className="mt-2">Your application is pending</p>
-                    ) : null}
+                    {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                      <p>You have been accepted!</p>
+                    ) : job?.applicants.some(
+                        applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
+                      ) ? (
+                      <p>We are sorry. It was not a match. Please apply later.</p>
+                    ) : job?.applicants.some(applicant => applicant.user._id === user._id) ? (
+                      <p>Your application is pending. Please wait for response.</p>
+                    ) : (
+                      <Button
+                        label="Apply now"
+                        onClick={() => applyForJob(user._id)}
+                        style={{ width: '100%', height: '100%' }}
+                        loading={isApplyForJobLoading}
+                      />
+                    )}
                   </li>
+
                   <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                     <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                    <Button label="Share Opportunity" severity="secondary" className="w-full" />
+                    <Button label="Share Opportunity" severity="secondary" style={{ width: '100%', height: '100%' }} />
                   </li>
                 </ul>
               </div>

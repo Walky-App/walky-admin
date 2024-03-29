@@ -45,7 +45,7 @@ export default function JobListItem({ job }: any) {
           {/* Job Skills */}
           <div className="mb-3 flex basis-1/3 flex-wrap gap-2 px-5 pt-5">
             <span className="pi pi-users"></span>
-            <p className="text-xs font-normal text-stone-500">{job.vacancy} spots available</p>
+            <p className="text-xs font-normal text-stone-500">{job.applicants.length} / {job.vacancy} Applicants</p>
           </div>
 
           {/* Job Details */}
