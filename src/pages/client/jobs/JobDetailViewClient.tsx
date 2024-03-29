@@ -178,8 +178,11 @@ export default function JobDetailViewClient() {
                 <Card
                   title={
                     <>
-                      <div className="flex items-center justify-between">
-                        <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
+                      <div className="flex items-center">
+                        <i className="pi pi-users" />
+                        <div className="ml-1 text-xs font-normal text-stone-500">
+                          {job.applicants.length} / {job.vacancy} Applicants
+                        </div>
                       </div>
                       {job.title}
                     </>
