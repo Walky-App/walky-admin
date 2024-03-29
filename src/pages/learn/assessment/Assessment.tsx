@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { confirmDialog } from 'primereact/confirmdialog'
 import { ProgressBar } from 'primereact/progressbar'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { IAssessmentResponse } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
+import { useLearn } from '../../../store/useLearn'
 import { cn } from '../../../utils/cn'
 import { Timer } from '../components/Timer'
 import { AssessmentResponse } from './AssessmentResponse'
@@ -28,12 +29,14 @@ export const Assessment = () => {
   const params = useParams()
   const [finishAssessment, setFinishAssessment] = useState(false)
   const [validatorResponse, setValidatorResponse] = useState<IAssessmentResponse>({
-    correctQuestions: 0,
-    minimumScore: 0,
-    incorrectQuestions: 0,
-    passAssessment: false,
-    percentageAssessment: 0,
+    correct_questions: 0,
+    minimum_score: 0,
+    incorrect_questions: 0,
+    pass_assessment: false,
+    percentagea_assessment: 0,
   })
+
+  const { setRecord } = useLearn()
 
   const fetchData = async () => {
     const response = await RequestService(`units/${params.unitId}`)
@@ -63,11 +66,12 @@ export const Assessment = () => {
         accept: async () => {
           const assessmentData = [...(assessmentArray ?? [])]
           assessmentData.push(selectAnswer)
-          const response: IAssessmentResponse = await RequestService(`units/assessment/validator`, 'POST', {
+          const response = await RequestService(`units/assessment/validator`, 'POST', {
             userAnswers: assessmentData,
             unitId: params.unitId,
           })
-          setValidatorResponse(response)
+          setRecord(response.AssessmentRecord)
+          setValidatorResponse(response.reponseAssessment)
           setFinishAssessment(true)
         },
       })
@@ -100,8 +104,6 @@ export const Assessment = () => {
 
   return (
     <div>
-      <ConfirmDialog />
-
       {!finishAssessment ? (
         <div>
           <HeaderComponent title={`Assessement - ${unit?.title}`} />
