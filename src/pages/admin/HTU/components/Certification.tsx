@@ -12,12 +12,6 @@ export const Certification = () => {
     <PDFViewer style={{ width: '100%', height: '100vh' }}>
       <Pdf data={module} user={user} />
     </PDFViewer>
-    // temporal comment
-    //<PDFDownloadLink document={<Pdf data={module} user={user} />} fileName="somename.pdf">
-    //  {({ blob, url, loading, error }) =>
-    //    loading ? 'Loading document...' : 'Download now!'
-    //  }
-    //</PDFDownloadLink>
   )
 }
 
