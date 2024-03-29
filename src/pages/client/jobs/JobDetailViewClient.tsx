@@ -9,10 +9,10 @@ import { Card } from 'primereact/card'
 import { Dialog } from 'primereact/dialog'
 import { Dropdown } from 'primereact/dropdown'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import { ToggleButton } from 'primereact/togglebutton'
 import { Rating } from 'primereact/rating'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
+import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
@@ -306,7 +306,7 @@ export default function JobDetailViewClient() {
                       })}
                     </ol>
                   </section>
-                  )}
+                )}
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
@@ -482,6 +482,7 @@ export default function JobDetailViewClient() {
                 </ul>
               </div>
             </TabPanel>
+
             <TabPanel header="Rejected">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
@@ -540,6 +541,7 @@ export default function JobDetailViewClient() {
                 </ul>
               </div>
             </TabPanel>
+
             <TabPanel header="Accepted">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
