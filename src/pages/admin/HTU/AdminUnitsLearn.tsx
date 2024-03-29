@@ -58,6 +58,10 @@ export const AdminUnitsLearn = () => {
     navigate(`/admin/learn/modules/${params.moduleId}/units/${unit?._id}/assessment`)
   }
 
+  const handlerCertification = () => {
+    navigate(`/admin/learn/modules/${params.moduleId}/certification`)
+  }
+
   return (
     <div>
       <div className="mb-4 flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white" key={module?._id}>
@@ -100,6 +104,15 @@ export const AdminUnitsLearn = () => {
         </div>
         <div className="m-3 h-auto text-xs font-normal text-stone-500">{module?.description}</div>
       </div>
+
+      <button
+        className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+        onClick={() => {
+          handlerCertification()
+        }}
+        type="button">
+        Certification Test
+      </button>
 
       <div className="mt-4 grid grid-cols-5 gap-6">
         <div className="col-span-2 ">
