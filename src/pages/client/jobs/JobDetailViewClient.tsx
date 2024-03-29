@@ -12,6 +12,7 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { Rating } from 'primereact/rating'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
+import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
@@ -32,6 +33,7 @@ export default function JobDetailViewClient() {
   const [rejectionReason, setRejectionReason] = useState<any>(null)
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
+  const [checked, setChecked] = useState(false)
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
@@ -176,8 +178,11 @@ export default function JobDetailViewClient() {
                 <Card
                   title={
                     <>
-                      <div className="flex items-center justify-between">
-                        <div className="mb-2 text-xs font-normal text-stone-500"> N / {job.vacancy} Applicants </div>
+                      <div className="flex items-center">
+                        <i className="pi pi-users" />
+                        <div className="ml-1 text-xs font-normal text-stone-500">
+                          {job.applicants.length} / {job.vacancy} Applicants
+                        </div>
                       </div>
                       {job.title}
                     </>
@@ -263,33 +268,45 @@ export default function JobDetailViewClient() {
                   </div>
                 </Card>
                 {/* Job Card End*/}
-                <section className="mt-12">
-                  <h2 className="text-base font-semibold leading-6 text-gray-900">
-                    Schedule ({job.job_dates.length} days)
-                  </h2>
-                  <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
-                    {job.job_dates.map((date: string, index: number) => {
-                      const dateObj = new Date(date)
-                      const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
-                      const formattedDate = dateObj.toLocaleDateString()
-                      return (
-                        <li key={index} className="py-4 sm:flex">
-                          <time dateTime={date} className="w-28 flex-none">
-                            {dayOfWeek}, {formattedDate}
-                          </time>
-                          <p className="flex-none sm:ml-6">
-                            <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                            <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
-                          </p>
-                          <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                            Lunch: {job.lunch_break} minutes
-                          </p>
-                          <p className="text-green-500">Confirmed</p>
-                        </li>
-                      )
-                    })}
-                  </ol>
-                </section>
+                {/* Schedule */}
+                <ToggleButton
+                  checked={checked}
+                  onChange={e => setChecked(e.value)}
+                  onLabel="Close Schedule"
+                  offLabel="Open Schedule"
+                  onIcon="pi pi-times"
+                  offIcon="pi pi-check"
+                  className="w-8rem mt-2"
+                />
+                {checked && (
+                  <section className="mt-12">
+                    <h2 className="text-base font-semibold leading-6 text-gray-900">
+                      Schedule ({job.job_dates.length} days)
+                    </h2>
+                    <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                      {job.job_dates.map((date: string, index: number) => {
+                        const dateObj = new Date(date)
+                        const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                        const formattedDate = dateObj.toLocaleDateString()
+                        return (
+                          <li key={index} className="py-4 sm:flex">
+                            <time dateTime={date} className="w-28 flex-none">
+                              {dayOfWeek}, {formattedDate}
+                            </time>
+                            <p className="flex-none sm:ml-6">
+                              <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                              <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                            </p>
+                            <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                              Lunch: {job.lunch_break} minutes
+                            </p>
+                            <p className="text-green-500">Confirmed</p>
+                          </li>
+                        )
+                      })}
+                    </ol>
+                  </section>
+                )}
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
@@ -465,6 +482,7 @@ export default function JobDetailViewClient() {
                 </ul>
               </div>
             </TabPanel>
+
             <TabPanel header="Rejected">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
@@ -523,6 +541,7 @@ export default function JobDetailViewClient() {
                 </ul>
               </div>
             </TabPanel>
+
             <TabPanel header="Accepted">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
