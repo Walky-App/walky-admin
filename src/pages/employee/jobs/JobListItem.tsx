@@ -44,6 +44,7 @@ export default function JobListItem({ job }: any) {
         <Link to={`/employee/jobs/${job._id}`}>
           {/* Job Skills */}
           <div className="mb-3 flex basis-1/3 flex-wrap gap-2 px-5 pt-5">
+            <span className="pi pi-users"></span>
             <p className="text-xs font-normal text-stone-500">{job.vacancy} spots available</p>
           </div>
 
@@ -55,7 +56,7 @@ export default function JobListItem({ job }: any) {
                 <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                 <div className="mt-0.5 flex flex-col gap-1">
                   <span className="text-xs font-medium text-black">{job?.facility?.city}</span>
-                  <span className="text-xs font-normal text-stone-500">(4.2 mi)</span>
+                  <span className="text-xs font-normal text-stone-500">{job.distance} miles</span>
                 </div>
               </div>
             </div>
@@ -78,7 +79,7 @@ export default function JobListItem({ job }: any) {
                 </div>{' '}
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                <div className="text-xs font-normal text-stone-500">Hours per Day</div>
+                <div className="text-xs font-normal text-stone-500">Hours Daily</div>
                 <div className="text-xs font-normal text-black">{job.total_hours}</div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
