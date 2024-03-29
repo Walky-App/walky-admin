@@ -74,6 +74,7 @@ export interface IJob {
   feedback: IFeedback[]
   clock_in_restriction: IRestriction[]
   clock_out_restriction: IRestriction[]
+  distance: number
   createdAt: Date
   updatedAt: Date
 }
