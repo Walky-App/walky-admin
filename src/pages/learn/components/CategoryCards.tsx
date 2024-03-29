@@ -67,9 +67,8 @@ export const CategoryCards = ({
     }
   }
 
-  const generateCertification = (category: Category) => () => {
-    const action = category
-    return action
+  const handlerCertification = (category: Category) => {
+    window.open(`/admin/learn/category/${category._id}/certification`, '_blank', 'noreferrer')
   }
 
   return (
@@ -133,13 +132,13 @@ export const CategoryCards = ({
                         </div>
                       </div>
                       {categoryCompleted(category._id) ? (
-                        <div className="flex items-center text-center text-xs font-normal">
-                          <ShieldCheckIcon
-                            className="h-4 w-4 text-green-600"
-                            onClick={generateCertification(category)}
-                          />
+                        <button
+                          className="flex items-center text-center text-xs font-normal"
+                          onClick={() => handlerCertification(category)}
+                          type="button">
+                          <ShieldCheckIcon className="h-4 w-4 text-green-600" />
                           <div>Completed</div>
-                        </div>
+                        </button>
                       ) : null}
                     </div>
                   )}

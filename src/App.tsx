@@ -110,7 +110,7 @@ export const App = () => {
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<ResetSuccess />} path="/reset-success" />
             <Route element={<Signup />} path="/invite/:email/:role" />
-            <Route element={<Certification />} path="/admin/learn/modules/:moduleId/certification" />
+            <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
