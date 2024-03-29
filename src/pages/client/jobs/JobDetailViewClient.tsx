@@ -9,6 +9,7 @@ import { Card } from 'primereact/card'
 import { Dialog } from 'primereact/dialog'
 import { Dropdown } from 'primereact/dropdown'
 import { ProgressSpinner } from 'primereact/progressspinner'
+import { ToggleButton } from 'primereact/togglebutton'
 import { Rating } from 'primereact/rating'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
@@ -32,6 +33,7 @@ export default function JobDetailViewClient() {
   const [rejectionReason, setRejectionReason] = useState<any>(null)
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
+  const [checked, setChecked] = useState(false)
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
@@ -263,33 +265,45 @@ export default function JobDetailViewClient() {
                   </div>
                 </Card>
                 {/* Job Card End*/}
-                <section className="mt-12">
-                  <h2 className="text-base font-semibold leading-6 text-gray-900">
-                    Schedule ({job.job_dates.length} days)
-                  </h2>
-                  <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
-                    {job.job_dates.map((date: string, index: number) => {
-                      const dateObj = new Date(date)
-                      const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
-                      const formattedDate = dateObj.toLocaleDateString()
-                      return (
-                        <li key={index} className="py-4 sm:flex">
-                          <time dateTime={date} className="w-28 flex-none">
-                            {dayOfWeek}, {formattedDate}
-                          </time>
-                          <p className="flex-none sm:ml-6">
-                            <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                            <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
-                          </p>
-                          <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                            Lunch: {job.lunch_break} minutes
-                          </p>
-                          <p className="text-green-500">Confirmed</p>
-                        </li>
-                      )
-                    })}
-                  </ol>
-                </section>
+                {/* Schedule */}
+                <ToggleButton
+                  checked={checked}
+                  onChange={e => setChecked(e.value)}
+                  onLabel="Close Schedule"
+                  offLabel="Open Schedule"
+                  onIcon="pi pi-times"
+                  offIcon="pi pi-check"
+                  className="w-8rem mt-2"
+                />
+                {checked && (
+                  <section className="mt-12">
+                    <h2 className="text-base font-semibold leading-6 text-gray-900">
+                      Schedule ({job.job_dates.length} days)
+                    </h2>
+                    <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                      {job.job_dates.map((date: string, index: number) => {
+                        const dateObj = new Date(date)
+                        const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                        const formattedDate = dateObj.toLocaleDateString()
+                        return (
+                          <li key={index} className="py-4 sm:flex">
+                            <time dateTime={date} className="w-28 flex-none">
+                              {dayOfWeek}, {formattedDate}
+                            </time>
+                            <p className="flex-none sm:ml-6">
+                              <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                              <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                            </p>
+                            <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                              Lunch: {job.lunch_break} minutes
+                            </p>
+                            <p className="text-green-500">Confirmed</p>
+                          </li>
+                        )
+                      })}
+                    </ol>
+                  </section>
+                  )}
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
