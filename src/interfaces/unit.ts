@@ -33,12 +33,13 @@ export interface Unit extends Documents {
   is_disabled: boolean
   time: number
   assessments: Assessment
+  order: number
 }
 
 export interface IAssessmentResponse {
-  percentageAssessment: number
-  minimumScore: number
-  passAssessment: boolean
-  correctQuestions: number
-  incorrectQuestions: number
+  percentagea_assessment: number
+  minimum_score: number
+  pass_assessment: boolean
+  correct_questions: number
+  incorrect_questions: number
 }

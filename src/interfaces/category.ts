@@ -1,17 +1,18 @@
 import type { Documents, TagsInterface } from './global'
 
 export interface Category extends Documents {
+  createdAt: Date
   description: string
   image: string
   is_disabled?: boolean
-  title: string
-  createdAt: Date
-  updatedAt: Date
+  modules_number: number
   progress: number
   state_tags: TagsInterface[]
+  title: string
+  updatedAt: Date
 }
 
 export interface CategoryTitle {
-  title: string
   _id: string
+  title: string
 }

@@ -1,3 +1,6 @@
+/* eslint-disable filename-rules/match */
+import { type ProgressHTU } from './htu'
+
 export interface IUserDocument {
   id: number
   url: string
@@ -28,4 +31,5 @@ export interface IUser {
   role_id?: string
   zip?: string
   documents?: IUserDocument[]
+  student_record?: ProgressHTU
 }

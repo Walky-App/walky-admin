@@ -1,11 +1,15 @@
 import { Suspense, useEffect, useState } from 'react'
+
 import { useParams, useSearchParams } from 'react-router-dom'
-import { RequestService } from '../../../services/RequestService'
-import { Module } from '../../../interfaces/module'
+
 import { CheckIcon } from '@heroicons/react/20/solid'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { ModuleCards } from '../components/ModuleCards'
 import { PencilIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
+
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { type Module } from '../../../interfaces/module'
+import { RequestService } from '../../../services/RequestService'
+import { useLearn } from '../../../store/useLearn'
+import { ModuleCards } from '../components/ModuleCards'
 
 export const Modules = () => {
   const [loading, setLoading] = useState<boolean>(true)
@@ -13,11 +17,16 @@ export const Modules = () => {
   const [searchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [modules, setModules] = useState<Module[]>([])
+  const { setRecord } = useLearn()
 
   const fetchData = async () => {
     const response = await RequestService(`modules/category/${params.categoryId}`)
     if (response.length !== 0) {
       setModules(response)
+    }
+    const responseLms = await RequestService('lms')
+    if (responseLms.length !== 0) {
+      setRecord(responseLms)
     }
     setLoading(false)
   }
@@ -33,11 +42,11 @@ export const Modules = () => {
   return (
     <div>
       <div className="w-full sm:overflow-x-hidden">
-        <HeaderComponent search title='Categories' />
+        <HeaderComponent search title="Categories" />
 
-        <div className="mt-4 grid grid-cols-4 md:grid-cols-3 gap-6">
-          <div className="col-span-4 md:col-span-2 order-2 md:order-1">
-            <Suspense fallback={<div>loading...</div>} key={search + '-module-cards'} >
+        <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
+          <div className="order-2 col-span-4 md:order-1 md:col-span-2">
+            <Suspense fallback={<div>loading...</div>} key={search + '-module-cards'}>
               <ModuleCards filter={search} isLoading={loading} module={modules} />
             </Suspense>
           </div>
