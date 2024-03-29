@@ -37,7 +37,12 @@ export const EmployeeMyJobs = () => {
         <TabPanel header="Pending">
           <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
             {jobs
-              ?.filter(job => job.applicants[0].is_approved === false)
+              ?.filter(
+                job =>
+                  job.applicants[0].is_approved === false &&
+                  job.applicants[0].is_working === false &&
+                  job.applicants[0].rejection_reason === '',
+              )
               .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
           </ul>
         </TabPanel>
@@ -55,16 +60,6 @@ export const EmployeeMyJobs = () => {
               .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
           </ul>
         </TabPanel>
-        {/* <TabPanel header="Saved">
-          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-            {jobs?.map(job => <JobListItem key={job._id} job={job} />)}
-          </ul>
-        </TabPanel>
-        <TabPanel header="Past">
-          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-            {jobs?.map(job => <JobListItem key={job._id} job={job} />)}
-          </ul>
-        </TabPanel> */}
         <TabPanel header="Rejected">
           <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
             {jobs

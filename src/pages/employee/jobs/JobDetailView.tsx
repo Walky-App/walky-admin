@@ -1,11 +1,13 @@
-/* eslint-disable */
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
 import { Skeleton } from 'primereact/skeleton'
+import { TabPanel, TabView } from 'primereact/tabview'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
@@ -16,12 +18,11 @@ import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
-  console.log('job: ', job)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isClockedIn, setIsClockedIn] = useState(false)
-  const [timesheets, setTimesheets] = useState<ITimeSheet | null>(null)
-  console.log('timesheet: ', timesheets)
+  const [timesheet, setTimesheet] = useState<ITimeSheet | null>(null)
   const { showToast } = useUtils()
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -81,13 +82,20 @@ export const JobDetailView = () => {
     return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
   }
 
-  useEffect(() => {
-    if (job?.applicants[0]?.is_approved === true) {
-      const timer = setInterval(() => {
-        setCurrentDate(new Date())
-      }, 1000)
+  const startTimer = () => {
+    return setInterval(() => {
+      setCurrentDate(new Date())
+    }, 1000)
+  }
 
-      return () => {
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined
+    if (job?.applicants[0]?.is_approved === true) {
+      timer = startTimer()
+    }
+
+    return () => {
+      if (timer) {
         clearInterval(timer)
       }
     }
@@ -95,12 +103,16 @@ export const JobDetailView = () => {
 
   useEffect(() => {
     const getJob = async () => {
-      const job = await RequestService(`jobs/${id}`)
-      if (job) {
-        setJob(job)
-        setIsLoading(false)
-      } else {
-        console.error('Job not found')
+      try {
+        const job = await RequestService(`jobs/${id}`)
+        if (job) {
+          setJob(job)
+        } else {
+          console.error('Job not found')
+        }
+      } catch (error) {
+        console.error('Failed to fetch job:', error)
+      } finally {
         setIsLoading(false)
       }
     }
@@ -108,73 +120,77 @@ export const JobDetailView = () => {
     getJob()
   }, [id])
 
+  const getCurrentJobTimeSheet = useCallback(async () => {
+    const { access_token } = GetTokenInfo()
+    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
+
+    const options: RequestInit = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+
+    try {
+      const response = await fetch(url, options)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      if (response.status === 204) {
+        setTimesheet(null)
+      } else {
+        const data = await response.json()
+        setTimesheet(data)
+        setIsClockedIn(data.is_clocked_in)
+      }
+    } catch (error) {
+      console.error('Failed to fetch timesheet:', error)
+      setTimesheet(null)
+    }
+  }, [job?._id, user._id])
+
   useEffect(() => {
-    if (job?.applicants[0]?.is_approved === true) {
-      const getCurrentJobTimeSheet = async () => {
-        try {
-          const response = await RequestService(`timesheets/employee/${user._id}?job_id=${job?._id}`)
-          if (response) {
-            setTimesheets(response)
-          }
-        } catch (error) {
-          console.error('Failed to fetch timesheet:', error)
-          setTimesheets(null)
-        }
-      }
+    if (job?.applicants[0]?.is_approved === true && user._id) {
+      getCurrentJobTimeSheet()
 
-      if (user._id && job?._id) {
-        getCurrentJobTimeSheet()
+      if (timesheet?.is_clocked_in) {
+        setIsClockedIn(true)
       }
     }
-  }, [user._id, job?._id, job?.applicants, isClockedIn])
+  }, [user._id, job?.applicants, isClockedIn, getCurrentJobTimeSheet, timesheet?.is_clocked_in])
 
-  const clockIn = async () => {
+  const clockInOut = async (endpoint: string, clockedIn: boolean) => {
+    setIsClockInOutLoading(true)
+    const timesheetId = timesheet?._id || null
     try {
       const body = {
         job_id: job?._id,
-        timeSheet_id: user._id,
+        timeSheet_id: timesheetId,
         location: [latitude, longitude],
       }
-      const timeSheet = await RequestService(`timesheets/clock-in`, 'POST', body)
-      console.log('clock-in timeSheet: ', timeSheet)
-      setIsClockedIn(true)
+      const timeSheet: ITimeSheet = await RequestService(`timesheets/${endpoint}`, 'POST', body)
+      setIsClockedIn(clockedIn)
 
-      const createdAt = new Date(timeSheet?.createdAt)
+      const createdAt = new Date(timeSheet?.punches[timeSheet?.punches.length - 1]?.time_stamp)
       const formattedTime = createdAt.toLocaleTimeString()
 
       showToast({
-        severity: 'info',
-        summary: 'Clocked in at',
+        severity: clockedIn ? 'success' : 'warn',
+        summary: `Clocked ${clockedIn ? 'in' : 'out'} at:`,
         detail: formattedTime,
+        life: 3000,
       })
+      setIsClockInOutLoading(false)
     } catch (error) {
       console.error(error)
     }
   }
 
-  const clockOut = async () => {
-    try {
-      const body = {
-        job_id: job?._id,
-        timeSheet_id: user._id,
-        location: [latitude, longitude],
-      }
-      const timeSheet = await RequestService(`timesheets/clock-out`, 'POST', body)
-      console.log('clock-out timeSheet: ', timeSheet)
-      setIsClockedIn(false)
-
-      const createdAt = new Date(timeSheet?.createdAt)
-      const formattedTime = createdAt.toLocaleTimeString()
-
-      showToast({
-        severity: 'info',
-        summary: 'Clocked out at',
-        detail: formattedTime,
-      })
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  const clockIn = () => clockInOut('clock-in', true)
+  const clockOut = () => clockInOut('clock-out', false)
 
   const applyForJob = async (userId: string) => {
     try {
@@ -189,6 +205,55 @@ export const JobDetailView = () => {
       console.error(error)
     }
   }
+
+  const isValidDate = (dateString: string): boolean => {
+    const date = new Date(dateString)
+    return !isNaN(date.getTime())
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString()
+  }
+  function formatTime(timeStamp: string | number) {
+    const date = new Date(timeStamp)
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
+  }
+
+  const formatDuration = (milliseconds: number): string => {
+    const hours = Math.floor(milliseconds / 3600000)
+    const minutes = Math.floor((milliseconds % 3600000) / 60000)
+    const seconds = Math.floor((milliseconds % 60000) / 1000)
+    return `${hours}h ${minutes}m ${seconds}s`
+  }
+
+  const punchPairsAndTotalTime = useMemo(() => {
+    if (!timesheet?.punches) {
+      return []
+    }
+
+    const sortedPunches = [...timesheet.punches].sort(
+      (a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime(),
+    )
+
+    const pairs = []
+    let punchIn = null
+    for (const punch of sortedPunches) {
+      if (punch.punch_in) {
+        punchIn = punch
+      } else if (punchIn) {
+        const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
+        pairs.push({ punchIn, punchOut: punch, totalTime: formatDuration(totalTime) })
+        punchIn = null
+      }
+    }
+
+    if (punchIn) {
+      pairs.push({ punchIn, punchOut: null, totalTime: undefined })
+    }
+
+    return pairs.reverse()
+  }, [timesheet])
 
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
@@ -284,33 +349,62 @@ export const JobDetailView = () => {
                   </div>
                 </Card>
                 {/* Job Card End*/}
-                <section className="mt-12">
-                  <h2 className="text-base font-semibold leading-6 text-gray-900">
-                    Schedule ({job.job_dates.length} days)
-                  </h2>
-                  <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
-                    {job.job_dates.map((date, index) => {
-                      const dateObj = new Date(date)
-                      const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
-                      const formattedDate = dateObj.toLocaleDateString()
-                      return (
-                        <li key={index} className="py-4 sm:flex">
-                          <time dateTime={formattedDate} className="w-28 flex-none">
-                            {dayOfWeek}, {formattedDate}
-                          </time>
-                          <p className="flex-none sm:ml-6">
-                            <time dateTime={formattedDate}>{convertToStandardTime(job.start_time)}</time> -
-                            <time dateTime={formattedDate}>{convertToStandardTime(job.end_time)}</time>
-                          </p>
-                          <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                            Lunch: {job.lunch_break} minutes
-                          </p>
-                          <p className="text-green-500">Confirmed</p>
-                        </li>
-                      )
-                    })}
-                  </ol>
-                </section>
+                <TabView className="mt-4">
+                  <TabPanel header="Schedule">
+                    <section className="mt-4">
+                      <h2 className="text-base font-semibold leading-6 text-gray-900">({job.job_dates.length} days)</h2>
+                      <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                        {job.job_dates.map((date, index) => {
+                          const dateObj = new Date(date)
+                          const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+                          const formattedDate = dateObj.toLocaleDateString()
+                          return (
+                            <li key={index} className="py-4 sm:flex">
+                              <time dateTime={formattedDate} className="w-28 flex-none">
+                                {dayOfWeek}, {formattedDate}
+                              </time>
+                              <p className="flex-none sm:ml-6">
+                                <time dateTime={formattedDate}>{convertToStandardTime(job.start_time)}</time> -
+                                <time dateTime={formattedDate}>{convertToStandardTime(job.end_time)}</time>
+                              </p>
+                              <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                                Lunch: {job.lunch_break} minutes
+                              </p>
+                              <p className="text-green-500">Confirmed</p>
+                            </li>
+                          )
+                        })}
+                      </ol>
+                    </section>
+                  </TabPanel>
+                  <TabPanel header="Timesheet">
+                    <section className="mt-4">
+                      <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
+                      <DataTable
+                        value={punchPairsAndTotalTime}
+                        stripedRows
+                        paginator
+                        rows={10}
+                        rowsPerPageOptions={[5, 10, 25, 50]}>
+                        <Column
+                          field="punchIn.time_stamp"
+                          header="Date"
+                          body={rowData =>
+                            isValidDate(rowData.punchIn.time_stamp)
+                              ? formatDate(rowData.punchIn.time_stamp)
+                              : 'Invalid Date'
+                          }
+                        />
+                        <Column header="Time In" body={rowData => formatTime(rowData.punchIn.time_stamp)} />
+                        <Column
+                          header="Time Out"
+                          body={rowData => (rowData.punchOut ? formatTime(rowData.punchOut.time_stamp) : 'Clocked In')}
+                        />
+                        <Column header="Total Time" body={rowData => rowData.totalTime || ''} />
+                      </DataTable>
+                    </section>
+                  </TabPanel>
+                </TabView>
               </div>
             ) : (
               <Skeleton shape="rectangle" height="150px" />
@@ -337,11 +431,23 @@ export const JobDetailView = () => {
                   </li>
                   {isClockedIn ? (
                     <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                      <Button label="Clock Out" severity="danger" onClick={() => clockOut()} className="w-full" />
+                      <Button
+                        label="Clock Out"
+                        severity="danger"
+                        onClick={() => clockOut()}
+                        loading={isClockInOutLoading}
+                        className="w-full"
+                      />
                     </li>
                   ) : (
                     <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                      <Button label="Clock In" severity="success" onClick={() => clockIn()} className="w-full" />
+                      <Button
+                        label="Clock In"
+                        severity="success"
+                        onClick={() => clockIn()}
+                        loading={isClockInOutLoading}
+                        className="w-full"
+                      />
                     </li>
                   )}
                 </ul>
@@ -355,14 +461,18 @@ export const JobDetailView = () => {
                 <ul className="w-full divide-y divide-gray-200">
                   <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                     <Button
-                      label="Apply now"
+                      label={job?.applicants[0]?.user._id === user?._id ? 'Already Applied' : 'Apply Now'}
                       onClick={() => applyForJob(user._id)}
-                      style={{ width: '100%', height: '100%' }}
+                      className="w-full"
+                      disabled={job?.applicants[0]?.user._id === user?._id}
                     />
+                    {job?.applicants[0]?.user._id === user?._id ? (
+                      <p className="mt-2">Your application is pending</p>
+                    ) : null}
                   </li>
                   <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                     <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                    <Button label="Share Opportunity" severity="secondary" style={{ width: '100%', height: '100%' }} />
+                    <Button label="Share Opportunity" severity="secondary" className="w-full" />
                   </li>
                 </ul>
               </div>
