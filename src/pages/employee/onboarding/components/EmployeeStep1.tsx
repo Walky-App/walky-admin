@@ -195,7 +195,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
               <Controller
                 control={control}
                 name="middle_name"
-                rules={{ required: 'Middle Name is required' }}
+                rules={{ required: false }}
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
