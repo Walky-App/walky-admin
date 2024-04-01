@@ -1,17 +1,20 @@
+/*eslint-disable */
 import React, { useRef } from 'react'
+
 import { Controller, set, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
-import { InputNumber } from 'primereact/inputnumber'
+import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
-import { IFacility } from '../../../../interfaces/Facility'
+import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 
@@ -36,12 +39,11 @@ export default function ClientAddJob() {
     end_time: null
     lunch_break: null
     job_tips: never[]
-    created_by?: string // Add this line
+    created_by?: string
   }
 
   React.useEffect(() => {
     const getFacilities = async () => {
-      // Check the pathname in the URL to decide which endpoint to call
       const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/byclient/${id}`
       const allFacilities = await RequestService(endpoint)
       setFacilities(allFacilities)
@@ -73,12 +75,6 @@ export default function ClientAddJob() {
   } = useForm({ defaultValues })
 
   const lunchBreak = watch('lunch_break')
-
-  const watchAllFields = watch() // This will return all form values
-
-  React.useEffect(() => {
-    console.log(watchAllFields)
-  }, [watchAllFields])
 
   React.useEffect(() => {
     if (startTime && endTime) {
@@ -356,7 +352,9 @@ export default function ClientAddJob() {
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
-              {totalHours !== 0 && <div className="text-base font-semibold leading-7 text-gray-900">Total Hours: {totalHours}</div>}
+              {totalHours !== 0 && (
+                <div className="text-base font-semibold leading-7 text-gray-900">Total Hours: {totalHours}</div>
+              )}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -460,7 +458,7 @@ export default function ClientAddJob() {
 
               <div className="sm:col-span-3">
                 <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
-                  Number of Vacancies:
+                  Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
                 </label>
                 <div className="mt-2">
                   <Controller
@@ -469,7 +467,8 @@ export default function ClientAddJob() {
                     rules={{
                       required: 'Enter a valid number of vacancies.',
                       validate: value =>
-                        (value !== null && value >= 0 && value <= 200) || 'Enter a valid number of vacancies.',
+                        (value !== null && value >= 1 && value <= 10) ||
+                        'Enter a valid number of vacancies. Max 10 vacancies allowed.',
                     }}
                     render={({ field, fieldState }) => (
                       <>
@@ -477,13 +476,20 @@ export default function ClientAddJob() {
                           <InputNumber
                             id={field.name}
                             inputRef={field.ref}
+                            tooltip="Enter a valid number of vacancies from 1 to 10. If you need more than 10 vacancies, please contact Customer Service at (999)999-99-99."
+                            tooltipOptions={{ position: 'mouse' }}
                             value={field.value}
                             onBlur={field.onBlur}
-                            onValueChange={e => field.onChange(e)}
+                            onValueChange={(e: InputNumberValueChangeEvent) => {
+                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
+                                field.onChange(e.value)
+                              }
+                            }}
                             useGrouping={false}
                             mode="decimal"
                             showButtons
                             min={1}
+                            max={10}
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
