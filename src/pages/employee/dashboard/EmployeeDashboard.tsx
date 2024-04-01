@@ -1,8 +1,11 @@
+import { useEffect } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 
 import { DashboardHeader } from '../../../components/shared/dashboard'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export type Status = string
 
@@ -28,6 +31,14 @@ export const EmployeeDashboard = () => {
   // const [facilities, setFacilities] = useState<IFacility[]>([])
 
   const navigate = useNavigate()
+
+  const { user } = useAuth()
+
+  useEffect(() => {
+    if (user?.isOnboarded === false) {
+      navigate('/employee/onboarding')
+    }
+  }, [])
 
   // useEffect(() => {
   //   const getCounts = async () => {
