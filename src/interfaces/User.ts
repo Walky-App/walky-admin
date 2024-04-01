@@ -32,4 +32,5 @@ export interface IUser {
   zip?: string
   documents?: IUserDocument[]
   student_record?: ProgressHTU
+  isOnboarded?: boolean
 }

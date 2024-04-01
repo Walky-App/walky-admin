@@ -58,7 +58,6 @@ const clientLinks: INavLink[] = [
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
   { id: 6, name: 'Messages', href: '/dashboard/messages', icon: <IoMdMail />, disabled: true },
   { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
-  { id: 8, name: 'HTU', href: '/learn', icon: <MdSchool /> },
 ]
 
 const employeeLinks: INavLink[] = [
