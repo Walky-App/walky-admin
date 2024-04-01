@@ -1,13 +1,12 @@
-/*eslint-disable */
 import React, { useRef } from 'react'
 
-import { Controller, set, useForm } from 'react-hook-form'
+import { Controller, type FieldErrors, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
-import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber'
+import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
@@ -18,7 +17,7 @@ import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 
-export default function ClientAddJob() {
+export const ClientAddJob = () => {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
   const [endTime, setEndTime] = React.useState<Date | null>(null)
   const [totalHours, setTotalHours] = React.useState(0)
@@ -30,16 +29,17 @@ export default function ClientAddJob() {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
 
-  interface DefaultValues {
+  interface JobFormDefaultValues {
     title: string
     facility_id: string
-    vacancy: null
-    job_dates: never[]
-    start_time: null
-    end_time: null
-    lunch_break: null
-    job_tips: never[]
+    vacancy: number
+    job_dates: Date[]
+    start_time: Date
+    end_time: Date
+    lunch_break: number
+    job_tips: string[]
     created_by?: string
+    total_hours: number
   }
 
   React.useEffect(() => {
@@ -52,15 +52,16 @@ export default function ClientAddJob() {
     getFacilities()
   }, [location.pathname, id])
 
-  let defaultValues: DefaultValues = {
+  let defaultValues: JobFormDefaultValues = {
     title: '',
     facility_id: '',
-    vacancy: null,
+    vacancy: 0,
     job_dates: [],
-    start_time: null,
-    end_time: null,
-    lunch_break: null,
+    start_time: new Date(),
+    end_time: new Date(),
+    lunch_break: 0,
     job_tips: [],
+    total_hours: 0,
   }
 
   if (isAdmin) {
@@ -78,38 +79,53 @@ export default function ClientAddJob() {
 
   React.useEffect(() => {
     if (startTime && endTime) {
-      let startHours = startTime.getHours() + startTime.getMinutes() / 60
+      const startHours = startTime.getHours() + startTime.getMinutes() / 60
       let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
       if (endHours <= startHours) {
-        // Adjust for cases where the end time is past midnight
         endHours += 24
       }
 
       const lunchBreakHours = lunchBreak ? lunchBreak / 60 : 0
       const totalHoursCalc = endHours - startHours - lunchBreakHours
-      setTotalHours(Math.round(totalHoursCalc * 100) / 100) // Update totalHours state
+      setTotalHours(Math.round(totalHoursCalc * 100) / 100)
     }
   }, [startTime, endTime, lunchBreak])
 
-  const getFormErrorMessage = (name: string) => {
-    //@ts-ignore
-    return errors[name] ? (
-      //@ts-ignore
-      <small className="p-error">{errors[name].message}</small>
-    ) : (
-      <small className="p-error">&nbsp;</small>
-    )
+  // const getFormErrorMessage = (name: string) => {
+  //   return errors[name] ? (
+  //     <small className="p-error">{errors[name].message}</small>
+  //   ) : (
+  //     <small className="p-error">&nbsp;</small>
+  //   )
+  // }
+
+  function getFormErrorMessage(path: string, errors: FieldErrors) {
+    const pathParts = path.split('.')
+    let error: FieldErrors = errors
+
+    for (const part of pathParts) {
+      if (typeof error !== 'object' || error === null) {
+        return null
+      }
+      error = error[part as keyof typeof error] as FieldErrors
+    }
+
+    if (error?.message) {
+      return <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>
+    }
+
+    return null
   }
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: JobFormDefaultValues) => {
     try {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
       const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
 
       if (startTime && endTime && data.lunch_break !== null) {
-        let startHours = startTime.getHours() + startTime.getMinutes() / 60
+        const startHours = startTime.getHours() + startTime.getMinutes() / 60
         let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
         if (endHours <= startHours) {
@@ -176,11 +192,11 @@ export default function ClientAddJob() {
 
   return (
     <>
-      <TitleComponent title={'Add a new job'} />
+      <TitleComponent title="Add a new job" />
       <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
         <Toast ref={toast} />
         <div className="space-y-12">
-          {isAdmin && (
+          {isAdmin ? (
             <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Admin Panel</h2>
@@ -201,15 +217,13 @@ export default function ClientAddJob() {
                       rules={{ required: "Client's email is required" }}
                       render={({ field, fieldState }) => (
                         <>
-                          <span className="p-float-label">
-                            <InputText
-                              id={field.name}
-                              value={field.value}
-                              className={classNames({ 'p-invalid': fieldState.error })}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                          </span>
-                          {getFormErrorMessage(field.name)}
+                          <InputText
+                            id={field.name}
+                            value={field.value}
+                            className={classNames({ 'p-invalid': fieldState.error })}
+                            onChange={e => field.onChange(e.target.value)}
+                          />
+                          {getFormErrorMessage(field.name, errors)}
                         </>
                       )}
                     />
@@ -217,7 +231,7 @@ export default function ClientAddJob() {
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
@@ -239,19 +253,17 @@ export default function ClientAddJob() {
                     rules={{ required: 'Job Title is required.' }}
                     render={({ field, fieldState }) => (
                       <>
-                        <div>
-                          <Dropdown
-                            id={field.name}
-                            value={field.value}
-                            optionLabel="title"
-                            options={options}
-                            filter
-                            focusInputRef={field.ref}
-                            onChange={e => field.onChange(e.value)}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          <div>{getFormErrorMessage(field.name)}</div>
-                        </div>
+                        <Dropdown
+                          id={field.name}
+                          value={field.value}
+                          optionLabel="title"
+                          options={options}
+                          filter
+                          focusInputRef={field.ref}
+                          onChange={e => field.onChange(e.value)}
+                          className={classNames({ 'p-invalid': fieldState.error })}
+                        />
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />{' '}
@@ -269,19 +281,17 @@ export default function ClientAddJob() {
                     rules={{ required: 'Facility is required.' }}
                     render={({ field, fieldState }) => (
                       <>
-                        <div>
-                          <Dropdown
-                            id={field.name}
-                            value={field.value}
-                            optionLabel="name"
-                            options={facilities}
-                            filter
-                            focusInputRef={field.ref}
-                            onChange={e => field.onChange(e.value)}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          <div>{getFormErrorMessage(field.name)}</div>
-                        </div>
+                        <Dropdown
+                          id={field.name}
+                          value={field.value}
+                          optionLabel="name"
+                          options={facilities}
+                          filter
+                          focusInputRef={field.ref}
+                          onChange={e => field.onChange(e.value)}
+                          className={classNames({ 'p-invalid': fieldState.error })}
+                        />
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />{' '}
@@ -323,7 +333,7 @@ export default function ClientAddJob() {
                             minDate={new Date()} // Disabling past dates
                             inline
                           />
-                          {field.value && field.value.length > 0 && (
+                          {field.value.length > 0 ? (
                             <div className="mt-2">
                               <h4>Selected Dates:</h4>
                               <ul className="mt-2 grid grid-cols-5 gap-2">
@@ -334,8 +344,8 @@ export default function ClientAddJob() {
                                   ))}
                               </ul>
                             </div>
-                          )}
-                          {getFormErrorMessage(field.name)}
+                          ) : null}
+                          {getFormErrorMessage(field.name, errors)}
                         </div>
                       )}
                     />
@@ -352,9 +362,9 @@ export default function ClientAddJob() {
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
-              {totalHours !== 0 && (
+              {totalHours !== 0 ? (
                 <div className="text-base font-semibold leading-7 text-gray-900">Total Hours: {totalHours}</div>
-              )}
+              ) : null}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -382,7 +392,7 @@ export default function ClientAddJob() {
                             icon={() => <i className="pi pi-clock" />}
                             className={classNames({ 'p-invalid': fieldState.error })}
                           />
-                          {getFormErrorMessage(field.name)}
+                          {getFormErrorMessage(field.name, errors)}
                         </div>
                       </div>
                     )}
@@ -414,7 +424,7 @@ export default function ClientAddJob() {
                             icon={() => <i className="pi pi-clock" />}
                             className={classNames({ 'p-invalid': fieldState.error })}
                           />
-                          {getFormErrorMessage(field.name)}
+                          {getFormErrorMessage(field.name, errors)}
                         </div>
                       </div>
                     )}
@@ -449,7 +459,7 @@ export default function ClientAddJob() {
                             className={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
-                        {getFormErrorMessage(field.name)}
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
@@ -493,7 +503,7 @@ export default function ClientAddJob() {
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
-                        {getFormErrorMessage(field.name)}
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
@@ -507,24 +517,25 @@ export default function ClientAddJob() {
                   <Controller
                     name="job_tips"
                     control={control}
-                    rules={{ required: 'Value is required.' }}
+                    rules={{ required: 'Job tips required.' }}
                     render={({ field }) => (
-                      <MultiSelect
-                        id={field.name}
-                        name="value"
-                        value={field.value}
-                        options={jobTips}
-                        filter
-                        onChange={e => field.onChange(e.value)}
-                        optionLabel="label"
-                        placeholder="Select Job Tips"
-                        maxSelectedLabels={8}
-                        className="md:w-20rem w-full"
-                      />
+                      <>
+                        <MultiSelect
+                          id={field.name}
+                          name="value"
+                          value={field.value}
+                          options={jobTips}
+                          filter
+                          onChange={e => field.onChange(e.value)}
+                          optionLabel="label"
+                          placeholder="Select Job Tips"
+                          maxSelectedLabels={8}
+                          className="md:w-20rem w-full"
+                        />
+                        {getFormErrorMessage(field.name, errors)}
+                      </>
                     )}
                   />
-
-                  {getFormErrorMessage('value')}
                 </div>
               </div>
             </div>
