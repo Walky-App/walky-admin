@@ -138,7 +138,11 @@ export const ClientAddJob = () => {
         requestData.total_hours = Math.round(totalHours * 100) / 100
         setTotalHours(requestData.total_hours)
         if (requestData.total_hours < 7) {
-          showToast({ severity: 'error', summary: 'Error', detail: 'Total hours must be at least 7 hours' })
+          showToast({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'The total working hours must be at least 7 hours for a job to be successfully created.',
+          })
           return
         }
       }
