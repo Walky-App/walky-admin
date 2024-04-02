@@ -94,14 +94,6 @@ export const ClientAddJob = () => {
     }
   }, [startTime, endTime, lunchBreak])
 
-  // const getFormErrorMessage = (name: string) => {
-  //   return errors[name] ? (
-  //     <small className="p-error">{errors[name].message}</small>
-  //   ) : (
-  //     <small className="p-error">&nbsp;</small>
-  //   )
-  // }
-
   function getFormErrorMessage(path: string, errors: FieldErrors) {
     const pathParts = path.split('.')
     let error: FieldErrors = errors
