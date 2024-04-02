@@ -192,7 +192,7 @@ export const EmployeeOnboarding = () => {
         moreAddressDetails,
         setMoreAddressDetails,
       }}>
-      <HeaderComponent title="Client Onboarding" />
+      <HeaderComponent title="Employee Onboarding" />
       <Steps
         model={steps}
         activeIndex={activeIndex}
