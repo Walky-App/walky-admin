@@ -15,6 +15,7 @@ import { classNames } from 'primereact/utils'
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 
 export const ClientAddJob = () => {
@@ -24,6 +25,7 @@ export const ClientAddJob = () => {
   const user = GetTokenInfo()
   const id = user?._id
   const toast = useRef<Toast>(null)
+  const { showToast } = useUtils()
   const [facilities, setFacilities] = React.useState<IFacility[]>()
   const navigate = useNavigate()
   const location = useLocation()
@@ -135,15 +137,15 @@ export const ClientAddJob = () => {
         const totalHours = endHours - startHours - lunchBreakHours
         requestData.total_hours = Math.round(totalHours * 100) / 100
         setTotalHours(requestData.total_hours)
+        if (requestData.total_hours < 7) {
+          showToast({ severity: 'error', summary: 'Error', detail: 'Total hours must be at least 7 hours' })
+          return
+        }
       }
 
       const response = await RequestService('jobs', 'POST', requestData)
       if (response) {
-        toast.current?.show({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Job information submitted successfully',
-        })
+        showToast({ severity: 'success', summary: 'Success', detail: 'Job information submitted successfully' })
         setTimeout(() => {
           navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
         }, 3000)
@@ -363,7 +365,13 @@ export const ClientAddJob = () => {
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
               {totalHours !== 0 ? (
-                <div className="text-base font-semibold leading-7 text-gray-900">Total Hours: {totalHours}</div>
+                <div className="mt-10">
+                  <div
+                    className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
+                    Total Hours: {totalHours}
+                  </div>
+                  <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
+                </div>
               ) : null}
             </div>
 
