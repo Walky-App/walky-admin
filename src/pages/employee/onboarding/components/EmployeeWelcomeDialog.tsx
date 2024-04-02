@@ -26,9 +26,8 @@ export const EmployeeWelcomeDialog = ({ visible, setVisible }: WelcomeDialogProp
         modal
         blockScroll
         onHide={() => setVisible(false)}
-        // style={{ width: '80vw' }}
         keepInViewport
-        className="w-full xl:w-10/12"
+        className="w-full xl:w-8/12"
         content={
           <div className="flex w-full flex-col items-center rounded-lg bg-white px-4 py-5 xl:px-8">
             <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="xl:w-6/12" />
