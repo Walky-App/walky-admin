@@ -9,7 +9,7 @@ import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { useAuth } from '../../../contexts/AuthContext'
 import { Step1, Step2, Step3, Step4, Step5, WelcomeDialog } from './components'
 
 const defaultFacilityFormValues: IFacilityFormInputs = {
@@ -222,12 +222,21 @@ const defaultMoreAddressDetails: IAddressAutoComplete = {
 }
 
 export const ClientOnboarding = () => {
-  const user = GetTokenInfo()
+  const { user } = useAuth()
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [formData, setFormData] = useState<IFacilityFormInputs>({
     ...defaultFacilityFormValues,
     user_id: user?._id || '',
+    contacts: [
+      {
+        first_name: user?.first_name || '',
+        last_name: user?.last_name || '',
+        role: 'Owner',
+        phone_number: user?.phone_number || '',
+        email: user?.email || '',
+      },
+    ],
   })
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
@@ -242,38 +251,18 @@ export const ClientOnboarding = () => {
   const steps: MenuItem[] = [
     {
       label: 'Business Information',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'First Step', detail: event.item.label })
-      },
     },
     {
       label: 'Documents and Images',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Second Step', detail: event.item.label })
-      },
     },
     {
       label: 'Locations',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Third Step', detail: event.item.label })
-      },
     },
     {
       label: 'Payment Information',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Fourth Step', detail: event.item.label })
-      },
     },
     {
       label: 'Terms and Conditions',
-      command: event => {
-        // @ts-expect-error toast.current may be null
-        toast.current?.show({ severity: 'info', summary: 'Fifth Step', detail: event.item.label })
-      },
     },
   ]
 
