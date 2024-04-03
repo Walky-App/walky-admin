@@ -3,20 +3,21 @@ import { Document, Page, Image, View, Text, Font, PDFViewer } from '@react-pdf/r
 import { useAdmin } from '../../../../contexts/AdminContext'
 import { useAuth } from '../../../../contexts/AuthContext'
 import type { IUser } from '../../../../interfaces/User'
-import { type Module } from '../../../../interfaces/module'
+import type { Category } from '../../../../interfaces/category'
 
 export const Certification = () => {
-  const { module } = useAdmin()
+  const { category } = useAdmin()
   const { user } = useAuth()
+
   return (
     <PDFViewer style={{ width: '100%', height: '100vh' }}>
-      <Pdf data={module} user={user} />
+      <Pdf data={category} user={user} />
     </PDFViewer>
   )
 }
 
 interface pdfProps {
-  data: Module | undefined
+  data: Category | undefined
   user: IUser | undefined
 }
 
@@ -68,7 +69,7 @@ export const Pdf = ({ data, user }: pdfProps) => {
             65b132-d6fd6f-ef0d7d-26d48e
           </Text>
           <Text style={{ position: 'absolute', left: '44%', top: '280px', fontFamily: 'Montserrat' }}>
-            {data?.category.title}
+            {data?.title}
           </Text>
           <Text
             style={{
