@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Link } from 'react-router-dom'
 
@@ -15,6 +15,11 @@ export default function JobListItem({ job }: any) {
   const [savedJob, setSavedJob] = useState(false)
   const { _id } = GetTokenInfo()
 
+  useEffect(() => {
+    const isSaved = job.saved_by.includes(_id)
+    setSavedJob(isSaved)
+  }, [job.saved_by, _id])
+
   const handleSaveJob = async () => {
     try {
       const response = await RequestService(`jobs/${job._id}/save`, 'POST', { user_id: _id })
@@ -26,6 +31,28 @@ export default function JobListItem({ job }: any) {
       }
     } catch (error) {
       console.error('Error while saving job:', error)
+    }
+  }
+
+  const handleUnSaveJob = async () => {
+    try {
+      const response = await RequestService(`jobs/${job._id}/unsave`, 'POST', { user_id: _id })
+
+      if (response.status === 200) {
+        setSavedJob(!savedJob)
+      } else {
+        console.error('Failed to unsave job:', response)
+      }
+    } catch (error) {
+      console.error('Error while unsaving job:', error)
+    }
+  }
+
+  const handleSaveUnsaveClick = async () => {
+    if (savedJob) {
+      await handleUnSaveJob()
+    } else {
+      await handleSaveJob()
     }
   }
 
@@ -115,7 +142,7 @@ export default function JobListItem({ job }: any) {
             <div className="h-1 w-1 rounded-full bg-stone-500" />
             <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
           </div>
-          <div onClick={handleSaveJob} className="flex h-4 cursor-pointer items-center justify-start gap-1">
+          <div onClick={handleSaveUnsaveClick} className="flex h-4 cursor-pointer items-center justify-start gap-1">
             {savedJob ? (
               <BookmarkIconSolid className="h-5 w-5 text-stone-500" />
             ) : (
