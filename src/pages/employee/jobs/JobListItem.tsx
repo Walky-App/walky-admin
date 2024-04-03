@@ -8,11 +8,25 @@ import { Badge } from 'flowbite-react'
 import { BriefcaseIcon, MapPinIcon, CreditCardIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
 import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outline'
 
+import { RequestService } from '../../../services/RequestService'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
+
 export default function JobListItem({ job }: any) {
   const [savedJob, setSavedJob] = useState(false)
+  const { _id } = GetTokenInfo()
 
-  const handleSaveJob = () => {
-    setSavedJob(!savedJob)
+  const handleSaveJob = async () => {
+    try {
+      const response = await RequestService(`jobs/${job._id}/save`, 'POST', { user_id: _id })
+
+      if (response.status === 200) {
+        setSavedJob(!savedJob)
+      } else {
+        console.error('Failed to save job:', response)
+      }
+    } catch (error) {
+      console.error('Error while saving job:', error)
+    }
   }
 
   let earliestDate, latestDate
@@ -45,7 +59,9 @@ export default function JobListItem({ job }: any) {
           {/* Job Skills */}
           <div className="mb-3 flex basis-1/3 flex-wrap gap-2 px-5 pt-5">
             <span className="pi pi-users"></span>
-            <p className="text-xs font-normal text-stone-500">{job.applicants.length} / {job.vacancy} Applicants</p>
+            <p className="text-xs font-normal text-stone-500">
+              {job.applicants.length} / {job.vacancy} Applicants
+            </p>
           </div>
 
           {/* Job Details */}
