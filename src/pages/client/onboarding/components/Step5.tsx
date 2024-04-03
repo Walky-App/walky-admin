@@ -61,17 +61,17 @@ export const Step5 = ({ step, setStep }: StepProps) => {
   }
 
   return (
-    <div className="space-y-12">
+    <div className="">
       <FinishOnboardingDialog visible={visible} setVisible={setVisible} />
 
       {/* Do you have more locations to add?  */}
-      <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-4">
-        <div className="sm:col-span-1">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Terms and Conditions</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">Please read the terms & conditions of HempTemps.</p>
+      <div className="grid grid-cols-1 gap-x-8 border-b border-gray-900/10 text-center md:grid-cols-1">
+        <div className="mb-3 sm:col-span-1">
+          <h2 className=" font-semibold leading-7 text-gray-900">Terms and Conditions</h2>
+          <p className="text-sm leading-6 text-gray-600">Please read the terms & conditions of HempTemps.</p>
         </div>
 
-        <div className="grid max-w-full grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-3">
+        <div className="grid max-w-full grid-cols-1 gap-x-6 gap-y-6">
           <div className="sm:col-span-5">
             <ul className="grid-cols-full grid auto-rows-fr gap-x-6 gap-y-8 xl:gap-x-8">
               <li className="overflow-hidden rounded-xl border border-gray-200">
