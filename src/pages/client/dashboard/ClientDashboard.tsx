@@ -30,15 +30,14 @@ export const ClientDashboard = () => {
   // const [counts, setCounts] = useState<ICounts | null>()
   // const [facilities, setFacilities] = useState<IFacility[]>([])
 
+  const navigate = useNavigate()
   const { user } = useAuth()
 
   useEffect(() => {
     if (user?.isOnboarded === false) {
       navigate('/client/onboarding')
     }
-  }, [])
-
-  const navigate = useNavigate()
+  }, [navigate, user?.isOnboarded])
 
   // useEffect(() => {
   //   const getCounts = async () => {
