@@ -10,7 +10,7 @@ import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { type IToastData } from '../../../../interfaces/global'
+import { type IToastParameters, type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import {
@@ -34,7 +34,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
     setMoreAddressDetails,
   } = useContext(FormDataContext)
 
-  const { setRemoveToastCallback, showToast } = useUtils()
+  const { setRemoveToastCallback, showToast, removeToast } = useUtils()
 
   const handleRemoveToast = useCallback(
     (toastData: ToastMessage | IToastData) => {
@@ -45,7 +45,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         severity = toastData.severity
       }
 
-      if (severity === 'success') {
+      if (severity === 'info') {
         setIsLoading(false)
         setStep(step + 1)
       }
@@ -78,9 +78,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
       if (moreAddressDetails.city) {
         setValue('city', moreAddressDetails.city)
       }
-      // if (moreAddressDetails.location_pin) {
-      //   setValue('location_pin', moreAddressDetails.location_pin)
-      // }
       if (moreAddressDetails.address) {
         setValue('address', moreAddressDetails.address)
       }
@@ -95,6 +92,15 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
   const onSubmit: SubmitHandler<IUserFormInputs> = async data => {
     setFormData(data)
     setIsLoading(true)
+
+    const infoToastMessage: IToastParameters = {
+      severity: 'info',
+      summary: 'Saving changes for:',
+      detail: getValues('first_name') + ' ' + getValues('last_name'),
+      sticky: true,
+    }
+
+    showToast(infoToastMessage)
 
     let userId = currentUser?._id
 
@@ -113,12 +119,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           if (response?._id !== null) {
             userId = response._id
 
-            showToast({
-              severity: 'success',
-              summary: 'Changes saved for:',
-              detail: getValues('first_name') + ' ' + getValues('last_name'),
-            })
-
             setCurrentUser(response)
           } else {
             throw new Error('Failed to update user')
@@ -133,7 +133,10 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           severity: 'error',
           summary: 'Error saving changes',
           detail: `${getValues('first_name')} could not be updated.`,
+          life: 2000,
         })
+      } finally {
+        removeToast(infoToastMessage)
       }
     }
   }
