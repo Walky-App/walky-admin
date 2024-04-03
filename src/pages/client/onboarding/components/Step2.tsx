@@ -50,7 +50,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
         const body = {
           name: 'HempTemps Client Agreement',
           type: 'sales',
-          template_id: '5vy2kbjyevk8',
+          template_id: 'ke36vcj367m3',
           email: docRecipient.email,
           first_name: docRecipient.first_name,
           last_name: docRecipient.last_name,
