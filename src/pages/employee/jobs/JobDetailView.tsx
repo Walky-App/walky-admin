@@ -122,7 +122,7 @@ export const JobDetailView = () => {
     }
 
     getJob()
-  }, [id, job?.applicants])
+  }, [id])
 
   const getCurrentJobTimeSheet = useCallback(async () => {
     const { access_token } = GetTokenInfo()
