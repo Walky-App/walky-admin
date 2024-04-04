@@ -6,7 +6,7 @@ import { HeaderComponent } from '../../../components/shared/general/HeaderCompon
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
-import JobListItem from './JobListItem'
+import { JobListItem } from './JobListItem'
 
 const jobCategoryOptions = [
   { name: 'All Jobs', code: 'all' },

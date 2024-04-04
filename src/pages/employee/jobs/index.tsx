@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
@@ -7,7 +6,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import JobListItem from './JobListItem'
+import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
   { name: 'All Jobs', code: 'all' },
@@ -28,31 +27,23 @@ const rangeOptions = [
 ]
 
 export const EmployeeJobs = () => {
-  const [jobs, setJobs] = useState<any>()
-  const [selectedJobTitle, setSelectedJobTitle] = useState<any>(null)
-  const [displayedJobs, setDisplayedJobs] = useState<any>([])
-  const [dates, setDates] = useState<any>(null)
-  const [latitude, setLatitude] = useState<number>()
-  const [longitude, setLongitude] = useState<number>()
-  const [error, setError] = useState<string>()
-  const [selectedRange, setSelectedRange] = useState<any>(null)
-
+  const [jobs, setJobs] = useState<IJob[]>([])
+  const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
+  const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
+  const [dates, setDates] = useState<[Date, Date] | null>(null)
+  const [latitude, setLatitude] = useState<number | undefined>(undefined)
+  const [longitude, setLongitude] = useState<number | undefined>(undefined)
+  const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   useEffect(() => {
     const getLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          setLatitude(position.coords.latitude)
-          setLongitude(position.coords.longitude)
-        },
-        error => {
-          setError(error.message)
-        },
-      )
+      navigator.geolocation.getCurrentPosition(position => {
+        setLatitude(position.coords.latitude)
+        setLongitude(position.coords.longitude)
+      })
     }
 
     getLocation()
   }, [])
-  console.log('lat:', latitude, 'long:', longitude)
 
   useEffect(() => {
     const getJobs = async () => {
@@ -67,7 +58,6 @@ export const EmployeeJobs = () => {
       }
     }
     getJobs()
-    console.log(jobs)
   }, [latitude, longitude])
 
   useEffect(() => {
@@ -77,7 +67,7 @@ export const EmployeeJobs = () => {
     }
     if (dates) {
       filteredJobs = filteredJobs.filter(job => {
-        return job.job_dates.some((jobDate: any) => {
+        return job.job_dates.some((jobDate: string) => {
           const date = new Date(jobDate)
           return date >= dates[0] && date <= dates[1]
         })
@@ -107,7 +97,7 @@ export const EmployeeJobs = () => {
         <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
           <Calendar
             value={dates}
-            onChange={e => setDates(e.value)}
+            onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
             showButtonBar
             numberOfMonths={2}
