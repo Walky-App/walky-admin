@@ -3,9 +3,7 @@ import { useState, useEffect } from 'react'
 
 import { Link } from 'react-router-dom'
 
-import { Badge } from 'flowbite-react'
-
-import { BriefcaseIcon, MapPinIcon, CreditCardIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
+import { MapPinIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
 import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outline'
 
 import { RequestService } from '../../../services/RequestService'
@@ -20,39 +18,22 @@ export default function JobListItem({ job }: any) {
     setSavedJob(isSaved)
   }, [job.saved_by, _id])
 
-  const handleSaveJob = async () => {
-    try {
-      const response = await RequestService(`jobs/${job._id}/save`, 'POST', { user_id: _id })
+  const handleSaveUnsaveClickOptimistic = async () => {
+    const currentSavedState = savedJob
+    setSavedJob(!savedJob)
 
-      if (response.status === 200) {
-        setSavedJob(!savedJob)
-      } else {
-        console.error('Failed to save job:', response)
+    try {
+      const responseContent = await RequestService(`jobs/${job._id}/${savedJob ? 'unsave' : 'save'}`, 'POST', {
+        user_id: _id,
+      })
+
+      if (!responseContent || responseContent.message.includes('error')) {
+        setSavedJob(currentSavedState)
+        console.error('Failed to change save state:', responseContent.message)
       }
     } catch (error) {
-      console.error('Error while saving job:', error)
-    }
-  }
-
-  const handleUnSaveJob = async () => {
-    try {
-      const response = await RequestService(`jobs/${job._id}/unsave`, 'POST', { user_id: _id })
-
-      if (response.status === 200) {
-        setSavedJob(!savedJob)
-      } else {
-        console.error('Failed to unsave job:', response)
-      }
-    } catch (error) {
-      console.error('Error while unsaving job:', error)
-    }
-  }
-
-  const handleSaveUnsaveClick = async () => {
-    if (savedJob) {
-      await handleUnSaveJob()
-    } else {
-      await handleSaveJob()
+      setSavedJob(currentSavedState)
+      console.error('Error while changing save state:', error)
     }
   }
 
@@ -65,7 +46,6 @@ export default function JobListItem({ job }: any) {
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
-      // Handle null input, for example, return a placeholder or an error message
       return 'Time not set'
     }
     const militaryTimeString = militaryTime.toString().padStart(4, '0')
@@ -142,7 +122,9 @@ export default function JobListItem({ job }: any) {
             <div className="h-1 w-1 rounded-full bg-stone-500" />
             <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
           </div>
-          <div onClick={handleSaveUnsaveClick} className="flex h-4 cursor-pointer items-center justify-start gap-1">
+          <div
+            onClick={handleSaveUnsaveClickOptimistic}
+            className="flex h-4 cursor-pointer items-center justify-start gap-1">
             {savedJob ? (
               <BookmarkIconSolid className="h-5 w-5 text-stone-500" />
             ) : (
