@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
 
@@ -6,11 +6,9 @@ import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
-import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { type IToastParameters, type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import {
@@ -34,28 +32,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
     setMoreAddressDetails,
   } = useContext(FormDataContext)
 
-  const { setRemoveToastCallback, showToast, removeToast } = useUtils()
-
-  const handleRemoveToast = useCallback(
-    (toastData: ToastMessage | IToastData) => {
-      let severity
-      if ('message' in toastData) {
-        severity = toastData.message.severity
-      } else {
-        severity = toastData.severity
-      }
-
-      if (severity === 'info') {
-        setIsLoading(false)
-        setStep(step + 1)
-      }
-    },
-    [setStep, step],
-  )
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
+  const { showToast } = useUtils()
 
   const values = formData !== null ? formData : defaultValues
 
@@ -69,19 +46,19 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
 
   useEffect(() => {
     if (moreAddressDetails) {
-      if (moreAddressDetails.zip) {
+      if (moreAddressDetails.zip != undefined) {
         setValue('zip', moreAddressDetails.zip)
       }
-      if (moreAddressDetails.state) {
+      if (moreAddressDetails.state != undefined) {
         setValue('state', moreAddressDetails.state)
       }
-      if (moreAddressDetails.city) {
+      if (moreAddressDetails.city != undefined) {
         setValue('city', moreAddressDetails.city)
       }
-      if (moreAddressDetails.address) {
+      if (moreAddressDetails.address != undefined) {
         setValue('address', moreAddressDetails.address)
       }
-      if (moreAddressDetails.country) {
+      if (moreAddressDetails.country != undefined) {
         setValue('country', moreAddressDetails.country)
       }
 
@@ -92,15 +69,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
   const onSubmit: SubmitHandler<IUserFormInputs> = async data => {
     setFormData(data)
     setIsLoading(true)
-
-    const infoToastMessage: IToastParameters = {
-      severity: 'info',
-      summary: 'Saving changes for:',
-      detail: getValues('first_name') + ' ' + getValues('last_name'),
-      sticky: true,
-    }
-
-    showToast(infoToastMessage)
 
     let userId = currentUser?._id
 
@@ -126,6 +94,8 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         } else {
           throw new Error('User not found')
         }
+
+        setStep(step + 1)
       } catch (error) {
         console.error('Error updating user:', error)
 
@@ -136,7 +106,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           life: 2000,
         })
       } finally {
-        removeToast(infoToastMessage)
+        setIsLoading(false)
       }
     }
   }
