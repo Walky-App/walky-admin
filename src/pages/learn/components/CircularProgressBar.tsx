@@ -15,8 +15,7 @@ export const CircularProgressBar = ({ progressData }: ProgressData) => {
   const offset = circumference - (percent / 100) * circumference
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const svgText: any = document.getElementById('svgText') as HTMLElement
+    const svgText = document.getElementById('svgText') as unknown as SVGTextElement
     const textBounding = svgText?.getBBox()
     const textWidth = textBounding?.width || 0
 
