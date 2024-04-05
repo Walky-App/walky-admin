@@ -1,6 +1,13 @@
 /* eslint-disable filename-rules/match */
 import { type ProgressHTU } from './htu'
 
+export interface IOnboardingStep {
+  step_number: number
+  completed: boolean
+  description: string
+  type: string
+}
+
 export interface IUserDocument {
   id: number
   url: string
@@ -26,6 +33,7 @@ export interface IUser {
   country?: string
   gender?: string
   middle_name?: string
+  preferred_name?: string
   notifications?: string[]
   phone_number?: string
   role_id?: string
@@ -33,4 +41,5 @@ export interface IUser {
   documents?: IUserDocument[]
   student_record?: ProgressHTU
   isOnboarded?: boolean
+  onboarding?: IOnboardingStep
 }

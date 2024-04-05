@@ -3,12 +3,12 @@ import { useContext, useEffect, useState } from 'react'
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
 
 import { Button } from 'primereact/button'
-import { Dropdown } from 'primereact/dropdown'
 import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import {
@@ -17,6 +17,7 @@ import {
   tooltipOptions,
   type IUserFormInputs,
   type StepProps,
+  steps,
 } from '../EmployeeOnboardingPage'
 
 export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
@@ -40,36 +41,31 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
     control,
     formState: { errors },
     handleSubmit,
-    getValues,
     setValue,
   } = useForm<IUserFormInputs>({ values })
 
   useEffect(() => {
     if (moreAddressDetails) {
-      if (moreAddressDetails.zip != undefined) {
+      if (moreAddressDetails.zip !== undefined) {
         setValue('zip', moreAddressDetails.zip)
       }
-      if (moreAddressDetails.state != undefined) {
+      if (moreAddressDetails.state !== undefined) {
         setValue('state', moreAddressDetails.state)
       }
-      if (moreAddressDetails.city != undefined) {
+      if (moreAddressDetails.city !== undefined) {
         setValue('city', moreAddressDetails.city)
       }
-      if (moreAddressDetails.address != undefined) {
+      if (moreAddressDetails.address !== undefined) {
         setValue('address', moreAddressDetails.address)
       }
-      if (moreAddressDetails.country != undefined) {
+      if (moreAddressDetails.country !== undefined) {
         setValue('country', moreAddressDetails.country)
       }
-
       setMoreAddressDetails(undefined)
     }
   }, [moreAddressDetails, setMoreAddressDetails, setValue])
 
-  const onSubmit: SubmitHandler<IUserFormInputs> = async data => {
-    setFormData(data)
-    setIsLoading(true)
-
+  const updateUserWithDataAndIncrementStep = async (data: IUserFormInputs, step: number) => {
     let userId = currentUser?._id
 
     if (userId != null) {
@@ -77,9 +73,14 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         const userFound = await RequestService(`users/${userId}`)
 
         if (userFound !== null) {
-          const updatedUser = {
+          const updatedUser: IUser = {
             ...userFound,
             ...data,
+            onboarding: {
+              ...userFound.onboarding,
+              step_number: (userFound.onboarding?.step_number ?? 0) + 1,
+              description: steps[1].label,
+            },
           }
 
           const response = await RequestService(`users/${userId}`, 'PATCH', updatedUser)
@@ -102,13 +103,20 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         showToast({
           severity: 'error',
           summary: 'Error saving changes',
-          detail: `${getValues('first_name')} could not be updated.`,
+          detail: `Information could not be updated.`,
           life: 2000,
         })
       } finally {
         setIsLoading(false)
       }
     }
+  }
+
+  const onSubmit: SubmitHandler<IUserFormInputs> = async data => {
+    setFormData(data)
+    setIsLoading(true)
+
+    await updateUserWithDataAndIncrementStep(data, step)
   }
 
   return (
@@ -172,7 +180,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Middle Name:
+                      Middle Name:
                     </label>
                     <InputText
                       id={field.name}
@@ -188,25 +196,24 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="gender"
-                rules={{ required: 'Field is required' }}
+                name="preferred_name"
+                rules={{ required: false }}
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Gender:
+                      Preferred Name:
                     </label>
-                    <Dropdown
+                    <InputText
                       id={field.name}
                       {...field}
-                      filter
-                      options={['Male', 'Female', 'Other']}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
                   </>
                 )}
               />
-              {getFormErrorMessage(`gender`, errors)}
+              {getFormErrorMessage(`middle_name`, errors)}
             </div>
+
             <div className="sm:col-span-3">
               <Controller
                 control={control}

@@ -3,12 +3,13 @@ import { createContext, type Dispatch, Fragment, type SetStateAction, useState, 
 import { type FieldErrors } from 'react-hook-form'
 
 import { type MenuItem } from 'primereact/menuitem'
+import { Skeleton } from 'primereact/skeleton'
 import { Steps } from 'primereact/steps'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { type IUserDocument, type IUser } from '../../../interfaces/User'
+import { type IUserDocument, type IUser, type IOnboardingStep } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { EmployeeStep1, EmployeeStep2, EmployeeWelcomeDialog } from './components'
@@ -18,7 +19,7 @@ const defaultUserValues: IUserFormInputs = {
   first_name: '',
   last_name: '',
   middle_name: '',
-  gender: '',
+  preferred_name: '',
   phone_number: '',
   email: '',
   address: '',
@@ -27,14 +28,20 @@ const defaultUserValues: IUserFormInputs = {
   zip: '',
   country: '',
   documents: [],
+  onboarding: {
+    step_number: 1,
+    completed: false,
+    description: 'Contact Information',
+    type: 'employee',
+  },
 }
 
 export interface IUserFormInputs {
   _id: string
   first_name: string
   last_name: string
-  middle_name: string
-  gender: string
+  middle_name?: string
+  preferred_name: string
   phone_number: string
   email: string
   address: string
@@ -43,6 +50,7 @@ export interface IUserFormInputs {
   zip: string
   country: string
   documents: IUserDocument[]
+  onboarding: IOnboardingStep
 }
 
 export interface FormDataContextProps {
@@ -55,7 +63,6 @@ export interface FormDataContextProps {
   setMoreAddressDetails: Dispatch<SetStateAction<IAddressAutoComplete | undefined>>
 }
 
-// Initialize the context with the defined shape and default value
 export const FormDataContext = createContext<FormDataContextProps>({
   defaultValues: defaultUserValues,
   formData: defaultUserValues,
@@ -115,7 +122,26 @@ const defaultMoreAddressDetails: IAddressAutoComplete = {
   country: undefined,
 }
 
+export const steps: MenuItem[] = [
+  {
+    label: 'Contact Information',
+  },
+  {
+    label: 'Documents and Certificates',
+  },
+  {
+    label: 'Locations',
+  },
+  {
+    label: 'Payment Information',
+  },
+  {
+    label: 'Terms and Conditions',
+  },
+]
+
 export const EmployeeOnboarding = () => {
+  const [loading, setLoading] = useState(true)
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [formData, setFormData] = useState<IUserFormInputs>({
@@ -125,24 +151,6 @@ export const EmployeeOnboarding = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
   )
-
-  const steps: MenuItem[] = [
-    {
-      label: 'Contact Information',
-    },
-    {
-      label: 'Documents and Certificates',
-    },
-    {
-      label: 'Locations',
-    },
-    {
-      label: 'Payment Information',
-    },
-    {
-      label: 'Terms and Conditions',
-    },
-  ]
 
   const onboardingSteps = [
     <Fragment key="step1">
@@ -159,20 +167,23 @@ export const EmployeeOnboarding = () => {
     const getUser = async () => {
       const { _id } = GetTokenInfo()
       try {
-        const response = await RequestService(`users/${_id}`)
+        const response: IUser = await RequestService(`users/${_id}`)
         setCurrentUser(response)
         setFormData(prevFormData => ({
           ...prevFormData,
           _id: response._id,
           first_name: response.first_name,
           last_name: response.last_name,
-          middle_name: response.middle_name,
-          gender: response.gender,
           email: response.email,
-          phone_number: response.phone_number,
-          address: response.address,
-          documents: response.documents,
+          middle_name: response.middle_name || '',
+          preferred_name: response.preferred_name || '',
+          phone_number: response.phone_number || '',
+          address: response.address || '',
+          documents: response.documents || [],
         }))
+
+        setActiveIndex((response.onboarding?.step_number ?? 1) - 1)
+        setLoading(false)
       } catch (error) {
         console.error('Error fetching user data:', error)
       }
@@ -193,17 +204,23 @@ export const EmployeeOnboarding = () => {
         setMoreAddressDetails,
       }}>
       <HeaderComponent title="Employee Onboarding" />
-      <Steps
-        model={steps}
-        activeIndex={activeIndex}
-        onSelect={e => setActiveIndex(e.index)}
-        readOnly={true}
-        pt={{
-          label: { className: 'hidden xl:inline' },
-          menuitem: { className: 'before:top-full before:sm:top-1/2' },
-        }}
-      />
-      <div className="mt-10">{onboardingSteps[activeIndex]}</div>
+      {loading ? (
+        <Skeleton />
+      ) : (
+        <>
+          <Steps
+            model={steps}
+            activeIndex={activeIndex}
+            onSelect={e => setActiveIndex(e.index)}
+            readOnly={true}
+            pt={{
+              label: { className: 'hidden xl:inline' },
+              menuitem: { className: 'before:top-full before:sm:top-1/2' },
+            }}
+          />
+          <div className="mt-10">{onboardingSteps[activeIndex]}</div>
+        </>
+      )}
     </FormDataContext.Provider>
   )
 }
