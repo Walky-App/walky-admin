@@ -16,7 +16,7 @@ import { MdSchool } from 'react-icons/md'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { Dialog, Menu, Transition } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon, Cog6ToothIcon } from '@heroicons/react/20/solid'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import { useAuth } from '../../contexts/AuthContext'
@@ -42,6 +42,7 @@ const adminLinks: INavLink[] = [
   { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
   { id: 6, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
   { id: 7, name: 'Messages', href: '/admin/messages', icon: <IoMdMail />, disabled: true },
+  { id: 8, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
 ]
 
 const clientLinks: INavLink[] = [
