@@ -61,13 +61,13 @@ export const EmployeeJobs = () => {
   }, [latitude, longitude])
 
   useEffect(() => {
-    let filteredJobs = [...(jobs || [])] as IJob[]
+    let filteredJobs = [...(jobs || [])]
     if (selectedJobTitle && selectedJobTitle.code !== 'all') {
       filteredJobs = filteredJobs.filter(job => job.title === selectedJobTitle.name)
     }
     if (dates) {
       filteredJobs = filteredJobs.filter(job => {
-        return job.job_dates.some((jobDate: string) => {
+        return job.job_dates.some(jobDate => {
           const date = new Date(jobDate)
           return date >= dates[0] && date <= dates[1]
         })
