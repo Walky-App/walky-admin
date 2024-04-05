@@ -275,32 +275,54 @@ export const JobDetailView = () => {
                     <>
                       <div className="flex items-center">
                         <i className="pi pi-users" />
-                        <div className="ml-1 text-xs font-normal text-stone-500">
+                        <div className="mb-2 ml-1 mt-2 text-sm font-normal text-stone-500">
                           {job.applicants.length} / {job.vacancy} Applicants
                         </div>
                       </div>
-                      {job.title}
+                      {!job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
+                        ? job.title
+                        : null}
                     </>
                   }>
                   {/* Job Facility */}
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-col items-start justify-start gap-1">
-                      {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
-                        <>
-                          <div className="flex items-center">
-                            <i className="pi pi-building" />
-                            <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
-                          </div>
-                          <div className="flex items-center">
-                            <i className="pi pi-directions" />
-                            <div className="ml-2 text-sm font-normal text-black">{job.facility.address}</div>
-                          </div>
-                        </>
+                  <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex">
+                      {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) &&
+                      job.facility?.main_image ? (
+                        <div className="max-w-screen-xl">
+                          <img
+                            className="mb-2 mr-8 h-32 w-32 flex-none rounded-lg bg-gray-50 object-cover"
+                            src={job.facility?.main_image}
+                            alt="Missing Facility"
+                          />
+                        </div>
                       ) : null}
-                      <div className="flex items-center">
-                        <i className="pi pi-map-marker" />
-                        <div className="ml-2 text-sm font-normal text-black">
-                          {job.facility.city}, {job.facility.state}, {job.facility.zip}
+
+                      <div className="align-center flex flex-col items-start justify-start gap-1">
+                        {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                          <>
+                            <div className="flex items-center text-2xl font-bold">{job.title}</div>
+                            <div className="flex items-center">
+                              <i className="pi pi-building" />
+                              <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
+                            </div>
+
+                            <div className="flex items-center">
+                              <i className="pi pi-directions" />
+                              <a
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.facility.address)}`}
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                <div className="ml-2 text-base font-normal text-black">{job.facility.address}</div>
+                              </a>{' '}
+                            </div>
+                          </>
+                        ) : null}
+                        <div className="flex items-center">
+                          <i className="pi pi-map-marker" />
+                          <div className="ml-2 text-base font-normal text-black">
+                            {job.facility.city}, {job.facility.state}, {job.facility.zip}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -311,7 +333,7 @@ export const JobDetailView = () => {
                     <div className="flex items-start gap-2">
                       {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-xs font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
+                        <span className="text-sm font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -321,50 +343,63 @@ export const JobDetailView = () => {
                         <i className="pi pi-calendar-times" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-xs font-medium text-black">
+                        <span className="text-sm font-medium text-black">
                           {job.is_completed === false ? 'Live' : 'Archived'}
                         </span>
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
                       {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
-                      <div className="text-xs font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
+                      <div className="text-sm font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
+                  {/* Arrival Notes */}
+                  {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) &&
+                  job.facility?.notes ? (
+                    <>
+                      <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
+                      <div className="flex flex-wrap gap-4">
+                        <div className="flex items-start gap-2">
+                          <i className="pi pi-info-circle" />
+                          <span className="text-base font-medium text-black">Arrival notes: {job.facility.notes}</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
                   {/* Divider */}
                   <hr className="mt-3 h-px w-full bg-zinc-100" />
                   <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Job Dates</div>
-                      <div className="text-xs font-normal text-black">
+                      <div className="text-sm font-normal text-stone-500">Job Dates</div>
+                      <div className="text-sm font-normal text-black">
                         {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Job Time</div>
-                      <div className="text-xs font-normal text-black">
+                      <div className="text-sm font-normal text-stone-500">Job Time</div>
+                      <div className="text-sm font-normal text-black">
                         {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Lunch Break</div>
-                      <div className="text-xs font-normal text-black">
+                      <div className="text-sm font-normal text-stone-500">Lunch Break</div>
+                      <div className="text-sm font-normal text-black">
                         {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Total Hours per day</div>
-                      <div className="text-xs font-normal text-black">{job.total_hours} hours </div>
+                      <div className="text-sm font-normal text-stone-500">Total Hours per day</div>
+                      <div className="text-sm font-normal text-black">{job.total_hours} hours </div>
                     </div>
                   </div>
                   {/* Job Card Footer */}
                   <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
                     <div className="flex flex-wrap items-center justify-start gap-1">
-                      <div className="text-balance text-xs font-normal text-stone-500">
+                      <div className="text-balance text-sm font-normal text-stone-500">
                         Last update on {new Date(job.createdAt).toLocaleDateString()}
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
-                      <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
+                      <div className="text-sm font-normal text-stone-500">#{job.uid}</div>
                     </div>
                   </div>
                 </Card>
@@ -436,6 +471,11 @@ export const JobDetailView = () => {
                         />
                         <Column header="Total Time" body={rowData => rowData.totalTime || ''} />
                       </DataTable>
+                    </section>
+                  </TabPanel>
+                  <TabPanel header="Facility Images">
+                    <section className="mt-4">
+                      <h2 className="text-base font-semibold leading-6 text-gray-900">Facility Images</h2>
                     </section>
                   </TabPanel>
                 </TabView>
