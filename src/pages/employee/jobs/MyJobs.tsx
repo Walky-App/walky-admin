@@ -8,6 +8,8 @@ import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { JobListItem } from './JobListItem'
 
+const adminRole = process.env.REACT_APP_ADMIN_ROLE
+
 const jobCategoryOptions = [
   { name: 'All Jobs', code: 'all' },
   { name: 'Packager', code: 'Packager' },
@@ -60,7 +62,7 @@ export const EmployeeMyJobs = () => {
               .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
           </ul>
         </TabPanel>
-        {role === '7891' ? (
+        {role === adminRole ? (
           <TabPanel header="Rejected">
             <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
               {jobs
