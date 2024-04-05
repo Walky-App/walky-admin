@@ -10,9 +10,10 @@ import {
 import { Panel } from 'primereact/panel'
 
 import { type IUser } from '../../../../interfaces/User'
+import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
-import { FormDataContext, type StepProps } from '../EmployeeOnboardingPage'
+import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
 import { EmployeeFinishOnboardingDialog } from './EmployeeFinishOnboardingDialog'
 
 export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
@@ -24,12 +25,59 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
   const userId = currentUser?._id
 
-  const handleSaveButton = () => {
+  const updateUserAndIncrementStep = async (step: number) => {
+    let userId = currentUser?._id
+
+    if (userId != null) {
+      try {
+        const userFound = await RequestService(`users/${userId}`)
+
+        if (userFound !== null) {
+          const updatedUser: IUser = {
+            ...userFound,
+            onboarding: {
+              ...userFound.onboarding,
+              step_number: (userFound.onboarding?.step_number ?? 0) + 1,
+              description: steps[2].label,
+            },
+          }
+
+          const response = await RequestService(`users/${userId}`, 'PATCH', updatedUser)
+
+          if (response?._id !== null) {
+            userId = response._id
+
+            setCurrentUser(response)
+          } else {
+            throw new Error('Failed to update user')
+          }
+        } else {
+          throw new Error('User not found')
+        }
+
+        setStep(step + 1)
+      } catch (error) {
+        console.error('Error updating user:', error)
+
+        showToast({
+          severity: 'error',
+          summary: 'Error saving changes',
+          detail: `Information could not be updated.`,
+          life: 2000,
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  }
+
+  const handleSaveButton = async () => {
     setIsLoading(true)
-    setTimeout(() => {
+    setTimeout(async () => {
       // This line is commented out to prevent the page from navigating to the next step
-      // setStep(step + 1)
-      setVisible(true)
+      await updateUserAndIncrementStep(step)
+      // This line is commented out to prevent the dialog from showing
+      // setVisible(true)
       setIsLoading(false)
     }, 500)
   }
