@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -32,12 +32,15 @@ export const Units = () => {
     if (responseLms.length !== 0) {
       setRecord(responseLms)
     }
+    unitsCompleted(response._id, response.category._id)
     setLoading(!loading)
   }
 
   useEffect(() => {
     if (!module) {
       fetchData()
+    } else {
+      unitsCompleted(module._id, module.category._id)
     }
   })
 
@@ -50,27 +53,11 @@ export const Units = () => {
     try {
       const category = record.categories.find(data => data.category == idCategory)
       const module = category?.modules.find(data => data.module == _id)
-      return module?.units.filter(unit => unit.assessments_completed == true).length ?? 0
+      setUnitUnlock(module?.units.filter(unit => unit.assessments_completed == true).length ?? 0)
     } catch (error) {
       return 0
     }
   }
-
-  useMemo(() => {
-    const lockOrder = () => {
-      setUnitUnlock(0)
-      const category = record.categories.find(data => data.category == module?.category._id)
-      const currentModule = category?.modules.find(data => data.module == module?._id)
-
-      currentModule?.units.forEach(unit => {
-        if (unit?.assessments_completed) {
-          setUnitUnlock(unitUnlock + 1)
-        }
-      })
-    }
-
-    lockOrder()
-  }, [record])
 
   return (
     <div>
@@ -117,7 +104,7 @@ export const Units = () => {
                 <CircularProgressBar
                   progressData={{
                     total: module.units?.length || 0,
-                    complete: unitsCompleted(module._id, module.category._id),
+                    complete: unitUnlock,
                   }}
                 />
               ) : null}
@@ -132,15 +119,15 @@ export const Units = () => {
             className={`space-y-6 pb-6 ${index !== (module?.units?.length ?? 0) - 1 && 'border-l-2 border-dashed'} `}>
             <div className="relative w-full">
               <div
-                className={`absolute -top-0.5 -ml-3.5 ${unit.order < unitUnlock ? 'bg-green-500' : unit.order == unitUnlock ? 'bg-white' : ' bg-gray-300'} z-10 flex h-7 w-7 justify-center rounded-full border text-blue-500`}
+                className={`absolute -top-0.5 -ml-3.5 ${index < unitUnlock ? 'bg-green-500' : index == unitUnlock ? 'bg-white' : ' bg-gray-300'} z-10 flex h-7 w-7 justify-center rounded-full border text-blue-500`}
               />
               <button
-                disabled={!(unitUnlock >= unit.order)}
-                className={`ml-6 h-24 max-h-24 min-h-24 ${unitUnlock >= unit.order ? 'cursor-pointer' : ''} text-left`}
+                disabled={!(unitUnlock >= index)}
+                className={`ml-6 h-24 max-h-24 min-h-24 ${unitUnlock >= index ? 'cursor-pointer' : ''} text-left`}
                 onClick={() => handlerUnit(unit)}
                 type="button">
                 <div
-                  className={`flex h-auto flex-row rounded-2xl border border-zinc-100 ${unitUnlock >= unit.order ? 'bg-white ' : ' bg-gray-300'}`}>
+                  className={`flex h-auto flex-row rounded-2xl border border-zinc-100 ${unitUnlock >= index ? 'bg-white ' : ' bg-gray-300'}`}>
                   <div>
                     <div className="m-2 flex flex-1 flex-row gap-3">
                       <div className="flex flex-1 flex-col justify-evenly">
@@ -150,7 +137,7 @@ export const Units = () => {
                     <div className="mx-2 mb-2 h-auto text-xs font-normal text-stone-500">{module?.description}</div>
                   </div>
                   <div className="flex items-center px-2">
-                    {unitUnlock >= unit.order ? (
+                    {unitUnlock >= index ? (
                       <ArrowRightIcon className="h-5 w-5" />
                     ) : (
                       <LockClosedIcon className="h-5 w-5" />
