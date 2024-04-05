@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
 
@@ -7,7 +7,6 @@ import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { InputText } from 'primereact/inputtext'
-import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { useAuth } from '../../../contexts/AuthContext'
@@ -65,8 +64,6 @@ export const AdminHolidays = () => {
       showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting holiday' })
     }
   }
-
-  const toast = useRef<Toast>(null)
 
   const defaultValues = {
     holiday_name: formHoliday?.holiday_name,
@@ -273,7 +270,6 @@ export const AdminHolidays = () => {
           </div>
         </div>
       </div>
-      <Toast ref={toast} />
     </form>
   )
 }
