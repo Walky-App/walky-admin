@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
@@ -9,11 +9,9 @@ import { InputNumber } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
-import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { services } from '../../../../utils/formOptions'
@@ -38,28 +36,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
     setMoreAddressDetails,
   } = useContext(FormDataContext)
 
-  const { setRemoveToastCallback, showToast } = useUtils()
-
-  const handleRemoveToast = useCallback(
-    (toastData: ToastMessage | IToastData) => {
-      let severity
-      if ('message' in toastData) {
-        severity = toastData.message.severity
-      } else {
-        severity = toastData.severity
-      }
-
-      if (severity === 'success') {
-        setIsLoading(false)
-        setStep(step + 1)
-      }
-    },
-    [setStep, step],
-  )
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
+  const { showToast } = useUtils()
 
   const values = formData !== null ? formData : defaultValues
 
@@ -108,7 +85,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
     let facilityId = facilitiesArray[0]?._id
 
     if (facilityId != null) {
-      // Existing facility, PATCH operation
       try {
         const facilityFound = await RequestService(`facilities/${facilityId}`)
 
@@ -124,12 +100,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
           if (response?._id !== null) {
             facilityId = response._id
-
-            showToast({
-              severity: 'success',
-              summary: 'Changes saved for:',
-              detail: getValues('name'),
-            })
 
             setFacilitiesArray(prevArray =>
               prevArray.map(facility => (facility._id === response._id ? response : facility)),
@@ -148,21 +118,16 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           summary: 'Error saving changes',
           detail: `${getValues('name')} could not be updated.`,
         })
+      } finally {
+        setIsLoading(false)
+        setStep(step + 1)
       }
     } else {
-      // New facility, POST operation
       try {
         const response = await RequestService(`facilities`, 'POST', data)
 
         if (response?._id !== null) {
           facilityId = response._id
-
-          showToast({
-            severity: 'success',
-            summary: 'Success',
-            detail: `${getValues('name')} created successfully.`,
-            life: 2000,
-          })
 
           setFacilitiesArray([response])
         } else {
@@ -176,6 +141,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           summary: 'Error adding facility',
           detail: `${getValues('name')} already exists.`,
         })
+      } finally {
+        setIsLoading(false)
+        setStep(step + 1)
       }
     }
   }
