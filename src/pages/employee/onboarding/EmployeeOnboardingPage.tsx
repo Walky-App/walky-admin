@@ -203,7 +203,7 @@ export const EmployeeOnboarding = () => {
           menuitem: { className: 'before:top-full before:sm:top-1/2' },
         }}
       />
-      <div className="mt-10">{onboardingSteps[activeIndex]}</div>
+      <div className="mt-4 sm:mt-10">{onboardingSteps[activeIndex]}</div>
     </FormDataContext.Provider>
   )
 }

@@ -1,7 +1,7 @@
-import { Search } from './Search'
-import { DisableButtonInterface, NavigationButtonInterface, SelectedOptionInterface } from '../../../interfaces/global'
-import { NavigationButton } from './NavigationButton'
+import { type DisableButtonInterface, type NavigationButtonInterface, type SelectedOptionInterface } from '../../../interfaces/global'
 import { DisableButton } from './DisableButton'
+import { NavigationButton } from './NavigationButton'
+import { Search } from './Search'
 import { SelectedOptionWithFilter } from './SelectedOptionWithFilter'
 
 interface Props {
@@ -14,10 +14,10 @@ interface Props {
 
 export const HeaderComponent = ({ title, selectedOptions, search = false, actionButton, disableButton }: Props) => {
   return (
-    <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between mb-10">
+    <div className="mb-4 border-b border-gray-200 pb-5 sm:mb-10 sm:flex sm:items-center sm:justify-between">
       <h3 className="text-base font-semibold leading-6 text-gray-900">{title}</h3>
       <div className="mt-3 sm:ml-4 sm:mt-0">
-        <label className="sr-only" htmlFor="search-header" >
+        <label className="sr-only" htmlFor="search-header">
           Search
         </label>
         <div className="flex rounded-md ">
@@ -42,10 +42,17 @@ export const HeaderComponent = ({ title, selectedOptions, search = false, action
             )
           ) : (
             search && <Search searchQuery="search" />
-          )
-          }
-          {(actionButton && !search && !selectedOptions) ? <NavigationButton disbalePlusIcon={actionButton.disbalePlusIcon} text={actionButton.text} to={actionButton.to} /> : null}
-          {(disableButton && !search && !selectedOptions) ? <DisableButton path={disableButton.path} redirect={disableButton.redirect} status={disableButton.status} /> : null}
+          )}
+          {actionButton && !search && !selectedOptions ? (
+            <NavigationButton
+              disbalePlusIcon={actionButton.disbalePlusIcon}
+              text={actionButton.text}
+              to={actionButton.to}
+            />
+          ) : null}
+          {disableButton && !search && !selectedOptions ? (
+            <DisableButton path={disableButton.path} redirect={disableButton.redirect} status={disableButton.status} />
+          ) : null}
         </div>
       </div>
     </div>
