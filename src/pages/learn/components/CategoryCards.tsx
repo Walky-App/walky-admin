@@ -67,8 +67,13 @@ export const CategoryCards = ({
     }
   }
 
-  const handlerCertification = (category: Category) => {
-    window.open(`/admin/learn/category/${category._id}/certification`, '_blank', 'noreferrer')
+  const handlerCertification = async (category: Category) => {
+    setCategory(category)
+    if (categoryCompleted(category._id)) {
+      navigate(`/admin/learn/category/${category._id}/certification`)
+    } else {
+      navigate(`/learn/category/${category._id}`)
+    }
   }
 
   return (
@@ -80,13 +85,12 @@ export const CategoryCards = ({
               <Card
                 className="cursor-pointer"
                 key={category._id}
-                onClick={() => handlerSetCategory(category)}
                 pt={{
                   body: { className: 'p-0 mb-4 ' },
                   content: { className: 'p-0' },
                 }}>
                 <div className="flex h-auto sm:h-32  ">
-                  <div className="m-3">
+                  <div className="m-3" onClick={() => handlerSetCategory(category)} aria-hidden="true">
                     {category.image ? (
                       <img
                         alt={`Hemp Temp ${category.title} category`}
@@ -97,7 +101,10 @@ export const CategoryCards = ({
                       <div className="h-24 w-24 rounded-xl bg-neutral-200" />
                     )}
                   </div>
-                  <div className="m-3 flex flex-1 flex-col justify-center gap-3">
+                  <div
+                    className="m-3 flex flex-1 flex-col justify-center gap-3"
+                    onClick={() => handlerSetCategory(category)}
+                    aria-hidden="true">
                     <div className="text-xl font-semibold text-black">{category.title}</div>
                     <div className=" h-12 overflow-hidden text-ellipsis text-xs font-normal text-stone-500">
                       {category.description}
@@ -112,7 +119,10 @@ export const CategoryCards = ({
                       </Badge>
                     </div>
                   ) : (
-                    <div className="m-3 flex flex-col items-center gap-y-5 p-3">
+                    <button
+                      className="m-3 flex flex-col items-center gap-y-5 p-3"
+                      onClick={() => handlerCertification(category)}
+                      type="button">
                       <div className="flex items-center justify-start gap-2">
                         <div className="text-right text-xs font-normal text-black">
                           {categoryProgress(category._id) !== 0 && category.modules_number !== 0
@@ -132,15 +142,12 @@ export const CategoryCards = ({
                         </div>
                       </div>
                       {categoryCompleted(category._id) ? (
-                        <button
-                          className="flex items-center text-center text-xs font-normal"
-                          onClick={() => handlerCertification(category)}
-                          type="button">
+                        <div className="flex items-center text-center text-xs font-normal">
                           <ShieldCheckIcon className="h-4 w-4 text-green-600" />
                           <div>Completed</div>
-                        </button>
+                        </div>
                       ) : null}
-                    </div>
+                    </button>
                   )}
                 </div>
               </Card>
