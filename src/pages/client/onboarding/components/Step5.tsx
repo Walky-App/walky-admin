@@ -1,11 +1,10 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import { Skeleton } from 'primereact/skeleton'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
 import { RequestService } from '../../../../services/RequestService'
-import { useUtils } from '../../../../store/useUtils'
 import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { FinishOnboardingDialog } from './FinishOnboardingDialog'
 
@@ -16,73 +15,75 @@ export function joinTruthyStrings(strings: (string | undefined)[], separator: st
 export const Step5 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [documentloading, setDocumentLoading] = useState(true)
   const [documentUrl, setDocumentUrl] = useState('')
 
   const { documentData } = useContext(FormDataContext)
 
-  const { setRemoveToastCallback, showToast } = useUtils()
-
   useEffect(() => {
+    setDocumentLoading(true)
     const documentId = documentData?.id
 
     const getDocumentRecipients = async () => {
       try {
-        const response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
-        if (response.error) {
-          throw response.error
-        } else {
-          setDocumentUrl(response.document_url)
+        if (!documentId) {
+          setDocumentLoading(false)
+          throw 'Document ID is missing'
         }
+
+        const response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
+        if (response.errors) {
+          throw response.errors
+        }
+
+        setDocumentUrl(response.document_url)
+        setDocumentLoading(false)
       } catch (error) {
         console.error('Error fetching document recipients:', error)
+        setDocumentLoading(false)
       }
     }
+
     getDocumentRecipients()
   }, [documentData])
 
-  const handleRemoveToast = useCallback(() => {
-    setIsLoading(false)
-    setVisible(true)
-  }, [setIsLoading, setVisible])
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
-
   const handleSaveButton = () => {
     setIsLoading(true)
+    setVisible(true)
+    setIsLoading(false)
+  }
 
-    showToast({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Changes saved successfully.',
-      life: 2000,
-    })
+  const renderDocument = () => {
+    if (documentloading) {
+      return (
+        <div className="flex h-dvh items-center justify-center">
+          <Skeleton shape="rectangle" size="100%" />
+        </div>
+      )
+    }
+
+    if (documentUrl) {
+      return <GetAcceptIframe documentUrl={documentUrl} className="h-dvh w-full" />
+    }
+
+    return (
+      <div className="flex h-dvh items-center justify-center">
+        <p className="text-gray-500">No document found</p>
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-12">
+    <div className="">
       <FinishOnboardingDialog visible={visible} setVisible={setVisible} />
-
-      {/* Do you have more locations to add?  */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-4">
-        <div className="sm:col-span-1">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Terms and Conditions</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">Please read the terms & conditions of HempTemps.</p>
-        </div>
-
-        <div className="grid max-w-full grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-3">
-          <div className="sm:col-span-5">
+        <div className="grid max-w-full grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-full">
+          <div className="sm:col-start-2 sm:col-end-6">
+            <div className="mb-4">
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Terms and Conditions</h2>
+            </div>
             <ul className="grid-cols-full grid auto-rows-fr gap-x-6 gap-y-8 xl:gap-x-8">
-              <li className="overflow-hidden rounded-xl border border-gray-200">
-                {documentUrl ? (
-                  <GetAcceptIframe documentUrl={documentUrl} className="h-dvh w-full" />
-                ) : (
-                  <div className="flex h-dvh items-center justify-center">
-                    <Skeleton shape="rectangle" size="100%" />
-                  </div>
-                )}
-              </li>
+              <li className="overflow-hidden rounded-xl border border-gray-200">{renderDocument()}</li>
             </ul>
           </div>
         </div>

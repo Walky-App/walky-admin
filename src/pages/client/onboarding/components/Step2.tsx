@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import {
@@ -9,9 +9,7 @@ import {
 } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
-import { type ToastMessage } from 'primereact/toast'
 
-import { type IToastParameters, type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
@@ -24,7 +22,6 @@ import {
 
 export const Step2 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [toastData, setToastData] = useState<IToastParameters | null>(null)
   const [requestLoading, setRequestLoading] = useState(false)
   const { facilitiesArray, setFacilitiesArray, setDocumentData, prevDocRecipient, setPrevDocRecipient } =
     useContext(FormDataContext)
@@ -32,7 +29,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
   const facilityId = facilitiesArray[0]?._id
   const fileUploadRef = useRef<FileUpload>(null)
 
-  const { setRemoveToastCallback, showToast } = useUtils()
+  const { showToast } = useUtils()
 
   useEffect(() => {
     const docRecipient: IGetAcceptRecipient = {
@@ -60,8 +57,8 @@ export const Step2 = ({ step, setStep }: StepProps) => {
         }
         try {
           const response = await RequestService('getaccept', 'POST', body)
-          if (response.error) {
-            throw response.error
+          if (response.errors) {
+            throw response.errors
           } else {
             setDocumentData(response)
           }
@@ -78,42 +75,12 @@ export const Step2 = ({ step, setStep }: StepProps) => {
     }
   }, [facilitiesArray, prevDocRecipient, setDocumentData, setPrevDocRecipient])
 
-  const handleRemoveToast = useCallback(
-    (toastData: ToastMessage | IToastData) => {
-      let severity
-      if ('message' in toastData) {
-        severity = toastData.message.severity
-      } else {
-        severity = toastData.severity
-      }
-
-      if (severity === 'success') {
-        setIsLoading(false)
-        setStep(step + 1)
-      }
-    },
-    [setStep, step],
-  )
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
-
-  useEffect(() => {
-    if (!requestLoading && toastData) {
-      showToast(toastData)
-      setToastData(null)
-    }
-  }, [requestLoading, toastData, showToast])
-
   const handleSaveButton = () => {
     setIsLoading(true)
-    setToastData({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Changes saved successfully.',
-      life: 2000,
-    })
+    if (!requestLoading) {
+      setStep(step + 1)
+      setIsLoading(false)
+    }
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
