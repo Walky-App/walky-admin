@@ -75,9 +75,10 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
   return (
     <>
       <EmployeeFinishOnboardingDialog visible={visible} setVisible={setVisible} />
-      <div className="space-y-12">
+      <div className="space-y-4 sm:space-y-12">
         {/* User Documents */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+          {' '}
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Documents and Certificates</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">

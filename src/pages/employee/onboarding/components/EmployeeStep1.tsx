@@ -46,19 +46,19 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
 
   useEffect(() => {
     if (moreAddressDetails) {
-      if (moreAddressDetails.zip != undefined) {
+      if (moreAddressDetails.zip !== undefined) {
         setValue('zip', moreAddressDetails.zip)
       }
-      if (moreAddressDetails.state != undefined) {
+      if (moreAddressDetails.state !== undefined) {
         setValue('state', moreAddressDetails.state)
       }
-      if (moreAddressDetails.city != undefined) {
+      if (moreAddressDetails.city !== undefined) {
         setValue('city', moreAddressDetails.city)
       }
-      if (moreAddressDetails.address != undefined) {
+      if (moreAddressDetails.address !== undefined) {
         setValue('address', moreAddressDetails.address)
       }
-      if (moreAddressDetails.country != undefined) {
+      if (moreAddressDetails.country !== undefined) {
         setValue('country', moreAddressDetails.country)
       }
 
@@ -113,14 +113,14 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <div className="space-y-12">
+      <div className="space-y-4 sm:space-y-12">
         {/* Contact Information */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+          {' '}
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information.</p>
           </div>
-
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
               <Controller
@@ -267,12 +267,12 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         </div>
 
         {/* Home Address */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+          {' '}
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your address information.</p>
           </div>
-
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-6">
               <Controller
