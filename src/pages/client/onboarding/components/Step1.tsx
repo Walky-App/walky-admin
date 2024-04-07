@@ -177,7 +177,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Tax ID:
+                      * Tax ID:
                     </label>
                     <InputMask
                       id={field.name}
@@ -202,7 +202,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Corporate Name:
+                      * Corporate Name:
                     </label>
                     <InputText
                       id={field.name}
@@ -223,7 +223,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Company DBAs:
+                      * Company DBAs:
                     </label>
                     <InputText
                       id={field.name}
@@ -247,7 +247,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Facility Name:
+                      * Facility Name:
                     </label>
                     <InputText
                       id={field.name}
@@ -268,7 +268,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Facility Phone Number:
+                      * Facility Phone Number:
                     </label>
                     <InputMask
                       id={field.name}
@@ -299,7 +299,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Facility Square Footage:
+                      * Facility Square Footage:
                     </label>
                     <InputNumber
                       id={field.name}
@@ -324,7 +324,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Services:
+                      * Services:
                     </label>
                     <MultiSelect
                       id={field.name}
@@ -385,7 +385,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Street Address:
+                      * Business Address:
                     </label>
                     <AddressAutoComplete
                       controlled
@@ -395,6 +395,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       value={field.value}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
+                    <small>No Residential Addresses allowed</small>
                   </>
                 )}
               />
@@ -420,7 +421,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *First Name:
+                        * First Name:
                       </label>
                       <InputText
                         id={field.name}
@@ -441,7 +442,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Last Name:
+                        * Last Name:
                       </label>
                       <InputText
                         id={field.name}
@@ -462,7 +463,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Role:
+                        * Role:
                       </label>
                       <Dropdown
                         id={field.name}
@@ -490,7 +491,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Phone Number:
+                        * Phone Number:
                       </label>
                       <InputMask
                         id={field.name}
@@ -520,7 +521,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Email:
+                        * Email:
                       </label>
                       <InputText
                         id={field.name}

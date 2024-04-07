@@ -1,30 +1,55 @@
-/* eslint-disable */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Link } from 'react-router-dom'
 
-import { Badge } from 'flowbite-react'
-
-import { BriefcaseIcon, MapPinIcon, CreditCardIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
+import { MapPinIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
 import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outline'
 
-export default function JobListItem({ job }: any) {
-  const [savedJob, setSavedJob] = useState(false)
+import { type IJob } from '../../../interfaces/job'
+import { RequestService } from '../../../services/RequestService'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 
-  const handleSaveJob = () => {
+interface JobListItemProps {
+  job: IJob
+}
+
+export const JobListItem = ({ job }: JobListItemProps) => {
+  const [savedJob, setSavedJob] = useState(false)
+  const { _id } = GetTokenInfo()
+
+  useEffect(() => {
+    const isSaved = job.saved_by.includes(_id)
+    setSavedJob(isSaved)
+  }, [job.saved_by, _id])
+
+  const handleSaveUnsaveClickOptimistic = async () => {
+    const currentSavedState = savedJob
     setSavedJob(!savedJob)
+
+    try {
+      const responseContent = await RequestService(`jobs/${job._id}/${savedJob ? 'unsave' : 'save'}`, 'POST', {
+        user_id: _id,
+      })
+
+      if (!responseContent || responseContent.message.includes('error')) {
+        setSavedJob(currentSavedState)
+        console.error('Failed to change save state:', responseContent.message)
+      }
+    } catch (error) {
+      setSavedJob(currentSavedState)
+      console.error('Error while changing save state:', error)
+    }
   }
 
   let earliestDate, latestDate
 
-  if (job && job.job_dates) {
-    earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date))))
-    latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date))))
+  if (job) {
+    const dateTimes = job.job_dates.map(dateString => new Date(dateString).getTime())
+    ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
   }
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
-      // Handle null input, for example, return a placeholder or an error message
       return 'Time not set'
     }
     const militaryTimeString = militaryTime.toString().padStart(4, '0')
@@ -37,15 +62,17 @@ export default function JobListItem({ job }: any) {
 
   return (
     <li
-      key={job.company_id}
+      key={job._id}
       className="col-span-1 divide-y divide-gray-200 rounded-lg transition delay-150 ease-in-out hover:shadow-2xl">
       {/* Job Card */}
       <div className="flex h-full flex-col items-start justify-center rounded-lg border border-zinc-100 bg-white">
         <Link to={`/employee/jobs/${job._id}`}>
           {/* Job Skills */}
           <div className="mb-3 flex basis-1/3 flex-wrap gap-2 px-5 pt-5">
-            <span className="pi pi-users"></span>
-            <p className="text-xs font-normal text-stone-500">{job.applicants.length} / {job.vacancy} Applicants</p>
+            <span className="pi pi-users" />
+            <p className="text-xs font-normal text-stone-500">
+              {job.applicants.length} / {job.vacancy} Applicants
+            </p>
           </div>
 
           {/* Job Details */}
@@ -99,7 +126,16 @@ export default function JobListItem({ job }: any) {
             <div className="h-1 w-1 rounded-full bg-stone-500" />
             <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
           </div>
-          <div onClick={handleSaveJob} className="flex h-4 cursor-pointer items-center justify-start gap-1">
+          <div
+            onClick={handleSaveUnsaveClickOptimistic}
+            role="button"
+            tabIndex={0}
+            onKeyDown={event => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                handleSaveUnsaveClickOptimistic()
+              }
+            }}
+            className="flex h-4 cursor-pointer items-center justify-start gap-1">
             {savedJob ? (
               <BookmarkIconSolid className="h-5 w-5 text-stone-500" />
             ) : (

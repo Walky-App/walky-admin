@@ -62,7 +62,7 @@ export const JobDetailView = () => {
     getLocation()
 
     return () => {
-      isMounted = false // Prevent state updates after the component has unmounted
+      isMounted = false
     }
   }, [error])
 
@@ -122,7 +122,7 @@ export const JobDetailView = () => {
     }
 
     getJob()
-  }, [id, job?.applicants])
+  }, [id])
 
   const getCurrentJobTimeSheet = useCallback(async () => {
     const { access_token } = GetTokenInfo()
