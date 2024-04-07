@@ -38,6 +38,7 @@ export interface IJob {
   job_tips: string[]
   vacancy: number
   applicants: IApplicant[]
+  saved_by: string[]
   dnr: IDnr[]
   is_completed: boolean
   is_full: boolean
