@@ -147,6 +147,10 @@ export interface FormDataContextProps {
   setSelectedFacility: Dispatch<SetStateAction<IFacilityFormInputs | undefined>>
   documentData: IGetAcceptDocumentDetails | null
   setDocumentData: Dispatch<SetStateAction<IGetAcceptDocumentDetails | null>>
+  documentUrl: string
+  setDocumentUrl: Dispatch<SetStateAction<string>>
+  documentLoading?: boolean
+  setDocumentLoading?: Dispatch<SetStateAction<boolean>>
   prevDocRecipient: IGetAcceptRecipient | null
   setPrevDocRecipient: Dispatch<SetStateAction<IGetAcceptRecipient | null>>
   moreAddressDetails: IAddressAutoComplete | undefined
@@ -171,9 +175,17 @@ export const FormDataContext = createContext<FormDataContextProps>({
   setSelectedFacility: () => {
     throw new Error('setSelectedFacility function must be overridden in FormDataContext')
   },
+  documentUrl: '',
+  setDocumentUrl: () => {
+    throw new Error('setDocumentUrl function must be overridden in FormDataContext')
+  },
   documentData: null,
   setDocumentData: () => {
     throw new Error('setDocumentId function must be overridden in FormDataContext')
+  },
+  documentLoading: true,
+  setDocumentLoading: () => {
+    throw new Error('setDocumentLoading function must be overridden in FormDataContext')
   },
   prevDocRecipient: null,
   setPrevDocRecipient: () => {
@@ -236,6 +248,8 @@ export const ClientOnboarding = () => {
   const [selectedFacility, setSelectedFacility] = useState<IFacilityFormInputs | undefined>()
   const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
   const [documentData, setDocumentData] = useState<IGetAcceptDocumentDetails | null>(null)
+  const [documentUrl, setDocumentUrl] = useState('')
+  const [documentLoading, setDocumentLoading] = useState(true)
   const [prevDocRecipient, setPrevDocRecipient] = useState<IGetAcceptRecipient | null>(null)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
@@ -269,6 +283,89 @@ export const ClientOnboarding = () => {
     }
     getUserDetails()
   }, [])
+
+  useEffect(() => {
+    if (activeIndex === 1 && facilitiesArray.length !== 0) {
+      const docRecipient: IGetAcceptRecipient = {
+        email: facilitiesArray[0]?.contacts[0].email,
+        first_name: facilitiesArray[0]?.contacts[0].first_name,
+        last_name: facilitiesArray[0]?.contacts[0].last_name,
+        company_name: facilitiesArray[0]?.corp_name,
+        company_number: facilitiesArray[0]?.phone_number,
+        mobile: facilitiesArray[0]?.contacts[0].phone_number,
+      }
+
+      if (JSON.stringify(docRecipient) !== JSON.stringify(prevDocRecipient)) {
+        setDocumentData(null)
+        setDocumentUrl('')
+        const sendDocumentFromTemplate = async () => {
+          const body = {
+            name: 'HempTemps Client Agreement',
+            type: 'sales',
+            template_id: 'ke36vcj367m3',
+            email: docRecipient.email,
+            first_name: docRecipient.first_name,
+            last_name: docRecipient.last_name,
+            company_name: docRecipient.company_name,
+            company_number: docRecipient.company_number,
+            mobile: docRecipient.mobile,
+          }
+          try {
+            const response = await RequestService('getaccept', 'POST', body)
+            if (response.errors) {
+              throw response.errors
+            } else {
+              setDocumentData(response)
+            }
+          } catch (error) {
+            console.error('Error sending document:', error)
+          }
+        }
+
+        sendDocumentFromTemplate()
+
+        setPrevDocRecipient(docRecipient)
+      }
+    }
+  }, [activeIndex, facilitiesArray, prevDocRecipient, setDocumentData, setPrevDocRecipient])
+
+  useEffect(() => {
+    setDocumentLoading(true)
+    if (activeIndex === 4 && documentData?.id) {
+      const documentId = documentData?.id
+
+      const getDocumentRecipients = async () => {
+        try {
+          if (!documentId) {
+            setDocumentLoading(false)
+            throw new Error('Document ID is missing')
+          }
+
+          let response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
+          if (response.errors) {
+            throw response.errors
+          }
+
+          while (!response.document_url) {
+            await new Promise(resolve => setTimeout(resolve, 3000))
+
+            response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
+            if (response.errors) {
+              throw response.errors
+            }
+          }
+
+          setDocumentUrl(response.document_url)
+          setDocumentLoading(false)
+        } catch (error) {
+          console.error('Error fetching document recipients:', error)
+          setDocumentLoading(false)
+        }
+      }
+
+      getDocumentRecipients()
+    }
+  }, [activeIndex, documentData, setDocumentUrl])
 
   const steps: MenuItem[] = [
     {
@@ -313,6 +410,10 @@ export const ClientOnboarding = () => {
         setSelectedFacility,
         documentData,
         setDocumentData,
+        documentUrl,
+        setDocumentUrl,
+        documentLoading,
+        setDocumentLoading,
         prevDocRecipient,
         setPrevDocRecipient,
         moreAddressDetails,
@@ -329,7 +430,7 @@ export const ClientOnboarding = () => {
           menuitem: { className: 'before:top-full before:sm:top-1/2' },
         }}
       />
-      <div className="mt-4 sm:mt-10">{onboardingSteps[activeIndex]}</div>
+      <div className="mt-4">{onboardingSteps[activeIndex]}</div>
     </FormDataContext.Provider>
   )
 }

@@ -104,6 +104,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
             setFacilitiesArray(prevArray =>
               prevArray.map(facility => (facility._id === response._id ? response : facility)),
             )
+            setTimeout(() => {
+              setStep(step + 1)
+            }, 1000)
           } else {
             throw new Error('Failed to update facility')
           }
@@ -118,9 +121,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           summary: 'Error saving changes',
           detail: `${getValues('name')} could not be updated.`,
         })
-      } finally {
         setIsLoading(false)
-        setStep(step + 1)
       }
     } else {
       try {
@@ -130,6 +131,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           facilityId = response._id
 
           setFacilitiesArray([response])
+          setTimeout(() => {
+            setStep(step + 1)
+          }, 1000)
         } else {
           throw new Error('Failed to add facility')
         }
@@ -141,18 +145,16 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           summary: 'Error adding facility',
           detail: `${getValues('name')} already exists.`,
         })
-      } finally {
         setIsLoading(false)
-        setStep(step + 1)
       }
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <div className="space-y-12">
+      <div className="space-y-4 sm:space-y-12">
         {/* Business Information */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
@@ -368,7 +370,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         </div>
 
         {/* Business Location */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your business address information.</p>
@@ -402,7 +404,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         </div>
 
         {/* Contact Information */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Contact Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information below.</p>

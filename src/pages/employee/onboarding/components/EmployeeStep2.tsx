@@ -31,7 +31,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
       // setStep(step + 1)
       setVisible(true)
       setIsLoading(false)
-    }, 500)
+    }, 1000)
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {

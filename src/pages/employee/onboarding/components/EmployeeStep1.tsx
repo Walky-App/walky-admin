@@ -95,7 +95,9 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           throw new Error('User not found')
         }
 
-        setStep(step + 1)
+        setTimeout(() => {
+          setStep(step + 1)
+        }, 1000)
       } catch (error) {
         console.error('Error updating user:', error)
 
@@ -105,7 +107,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           detail: `${getValues('first_name')} could not be updated.`,
           life: 2000,
         })
-      } finally {
         setIsLoading(false)
       }
     }
