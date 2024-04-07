@@ -1,10 +1,9 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import { Skeleton } from 'primereact/skeleton'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
-import { RequestService } from '../../../../services/RequestService'
 import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { FinishOnboardingDialog } from './FinishOnboardingDialog'
 
@@ -15,37 +14,8 @@ export function joinTruthyStrings(strings: (string | undefined)[], separator: st
 export const Step5 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [documentloading, setDocumentLoading] = useState(true)
-  const [documentUrl, setDocumentUrl] = useState('')
 
-  const { documentData } = useContext(FormDataContext)
-
-  useEffect(() => {
-    setDocumentLoading(true)
-    const documentId = documentData?.id
-
-    const getDocumentRecipients = async () => {
-      try {
-        if (!documentId) {
-          setDocumentLoading(false)
-          throw 'Document ID is missing'
-        }
-
-        const response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
-        if (response.errors) {
-          throw response.errors
-        }
-
-        setDocumentUrl(response.document_url)
-        setDocumentLoading(false)
-      } catch (error) {
-        console.error('Error fetching document recipients:', error)
-        setDocumentLoading(false)
-      }
-    }
-
-    getDocumentRecipients()
-  }, [documentData])
+  const { documentUrl, documentLoading } = useContext(FormDataContext)
 
   const handleSaveButton = () => {
     setIsLoading(true)
@@ -54,7 +24,7 @@ export const Step5 = ({ step, setStep }: StepProps) => {
   }
 
   const renderDocument = () => {
-    if (documentloading) {
+    if (documentLoading) {
       return (
         <div className="flex h-dvh items-center justify-center">
           <Skeleton shape="rectangle" size="100%" />
@@ -74,7 +44,7 @@ export const Step5 = ({ step, setStep }: StepProps) => {
   }
 
   return (
-    <div className="">
+    <>
       <FinishOnboardingDialog visible={visible} setVisible={setVisible} />
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-4">
         <div className="grid max-w-full grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-full">
@@ -90,8 +60,8 @@ export const Step5 = ({ step, setStep }: StepProps) => {
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
-        <Button label="Finish" onClick={handleSaveButton} loading={isLoading} />
+        <Button label="Finish" onClick={handleSaveButton} loading={isLoading} disabled={documentLoading} />
       </div>
-    </div>
+    </>
   )
 }

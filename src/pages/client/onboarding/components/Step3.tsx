@@ -15,17 +15,23 @@ function joinTruthyStrings(strings: (string | undefined)[], separator: string): 
 
 export const Step3 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { facilitiesArray, defaultValues, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
 
   const handleSaveButton = () => {
-    setStep(step + 1)
+    setIsLoading(true)
+
+    setTimeout(() => {
+      setStep(step + 1)
+    }, 1000)
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-4 sm:space-y-12">
       <AddFacilityDialog visible={visible} setVisible={setVisible} values={selectedFacility || defaultValues} />
-      <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+        {' '}
         <div>
           <h2 className="text-base font-semibold leading-7 text-gray-900">Do you have more locations to add?</h2>
           <p className="mt-1 text-sm leading-6 text-gray-600">
@@ -88,7 +94,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
                   <div className="flex justify-between gap-x-4 py-3">
                     <dt className="text-gray-500">Address</dt>
                     <dd className="flex items-start gap-x-2">
-                      <div className="font-medium text-gray-900">{facility.address}</div>
+                      <div className="text-balance text-end font-medium text-gray-900">{facility.address}</div>
                     </dd>
                   </div>
                   <div className="flex justify-between gap-x-4 py-3">
@@ -127,7 +133,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
-        <Button label="Save" onClick={handleSaveButton} />
+        <Button label="Save" onClick={handleSaveButton} loading={isLoading} />
       </div>
     </div>
   )
