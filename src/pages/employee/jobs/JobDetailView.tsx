@@ -450,11 +450,13 @@ export const JobDetailView = () => {
                     </ul>
                   </div>
                   {job?.facility.location_pin[0] && job?.facility.location_pin[1] ? (
-                    <div className="mt-2">
-                      <GoogleMapComponent
-                        locationPin={job.facility.location_pin}
-                        containerStyle={{ width: '380px', height: '380px' }}
-                      />
+                    <div className="col-span-1 mt-2 h-64 md:col-span-1">
+                      <div className="flex h-full flex-row md:flex-col">
+                        <GoogleMapComponent
+                          locationPin={job.facility.location_pin}
+                          containerStyle={{ width: '100%', height: '100%' }}
+                        />
+                      </div>
                     </div>
                   ) : null}
                 </div>
