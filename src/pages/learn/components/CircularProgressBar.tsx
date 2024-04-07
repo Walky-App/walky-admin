@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 interface ProgressData {
   progressData: {
@@ -7,17 +7,15 @@ interface ProgressData {
   }
 }
 
-
 // #TODO changed to primereact progressbar
 export const CircularProgressBar = ({ progressData }: ProgressData) => {
-  const [currentSkill] = useState(progressData)
-  const percent = Math.floor((currentSkill.complete / currentSkill.total) * 100)
+  const percent = Math.floor((progressData.complete / progressData.total) * 100)
 
   const circumference = 2 * (22 / 7) * 30
   const offset = circumference - (percent / 100) * circumference
 
   useEffect(() => {
-    const svgText: any = document.getElementById('svgText') as HTMLElement
+    const svgText = document.getElementById('svgText') as unknown as SVGTextElement
     const textBounding = svgText?.getBBox()
     const textWidth = textBounding?.width || 0
 
@@ -25,10 +23,10 @@ export const CircularProgressBar = ({ progressData }: ProgressData) => {
     if (svgText) {
       svgText.style.strokeDashoffset = `${adjustedOffset}px`
     }
-  }, [percent, offset])
+  }, [percent, offset, circumference])
 
   return (
-    <svg className="transform w-24 h-full">
+    <svg className="h-full w-24 transform">
       <circle
         className="text-gray-300"
         cx="48"
@@ -50,15 +48,8 @@ export const CircularProgressBar = ({ progressData }: ProgressData) => {
         strokeWidth="5"
         transform="rotate(-90 48 48)"
       />
-      <text
-        fill="black"
-        fontSize="0.75em"
-        id="svgText"
-        textAnchor="middle"
-        x="48"
-        y="52"
-      >
-        {`${currentSkill.complete} / ${currentSkill.total}`}
+      <text fill="black" fontSize="0.75em" id="svgText" textAnchor="middle" x="48" y="52">
+        {`${progressData.complete} / ${progressData.total}`}
       </text>
     </svg>
   )
