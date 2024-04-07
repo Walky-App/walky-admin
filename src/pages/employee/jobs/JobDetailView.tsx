@@ -36,7 +36,7 @@ export const JobDetailView = () => {
   const [error, setError] = useState<string>()
 
   useEffect(() => {
-    let isMounted = true // This flag is used to prevent state updates after unmount
+    let isMounted = true
 
     const getLocation = () => {
       if (!navigator.geolocation) {
@@ -264,7 +264,7 @@ export const JobDetailView = () => {
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
-      <HeaderComponent title="Job Detail" />
+      <HeaderComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         {job ? (
           <>
@@ -361,7 +361,9 @@ export const JobDetailView = () => {
                     <div className="flex flex-wrap gap-4">
                       <div className="flex items-start gap-2">
                         <i className="pi pi-info-circle" />
-                        <span className="text-base font-medium text-black">Arrival notes: {job.facility.notes}</span>
+                        <span className="text-base font-medium text-black">
+                          Arrival notes: <span className="font-normal">{job.facility.notes}</span>
+                        </span>{' '}
                       </div>
                     </div>
                   </>
