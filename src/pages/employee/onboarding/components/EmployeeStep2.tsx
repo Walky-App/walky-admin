@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import {
@@ -8,10 +8,8 @@ import {
   type FileUploadUploadEvent,
 } from 'primereact/fileupload'
 import { Panel } from 'primereact/panel'
-import { type ToastMessage } from 'primereact/toast'
 
 import { type IUser } from '../../../../interfaces/User'
-import { type IToastData } from '../../../../interfaces/global'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { FormDataContext, type StepProps } from '../EmployeeOnboardingPage'
@@ -19,46 +17,21 @@ import { EmployeeFinishOnboardingDialog } from './EmployeeFinishOnboardingDialog
 
 export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
-
   const [isLoading, setIsLoading] = useState(false)
   const { currentUser, setCurrentUser } = useContext(FormDataContext)
+  const fileUploadRef = useRef<FileUpload>(null)
+  const { showToast } = useUtils()
 
   const userId = currentUser?._id
 
-  const fileUploadRef = useRef<FileUpload>(null)
-
-  const { setRemoveToastCallback, showToast } = useUtils()
-
-  const handleRemoveToast = useCallback((toastData: ToastMessage | IToastData) => {
-    let severity
-    if ('message' in toastData) {
-      severity = toastData.message.severity
-    } else {
-      severity = toastData.severity
-    }
-
-    if (severity === 'success') {
-      setIsLoading(false)
-
-      setVisible(true)
-
-      // This line is commented out to prevent the page from navigating to the next step
-      // setStep(step + 1)
-    }
-  }, [])
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
-
   const handleSaveButton = () => {
     setIsLoading(true)
-    showToast({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Changes saved successfully.',
-      life: 2000,
-    })
+    setTimeout(() => {
+      // This line is commented out to prevent the page from navigating to the next step
+      // setStep(step + 1)
+      setVisible(true)
+      setIsLoading(false)
+    }, 1000)
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -102,9 +75,9 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
   return (
     <>
       <EmployeeFinishOnboardingDialog visible={visible} setVisible={setVisible} />
-      <div className="space-y-12">
+      <div className="space-y-4 sm:space-y-12">
         {/* User Documents */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Documents and Certificates</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">

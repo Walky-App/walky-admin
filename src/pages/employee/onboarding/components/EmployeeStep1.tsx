@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
 
@@ -6,11 +6,9 @@ import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
-import { type ToastMessage } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { type IToastData } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import {
@@ -34,28 +32,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
     setMoreAddressDetails,
   } = useContext(FormDataContext)
 
-  const { setRemoveToastCallback, showToast } = useUtils()
-
-  const handleRemoveToast = useCallback(
-    (toastData: ToastMessage | IToastData) => {
-      let severity
-      if ('message' in toastData) {
-        severity = toastData.message.severity
-      } else {
-        severity = toastData.severity
-      }
-
-      if (severity === 'success') {
-        setIsLoading(false)
-        setStep(step + 1)
-      }
-    },
-    [setStep, step],
-  )
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
+  const { showToast } = useUtils()
 
   const values = formData !== null ? formData : defaultValues
 
@@ -69,22 +46,19 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
 
   useEffect(() => {
     if (moreAddressDetails) {
-      if (moreAddressDetails.zip) {
+      if (moreAddressDetails.zip !== undefined) {
         setValue('zip', moreAddressDetails.zip)
       }
-      if (moreAddressDetails.state) {
+      if (moreAddressDetails.state !== undefined) {
         setValue('state', moreAddressDetails.state)
       }
-      if (moreAddressDetails.city) {
+      if (moreAddressDetails.city !== undefined) {
         setValue('city', moreAddressDetails.city)
       }
-      // if (moreAddressDetails.location_pin) {
-      //   setValue('location_pin', moreAddressDetails.location_pin)
-      // }
-      if (moreAddressDetails.address) {
+      if (moreAddressDetails.address !== undefined) {
         setValue('address', moreAddressDetails.address)
       }
-      if (moreAddressDetails.country) {
+      if (moreAddressDetails.country !== undefined) {
         setValue('country', moreAddressDetails.country)
       }
 
@@ -113,12 +87,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           if (response?._id !== null) {
             userId = response._id
 
-            showToast({
-              severity: 'success',
-              summary: 'Changes saved for:',
-              detail: getValues('first_name') + ' ' + getValues('last_name'),
-            })
-
             setCurrentUser(response)
           } else {
             throw new Error('Failed to update user')
@@ -126,6 +94,10 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         } else {
           throw new Error('User not found')
         }
+
+        setTimeout(() => {
+          setStep(step + 1)
+        }, 1000)
       } catch (error) {
         console.error('Error updating user:', error)
 
@@ -133,21 +105,22 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           severity: 'error',
           summary: 'Error saving changes',
           detail: `${getValues('first_name')} could not be updated.`,
+          life: 2000,
         })
+        setIsLoading(false)
       }
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <div className="space-y-12">
+      <div className="space-y-4 sm:space-y-12">
         {/* Contact Information */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information.</p>
           </div>
-
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
               <Controller
@@ -294,12 +267,11 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         </div>
 
         {/* Home Address */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your address information.</p>
           </div>
-
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-6">
               <Controller

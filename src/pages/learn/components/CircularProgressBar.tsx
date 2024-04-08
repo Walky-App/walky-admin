@@ -23,7 +23,7 @@ export const CircularProgressBar = ({ progressData }: ProgressData) => {
     if (svgText) {
       svgText.style.strokeDashoffset = `${adjustedOffset}px`
     }
-  }, [percent, offset])
+  }, [percent, offset, circumference])
 
   return (
     <svg className="h-full w-24 transform">
