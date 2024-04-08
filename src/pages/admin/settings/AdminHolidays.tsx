@@ -233,7 +233,7 @@ export const AdminHolidays = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-1">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
           <div>
             <h1 className="text-xl font-bold leading-7 text-gray-900">Holidays Table</h1>
             <DataTable

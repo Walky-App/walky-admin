@@ -47,7 +47,6 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 /** Admin Pages */
 import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
-import { AdminHolidays } from './pages/admin/profile/AdminHolidays'
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import AdminUsers from './pages/admin/users'
@@ -81,6 +80,8 @@ import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 import { Certification } from './pages/admin/HTU/components/Certification'
 
 import AdminJobs from './pages/admin/jobs'
+
+import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
