@@ -294,7 +294,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
               <Controller
                 control={control}
                 name="phone_number"
-                rules={{ required: 'Mobile Number is required' }}
+                rules={{ required: 'Phone Number is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
@@ -511,7 +511,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   control={control}
                   name={`contacts.${index}.phone_number`}
                   rules={{
-                    required: 'Mobile Number is required',
+                    required: 'Phone Number is required',
                     pattern: {
                       value: /^\(\d{3}\) \d{3}-\d{4}$/,
                       message: 'Invalid Mobile Number. E.g. (123) 456-7890',
