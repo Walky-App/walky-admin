@@ -14,7 +14,6 @@ import {
   RecentActivityTable,
   RecentInfoCards,
 } from '../../../components/shared/dashboard'
-import { MessagesTable } from '../../../components/shared/dashboard/MessagesTable'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 
@@ -38,7 +37,7 @@ interface ICounts {
 }
 
 export const AdminDashboard = () => {
-  const [counts, setCounts] = useState<ICounts | null>()
+  const [counts, setCounts] = useState<ICounts>()
   const [facilities, setFacilities] = useState<IFacility[]>([])
 
   const navigate = useNavigate()
@@ -46,7 +45,7 @@ export const AdminDashboard = () => {
   useEffect(() => {
     const getCounts = async () => {
       try {
-        const response = await RequestService('/dashboard')
+        const response = await RequestService('dashboard')
         setCounts({
           facilities: response.facilities,
           jobs: response.jobs,
@@ -61,7 +60,7 @@ export const AdminDashboard = () => {
 
     const get3Facilities = async () => {
       try {
-        const response = await RequestService('/dashboard/facilities')
+        const response = await RequestService('dashboard/facilities')
         setFacilities(response)
       } catch (error) {
         console.error('error', error)
@@ -149,10 +148,6 @@ export const AdminDashboard = () => {
             </div>
           </div>
 
-          <h2 className="mx-auto mt-8 max-w-6xl px-4 text-lg font-medium leading-6 text-gray-900 sm:px-6 lg:px-8">
-            Messages
-          </h2>
-          <MessagesTable transactions={transactionsData} />
           <h2 className="mx-auto mt-8 max-w-6xl px-4 text-lg font-medium leading-6 text-gray-900 sm:px-6 lg:px-8">
             Recent activity
           </h2>

@@ -44,7 +44,7 @@ export const AdminHolidays = () => {
   useEffect(() => {
     const getHolidays = async () => {
       try {
-        const response = await RequestService('/holidays', 'GET')
+        const response = await RequestService('holidays', 'GET')
         setHolidays(response)
       } catch (error) {
         console.error('error fetching holidays', error)
@@ -112,10 +112,10 @@ export const AdminHolidays = () => {
       let response: IHoliday
       if (selectedHoliday) {
         const updatedData = { ...data, updated_by: user?.email || '' }
-        response = await RequestService(`/holidays/${selectedHoliday._id}`, 'PATCH', updatedData)
+        response = await RequestService(`holidays/${selectedHoliday._id}`, 'PATCH', updatedData)
       } else {
         const newData = { ...data, created_by: user?.email || '' }
-        response = await RequestService('/holidays', 'POST', newData)
+        response = await RequestService('holidays', 'POST', newData)
       }
       if (response) {
         setFormHoliday({

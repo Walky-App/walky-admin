@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
-/* eslint-disable */
 import { useEffect, useState } from 'react'
 
 import { set } from 'react-hook-form'
@@ -44,7 +42,7 @@ export const MessagesTable: React.FC<Props> = ({ transactions }) => {
   const [messages, setMessages] = useState<IMessage[] | null>([])
   useEffect(() => {
     const getAllMessages = async () => {
-      const allMessages = await RequestService('/messages')
+      const allMessages = await RequestService('messages')
       setProducts(allMessages)
     }
 
@@ -73,7 +71,7 @@ export const MessagesTable: React.FC<Props> = ({ transactions }) => {
     })
 
     newSocket.on('disconnect', () => {
-      console.log('disconnect socket')
+      // console.log('disconnected')
     })
 
     setSocket(newSocket)
