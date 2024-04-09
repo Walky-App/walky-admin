@@ -55,7 +55,7 @@ export const AdminHolidays = () => {
 
   const deleteHoliday = async (holiday: IHoliday) => {
     try {
-      await RequestService(`/holidays/${holiday._id}`, 'DELETE')
+      await RequestService(`holidays/${holiday._id}`, 'DELETE')
       setHolidays(holidays.filter(existingHoliday => existingHoliday._id !== holiday._id))
 
       showToast({ severity: 'success', summary: 'Success', detail: 'Holiday deleted successfully' })
@@ -233,7 +233,7 @@ export const AdminHolidays = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-1">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
           <div>
             <h1 className="text-xl font-bold leading-7 text-gray-900">Holidays Table</h1>
             <DataTable

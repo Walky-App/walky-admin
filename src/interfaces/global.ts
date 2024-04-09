@@ -39,9 +39,10 @@ export interface FilterInterface {
   selected: string
 }
 
-export interface IToastParameters extends ToastMessageOptions {
-  position?: ToastProps['position']
-}
+export type IToastParameters = ToastMessageOptions &
+  ToastMessage & {
+    position?: ToastProps['position']
+  }
 
 export interface IToastData extends ToastMessage {
   message: ToastMessage

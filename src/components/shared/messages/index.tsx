@@ -95,7 +95,7 @@ export const Messages = () => {
       }
     }
     getMessages()
-  }, [])
+  }, [roleType])
 
   const handleMessageRecepients = () => {
     if (roleType === 'admin') {

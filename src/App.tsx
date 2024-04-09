@@ -43,7 +43,6 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 /******************************************* Admin Pages ************************************/
 import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
-import { AdminHolidays } from './pages/admin/profile/AdminHolidays'
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import AdminUsers from './pages/admin/users'
@@ -81,6 +80,9 @@ import AdminJobs from './pages/admin/jobs'
 import { AdminMessages } from './pages/admin/messages'
 
 /******************************************* Employee Pages ************************************/
+import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
+
+/** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
 import { EmployeeJobs } from './pages/employee/jobs'
