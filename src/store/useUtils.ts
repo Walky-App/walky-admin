@@ -12,6 +12,8 @@ interface State {
   toastPosition: ToastProps['position']
   setToast: (ref: MutableRefObject<Toast | null>) => void
   showToast: (options: IToastParameters) => void
+  removeToast: (toastData: ToastMessage) => void
+  clearAllMessagesFromToast: () => void
   onRemoveToast: ToastCallback
   setRemoveToastCallback: (callback: ToastCallback) => void
   removeToastCallback?: ToastCallback
@@ -25,6 +27,18 @@ export const useUtils = create<State>(set => ({
     set(state => {
       state.toastPosition = position
       state.toast.current?.show(options)
+      return state
+    })
+  },
+  removeToast: (toastData: ToastMessage) => {
+    set(state => {
+      state.toast.current?.remove(toastData)
+      return state
+    })
+  },
+  clearAllMessagesFromToast: () => {
+    set(state => {
+      state.toast.current?.clear()
       return state
     })
   },

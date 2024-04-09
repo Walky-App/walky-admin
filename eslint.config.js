@@ -72,6 +72,7 @@ export default tseslint.config(
       'react/jsx-fragments': ['error', 'syntax'],
       'react/destructuring-assignment': ['error', 'always', { destructureInSignature: 'always' }],
       'react/jsx-no-leaked-render': ['error', { validStrategies: ['ternary'] }],
+      'react-hooks/exhaustive-deps': 'error',
       'react/function-component-definition': ['warn', { namedComponents: 'arrow-function' }],
       'react/jsx-key': [
         'error',
