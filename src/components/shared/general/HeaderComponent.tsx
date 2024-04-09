@@ -1,4 +1,8 @@
-import { type DisableButtonInterface, type NavigationButtonInterface, type SelectedOptionInterface } from '../../../interfaces/global'
+import {
+  type DisableButtonInterface,
+  type NavigationButtonInterface,
+  type SelectedOptionInterface,
+} from '../../../interfaces/global'
 import { DisableButton } from './DisableButton'
 import { NavigationButton } from './NavigationButton'
 import { Search } from './Search'
