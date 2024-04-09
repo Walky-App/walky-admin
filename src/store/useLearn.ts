@@ -6,6 +6,8 @@ interface State {
   record: ProgressHTU
   setRecord: (data: ProgressHTU) => void
   getUnitsIdCompleted: (_id: string) => string[]
+  expireTime: boolean
+  setExpireTime: (valid: boolean) => void
 }
 
 export const useLearn = create<State>((set, get) => ({
@@ -27,6 +29,8 @@ export const useLearn = create<State>((set, get) => ({
       },
     ],
   },
+  expireTime: false,
+  setExpireTime: valid => set({ expireTime: valid }),
 
   setRecord: data => set({ record: data }),
   getUnitsIdCompleted: _id => {

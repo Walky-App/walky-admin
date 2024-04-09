@@ -10,6 +10,7 @@ import { useAdmin } from '../../../contexts/AdminContext'
 import type { IAssessmentResponse } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
 import { useLearn } from '../../../store/useLearn'
+import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
 import { Timer } from '../components/Timer'
 import { AssessmentResponse } from './AssessmentResponse'
@@ -36,20 +37,34 @@ export const Assessment = () => {
     percentagea_assessment: 0,
   })
 
-  const { setRecord } = useLearn()
-
-  const fetchData = async () => {
-    const response = await RequestService(`units/${params.unitId}`)
-    if (response) {
-      setUnit(response)
-    }
-  }
+  const { setRecord, expireTime, setExpireTime } = useLearn()
+  const { showToast } = useUtils()
 
   useEffect(() => {
+    const fetchData = async () => {
+      const response = await RequestService(`units/${params.unitId}`)
+      if (response) {
+        setUnit(response)
+      }
+    }
     if (!unit) {
       fetchData()
     }
-  })
+    const sendDataAssessment = async () => {
+      const response = await RequestService(`units/assessment/validator`, 'POST', {
+        userAnswers: assessmentArray,
+        unitId: params.unitId,
+      })
+      setRecord(response.AssessmentRecord)
+      setValidatorResponse(response.reponseAssessment)
+      setFinishAssessment(true)
+      showToast({ severity: 'error', detail: 'Assessment sent due to time expiration', summary: 'Information' })
+    }
+    if (expireTime) {
+      sendDataAssessment()
+      setExpireTime(false)
+    }
+  }, [expireTime, unit, params.unitId, setUnit, assessmentArray, setRecord, setExpireTime, showToast])
 
   const handlerControllerQuestion = () => {
     if (indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1) {
