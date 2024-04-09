@@ -30,7 +30,7 @@ export const useLearn = create<State>((set, get) => ({
     ],
   },
   expireTime: false,
-  setExpireTime: valide => set({ expireTime: valide }),
+  setExpireTime: valid => set({ expireTime: valid }),
 
   setRecord: data => set({ record: data }),
   getUnitsIdCompleted: _id => {
