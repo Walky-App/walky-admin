@@ -3,9 +3,9 @@ import { type ProgressHTU } from './htu'
 
 export interface IOnboardingStep {
   step_number: number
-  completed: boolean
   description: string
   type: string
+  completed: boolean
 }
 
 export interface IUserDocument {
@@ -26,6 +26,9 @@ export interface IUser {
   state: string
   updated_at: string
   verified: boolean
+  isOnboarded: boolean
+  onboarding: IOnboardingStep
+  job_preferences: string[]
   address?: string
   avatar?: string
   birth_date?: Date
@@ -40,6 +43,4 @@ export interface IUser {
   zip?: string
   documents?: IUserDocument[]
   student_record?: ProgressHTU
-  isOnboarded?: boolean
-  onboarding?: IOnboardingStep
 }

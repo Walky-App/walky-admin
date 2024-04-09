@@ -70,16 +70,17 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
 
     if (userId != null) {
       try {
-        const userFound = await RequestService(`users/${userId}`)
+        const userFound: IUser = await RequestService(`users/${userId}`)
 
         if (userFound !== null) {
           const updatedUser: IUser = {
             ...userFound,
             ...data,
             onboarding: {
-              ...userFound.onboarding,
-              step_number: (userFound.onboarding?.step_number ?? 0) + 1,
-              description: steps[1].label,
+              step_number: 1,
+              description: steps[0].label ?? '',
+              type: data.onboarding?.type,
+              completed: data.onboarding?.completed,
             },
           }
 
@@ -120,8 +121,8 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <div className="space-y-12">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="p-fluid space-y-12">
         {/* Contact Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
@@ -272,7 +273,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
             </div>
           </div>
         </div>
-
         {/* Home Address */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
@@ -309,9 +309,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
-        <div>
-          <Button type="submit" label="Submit" loading={isLoading} />
-        </div>
+        <Button type="submit" label="Submit" loading={isLoading} />
       </div>
     </form>
   )
