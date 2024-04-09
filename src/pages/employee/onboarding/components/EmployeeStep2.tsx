@@ -14,10 +14,8 @@ import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
-import { EmployeeFinishOnboardingDialog } from './EmployeeFinishOnboardingDialog'
 
 export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
-  const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
   const { currentUser, setCurrentUser } = useContext(FormDataContext)
   const fileUploadRef = useRef<FileUpload>(null)
@@ -30,15 +28,15 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
     if (userId != null) {
       try {
-        const userFound = await RequestService(`users/${userId}`)
+        const userFound: IUser = await RequestService(`users/${userId}`)
 
         if (userFound !== null) {
           const updatedUser: IUser = {
             ...userFound,
             onboarding: {
               ...userFound.onboarding,
-              step_number: (userFound.onboarding?.step_number ?? 0) + 1,
-              description: steps[2].label,
+              step_number: 2,
+              description: steps[1].label ?? '',
             },
           }
 
@@ -74,10 +72,8 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
   const handleSaveButton = async () => {
     setIsLoading(true)
     setTimeout(async () => {
-      // This line is commented out to prevent the page from navigating to the next step
       await updateUserAndIncrementStep(step)
-      // This line is commented out to prevent the dialog from showing
-      // setVisible(true)
+
       setIsLoading(false)
     }, 500)
   }
@@ -122,7 +118,6 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
   return (
     <>
-      <EmployeeFinishOnboardingDialog visible={visible} setVisible={setVisible} />
       <div className="space-y-12">
         {/* User Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">

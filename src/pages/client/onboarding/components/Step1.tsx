@@ -350,7 +350,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
               <Controller
                 control={control}
                 name="services"
-                rules={{ required: 'At least one Serivce is required' }}
+                rules={{ required: 'At least one Service is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">

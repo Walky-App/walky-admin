@@ -13,6 +13,7 @@ import { type IUserDocument, type IUser, type IOnboardingStep } from '../../../i
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 import { EmployeeStep1, EmployeeStep2, EmployeeWelcomeDialog } from './components'
+import { EmployeeStep3 } from './components/EmployeeStep3'
 
 const defaultUserValues: IUserFormInputs = {
   _id: '',
@@ -30,10 +31,12 @@ const defaultUserValues: IUserFormInputs = {
   documents: [],
   onboarding: {
     step_number: 1,
-    completed: false,
     description: 'Contact Information',
     type: 'employee',
+    completed: false,
   },
+  job_preferences: [],
+  notifications: [],
 }
 
 export interface IUserFormInputs {
@@ -51,6 +54,8 @@ export interface IUserFormInputs {
   country: string
   documents: IUserDocument[]
   onboarding: IOnboardingStep
+  job_preferences: string[]
+  notifications: string[]
 }
 
 export interface FormDataContextProps {
@@ -130,7 +135,7 @@ export const steps: MenuItem[] = [
     label: 'Documents and Certificates',
   },
   {
-    label: 'Locations',
+    label: 'Preferences',
   },
   {
     label: 'Payment Information',
@@ -158,16 +163,17 @@ export const EmployeeOnboarding = () => {
       <EmployeeStep1 step={activeIndex} setStep={setActiveIndex} />
     </Fragment>,
     <EmployeeStep2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
-    // <Step3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
+    <EmployeeStep3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
     // <Step4 key="step4" step={activeIndex} setStep={setActiveIndex} />,
     // <Step5 key="step5" step={activeIndex} setStep={setActiveIndex} />,
   ]
 
   useEffect(() => {
+    const userId = GetTokenInfo()._id
+
     const getUser = async () => {
-      const { _id } = GetTokenInfo()
       try {
-        const response: IUser = await RequestService(`users/${_id}`)
+        const response: IUser = await RequestService(`users/${userId}`)
         setCurrentUser(response)
         setFormData(prevFormData => ({
           ...prevFormData,
@@ -180,6 +186,8 @@ export const EmployeeOnboarding = () => {
           phone_number: response.phone_number || '',
           address: response.address || '',
           documents: response.documents || [],
+          job_preferences: response.job_preferences || [],
+          notifications: response.notifications || [],
         }))
 
         setActiveIndex((response.onboarding?.step_number ?? 1) - 1)
