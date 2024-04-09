@@ -92,7 +92,7 @@ export const Assessment = () => {
       })
     } else {
       //next
-      if (selectAnswer.code !== 99) {
+      if (indexQuestion >= assessmentArray.length) {
         const assessmentData = [...(assessmentArray ?? [])]
         assessmentData.push(selectAnswer)
         setAssessmentArray(assessmentData)
@@ -160,8 +160,12 @@ export const Assessment = () => {
               Previous
             </button>
             <button
-              className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+              className={cn(
+                selectAnswer.code === 99 ? 'bg-gray-300' : 'bg-green-600 hover:bg-green-500',
+                'rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm ',
+              )}
               onClick={() => handlerControllerQuestion()}
+              disabled={selectAnswer.code === 99}
               type="button">
               {indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1 ? 'Submit' : 'Next'}
             </button>
