@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -12,6 +12,7 @@ import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/AuthService'
 import { SetToken } from '../../utils/TokenUtils'
+import { roleChecker } from '../../utils/roleChecker'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE
 const client_role = process.env.REACT_APP_CLIENT_ROLE
@@ -25,6 +26,27 @@ export const LoginForm = () => {
 
   const { setUser } = useAuth()
   const navigate = useNavigate()
+
+  const roleType = roleChecker()
+
+  useEffect(() => {
+    switch (roleType) {
+      case 'admin':
+        navigate('/admin/dashboard')
+        break
+      case 'client':
+        navigate('/client/dashboard')
+        break
+      case 'employee':
+        navigate('/employee/dashboard')
+        break
+      case 'sales':
+        navigate('/sales/dashboard')
+        break
+      default:
+        navigate('/login')
+    }
+  }, [])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()

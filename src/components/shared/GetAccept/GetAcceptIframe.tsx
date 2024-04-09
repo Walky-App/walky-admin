@@ -19,6 +19,3 @@ export const GetAcceptIframe: React.FC<GetAcceptIframeProps> = ({ documentUrl, c
 
   return <iframe ref={iframeRef} title="GetAccept Document" className={classes} />
 }
-
-// Usage in your component
-// <GetAcceptIframe documentUrl={DOCUMENT_URL} />
