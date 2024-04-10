@@ -97,7 +97,9 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           throw new Error('User not found')
         }
 
-        setStep(step + 1)
+        setTimeout(() => {
+          setStep(step + 1)
+        }, 1000)
       } catch (error) {
         console.error('Error updating user:', error)
 
@@ -107,7 +109,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           detail: `Information could not be updated.`,
           life: 2000,
         })
-      } finally {
         setIsLoading(false)
       }
     }
@@ -124,12 +125,11 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-fluid space-y-12">
         {/* Contact Information */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information.</p>
           </div>
-
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
               <Controller
@@ -274,12 +274,11 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
           </div>
         </div>
         {/* Home Address */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your address information.</p>
           </div>
-
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-6">
               <Controller

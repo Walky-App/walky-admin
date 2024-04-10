@@ -1,13 +1,10 @@
-import { Fragment, useCallback, useContext, useEffect, useState } from 'react'
+import { Fragment, useContext, useState } from 'react'
 
 import { Button } from 'primereact/button'
-import { type ToastMessage } from 'primereact/toast'
 
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
 
-import { type IToastData } from '../../../../interfaces/global'
-import { useUtils } from '../../../../store/useUtils'
 import { cn } from '../../../../utils/cn'
 import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
 import { AddFacilityDialog } from './AddFacilityDialog'
@@ -22,53 +19,24 @@ export const Step3 = ({ step, setStep }: StepProps) => {
 
   const { facilitiesArray, defaultValues, selectedFacility, setSelectedFacility } = useContext(FormDataContext)
 
-  const { setRemoveToastCallback, showToast } = useUtils()
-
-  const handleRemoveToast = useCallback(
-    (toastData: ToastMessage | IToastData) => {
-      let severity
-      if ('message' in toastData) {
-        severity = toastData.message.severity
-      } else {
-        severity = toastData.severity
-      }
-
-      if (severity === 'success') {
-        setIsLoading(false)
-        setStep(step + 1)
-      }
-    },
-    [setStep, step],
-  )
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
-
   const handleSaveButton = () => {
     setIsLoading(true)
 
-    showToast({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Changes saved successfully.',
-      life: 2000,
-    })
+    setTimeout(() => {
+      setStep(step + 1)
+    }, 1000)
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-4 sm:space-y-12">
       <AddFacilityDialog visible={visible} setVisible={setVisible} values={selectedFacility || defaultValues} />
-
-      {/* Do you have more locations to add?  */}
-      <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
         <div>
           <h2 className="text-base font-semibold leading-7 text-gray-900">Do you have more locations to add?</h2>
           <p className="mt-1 text-sm leading-6 text-gray-600">
             To continue, enter your business location information below.
           </p>
         </div>
-
         <div className="sm:col-span-full">
           <ul className="grid auto-rows-fr grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
             {facilitiesArray?.map(facility => (
@@ -125,7 +93,7 @@ export const Step3 = ({ step, setStep }: StepProps) => {
                   <div className="flex justify-between gap-x-4 py-3">
                     <dt className="text-gray-500">Address</dt>
                     <dd className="flex items-start gap-x-2">
-                      <div className="font-medium text-gray-900">{facility.address}</div>
+                      <div className="text-balance text-end font-medium text-gray-900">{facility.address}</div>
                     </dd>
                   </div>
                   <div className="flex justify-between gap-x-4 py-3">
@@ -146,7 +114,6 @@ export const Step3 = ({ step, setStep }: StepProps) => {
               </li>
             ))}
             <li className="overflow-hidden rounded-xl border border-gray-200">
-              {/* Card Header */}
               <div className="flex h-full flex-col items-center justify-center gap-x-4 gap-y-3 border-b border-gray-900/5 bg-gray-50 p-6">
                 <Button
                   icon="pi pi-plus"

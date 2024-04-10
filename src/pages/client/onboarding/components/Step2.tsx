@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import {
@@ -9,111 +9,26 @@ import {
 } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
-import { type ToastMessage } from 'primereact/toast'
 
-import { type IToastParameters, type IToastData } from '../../../../interfaces/global'
-import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
-import {
-  FormDataContext,
-  type IGetAcceptRecipient,
-  type IFacilityFormInputs,
-  type StepProps,
-} from '../ClientOnboardingPage'
+import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
 
 export const Step2 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [toastData, setToastData] = useState<IToastParameters | null>(null)
-  const [requestLoading, setRequestLoading] = useState(false)
-  const { facilitiesArray, setFacilitiesArray, setDocumentData, prevDocRecipient, setPrevDocRecipient } =
-    useContext(FormDataContext)
+  const { facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 
   const facilityId = facilitiesArray[0]?._id
   const fileUploadRef = useRef<FileUpload>(null)
 
-  const { setRemoveToastCallback, showToast } = useUtils()
-
-  useEffect(() => {
-    const docRecipient: IGetAcceptRecipient = {
-      email: facilitiesArray[0]?.contacts[0].email,
-      first_name: facilitiesArray[0]?.contacts[0].first_name,
-      last_name: facilitiesArray[0]?.contacts[0].last_name,
-      company_name: facilitiesArray[0]?.corp_name,
-      company_number: facilitiesArray[0]?.phone_number,
-      mobile: facilitiesArray[0]?.contacts[0].phone_number,
-    }
-
-    if (JSON.stringify(docRecipient) !== JSON.stringify(prevDocRecipient)) {
-      setRequestLoading(true)
-      const sendDocumentFromTemplate = async () => {
-        const body = {
-          name: 'HempTemps Client Agreement',
-          type: 'sales',
-          template_id: 'ke36vcj367m3',
-          email: docRecipient.email,
-          first_name: docRecipient.first_name,
-          last_name: docRecipient.last_name,
-          company_name: docRecipient.company_name,
-          company_number: docRecipient.company_number,
-          mobile: docRecipient.mobile,
-        }
-        try {
-          const response = await RequestService('getaccept', 'POST', body)
-          if (response.error) {
-            throw response.error
-          } else {
-            setDocumentData(response)
-          }
-        } catch (error) {
-          console.error('Error sending document:', error)
-        } finally {
-          setRequestLoading(false)
-        }
-      }
-
-      sendDocumentFromTemplate()
-
-      setPrevDocRecipient(docRecipient)
-    }
-  }, [facilitiesArray, prevDocRecipient, setDocumentData, setPrevDocRecipient])
-
-  const handleRemoveToast = useCallback(
-    (toastData: ToastMessage | IToastData) => {
-      let severity
-      if ('message' in toastData) {
-        severity = toastData.message.severity
-      } else {
-        severity = toastData.severity
-      }
-
-      if (severity === 'success') {
-        setIsLoading(false)
-        setStep(step + 1)
-      }
-    },
-    [setStep, step],
-  )
-
-  useEffect(() => {
-    setRemoveToastCallback(handleRemoveToast)
-  }, [handleRemoveToast, setRemoveToastCallback])
-
-  useEffect(() => {
-    if (!requestLoading && toastData) {
-      showToast(toastData)
-      setToastData(null)
-    }
-  }, [requestLoading, toastData, showToast])
+  const { showToast } = useUtils()
 
   const handleSaveButton = () => {
     setIsLoading(true)
-    setToastData({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Changes saved successfully.',
-      life: 2000,
-    })
+
+    setTimeout(() => {
+      setStep(step + 1)
+    }, 1000)
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -161,9 +76,9 @@ export const Step2 = ({ step, setStep }: StepProps) => {
 
   return (
     <>
-      <div className="space-y-12">
+      <div className="space-y-4 sm:space-y-12">
         {/* Business License Documents */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Documents</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
@@ -218,7 +133,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
         </div>
 
         {/* Facility Images */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Images</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
