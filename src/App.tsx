@@ -52,7 +52,7 @@ import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import AdminUsers from './pages/admin/users'
 import AdminInviteUser from './pages/admin/users/AdminInviteUser'
-import AdminUserDetails from './pages/admin/users/AdminUserDetails'
+import { AdminUserDetails } from './pages/admin/users/AdminUserDetails'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
