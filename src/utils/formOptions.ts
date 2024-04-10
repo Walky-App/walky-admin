@@ -1,3 +1,27 @@
+export const notifications_preferences = ['Email', 'SMS']
+
+export const job_preferences = [
+  'Harvester',
+  'Budtender',
+  'Trimmer',
+  'Packager',
+  'Gardener',
+  'Cultivator',
+  'Extractor',
+  'Front desk',
+  'Greeter',
+  'Id checker',
+  'Inventory',
+  'Data entry',
+  'Event staff',
+  'Promo representative',
+  'Cleaning',
+  'Joint roller',
+  'Grow tech',
+  'Clone tech',
+  'Sign spinner',
+]
+
 export const services = ['Trimming', 'Harvesting', 'Packaging', 'Budtending', 'Gardening', 'General Labor', 'Other']
 
 export const countries = [
