@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
@@ -48,6 +49,8 @@ export const EmployeeJobs = () => {
   const [latitude, setLatitude] = useState<number | undefined>(undefined)
   const [longitude, setLongitude] = useState<number | undefined>(undefined)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
+  const [loading, setLoading] = useState(true)
+
   useEffect(() => {
     const getLocation = () => {
       navigator.geolocation.getCurrentPosition(position => {
@@ -70,6 +73,7 @@ export const EmployeeJobs = () => {
       if (allJobs) {
         setJobs(allJobs)
       }
+      setLoading(false)
     }
     getJobs()
   }, [latitude, longitude])
@@ -92,6 +96,14 @@ export const EmployeeJobs = () => {
     }
     setDisplayedJobs(filteredJobs)
   }, [selectedJobTitle, dates, jobs, selectedRange])
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <ProgressSpinner />
+      </div>
+    )
+  }
 
   return (
     <>
