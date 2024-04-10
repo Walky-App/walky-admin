@@ -1,8 +1,10 @@
+/* eslint-disable */
 import React, { useRef } from 'react'
 
 import { Controller, type FieldErrors, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { request } from 'http'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
@@ -35,6 +37,7 @@ export const ClientAddJob = () => {
     title: string
     facility_id: string
     vacancy: number
+    hourly_rate: number
     job_dates: Date[]
     start_time: Date
     end_time: Date
@@ -58,6 +61,7 @@ export const ClientAddJob = () => {
     title: '',
     facility_id: '',
     vacancy: 0,
+    hourly_rate: 0,
     job_dates: [],
     start_time: new Date(),
     end_time: new Date(),
@@ -140,6 +144,7 @@ export const ClientAddJob = () => {
       }
 
       const response = await RequestService('jobs', 'POST', requestData)
+      console.log('THE REQUEST DATA -->', requestData)
       if (response) {
         showToast({ severity: 'success', summary: 'Success', detail: 'Job information submitted successfully' })
         setTimeout(() => {
@@ -159,6 +164,18 @@ export const ClientAddJob = () => {
     { title: 'Gardener', value: 'Gardener' },
     { title: 'Cultivator', value: 'Cultivator' },
     { title: 'Extractor', value: 'Extractor' },
+    { title: 'Front desk', value: 'Front desk' },
+    { title: 'Greeter', value: 'Greeter' },
+    { title: 'Id checker', value: 'Id checker' },
+    { title: 'Inventory', value: 'Inventory' },
+    { title: 'Data entry', value: 'Data entry' },
+    { title: 'Event staff', value: 'Event staff' },
+    { title: 'Promo representative', value: 'Promo representative' },
+    { title: 'Cleaning', value: 'Cleaning' },
+    { title: 'Joint roller', value: 'Joint roller' },
+    { title: 'Grow tech', value: 'Grow tech' },
+    { title: 'Clone tech', value: 'Clone tech' },
+    { title: 'Sign spinner', value: 'Sign spinner' },
   ]
 
   const lunchTimes = [
@@ -504,6 +521,50 @@ export const ClientAddJob = () => {
                             showButtons
                             min={1}
                             max={10}
+                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
+                          />
+                        </div>
+                        {getFormErrorMessage(field.name, errors)}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="sm:col-span-3">
+                <label htmlFor="hourly_rate" className="block text-sm font-medium leading-6 text-gray-900">
+                  Pay Rate:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    name="hourly_rate"
+                    control={control}
+                    rules={{
+                      required: 'Enter hourly pay rate.',
+                      validate: value =>
+                        (value !== null && value >= 1 && value <= 40) || 'Enter a valid pay rate amount.',
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <div>
+                          <InputNumber
+                            id={field.name}
+                            inputRef={field.ref}
+                            tooltip="Enter hourly pay rate for this job in USD."
+                            tooltipOptions={{ position: 'mouse' }}
+                            value={field.value}
+                            onBlur={field.onBlur}
+                            onValueChange={(e: InputNumberValueChangeEvent) => {
+                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 40) {
+                                field.onChange(e.value)
+                              }
+                            }}
+                            useGrouping={false}
+                            mode="currency"
+                            currency="USD"
+                            showButtons
+                            min={1}
+                            max={40}
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>

@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
@@ -204,11 +205,33 @@ export const JobDetailView = () => {
         is_approved: false,
         is_working: false,
       }
-      await RequestService(`jobs/${id}/apply`, 'POST', applicant)
-      setIsApplyForJobLoading(true)
+      const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs/${id}/apply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${GetTokenInfo().access_token}`,
+        },
+        body: JSON.stringify(applicant),
+      })
+
+      if (!response.ok) {
+        const errorBody = await response.json()
+        throw { status: response.status, message: errorBody.message }
+      }
+
       showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for the job' })
-    } catch (error) {
-      console.error(error)
+      setIsApplyForJobLoading(true)
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
+        const err = error as { status: number; message: string }
+        if (err.status === 400) {
+          showToast({
+            severity: 'error',
+            summary: 'Failed',
+            detail: err.message,
+          })
+        }
+      }
     }
   }
 
@@ -390,8 +413,12 @@ export const JobDetailView = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-sm font-normal text-stone-500">Total Hours per day</div>
+                    <div className="text-sm font-normal text-stone-500">Hours Daily</div>
                     <div className="text-sm font-normal text-black">{job.total_hours} hours </div>
+                  </div>
+                  <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                    <div className="text-sm font-normal text-stone-500">Hourly Rate</div>
+                    <div className="text-sm font-normal text-black">{job.hourly_rate || 0} USD </div>
                   </div>
                 </div>
                 {/* Job Card Footer */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
@@ -16,7 +17,21 @@ const jobTitleOptions = [
   { name: 'Gardener', code: 'Gardener' },
   { name: 'Cultivator', code: 'Cultivator' },
   { name: 'Extractor', code: 'Extractor' },
+  { name: 'Budtender', code: 'Budtender' },
+  { name: 'Front desk', code: 'Front desk' },
+  { name: 'Greeter', code: 'Greeter' },
+  { name: 'Id checker', code: 'Id checker' },
+  { name: 'Inventory', code: 'Inventory' },
+  { name: 'Data entry', code: 'Data entry' },
+  { name: 'Event staff', code: 'Event staff' },
+  { name: 'Promo representative', code: 'Promo representative' },
+  { name: 'Cleaning', code: 'Cleaning' },
+  { name: 'Joint roller', code: 'Joint roller' },
+  { name: 'Grow tech', code: 'Grow tech' },
+  { name: 'Clone tech', code: 'Clone tech' },
+  { name: 'Sign spinner', code: 'Sign spinner' },
 ]
+
 const rangeOptions = [
   { name: '5 miles', code: 5 },
   { name: '10 miles', code: 10 },
@@ -34,6 +49,8 @@ export const EmployeeJobs = () => {
   const [latitude, setLatitude] = useState<number | undefined>(undefined)
   const [longitude, setLongitude] = useState<number | undefined>(undefined)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
+  const [loading, setLoading] = useState(true)
+
   useEffect(() => {
     const getLocation = () => {
       navigator.geolocation.getCurrentPosition(position => {
@@ -56,6 +73,7 @@ export const EmployeeJobs = () => {
       if (allJobs) {
         setJobs(allJobs)
       }
+      setLoading(false)
     }
     getJobs()
   }, [latitude, longitude])
@@ -78,6 +96,14 @@ export const EmployeeJobs = () => {
     }
     setDisplayedJobs(filteredJobs)
   }, [selectedJobTitle, dates, jobs, selectedRange])
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <ProgressSpinner />
+      </div>
+    )
+  }
 
   return (
     <>

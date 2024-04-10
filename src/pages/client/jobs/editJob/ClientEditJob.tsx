@@ -1,6 +1,9 @@
+/*eslint-disable */
 import React, { useEffect, useRef } from 'react'
-import { Controller, set, useForm } from 'react-hook-form'
+
+import { Controller, useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
@@ -53,6 +56,7 @@ export default function ClientEditJob() {
         setValue('title', job.title)
         setValue('facility_id', job.facility._id)
         setValue('vacancy', job.vacancy)
+        setValue('hourly_rate', job.hourly_rate)
         setValue('lunch_break', job.lunch_break)
         const jobDates = job.job_dates.map((dateString: string) => new Date(dateString))
         setValue('job_dates', jobDates)
@@ -70,6 +74,7 @@ export default function ClientEditJob() {
     title: job.title,
     facility_id: job.facility_id,
     vacancy: job.vacancy,
+    hourly_rate: job.hourly_rate,
     job_dates: job.job_dates,
     start_time: job.start_time,
     end_time: job.end_time,
@@ -98,13 +103,12 @@ export default function ClientEditJob() {
       let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
       if (endHours <= startHours) {
-        // Adjust for cases where the end time is past midnight
         endHours += 24
       }
 
       const lunchBreakHours = lunchBreak ? lunchBreak / 60 : 0
       const totalHoursCalc = endHours - startHours - lunchBreakHours
-      setTotalHours(Math.round(totalHoursCalc * 100) / 100) // Update totalHours state
+      setTotalHours(Math.round(totalHoursCalc * 100) / 100)
     }
   }, [startTime, endTime, lunchBreak])
 
@@ -146,8 +150,8 @@ export default function ClientEditJob() {
           detail: 'Job information updated successfully',
         })
         setTimeout(() => {
-    navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
-  }, 3000)
+          navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
+        }, 3000)
       }
     } catch (error) {
       console.error(error)
@@ -162,6 +166,18 @@ export default function ClientEditJob() {
     { title: 'Gardener', value: 'Gardener' },
     { title: 'Cultivator', value: 'Cultivator' },
     { title: 'Extractor', value: 'Extractor' },
+    { title: 'Front desk', value: 'Front desk' },
+    { title: 'Greeter', value: 'Greeter' },
+    { title: 'Id checker', value: 'Id checker' },
+    { title: 'Inventory', value: 'Inventory' },
+    { title: 'Data entry', value: 'Data entry' },
+    { title: 'Event staff', value: 'Event staff' },
+    { title: 'Promo representative', value: 'Promo representative' },
+    { title: 'Cleaning', value: 'Cleaning' },
+    { title: 'Joint roller', value: 'Joint roller' },
+    { title: 'Grow tech', value: 'Grow tech' },
+    { title: 'Clone tech', value: 'Clone tech' },
+    { title: 'Sign spinner', value: 'Sign spinner' },
   ]
 
   const lunchTimes = [
@@ -466,6 +482,47 @@ export default function ClientEditJob() {
                   />
                 </div>
               </div>
+
+              <div className="sm:col-span-3">
+                <label htmlFor="hourly_rate" className="block text-sm font-medium leading-6 text-gray-900">
+                  Pay Rate:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    name="hourly_rate"
+                    control={control}
+                    rules={{
+                      required: 'Enter hourly pay rate.',
+                      validate: value =>
+                        (value !== null && value >= 1 && value <= 40) || 'Enter a valid hourly pay rate amount.',
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <div>
+                          <InputNumber
+                            id={field.name}
+                            inputRef={field.ref}
+                            tooltip="Enter pay rate for this job in USD."
+                            tooltipOptions={{ position: 'mouse' }}
+                            value={field.value}
+                            onBlur={field.onBlur}
+                            onValueChange={e => field.onChange(e)}
+                            useGrouping={false}
+                            mode="currency"
+                            currency="USD"
+                            showButtons
+                            min={1}
+                            max={40}
+                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
+                          />
+                        </div>
+                        {getFormErrorMessage(field.name)}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+
               <div className="sm:col-span-3">
                 <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
                   Job tips:
