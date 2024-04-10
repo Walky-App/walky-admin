@@ -64,6 +64,15 @@ export const Assessment = () => {
       sendDataAssessment()
       setExpireTime(false)
     }
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
   }, [expireTime, unit, params.unitId, setUnit, assessmentArray, setRecord, setExpireTime, showToast])
 
   const handlerControllerQuestion = () => {
