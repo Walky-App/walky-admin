@@ -6,7 +6,9 @@ import { HeaderComponent } from '../../../components/shared/general/HeaderCompon
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
-import JobListItem from './JobListItem'
+import { JobListItem } from './JobListItem'
+
+const adminRole = process.env.REACT_APP_ADMIN_ROLE
 
 const jobCategoryOptions = [
   { name: 'All Jobs', code: 'all' },
@@ -17,12 +19,11 @@ const jobCategoryOptions = [
 export const EmployeeMyJobs = () => {
   const [jobs, setJobs] = useState<IJob[]>([])
 
-  const { _id } = GetTokenInfo()
+  const { _id, role } = GetTokenInfo()
 
   useEffect(() => {
     const getJobs = async () => {
       const allJobs = await RequestService(`jobs/byemployee/${_id}`)
-
       if (allJobs) {
         setJobs(allJobs)
       }
@@ -34,11 +35,26 @@ export const EmployeeMyJobs = () => {
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
       <HeaderComponent title="My Jobs" search selectedOptions={jobCategoryOptions} />
       <TabView>
+        <TabPanel header="Active">
+          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
+            {jobs
+              ?.filter(job => job.applicants.length > 0 && job.applicants[0].is_working === true)
+              .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+          </ul>
+        </TabPanel>
+        <TabPanel header="Accepted">
+          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
+            {jobs
+              ?.filter(job => job.applicants.length > 0 && job.applicants[0].is_approved === true)
+              .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+          </ul>
+        </TabPanel>
         <TabPanel header="Pending">
           <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
             {jobs
               ?.filter(
                 job =>
+                  job.applicants.length > 0 &&
                   job.applicants[0].is_approved === false &&
                   job.applicants[0].is_working === false &&
                   job.applicants[0].rejection_reason === '',
@@ -46,24 +62,28 @@ export const EmployeeMyJobs = () => {
               .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
           </ul>
         </TabPanel>
-        <TabPanel header="Accepted">
+        {role === adminRole ? (
+          <TabPanel header="Rejected">
+            <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
+              {jobs
+                ?.filter(job => job.applicants.length > 0 && job.applicants[0].rejection_reason !== '')
+                .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+            </ul>
+          </TabPanel>
+        ) : null}
+        <TabPanel header="Saved Jobs">
           <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
             {jobs
-              ?.filter(job => job.applicants[0].is_approved === true)
+              ?.filter(job => job.saved_by.length > 0 && job.saved_by.some(userId => userId === _id))
               .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
           </ul>
         </TabPanel>
-        <TabPanel header="Working">
+        <TabPanel header="Past Jobs">
           <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
             {jobs
-              ?.filter(job => job.applicants[0].is_working === true)
-              .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
-          </ul>
-        </TabPanel>
-        <TabPanel header="Rejected">
-          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-            {jobs
-              ?.filter(job => job.applicants[0].rejection_reason !== '')
+              ?.filter(
+                job => job.applicants.length > 0 && job.applicants[0].is_approved === true && job.is_completed === true,
+              )
               .map((job: IJob) => <JobListItem key={job._id} job={job} />)}
           </ul>
         </TabPanel>

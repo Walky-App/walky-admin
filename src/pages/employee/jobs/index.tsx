@@ -1,13 +1,13 @@
-/* eslint-disable */
 import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import JobListItem from './JobListItem'
+import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
   { name: 'All Jobs', code: 'all' },
@@ -17,7 +17,21 @@ const jobTitleOptions = [
   { name: 'Gardener', code: 'Gardener' },
   { name: 'Cultivator', code: 'Cultivator' },
   { name: 'Extractor', code: 'Extractor' },
+  { name: 'Budtender', code: 'Budtender' },
+  { name: 'Front desk', code: 'Front desk' },
+  { name: 'Greeter', code: 'Greeter' },
+  { name: 'Id checker', code: 'Id checker' },
+  { name: 'Inventory', code: 'Inventory' },
+  { name: 'Data entry', code: 'Data entry' },
+  { name: 'Event staff', code: 'Event staff' },
+  { name: 'Promo representative', code: 'Promo representative' },
+  { name: 'Cleaning', code: 'Cleaning' },
+  { name: 'Joint roller', code: 'Joint roller' },
+  { name: 'Grow tech', code: 'Grow tech' },
+  { name: 'Clone tech', code: 'Clone tech' },
+  { name: 'Sign spinner', code: 'Sign spinner' },
 ]
+
 const rangeOptions = [
   { name: '5 miles', code: 5 },
   { name: '10 miles', code: 10 },
@@ -28,31 +42,25 @@ const rangeOptions = [
 ]
 
 export const EmployeeJobs = () => {
-  const [jobs, setJobs] = useState<any>()
-  const [selectedJobTitle, setSelectedJobTitle] = useState<any>(null)
-  const [displayedJobs, setDisplayedJobs] = useState<any>([])
-  const [dates, setDates] = useState<any>(null)
-  const [latitude, setLatitude] = useState<number>()
-  const [longitude, setLongitude] = useState<number>()
-  const [error, setError] = useState<string>()
-  const [selectedRange, setSelectedRange] = useState<any>(null)
+  const [jobs, setJobs] = useState<IJob[]>([])
+  const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
+  const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
+  const [dates, setDates] = useState<[Date, Date] | null>(null)
+  const [latitude, setLatitude] = useState<number | undefined>(undefined)
+  const [longitude, setLongitude] = useState<number | undefined>(undefined)
+  const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const getLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          setLatitude(position.coords.latitude)
-          setLongitude(position.coords.longitude)
-        },
-        error => {
-          setError(error.message)
-        },
-      )
+      navigator.geolocation.getCurrentPosition(position => {
+        setLatitude(position.coords.latitude)
+        setLongitude(position.coords.longitude)
+      })
     }
 
     getLocation()
   }, [])
-  console.log('lat:', latitude, 'long:', longitude)
 
   useEffect(() => {
     const getJobs = async () => {
@@ -65,19 +73,19 @@ export const EmployeeJobs = () => {
       if (allJobs) {
         setJobs(allJobs)
       }
+      setLoading(false)
     }
     getJobs()
-    console.log(jobs)
   }, [latitude, longitude])
 
   useEffect(() => {
-    let filteredJobs = [...(jobs || [])] as IJob[]
+    let filteredJobs = [...(jobs || [])]
     if (selectedJobTitle && selectedJobTitle.code !== 'all') {
       filteredJobs = filteredJobs.filter(job => job.title === selectedJobTitle.name)
     }
     if (dates) {
       filteredJobs = filteredJobs.filter(job => {
-        return job.job_dates.some((jobDate: any) => {
+        return job.job_dates.some(jobDate => {
           const date = new Date(jobDate)
           return date >= dates[0] && date <= dates[1]
         })
@@ -88,6 +96,14 @@ export const EmployeeJobs = () => {
     }
     setDisplayedJobs(filteredJobs)
   }, [selectedJobTitle, dates, jobs, selectedRange])
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <ProgressSpinner />
+      </div>
+    )
+  }
 
   return (
     <>
@@ -107,7 +123,7 @@ export const EmployeeJobs = () => {
         <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
           <Calendar
             value={dates}
-            onChange={e => setDates(e.value)}
+            onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
             showButtonBar
             numberOfMonths={2}

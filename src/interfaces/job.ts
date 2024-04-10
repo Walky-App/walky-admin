@@ -37,7 +37,9 @@ export interface IJob {
   job_dates: string[]
   job_tips: string[]
   vacancy: number
+  hourly_rate: number
   applicants: IApplicant[]
+  saved_by: string[]
   dnr: IDnr[]
   is_completed: boolean
   is_full: boolean

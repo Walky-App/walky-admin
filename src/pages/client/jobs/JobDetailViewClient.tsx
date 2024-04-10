@@ -180,7 +180,7 @@ export default function JobDetailViewClient() {
                     <>
                       <div className="flex items-center">
                         <i className="pi pi-users" />
-                        <div className="ml-1 text-xs font-normal text-stone-500">
+                        <div className="ml-1 text-base font-normal text-stone-500">
                           {job.applicants.length} / {job.vacancy} Applicants
                         </div>
                       </div>
@@ -196,7 +196,7 @@ export default function JobDetailViewClient() {
                       </div>
                       <div className="flex items-center">
                         <i className="pi pi-map-marker" />
-                        <div className="ml-2 text-sm font-normal text-black">
+                        <div className="ml-2 text-base font-normal text-black">
                           {job.facility.address}, {job.facility.city}, {job.facility.state}, {job.facility.zip}
                         </div>
                       </div>
@@ -208,7 +208,7 @@ export default function JobDetailViewClient() {
                     <div className="flex items-start gap-2">
                       {job.is_active === true ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-xs font-medium text-black">
+                        <span className="text-sm font-medium text-black">
                           {job.is_active === true ? 'Active' : 'Disabled'}
                         </span>
                       </div>
@@ -220,50 +220,54 @@ export default function JobDetailViewClient() {
                         <i className="pi pi-calendar-times" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-xs font-medium text-black">
+                        <span className="text-sm font-medium text-black">
                           {job.is_completed === false ? 'Live' : 'Archived'}
                         </span>
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
                       {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
-                      <div className="text-xs font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
+                      <div className="text-sm font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
                   {/* Divider */}
                   <hr className="mt-3 h-px w-full bg-zinc-100" />
                   <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Job Dates</div>
-                      <div className="text-xs font-normal text-black">
+                      <div className="text-sm font-normal text-stone-500">Job Dates</div>
+                      <div className="text-sm font-normal text-black">
                         {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Job Time</div>
-                      <div className="text-xs font-normal text-black">
+                      <div className="text-sm font-normal text-stone-500">Job Time</div>
+                      <div className="text-sm font-normal text-black">
                         {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Lunch Break</div>
-                      <div className="text-xs font-normal text-black">
+                      <div className="text-sm font-normal text-stone-500">Lunch Break</div>
+                      <div className="text-sm font-normal text-black">
                         {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-xs font-normal text-stone-500">Total Hours</div>
-                      <div className="text-xs font-normal text-black">{job.total_hours} Hours</div>
+                      <div className="text-sm font-normal text-stone-500">Total Hours</div>
+                      <div className="text-sm font-normal text-black">{job.total_hours} Hours</div>
+                    </div>
+                    <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                      <div className="text-sm font-normal text-stone-500">Hourly Rate</div>
+                      <div className="text-sm font-normal text-black">{job.hourly_rate} USD</div>
                     </div>
                   </div>
                   {/* Job Card Footer */}
                   <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
                     <div className="flex flex-wrap items-center justify-start gap-1">
-                      <div className="text-balance text-xs font-normal text-stone-500">
+                      <div className="text-balance text-sm font-normal text-stone-500">
                         Last update on {new Date(job.createdAt).toLocaleDateString()}
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
-                      <div className="text-xs font-normal text-stone-500">#{job.uid}</div>
+                      <div className="text-sm font-normal text-stone-500">#{job.uid}</div>
                     </div>
                   </div>
                 </Card>
@@ -283,7 +287,7 @@ export default function JobDetailViewClient() {
                     <h2 className="text-base font-semibold leading-6 text-gray-900">
                       Schedule ({job.job_dates.length} days)
                     </h2>
-                    <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+                    <ol className="mt-2 divide-y divide-gray-200 text-base leading-6 text-gray-500">
                       {job.job_dates.map((date: string, index: number) => {
                         const dateObj = new Date(date)
                         const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
@@ -377,7 +381,7 @@ export default function JobDetailViewClient() {
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4">
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-base text-gray-500">
                       You can reject the applicants within X hours of the worker accepted the job. If no reject is done
                       in X hours then worker is automatically accepted and then the contract is created automatically.
                       you and applicant both are notified about the contract.
@@ -409,12 +413,12 @@ export default function JobDetailViewClient() {
                                 alt=""
                               />
                               <div className="min-w-0 flex-auto">
-                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                <p className="text-base font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                 </p>
                                 <Rating value={3} readOnly cancel={false} />
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
+                                <p className="mt-1 flex text-sm leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
@@ -487,7 +491,7 @@ export default function JobDetailViewClient() {
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4 mt-4">
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-base text-gray-500">
                       This is the list of all applicants who have been rejected. You can reinstate them if you wish by
                       clicking on the Cancel button. This action will move the applicant back to the pending list.
                     </p>
@@ -510,14 +514,14 @@ export default function JobDetailViewClient() {
                                 alt=""
                               />
                               <div className="min-w-0 flex-auto">
-                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                <p className="text-base font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                   <Tag className="mb-2 ml-2" value="Rejected" severity="danger" />
                                   <Rating value={3} readOnly cancel={false} />
                                   Reason for rejection: {applicant.rejection_reason}
                                 </p>
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
+                                <p className="mt-1 flex text-sm leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
@@ -546,7 +550,7 @@ export default function JobDetailViewClient() {
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4 mt-4">
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-base text-gray-500">
                       This is the list of all workers who have been accepted for this job. You can cancel their
                       acceptance by click on the Cancel button. This action will move the worker back to the pending
                       list.
@@ -570,13 +574,13 @@ export default function JobDetailViewClient() {
                                 alt=""
                               />
                               <div className="min-w-0 flex-auto">
-                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                <p className="text-base font-semibold leading-6 text-gray-900">
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                   <Tag className="mb-2 ml-2" value="Accepted" severity="success" />
                                   <Rating value={3} readOnly cancel={false} />
                                 </p>
-                                <p className="mt-1 flex text-xs leading-5 text-gray-500" />
+                                <p className="mt-1 flex text-sm leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
