@@ -449,7 +449,7 @@ export default function ClientEditJob() {
 
               <div className="sm:col-span-3">
                 <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
-                  Number of Vacancies:
+                  Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
                 </label>
                 <div className="mt-2">
                   <Controller
