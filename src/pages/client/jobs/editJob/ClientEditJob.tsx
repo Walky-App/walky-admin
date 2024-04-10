@@ -7,7 +7,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
-import { InputNumber } from 'primereact/inputnumber'
+import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
 import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
@@ -458,7 +458,8 @@ export default function ClientEditJob() {
                     rules={{
                       required: 'Enter a valid number of vacancies.',
                       validate: value =>
-                        (value !== null && value >= 0 && value <= 200) || 'Enter a valid number of vacancies.',
+                        (value !== null && value >= 1 && value <= 10) ||
+                        'Enter a valid number of vacancies. Max 10 vacancies allowed.',
                     }}
                     render={({ field, fieldState }) => (
                       <>
@@ -466,13 +467,20 @@ export default function ClientEditJob() {
                           <InputNumber
                             id={field.name}
                             inputRef={field.ref}
+                            tooltip="Enter a valid number of vacancies from 1 to 10. If you need more than 10 vacancies, please contact Customer Service at (999)999-99-99."
+                            tooltipOptions={{ position: 'mouse' }}
                             value={field.value}
                             onBlur={field.onBlur}
-                            onValueChange={e => field.onChange(e)}
+                            onValueChange={(e: InputNumberValueChangeEvent) => {
+                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
+                                field.onChange(e.value)
+                              }
+                            }}
                             useGrouping={false}
                             mode="decimal"
                             showButtons
                             min={1}
+                            max={10}
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
