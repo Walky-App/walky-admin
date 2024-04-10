@@ -1,13 +1,19 @@
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useInterval } from 'primereact/hooks'
 
+import { useLearn } from '../../../store/useLearn'
+
 export const Timer = ({ initialSeconds }: { initialSeconds: number }) => {
   const [secondsLeft, setSecondsLeft] = useState<number>(initialSeconds)
+  const { setExpireTime } = useLearn()
 
   const handleTimer = () => {
     if (secondsLeft > 0) {
       setSecondsLeft(prevSeconds => prevSeconds - 1)
+    }
+    if (secondsLeft === 0) {
+      setExpireTime(true)
     }
   }
 

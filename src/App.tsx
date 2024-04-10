@@ -5,26 +5,24 @@ import { ProtectedRouteAuth, ProtectedRouteRol } from './utils/ProtectedRoute'
 import { AdminProvider } from './contexts/AdminContext'
 import { AuthProvider } from './contexts/AuthContext'
 
-/** Utilities Pages */
 import { Layout } from './components/layout/'
 
-/** Error Pages */
 import { Error404 } from './pages/Error404'
 
-/** Auth Pages */
+/******************************************* Auth Pages ************************************/
 import { Auth } from './pages/auth'
 import NewPasswordForm from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import Signup from './pages/auth/SignupForm'
 
-/** Learn Pages */
+/******************************************* HTU Pages ************************************/
 import { Learn } from './pages/learn/Learn'
 import { Assessment } from './pages/learn/assessment/Assessment'
 import { Modules } from './pages/learn/modules/Modules'
 import { UnitDetail } from './pages/learn/units/UnitDetail'
 import { Units } from './pages/learn/units/Units'
 
-/** Client Pages */
+/******************************************* Client Pages ************************************/
 import ClientProfile from './pages/client/ClientProfile'
 import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
@@ -33,21 +31,18 @@ import Jobs from './pages/client/jobs'
 import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
 import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
+import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
-/** Sales Pages */
+/******************************************* Sales Pages ************************************/
 import { SalesDashboard } from './pages/sales/dashboard'
 import { ProductList as Products } from './pages/sales/products'
 import { ProductCategories } from './pages/sales/products/ProductCategories'
 import ProductDetail from './pages/sales/products/ProductDetail'
 
-// Not yet implemented
-// import SalesProfile from './pages/sales/profile/SalesProfile'
-
-/** Admin Pages */
+/******************************************* Admin Pages ************************************/
 import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
-import { AdminHolidays } from './pages/admin/profile/AdminHolidays'
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import AdminUsers from './pages/admin/users'
@@ -82,23 +77,23 @@ import { Certification } from './pages/admin/HTU/components/Certification'
 
 import AdminJobs from './pages/admin/jobs'
 
+import { AdminMessages } from './pages/admin/messages'
+
+/******************************************* Employee Pages ************************************/
+import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
+
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
 import { EmployeeJobs } from './pages/employee/jobs'
 import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
+import { EmployeeMessages } from './pages/employee/messages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
-
-// import AdminAddJob from './pages/admin/jobs/AdminAddJob'
-// import AdminJobDetails from './pages/admin/jobs/AdminJobDetails'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
-
-//Not yet implemented
-// const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 
 export const App = () => {
   return (
@@ -120,6 +115,7 @@ export const App = () => {
                 <Route element={<EmployeeMyJobs />} path="/employee/myjobs" />
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />
                 <Route element={<EmployeeProfile />} path="/employee/profile" />
+                <Route element={<EmployeeMessages />} path="/employee/messages" />
                 {/* LMS Module */}
                 <Route element={<Learn />} path="/learn" />
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
@@ -129,6 +125,7 @@ export const App = () => {
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
+                  <Route element={<ClientMessages />} path="/client/messages" />
                   <Route element={<ClientProfile />} path="/client/profile" />
                   <Route element={<ClientFacilities />} path="/client/facilities" />
                   <Route element={<ClientAddFacility />} path="/client/facilities/new" />
@@ -166,6 +163,7 @@ export const App = () => {
                   <Route element={<AdminDashboard />} path="/admin/dashboard" />
                   <Route element={<AdminProfile />} path="/admin/profile" />
                   <Route element={<AdminHolidays />} path="/admin/holidays" />
+                  <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUsers />} path="/admin/users" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<AdminUserDetails />} path="/admin/users/:id" />

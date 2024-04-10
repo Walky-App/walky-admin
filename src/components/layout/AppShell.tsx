@@ -40,9 +40,9 @@ const adminLinks: INavLink[] = [
   { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
   { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
   { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
-  { id: 6, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
-  { id: 7, name: 'Messages', href: '/admin/messages', icon: <IoMdMail />, disabled: true },
-  { id: 8, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
+  { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
+  { id: 7, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
+  { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
 ]
 
 const clientLinks: INavLink[] = [
@@ -57,7 +57,7 @@ const clientLinks: INavLink[] = [
     disabled: true,
   },
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-  { id: 6, name: 'Messages', href: '/dashboard/messages', icon: <IoMdMail />, disabled: true },
+  { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
   { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
 ]
 
@@ -65,7 +65,7 @@ const employeeLinks: INavLink[] = [
   { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime /> },
   { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-  { id: 4, disabled: true, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+  { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
 ]
 
 const salesLinks: INavLink[] = [
@@ -74,6 +74,7 @@ const salesLinks: INavLink[] = [
   { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
   { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: true },
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
+  { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
 ]
 
 export interface SideBarData {
