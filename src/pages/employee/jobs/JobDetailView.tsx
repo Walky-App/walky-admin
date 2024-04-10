@@ -390,8 +390,12 @@ export const JobDetailView = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-sm font-normal text-stone-500">Total Hours per day</div>
+                    <div className="text-sm font-normal text-stone-500">Hours Daily</div>
                     <div className="text-sm font-normal text-black">{job.total_hours} hours </div>
+                  </div>
+                  <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
+                    <div className="text-sm font-normal text-stone-500">Hourly Rate</div>
+                    <div className="text-sm font-normal text-black">{job.hourly_rate || 0} USD </div>
                   </div>
                 </div>
                 {/* Job Card Footer */}

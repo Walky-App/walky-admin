@@ -16,7 +16,21 @@ const jobTitleOptions = [
   { name: 'Gardener', code: 'Gardener' },
   { name: 'Cultivator', code: 'Cultivator' },
   { name: 'Extractor', code: 'Extractor' },
+  { name: 'Budtender', code: 'Budtender' },
+  { name: 'Front desk', code: 'Front desk' },
+  { name: 'Greeter', code: 'Greeter' },
+  { name: 'Id checker', code: 'Id checker' },
+  { name: 'Inventory', code: 'Inventory' },
+  { name: 'Data entry', code: 'Data entry' },
+  { name: 'Event staff', code: 'Event staff' },
+  { name: 'Promo representative', code: 'Promo representative' },
+  { name: 'Cleaning', code: 'Cleaning' },
+  { name: 'Joint roller', code: 'Joint roller' },
+  { name: 'Grow tech', code: 'Grow tech' },
+  { name: 'Clone tech', code: 'Clone tech' },
+  { name: 'Sign spinner', code: 'Sign spinner' },
 ]
+
 const rangeOptions = [
   { name: '5 miles', code: 5 },
   { name: '10 miles', code: 10 },

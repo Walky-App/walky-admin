@@ -1,9 +1,12 @@
+/*eslint-disable */
 import * as React from 'react'
+
 import { useNavigate } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 
-import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import GlobalTable from '../../../components/shared/GlobalTable'
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
 
@@ -54,6 +57,7 @@ export default function Facilities() {
       accessor: 'total_hours',
     }, //@ts-ignore
     { Header: 'Vacancy', accessor: 'vacancy' },
+    { Header: 'Hourly Rate', accessor: 'hourly_rate' },
     {
       Header: 'Availability',
       accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
@@ -72,7 +76,7 @@ export default function Facilities() {
         onClick={() => {
           navigate('/client/jobs/new')
         }}
-        size='small'
+        size="small"
       />
       <GlobalTable data={jobsData} columns={jobsColumns} allowClick />
     </div>
