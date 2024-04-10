@@ -18,6 +18,7 @@ export interface IUser {
   role: string
   state: string
   updated_at: string
+  experience_level?: string
   verified: boolean
   address?: string
   avatar?: string
