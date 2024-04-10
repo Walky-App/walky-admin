@@ -34,7 +34,6 @@ interface Props {
 }
 
 export const JobCalendar: React.FC<Props> = ({ jobs }) => {
-  const [currentDate, setCurrentDate] = useState(new Date())
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
 
@@ -53,14 +52,10 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
       })
     }
 
-    // Iterate over all jobs
     for (const job of jobs) {
-      // Iterate over all job_dates of the current job
       for (const jobDate of job.job_dates) {
-        // Find the day object for the current job_date
         const day = newDays.find(day => day.date === jobDate.split('T')[0])
 
-        // If the day object exists, push the job to its events
         if (day) {
           day.events.push({
             id: job._id,
@@ -76,8 +71,10 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
   }, [currentMonth, currentYear, jobs])
 
   const isToday = (date: string) => {
-    const today = currentDate
-    const d = new Date(date)
+    const today = new Date()
+
+    const [year, month, day] = date.split('-').map(Number)
+    const d = new Date(year, month - 1, day)
 
     return (
       d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()
@@ -88,7 +85,6 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     const today = new Date()
     setCurrentMonth(today.getMonth())
     setCurrentYear(today.getFullYear())
-    setCurrentDate(today)
   }
 
   const handlePreviousMonth = () => {
@@ -107,10 +103,8 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     }
   }
   const daysWithJobs = days.map(day => {
-    // Find jobs for the current day
     const jobsForDay = jobs.filter(job => job.job_dates.includes(day.date))
 
-    // Map jobs to events
     const jobEvents = jobsForDay.map(job => ({
       id: job._id,
       name: job.title,
@@ -118,7 +112,6 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
       datetime: job.job_dates[0],
     }))
 
-    // Return the day with the job events added to the events array
     return {
       ...day,
       events: [...day.events, ...jobEvents],
