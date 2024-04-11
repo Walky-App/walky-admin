@@ -7,7 +7,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
-import { InputNumber } from 'primereact/inputnumber'
+import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
 import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
@@ -15,6 +15,7 @@ import { classNames } from 'primereact/utils'
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 import { IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 
 export default function ClientEditJob() {
@@ -26,6 +27,7 @@ export default function ClientEditJob() {
   const user = GetTokenInfo()
   const id = user?._id
   const toast = useRef<Toast>(null)
+  const { showToast } = useUtils()
   const [facilities, setFacilities] = React.useState<IFacility[]>()
   const navigate = useNavigate()
   const location = useLocation()
@@ -130,7 +132,7 @@ export default function ClientEditJob() {
 
       // Calculating total hours and sending with payload
       if (startTime && endTime && data.lunch_break !== null) {
-        let startHours = startTime.getHours() + startTime.getMinutes() / 60
+        const startHours = startTime.getHours() + startTime.getMinutes() / 60
         let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
         if (endHours <= startHours) {
@@ -140,6 +142,14 @@ export default function ClientEditJob() {
         const totalHours = endHours - startHours - lunchBreakHours
         requestData.total_hours = Math.round(totalHours * 100) / 100
         setTotalHours(requestData.total_hours)
+        if (requestData.total_hours < 7) {
+          showToast({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'The total working hours must be at least 7 hours for a job to be successfully created.',
+          })
+          return
+        }
       }
 
       const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData)
@@ -341,11 +351,19 @@ export default function ClientEditJob() {
           {/* Shift Details */}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours and Vacancies</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Vacancies and Tips</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
-              {totalHours !== 0 && <div>Total hours: {totalHours}</div>}
+              {totalHours !== 0 ? (
+                <div className="mt-10">
+                  <div
+                    className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
+                    Total Hours: {totalHours}
+                  </div>
+                  <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
+                </div>
+              ) : null}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -449,7 +467,7 @@ export default function ClientEditJob() {
 
               <div className="sm:col-span-3">
                 <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
-                  Number of Vacancies:
+                  Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
                 </label>
                 <div className="mt-2">
                   <Controller
@@ -458,7 +476,8 @@ export default function ClientEditJob() {
                     rules={{
                       required: 'Enter a valid number of vacancies.',
                       validate: value =>
-                        (value !== null && value >= 0 && value <= 200) || 'Enter a valid number of vacancies.',
+                        (value !== null && value >= 1 && value <= 10) ||
+                        'Enter a valid number of vacancies. Max 10 vacancies allowed.',
                     }}
                     render={({ field, fieldState }) => (
                       <>
@@ -466,13 +485,20 @@ export default function ClientEditJob() {
                           <InputNumber
                             id={field.name}
                             inputRef={field.ref}
+                            tooltip="Enter a valid number of vacancies from 1 to 10. If you need more than 10 vacancies, please contact Customer Service at (999)999-99-99."
+                            tooltipOptions={{ position: 'mouse' }}
                             value={field.value}
                             onBlur={field.onBlur}
-                            onValueChange={e => field.onChange(e)}
+                            onValueChange={(e: InputNumberValueChangeEvent) => {
+                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
+                                field.onChange(e.value)
+                              }
+                            }}
                             useGrouping={false}
                             mode="decimal"
                             showButtons
                             min={1}
+                            max={10}
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
