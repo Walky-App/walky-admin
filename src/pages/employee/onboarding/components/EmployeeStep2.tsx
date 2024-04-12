@@ -35,8 +35,9 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
             ...userFound,
             onboarding: {
               ...userFound.onboarding,
-              step_number: 2,
-              description: steps[1].label ?? '',
+              step_number: 3,
+              description: steps[2].label ?? '',
+              completed: false,
             },
           }
 

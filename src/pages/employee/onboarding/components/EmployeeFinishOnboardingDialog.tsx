@@ -38,7 +38,6 @@ export const EmployeeFinishOnboardingDialog = ({ visible, setVisible }: Props) =
               <Button
                 label="Close"
                 onClick={() => {
-                  setVisible(false)
                   navigate('/employee/dashboard')
                 }}
               />
