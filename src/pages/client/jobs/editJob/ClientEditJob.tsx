@@ -1,10 +1,13 @@
+/*eslint-disable */
 import React, { useEffect, useRef } from 'react'
-import { Controller, set, useForm } from 'react-hook-form'
+
+import { Controller, useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
-import { InputNumber } from 'primereact/inputnumber'
+import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
 import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
@@ -12,6 +15,7 @@ import { classNames } from 'primereact/utils'
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 import { IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 
 export default function ClientEditJob() {
@@ -23,6 +27,7 @@ export default function ClientEditJob() {
   const user = GetTokenInfo()
   const id = user?._id
   const toast = useRef<Toast>(null)
+  const { showToast } = useUtils()
   const [facilities, setFacilities] = React.useState<IFacility[]>()
   const navigate = useNavigate()
   const location = useLocation()
@@ -53,6 +58,7 @@ export default function ClientEditJob() {
         setValue('title', job.title)
         setValue('facility_id', job.facility._id)
         setValue('vacancy', job.vacancy)
+        setValue('hourly_rate', job.hourly_rate)
         setValue('lunch_break', job.lunch_break)
         const jobDates = job.job_dates.map((dateString: string) => new Date(dateString))
         setValue('job_dates', jobDates)
@@ -70,6 +76,7 @@ export default function ClientEditJob() {
     title: job.title,
     facility_id: job.facility_id,
     vacancy: job.vacancy,
+    hourly_rate: job.hourly_rate,
     job_dates: job.job_dates,
     start_time: job.start_time,
     end_time: job.end_time,
@@ -98,13 +105,12 @@ export default function ClientEditJob() {
       let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
       if (endHours <= startHours) {
-        // Adjust for cases where the end time is past midnight
         endHours += 24
       }
 
       const lunchBreakHours = lunchBreak ? lunchBreak / 60 : 0
       const totalHoursCalc = endHours - startHours - lunchBreakHours
-      setTotalHours(Math.round(totalHoursCalc * 100) / 100) // Update totalHours state
+      setTotalHours(Math.round(totalHoursCalc * 100) / 100)
     }
   }, [startTime, endTime, lunchBreak])
 
@@ -126,7 +132,7 @@ export default function ClientEditJob() {
 
       // Calculating total hours and sending with payload
       if (startTime && endTime && data.lunch_break !== null) {
-        let startHours = startTime.getHours() + startTime.getMinutes() / 60
+        const startHours = startTime.getHours() + startTime.getMinutes() / 60
         let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
         if (endHours <= startHours) {
@@ -136,6 +142,14 @@ export default function ClientEditJob() {
         const totalHours = endHours - startHours - lunchBreakHours
         requestData.total_hours = Math.round(totalHours * 100) / 100
         setTotalHours(requestData.total_hours)
+        if (requestData.total_hours < 7) {
+          showToast({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'The total working hours must be at least 7 hours for a job to be successfully created.',
+          })
+          return
+        }
       }
 
       const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData)
@@ -146,8 +160,8 @@ export default function ClientEditJob() {
           detail: 'Job information updated successfully',
         })
         setTimeout(() => {
-    navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
-  }, 3000)
+          navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
+        }, 3000)
       }
     } catch (error) {
       console.error(error)
@@ -162,6 +176,18 @@ export default function ClientEditJob() {
     { title: 'Gardener', value: 'Gardener' },
     { title: 'Cultivator', value: 'Cultivator' },
     { title: 'Extractor', value: 'Extractor' },
+    { title: 'Front desk', value: 'Front desk' },
+    { title: 'Greeter', value: 'Greeter' },
+    { title: 'Id checker', value: 'Id checker' },
+    { title: 'Inventory', value: 'Inventory' },
+    { title: 'Data entry', value: 'Data entry' },
+    { title: 'Event staff', value: 'Event staff' },
+    { title: 'Promo representative', value: 'Promo representative' },
+    { title: 'Cleaning', value: 'Cleaning' },
+    { title: 'Joint roller', value: 'Joint roller' },
+    { title: 'Grow tech', value: 'Grow tech' },
+    { title: 'Clone tech', value: 'Clone tech' },
+    { title: 'Sign spinner', value: 'Sign spinner' },
   ]
 
   const lunchTimes = [
@@ -325,11 +351,19 @@ export default function ClientEditJob() {
           {/* Shift Details */}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours and Vacancies</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Vacancies and Tips</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please provide working hours, lunch break duration and number of available vacancies.
               </p>
-              {totalHours !== 0 && <div>Total hours: {totalHours}</div>}
+              {totalHours !== 0 ? (
+                <div className="mt-10">
+                  <div
+                    className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
+                    Total Hours: {totalHours}
+                  </div>
+                  <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
+                </div>
+              ) : null}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -433,7 +467,7 @@ export default function ClientEditJob() {
 
               <div className="sm:col-span-3">
                 <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
-                  Number of Vacancies:
+                  Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
                 </label>
                 <div className="mt-2">
                   <Controller
@@ -442,7 +476,8 @@ export default function ClientEditJob() {
                     rules={{
                       required: 'Enter a valid number of vacancies.',
                       validate: value =>
-                        (value !== null && value >= 0 && value <= 200) || 'Enter a valid number of vacancies.',
+                        (value !== null && value >= 1 && value <= 10) ||
+                        'Enter a valid number of vacancies. Max 10 vacancies allowed.',
                     }}
                     render={({ field, fieldState }) => (
                       <>
@@ -450,13 +485,20 @@ export default function ClientEditJob() {
                           <InputNumber
                             id={field.name}
                             inputRef={field.ref}
+                            tooltip="Enter a valid number of vacancies from 1 to 10. If you need more than 10 vacancies, please contact Customer Service at (999)999-99-99."
+                            tooltipOptions={{ position: 'mouse' }}
                             value={field.value}
                             onBlur={field.onBlur}
-                            onValueChange={e => field.onChange(e)}
+                            onValueChange={(e: InputNumberValueChangeEvent) => {
+                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
+                                field.onChange(e.value)
+                              }
+                            }}
                             useGrouping={false}
                             mode="decimal"
                             showButtons
                             min={1}
+                            max={10}
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
@@ -466,6 +508,47 @@ export default function ClientEditJob() {
                   />
                 </div>
               </div>
+
+              <div className="sm:col-span-3">
+                <label htmlFor="hourly_rate" className="block text-sm font-medium leading-6 text-gray-900">
+                  Pay Rate:
+                </label>
+                <div className="mt-2">
+                  <Controller
+                    name="hourly_rate"
+                    control={control}
+                    rules={{
+                      required: 'Enter hourly pay rate.',
+                      validate: value =>
+                        (value !== null && value >= 1 && value <= 40) || 'Enter a valid hourly pay rate amount.',
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <div>
+                          <InputNumber
+                            id={field.name}
+                            inputRef={field.ref}
+                            tooltip="Enter pay rate for this job in USD."
+                            tooltipOptions={{ position: 'mouse' }}
+                            value={field.value}
+                            onBlur={field.onBlur}
+                            onValueChange={e => field.onChange(e)}
+                            useGrouping={false}
+                            mode="currency"
+                            currency="USD"
+                            showButtons
+                            min={1}
+                            max={40}
+                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
+                          />
+                        </div>
+                        {getFormErrorMessage(field.name)}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+
               <div className="sm:col-span-3">
                 <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
                   Job tips:

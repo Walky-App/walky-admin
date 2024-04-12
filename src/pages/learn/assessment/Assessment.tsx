@@ -10,6 +10,7 @@ import { useAdmin } from '../../../contexts/AdminContext'
 import type { IAssessmentResponse } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
 import { useLearn } from '../../../store/useLearn'
+import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
 import { Timer } from '../components/Timer'
 import { AssessmentResponse } from './AssessmentResponse'
@@ -36,20 +37,43 @@ export const Assessment = () => {
     percentagea_assessment: 0,
   })
 
-  const { setRecord } = useLearn()
-
-  const fetchData = async () => {
-    const response = await RequestService(`units/${params.unitId}`)
-    if (response) {
-      setUnit(response)
-    }
-  }
+  const { setRecord, expireTime, setExpireTime } = useLearn()
+  const { showToast } = useUtils()
 
   useEffect(() => {
+    const fetchData = async () => {
+      const response = await RequestService(`units/${params.unitId}`)
+      if (response) {
+        setUnit(response)
+      }
+    }
     if (!unit) {
       fetchData()
     }
-  })
+    const sendDataAssessment = async () => {
+      const response = await RequestService(`units/assessment/validator`, 'POST', {
+        userAnswers: assessmentArray,
+        unitId: params.unitId,
+      })
+      setRecord(response.AssessmentRecord)
+      setValidatorResponse(response.reponseAssessment)
+      setFinishAssessment(true)
+      showToast({ severity: 'error', detail: 'Assessment sent due to time expiration', summary: 'Information' })
+    }
+    if (expireTime) {
+      sendDataAssessment()
+      setExpireTime(false)
+    }
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [expireTime, unit, params.unitId, setUnit, assessmentArray, setRecord, setExpireTime, showToast])
 
   const handlerControllerQuestion = () => {
     if (indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1) {
@@ -77,7 +101,7 @@ export const Assessment = () => {
       })
     } else {
       //next
-      if (selectAnswer.code !== 99) {
+      if (indexQuestion >= assessmentArray.length) {
         const assessmentData = [...(assessmentArray ?? [])]
         assessmentData.push(selectAnswer)
         setAssessmentArray(assessmentData)
@@ -145,8 +169,12 @@ export const Assessment = () => {
               Previous
             </button>
             <button
-              className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+              className={cn(
+                selectAnswer.code === 99 ? 'bg-gray-300' : 'bg-green-600 hover:bg-green-500',
+                'rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm ',
+              )}
               onClick={() => handlerControllerQuestion()}
+              disabled={selectAnswer.code === 99}
               type="button">
               {indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1 ? 'Submit' : 'Next'}
             </button>
