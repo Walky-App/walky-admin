@@ -140,10 +140,7 @@ export const AdminHolidays = () => {
   }
 
   const updatedByTemplate = (rowData: IHoliday) => {
-    if (rowData.created_by == rowData.updated_by) {
-      return <span>{rowData.updated_by}</span>
-    }
-    return null
+    return <span>{rowData.updated_by}</span>
   }
 
   return (
