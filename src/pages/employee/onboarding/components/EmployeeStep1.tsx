@@ -77,10 +77,10 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
             ...userFound,
             ...data,
             onboarding: {
-              step_number: 1,
-              description: steps[0].label ?? '',
+              step_number: 2,
+              description: steps[1].label ?? '',
               type: data.onboarding?.type,
-              completed: data.onboarding?.completed,
+              completed: false,
             },
           }
 
@@ -220,11 +220,8 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 control={control}
                 name="phone_number"
                 rules={{
-                  required: 'Mobile Number is required',
-                  pattern: {
-                    value: /^\(\d{3}\) \d{3}-\d{4}$/,
-                    message: 'Invalid Mobile Number. E.g. (123) 456-7890',
-                  },
+                  required: 'Mobile Number is required, should be 10 digits.',
+                  pattern: /^\d{10}$/,
                 }}
                 render={({ field, fieldState }) => (
                   <>
@@ -236,6 +233,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                       {...field}
                       mask="(999) 999-9999"
                       slotChar="x"
+                      unmask={true}
                       tooltip="E.g. (281) 330-8004"
                       tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}

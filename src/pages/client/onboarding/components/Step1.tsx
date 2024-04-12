@@ -177,7 +177,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Tax ID:
+                      *Tax ID:
                     </label>
                     <InputMask
                       id={field.name}
@@ -202,7 +202,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Corporate Name:
+                      *Corporate Name:
                     </label>
                     <InputText
                       id={field.name}
@@ -223,7 +223,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Company DBAs:
+                      *Company DBAs:
                     </label>
                     <InputText
                       id={field.name}
@@ -247,7 +247,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Facility Name:
+                      *Facility Name:
                     </label>
                     <InputText
                       id={field.name}
@@ -264,17 +264,21 @@ export const Step1 = ({ step, setStep }: StepProps) => {
               <Controller
                 control={control}
                 name="phone_number"
-                rules={{ required: 'Phone Number is required' }}
+                rules={{
+                  required: 'Phone Number is required, should be 10 digits.',
+                  pattern: /^\d{10}$/,
+                }}
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Facility Phone Number:
+                      *Facility Phone Number:
                     </label>
                     <InputMask
                       id={field.name}
                       {...field}
                       mask="(999) 999-9999"
                       slotChar="x"
+                      unmask={true}
                       tooltip="E.g. (281) 330-8004"
                       tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
@@ -299,7 +303,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Facility Square Footage:
+                      *Facility Square Footage:
                     </label>
                     <InputNumber
                       id={field.name}
@@ -324,7 +328,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Services:
+                      *Services:
                     </label>
                     <MultiSelect
                       id={field.name}
@@ -385,7 +389,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      * Business Address:
+                      *Business Address:
                     </label>
                     <AddressAutoComplete
                       controlled
@@ -421,7 +425,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        * First Name:
+                        *First Name:
                       </label>
                       <InputText
                         id={field.name}
@@ -442,7 +446,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        * Last Name:
+                        *Last Name:
                       </label>
                       <InputText
                         id={field.name}
@@ -463,7 +467,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        * Role:
+                        *Role:
                       </label>
                       <Dropdown
                         id={field.name}
@@ -482,22 +486,20 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   control={control}
                   name={`contacts.${index}.phone_number`}
                   rules={{
-                    required: 'Phone Number is required',
-                    pattern: {
-                      value: /^\(\d{3}\) \d{3}-\d{4}$/,
-                      message: 'Invalid Mobile Number. E.g. (123) 456-7890',
-                    },
+                    required: 'Phone Number is required, should be 10 digits.',
+                    pattern: /^\d{10}$/,
                   }}
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        * Phone Number:
+                        *Phone Number:
                       </label>
                       <InputMask
                         id={field.name}
                         {...field}
                         mask="(999) 999-9999"
                         slotChar="x"
+                        unmask={true}
                         tooltip="E.g. (281) 330-8004"
                         tooltipOptions={tooltipOptions}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
@@ -521,7 +523,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   render={({ field, fieldState }) => (
                     <>
                       <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        * Email:
+                        *Email:
                       </label>
                       <InputText
                         id={field.name}

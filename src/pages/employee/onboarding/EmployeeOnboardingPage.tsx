@@ -31,8 +31,8 @@ const defaultUserValues: IUserFormInputs = {
   documents: [],
   onboarding: {
     step_number: 1,
-    description: 'Contact Information',
-    type: 'employee',
+    description: '',
+    type: '',
     completed: false,
   },
   job_preferences: [],
@@ -159,7 +159,9 @@ export const EmployeeOnboarding = () => {
 
   const onboardingSteps = [
     <Fragment key="step1">
-      <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
+      {currentUser?.onboarding?.step_number === 1 ? (
+        <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
+      ) : null}
       <EmployeeStep1 step={activeIndex} setStep={setActiveIndex} />
     </Fragment>,
     <EmployeeStep2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
@@ -188,9 +190,16 @@ export const EmployeeOnboarding = () => {
           documents: response.documents || [],
           job_preferences: response.job_preferences || [],
           notifications: response.notifications || [],
+          onboarding: {
+            step_number: 1,
+            description: 'Contact Information',
+            type: 'employee',
+            completed: false,
+          },
         }))
 
-        setActiveIndex((response.onboarding?.step_number ?? 1) - 1)
+        // For now we will show the FinishOnboardingDialog in "Preferences" when user returns to onboarding and has already finished Step3
+        setActiveIndex(response.onboarding?.step_number === 4 ? 2 : (response.onboarding?.step_number ?? 1) - 1)
         setLoading(false)
       } catch (error) {
         console.error('Error fetching user data:', error)
