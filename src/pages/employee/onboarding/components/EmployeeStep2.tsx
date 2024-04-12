@@ -10,13 +10,12 @@ import {
 import { Panel } from 'primereact/panel'
 
 import { type IUser } from '../../../../interfaces/User'
+import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
-import { FormDataContext, type StepProps } from '../EmployeeOnboardingPage'
-import { EmployeeFinishOnboardingDialog } from './EmployeeFinishOnboardingDialog'
+import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
 
 export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
-  const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
   const { currentUser, setCurrentUser } = useContext(FormDataContext)
   const fileUploadRef = useRef<FileUpload>(null)
@@ -24,12 +23,58 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
   const userId = currentUser?._id
 
-  const handleSaveButton = () => {
+  const updateUserAndIncrementStep = async (step: number) => {
+    let userId = currentUser?._id
+
+    if (userId != null) {
+      try {
+        const userFound: IUser = await RequestService(`users/${userId}`)
+
+        if (userFound !== null) {
+          const updatedUser: IUser = {
+            ...userFound,
+            onboarding: {
+              ...userFound.onboarding,
+              step_number: 3,
+              description: steps[2].label ?? '',
+              completed: false,
+            },
+          }
+
+          const response = await RequestService(`users/${userId}`, 'PATCH', updatedUser)
+
+          if (response?._id !== null) {
+            userId = response._id
+
+            setCurrentUser(response)
+          } else {
+            throw new Error('Failed to update user')
+          }
+        } else {
+          throw new Error('User not found')
+        }
+
+        setStep(step + 1)
+      } catch (error) {
+        console.error('Error updating user:', error)
+
+        showToast({
+          severity: 'error',
+          summary: 'Error saving changes',
+          detail: `Information could not be updated.`,
+          life: 2000,
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  }
+
+  const handleSaveButton = async () => {
     setIsLoading(true)
-    setTimeout(() => {
-      // This line is commented out to prevent the page from navigating to the next step
-      // setStep(step + 1)
-      setVisible(true)
+    setTimeout(async () => {
+      await updateUserAndIncrementStep(step)
+
       setIsLoading(false)
     }, 1000)
   }
@@ -74,8 +119,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
   return (
     <>
-      <EmployeeFinishOnboardingDialog visible={visible} setVisible={setVisible} />
-      <div className="space-y-4 sm:space-y-12">
+      <div className="space-y-12">
         {/* User Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>

@@ -3,12 +3,12 @@ import { useContext, useEffect, useState } from 'react'
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
 
 import { Button } from 'primereact/button'
-import { Dropdown } from 'primereact/dropdown'
 import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import {
@@ -17,6 +17,7 @@ import {
   tooltipOptions,
   type IUserFormInputs,
   type StepProps,
+  steps,
 } from '../EmployeeOnboardingPage'
 
 export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
@@ -40,7 +41,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
     control,
     formState: { errors },
     handleSubmit,
-    getValues,
     setValue,
   } = useForm<IUserFormInputs>({ values })
 
@@ -61,25 +61,27 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
       if (moreAddressDetails.country !== undefined) {
         setValue('country', moreAddressDetails.country)
       }
-
       setMoreAddressDetails(undefined)
     }
   }, [moreAddressDetails, setMoreAddressDetails, setValue])
 
-  const onSubmit: SubmitHandler<IUserFormInputs> = async data => {
-    setFormData(data)
-    setIsLoading(true)
-
+  const updateUserWithDataAndIncrementStep = async (data: IUserFormInputs, step: number) => {
     let userId = currentUser?._id
 
     if (userId != null) {
       try {
-        const userFound = await RequestService(`users/${userId}`)
+        const userFound: IUser = await RequestService(`users/${userId}`)
 
         if (userFound !== null) {
-          const updatedUser = {
+          const updatedUser: IUser = {
             ...userFound,
             ...data,
+            onboarding: {
+              step_number: 2,
+              description: steps[1].label ?? '',
+              type: data.onboarding?.type,
+              completed: false,
+            },
           }
 
           const response = await RequestService(`users/${userId}`, 'PATCH', updatedUser)
@@ -104,7 +106,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         showToast({
           severity: 'error',
           summary: 'Error saving changes',
-          detail: `${getValues('first_name')} could not be updated.`,
+          detail: `Information could not be updated.`,
           life: 2000,
         })
         setIsLoading(false)
@@ -112,9 +114,16 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
     }
   }
 
+  const onSubmit: SubmitHandler<IUserFormInputs> = async data => {
+    setFormData(data)
+    setIsLoading(true)
+
+    await updateUserWithDataAndIncrementStep(data, step)
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <div className="space-y-4 sm:space-y-12">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="p-fluid space-y-12">
         {/* Contact Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
@@ -172,7 +181,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Middle Name:
+                      Middle Name:
                     </label>
                     <InputText
                       id={field.name}
@@ -188,35 +197,31 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="gender"
-                rules={{ required: 'Field is required' }}
+                name="preferred_name"
+                rules={{ required: false }}
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Gender:
+                      Preferred Name:
                     </label>
-                    <Dropdown
+                    <InputText
                       id={field.name}
                       {...field}
-                      filter
-                      options={['Male', 'Female', 'Other']}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
                   </>
                 )}
               />
-              {getFormErrorMessage(`gender`, errors)}
+              {getFormErrorMessage(`middle_name`, errors)}
             </div>
+
             <div className="sm:col-span-3">
               <Controller
                 control={control}
                 name="phone_number"
                 rules={{
-                  required: 'Mobile Number is required',
-                  pattern: {
-                    value: /^\(\d{3}\) \d{3}-\d{4}$/,
-                    message: 'Invalid Mobile Number. E.g. (123) 456-7890',
-                  },
+                  required: 'Mobile Number is required, should be 10 digits.',
+                  pattern: /^\d{10}$/,
                 }}
                 render={({ field, fieldState }) => (
                   <>
@@ -228,6 +233,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                       {...field}
                       mask="(999) 999-9999"
                       slotChar="x"
+                      unmask={true}
                       tooltip="E.g. (281) 330-8004"
                       tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
@@ -265,7 +271,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
             </div>
           </div>
         </div>
-
         {/* Home Address */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
@@ -301,9 +306,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
-        <div>
-          <Button type="submit" label="Submit" loading={isLoading} />
-        </div>
+        <Button type="submit" label="Submit" loading={isLoading} />
       </div>
     </form>
   )
