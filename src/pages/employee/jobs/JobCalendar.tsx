@@ -353,7 +353,10 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
             {daysWithJobs.map(day => (
               <div
                 key={day.date}
-                className={cn(day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-500', 'relative px-3 py-2')}>
+                className={cn(
+                  day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-500',
+                  'relative px-3 py-2 lg:min-h-28',
+                )}>
                 <time
                   dateTime={day.date}
                   className={
