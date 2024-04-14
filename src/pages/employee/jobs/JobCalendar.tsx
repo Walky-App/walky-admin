@@ -13,6 +13,7 @@ import {
 
 import { type IJob } from '../../../interfaces/job'
 import { cn } from '../../../utils/cn'
+import { convertToStandardTime } from '../../../utils/timeUtils'
 
 interface IEvent {
   id: string
@@ -57,10 +58,18 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
         const day = newDays.find(day => day.date === jobDate.split('T')[0])
 
         if (day) {
+          let jobStartTime
+          try {
+            jobStartTime = convertToStandardTime(job.start_time)
+          } catch (error) {
+            console.error(error)
+            jobStartTime = ''
+          }
+
           day.events.push({
             id: job._id,
             name: job.title,
-            time: new Date(jobDate).toLocaleTimeString(),
+            time: jobStartTime,
             datetime: jobDate,
           })
         }
@@ -151,7 +160,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
               <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
-          {/* Desktop View */}
+          {/* Toolbar (Desktop View) */}
           <div className="hidden md:ml-4 md:flex md:items-center">
             <Menu as="div" className="relative">
               <Menu.Button
@@ -224,7 +233,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
               </Transition>
             </Menu>
           </div>
-          {/* Mobile View */}
+          {/* Toolbar (Mobile View) */}
           <Menu as="div" className="relative ml-6 md:hidden">
             <Menu.Button className="-mx-2 flex items-center rounded-full border border-transparent p-2 text-gray-400 hover:text-gray-500">
               <span className="sr-only">Open menu</span>
@@ -348,7 +357,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
           </div>
         </div>
         <div className="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
-          {/* Desktop View */}
+          {/*Calendar (Desktop View) */}
           <div className="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-6 lg:gap-px">
             {daysWithJobs.map(day => (
               <div
