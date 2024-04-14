@@ -81,7 +81,7 @@ export const EmployeeMyJobs = () => {
         />
       </div>
       {view === 'calendar' ? (
-        <JobCalendar jobs={jobs} />
+        <JobCalendar jobs={activeJobs} />
       ) : (
         <div className="[&>*:last-child]:mt-8">
           <TabView>
