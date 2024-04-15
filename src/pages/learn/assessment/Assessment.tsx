@@ -101,14 +101,22 @@ export const Assessment = () => {
       })
     } else {
       //next
+      const assessmentData = [...(assessmentArray ?? [])]
       if (indexQuestion >= assessmentArray.length) {
-        const assessmentData = [...(assessmentArray ?? [])]
         assessmentData.push(selectAnswer)
         setAssessmentArray(assessmentData)
       }
+      const updateAnswer = assessmentData.map((item, index) => {
+        if (index === indexQuestion) {
+          return selectAnswer
+        }
+        return item
+      })
       if (assessmentArray[indexQuestion + 1]) {
+        setAssessmentArray(updateAnswer)
         setSelectAnswer(assessmentArray[indexQuestion + 1])
       } else {
+        setAssessmentArray(updateAnswer)
         setSelectAnswer({ code: 99, answer: '', _id: '' })
       }
       setIndexQuestion(indexQuestion + 1)
@@ -137,7 +145,9 @@ export const Assessment = () => {
           </p>
           <ProgressBar className="h-2" value={progressValue} showValue={false} />
 
-          <div className="mt-3 text-xl font-semibold">{unit?.assessments.questions?.[indexQuestion]?.header}</div>
+          <div className="mt-3 select-none text-xl font-semibold">
+            {unit?.assessments.questions?.[indexQuestion]?.header}
+          </div>
 
           <div className="my-3 gap-5">
             {unit?.assessments.questions?.[indexQuestion]?.options?.map((option, index) => {
@@ -146,7 +156,7 @@ export const Assessment = () => {
                   <button
                     className={cn(
                       selectAnswer.code === index ? 'border-green-500' : 'border-gray-300',
-                      'flex w-full gap-2 rounded-md border-2  p-2 hover:border-green-500 sm:w-4/5',
+                      'flex w-full select-none gap-2 rounded-md  border-2 p-2 hover:border-green-500 sm:w-4/5',
                     )}
                     onClick={() => handleAddAnswer(option, index)}
                     type="button">
