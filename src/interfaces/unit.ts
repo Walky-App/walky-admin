@@ -34,6 +34,8 @@ export interface Unit extends Documents {
   time: number
   assessments: Assessment
   order: number
+  type: string
+  url_video: string
 }
 
 export interface IAssessmentResponse {
