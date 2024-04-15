@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { Unit } from '../../../interfaces/unit'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useLearn } from '../../../store/useLearn'
 import { TableContents } from '../components/TableContents'
 import { UnitDetailsCard } from '../components/UnitDetailsCard'
@@ -18,13 +18,15 @@ export const UnitDetail = () => {
   const navigate = useNavigate()
 
   const fetchData = async () => {
-    const response: Unit = await RequestService(`units/${params.unitId}`)
-    if (response._id) {
-      setUnit(response)
+    const response = await requestService(`units/${params.unitId}`)
+    if (response.status === 200) {
+      const jsonResponse: Unit = await response.json()
+      setUnit(jsonResponse)
     }
-    const responseLms = await RequestService('lms')
-    if (responseLms.length !== 0) {
-      setRecord(responseLms)
+    const responseLms = await requestService('lms')
+    if (responseLms.status === 200) {
+      const jsonResponseLMS = await responseLms.json()
+      setRecord(jsonResponseLMS)
     }
   }
 
