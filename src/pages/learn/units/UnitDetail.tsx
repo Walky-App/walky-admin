@@ -8,6 +8,7 @@ import { RequestService } from '../../../services/RequestService'
 import { useLearn } from '../../../store/useLearn'
 import { TableContents } from '../components/TableContents'
 import { UnitDetailsCard } from '../components/UnitDetailsCard'
+import { VideoPlayer } from '../components/VideoPlayer'
 
 export const UnitDetail = () => {
   const { unit, setUnit } = useAdmin()
@@ -17,8 +18,8 @@ export const UnitDetail = () => {
   const navigate = useNavigate()
 
   const fetchData = async () => {
-    const response = await RequestService(`units/${params.unitId}`)
-    if (response) {
+    const response: Unit = await RequestService(`units/${params.unitId}`)
+    if (response._id) {
       setUnit(response)
     }
     const responseLms = await RequestService('lms')
@@ -37,20 +38,17 @@ export const UnitDetail = () => {
     <div>
       <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
         {/*left content*/}
-        <div className="order-2 col-span-4 md:order-1 md:col-span-2 ">
-          <div className="flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white">
-            <UnitDetailsCard unit={unit as Unit} />
-          </div>
+        <div className="order-1 col-span-4 rounded-2xl border border-zinc-100 bg-white md:col-span-2">
+          {unit?.type === 'video' ? <VideoPlayer url={unit.url_video} /> : null}
+          <div className="flex h-auto flex-col ">{unit ? <UnitDetailsCard unit={unit} /> : null}</div>
         </div>
 
         {/*right content*/}
-        <div className="sticky top-[70px] order-1 col-span-4 h-80 md:col-span-1">
+        <div className="order-2 col-span-4 md:sticky md:top-[70px] md:col-span-1 md:h-80">
           <div className="h-auto rounded-2xl border border-zinc-100 bg-white p-3">
-            <div className="text-base font-semibold">Complete {unit?.title}?</div>
-            <div className="text-xs">Take the assessment to unlock the next unit.</div>
-            <div className="mt-3 flex justify-center">
+            <div className="my-3 flex justify-center">
               <button
-                className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                className="w-full rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
                 disabled={unit?.assessments ? false : true}
                 onClick={() => {
                   navigate(`/learn/module/${params.moduleId}/unit/${params.unitId}/assesment`)
@@ -59,9 +57,9 @@ export const UnitDetail = () => {
                 Take Assessment
               </button>
             </div>
-          </div>
-          <div className="m-3">
-            <TableContents header="Topics" />
+            <div className="m-3 hidden md:block">
+              <TableContents headerTitle="Topics" />
+            </div>
           </div>
         </div>
       </div>
