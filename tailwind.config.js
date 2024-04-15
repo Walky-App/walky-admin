@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -11,6 +12,10 @@ module.exports = {
         primary: '#0E9F6E',
         primaryDark: '#057A55',
         primaryDarker: '#0A5F3C',
+        primaryLight: '#81C44F',
+      },
+      backgroundColor: {
+        'black-60': 'rgba(0, 0, 0, 0.6)',
       },
     },
   },
