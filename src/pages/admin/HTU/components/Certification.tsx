@@ -80,7 +80,7 @@ export const Pdf = ({ data, user }: pdfProps) => {
               fontFamily: 'BebasNeue',
               color: '#95CA56',
             }}>
-            {`${user?.first_name} ${user?.last_name}`}
+            {`${user?.first_name} ${user?.last_name !== undefined ? user?.last_name : ''}`}
           </Text>
         </View>
       </Page>
