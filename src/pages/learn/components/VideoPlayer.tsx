@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ReactPlayer from 'react-player'
@@ -24,6 +23,17 @@ const formatTime = (time: number) => {
 
 interface VideoPlayerProps {
   url: string
+}
+
+interface FullscreenDocument extends Document {
+  mozCancelFullScreen?: () => Promise<void>
+  webkitExitFullscreen?: () => Promise<void>
+  msExitFullscreen?: () => Promise<void>
+}
+interface FullscreenElement extends HTMLDivElement {
+  mozRequestFullScreen?: () => Promise<void>
+  webkitRequestFullscreen?: () => Promise<void>
+  msRequestFullscreen?: () => Promise<void>
 }
 
 export const VideoPlayer = ({ url }: VideoPlayerProps) => {
@@ -151,33 +161,28 @@ export const VideoPlayer = ({ url }: VideoPlayerProps) => {
 
   const handleFullScreen = () => {
     if (playerContainerRef.current) {
-      const container = playerContainerRef.current as HTMLDivElement
+      const container = playerContainerRef.current as FullscreenElement
       if (fullScreen) {
         if (container.requestFullscreen) {
           container.requestFullscreen()
-        } else if ((container as any).mozRequestFullScreen) {
-          // Explicit type cast
-          ;(container as any).mozRequestFullScreen()
-        } else if ((container as any).webkitRequestFullscreen) {
-          // Chrome, Safari and Opera
-          ;(container as any).webkitRequestFullscreen()
-        } else if ((container as any).msRequestFullscreen) {
-          // IE/Edge
-          ;(container as any).msRequestFullscreen()
+        } else if (container.mozRequestFullScreen) {
+          container.mozRequestFullScreen()
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen()
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen()
         }
       } else {
-        if (document.fullscreenElement) {
-          if (document.exitFullscreen) {
-            document.exitFullscreen()
-          } else if ((document as any).mozCancelFullScreen) {
-            // Explicit type cast
-            ;(document as any).mozCancelFullScreen()
-          } else if ((document as any).webkitExitFullscreen) {
-            // Chrome, Safari and Opera
-            ;(document as any).webkitExitFullscreen()
-          } else if ((document as any).msExitFullscreen) {
-            // IE/Edge
-            ;(document as any).msExitFullscreen()
+        const doc = document as FullscreenDocument
+        if (doc.fullscreenElement) {
+          if (doc.exitFullscreen) {
+            doc.exitFullscreen()
+          } else if (doc.mozCancelFullScreen) {
+            doc.mozCancelFullScreen()
+          } else if (doc.webkitExitFullscreen) {
+            doc.webkitExitFullscreen()
+          } else if (doc.msExitFullscreen) {
+            doc.msExitFullscreen()
           }
         }
       }
@@ -303,7 +308,7 @@ const Control = ({
                   fill="#fff"
                 />
               </svg>
-            )}{' '}
+            )}
           </div>
         )}
       </div>
@@ -373,7 +378,7 @@ const Control = ({
                       fill="#fff"
                     />
                   </svg>
-                )}{' '}
+                )}
               </button>
               <button onClick={onForward} type="button">
                 <svg
