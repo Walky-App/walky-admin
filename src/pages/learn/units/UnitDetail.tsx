@@ -4,8 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { Unit } from '../../../interfaces/unit'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useLearn } from '../../../store/useLearn'
+import { useUtils } from '../../../store/useUtils'
 import { TableContents } from '../components/TableContents'
 import { UnitDetailsCard } from '../components/UnitDetailsCard'
 import { VideoPlayer } from '../components/VideoPlayer'
@@ -14,17 +15,30 @@ export const UnitDetail = () => {
   const { unit, setUnit } = useAdmin()
   const { setRecord } = useLearn()
   const params = useParams()
+  const { showToast } = useUtils()
 
   const navigate = useNavigate()
 
   const fetchData = async () => {
-    const response: Unit = await RequestService(`units/${params.unitId}`)
-    if (response._id) {
-      setUnit(response)
+    try {
+      const response = await requestService(`units/${params.unitId}`)
+      if (response.status === 200) {
+        const jsonResponse: Unit = await response.json()
+        setUnit(jsonResponse)
+      }
+    } catch (error) {
+      showToast({ severity: 'error', detail: 'Internal error', summary: 'wait a moment and try again' })
+      navigate('/learn')
     }
-    const responseLms = await RequestService('lms')
-    if (responseLms.length !== 0) {
-      setRecord(responseLms)
+    try {
+      const responseLms = await requestService('lms')
+      if (responseLms.status === 200) {
+        const jsonResponseLMS = await responseLms.json()
+        setRecord(jsonResponseLMS)
+      }
+    } catch (error) {
+      showToast({ severity: 'error', detail: 'Internal error', summary: 'wait a moment and try again' })
+      navigate('/learn')
     }
   }
 
