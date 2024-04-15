@@ -5,10 +5,10 @@ import { type NavigationButtonInterface } from '../../../interfaces/global'
 import { type Section } from '../../../interfaces/unit'
 
 interface TableContentsProps {
-  header: string
+  headerTitle: string
 }
 
-export const TableContents = ({ header }: TableContentsProps) => {
+export const TableContents = ({ headerTitle }: TableContentsProps) => {
   const [active, setActive] = useState<number | null>(null)
   const [dataContents, setDataContents] = useState<NavigationButtonInterface[]>([])
   const { unit } = useAdmin()
@@ -43,7 +43,7 @@ export const TableContents = ({ header }: TableContentsProps) => {
 
   return (
     <div>
-      <div>{header}</div>
+      <div>{headerTitle}</div>
       <nav>
         <ul>
           {dataContents.map((item, index) => (

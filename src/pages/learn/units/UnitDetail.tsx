@@ -18,8 +18,8 @@ export const UnitDetail = () => {
   const navigate = useNavigate()
 
   const fetchData = async () => {
-    const response = await RequestService(`units/${params.unitId}`)
-    if (response) {
+    const response: Unit = await RequestService(`units/${params.unitId}`)
+    if (response._id) {
       setUnit(response)
     }
     const responseLms = await RequestService('lms')
@@ -40,9 +40,7 @@ export const UnitDetail = () => {
         {/*left content*/}
         <div className="order-1 col-span-4 rounded-2xl border border-zinc-100 bg-white md:col-span-2">
           {unit?.type === 'video' ? <VideoPlayer url={unit.url_video} /> : null}
-          <div className="flex h-auto flex-col ">
-            <UnitDetailsCard unit={unit as Unit} />
-          </div>
+          <div className="flex h-auto flex-col ">{unit ? <UnitDetailsCard unit={unit} /> : null}</div>
         </div>
 
         {/*right content*/}
@@ -60,7 +58,7 @@ export const UnitDetail = () => {
               </button>
             </div>
             <div className="m-3 hidden md:block">
-              <TableContents header="Topics" />
+              <TableContents headerTitle="Topics" />
             </div>
           </div>
         </div>

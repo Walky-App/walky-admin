@@ -43,12 +43,11 @@ export const AdminAddUnit = () => {
       const url = 'units'
       const method = 'POST'
       const response: Unit = await RequestService(url, method, newUnit)
-      if (response) {
+      if (response._id) {
         setUnit(response)
         redirectToPreviousPath(response._id)
       } else {
         console.error('Error uploading data and image')
-        alert('Error Details, Coming soon')
       }
     } catch (error) {
       console.error('Request error:', error)

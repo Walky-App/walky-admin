@@ -10,7 +10,7 @@ import { HeaderComponent } from '../../../components/shared/general/HeaderCompon
 import { SelectedOption } from '../../../components/shared/general/SelectedOption'
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { DisableButtonInterface, SelectedOptionInterface } from '../../../interfaces/global'
-import type { Section } from '../../../interfaces/unit'
+import type { Section, Unit } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
 import { SectionEditor } from './components/SectionEditor'
 import { SectionImage } from './components/SectionImage'
@@ -61,15 +61,14 @@ export const AdminDetailsUnit = () => {
       const url = `units/${params.unitId}`
       const method = 'PATCH'
 
-      const response = await RequestService(url, method, newUnit)
+      const response: Unit = await RequestService(url, method, newUnit)
 
-      if (response) {
+      if (response._id) {
         if (unit) {
           setUnit(response)
         }
       } else {
         console.error('Error uploading data and image')
-        alert('Error Details, Coming soon')
       }
     } catch (error) {
       console.error('Request error:', error)
