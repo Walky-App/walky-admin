@@ -254,7 +254,7 @@ export default function ClientEditJob() {
                         </div>
                       </>
                     )}
-                  />{' '}
+                  />
                 </div>
               </div>
             </div>
