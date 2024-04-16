@@ -28,18 +28,10 @@ export default function ClientEditJob() {
   const id = user?._id
   const toast = useRef<Toast>(null)
   const { showToast } = useUtils()
-  const [facilities, setFacilities] = React.useState<IFacility[]>()
+  const [facilities, setFacilities] = React.useState<IFacility[]>([])
   const navigate = useNavigate()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
-
-  useEffect(() => {
-    const getFacilities = async () => {
-      const allFacilitiesByClient = await RequestService(`facilities/byclient/${id}`)
-      setFacilities(allFacilitiesByClient)
-    }
-    getFacilities()
-  }, [])
 
   function militaryToStandardDate(time: any, date: any) {
     const hours = Math.floor(time / 100)
@@ -55,22 +47,26 @@ export default function ClientEditJob() {
       const job = await RequestService(`jobs/${params.id}`)
       if (job) {
         setJob(job)
+
+        const jobDates = job.job_dates.map((dateString: string) => new Date(dateString))
+        const startTime = militaryToStandardDate(job.start_time, jobDates[0])
+        const endTime = militaryToStandardDate(job.end_time, jobDates[0])
+
+        setStartTime(startTime)
+        setEndTime(endTime)
+
         setValue('title', job.title)
-        setValue('facility_id', job.facility._id)
         setValue('vacancy', job.vacancy)
         setValue('hourly_rate', job.hourly_rate)
         setValue('lunch_break', job.lunch_break)
-        const jobDates = job.job_dates.map((dateString: string) => new Date(dateString))
         setValue('job_dates', jobDates)
-        const startTime = militaryToStandardDate(job.start_time, jobDates[0])
-        const endTime = militaryToStandardDate(job.end_time, jobDates[0])
         setValue('start_time', startTime)
         setValue('end_time', endTime)
         setValue('job_tips', job.job_tips)
       }
     }
     getJob()
-  }, [facilities])
+  }, [params.id])
 
   const defaultValues = {
     title: job.title,
@@ -225,10 +221,10 @@ export default function ClientEditJob() {
         <div className="space-y-12">
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please take a moment to provide the essential information for the job posting. We require you to specify
-                the job title and provide a facility this job pertains to.
+                Please take a moment to provide the essential information to update the job posting. We require you to
+                specify the job title in this section.
               </p>
             </div>
 
@@ -252,35 +248,6 @@ export default function ClientEditJob() {
                             options={options}
                             focusInputRef={field.ref}
                             onChange={e => field.onChange(e.value)}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          <div>{getFormErrorMessage(field.name)}</div>
-                        </div>
-                      </>
-                    )}
-                  />{' '}
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="facility" className="block text-sm font-medium leading-6 text-gray-900">
-                  Select Facility:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="facility_id"
-                    control={control}
-                    rules={{ required: 'Facility is required.' }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <div>
-                          <Dropdown
-                            id={field.name}
-                            value={facilities?.find(facility => facility._id === field.value)}
-                            optionLabel="name"
-                            options={facilities}
-                            focusInputRef={field.ref}
-                            onChange={e => field.onChange(e.value._id)}
                             className={classNames({ 'p-invalid': fieldState.error })}
                           />
                           <div>{getFormErrorMessage(field.name)}</div>
