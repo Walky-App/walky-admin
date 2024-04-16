@@ -72,6 +72,7 @@ export const EmployeeMyJobs = () => {
           options={viewOptions}
           optionLabel="value"
           itemTemplate={viewOptionsTemplate}
+          pt={{ button: { className: 'justify-center' } }}
         />
       </div>
       {view === 'calendar' ? (
