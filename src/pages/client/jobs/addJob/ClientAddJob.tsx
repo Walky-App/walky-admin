@@ -48,14 +48,16 @@ export const ClientAddJob = () => {
 
   React.useEffect(() => {
     const getFacilities = async () => {
-      const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/byclient/${id}`
-      const allFacilities = await RequestService(endpoint)
-      setFacilities(allFacilities)
-      console.log('THE FACILITIES -->', allFacilities)
+      try {
+        const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/byclient/${id}`
+        const allFacilities = await RequestService(endpoint)
+        setFacilities(allFacilities)
+      } catch (error) {
+        console.error('Error fetching facilities:', error)
+      }
     }
-
     getFacilities()
-  }, [location.pathname, id])
+  }, [id, location.pathname])
 
   let defaultValues: JobFormDefaultValues = {
     title: '',

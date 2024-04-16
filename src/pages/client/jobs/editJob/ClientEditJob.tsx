@@ -88,7 +88,7 @@ export default function ClientEditJob() {
     watch,
   } = useForm({ defaultValues })
 
-  const watchAllFields = watch() // This will return all form values
+  const watchAllFields = watch()
   const lunchBreak = watch('lunch_break')
 
   React.useEffect(() => {
