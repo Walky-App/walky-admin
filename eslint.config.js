@@ -127,7 +127,7 @@ export default tseslint.config(
           fixStyle: 'inline-type-imports',
         },
       ],
-      'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': 'pascalcase' }],
+      'filename-rules/match': ['warn', { '.ts': 'camelcase', '.tsx': ['PascalCase', 'camelCase'] }],
     },
   },
   {
