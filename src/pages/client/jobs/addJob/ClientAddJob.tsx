@@ -51,6 +51,7 @@ export const ClientAddJob = () => {
       const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/byclient/${id}`
       const allFacilities = await RequestService(endpoint)
       setFacilities(allFacilities)
+      console.log('THE FACILITIES -->', allFacilities)
     }
 
     getFacilities()
@@ -210,42 +211,6 @@ export const ClientAddJob = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
         <Toast ref={toast} />
         <div className="space-y-12">
-          {isAdmin ? (
-            <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Admin Panel</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Please select the email of the client which you are posting a job for.
-                </p>
-              </div>
-
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                <div className="sm:col-span-3">
-                  <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                    Created By:
-                  </label>
-                  <div className="mt-2">
-                    <Controller
-                      name="created_by"
-                      control={control}
-                      rules={{ required: "Client's email is required" }}
-                      render={({ field, fieldState }) => (
-                        <>
-                          <InputText
-                            id={field.name}
-                            value={field.value}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                            onChange={e => field.onChange(e.target.value)}
-                          />
-                          {getFormErrorMessage(field.name, errors)}
-                        </>
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : null}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
