@@ -1,15 +1,10 @@
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-import { Menu, Transition } from '@headlessui/react'
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ClockIcon,
-  EllipsisHorizontalIcon,
-} from '@heroicons/react/20/solid'
+import { Button } from 'primereact/button'
+
+import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@heroicons/react/20/solid'
 
 import { type IJob } from '../../../interfaces/job'
 import { cn } from '../../../utils/cn'
@@ -39,6 +34,8 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
 
   const [days, setDays] = useState<IDay[]>([])
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const firstDay = new Date(currentYear, currentMonth, 1)
@@ -127,11 +124,47 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     }
   })
 
-  const selectedDay = daysWithJobs.find(day => day.isSelected)
+  const renderEventListItems = () => {
+    return daysWithJobs.map(day => {
+      const { events } = day
+
+      return events.map(event => {
+        const { id, name, datetime } = event
+        const date = new Date(datetime)
+        const formattedDate = date.toLocaleDateString()
+
+        return (
+          <li key={id} className="group flex p-4 pr-6 focus-within:bg-gray-50 hover:bg-gray-50">
+            <div className="flex-auto">
+              <p className="font-semibold text-gray-900">{name}</p>
+              <div className="justify flex items-center justify-between text-gray-700 [&>*]:mt-2">
+                <time dateTime={datetime} className="flex items-center">
+                  <ClockIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                  {event.time}
+                </time>
+                <span className="ml-2 flex items-center">
+                  <CalendarIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                  {formattedDate}
+                </span>
+                <Button
+                  size="small"
+                  link
+                  outlined
+                  label="View Details"
+                  onClick={() => navigate(`/employee/jobs/${event.id}`)}
+                  className="ml-2"
+                />
+              </div>
+            </div>
+          </li>
+        )
+      })
+    })
+  }
 
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
-      <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4 lg:flex-none">
+      <header className="flex items-center justify-between border-b border-gray-200 py-4 pl-2 lg:flex-none">
         <h1 className="text-base font-semibold leading-6 text-gray-900">
           <time
             dateTime={`${currentYear}-${currentMonth + 1}`}>{`${new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} ${currentYear}`}</time>
@@ -145,10 +178,11 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
               <span className="sr-only">Previous month</span>
               <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
             </button>
+            <span className="relative -mx-px h-5 w-px bg-gray-300 md:hidden" />
             <button
               type="button"
               onClick={handleToday}
-              className="hidden border-y border-gray-300 px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative md:block">
+              className="h-9 border-y border-gray-300 px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative md:block">
               Today
             </button>
             <span className="relative -mx-px h-5 w-px bg-gray-300 md:hidden" />
@@ -160,178 +194,10 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
               <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
-          {/* Toolbar (Desktop View) */}
-          <div className="hidden md:ml-4 md:flex md:items-center">
-            <Menu as="div" className="relative">
-              <Menu.Button
-                type="button"
-                className="flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                Month view
-                <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
-              </Menu.Button>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95">
-                <Menu.Items className="absolute right-0 z-10 mt-3 w-36 origin-top-right overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          type="button"
-                          className={cn(
-                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                            'block px-4 py-2 text-sm',
-                          )}>
-                          Day view
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          type="button"
-                          className={cn(
-                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                            'block px-4 py-2 text-sm',
-                          )}>
-                          Week view
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          type="button"
-                          className={cn(
-                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                            'block px-4 py-2 text-sm',
-                          )}>
-                          Month view
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          type="button"
-                          className={cn(
-                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                            'block px-4 py-2 text-sm',
-                          )}>
-                          Year view
-                        </button>
-                      )}
-                    </Menu.Item>
-                  </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          </div>
-          {/* Toolbar (Mobile View) */}
-          <Menu as="div" className="relative ml-6 md:hidden">
-            <Menu.Button className="-mx-2 flex items-center rounded-full border border-transparent p-2 text-gray-400 hover:text-gray-500">
-              <span className="sr-only">Open menu</span>
-              <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-            </Menu.Button>
-
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95">
-              <Menu.Items className="absolute right-0 z-10 mt-3 w-36 origin-top-right divide-y divide-gray-100 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="py-1">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        type="button"
-                        className={cn(
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                          'block px-4 py-2 text-sm',
-                        )}>
-                        Create event
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div>
-                <div className="py-1">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        type="button"
-                        className={cn(
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                          'block px-4 py-2 text-sm',
-                        )}>
-                        Go to today
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div>
-                <div className="py-1">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        type="button"
-                        className={cn(
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                          'block px-4 py-2 text-sm',
-                        )}>
-                        Day view
-                      </button>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        type="button"
-                        className={cn(
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                          'block px-4 py-2 text-sm',
-                        )}>
-                        Week view
-                      </button>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        type="button"
-                        className={cn(
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                          'block px-4 py-2 text-sm',
-                        )}>
-                        Month view
-                      </button>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        type="button"
-                        className={cn(
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                          'block px-4 py-2 text-sm',
-                        )}>
-                        Year view
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div>
-              </Menu.Items>
-            </Transition>
-          </Menu>
         </div>
       </header>
+
+      {/* Day column headings */}
       <div className="shadow ring-1 ring-black ring-opacity-5 lg:flex lg:flex-auto lg:flex-col">
         <div className="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs font-semibold leading-6 text-gray-700 lg:flex-none">
           <div className="bg-white py-2">
@@ -356,9 +222,10 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
             S<span className="sr-only sm:not-sr-only">un</span>
           </div>
         </div>
-        <div className="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
+
+        <div className="flex bg-gray-100 text-xs leading-6 text-gray-700 lg:flex-auto">
           {/*Calendar (Desktop View) */}
-          <div className="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-6 lg:gap-px">
+          <div className="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-5 lg:gap-px">
             {daysWithJobs.map(day => (
               <div
                 key={day.date}
@@ -380,14 +247,16 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
                     {day.events.slice(0, 2).map(event => (
                       <li key={event.id}>
                         <Link to={`/employee/jobs/${event.id}`} className="group flex">
-                          <p className="flex-auto truncate font-medium text-gray-900 group-hover:text-primary">
-                            {event.name}
-                          </p>
-                          <time
-                            dateTime={event.datetime}
-                            className="ml-3 hidden flex-none text-gray-500 group-hover:text-primary xl:block">
-                            {event.time}
-                          </time>
+                          <Button size="small" link raised>
+                            <p className="flex-auto truncate font-medium text-gray-900 group-hover:text-primary">
+                              {event.name}
+                            </p>
+                            <time
+                              dateTime={event.datetime}
+                              className="ml-3 hidden flex-none text-gray-500 group-hover:text-primary xl:block">
+                              {event.time}
+                            </time>
+                          </Button>
                         </Link>
                       </li>
                     ))}
@@ -398,12 +267,12 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
             ))}
           </div>
           {/* Mobile View */}
-          <div className="isolate grid w-full grid-cols-7 grid-rows-6 gap-px lg:hidden">
+          <div className="isolate grid w-full grid-cols-7 grid-rows-5 gap-px lg:hidden">
             {daysWithJobs.map(day => (
               <button
                 key={day.date}
                 type="button"
-                className={cn('flex h-14 flex-col px-3 py-2 hover:bg-gray-100 focus:z-10', {
+                className={cn('flex h-14 flex-col px-3 py-2 focus:z-10', {
                   'bg-white': day.isCurrentMonth,
                   'bg-gray-50': !day.isCurrentMonth,
                   'font-semibold': day.isSelected || day.isToday,
@@ -434,25 +303,10 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
           </div>
         </div>
       </div>
-      {selectedDay && selectedDay.events.length > 0 ? (
+      {daysWithJobs.length > 0 ? (
         <div className="px-4 py-10 sm:px-6 lg:hidden">
           <ol className="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white text-sm shadow ring-1 ring-black ring-opacity-5">
-            {selectedDay.events.map(event => (
-              <li key={event.id} className="group flex p-4 pr-6 focus-within:bg-gray-50 hover:bg-gray-50">
-                <div className="flex-auto">
-                  <p className="font-semibold text-gray-900">{event.name}</p>
-                  <time dateTime={event.datetime} className="mt-2 flex items-center text-gray-700">
-                    <ClockIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                    {event.time}
-                  </time>
-                </div>
-                {/* <a
-                  href={event.href}
-                  className="ml-6 flex-none self-center rounded-md bg-white px-3 py-2 font-semibold text-gray-900 opacity-0 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400 focus:opacity-100 group-hover:opacity-100">
-                  Edit<span className="sr-only">, {event.name}</span>
-                </a> */}
-              </li>
-            ))}
+            {renderEventListItems()}
           </ol>
         </div>
       ) : null}
