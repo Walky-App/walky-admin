@@ -5,7 +5,7 @@ import { Button } from 'primereact/button'
 import { LogosPack } from '../../components/layout/LogosPack'
 import { ForgotPassword } from './ForgotPasswordForm'
 import { LoginForm } from './LoginForm'
-import SignupForm from './SignupForm'
+import { Signup } from './SignupForm'
 
 export const Auth = () => {
   const [userForm, setUserForm] = useState('Login')
@@ -46,7 +46,7 @@ export const Auth = () => {
           <div className="flex justify-center">{LogosPack('login')}</div>
 
           {userForm === 'Login' ? <LoginForm /> : null}
-          {userForm === 'Sign up' ? <SignupForm /> : null}
+          {userForm === 'Sign up' ? <Signup /> : null}
           {userForm === 'Forgot Password' ? <ForgotPassword /> : null}
 
           <div className="mr-center flex flex-col items-center justify-center gap-2">
