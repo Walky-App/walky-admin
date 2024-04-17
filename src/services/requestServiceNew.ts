@@ -1,37 +1,36 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GetTokenInfo } from '../utils/TokenUtils'
 
-type IRequestService = (path: string, method?: string, body?: any, dataType?: string) => Promise<Response>
+interface IRequestServiceProps {
+  path: string
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  body?: BodyInit | undefined
+  dataType?: 'json' | 'blob' | 'text' | 'formData' | 'arrayBuffer'
+}
 
-export const requestService: IRequestService = async (
-  path: string,
+export const requestService = async ({
+  path,
   method = 'GET',
-  body: any = null,
+  body = undefined,
   dataType = 'json',
-): Promise<Response> => {
+}: IRequestServiceProps): Promise<Response> => {
   const { access_token } = GetTokenInfo()
-
   const url = `${process.env.REACT_APP_PUBLIC_API}/${path}`
 
-  const headersJsonData = {
-    'Content-Type': 'application/json',
+  let headers: HeadersInit = {
     Authorization: `Bearer ${access_token}`,
   }
 
-  const headersBinaryData = {
-    Authorization: `Bearer ${access_token}`,
+  if (dataType === 'json') {
+    headers = { ...headers, 'Content-Type': 'application/json' }
   }
-
-  const headers = dataType === 'json' ? headersJsonData : headersBinaryData
 
   const bodyData = dataType === 'json' ? JSON.stringify(body) : body
 
   const options: RequestInit = {
     method,
     headers,
-    body: body ? bodyData : undefined,
+    body: body !== undefined ? bodyData : undefined,
   }
 
-  const response = await fetch(url, options)
-  return response
+  return fetch(url, options)
 }

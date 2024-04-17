@@ -11,10 +11,11 @@ export function convertToStandardTime(militaryTime: number): string {
   if (militaryTime < 0 || militaryTime > 2359 || militaryTime % 100 > 59) {
     throw new Error('Invalid military time')
   }
-  const militaryTimeString = militaryTime.toString().padStart(4, '0')
-  const hours = Number(militaryTimeString.slice(0, -2))
-  const minutes = Number(militaryTimeString.slice(-2))
-  const standardHours = ((hours + 11) % 12) + 1
+
+  const hours = Math.floor(militaryTime / 100)
+  const minutes = militaryTime % 100
+  const standardHours = hours % 12 || 12
   const amPm = hours >= 12 ? 'pm' : 'am'
+
   return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
 }
