@@ -16,9 +16,10 @@ export const FacilityDetailsForm = ({
   setFacility: React.Dispatch<React.SetStateAction<IFacility | undefined>>
 }) => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
-  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
-  const [locationPolygon, setLocationPolygon] = useState<[number, number][]>([])
-
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(facility)
+  const [locationPolygon, setLocationPolygon] = useState<[number, number][]>(
+    facility.location_polygon ? facility.location_polygon : [],
+  )
   const { zip, state, city, location_pin, address } = moreAddressDetails || {
     zip: undefined,
     state: undefined,

@@ -22,12 +22,6 @@ const viewOptions: ViewOption[] = [
   { icon: 'pi pi-calendar', value: 'calendar' },
 ]
 
-const jobCategoryOptions = [
-  { name: 'All Jobs', code: 'all' },
-  { name: 'Packager', code: 'Packager' },
-  { name: 'Trimmer', code: 'Trimmer' },
-]
-
 export const EmployeeMyJobs = () => {
   const [jobs, setJobs] = useState<IJob[]>([])
   const [view, setView] = useState<string>('list')
@@ -70,7 +64,7 @@ export const EmployeeMyJobs = () => {
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
-      <HeaderComponent title="My Jobs" search selectedOptions={jobCategoryOptions} />
+      <HeaderComponent title="My Jobs" />
       <div className="flex w-full justify-end">
         <SelectButton
           value={view}
@@ -78,10 +72,11 @@ export const EmployeeMyJobs = () => {
           options={viewOptions}
           optionLabel="value"
           itemTemplate={viewOptionsTemplate}
+          pt={{ button: { className: 'justify-center' } }}
         />
       </div>
       {view === 'calendar' ? (
-        <JobCalendar jobs={jobs} />
+        <JobCalendar jobs={activeJobs} />
       ) : (
         <div className="[&>*:last-child]:mt-8">
           <TabView>
