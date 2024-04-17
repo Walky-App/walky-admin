@@ -12,7 +12,7 @@ import {
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
-import { MdSchool } from 'react-icons/md'
+import { MdPhone, MdSchool } from 'react-icons/md'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { Dialog, Menu, Transition } from '@headlessui/react'
@@ -42,7 +42,8 @@ const adminLinks: INavLink[] = [
   { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
   { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
   { id: 7, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
-  { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
+  { id: 8, name: 'Support', href: '/support', icon: <MdPhone /> },
+  { id: 9, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
 ]
 
 const clientLinks: INavLink[] = [
@@ -59,6 +60,7 @@ const clientLinks: INavLink[] = [
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
   { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
   { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
+  { id: 8, name: 'Support', href: '/support', icon: <MdPhone /> },
 ]
 
 const employeeLinks: INavLink[] = [
@@ -66,6 +68,7 @@ const employeeLinks: INavLink[] = [
   { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
   { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+  { id: 5, name: 'Support', href: '/support', icon: <MdPhone /> },
 ]
 
 const salesLinks: INavLink[] = [
@@ -75,6 +78,7 @@ const salesLinks: INavLink[] = [
   { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: true },
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
   { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
+  { id: 7, name: 'Support', href: '/support', icon: <MdPhone /> },
 ]
 
 export interface SideBarData {
