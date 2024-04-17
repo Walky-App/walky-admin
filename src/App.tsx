@@ -82,6 +82,8 @@ import { AdminMessages } from './pages/admin/messages'
 /******************************************* Employee Pages ************************************/
 import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
 
+import { Support } from './pages/Support'
+
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
@@ -109,6 +111,7 @@ export const App = () => {
             <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
+                <Route element={<Support />} path="/support" />
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
                 <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
