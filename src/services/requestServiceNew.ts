@@ -24,12 +24,10 @@ export const requestService = async ({
     headers = { ...headers, 'Content-Type': 'application/json' }
   }
 
-  const bodyData = dataType === 'json' ? JSON.stringify(body) : body
-
   const options: RequestInit = {
     method,
     headers,
-    body: body !== undefined ? bodyData : undefined,
+    body: body !== undefined ? body : undefined,
   }
 
   return fetch(url, options)
