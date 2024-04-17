@@ -1,42 +1,59 @@
+/* eslint-disable */
 import * as React from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
-import { RequestService } from '../../../services/RequestService'
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 
-type FacilitySchema = {
-  user_id: string
-  name: string
-  country: string
-  address: string
-  city: string
-  state: string
-  zip: string
-  tax_id: string
-  phone_number: string
-  notes: string
-  active: boolean
-  sqft: number
-  corp_name: string
-  company_dbas: string
-  services: string[]
-}
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
+
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
+import { RequestService } from '../../../services/RequestService'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export default function ClientAddFacility() {
   const user = GetTokenInfo()
   const user_id = user._id
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FacilitySchema>()
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
-  const onSubmit: SubmitHandler<FacilitySchema> = async data => {
-    data.user_id = user._id
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const target = e.target as typeof e.target & {
+      name: { value: string }
+      country: { value: string }
+      address: { value: string }
+      city: { value: string }
+      state: { value: string }
+      zip: { value: string }
+      tax_id: { value: string }
+      phone_number: { value: string }
+      notes: { value: string }
+      active: { value: string }
+      sqft: { value: number }
+      corp_name: { value: string }
+      company_dbas: { value: string }
+      services: [{ value: string }]
+    }
+
+    const formData = {
+      user_id: user_id,
+      name: target.name.value,
+      country: target.country.value,
+      address: target.address.value,
+      city: target.city.value,
+      state: target.state.value,
+      zip: target.zip.value,
+      tax_id: target.tax_id.value,
+      phone_number: target.phone_number.value,
+      notes: target.notes.value,
+      active: target.active.value === 'true' ? true : false,
+      sqft: target.sqft.value,
+      corp_name: target.corp_name.value,
+      company_dbas: target.company_dbas.value.split(',').map(dba => dba.trim()),
+      services: Array.from(document.querySelectorAll('input[name="services"]:checked'))
+        //@ts-ignore
+        .map(input => input.value),
+    }
+
     try {
-      const response = await RequestService(`facilities`, 'POST', data)
+      const response = await RequestService(`facilities`, 'POST', formData)
       if (response) {
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
@@ -52,7 +69,7 @@ export default function ClientAddFacility() {
   return (
     <>
       <TitleComponent title="Add Facility" />
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
@@ -67,19 +84,11 @@ export default function ClientAddFacility() {
                 </label>
                 <div className="mt-2">
                   <input
-                    {...register('tax_id', {
-                      required: 'Tax ID is required',
-                      pattern: {
-                        value: /^\d{10}$/,
-                        message: 'Tax ID must be a 10 digit number',
-                      },
-                    })}
                     type="text"
                     name="tax_id"
                     id="tax-id"
                     className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
-                  {errors.tax_id && <p className="text-xs italic text-red-500">{errors.tax_id.message}</p>}
                 </div>
               </div>
               <div className="sm:col-span-3">
@@ -88,13 +97,11 @@ export default function ClientAddFacility() {
                 </label>
                 <div className="mt-2">
                   <input
-                    {...register('corp_name', { required: 'Corporate Name is required' })}
                     type="text"
                     name="corp_name"
                     id="corp-name"
                     className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                   />
-                  {errors.corp_name && <p className="text-xs italic text-red-500">{errors.corp_name.message}</p>}
                 </div>
               </div>
               <div className="sm:col-span-3">

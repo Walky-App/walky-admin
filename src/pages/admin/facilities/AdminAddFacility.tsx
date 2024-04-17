@@ -1,13 +1,27 @@
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
+/*eslint-disable*/
 import * as React from 'react'
+import { useEffect } from 'react'
+
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
+
 import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
 
 export default function AdminAddFacility() {
-  const user = GetTokenInfo()
-  const user_id = user._id
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const [clients, setClients] = React.useState([])
+
+  useEffect(() => {
+    const getClients = async () => {
+      try {
+        const response = await RequestService(`users/clients`)
+        setClients(response)
+      } catch (error) {
+        console.error('Error fetching facility data:', error)
+      }
+    }
+    getClients()
+  }, [])
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -31,7 +45,7 @@ export default function AdminAddFacility() {
     }
 
     const formData = {
-      user_id: user_id,
+      user_id: target.user_id.value,
       name: target.name.value,
       country: target.country.value,
       address: target.address.value,
@@ -51,8 +65,8 @@ export default function AdminAddFacility() {
     }
 
     try {
-      const response = await RequestService(`facilities`, 'POST', formData)
-      if (response.ok) {
+      const response = await RequestService(`facilities/admin`, 'POST', formData)
+      if (response) {
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000) // Hide message after 5 seconds
       } else {
@@ -76,6 +90,23 @@ export default function AdminAddFacility() {
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+              <div className="sm:col-span-3">
+                <label htmlFor="user_id" className="block text-sm font-medium leading-6 text-gray-900">
+                  Select Client
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="user_id"
+                    name="user_id"
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                    {clients.map((client: { _id: string; email: string }) => (
+                      <option key={client._id} value={client._id}>
+                        {client.email}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               <div className="sm:col-span-3">
                 <label htmlFor="tax-id" className="block text-sm font-medium leading-6 text-gray-900">
                   Tax ID
