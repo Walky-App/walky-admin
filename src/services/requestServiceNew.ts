@@ -1,13 +1,18 @@
 import { GetTokenInfo } from '../utils/TokenUtils'
 
-type IRequestService = (path: string, method?: string, body?: BodyInit, dataType?: string) => Promise<Response>
+interface IRequestServiceProps {
+  path: string
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  body?: BodyInit | undefined
+  dataType?: 'json' | 'blob' | 'text' | 'formData' | 'arrayBuffer'
+}
 
-export const requestService: IRequestService = async (
-  path: string,
+export const requestService = async ({
+  path,
   method = 'GET',
-  body: BodyInit | undefined,
+  body = undefined,
   dataType = 'json',
-): Promise<Response> => {
+}: IRequestServiceProps): Promise<Response> => {
   const { access_token } = GetTokenInfo()
   const url = `${process.env.REACT_APP_PUBLIC_API}/${path}`
 
@@ -19,10 +24,12 @@ export const requestService: IRequestService = async (
     headers = { ...headers, 'Content-Type': 'application/json' }
   }
 
+  const bodyData = dataType === 'json' ? JSON.stringify(body) : body
+
   const options: RequestInit = {
     method,
     headers,
-    body: body !== undefined && dataType === 'json' ? JSON.stringify(body) : null,
+    body: body !== undefined ? bodyData : undefined,
   }
 
   return fetch(url, options)

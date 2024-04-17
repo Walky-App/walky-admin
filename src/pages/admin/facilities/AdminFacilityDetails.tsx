@@ -28,7 +28,6 @@ export const AdminFacilityDetails = () => {
   return (
     <>
       <SubHeader data={facility} links={adminFacilitiesLinks} />
-
       <FacilityDetailsForm facility={facility} setFacility={setFacility} />
     </>
   )
