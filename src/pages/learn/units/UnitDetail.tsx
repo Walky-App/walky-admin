@@ -21,7 +21,7 @@ export const UnitDetail = () => {
 
   const fetchData = async () => {
     try {
-      const response = await requestService(`units/${params.unitId}`)
+      const response = await requestService({ path: `units/${params.unitId}` })
       if (response.status === 200) {
         const jsonResponse: Unit = await response.json()
         setUnit(jsonResponse)
@@ -31,7 +31,7 @@ export const UnitDetail = () => {
       navigate('/learn')
     }
     try {
-      const responseLms = await requestService('lms')
+      const responseLms = await requestService({ path: 'lms' })
       if (responseLms.status === 200) {
         const jsonResponseLMS = await responseLms.json()
         setRecord(jsonResponseLMS)
@@ -53,7 +53,7 @@ export const UnitDetail = () => {
       <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
         {/*left content*/}
         <div className="order-1 col-span-4 rounded-2xl border border-zinc-100 bg-white md:col-span-2">
-          {unit?.type === 'video' ? <VideoPlayer url={unit.url_video} /> : null}
+          {unit?.type === 'video' ? <VideoPlayer url={unit.url_video} captions={unit.url_captions} /> : null}
           <div className="flex h-auto flex-col ">{unit ? <UnitDetailsCard unit={unit} /> : null}</div>
         </div>
 

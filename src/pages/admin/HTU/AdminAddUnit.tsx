@@ -14,6 +14,7 @@ export const AdminAddUnit = () => {
   const [title, setTitle] = useState<string>('')
   const [time, setTime] = useState<number>(0)
   const [urlVideo, setUrlVideo] = useState<string>('')
+  const [urlCaption, setUrlCaption] = useState<string>('')
   const [unitType, setUnitType] = useState<string>('blog')
   const params = useParams()
   const navigate = useNavigate()
@@ -38,6 +39,9 @@ export const AdminAddUnit = () => {
       moduleId: params.moduleId,
       title,
       time: time * 60,
+      type: unitType,
+      url_video: urlVideo,
+      url_caption: urlCaption,
     }
     try {
       const url = 'units'
@@ -110,24 +114,44 @@ export const AdminAddUnit = () => {
                 </div>
               </div>
               {unitType === 'video' ? (
-                <div className="col-span-6 sm:col-span-3">
-                  <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="url_video">
-                    Url Video
-                  </label>
-                  <div className="mt-2">
-                    <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
-                      <input
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                        id="url_video"
-                        name="url_video"
-                        onChange={e => setUrlVideo(e.target.value)}
-                        placeholder="Url video"
-                        type="text"
-                        value={urlVideo}
-                      />
+                <>
+                  <div className="col-span-6 sm:col-span-3">
+                    <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="url_video">
+                      Url video
+                    </label>
+                    <div className="mt-2">
+                      <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
+                        <input
+                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                          id="url_video"
+                          name="url_video"
+                          onChange={e => setUrlVideo(e.target.value)}
+                          placeholder="Url video"
+                          type="text"
+                          value={urlVideo}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
+                  <div className="col-span-6 sm:col-span-3">
+                    <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="url_caption">
+                      Url caption
+                    </label>
+                    <div className="mt-2">
+                      <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
+                        <input
+                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                          id="url_caption"
+                          name="url_caption"
+                          onChange={e => setUrlCaption(e.target.value)}
+                          placeholder="Url caption"
+                          type="text"
+                          value={urlCaption}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
               ) : null}
             </div>
             <div className="mt-6 flex items-center justify-end gap-x-6">

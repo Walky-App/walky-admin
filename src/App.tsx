@@ -13,7 +13,7 @@ import { Error404 } from './pages/Error404'
 import { Auth } from './pages/auth'
 import NewPasswordForm from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
-import Signup from './pages/auth/SignupForm'
+import { Signup } from './pages/auth/SignupForm'
 
 /******************************************* HTU Pages ************************************/
 import { Learn } from './pages/learn/Learn'
