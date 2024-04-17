@@ -1,13 +1,15 @@
 import * as React from 'react'
+
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
-import { RequestService } from '../../../services/RequestService'
+
+import { RequestService } from '../../../../services/RequestService'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
-export default function AdminInviteUser() {
+export const AdminInviteUser = () => {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,7 +87,7 @@ export default function AdminInviteUser() {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-          {updateSuccess && (
+          {updateSuccess ? (
             <div className="rounded-md bg-green-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -95,11 +97,11 @@ export default function AdminInviteUser() {
                   <p className="text-sm font-medium text-green-800">Invitation sent successfully</p>
                 </div>
                 <div className="ml-auto pl-3">
-                  <div className="-mx-1.5 -my-1.5"></div>
+                  <div className="-mx-1.5 -my-1.5" />
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
           <button
             type="submit"
             className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
