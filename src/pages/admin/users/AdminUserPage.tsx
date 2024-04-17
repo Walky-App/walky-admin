@@ -29,7 +29,7 @@ export const AdminUserPage = () => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await requestService(`users/${selectedUserId}`)
+        const response = await requestService({ path: `users/${selectedUserId}` })
         if (!response.ok) {
           throw new Error('Failed to fetch user data')
         }
