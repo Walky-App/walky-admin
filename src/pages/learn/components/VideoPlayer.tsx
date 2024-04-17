@@ -23,6 +23,7 @@ const formatTime = (time: number) => {
 
 interface VideoPlayerProps {
   url: string
+  captions: string
 }
 
 interface FullscreenDocument extends Document {
@@ -36,7 +37,7 @@ interface FullscreenElement extends HTMLDivElement {
   msRequestFullscreen?: () => Promise<void>
 }
 
-export const VideoPlayer = ({ url }: VideoPlayerProps) => {
+export const VideoPlayer = ({ url, captions }: VideoPlayerProps) => {
   const playerContainerRef = useRef(null)
   const [count, setCount] = useState(0)
 
@@ -203,6 +204,22 @@ export const VideoPlayer = ({ url }: VideoPlayerProps) => {
         onProgress={progressHandler}
         onBuffer={bufferStartHandler}
         onBufferEnd={bufferEndHandler}
+        config={{
+          file: {
+            attributes: {
+              crossOrigin: 'anonymous',
+            },
+            tracks: [
+              {
+                kind: 'subtitles',
+                src: captions,
+                srcLang: 'en',
+                label: 'English',
+                default: true,
+              },
+            ],
+          },
+        }}
       />
 
       <Control
