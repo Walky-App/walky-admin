@@ -21,7 +21,7 @@ export const UnitDetail = () => {
 
   const fetchData = async () => {
     try {
-      const response = await requestService(`units/${params.unitId}`)
+      const response = await requestService({ path: `units/${params.unitId}` })
       if (response.status === 200) {
         const jsonResponse: Unit = await response.json()
         setUnit(jsonResponse)
@@ -31,7 +31,7 @@ export const UnitDetail = () => {
       navigate('/learn')
     }
     try {
-      const responseLms = await requestService('lms')
+      const responseLms = await requestService({ path: 'lms' })
       if (responseLms.status === 200) {
         const jsonResponseLMS = await responseLms.json()
         setRecord(jsonResponseLMS)
