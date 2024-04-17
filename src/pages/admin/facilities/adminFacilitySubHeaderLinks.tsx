@@ -7,6 +7,7 @@ import {
   DocumentPlusIcon,
   HomeIcon,
 } from '@heroicons/react/20/solid'
+
 import { type SubHeaderLink } from '../../../components/shared/SubHeader'
 
 export const adminFacilitiesLinks: SubHeaderLink[] = [
@@ -18,4 +19,5 @@ export const adminFacilitiesLinks: SubHeaderLink[] = [
   { id: 5, name: 'Licenses', href: '/licenses', icon: <IdentificationIcon /> },
   { id: 5, name: 'Activity', href: '/activity', icon: <IdentificationIcon /> },
   { id: 6, name: 'Docs', href: '/documents', icon: <DocumentPlusIcon />, disabled: true },
+  { id: 6, name: 'DNR', href: '/dnr', icon: <DocumentPlusIcon /> },
 ]
