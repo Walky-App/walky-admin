@@ -36,6 +36,7 @@ export interface Unit extends Documents {
   order: number
   type: string
   url_video: string
+  url_captions: string
 }
 
 export interface IAssessmentResponse {
