@@ -16,7 +16,6 @@ export default function AdminAddFacility() {
       try {
         const response = await RequestService(`users/clients`)
         setClients(response)
-        console.log('clients:', response)
       } catch (error) {
         console.error('Error fetching facility data:', error)
       }
@@ -66,7 +65,6 @@ export default function AdminAddFacility() {
     }
 
     try {
-      console.log('formData:', formData)
       const response = await RequestService(`facilities/admin`, 'POST', formData)
       if (response) {
         setUpdateSuccess(true)
