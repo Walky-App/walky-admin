@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
-import { Column } from 'primereact/column'
+import { Calendar } from 'primereact/calendar'
+import { Column, type ColumnEditorOptions } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
@@ -115,16 +116,31 @@ export const AdminUserTimeSheets = () => {
     return [...processedTimeSheets].sort((a, b) => new Date(b.day).getTime() - new Date(a.day).getTime())
   }, [processedTimeSheets])
 
-  interface ColumnMeta {
+  interface IColumnMeta {
     field: string
     header: string
     sortable?: boolean
+    editor?: (options: ColumnEditorOptions) => React.ReactNode
   }
 
-  const cols: ColumnMeta[] = [
+  // const textEditor = (options: ColumnEditorOptions) => {
+  //   return (
+  //     <InputText
+  //       type="text"
+  //       value={options.value}
+  //       onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)}
+  //     />
+  //   )
+  // }
+
+  const timeEditor = (options: ColumnEditorOptions) => {
+    return <Calendar value={options.value} onChange={e => options.editorCallback!(e.target.value)} timeOnly />
+  }
+
+  const cols: IColumnMeta[] = [
     { field: 'day', header: 'Day', sortable: true },
-    { field: 'in', header: 'In', sortable: false },
-    { field: 'out', header: 'Out', sortable: false },
+    { field: 'in', header: 'In', sortable: false, editor: timeEditor },
+    { field: 'out', header: 'Out', sortable: false, editor: timeEditor },
     { field: 'total', header: 'Total', sortable: false },
     { field: 'details', header: 'Job Details', sortable: false },
     { field: 'worked', header: 'Worked', sortable: false },
@@ -132,12 +148,26 @@ export const AdminUserTimeSheets = () => {
     { field: 'difference', header: 'Difference', sortable: false },
   ]
 
+  const getEditor = (col: IColumnMeta) => {
+    if (col.field === 'in' || col.field === 'out') {
+      return (options: ColumnEditorOptions) => (col.editor ? col.editor(options) : undefined)
+    }
+    return undefined
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <DataTable value={sortedTimeSheets} tableStyle={{ minWidth: '50rem' }}>
+      <DataTable value={sortedTimeSheets} editMode="row" tableStyle={{ minWidth: '50rem' }}>
         {cols.map(col => (
-          <Column key={col.field} field={col.field} header={col.header} sortable={col.sortable} />
+          <Column
+            key={col.field}
+            field={col.field}
+            header={col.header}
+            sortable={col.sortable}
+            editor={getEditor(col)}
+          />
         ))}
+        <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }} />
       </DataTable>
       {timeSheets !== null ? <pre>{JSON.stringify(timeSheets, null, 3)}</pre> : null}
     </div>
