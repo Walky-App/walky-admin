@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
@@ -46,7 +45,7 @@ export const LoginForm = () => {
       default:
         navigate('/login')
     }
-  }, [])
+  }, [navigate, roleType])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
