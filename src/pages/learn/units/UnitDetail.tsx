@@ -4,8 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { Unit } from '../../../interfaces/unit'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useLearn } from '../../../store/useLearn'
+import { useUtils } from '../../../store/useUtils'
 import { TableContents } from '../components/TableContents'
 import { UnitDetailsCard } from '../components/UnitDetailsCard'
 import { VideoPlayer } from '../components/VideoPlayer'
@@ -14,17 +15,30 @@ export const UnitDetail = () => {
   const { unit, setUnit } = useAdmin()
   const { setRecord } = useLearn()
   const params = useParams()
+  const { showToast } = useUtils()
 
   const navigate = useNavigate()
 
   const fetchData = async () => {
-    const response: Unit = await RequestService(`units/${params.unitId}`)
-    if (response._id) {
-      setUnit(response)
+    try {
+      const response = await requestService({ path: `units/${params.unitId}` })
+      if (response.status === 200) {
+        const jsonResponse: Unit = await response.json()
+        setUnit(jsonResponse)
+      }
+    } catch (error) {
+      showToast({ severity: 'error', detail: 'Internal error', summary: 'wait a moment and try again' })
+      navigate('/learn')
     }
-    const responseLms = await RequestService('lms')
-    if (responseLms.length !== 0) {
-      setRecord(responseLms)
+    try {
+      const responseLms = await requestService({ path: 'lms' })
+      if (responseLms.status === 200) {
+        const jsonResponseLMS = await responseLms.json()
+        setRecord(jsonResponseLMS)
+      }
+    } catch (error) {
+      showToast({ severity: 'error', detail: 'Internal error', summary: 'wait a moment and try again' })
+      navigate('/learn')
     }
   }
 
@@ -39,7 +53,7 @@ export const UnitDetail = () => {
       <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
         {/*left content*/}
         <div className="order-1 col-span-4 rounded-2xl border border-zinc-100 bg-white md:col-span-2">
-          {unit?.type === 'video' ? <VideoPlayer url={unit.url_video} /> : null}
+          {unit?.type === 'video' ? <VideoPlayer url={unit.url_video} captions={unit.url_captions} /> : null}
           <div className="flex h-auto flex-col ">{unit ? <UnitDetailsCard unit={unit} /> : null}</div>
         </div>
 
