@@ -54,6 +54,7 @@ import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
+import { AdminFacilityDNR } from './pages/admin/facilities/AdminFacilityDNR'
 import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
@@ -181,6 +182,7 @@ export const App = () => {
                   <Route element={<AdminFacilityJobDetails />} path="/admin/facilities/:facilityId/jobs/:jobId" />
                   <Route element={<AdminFacilityImages />} path="/admin/facilities/:facilityId/images" />
                   <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
+                  <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<ClientAddJob />} path="/admin/jobs/new" />
                   <Route element={<JobDetailViewClient />} path="/admin/jobs/:id" />
