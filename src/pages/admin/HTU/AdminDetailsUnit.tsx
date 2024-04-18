@@ -31,7 +31,7 @@ export const AdminDetailsUnit = () => {
   const [title, setTitle] = useState<string>(unit?.title || '')
   const [time, setTime] = useState<number>(unit?.time ? unit.time / 60 : 0)
   const [urlVideo, setUrlVideo] = useState<string>(unit?.url_video || '')
-  const [urlCaption, setUrlCaption] = useState<string>(unit?.url_captions || '')
+  const [urlCaptions, setUrlCaptions] = useState<string>(unit?.url_captions || '')
   const [unitType, setUnitType] = useState<string>(unit?.type || 'blog')
   const [sections, setSections] = useState<Section[]>(unit?.sections || [])
   const [selectedSection, setSelectedSection] = useState<Section>()
@@ -57,7 +57,7 @@ export const AdminDetailsUnit = () => {
       time: time * 60,
       type: unitType,
       url_video: urlVideo,
-      url_caption: urlCaption,
+      url_captions: urlCaptions,
     }
     try {
       const url = `units/${params.unitId}`
@@ -212,10 +212,10 @@ export const AdminDetailsUnit = () => {
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                           id="url_caption"
                           name="url_caption"
-                          onChange={e => setUrlCaption(e.target.value)}
+                          onChange={e => setUrlCaptions(e.target.value)}
                           placeholder="Url caption"
                           type="text"
-                          value={urlCaption}
+                          value={urlCaptions}
                         />
                       </div>
                     </div>
