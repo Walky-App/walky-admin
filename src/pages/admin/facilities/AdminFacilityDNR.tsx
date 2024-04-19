@@ -1,4 +1,3 @@
-/*eslint-disable */
 import { useState, useEffect } from 'react'
 
 import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
@@ -247,7 +246,6 @@ export const AdminFacilityDNR = () => {
                       severity="danger"
                       onClick={() => {
                         deleteFromDNR(rowData.user_id._id)
-                        console.log('User ID:', rowData.user_id._id)
                       }}
                     />
                   )}
