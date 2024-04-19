@@ -1,11 +1,9 @@
-/* eslint-disable */
 import { useState, useEffect } from 'react'
 
 import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
-import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
@@ -13,9 +11,9 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { classNames } from 'primereact/utils'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { useAuth } from '../../../contexts/AuthContext'
-import { IUser } from '../../../interfaces/User'
-import { RequestService } from '../../../services/RequestService'
+import { type IFacility } from '../../../interfaces/Facility'
+import { type IUser } from '../../../interfaces/User'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
@@ -26,60 +24,44 @@ interface IDNRFormValues {
 
 export const AdminFacilityDNR = () => {
   const { showToast } = useUtils()
-  const { user } = useAuth()
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<any>({})
-  const [formDNR, setFormDNR] = useState<IDNRFormValues>({
-    employee: '',
-    reason: '',
-  })
-
-  const [DNRList, setDNRList] = useState<IUser[]>([])
+  const [facility, setFacility] = useState<IFacility>({} as IFacility)
   const [employees, setEmployees] = useState<IUser[]>([])
-  const [selectedEmployee, setSelectedEmployee] = useState<IUser | null>(null)
 
   useEffect(() => {
-    const getFacility = async () => {
+    const getFacilityWithDNRusers = async () => {
       try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
-        setFacility(facilityFound)
+        const response = await requestService({ path: `facilities/${facilityId}/dnr-users` })
+        if (response.status === 200) {
+          const jsonResponse: IFacility = await response.json()
+          setFacility(jsonResponse)
+        }
       } catch (error) {
         console.error('Error fetching facility data:', error)
       }
     }
-    getFacility()
-  }, [])
+    getFacilityWithDNRusers()
+  }, [facilityId])
 
   useEffect(() => {
     const getEmployees = async () => {
       try {
-        const response = await RequestService('users/employees', 'GET')
-        setEmployees(response)
+        const response = await requestService({ path: 'users/employees' })
+        if (response.status === 200) {
+          const jsonResponse: IUser[] = await response.json()
+          setEmployees(jsonResponse)
+        }
       } catch (error) {
-        console.error('error fetching holidays', error)
+        console.error('Error fetching employees:', error)
       }
     }
+
     getEmployees()
   }, [])
 
-  useEffect(() => {
-    const getDNRList = async () => {
-      try {
-        const response = await RequestService(`facilities/${facilityId}/dnr`, 'GET')
-        console.log('DNR list:', response)
-        setDNRList(response)
-      } catch (error) {
-        console.error('Error fetching DNR list:', error)
-      }
-    }
-    if (facilityId) {
-      getDNRList()
-    }
-  }, [DNRList])
-
   const defaultValues = {
-    employee: formDNR?.employee,
-    reason: formDNR?.reason,
+    employee: '',
+    reason: '',
   }
 
   const {
@@ -87,15 +69,7 @@ export const AdminFacilityDNR = () => {
     formState: { errors },
     handleSubmit,
     reset,
-    setValue,
   } = useForm({ defaultValues })
-
-  useEffect(() => {
-    if (formDNR) {
-      setValue('employee', formDNR?.employee)
-      setValue('reason', formDNR?.reason)
-    }
-  }, [])
 
   function getFormErrorMessage(path: string, errors: FieldErrors) {
     const pathParts = path.split('.')
@@ -120,9 +94,14 @@ export const AdminFacilityDNR = () => {
         user_id: data.employee,
         reason: data.reason,
       }
-      const response = await RequestService(`facilities/${facilityId}/dnr`, 'POST', payload)
-
-      if (response) {
+      const response = await requestService({
+        path: `facilities/${facilityId}/dnr`,
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+      if (response.status === 200) {
+        const jsonResponse = await response.json()
+        setFacility(jsonResponse)
         showToast({
           severity: 'success',
           summary: 'Success',
@@ -140,27 +119,27 @@ export const AdminFacilityDNR = () => {
     }
   }
 
-  const deleteFromDNR = async (user_id: IUser) => {
-    try {
-      const response = await RequestService(`facilities/${facilityId}/dnr/`, 'DELETE')
+  // const deleteFromDNR = async (user_id: IUser) => {
+  //   try {
+  //     const response = await RequestService(`facilities/${facilityId}/dnr/`, 'DELETE')
 
-      if (response) {
-        showToast({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Employee removed from DNR list successfully',
-        })
-        reset()
-      }
-    } catch (error) {
-      console.error('Error:', error)
-      showToast({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Error removing employee from DNR list',
-      })
-    }
-  }
+  //     if (response) {
+  //       showToast({
+  //         severity: 'success',
+  //         summary: 'Success',
+  //         detail: 'Employee removed from DNR list successfully',
+  //       })
+  //       reset()
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error)
+  //     showToast({
+  //       severity: 'error',
+  //       summary: 'Error',
+  //       detail: 'Error removing employee from DNR list',
+  //     })
+  //   }
+  // }
 
   return (
     <>
@@ -220,7 +199,7 @@ export const AdminFacilityDNR = () => {
                         value={field.value}
                         name="reason"
                         className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                        onChange={(e: { target: { value: any } }) => field.onChange(e.target.value)}
+                        onChange={e => field.onChange(e.target.value)}
                       />
                     )}
                   />
@@ -237,12 +216,10 @@ export const AdminFacilityDNR = () => {
             <div>
               <h1 className="text-xl font-bold leading-7 text-gray-900">DNR Table</h1>
               <DataTable
-                value={DNRList}
+                value={facility.dnr}
                 selectionMode="single"
-                selection={selectedEmployee}
                 // onSelectionChange={e => setSelectedEmployee(e.value)}
                 // onRowSelect={e => setFormHoliday(e.data)}
-                dataKey="user_id._id"
                 paginator
                 rows={5}
                 metaKeySelection={false}
@@ -255,20 +232,23 @@ export const AdminFacilityDNR = () => {
                       <img src={rowData.user_id.avatar} alt="Avatar" style={{ width: '50px', height: '50px' }} />
                     ) : null
                   }
-                />{' '}
+                />
                 <Column field="user_id.first_name" header="First Name" />
                 <Column field="user_id.last_name" header="Last Name" />
                 <Column field="reason" header="Reason" />
-                <Column
+                {/* <Column
                   header="Delete"
                   body={rowData => (
                     <Button
                       icon="pi pi-trash"
-                      className="p-button-rounded p-button-danger"
-                      onClick={() => deleteFromDNR(rowData.user_id)}
+                      rounded
+                      severity='danger'
+                      onClick={() => {
+                        deleteFromDNR(rowData.user_id)
+                      }}
                     />
                   )}
-                />
+                /> */}
               </DataTable>
             </div>
           </div>
