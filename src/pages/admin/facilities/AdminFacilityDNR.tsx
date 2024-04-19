@@ -179,7 +179,7 @@ export const AdminFacilityDNR = () => {
                         onChange={e => field.onChange(e.target.value)}
                         options={employees.map(employee => ({
                           value: employee._id,
-                          label: `${employee.first_name} ${employee.last_name.charAt(0)}`,
+                          label: `${employee.first_name} ${employee.last_name}`,
                         }))}
                         optionLabel="label"
                         filter
