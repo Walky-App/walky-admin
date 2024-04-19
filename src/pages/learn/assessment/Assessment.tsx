@@ -83,7 +83,7 @@ export const Assessment = () => {
         header: 'Finish assessment',
         icon: 'pi pi-info-circle',
         defaultFocus: 'accept',
-        acceptClassName: 'p-button-success',
+        acceptClassName: 'bg-green-600 hover:bg-green-500',
         rejectClassName: 'p-button-danger',
         style: { width: '50vw' },
         breakpoints: { '1100px': '75vw', '960px': '100vw' },
