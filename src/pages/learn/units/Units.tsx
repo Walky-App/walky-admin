@@ -13,6 +13,7 @@ import type { Unit } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
 import { useLearn } from '../../../store/useLearn'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
+import { cn } from '../../../utils/cn'
 import { CircularProgressBar } from '../components/CircularProgressBar'
 
 export const Units = () => {
@@ -116,18 +117,31 @@ export const Units = () => {
       {module?.units?.map((unit: Unit, index) => (
         <div className="flex items-center justify-center bg-white pl-6" key={`unit-${index}`}>
           <div
-            className={`space-y-6 pb-6 ${index !== (module?.units?.length ?? 0) - 1 && 'border-l-2 border-dashed'} `}>
+            className={cn('space-y-6 pb-6', {
+              'border-l-2 border-dashed': index !== (module?.units?.length ?? 0) - 1,
+            })}>
             <div className="relative w-full">
               <div
-                className={`absolute -top-0.5 -ml-3.5 ${index < unitUnlock ? 'bg-green-500' : index == unitUnlock ? 'bg-white' : ' bg-gray-300'} z-10 flex h-7 w-7 justify-center rounded-full border text-blue-500`}
+                className={cn(
+                  'absolute -top-0.5 z-10 -ml-3.5 flex h-7 w-7 justify-center rounded-full border text-blue-500',
+                  {
+                    'bg-green-500': index < unitUnlock,
+                    'bg-white': index === unitUnlock,
+                    'bg-gray-300': index > unitUnlock,
+                  },
+                )}
               />
               <button
                 disabled={!(unitUnlock >= index)}
-                className={`ml-6 h-24 max-h-24 min-h-24 ${unitUnlock >= index ? 'cursor-pointer' : ''} text-left`}
+                className={cn('ml-6 h-24 max-h-24 min-h-24 text-left', {
+                  'cursor-pointer': unitUnlock >= index,
+                })}
                 onClick={() => handlerUnit(unit)}
                 type="button">
                 <div
-                  className={`flex h-auto flex-row rounded-2xl border border-zinc-100 ${unitUnlock >= index ? 'bg-white ' : ' bg-gray-300'}`}>
+                  className={cn('flex h-auto flex-row rounded-2xl border border-zinc-100  bg-gray-300', {
+                    'bg-white': unitUnlock >= index,
+                  })}>
                   <div>
                     <div className="m-2 flex flex-1 flex-row gap-3">
                       <div className="flex flex-1 flex-col justify-evenly">
