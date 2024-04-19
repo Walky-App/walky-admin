@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
+import { Button } from 'primereact/button'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { ProgressBar } from 'primereact/progressbar'
 
@@ -83,7 +84,7 @@ export const Assessment = () => {
         header: 'Finish assessment',
         icon: 'pi pi-info-circle',
         defaultFocus: 'accept',
-        acceptClassName: 'p-button-success',
+        acceptClassName: 'p-button',
         rejectClassName: 'p-button-danger',
         style: { width: '50vw' },
         breakpoints: { '1100px': '75vw', '960px': '100vw' },
@@ -168,26 +169,20 @@ export const Assessment = () => {
           </div>
 
           <div className="flex justify-between gap-2 sm:justify-end ">
-            <button
-              className={cn(
-                indexQuestion == 0 ? 'bg-gray-300' : ' bg-green-600 hover:bg-green-500',
-                'rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm ',
-              )}
+            <Button
               onClick={() => handlerPreviousQuestion()}
               disabled={indexQuestion === 0}
-              type="button">
-              Previous
-            </button>
-            <button
-              className={cn(
-                selectAnswer.code === 99 ? 'bg-gray-300' : 'bg-green-600 hover:bg-green-500',
-                'rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm ',
-              )}
+              size="small"
+              label="Previous"
+              type="button"
+            />
+            <Button
               onClick={() => handlerControllerQuestion()}
               disabled={selectAnswer.code === 99}
-              type="button">
-              {indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1 ? 'Submit' : 'Next'}
-            </button>
+              size="small"
+              label={indexQuestion === (unit?.assessments?.questions?.length ?? 0) - 1 ? 'Finish' : 'Next'}
+              type="button"
+            />
           </div>
         </div>
       ) : (
