@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useAdmin } from '../../../contexts/AdminContext'
 import { type NavigationButtonInterface } from '../../../interfaces/global'
 import { type Section } from '../../../interfaces/unit'
+import { cn } from '../../../utils/cn'
 
 interface TableContentsProps {
   headerTitle: string
@@ -49,7 +50,9 @@ export const TableContents = ({ headerTitle }: TableContentsProps) => {
           {dataContents.map((item, index) => (
             <li key={`content-item-${index}`}>
               <button
-                className={`cursor-pointer py-2 pl-5 text-lg hover:border-l-2 hover:border-gray-600 ${index === active && 'border-l-2 border-green-500 text-green-500 hover:border-green-500'} `}
+                className={cn(`cursor-pointer py-2 pl-5 text-lg hover:border-l-2 hover:border-gray-600`, {
+                  'border-l-2 border-green-500 text-green-500 hover:border-green-500': index === active,
+                })}
                 onClick={() => handlerMenuNav(item, index)}
                 type="button">
                 {item.text}
