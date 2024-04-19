@@ -56,6 +56,7 @@ import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
 import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
 import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
 import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
+import { AdminFacilityDNR } from './pages/admin/facilities/AdminFacilityDNR'
 import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import AdminFacilityImages from './pages/admin/facilities/AdminFacilityImages'
 import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
@@ -84,6 +85,8 @@ import { AdminMessages } from './pages/admin/messages'
 /******************************************* Employee Pages ************************************/
 import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
 
+import { Support } from './pages/Support'
+
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
@@ -111,6 +114,7 @@ export const App = () => {
             <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
+                <Route element={<Support />} path="/support" />
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
                 <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
@@ -183,6 +187,7 @@ export const App = () => {
                   <Route element={<AdminFacilityJobDetails />} path="/admin/facilities/:facilityId/jobs/:jobId" />
                   <Route element={<AdminFacilityImages />} path="/admin/facilities/:facilityId/images" />
                   <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
+                  <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<ClientAddJob />} path="/admin/jobs/new" />
                   <Route element={<JobDetailViewClient />} path="/admin/jobs/:id" />
