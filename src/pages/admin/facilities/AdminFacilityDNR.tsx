@@ -1,3 +1,4 @@
+/*eslint-disable */
 import { useState, useEffect } from 'react'
 
 import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
@@ -119,27 +120,31 @@ export const AdminFacilityDNR = () => {
     }
   }
 
-  // const deleteFromDNR = async (user_id: IUser) => {
-  //   try {
-  //     const response = await RequestService(`facilities/${facilityId}/dnr/`, 'DELETE')
-
-  //     if (response) {
-  //       showToast({
-  //         severity: 'success',
-  //         summary: 'Success',
-  //         detail: 'Employee removed from DNR list successfully',
-  //       })
-  //       reset()
-  //     }
-  //   } catch (error) {
-  //     console.error('Error:', error)
-  //     showToast({
-  //       severity: 'error',
-  //       summary: 'Error',
-  //       detail: 'Error removing employee from DNR list',
-  //     })
-  //   }
-  // }
+  const deleteFromDNR = async (userId: string) => {
+    try {
+      const response = await requestService({
+        path: `facilities/${facilityId}/dnr`,
+        method: 'DELETE',
+        body: JSON.stringify({ user_id: userId }),
+      })
+      if (response.status === 200) {
+        const jsonResponse = await response.json()
+        setFacility(jsonResponse)
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Employee removed from DNR list successfully',
+        })
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      showToast({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error removing employee from DNR list',
+      })
+    }
+  }
 
   return (
     <>
@@ -217,9 +222,6 @@ export const AdminFacilityDNR = () => {
               <h1 className="text-xl font-bold leading-7 text-gray-900">DNR Table</h1>
               <DataTable
                 value={facility.dnr}
-                selectionMode="single"
-                // onSelectionChange={e => setSelectedEmployee(e.value)}
-                // onRowSelect={e => setFormHoliday(e.data)}
                 paginator
                 rows={5}
                 metaKeySelection={false}
@@ -236,19 +238,20 @@ export const AdminFacilityDNR = () => {
                 <Column field="user_id.first_name" header="First Name" />
                 <Column field="user_id.last_name" header="Last Name" />
                 <Column field="reason" header="Reason" />
-                {/* <Column
+                <Column
                   header="Delete"
                   body={rowData => (
                     <Button
                       icon="pi pi-trash"
                       rounded
-                      severity='danger'
+                      severity="danger"
                       onClick={() => {
-                        deleteFromDNR(rowData.user_id)
+                        deleteFromDNR(rowData.user_id._id)
+                        console.log('User ID:', rowData.user_id._id)
                       }}
                     />
                   )}
-                /> */}
+                />
               </DataTable>
             </div>
           </div>
