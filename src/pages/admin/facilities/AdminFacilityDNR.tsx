@@ -34,8 +34,10 @@ export const AdminFacilityDNR = () => {
     reason: '',
   })
 
+  const [DNRList, setDNRList] = useState<IUser[]>([])
   const [employees, setEmployees] = useState<IUser[]>([])
-  // const [selectedHoliday, setSelectedHoliday] = useState<IHoliday | null>(null)
+  const [selectedEmployee, setSelectedEmployee] = useState<IUser | null>(null)
+
   useEffect(() => {
     const getFacility = async () => {
       try {
@@ -46,7 +48,7 @@ export const AdminFacilityDNR = () => {
       }
     }
     getFacility()
-  }, [facilityId])
+  }, [])
 
   useEffect(() => {
     const getEmployees = async () => {
@@ -60,17 +62,20 @@ export const AdminFacilityDNR = () => {
     getEmployees()
   }, [])
 
-  // const deleteHoliday = async (holiday: IHoliday) => {
-  //   try {
-  //     await RequestService(`holidays/${holiday._id}`, 'DELETE')
-  //     setHolidays(holidays.filter(existingHoliday => existingHoliday._id !== holiday._id))
-
-  //     showToast({ severity: 'success', summary: 'Success', detail: 'Holiday deleted successfully' })
-  //   } catch (error) {
-  //     console.error('error deleting holiday', error)
-  //     showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting holiday' })
-  //   }
-  // }
+  useEffect(() => {
+    const getDNRList = async () => {
+      try {
+        const response = await RequestService(`facilities/${facilityId}/dnr`, 'GET')
+        console.log('DNR list:', response)
+        setDNRList(response)
+      } catch (error) {
+        console.error('Error fetching DNR list:', error)
+      }
+    }
+    if (facilityId) {
+      getDNRList()
+    }
+  }, [DNRList])
 
   const defaultValues = {
     employee: formDNR?.employee,
@@ -90,7 +95,7 @@ export const AdminFacilityDNR = () => {
       setValue('employee', formDNR?.employee)
       setValue('reason', formDNR?.reason)
     }
-  }, [formDNR, setValue])
+  }, [])
 
   function getFormErrorMessage(path: string, errors: FieldErrors) {
     const pathParts = path.split('.')
@@ -106,21 +111,56 @@ export const AdminFacilityDNR = () => {
     if (error?.message) {
       return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
     }
-
     return null
   }
 
   const onSubmit: SubmitHandler<IDNRFormValues> = async data => {
     try {
+      const payload = {
+        user_id: data.employee,
+        reason: data.reason,
+      }
+      const response = await RequestService(`facilities/${facilityId}/dnr`, 'POST', payload)
+
+      if (response) {
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Employee added to DNR list successfully',
+        })
+        reset()
+      }
     } catch (error) {
       console.error('Error:', error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error adding employee to DNR list' })
+      showToast({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error adding employee to DNR list',
+      })
     }
   }
 
-  // const updatedByTemplate = (rowData: IDNR) => {
-  //   return <span>{rowData.updated_by}</span>
-  // }
+  const deleteFromDNR = async (user_id: IUser) => {
+    try {
+      const response = await RequestService(`facilities/${facilityId}/dnr/`, 'DELETE')
+
+      if (response) {
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Employee removed from DNR list successfully',
+        })
+        reset()
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      showToast({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error removing employee from DNR list',
+      })
+    }
+  }
 
   return (
     <>
@@ -196,38 +236,40 @@ export const AdminFacilityDNR = () => {
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
             <div>
               <h1 className="text-xl font-bold leading-7 text-gray-900">DNR Table</h1>
-              {/* <DataTable
-              value={employees}
-              selectionMode="single"
-              selection={selectedEmployee}
-              onSelectionChange={e => setSelectedEmployee(e.value as IHoliday)}
-              onRowSelect={e => setFormHoliday(e.data)}
-              dataKey="_id"
-              paginator
-              rows={5}
-              metaKeySelection={false}
-              tableStyle={{ minWidth: '50rem' }}>
-              <Column field="avatar" header="Avatar" />
-              <Column field="first_name" header="Name" />
-              <Column
-                body={(rowData: IHoliday) => (
-                  <span>{rowData.holiday_date ? new Date(rowData.holiday_date).toLocaleDateString() : ''}</span>
-                )}
-                header="Date Added"
-              />
-              <Column field="created_by" header="Added By" />
-              <Column body={updatedByTemplate} header="Reason" />
-              <Column
-                header="Delete"
-                body={rowData => (
-                  <Button
-                    icon="pi pi-trash"
-                    className="p-button-rounded p-button-danger"
-                    onClick={() => deleteHoliday(rowData)}
-                  />
-                )}
-              />
-            </DataTable> */}
+              <DataTable
+                value={DNRList}
+                selectionMode="single"
+                selection={selectedEmployee}
+                // onSelectionChange={e => setSelectedEmployee(e.value)}
+                // onRowSelect={e => setFormHoliday(e.data)}
+                dataKey="user_id._id"
+                paginator
+                rows={5}
+                metaKeySelection={false}
+                tableStyle={{ minWidth: '50rem' }}>
+                <Column
+                  field="user_id.avatar"
+                  header="Avatar"
+                  body={rowData =>
+                    rowData.user_id.avatar ? (
+                      <img src={rowData.user_id.avatar} alt="Avatar" style={{ width: '50px', height: '50px' }} />
+                    ) : null
+                  }
+                />{' '}
+                <Column field="user_id.first_name" header="First Name" />
+                <Column field="user_id.last_name" header="Last Name" />
+                <Column field="reason" header="Reason" />
+                <Column
+                  header="Delete"
+                  body={rowData => (
+                    <Button
+                      icon="pi pi-trash"
+                      className="p-button-rounded p-button-danger"
+                      onClick={() => deleteFromDNR(rowData.user_id)}
+                    />
+                  )}
+                />
+              </DataTable>
             </div>
           </div>
         </div>
