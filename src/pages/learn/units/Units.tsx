@@ -140,7 +140,7 @@ export const Units = () => {
                 type="button">
                 <div
                   className={cn('flex h-auto flex-row rounded-2xl border border-zinc-100  bg-gray-300', {
-                    'bg-white': unitUnlock >= index,
+                    'bg-white hover:bg-gray-100': unitUnlock >= index,
                   })}>
                   <div>
                     <div className="m-2 flex flex-1 flex-row gap-3">
