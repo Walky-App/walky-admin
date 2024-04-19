@@ -42,25 +42,36 @@ interface UnitFormProps {
   handleSubmit: UseFormHandleSubmit<IUnitFormValues>
   unitTypeChosen: string
   setUnitTypeChosen: (value: string) => void
+  action?: string
 }
 
-export const FormUnits = ({ control, errors, handleSubmit, unitTypeChosen, setUnitTypeChosen }: UnitFormProps) => {
+export const FormUnits = ({
+  control,
+  errors,
+  handleSubmit,
+  unitTypeChosen,
+  setUnitTypeChosen,
+  action = 'update',
+}: UnitFormProps) => {
   const { setUnit, setModule } = useAdmin()
   const params = useParams()
   const navigate = useNavigate()
   const { showToast } = useUtils()
 
-  const redirectToPreviousPath = () => {
+  const redirectToPreviousPath = (unitId = '') => {
     const currentPath = window.location.pathname
     const newPath = currentPath.substring(0, currentPath.lastIndexOf('/'))
-    setModule(undefined)
-    setUnit(undefined)
-    navigate(newPath)
+    if (unitId === '') {
+      setModule(undefined)
+      navigate(newPath)
+    } else {
+      navigate(newPath + `/${unitId}`)
+    }
   }
 
   const handleRequest: SubmitHandler<IUnitFormValues> = async data => {
     try {
-      const newUnit = {
+      const updateUnit = {
         title: data.title,
         time: (data.time as number) * 60,
         description: data.description,
@@ -69,15 +80,38 @@ export const FormUnits = ({ control, errors, handleSubmit, unitTypeChosen, setUn
         url_captions: data.urlCaptions,
         url_image: data.urlImage,
       }
+
+      let path = `units/${params.unitId}`
+      let method = 'PATCH'
+      const newUnit = {
+        moduleId: params.moduleId || '',
+        title: data.title,
+        time: (data.time as number) * 60,
+        description: data.description,
+        type: data.unitType,
+        url_video: data.urlVideo,
+        url_captions: data.urlCaptions,
+        url_image: data.urlImage,
+      }
+      if (action === 'create') {
+        path = 'units'
+        method = 'POST'
+      }
+
       const response = await requestService({
-        path: `units/${params.unitId}`,
-        method: 'PATCH',
-        body: JSON.stringify(newUnit),
+        path,
+        method: method as 'POST' | 'PATCH',
+        body: JSON.stringify(action === 'create' ? newUnit : updateUnit),
       })
       if (response.ok) {
         const unit = await response.json()
         setUnit(unit)
-        showToast({ severity: 'success', summary: 'Success', detail: 'Unit updated successfully' })
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: action === 'create' ? 'Unit created successfully' : 'Unit updated successfully',
+        })
+        action === 'create' && redirectToPreviousPath(unit._id)
       }
     } catch (error) {
       showToast({ severity: 'error', summary: 'Error', detail: 'Error updating Unit' })
@@ -263,7 +297,7 @@ export const FormUnits = ({ control, errors, handleSubmit, unitTypeChosen, setUn
           <div className="col-span-6 col-start-1 flex justify-end gap-3">
             <Button
               className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200"
-              onClick={redirectToPreviousPath}
+              onClick={() => redirectToPreviousPath('')}
               type="button"
               label="Cancel"
             />
