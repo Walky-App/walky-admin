@@ -30,6 +30,7 @@ export interface Questions {
 export interface Unit extends Documents {
   sections: Section[]
   title: string
+  description: string
   is_disabled: boolean
   time: number
   assessments: Assessment
@@ -37,6 +38,7 @@ export interface Unit extends Documents {
   type: string
   url_video: string
   url_captions: string
+  url_image: string
 }
 
 export interface IAssessmentResponse {
