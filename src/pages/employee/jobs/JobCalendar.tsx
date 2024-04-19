@@ -137,8 +137,8 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
           <li key={id} className="group flex p-2 focus-within:bg-gray-50 hover:bg-gray-50 sm:p-4">
             <div className="flex-auto">
               <p className="font-semibold text-gray-900">{name}</p>
-              <div className="mt-2 flex flex-wrap items-center justify-between text-gray-700 sm:justify-between">
-                <div className="flex flex-wrap items-center justify-between gap-x-2 sm:justify-around sm:space-x-8">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-y-2 text-gray-700 sm:justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 xs:gap-x-6 sm:justify-around">
                   <time dateTime={datetime} className="flex items-center">
                     <ClockIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
                     {event.time}
@@ -305,7 +305,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
         </div>
       </div>
       {daysWithJobs.length > 0 ? (
-        <div className="py-10 sm:px-6 lg:hidden">
+        <div className="mx-auto max-w-lg py-10 sm:px-6 lg:hidden">
           <ol className="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white text-sm shadow ring-1 ring-black ring-opacity-5">
             {renderEventListItems()}
           </ol>
