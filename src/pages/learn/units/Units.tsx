@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { Badge } from 'flowbite-react'
 
-import { ArrowRightIcon } from '@heroicons/react/20/solid'
+import { ArrowRightIcon, CheckIcon } from '@heroicons/react/20/solid'
 import { BriefcaseIcon, ClockIcon, LockClosedIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 
 import { useAdmin } from '../../../contexts/AdminContext'
@@ -115,7 +115,7 @@ export const Units = () => {
         <div className="m-3 h-auto text-xs font-normal text-stone-500">{module?.description}</div>
       </div>
       {module?.units?.map((unit: Unit, index) => (
-        <div className="flex items-center justify-center bg-white pl-6" key={`unit-${index}`}>
+        <div className="flex flex-1 items-center justify-center bg-white pl-6" key={`unit-${index}`}>
           <div
             className={cn('space-y-6 pb-6', {
               'border-l-2 border-dashed': index !== (module?.units?.length ?? 0) - 1,
@@ -123,14 +123,15 @@ export const Units = () => {
             <div className="relative w-full">
               <div
                 className={cn(
-                  'absolute -top-0.5 z-10 -ml-3.5 flex h-7 w-7 justify-center rounded-full border text-blue-500',
+                  'absolute -top-0.5 z-10 -ml-3.5 flex h-7 w-7 items-center justify-center rounded-full border text-blue-500',
                   {
                     'bg-green-500': index < unitUnlock,
                     'bg-white': index === unitUnlock,
                     'bg-gray-300': index > unitUnlock,
                   },
-                )}
-              />
+                )}>
+                {index < unitUnlock ? <CheckIcon className="h-8 w-8" color="#fff" /> : null}
+              </div>
               <button
                 disabled={!(unitUnlock >= index)}
                 className={cn('ml-6 h-24 max-h-24 min-h-24 text-left', {
@@ -148,7 +149,7 @@ export const Units = () => {
                         <div className="text-base font-semibold text-black">{unit.title}</div>
                       </div>
                     </div>
-                    <div className="mx-2 mb-2 h-auto text-xs font-normal text-stone-500">{module?.description}</div>
+                    <div className="mx-2 mb-2 h-auto text-xs font-normal text-stone-500">{unit.description}</div>
                   </div>
                   <div className="flex items-center px-2">
                     {unitUnlock >= index ? (
