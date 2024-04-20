@@ -24,6 +24,7 @@ const formatTime = (time: number) => {
 interface VideoPlayerProps {
   url: string
   captions: string
+  title: string
 }
 
 interface FullscreenDocument extends Document {
@@ -37,7 +38,7 @@ interface FullscreenElement extends HTMLDivElement {
   msRequestFullscreen?: () => Promise<void>
 }
 
-export const VideoPlayer = ({ url, captions }: VideoPlayerProps) => {
+export const VideoPlayer = ({ url, captions, title }: VideoPlayerProps) => {
   const playerContainerRef = useRef(null)
   const [count, setCount] = useState(0)
 
@@ -241,6 +242,7 @@ export const VideoPlayer = ({ url, captions }: VideoPlayerProps) => {
         buffer={buffer}
         onFullScreen={handleFullScreen}
         fullScreen={fullScreen}
+        title={title}
       />
     </div>
   )
@@ -265,6 +267,7 @@ const Control = ({
   buffer,
   onFullScreen,
   fullScreen,
+  title,
 }: {
   onPlayPause: () => void
   playing: boolean
@@ -284,11 +287,12 @@ const Control = ({
   buffer: boolean
   onFullScreen: () => void
   fullScreen: boolean
+  title: string
 }) => {
   return (
     <div className="absolute bottom-0 left-0 right-0 top-0 flex flex-col justify-between bg-black-60" ref={controlRef}>
       <div className="mx-3 my-3 flex items-center justify-between text-2xl font-medium text-primaryLight">
-        <h2>Clothing and Presentation</h2>
+        <h2>{title}</h2>
       </div>
       <div className="flex flex-1 items-center justify-center" onClick={onPlayPause} aria-hidden="true">
         {buffer && playing ? (
