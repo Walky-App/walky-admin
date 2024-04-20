@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate, useParams } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/20/solid'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { SelectedOption } from '../../../components/shared/general/SelectedOption'
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { DisableButtonInterface, SelectedOptionInterface } from '../../../interfaces/global'
-import type { Section, Unit } from '../../../interfaces/unit'
-import { RequestService } from '../../../services/RequestService'
+import type { Section } from '../../../interfaces/unit'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
+import { FormUnits } from './components/FormUnits'
+import type { IUnitFormValues } from './components/FormUnits'
 import { SectionEditor } from './components/SectionEditor'
 import { SectionImage } from './components/SectionImage'
 
@@ -25,57 +28,25 @@ export const unitsType: SelectedOptionInterface[] = [
     code: 'video',
   },
 ]
+export const unitsTypePrimeReact = [
+  {
+    title: 'Blog',
+    value: 'blog',
+  },
+  {
+    title: 'Video',
+    value: 'video',
+  },
+]
 
 export const AdminDetailsUnit = () => {
-  const { unit, setUnit, setModule } = useAdmin()
-  const [title, setTitle] = useState<string>(unit?.title || '')
-  const [time, setTime] = useState<number>(unit?.time ? unit.time / 60 : 0)
-  const [urlVideo, setUrlVideo] = useState<string>(unit?.url_video || '')
-  const [urlCaptions, setUrlCaptions] = useState<string>(unit?.url_captions || '')
-  const [unitType, setUnitType] = useState<string>(unit?.type || 'blog')
+  const { unit, setUnit } = useAdmin()
   const [sections, setSections] = useState<Section[]>(unit?.sections || [])
+  const [unitTypeChosen, setUnitTypeChosen] = useState<string>(unit?.type || 'blog')
   const [selectedSection, setSelectedSection] = useState<Section>()
   const [activeIndex, setActiveIndex] = useState(0)
   const params = useParams()
-  const navigate = useNavigate()
-
-  const redirectToPreviousPath = () => {
-    const currentPath = window.location.pathname
-    const newPath = currentPath.substring(0, currentPath.lastIndexOf('/'))
-    setModule(undefined)
-    setUnit(undefined)
-    navigate(newPath)
-  }
-
-  const handleRequest = async () => {
-    if (title === '' || time === 0) {
-      alert('Please fill the title and time')
-      return
-    }
-    const newUnit = {
-      title,
-      time: time * 60,
-      type: unitType,
-      url_video: urlVideo,
-      url_captions: urlCaptions,
-    }
-    try {
-      const url = `units/${params.unitId}`
-      const method = 'PATCH'
-
-      const response: Unit = await RequestService(url, method, newUnit)
-
-      if (response._id) {
-        if (unit) {
-          setUnit(response)
-        }
-      } else {
-        console.error('Error uploading data and image')
-      }
-    } catch (error) {
-      console.error('Request error:', error)
-    }
-  }
+  const { showToast } = useUtils()
 
   const handlerSectionEdit = (section: Section) => {
     if (section.type === 'text') {
@@ -87,16 +58,26 @@ export const AdminDetailsUnit = () => {
   }
 
   const handlerSectionDelete = async (sectionDelete: Section) => {
-    const response = await RequestService(`units/section/disable/${params.unitId}`, 'PATCH', { section: sectionDelete })
-
-    if (response) {
-      setSections(response.sections)
+    try {
+      const response = await requestService({
+        path: `units/section/disable/${params.unitId}`,
+        method: 'PATCH',
+        body: JSON.stringify({ section: sectionDelete }),
+      })
+      const responseJson = await response.json()
+      if (response.ok) {
+        setSections(responseJson.sections)
+        showToast({ severity: 'success', summary: 'Success', detail: 'Section deleted successfully' })
+      }
+    } catch (error) {
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting section' })
     }
   }
 
   const handleTabChange = (index: number) => {
     setActiveIndex(index)
   }
+
   const handlerBeforeTabChang = () => {
     setSelectedSection(undefined)
   }
@@ -104,19 +85,48 @@ export const AdminDetailsUnit = () => {
   const deleteSelectedSection = () => {
     setSelectedSection(undefined)
   }
-
-  const fetchData = async () => {
-    const response = await RequestService(`units/${params.unitId}`)
-    setUnit(response)
-    setTitle(response.title)
-    setTime(response.time / 60)
-    setSections(response.sections)
-  }
-
   const disableButtonData: DisableButtonInterface = {
     path: `units/disable/${unit?._id}`,
     status: unit?.is_disabled as boolean,
     redirect: window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')),
+  }
+
+  const defaultValues = {
+    title: unit?.title || '',
+    time: unit?.time ? unit.time / 60 : 0,
+    description: unit?.description || '',
+    unitType: unit?.type || 'blog',
+    urlVideo: unit?.url_video || '',
+    urlCaptions: unit?.url_captions || '',
+    urlImage: unit?.url_image || '',
+  }
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<IUnitFormValues>({ defaultValues })
+
+  const fetchData = async () => {
+    try {
+      const response = await requestService({ path: `units/${params.unitId}` })
+      const unitResponse = await response.json()
+      setUnit(unitResponse)
+      reset({
+        title: unitResponse.title,
+        time: unitResponse.time / 60,
+        description: unitResponse.description,
+        unitType: unitResponse.type,
+        urlVideo: unitResponse.url_video,
+        urlCaptions: unitResponse.url_captions,
+        urlImage: unitResponse.url_image,
+      })
+      setUnitTypeChosen(unitResponse.type)
+      setSections(unitResponse.sections)
+    } catch (error) {
+      showToast({ severity: 'error', detail: 'Internal error', summary: 'wait a moment and try again' })
+    }
   }
 
   useEffect(() => {
@@ -128,190 +138,87 @@ export const AdminDetailsUnit = () => {
   return (
     <div className="w-full sm:overflow-x-hidden">
       <HeaderComponent disableButton={disableButtonData} title="Unit details" />
-      <form>
-        <div className="space-y-12">
-          <div className=" pb-12">
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="col-span-6 sm:col-span-3">
-                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="title">
-                  Title
-                </label>
-                <div className="mt-2">
-                  <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
-                    <input
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      id="title"
-                      name="title"
-                      onChange={e => setTitle(e.target.value)}
-                      placeholder="Unit title"
-                      type="text"
-                      value={title}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-span-6 sm:col-span-3">
-                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="reading_time">
-                  Reading time
-                </label>
-                <div className="mt-2">
-                  <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
-                    <input
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      id="reading_time"
-                      min={0}
-                      name="reading_time"
-                      onChange={e => setTime(Number(e.target.value))}
-                      placeholder="x minutes"
-                      type="number"
-                      value={time}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-span-6 sm:col-span-3">
-                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="unit_type">
-                  Unit type
-                </label>
-                <div className="mt-2">
-                  <SelectedOption
-                    classStyle="w-full sm:max-w-md"
-                    selectedOptions={unitsType}
-                    setSelectedOptions={setUnitType}
-                    value={unitType}
-                  />
-                </div>
-              </div>
-              {unitType === 'video' ? (
-                <>
-                  <div className="col-span-6 sm:col-span-3">
-                    <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="url_video">
-                      Url video
-                    </label>
-                    <div className="mt-2">
-                      <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
-                        <input
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                          id="url_video"
-                          name="url_video"
-                          onChange={e => setUrlVideo(e.target.value)}
-                          placeholder="Url video"
-                          type="text"
-                          value={urlVideo}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-6 sm:col-span-3">
-                    <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="url_caption">
-                      Url caption
-                    </label>
-                    <div className="mt-2">
-                      <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 ">
-                        <input
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                          id="url_caption"
-                          name="url_caption"
-                          onChange={e => setUrlCaptions(e.target.value)}
-                          placeholder="Url caption"
-                          type="text"
-                          value={urlCaptions}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : null}
-              <div className="col-span-6 mt-6 flex items-center justify-end gap-x-6">
-                <button
-                  className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200"
-                  onClick={redirectToPreviousPath}
-                  type="button">
-                  Cancel
-                </button>
-                <button
-                  className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
-                  onClick={handleRequest}
-                  type="button">
-                  Update
-                </button>
-              </div>
-              <div className="col-span-6">
-                <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="section_title">
-                  Section management
-                </label>
-                <TabView
-                  activeIndex={activeIndex}
-                  onBeforeTabChange={handlerBeforeTabChang}
-                  onTabChange={e => handleTabChange(e.index)}>
-                  <TabPanel header="Text">
-                    <SectionEditor
-                      deleteSelectedSection={deleteSelectedSection}
-                      section={sections}
-                      selectedSection={selectedSection}
-                      setSection={setSections}
-                    />
-                  </TabPanel>
-                  <TabPanel header="Image">
-                    <SectionImage
-                      deleteSelectedSection={deleteSelectedSection}
-                      section={sections}
-                      selectedSection={selectedSection}
-                      setSection={setSections}
-                    />
-                  </TabPanel>
-                </TabView>
-              </div>
-              <div className="col-span-6">
-                <label className="mb-4 block text-sm font-medium leading-6 text-gray-900" htmlFor="sections">
-                  Sections
-                </label>
-                <div className="flex flex-wrap justify-center gap-1">
-                  <div className="mx-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {sections.map((section, index) => {
-                      return (
-                        <div
-                          className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow"
-                          key={`unit-details-${index}`}>
-                          <div className="flex w-full items-center justify-between space-x-6 p-6">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">{`#${index + 1}`}</div>
-                            <div className="flex-1 truncate">
-                              <div className="flex items-center space-x-3">
-                                <h3 className="truncate text-sm font-medium text-gray-900">{section.title}</h3>
-                              </div>
-                              <span className="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                {`Type: ${section.type}`}
-                              </span>
-                            </div>
-                          </div>
-                          <div>
-                            <div className="-mt-px flex divide-x divide-gray-200">
-                              <button
-                                className="flex w-0 flex-1 cursor-pointer items-center justify-center p-2 transition-colors duration-300 ease-in-out hover:bg-green-100"
-                                onClick={() => handlerSectionEdit(section)}
-                                type="button">
-                                <PencilSquareIcon aria-hidden="true" className="h-5 w-5 text-gray-400 " />
-                                Edit
-                              </button>
-                              <button
-                                className="-ml-px flex w-0 flex-1 cursor-pointer items-center justify-center p-2 transition-colors duration-300 ease-in-out hover:bg-red-100"
-                                onClick={() => handlerSectionDelete(section)}
-                                type="button">
-                                <TrashIcon aria-hidden="true" className="h-5 w-5 text-gray-400" />
-                                Delete
-                              </button>
-                            </div>
-                          </div>
+      <FormUnits
+        control={control}
+        errors={errors}
+        handleSubmit={handleSubmit}
+        unitTypeChosen={unitTypeChosen}
+        setUnitTypeChosen={setUnitTypeChosen}
+      />
+      <div className="space-y-12">
+        <div className="col-span-6">
+          <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="section_title">
+            Section management
+          </label>
+          <TabView
+            activeIndex={activeIndex}
+            onBeforeTabChange={handlerBeforeTabChang}
+            onTabChange={e => handleTabChange(e.index)}>
+            <TabPanel header="Text">
+              <SectionEditor
+                deleteSelectedSection={deleteSelectedSection}
+                section={sections}
+                selectedSection={selectedSection}
+                setSection={setSections}
+              />
+            </TabPanel>
+            <TabPanel header="Image">
+              <SectionImage
+                deleteSelectedSection={deleteSelectedSection}
+                section={sections}
+                selectedSection={selectedSection}
+                setSection={setSections}
+              />
+            </TabPanel>
+          </TabView>
+        </div>
+        <div className="col-span-6">
+          <label className="mb-4 block text-sm font-medium leading-6 text-gray-900" htmlFor="sections">
+            Sections
+          </label>
+          <div className="flex flex-wrap justify-center gap-1">
+            <div className="mx-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {sections.map((section, index) => {
+                return (
+                  <div
+                    className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow"
+                    key={`unit-details-${index}`}>
+                    <div className="flex w-full items-center justify-between space-x-6 p-6">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">{`#${index + 1}`}</div>
+                      <div className="flex-1 truncate">
+                        <div className="flex items-center space-x-3">
+                          <h3 className="truncate text-sm font-medium text-gray-900">{section.title}</h3>
                         </div>
-                      )
-                    })}
+                        <span className="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                          {`Type: ${section.type}`}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="-mt-px flex divide-x divide-gray-200">
+                        <button
+                          className="flex w-0 flex-1 cursor-pointer items-center justify-center p-2 transition-colors duration-300 ease-in-out hover:bg-green-100"
+                          onClick={() => handlerSectionEdit(section)}
+                          type="button">
+                          <PencilSquareIcon aria-hidden="true" className="h-5 w-5 text-gray-400 " />
+                          Edit
+                        </button>
+                        <button
+                          className="-ml-px flex w-0 flex-1 cursor-pointer items-center justify-center p-2 transition-colors duration-300 ease-in-out hover:bg-red-100"
+                          onClick={() => handlerSectionDelete(section)}
+                          type="button">
+                          <TrashIcon aria-hidden="true" className="h-5 w-5 text-gray-400" />
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                )
+              })}
             </div>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   )
 }
