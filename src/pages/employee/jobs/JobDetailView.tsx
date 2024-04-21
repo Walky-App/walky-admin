@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
@@ -26,7 +25,7 @@ export const JobDetailView = () => {
   const [job, setJob] = useState<IJob | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isClockedIn, setIsClockedIn] = useState(false)
-  const [timesheet, setTimesheet] = useState<ITimeSheet | null>(null)
+  const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
   const [checked, setChecked] = useState(true)
   const { showToast } = useUtils()
   const { id } = useParams()
@@ -126,7 +125,11 @@ export const JobDetailView = () => {
     getJob()
   }, [id])
 
-  const getCurrentJobTimeSheet = useCallback(async () => {
+  const getLastTimesheet = (array?: ITimeSheet[] | null) => {
+    return array?.length ? array[array.length - 1] : null
+  }
+
+  const getCurrentJobTimeSheets = useCallback(async () => {
     const { access_token } = GetTokenInfo()
     const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
 
@@ -146,46 +149,45 @@ export const JobDetailView = () => {
       }
 
       if (response.status === 204) {
-        setTimesheet(null)
+        setTimesheets(null)
       } else {
         const data = await response.json()
-        setTimesheet(data)
-        setIsClockedIn(data.is_clocked_in)
+        setTimesheets(data)
+        const lastTimesheet = getLastTimesheet(data)
+        setIsClockedIn(lastTimesheet?.is_clocked_in || false)
       }
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
-      setTimesheet(null)
+      setTimesheets(null)
     }
   }, [job?._id, user._id])
 
   useEffect(() => {
     if (job?.applicants[0]?.is_approved === true && user._id) {
-      getCurrentJobTimeSheet()
-
-      if (timesheet?.is_clocked_in) {
-        setIsClockedIn(true)
-      }
+      getCurrentJobTimeSheets()
     }
-  }, [user._id, job?.applicants, isClockedIn, getCurrentJobTimeSheet, timesheet?.is_clocked_in])
+  }, [getCurrentJobTimeSheets, job?.applicants, user._id])
 
-  const clockInOut = async (endpoint: string, clockedIn: boolean) => {
+  const clockInOut = async (endpoint: string) => {
     setIsClockInOutLoading(true)
-    const timesheetId = timesheet?._id || null
+    const lastTimesheet = getLastTimesheet(timesheets)
+    const timesheetId = lastTimesheet?._id || null
     try {
       const body = {
         job_id: job?._id,
-        timeSheet_id: timesheetId,
+        timesheet_id: timesheetId,
         location: [latitude, longitude],
       }
       const timeSheet: ITimeSheet = await RequestService(`timesheets/${endpoint}`, 'POST', body)
-      setIsClockedIn(clockedIn)
+
+      getCurrentJobTimeSheets()
 
       const createdAt = new Date(timeSheet?.punches[timeSheet?.punches.length - 1]?.time_stamp)
       const formattedTime = createdAt.toLocaleTimeString()
 
       showToast({
-        severity: clockedIn ? 'success' : 'warn',
-        summary: `Clocked ${clockedIn ? 'in' : 'out'} at:`,
+        severity: isClockedIn ? 'success' : 'warn',
+        summary: `Clocked ${isClockedIn ? 'in' : 'out'} at:`,
         detail: formattedTime,
         life: 3000,
       })
@@ -195,8 +197,8 @@ export const JobDetailView = () => {
     }
   }
 
-  const clockIn = () => clockInOut('clock-in', true)
-  const clockOut = () => clockInOut('clock-out', false)
+  const clockIn = () => clockInOut('clock-in')
+  const clockOut = () => clockInOut('clock-out')
 
   const applyForJob = async (userId: string) => {
     try {
@@ -244,6 +246,7 @@ export const JobDetailView = () => {
     const date = new Date(dateString)
     return date.toLocaleDateString()
   }
+
   function formatTime(timeStamp: string | number) {
     const date = new Date(timeStamp)
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
@@ -257,11 +260,13 @@ export const JobDetailView = () => {
   }
 
   const punchPairsAndTotalTime = useMemo(() => {
-    if (!timesheet?.punches) {
+    if (!timesheets) {
       return []
     }
 
-    const sortedPunches = [...timesheet.punches].sort(
+    const allPunches = timesheets.flatMap(timesheet => timesheet.punches || [])
+
+    const sortedPunches = [...allPunches].sort(
       (a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime(),
     )
 
@@ -282,7 +287,7 @@ export const JobDetailView = () => {
     }
 
     return pairs.reverse()
-  }, [timesheet])
+  }, [timesheets])
 
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
@@ -587,7 +592,7 @@ export const JobDetailView = () => {
                           body={rowData =>
                             isValidDate(rowData.punchIn.time_stamp)
                               ? formatDate(rowData.punchIn.time_stamp)
-                              : 'Invalid Date'
+                              : 'No Timestamp'
                           }
                         />
                         <Column header="Time In" body={rowData => formatTime(rowData.punchIn.time_stamp)} />
