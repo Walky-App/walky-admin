@@ -104,7 +104,7 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Jobs</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Let us know what kind of jobs you may be interested in.
+                Please let us know what type of positions you may be interested in.
               </p>
             </div>
 
@@ -144,7 +144,7 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Let us know which notifications you would like to receive.
+                Please let us know the preferred notifications you would like to receive.
               </p>
             </div>
 
