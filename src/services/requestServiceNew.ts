@@ -2,7 +2,7 @@ import { GetTokenInfo } from '../utils/TokenUtils'
 
 interface IRequestServiceProps {
   path: string
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
   body?: BodyInit | undefined
   dataType?: 'json' | 'blob' | 'text' | 'formData' | 'arrayBuffer'
 }

@@ -284,7 +284,7 @@ export const ClientAddJob = () => {
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide jobs dates by picking multiple dates from the calendar or setting recurring dates.
+                Please select the dates you need temps at your facility. You can select one or multiple dates.
               </p>
             </div>
 
@@ -338,9 +338,10 @@ export const ClientAddJob = () => {
           {/* Shift Details */}
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Vacancies and Tips</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide working hours, lunch break duration and number of available vacancies.
+                Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
+                select the pay rate you are choosing to list your job.
               </p>
               {totalHours !== 0 ? (
                 <div className="mt-10">

@@ -124,9 +124,8 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Documents and Certificates</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please upload your documents and/or certificates. Please make sure your upload is clear without any warped
-              or blur portions and shows all relevant information.
+            <p className="mt-1 text-balance text-sm leading-6 text-gray-600">
+              Please upload your State issued badge or background check if you have one.
             </p>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -164,10 +163,16 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
                   onUpload={handleUploadSuccess}
                   onError={handleUploadError}
                   emptyTemplate={
-                    <p>
-                      Drag and drop <u>Documents and/or prior certifications</u> PDF or image files to upload. Max size:
-                      1MB
-                    </p>
+                    <div className="space-y-4 text-balance text-sm">
+                      <p>
+                        Drag and drop <u>Documents and/or prior certifications</u> PDF or image files to upload. Max
+                        size: 1MB
+                      </p>
+                      <p>
+                        Please make sure your upload is clear without any warped or blur portions and shows all relevant
+                        information.
+                      </p>
+                    </div>
                   }
                   previewWidth={200}
                 />
