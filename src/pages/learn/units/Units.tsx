@@ -118,7 +118,7 @@ export const Units = () => {
             </div>
           </div>
         </div>
-        <div className="m-3 h-auto  font-normal text-stone-500">{module?.description}</div>
+        <div className="m-3 h-auto font-normal text-stone-500">{module?.description}</div>
       </div>
       {module?.units?.map((unit: Unit, index) => (
         <div className="px-4 md:px-6" key={`unit-${index}`}>
