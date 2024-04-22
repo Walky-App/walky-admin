@@ -5,6 +5,12 @@ export interface IFacilityImage {
   timestamp: string
   _id: string
 }
+
+export interface IFacilityDNR {
+  _id: string
+  user_id: string
+  reason: string
+}
 export interface IFacility {
   _id: string
   account_info: string[]
@@ -43,6 +49,7 @@ export interface IFacility {
   state_license: string
   tax_id: string
   zip: string
+  dnr: IFacilityDNR[]
 }
 
 export interface IAddressDetails {
