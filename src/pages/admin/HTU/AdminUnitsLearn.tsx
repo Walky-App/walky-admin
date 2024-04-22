@@ -60,7 +60,7 @@ export const AdminUnitsLearn = () => {
 
   return (
     <div>
-      <div className="mb-4 flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white" key={module?._id}>
+      <div className="mb-4 flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white p-6" key={module?._id}>
         <div className="flex flex-row">
           <div className="m-3">
             {module?.image ? (
@@ -69,52 +69,49 @@ export const AdminUnitsLearn = () => {
               <div className="h-full w-36 rounded-xl bg-neutral-200" />
             )}
           </div>
-          <div className="m-3 flex flex-1 flex-col justify-center gap-3">
+          <div className="m-6 flex flex-1 flex-col justify-center gap-3">
             <div className="flex basis-1/3 flex-wrap ">
               <Badge color="gray" size="sm">
-                <p className="text-xs font-normal text-stone-500">{category?.title}</p>
+                <p className="font-normal text-stone-500">{category?.title}</p>
               </Badge>
             </div>
             <div className="text-xl font-semibold text-black">{module?.title}</div>
             <div className="inline-flex h-5 w-full items-center justify-start gap-2">
               <div className="flex items-center justify-start gap-1">
                 <ClockIcon className="h-5" />
-                <div className="flex h-5 items-center text-xs font-medium text-black">
+                <div className="flex h-5 items-center font-medium text-black">
                   {secondsToTimeDescription(module?.total_time as number)}
                 </div>
               </div>
               <div className="h-1 w-1 rounded-full bg-stone-500" />
               <div className="flex items-center justify-start gap-1">
                 <NewspaperIcon className="h-5" />
-                <div className="flex h-5 items-center text-xs font-medium text-black">
-                  {module?.units?.length} Units
-                </div>
+                <div className="flex h-5 items-center font-medium text-black">{module?.units?.length} Units</div>
               </div>
               <div className="h-1 w-1 rounded-full bg-stone-500" />
               <div className="flex items-center justify-start gap-1">
                 <BriefcaseIcon className="h-5" />
-                <div className="flex h-5 items-center text-xs font-medium text-black">{module?.level}</div>
+                <div className="flex h-5 items-center font-medium text-black">{module?.level}</div>
               </div>
             </div>
           </div>
         </div>
-        <div className="m-3 h-auto text-xs font-normal text-stone-500">{module?.description}</div>
+        <div className="m-3 h-auto font-normal text-stone-500">{module?.description}</div>
       </div>
 
       <div className="mt-4 grid grid-cols-5 gap-6">
         <div className="col-span-2 ">
           <div className="flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white">
             <button
-              className="flex flex-row justify-center rounded-t-2xl border bg-gray-300 p-3 text-left text-sm "
+              className="flex flex-row justify-center rounded-t-2xl border bg-gray-300 p-3 text-left  "
               onClick={handlerCreateUnit}
               type="button">
-              {' '}
-              <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" /> Create Unit
+              <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" /> Create Units
             </button>
             {module?.units?.map((unit, index) => {
               return (
                 <button
-                  className={`flex flex-row justify-between border-b border-zinc-100 p-3 text-left text-sm hover:bg-gray-100  ${index === (module?.units?.length ?? 0) - 1 ? 'rounded-b-2xl' : ''}`}
+                  className={`flex flex-row justify-between border-b border-zinc-100 p-3 text-left  hover:bg-gray-100  ${index === (module?.units?.length ?? 0) - 1 ? 'rounded-b-2xl' : ''}`}
                   key={unit._id}
                   onClick={() => {
                     handlerSelectUnit(unit)
@@ -143,7 +140,7 @@ export const AdminUnitsLearn = () => {
                     <div className="w-full">
                       <div className="flex flex-1 justify-end">
                         <button
-                          className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                          className="rounded-md bg-green-600 px-3 py-2  font-semibold text-white shadow-sm hover:bg-green-500"
                           onClick={() => {
                             handleEditAssessment()
                           }}
@@ -162,16 +159,16 @@ export const AdminUnitsLearn = () => {
                           <FaFileLines className="h-5 w-5" /> {unit?.assessments?.questions?.length} questions
                         </div>
                       </div>
-                      <p className="py-3 text-xs text-gray-500">Questions</p>
+                      <p className="py-3 text-gray-500">Questions</p>
                       {unit.assessments.questions?.map((question, index) => {
                         return (
                           <div
                             className={`flex flex-col ${index === (unit.assessments.questions?.length ?? 1) - 1 ? '' : 'border-b'} mb-2 gap-2 border-zinc-100 pb-4`}
                             key={question._id}>
                             <div className="flex basis-1/3 flex-row">
-                              <div className="text-sm font-semibold leading-6 text-gray-900">{question.header}</div>
+                              <div className=" font-semibold leading-6 text-gray-900">{question.header}</div>
                             </div>
-                            <div className="ml-4 text-sm">
+                            <div className="ml-4 ">
                               <div className="gap-2">
                                 <span className="font-bold">A)</span>
                                 {question.options[0]}
@@ -209,11 +206,11 @@ export const AdminUnitsLearn = () => {
                           vectorEffect="non-scaling-stroke"
                         />
                       </svg>
-                      <h3 className="mt-2 text-sm font-semibold text-gray-900">No assessment</h3>
-                      <p className="mt-1 text-sm text-gray-500">Get started by creating a new assessment.</p>
+                      <h3 className="mt-2  font-semibold text-gray-900">No assessment</h3>
+                      <p className="mt-1  text-gray-500">Get started by creating a new assessment.</p>
                       <div className="mt-6">
                         <button
-                          className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                          className="rounded-md bg-green-600 px-3 py-2  font-semibold text-white shadow-sm hover:bg-green-500"
                           onClick={() => {
                             handleNewAssessment()
                           }}
