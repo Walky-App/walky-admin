@@ -51,7 +51,7 @@ export const CategoryCards = ({
 
   const categoryProgress = (_id: string) => {
     try {
-      const category = record.categories.find(data => data.category == _id)
+      const category = record.categories.find(data => data.category === _id)
       return category ? category.modules.filter(module => module.is_completed).length : 0
     } catch (error) {
       return 0
