@@ -9,6 +9,7 @@ import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { useAdminUserContext } from '../AdminUserPage'
 
 interface IProcessedTimeSheet {
+  time_stamp: string
   day: string
   in: string
   out: string
@@ -87,11 +88,17 @@ export const AdminUserTimeSheets = () => {
               }
             }
 
+            if (!outTime && punchIn) {
+              const totalTime = Date.now() - Date.parse(punchIn.time_stamp)
+              totalWorkedTime += totalTime
+            }
+
             const totalWorkedHours = totalWorkedTime / 1000 / 60 / 60
 
             const day = formatDate(sortedPunches[0].time_stamp)
 
             return {
+              time_stamp: sortedPunches[0].time_stamp,
               day,
               in: inTime,
               out: outTime,
@@ -113,7 +120,7 @@ export const AdminUserTimeSheets = () => {
   }, [selectedUserId])
 
   const sortedTimeSheets = useMemo(() => {
-    return [...processedTimeSheets].sort((a, b) => new Date(b.day).getTime() - new Date(a.day).getTime())
+    return [...processedTimeSheets].sort((a, b) => new Date(b.time_stamp).getTime() - new Date(a.time_stamp).getTime())
   }, [processedTimeSheets])
 
   interface IColumnMeta {
@@ -154,6 +161,17 @@ export const AdminUserTimeSheets = () => {
     }
     return undefined
   }
+  const getCellValue = (col: IColumnMeta, rowData: IProcessedTimeSheet) => {
+    const field = col.field as keyof IProcessedTimeSheet
+
+    if (field === 'out' && (!rowData[field] || rowData[field] === '')) {
+      return 'Clocked in'
+    } else if (field === 'total' && (!rowData['out'] || rowData['out'] === '')) {
+      return ''
+    } else {
+      return rowData[field]
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -163,11 +181,7 @@ export const AdminUserTimeSheets = () => {
             key={col.field}
             field={col.field}
             header={col.header}
-            body={rowData =>
-              col.field === 'out' && (!rowData[col.field] || rowData[col.field] === '')
-                ? 'Clocked in'
-                : rowData[col.field]
-            }
+            body={rowData => getCellValue(col, rowData)}
             sortable={col.sortable}
             editor={getEditor(col)}
           />
