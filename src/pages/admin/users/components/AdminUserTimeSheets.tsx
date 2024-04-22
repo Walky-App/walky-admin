@@ -2,27 +2,33 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions } from 'primereact/column'
-import { DataTable } from 'primereact/datatable'
+import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
 
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { GetTokenInfo } from '../../../../utils/TokenUtils'
 import { useAdminUserContext } from '../AdminUserPage'
 
+interface IPunchDetails {
+  in_time: string
+  out_time: string
+  total_time: string
+}
 interface IProcessedTimeSheet {
   time_stamp: string
   day: string
-  in: string
-  out: string
-  total: string
+  in_time: string
+  out_time: string
+  total_time: string
   details: string
-  worked: string
-  scheduled: string
+  worked_time: string
+  scheduled_time: string
   difference: string
+  punchesWithDetails: IPunchDetails[]
 }
 
 export const AdminUserTimeSheets = () => {
-  const [timeSheets, setTimeSheets] = useState<ITimeSheet[]>([])
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IProcessedTimeSheet[]>([])
+  const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
 
   const { selectedUserId } = useAdminUserContext()
 
@@ -60,10 +66,9 @@ export const AdminUserTimeSheets = () => {
         }
 
         if (response.status === 204) {
-          setTimeSheets([])
+          console.error('No timesheets found')
         } else {
           const data: ITimeSheet[] = await response.json()
-          setTimeSheets(data)
 
           const processedData: IProcessedTimeSheet[] = data.map(timeSheet => {
             const sortedPunches = [...timeSheet.punches].sort(
@@ -100,20 +105,49 @@ export const AdminUserTimeSheets = () => {
             return {
               time_stamp: sortedPunches[0].time_stamp,
               day,
-              in: inTime,
-              out: outTime,
-              total: totalWorkedHours.toFixed(2), // total worked hours
+              in_time: inTime,
+              out_time: outTime,
+              total_time: totalWorkedHours.toFixed(2), // total worked hours
               details: timeSheet.job_id, // generate details
-              worked: totalWorkedHours.toFixed(2), // total worked hours
-              scheduled: '', // calculate scheduled
+              worked_time: totalWorkedHours.toFixed(2), // total worked hours
+              scheduled_time: '', // calculate scheduled
               difference: '', // calculate difference
-            }
+              punchesWithDetails: (() => {
+                const punchPairs = []
+                let punchIn = null
+
+                for (const punch of sortedPunches) {
+                  if (punch.punch_in) {
+                    punchIn = punch
+                  } else if (punchIn) {
+                    const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
+                    punchPairs.push({
+                      in_time: formatTime(punchIn.time_stamp),
+                      out_time: formatTime(punch.time_stamp),
+                      total_time: (totalTime / 1000 / 60 / 60).toFixed(2), // total time in hours
+                    })
+                    punchIn = null
+                  }
+                }
+
+                // If there's a punch-in without a corresponding punch-out, calculate the total time until now
+                if (punchIn) {
+                  const totalTime = Date.now() - Date.parse(punchIn.time_stamp)
+                  punchPairs.push({
+                    in_time: formatTime(punchIn.time_stamp),
+                    out_time: '',
+                    total_time: (totalTime / 1000 / 60 / 60).toFixed(2), // total time in hours
+                  })
+                }
+
+                return punchPairs
+              })(),
+            } as IProcessedTimeSheet
           })
           setProcessedTimeSheets(processedData)
         }
       } catch (error) {
         console.error('Failed to fetch timesheet:', error)
-        setTimeSheets([])
       }
     }
     fetchTimeSheets()
@@ -122,13 +156,6 @@ export const AdminUserTimeSheets = () => {
   const sortedTimeSheets = useMemo(() => {
     return [...processedTimeSheets].sort((a, b) => new Date(b.time_stamp).getTime() - new Date(a.time_stamp).getTime())
   }, [processedTimeSheets])
-
-  interface IColumnMeta {
-    field: string
-    header: string
-    sortable?: boolean
-    editor?: (options: ColumnEditorOptions) => React.ReactNode
-  }
 
   // const textEditor = (options: ColumnEditorOptions) => {
   //   return (
@@ -144,38 +171,72 @@ export const AdminUserTimeSheets = () => {
     return <Calendar value={options.value} onChange={e => options.editorCallback!(e.target.value)} timeOnly />
   }
 
-  const cols: IColumnMeta[] = [
+  interface IColumnMeta<T> {
+    field: keyof T
+    header: string
+    sortable?: boolean
+    editor?: (options: ColumnEditorOptions) => React.ReactNode
+  }
+
+  const cols: IColumnMeta<IProcessedTimeSheet>[] = [
     { field: 'day', header: 'Day', sortable: true },
-    { field: 'in', header: 'In', sortable: false, editor: timeEditor },
-    { field: 'out', header: 'Out', sortable: false, editor: timeEditor },
-    { field: 'total', header: 'Total', sortable: false },
+    { field: 'in_time', header: 'In', sortable: false, editor: timeEditor },
+    { field: 'out_time', header: 'Out', sortable: false, editor: timeEditor },
+    { field: 'total_time', header: 'Total', sortable: false },
     { field: 'details', header: 'Job Details', sortable: false },
-    { field: 'worked', header: 'Worked', sortable: false },
-    { field: 'scheduled', header: 'Scheduled', sortable: false },
+    { field: 'worked_time', header: 'Worked', sortable: false },
+    { field: 'scheduled_time', header: 'Scheduled', sortable: false },
     { field: 'difference', header: 'Difference', sortable: false },
   ]
 
-  const getEditor = (col: IColumnMeta) => {
-    if (col.field === 'in' || col.field === 'out') {
+  const getEditor = (col: IColumnMeta<IProcessedTimeSheet>) => {
+    if (col.field === 'in_time' || col.field === 'out_time') {
       return (options: ColumnEditorOptions) => (col.editor ? col.editor(options) : undefined)
     }
     return undefined
   }
-  const getCellValue = (col: IColumnMeta, rowData: IProcessedTimeSheet) => {
+
+  const getCellValue = (col: IColumnMeta<IProcessedTimeSheet>, rowData: IProcessedTimeSheet) => {
     const field = col.field as keyof IProcessedTimeSheet
 
-    if (field === 'out' && (!rowData[field] || rowData[field] === '')) {
+    if (field === 'out_time' && (!rowData[field] || rowData[field] === '')) {
       return 'Clocked in'
-    } else if (field === 'total' && (!rowData['out'] || rowData['out'] === '')) {
+    } else if (field === 'total_time' && (!rowData['out_time'] || rowData['out_time'] === '')) {
       return ''
     } else {
-      return rowData[field]
+      const value = rowData[field]
+      if (Array.isArray(value)) {
+        return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
+      } else {
+        return value
+      }
     }
+  }
+
+  const allowExpansion = (rowData: IProcessedTimeSheet) => {
+    return !rowData['out_time'] || rowData['out_time'] !== ''
+  }
+
+  const rowExpansionTemplate = (data: IProcessedTimeSheet) => {
+    return (
+      <DataTable value={data.punchesWithDetails}>
+        <Column field="in_time" header="In" />
+        <Column field="out_time" header="Out" />
+        <Column field="total_time" header="Total" />
+      </DataTable>
+    )
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <DataTable value={sortedTimeSheets} editMode="row" tableStyle={{ minWidth: '50rem' }}>
+      <DataTable
+        value={sortedTimeSheets}
+        editMode="row"
+        tableStyle={{ minWidth: '50rem' }}
+        expandedRows={expandedRows}
+        onRowToggle={e => setExpandedRows(e.data)}
+        rowExpansionTemplate={rowExpansionTemplate}>
+        <Column expander={allowExpansion} style={{ width: '5rem' }} />
         {cols.map(col => (
           <Column
             key={col.field}
@@ -188,7 +249,6 @@ export const AdminUserTimeSheets = () => {
         ))}
         <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }} />
       </DataTable>
-      {timeSheets !== null ? <pre>{JSON.stringify(timeSheets, null, 3)}</pre> : null}
     </div>
   )
 }
