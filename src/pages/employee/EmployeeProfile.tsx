@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { useMemo, useState } from 'react'
 
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
@@ -77,13 +78,14 @@ export const EmployeeProfile = () => {
         <h3 className="text-base font-semibold leading-6 text-gray-900">Profile Detail</h3>
       </div>
 
-      {formUser.role ? <form onSubmit={handleUpdate}>
+      {formUser.role ? (
+        <form onSubmit={handleUpdate}>
           <div className="space-y-12">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Avatar</h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  This information will be displayed publicly so be careful what you share.
+                  Please upload a professional image of yourself that our clients will be able to see.
                 </p>
               </div>
 
@@ -112,9 +114,6 @@ export const EmployeeProfile = () => {
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Use a permanent address where you can receive mail.
-                </p>
               </div>
 
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
@@ -229,7 +228,8 @@ export const EmployeeProfile = () => {
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Address</h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Use a permanent address where you can receive mail.
+                  Please enter your physical home address. We use this location to map your location to closest jobs
+                  available.
                 </p>
               </div>
 
@@ -300,133 +300,11 @@ export const EmployeeProfile = () => {
               </div>
             </div>
 
-            {formUser?.role === employee_role ? <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Direct Deposit</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Use a permanent address where you can receive mail.
-                  </p>
-                </div>
-
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank Name
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_name}
-                        type="text"
-                        name="bank_name"
-                        id="bank_name"
-                        autoComplete="bank_name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="account_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Account #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.account_number}
-                        type="text"
-                        name="account_number"
-                        id="account_number"
-                        autoComplete="account_number"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="routing_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Routing #
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.routing_number}
-                        type="text"
-                        name="routing_number"
-                        id="routing_number"
-                        autoComplete="routing_number"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-full">
-                    <label htmlFor="bank_address" className="block text-sm font-medium leading-6 text-gray-900">
-                      Bank address
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_address}
-                        type="text"
-                        name="bank_address"
-                        id="bank_address"
-                        autoComplete="bank_address"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor="bank_city" className="block text-sm font-medium leading-6 text-gray-900">
-                      City
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_city}
-                        type="text"
-                        name="bank_city"
-                        id="bank_city"
-                        autoComplete="address-level2"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_state" className="block text-sm font-medium leading-6 text-gray-900">
-                      State / Province
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_state}
-                        type="text"
-                        name="bank_state"
-                        id="bank_state"
-                        autoComplete="address-level1"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bank_zip" className="block text-sm font-medium leading-6 text-gray-900">
-                      ZIP / Postal code
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        defaultValue={formUser.direct_deposit?.bank_zip}
-                        type="number"
-                        name="bank_zip"
-                        id="bank_zip"
-                        autoComplete="bank_zip"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div> : null}
-
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  We'll always let you know about important changes, but you pick what else you want to hear about.
+                  Please select the best option to keep you up to date
                 </p>
               </div>
 
@@ -475,7 +353,8 @@ export const EmployeeProfile = () => {
           </div>
 
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            {updateSuccess ? <div className="rounded-md bg-green-50 p-4">
+            {updateSuccess ? (
+              <div className="rounded-md bg-green-50 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
                     <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
@@ -487,14 +366,16 @@ export const EmployeeProfile = () => {
                     <div className="-mx-1.5 -my-1.5" />
                   </div>
                 </div>
-              </div> : null}
+              </div>
+            ) : null}
             <button
               type="submit"
               className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
               Update
             </button>
           </div>
-        </form> : null}
+        </form>
+      ) : null}
     </>
   )
 }
