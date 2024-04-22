@@ -204,22 +204,22 @@ export const FormAssessment = ({ action }: Props) => {
             </div>
           </div>
           <div className="col-span-full">
-            <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="description">
+            <label className="block  font-medium leading-6 text-gray-900" htmlFor="description">
               Questions
             </label>
             <div className="mt-3 flex h-auto flex-col">
               <button
-                className="mx-3 flex flex-row justify-center rounded-2xl border bg-green-600 p-3 text-left text-sm text-white hover:bg-green-500 "
+                className="mx-3 flex flex-row justify-center rounded-2xl border bg-green-600 p-3 text-left  text-white hover:bg-green-500 "
                 onClick={handlerSetAssessment}
                 type="button">
                 <PlusIcon className="h-5 w-5" />
-                <div>Add Questions</div>
+                <div>Add Question</div>
               </button>
 
               {questions.map(question => {
                 return (
                   <div className="mt-3 flex rounded-lg border-2 border-gray-200 p-2 shadow-md" key={question._id}>
-                    <div className="flex flex-1 items-center">{question.header}</div>
+                    <div className="flex flex-1 items-center text-xl">{question.header}</div>
                     <div className="flex">
                       <button
                         className="p-2 hover:text-green-400"
@@ -244,7 +244,7 @@ export const FormAssessment = ({ action }: Props) => {
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <button
-          className="text-sm font-semibold leading-6 text-gray-900"
+          className=" font-semibold leading-6 text-gray-900"
           onClick={() => {
             navigate(`/admin/learn/modules/${params.moduleId}/units`)
           }}
@@ -252,7 +252,7 @@ export const FormAssessment = ({ action }: Props) => {
           Cancel
         </button>
         <button
-          className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+          className="rounded-md bg-green-600 px-3 py-2  font-semibold text-white shadow-sm hover:bg-green-500"
           type="submit">
           {action === 'create' ? 'Create' : 'Save'}
         </button>

@@ -30,6 +30,7 @@ export const AdminUnitsLearn = () => {
     if (responseModule) {
       setModule(responseModule)
       setCategory(responseModule.category as unknown as CategoryTitle)
+      setUnit(responseModule.units?.[0])
     }
   }
 
@@ -103,23 +104,22 @@ export const AdminUnitsLearn = () => {
         <div className="col-span-2 ">
           <div className="flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white">
             <button
-              className="flex flex-row justify-center rounded-t-2xl border bg-gray-300 p-3 text-left  "
+              className="flex flex-row justify-center rounded-t-2xl border bg-gray-300 p-3 hover:bg-gray-200 hover:shadow-md"
               onClick={handlerCreateUnit}
               type="button">
-              <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" /> Create Units
+              <PlusIcon className=" mr-1.5 h-8 w-8" />
+              <h3 className="text-2xl">Create Units</h3>
             </button>
-            {module?.units?.map((unit, index) => {
+            {module?.units?.map(eachUnit => {
               return (
                 <button
-                  className={`flex flex-row justify-between border-b border-zinc-100 p-3 text-left  hover:bg-gray-100  ${index === (module?.units?.length ?? 0) - 1 ? 'rounded-b-2xl' : ''}`}
-                  key={unit._id}
-                  onClick={() => {
-                    handlerSelectUnit(unit)
-                  }}
+                  className={`border-b p-3 hover:bg-gray-100 ${unit?._id === eachUnit._id ? 'bg-gray-100' : ''}`}
+                  key={eachUnit._id}
+                  onClick={() => handlerSelectUnit(eachUnit)}
                   type="button">
                   <div className="flex flex-row items-center gap-3">
                     <Bars2Icon className="h-5 w-5" />
-                    <div>{unit.title}</div>
+                    <div className="text-xl">{eachUnit.title}</div>
                   </div>
                 </button>
               )
@@ -138,12 +138,11 @@ export const AdminUnitsLearn = () => {
                 <TabPanel header="Assessment Detail">
                   {unit?.assessments && (unit?.assessments?.questions?.length ?? 0) > 0 ? (
                     <div className="w-full">
-                      <div className="flex flex-1 justify-end">
+                      <div className="flex flex-1 justify-between py-9">
+                        <h2 className="text-xl font-bold">{unit.title}</h2>
                         <button
                           className="rounded-md bg-green-600 px-3 py-2  font-semibold text-white shadow-sm hover:bg-green-500"
-                          onClick={() => {
-                            handleEditAssessment()
-                          }}
+                          onClick={() => handleEditAssessment()}
                           type="button">
                           Edit
                         </button>
@@ -170,19 +169,19 @@ export const AdminUnitsLearn = () => {
                             </div>
                             <div className="ml-4 ">
                               <div className="gap-2">
-                                <span className="font-bold">A)</span>
+                                <span className="mr-2 font-bold">A)</span>
                                 {question.options[0]}
                               </div>
                               <div className="gap-2">
-                                <span className="font-bold">B)</span>
+                                <span className="mr-2 font-bold">B)</span>
                                 {question.options[1]}
                               </div>
                               <div className="gap-2">
-                                <span className="font-bold">C)</span>
+                                <span className="mr-2 font-bold">C)</span>
                                 {question.options[2]}
                               </div>
                               <div className="gap-2">
-                                <span className="font-bold">D)</span>
+                                <span className="mr-2 font-bold">D)</span>
                                 {question.options[3]}
                               </div>
                             </div>
@@ -210,7 +209,7 @@ export const AdminUnitsLearn = () => {
                       <p className="mt-1  text-gray-500">Get started by creating a new assessment.</p>
                       <div className="mt-6">
                         <button
-                          className="rounded-md bg-green-600 px-3 py-2  font-semibold text-white shadow-sm hover:bg-green-500"
+                          className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
                           onClick={() => {
                             handleNewAssessment()
                           }}

@@ -123,9 +123,8 @@ export const QuestionDialog = ({
         className="w-4/5"
         content={
           <div className="flex flex-col rounded-lg bg-white px-8 py-5 sm:w-full">
-            <div className="flex">Add Question</div>
             <div className="my-3">
-              <label className="block text-sm font-medium leading-6 text-gray-900 " htmlFor="title">
+              <label className="block font-medium leading-6 text-gray-900 " htmlFor="title">
                 Question text
               </label>
               <div className="mt-2 flex ">
@@ -139,7 +138,7 @@ export const QuestionDialog = ({
               </div>
             </div>
             <div className="my-3">
-              <label className="block text-sm font-medium leading-6 text-gray-900" htmlFor="title">
+              <label className="block font-medium leading-6 text-gray-900" htmlFor="title">
                 Options
               </label>
               <div className="my-2">
