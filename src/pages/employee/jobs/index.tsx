@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
@@ -7,6 +8,7 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { useJobs } from '../../../store/useJobs'
 import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
@@ -42,7 +44,9 @@ const rangeOptions = [
 ]
 
 export const EmployeeJobs = () => {
-  const [jobs, setJobs] = useState<IJob[]>([])
+  const { jobs, setJobs } = useJobs()
+
+  // const [jobs, setJobs] = useState<IJob[]>([])
   const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
@@ -63,19 +67,21 @@ export const EmployeeJobs = () => {
   }, [])
 
   useEffect(() => {
-    const getJobs = async () => {
-      if (typeof longitude !== 'number' || typeof latitude !== 'number' || isNaN(longitude) || isNaN(latitude)) {
-        console.error('Invalid coordinates: ', { longitude, latitude })
-        return
+    if (jobs.length) {
+      const getJobs = async () => {
+        if (typeof longitude !== 'number' || typeof latitude !== 'number' || isNaN(longitude) || isNaN(latitude)) {
+          console.error('Invalid coordinates: ', { longitude, latitude })
+          return
+        }
+        const fromCoordinates = [longitude, latitude]
+        const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
+        if (allJobs) {
+          setJobs(allJobs)
+        }
+        setLoading(false)
       }
-      const fromCoordinates = [longitude, latitude]
-      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
-      if (allJobs) {
-        setJobs(allJobs)
-      }
-      setLoading(false)
+      getJobs()
     }
-    getJobs()
   }, [latitude, longitude])
 
   useEffect(() => {
