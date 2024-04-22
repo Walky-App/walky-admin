@@ -41,7 +41,7 @@ export const AdminUserTimeSheets = () => {
         return
       }
       const { access_token } = GetTokenInfo()
-      const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}/all`
+      const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}`
 
       const options: RequestInit = {
         method: 'GET',
@@ -163,6 +163,11 @@ export const AdminUserTimeSheets = () => {
             key={col.field}
             field={col.field}
             header={col.header}
+            body={rowData =>
+              col.field === 'out' && (!rowData[col.field] || rowData[col.field] === '')
+                ? 'Clocked in'
+                : rowData[col.field]
+            }
             sortable={col.sortable}
             editor={getEditor(col)}
           />
