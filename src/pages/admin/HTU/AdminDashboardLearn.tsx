@@ -1,29 +1,31 @@
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { AcademicCapIcon, TagIcon } from '@heroicons/react/24/outline'
-import { classNames } from '../../../utils/Tailwind'
 import { Link } from 'react-router-dom'
+
+import { AcademicCapIcon, TagIcon } from '@heroicons/react/24/outline'
+
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { classNames } from '../../../utils/Tailwind'
 
 export const AdminDashboardLearn = () => {
   const items = [
     {
       title: 'Categories',
-      description: 'Manager categories you can create, update or disable.',
+      description: 'Manage categories (create, update or disable).',
       icon: TagIcon,
-      background: 'bg-blue-500',
+      background: 'bg-green-500',
       to: '/admin/learn/categories',
     },
     {
       title: 'Modules',
-      description: 'Manager Modules you can create, update or disable.',
+      description: 'Manage Modules (can create, update or disable).',
       icon: AcademicCapIcon,
-      background: 'bg-yellow-500',
+      background: 'bg-green-500',
       to: '/admin/learn/modules',
     },
   ]
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title='Manage HTU' />
-      <ul className="grid grid-cols-1 gap-6 border-b border-gray-200 pb-6 sm:grid-cols-2">
+      <HeaderComponent title="Manage HTU" />
+      <ul className="grid grid-cols-1 gap-6 border-gray-200 pb-6 sm:grid-cols-2">
         {items.map((item, itemIdx) => (
           <Link key={itemIdx} to={item.to}>
             <li className="flow-root">

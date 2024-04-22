@@ -1,23 +1,28 @@
 import { HomeIcon } from '@heroicons/react/20/solid'
 
-const pages = [
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Project Nero', href: '#', current: true },
-]
+export interface IPage {
+  name: string
+  href: string
+  current: boolean
+}
 
-export default function Example() {
+export interface IBreadCrumb {
+  pages: IPage[]
+}
+
+export const BreadCrumbs = ({ pages }: IBreadCrumb) => {
   return (
-    <nav className="flex" aria-label="Breadcrumb">
-      <ol role="list" className="flex items-center space-x-4">
+    <nav className="mb-6 flex" aria-label="Breadcrumb">
+      <ol className="flex items-center space-x-2">
         <li>
           <div>
-            <a href="#" className="text-gray-400 hover:text-gray-500">
+            <a href="/" className="text-gray-400 hover:text-gray-500">
               <HomeIcon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               <span className="sr-only">Home</span>
             </a>
           </div>
         </li>
-        {pages.map(page => (
+        {pages?.map((page: IPage) => (
           <li key={page.name}>
             <div className="flex items-center">
               <svg
