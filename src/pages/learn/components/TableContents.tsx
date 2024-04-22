@@ -43,14 +43,14 @@ export const TableContents = ({ headerTitle }: TableContentsProps) => {
   }, [unit])
 
   return (
-    <div>
+    <div className="max-h-[500px] overflow-auto">
       <div className="py-2 pl-5 text-lg font-medium">{headerTitle}</div>
       <nav>
         <ul className="last:mb-2">
           {dataContents.map((item, index) => (
             <li key={`content-item-${index}`}>
               <button
-                className={cn(`cursor-pointer py-2 pl-5 text-lg hover:border-l-2 hover:border-gray-600`, {
+                className={cn(`cursor-pointer py-2 pl-5 text-start text-lg hover:border-l-2 hover:border-gray-600`, {
                   'border-l-2 border-green-500 text-green-500 hover:border-green-500': index === active,
                 })}
                 onClick={() => handlerMenuNav(item, index)}
