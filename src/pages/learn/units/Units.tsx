@@ -150,7 +150,7 @@ export const Units = () => {
                     className={cn('flex h-full rounded-2xl border border-zinc-100  bg-gray-300', {
                       'bg-white hover:bg-gray-100': unitUnlock >= index,
                     })}>
-                    <div className="flex flex-1 items-center justify-start gap-2 pl-2">
+                    <div className="flex flex-1 items-center justify-start gap-6 pl-2">
                       <div className="flex items-center justify-center">
                         {unit?.url_image ? (
                           <img

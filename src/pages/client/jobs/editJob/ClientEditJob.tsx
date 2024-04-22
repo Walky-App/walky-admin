@@ -92,10 +92,6 @@ export default function ClientEditJob() {
   const lunchBreak = watch('lunch_break')
 
   React.useEffect(() => {
-    console.log(watchAllFields)
-  }, [watchAllFields])
-
-  React.useEffect(() => {
     if (startTime && endTime) {
       let startHours = startTime.getHours() + startTime.getMinutes() / 60
       let endHours = endTime.getHours() + endTime.getMinutes() / 60
