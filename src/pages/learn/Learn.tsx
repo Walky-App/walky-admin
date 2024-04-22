@@ -36,6 +36,7 @@ export const Learn = () => {
       search: searchParams.get('search') ?? '',
       selected: '',
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, categories])
 
   return (
@@ -70,7 +71,7 @@ export const Learn = () => {
           </div>
         </div>
 
-        <HeaderComponent search title="Learn" />
+        <HeaderComponent search title="Categories" />
 
         <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
           <div className="order-2 col-span-4 md:order-1 md:col-span-2">
