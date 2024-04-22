@@ -219,24 +219,28 @@ export const AdminUserTimeSheets = () => {
 
   const rowExpansionTemplate = (data: IProcessedTimeSheet) => {
     return (
-      <DataTable value={data.punchesWithDetails}>
-        <Column field="in_time" header="In" />
-        <Column field="out_time" header="Out" />
-        <Column field="total_time" header="Total" />
-      </DataTable>
+      <div className="p-4">
+        <h5 className="text-sm font-semibold">Punch Details</h5>
+        <DataTable value={data.punchesWithDetails}>
+          <Column field="in_time" header="In" />
+          <Column field="out_time" header="Out" />
+          <Column field="total_time" header="Total" />
+        </DataTable>
+      </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-4">
       <DataTable
+        header="Daily Timesheets"
         value={sortedTimeSheets}
         editMode="row"
         tableStyle={{ minWidth: '50rem' }}
         expandedRows={expandedRows}
         onRowToggle={e => setExpandedRows(e.data)}
         rowExpansionTemplate={rowExpansionTemplate}>
-        <Column expander={allowExpansion} style={{ width: '5rem' }} />
+        <Column expander={allowExpansion} />
         {cols.map(col => (
           <Column
             key={col.field}
