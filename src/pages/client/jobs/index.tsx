@@ -23,7 +23,6 @@ export default function Facilities() {
     const getJobs = async () => {
       try {
         const allJobs = await RequestService(`jobs/client/${id}`)
-        console.log('All Jobs:', allJobs)
         setJobsData(allJobs)
       } catch (error) {
         console.error('Error fetching jobs data:', error)
