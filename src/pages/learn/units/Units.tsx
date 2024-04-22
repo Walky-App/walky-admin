@@ -118,7 +118,7 @@ export const Units = () => {
             </div>
           </div>
         </div>
-        <div className="m-3 h-auto text-sm font-normal text-stone-500">{module?.description}</div>
+        <div className="m-3 h-auto  font-normal text-stone-500">{module?.description}</div>
       </div>
       {module?.units?.map((unit: Unit, index) => (
         <div className="px-4 md:px-6" key={`unit-${index}`}>
@@ -155,14 +155,14 @@ export const Units = () => {
                         {unit?.url_image ? (
                           <img
                             alt={`Hemp Temp ${unit.title} module`}
-                            className="mt-2 hidden h-20 w-20 rounded-xl md:m-0 md:flex md:h-full "
+                            className="mt-2 hidden h-20 min-w-20 rounded-xl md:m-0 md:flex "
                             src={unit.url_image}
                           />
                         ) : null}
                       </div>
                       <div>
                         <div className="mt-2 text-start text-base font-semibold text-black">{unit.title}</div>
-                        <div className="mb-2 h-auto overflow-hidden text-start text-sm font-normal text-stone-500 md:line-clamp-2 md:text-ellipsis">
+                        <div className="mb-2 h-auto overflow-hidden text-start font-normal text-stone-500 md:line-clamp-2 md:text-ellipsis">
                           {unit.description}
                         </div>
                       </div>
