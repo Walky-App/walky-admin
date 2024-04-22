@@ -155,7 +155,7 @@ export const Units = () => {
                         {unit?.url_image ? (
                           <img
                             alt={`Hemp Temp ${unit.title} module`}
-                            className="mt-2 hidden h-20 w-20 rounded-xl md:m-0 md:flex md:h-full md:w-36 "
+                            className="mt-2 hidden h-20 w-20 rounded-xl md:m-0 md:flex md:h-full "
                             src={unit.url_image}
                           />
                         ) : null}
