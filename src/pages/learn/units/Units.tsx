@@ -163,10 +163,7 @@ export const Units = () => {
                       <div>
                         <div className="mt-2 text-start text-base font-semibold text-black">{unit.title}</div>
                         <div className="mb-2 h-auto overflow-hidden text-start text-sm font-normal text-stone-500 md:line-clamp-2 md:text-ellipsis">
-                          {/* {unit.description} */}
-                          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo non necessitatibus delectus
-                          ipsum deleniti, debitis quasi vero quidem repudiandae sunt ab totam iure beatae aliquam sint
-                          placeat officiis voluptatibus veritatis.
+                          {unit.description}
                         </div>
                       </div>
                     </div>
