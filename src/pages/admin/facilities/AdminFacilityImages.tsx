@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom'
 
 import { Spinner } from 'flowbite-react'
 import { Badge } from 'primereact/badge'
+import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Image } from 'primereact/image'
 
 import { Dialog, Transition } from '@headlessui/react'
@@ -81,17 +82,29 @@ export const AdminFacilityImages = () => {
     filesInputRef.current.click()
   }
 
-  const handleRemoveImage = async () => {
-    setOpenDialog(false)
+  const handleRemoveImage = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    const accept = async () => {
+      const updatedFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
+
+      setFacility(updatedFacility)
+
+      showToast({ severity: 'warn', summary: 'Confirmed', detail: 'Image removed', life: 3000 })
+      setOpenDialog(false)
+    }
+
+    confirmPopup({
+      target: event.currentTarget,
+      message: 'Do you want to delete this image?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept,
+    })
     const body = {
       file_type: 'images',
       file_id: selectedImage.current._id,
       file_path: selectedImage.current.key,
     }
-
-    const updatedFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
-
-    setFacility(updatedFacility)
   }
 
   const handleFacilityUpdate = async () => {
@@ -114,6 +127,7 @@ export const AdminFacilityImages = () => {
 
   return (
     <div>
+      <ConfirmPopup />
       <SubHeader data={facility} links={adminFacilitiesLinks} />
       <input
         ref={filesInputRef}
@@ -196,8 +210,15 @@ export const AdminFacilityImages = () => {
                       <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                     </button>
                   </div>
-                  <div className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
-                    <Image src={selectedImage.current?.url} alt="facility" preview />
+                  <div className="mx-auto flex max-h-[300px] max-w-[400px]">
+                    <Image
+                      src={selectedImage.current?.url}
+                      alt="facility"
+                      preview
+                      pt={{
+                        image: { className: 'mx-auto max-h-full max-w-full object-contain rounded-lg' },
+                      }}
+                    />
                   </div>
                   <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                     <button
