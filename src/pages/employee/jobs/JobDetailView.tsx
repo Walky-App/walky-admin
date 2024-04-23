@@ -17,7 +17,7 @@ import { type IJob } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)

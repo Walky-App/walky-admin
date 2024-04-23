@@ -7,7 +7,7 @@ import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
 import { RequestService } from '../../services/RequestService'
 import { useUtils } from '../../store/useUtils'
-import { SetToken } from '../../utils/TokenUtils'
+import { SetToken } from '../../utils/tokenUtil'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string

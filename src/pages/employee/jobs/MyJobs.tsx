@@ -6,7 +6,7 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobCalendar } from './JobCalendar'
 import { JobListItem } from './JobListItem'
 

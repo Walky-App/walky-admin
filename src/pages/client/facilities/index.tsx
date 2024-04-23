@@ -6,7 +6,7 @@ import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTab
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface IRow {
   row: { original: IFacility }
