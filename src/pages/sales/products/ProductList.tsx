@@ -1,9 +1,10 @@
 import React from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import GlobalTable from '../../../components/shared/GlobalTable'
-import { IProduct } from '../../../interfaces/Product'
+import { type IProduct } from '../../../interfaces/Product'
 import { RequestService } from '../../../services/RequestService'
 import { ImportUpdateModal } from './components/ImportUpdateModal'
 
@@ -111,4 +112,3 @@ export const ProductList = () => {
     </div>
   )
 }
-

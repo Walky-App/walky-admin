@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { RequestService } from '../../../services/RequestService'
 
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
