@@ -11,7 +11,7 @@ import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
 
 import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
 
 export const Step2 = ({ step, setStep }: StepProps) => {

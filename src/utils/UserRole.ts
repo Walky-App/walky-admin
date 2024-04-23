@@ -1,4 +1,4 @@
-import { GetTokenInfo } from './TokenUtils'
+import { GetTokenInfo } from './tokenUtil'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string

@@ -9,10 +9,10 @@ import { useAuth } from '../../contexts/AuthContext'
 import { type LoginData } from '../../interfaces/global'
 import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
-import { LoginService } from '../../services/AuthService'
+import { LoginService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
-import { SetToken } from '../../utils/TokenUtils'
 import { roleChecker } from '../../utils/roleChecker'
+import { SetToken } from '../../utils/tokenUtil'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE
 const client_role = process.env.REACT_APP_CLIENT_ROLE
@@ -75,12 +75,12 @@ export const LoginForm = () => {
             role: user.role,
             access_token: access_token,
             avatar: user.avatar,
+            onboarding: user.onboarding,
           }
 
           SetToken(data)
-          setUser({ ...user, access_token: access_token })
+          setUser({ ...user, access_token: access_token, onboarding: user.onboarding })
           setAvatar(user.avatar as string)
-          setLoading(false)
 
           switch (user.role) {
             case admin_role:
