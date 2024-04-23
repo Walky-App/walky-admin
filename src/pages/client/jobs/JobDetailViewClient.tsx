@@ -46,6 +46,7 @@ export default function JobDetailViewClient() {
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
   const [potentialApplicants, setPotentialApplicants] = useState<any>([])
   const [checked, setChecked] = useState(false)
+  const [submitCount, setSubmitCount] = useState(0)
 
   useEffect(() => {
     const getJob = async () => {
@@ -68,6 +69,7 @@ export default function JobDetailViewClient() {
     rejectionReason,
     lastRejectedApplicantId,
     lastReinstatedApplicantId,
+    submitCount,
   ])
 
   function getFormErrorMessage(path: string, errors: FieldErrors) {
@@ -112,7 +114,7 @@ export default function JobDetailViewClient() {
       }
     }
     getPotentialApplicants()
-  }, [id])
+  }, [id, submitCount])
 
   const defaultValues = {
     user_id: '',
@@ -122,6 +124,7 @@ export default function JobDetailViewClient() {
     control,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm({ defaultValues })
 
   let earliestDate, latestDate
@@ -233,6 +236,7 @@ export default function JobDetailViewClient() {
         })
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Added', detail: 'Applicant has been added' })
+        setSubmitCount(prevCount => prevCount + 1)
       }
     } catch (error) {
       console.error(error)
@@ -390,7 +394,10 @@ export default function JobDetailViewClient() {
                       <Button
                         type="submit"
                         label="Add New Applicant"
-                        onClick={handleSubmit(data => onSubmit(data.user_id))}
+                        onClick={handleSubmit(data => {
+                          onSubmit(data.user_id)
+                          reset({ user_id: '' })
+                        })}
                         className="ml-4"
                       />
                     </div>
