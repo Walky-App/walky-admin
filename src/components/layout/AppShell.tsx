@@ -4,67 +4,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
 import { FooterComponent } from './FooterComponent'
-<<<<<<< HEAD
 import { HeaderComponent } from './HeaderComponent'
 import { SidebarComponent } from './SideBarComponent'
-=======
-import { LogosPack } from './LogosPack'
-
-interface INavLink {
-  id: number
-  name: string
-  href: string
-  icon?: JSX.Element
-  disabled?: boolean
-}
-
-const adminLinks: INavLink[] = [
-  { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
-  { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
-  { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
-  { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
-  { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
-  { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
-  { id: 8, name: 'Support', href: '/support', icon: <MdPhone /> },
-  { id: 9, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
-]
-
-const clientLinks: INavLink[] = [
-  { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase /> },
-  { id: 2, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
-  { id: 3, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
-  { id: 4, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
-  {
-    id: 5,
-    name: 'Timesheets',
-    href: '/dashboard/timesheets',
-    icon: <BsFillFileEarmarkSpreadsheetFill />,
-    disabled: true,
-  },
-  { id: 6, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-  { id: 7, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
-  { id: 8, name: 'Support', href: '/support', icon: <MdPhone /> },
-]
-
-const employeeLinks: INavLink[] = [
-  { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime /> },
-  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
-  { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-  { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-  { id: 5, name: 'Support', href: '/support', icon: <MdPhone /> },
-]
-
-const salesLinks: INavLink[] = [
-  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
-  { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
-  { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: true },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-  { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Support', href: '/support', icon: <MdPhone /> },
-]
->>>>>>> staging
 
 export interface SideBarData {
   id: number
