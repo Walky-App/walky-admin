@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { useEffect, useState } from 'react'
 
+import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { Avatar } from 'primereact/avatar'
@@ -14,13 +15,23 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
 import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
+import { classNames } from 'primereact/utils'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
+import AdminJobDetails from '../../admin/jobs/AdminJobDetails'
+
+const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
+const client_role = process.env.REACT_APP_CLIENT_ROLE as string
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
+const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export default function JobDetailViewClient() {
+  const userRole = GetTokenInfo().role
   const [job, setJob] = useState<any>({})
   const navigate = useNavigate()
   const params = useParams()
@@ -33,19 +44,8 @@ export default function JobDetailViewClient() {
   const [rejectionReason, setRejectionReason] = useState<any>(null)
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
+  const [potentialApplicants, setPotentialApplicants] = useState<any>([])
   const [checked, setChecked] = useState(false)
-
-  function convertToStandardTime(militaryTime: number) {
-    if (militaryTime == null) {
-      return 'Time not set'
-    }
-    const militaryTimeString = militaryTime.toString().padStart(4, '0')
-    const hours = Number(militaryTimeString.slice(0, -2))
-    const minutes = Number(militaryTimeString.slice(-2))
-    const standardHours = ((hours + 11) % 12) + 1
-    const amPm = hours >= 12 ? 'pm' : 'am'
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
-  }
 
   useEffect(() => {
     const getJob = async () => {
@@ -69,6 +69,60 @@ export default function JobDetailViewClient() {
     lastRejectedApplicantId,
     lastReinstatedApplicantId,
   ])
+
+  function getFormErrorMessage(path: string, errors: FieldErrors) {
+    const pathParts = path.split('.')
+    let error: FieldErrors = errors
+
+    for (const part of pathParts) {
+      if (typeof error !== 'object' || error === null) {
+        return null
+      }
+      error = error[part as keyof typeof error] as FieldErrors
+    }
+
+    if (error?.message) {
+      return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
+    }
+    return null
+  }
+
+  function convertToStandardTime(militaryTime: number) {
+    if (militaryTime == null) {
+      return 'Time not set'
+    }
+    const militaryTimeString = militaryTime.toString().padStart(4, '0')
+    const hours = Number(militaryTimeString.slice(0, -2))
+    const minutes = Number(militaryTimeString.slice(-2))
+    const standardHours = ((hours + 11) % 12) + 1
+    const amPm = hours >= 12 ? 'pm' : 'am'
+    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
+  }
+
+  useEffect(() => {
+    const getPotentialApplicants = async () => {
+      try {
+        const response = await requestService({ path: `jobs/${id}/get-potential-applicants` })
+        if (response.status === 200) {
+          const jsonResponse = await response.json()
+          setPotentialApplicants(jsonResponse)
+        }
+      } catch (error) {
+        console.error('Error fetching potential applicants', error)
+      }
+    }
+    getPotentialApplicants()
+  }, [id])
+
+  const defaultValues = {
+    user_id: '',
+  }
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({ defaultValues })
 
   let earliestDate, latestDate
 
@@ -160,6 +214,25 @@ export default function JobDetailViewClient() {
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Reinstated', detail: 'Applicant has been reinstated' })
         setLastReinstatedApplicantId(user_id)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const onSubmit = async (user_id: string) => {
+    try {
+      const requestData = { user_id }
+      const response = await RequestService(`jobs/${id}/add-applicant`, 'POST', requestData)
+      if (response) {
+        const updatedApplicants = job.applicants.map((applicant: any) => {
+          if (applicant.id === user_id) {
+            return { ...applicant, is_approved: false, rejection_reason: '' }
+          }
+          return applicant
+        })
+        setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
+        showToast({ severity: 'success', summary: 'Applicant Added', detail: 'Applicant has been added' })
       }
     } catch (error) {
       console.error(error)
@@ -273,15 +346,57 @@ export default function JobDetailViewClient() {
                 </Card>
                 {/* Job Card End*/}
                 {/* Schedule */}
-                <ToggleButton
-                  checked={checked}
-                  onChange={e => setChecked(e.value)}
-                  onLabel="Close Schedule"
-                  offLabel="Open Schedule"
-                  onIcon="pi pi-times"
-                  offIcon="pi pi-check"
-                  className="w-8rem mt-2"
-                />
+                {userRole === admin_role && (
+                  <div className="flex items-center justify-between">
+                    <ToggleButton
+                      checked={checked}
+                      onChange={e => setChecked(e.value)}
+                      onLabel="Close Schedule"
+                      offLabel="Open Schedule"
+                      onIcon="pi pi-times"
+                      offIcon="pi pi-check"
+                      className="w-8rem mt-2"
+                    />
+                    <div className="mt-4 flex flex-grow justify-end">
+                      <div className="align w-1/2">
+                        <div className="mt-2">
+                          <Controller
+                            name="user_id"
+                            control={control}
+                            rules={{ required: 'Employee selection is required' }}
+                            render={({ field, fieldState }) => (
+                              <Dropdown
+                                id={field.name}
+                                value={field.value}
+                                placeholder="Select an applicant"
+                                name="employee"
+                                className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
+                                onChange={e => field.onChange(e.target.value)}
+                                options={potentialApplicants.map(
+                                  (potentialApplicant: { _id: any; first_name: any; last_name: any }) => ({
+                                    value: potentialApplicant._id,
+                                    label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
+                                  }),
+                                )}
+                                optionLabel="label"
+                                filter
+                              />
+                            )}
+                          />
+                        </div>
+                        {getFormErrorMessage('applicant', errors)}
+                      </div>
+
+                      <Button
+                        type="submit"
+                        label="Add New Applicant"
+                        onClick={handleSubmit(data => onSubmit(data.user_id))}
+                        className="ml-4"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {checked && (
                   <section className="mt-12">
                     <h2 className="text-base font-semibold leading-6 text-gray-900">
