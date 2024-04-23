@@ -5,7 +5,7 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export default function ClientAddFacility() {
   const user = GetTokenInfo()

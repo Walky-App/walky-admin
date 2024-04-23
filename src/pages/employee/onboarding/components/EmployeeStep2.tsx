@@ -12,7 +12,7 @@ import { Panel } from 'primereact/panel'
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
 
 export const EmployeeStep2 = ({ step, setStep }: StepProps) => {

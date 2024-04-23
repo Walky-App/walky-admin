@@ -10,7 +10,7 @@ import { type IAddressAutoComplete } from '../../../components/shared/forms/Addr
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { Step1, Step2, Step3, Step4, Step5, WelcomeDialog } from './components'
 
 const defaultFacilityFormValues: IFacilityFormInputs = {
