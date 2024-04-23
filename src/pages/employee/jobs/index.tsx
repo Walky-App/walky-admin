@@ -45,32 +45,29 @@ const rangeOptions = [
 
 export const EmployeeJobs = () => {
   const { jobs, setJobs } = useJobs()
-  const { latitude, longitude, loading: coordinatesLoading } = useCoordinates()
+  const {
+    latitude,
+    longitude,
+    loading: coordinatesLoading,
+    getLatitudeFromLocalStorage,
+    getLongitudeFromLocalStorage,
+  } = useCoordinates()
 
-  // const [jobs, setJobs] = useState<IJob[]>([])
   const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  // const [latitude, setLatitude] = useState<number | undefined>(undefined)
-  // const [longitude, setLongitude] = useState<number | undefined>(undefined)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   const [loading, setLoading] = useState(true)
-  // const [isJobsFetched, setIsJobsFetched] = useState(false)
-
-  // useEffect(() => {
-  //   const getLocation = () => {
-  //     navigator.geolocation.getCurrentPosition(position => {
-  //       setLatitude(position.coords.latitude)
-  //       setLongitude(position.coords.longitude)
-  //     })
-  //   }
-
-  //   getLocation()
-  // }, [])
 
   useEffect(() => {
-    if (!coordinatesLoading && !jobs.length) {
+    if (jobs.length) {
+      setLoading(false)
+    }
+    if (getLongitudeFromLocalStorage() && getLatitudeFromLocalStorage() && !jobs.length) {
       const getJobs = async () => {
+        if (latitude === null || longitude === null) {
+          return
+        }
         const fromCoordinates = [longitude, latitude]
         const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
         if (allJobs) {
@@ -80,7 +77,15 @@ export const EmployeeJobs = () => {
       }
       getJobs()
     }
-  }, [jobs, setJobs, coordinatesLoading, latitude, longitude])
+  }, [
+    jobs,
+    setJobs,
+    coordinatesLoading,
+    latitude,
+    longitude,
+    getLatitudeFromLocalStorage,
+    getLongitudeFromLocalStorage,
+  ])
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])]

@@ -12,11 +12,14 @@ import { AppShell } from './AppShell'
 export const Layout = () => {
   const toastRef = useRef<Toast>(null)
   const { toastPosition, setToast, onRemoveToast } = useUtils()
-  useCoordinates()
+  const { getLocation, latitude, longitude } = useCoordinates()
 
   useEffect(() => {
     setToast(toastRef)
-  }, [setToast])
+    if (latitude === null && longitude === null) {
+      getLocation()
+    }
+  }, [setToast, latitude, longitude, getLocation])
 
   return (
     <>
