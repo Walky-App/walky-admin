@@ -7,6 +7,8 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { useCoordinates } from '../../../store/useCoordinates'
+import { useJobs } from '../../../store/useJobs'
 import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
@@ -42,41 +44,48 @@ const rangeOptions = [
 ]
 
 export const EmployeeJobs = () => {
-  const [jobs, setJobs] = useState<IJob[]>([])
+  const { jobs, setJobs } = useJobs()
+  const {
+    latitude,
+    longitude,
+    loading: coordinatesLoading,
+    getLatitudeFromLocalStorage,
+    getLongitudeFromLocalStorage,
+  } = useCoordinates()
+
   const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [latitude, setLatitude] = useState<number | undefined>(undefined)
-  const [longitude, setLongitude] = useState<number | undefined>(undefined)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const getLocation = () => {
-      navigator.geolocation.getCurrentPosition(position => {
-        setLatitude(position.coords.latitude)
-        setLongitude(position.coords.longitude)
-      })
-    }
-
-    getLocation()
-  }, [])
-
-  useEffect(() => {
-    const getJobs = async () => {
-      if (typeof longitude !== 'number' || typeof latitude !== 'number' || isNaN(longitude) || isNaN(latitude)) {
-        console.error('Invalid coordinates: ', { longitude, latitude })
-        return
-      }
-      const fromCoordinates = [longitude, latitude]
-      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
-      if (allJobs) {
-        setJobs(allJobs)
-      }
+    if (jobs.length) {
       setLoading(false)
     }
-    getJobs()
-  }, [latitude, longitude])
+    if (getLongitudeFromLocalStorage() && getLatitudeFromLocalStorage() && !jobs.length) {
+      const getJobs = async () => {
+        if (latitude === null || longitude === null) {
+          return
+        }
+        const fromCoordinates = [longitude, latitude]
+        const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
+        if (allJobs) {
+          setJobs(allJobs)
+        }
+        setLoading(false)
+      }
+      getJobs()
+    }
+  }, [
+    jobs,
+    setJobs,
+    coordinatesLoading,
+    latitude,
+    longitude,
+    getLatitudeFromLocalStorage,
+    getLongitudeFromLocalStorage,
+  ])
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])]
