@@ -10,6 +10,7 @@ import { type LoginData } from '../../interfaces/global'
 import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/AuthService'
+import { useUtils } from '../../store/useUtils'
 import { SetToken } from '../../utils/TokenUtils'
 import { roleChecker } from '../../utils/roleChecker'
 
@@ -22,6 +23,7 @@ export const LoginForm = () => {
   const [error, setError] = useState<Error>()
   const [loading, setLoading] = useState(false)
   const [value, setValue] = useState<string>('')
+  const { setAvatar } = useUtils()
 
   const { setUser } = useAuth()
   const navigate = useNavigate()
@@ -77,6 +79,7 @@ export const LoginForm = () => {
 
           SetToken(data)
           setUser({ ...user, access_token: access_token })
+          setAvatar(user.avatar as string)
           setLoading(false)
 
           switch (user.role) {
