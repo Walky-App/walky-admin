@@ -7,30 +7,39 @@ interface State {
   setLatitude: (latitude: number) => void
   setLongitude: (longitude: number) => void
   setLoading: (loading: boolean) => void
+  getLatitudeFromLocalStorage: () => boolean
+  getLongitudeFromLocalStorage: () => boolean
+  getLocation: () => void
 }
 
-export const useCoordinates = create<State>(set => {
-  const setLatitude = (latitude: number) => set(state => ({ ...state, latitude }))
-  const setLongitude = (longitude: number) => set(state => ({ ...state, longitude }))
-  const setLoading = (loading: boolean) => set(state => ({ ...state, loading }))
-
-  const getLocation = () => {
-    setLoading(true)
+export const useCoordinates = create<State>(set => ({
+  latitude: null,
+  longitude: null,
+  loading: false,
+  setLatitude: (latitude: number) => set(state => ({ ...state, latitude })),
+  setLongitude: (longitude: number) => set(state => ({ ...state, longitude })),
+  setLoading: (loading: boolean) => set(state => ({ ...state, loading })),
+  getLatitudeFromLocalStorage: () => {
+    const latitude = localStorage.getItem('latitude')
+    set({ latitude: latitude ? parseFloat(latitude) : null })
+    return latitude ? true : false
+  },
+  getLongitudeFromLocalStorage: () => {
+    const longitude = localStorage.getItem('longitude')
+    set({ longitude: longitude ? parseFloat(longitude) : null })
+    return longitude ? true : false
+  },
+  getLocation: () => {
+    set({ loading: true })
     navigator.geolocation.getCurrentPosition(position => {
-      setLatitude(position.coords.latitude)
-      setLongitude(position.coords.longitude)
-      setLoading(false)
+      const { latitude, longitude } = position.coords
+      localStorage.setItem('latitude', latitude.toString())
+      localStorage.setItem('longitude', longitude.toString())
+      set({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        loading: false,
+      })
     })
-  }
-
-  getLocation()
-
-  return {
-    latitude: null,
-    longitude: null,
-    loading: true,
-    setLatitude,
-    setLongitude,
-    setLoading,
-  }
-})
+  },
+}))
