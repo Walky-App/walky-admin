@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 
+import { Image } from 'primereact/image'
+
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { getCurrentUserRole } from '../../../../utils/UserRole'
 import { PolygonMap } from './PolygonMap'
 
 export const FacilityDetailsForm = ({
@@ -20,6 +23,9 @@ export const FacilityDetailsForm = ({
   const [locationPolygon, setLocationPolygon] = useState<[number, number][]>(
     facility.location_polygon ? facility.location_polygon : [],
   )
+
+  const role = getCurrentUserRole()
+
   const { zip, state, city, location_pin, address } = moreAddressDetails || {
     zip: undefined,
     state: undefined,
@@ -96,29 +102,35 @@ export const FacilityDetailsForm = ({
 
   return (
     <form onSubmit={handleForm}>
-      <div className="space-y-12">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+      <div className="space-y-4 md:space-y-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please see the information about this particular facility.
             </p>
-
-            {facility?.main_image ? (
-              <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
-                <img
-                  className="mb-4 h-64 w-64 flex-none rounded-lg bg-gray-50 object-cover"
-                  src={facility?.main_image}
-                  alt="Missing Facility"
+            <div className="relative mt-6">
+              <div className="flex max-h-[300px] max-w-[400px]">
+                <Image
+                  src={facility.main_image}
+                  alt="facility"
+                  preview
+                  pt={{
+                    image: { className: 'max-h-full max-w-full object-contain rounded-lg' },
+                  }}
                 />
               </div>
-            ) : null}
+            </div>
 
             {facility.location_pin[0] && facility.location_pin[1] ? (
-              <GoogleMapComponent
-                locationPin={facility.location_pin}
-                containerStyle={{ width: '450px', height: '450px' }}
-              />
+              <div className="col-span-1 mt-8 hidden h-64 md:col-span-1 md:block">
+                <div className="flex h-full max-w-[400px] flex-row md:flex-col">
+                  <GoogleMapComponent
+                    locationPin={facility.location_pin}
+                    containerStyle={{ width: '100%', height: '100%' }}
+                  />
+                </div>
+              </div>
             ) : null}
           </div>
 
@@ -392,15 +404,22 @@ export const FacilityDetailsForm = ({
           </div>
         </div>
 
-        {/* section two */}
-
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        {/* Facility Address */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Address</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Business address information of this particular facility
-            </p>
+            <p className="mt-1 text-sm leading-6 text-gray-600">Business address of this particular facility:</p>
             {facility?.address ? <h2>{facility.address}</h2> : null}
+            {facility.location_pin[0] && facility.location_pin[1] ? (
+              <div className="col-span-1 mt-4 h-64 sm:hidden md:col-span-1">
+                <div className="flex h-full flex-row md:flex-col">
+                  <GoogleMapComponent
+                    locationPin={facility.location_pin}
+                    containerStyle={{ width: '100%', height: '100%' }}
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
@@ -419,8 +438,9 @@ export const FacilityDetailsForm = ({
             </div>
           </div>
         </div>
-        {facility.location_pin.length ? (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        {/* Geo Fencing */}
+        {facility.location_pin.length && role === 'admin' ? (
+          <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
@@ -445,7 +465,6 @@ export const FacilityDetailsForm = ({
           </div>
         ) : null}
       </div>
-
       <div className="mt-6 flex items-center justify-end gap-x-6">
         {updateSuccess ? (
           <div className="rounded-md bg-green-50 p-4">

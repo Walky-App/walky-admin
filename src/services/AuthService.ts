@@ -1,4 +1,4 @@
-import { LoginData } from '../interfaces/global'
+import { type LoginData } from '../interfaces/global'
 import { RequestService } from './RequestService'
 
 export const LoginService = async (body: LoginData) => {
@@ -12,6 +12,5 @@ export const LoginService = async (body: LoginData) => {
 
 export const LogoutService = async () => {
   localStorage.removeItem('ht_usr')
-
   return true
 }

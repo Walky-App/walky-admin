@@ -11,7 +11,7 @@ import { type IAddressAutoComplete } from '../../../components/shared/forms/Addr
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IUserDocument, type IUser, type IOnboardingStep } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { EmployeeStep1, EmployeeStep2, EmployeeWelcomeDialog } from './components'
 import { EmployeeStep3 } from './components/EmployeeStep3'
 

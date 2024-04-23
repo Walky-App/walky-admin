@@ -7,7 +7,7 @@ import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outlin
 
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
   job: IJob

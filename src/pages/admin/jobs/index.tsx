@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
+
 import { useNavigate } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import GlobalTable from '../../../components/shared/GlobalTable'
 import { RequestService } from '../../../services/RequestService'
+import { GlobalTable } from '../../../components/shared/GlobalTable'
+
 
 export default function AdminJobs() {
   const [jobsData, setJobsData] = React.useState<any>([])
@@ -70,7 +74,7 @@ export default function AdminJobs() {
 
   return (
     <div className="">
-      <HeaderComponent title={'Jobs'} />
+      <HeaderComponent title="Jobs" />
       <Button
         label="Add Job"
         onClick={() => {
@@ -80,7 +84,7 @@ export default function AdminJobs() {
       />
       {isLoading ? (
         <div className="flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600" />
         </div>
       ) : (
         <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />

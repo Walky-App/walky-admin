@@ -58,9 +58,9 @@ export const Units = () => {
 
   const unitsCompleted = (_id: string, idCategory: string) => {
     try {
-      const category = record.categories.find(data => data.category == idCategory)
-      const module = category?.modules.find(data => data.module == _id)
-      setUnitUnlock(module?.units.filter(unit => unit.assessments_completed == true).length ?? 0)
+      const category = record.categories.find(data => data.category === idCategory)
+      const module = category?.modules.find(data => data.module === _id)
+      setUnitUnlock(module?.units.filter(unit => unit.assessments_completed === true).length ?? 0)
     } catch (error) {
       return 0
     }

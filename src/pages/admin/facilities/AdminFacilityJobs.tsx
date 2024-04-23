@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import GlobalTable from '../../../components/shared/GlobalTable'
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'

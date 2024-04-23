@@ -1,6 +1,8 @@
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useAdmin } from '../../../contexts/AdminContext'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FaSortUp, FaSortDown } from 'react-icons/fa'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import { useAdmin } from '../../../contexts/AdminContext'
 
 interface ITableProps {
   getTableProps: any
@@ -11,14 +13,14 @@ interface ITableProps {
   allowClick?: boolean
 }
 
-export default function TableComponent({
+export const TableComponent = ({
   getTableProps,
   headerGroups,
   getTableBodyProps,
   rows,
   prepareRow,
   allowClick,
-}: ITableProps) {
+}: ITableProps) => {
   const { setModule } = useAdmin()
   const navigate = useNavigate()
   const location = useLocation()
@@ -31,7 +33,7 @@ export default function TableComponent({
   }
 
   return (
-    <div className="w-full min-w-[30rem] rounded-xl bg-white p-4 shadow-[0_4px_10px_rgba(0,0,0,0.03)]">
+    <div className="">
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup: any) => (
@@ -40,17 +42,20 @@ export default function TableComponent({
                 <th
                   key={column.id}
                   {...column.getHeaderProps(column.getSortByToggleProps())}
-                  className="cursor-pointe px-3 text-start text-xs font-light uppercase"
+                  className="cursor-pointe text-start uppercase"
                   style={{ width: column.width }}>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <div className="text-gray-600">{column.render('Header')}</div>
                     <div className="flex flex-col">
                       <FaSortUp
-                        className={`translate-y-1/2 text-sm ${column.isSorted && !column.isSortedDesc ? 'text-green-500' : 'text-gray-300'
-                          }`}
+                        className={`translate-y-1/2 ${
+                          (column.isSorted as boolean) && !(column.isSortedDesc as boolean)
+                            ? 'text-green-500'
+                            : 'text-gray-300'
+                        }`}
                       />
                       <FaSortDown
-                        className={`-translate-y-1/2 text-sm ${column.isSortedDesc ? 'text-green-500' : 'text-gray-300'}`}
+                        className={`-translate-y-1/2 ${(column.isSortedDesc as boolean) ? 'text-green-500' : 'text-gray-300'}`}
                       />
                     </div>
                   </div>
@@ -64,13 +69,13 @@ export default function TableComponent({
             prepareRow(row)
             if (allowClick) {
               return (
-                <tr className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>
+                <tr key={row._id} className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>
                   {row.cells.map((cell: any) => {
                     return (
                       <td
                         key={cell.column.id}
                         {...cell.getCellProps()}
-                        className="p-3 text-sm font-normal text-gray-700 first:rounded-l-lg last:rounded-r-lg">
+                        className="border-b-2 border-slate-100 p-3 text-gray-700 first:rounded-l-lg last:rounded-r-lg">
                         {cell.render('Cell')}
                       </td>
                     )
@@ -79,12 +84,10 @@ export default function TableComponent({
               )
             } else {
               return (
-                <tr>
+                <tr key={row._id}>
                   {row.cells.map((cell: any) => {
                     return (
-                      <td
-                        key={cell.column.id}
-                        className="p-3 text-sm font-normal text-gray-700 first:rounded-l-lg last:rounded-r-lg">
+                      <td key={cell.column.id} className="p-3 text-gray-700 first:rounded-l-lg last:rounded-r-lg">
                         {cell.render('Cell')}
                       </td>
                     )
