@@ -18,12 +18,13 @@ import { Dialog, Transition } from '@headlessui/react'
 import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityImages = () => {
-  const [facility, setFacility] = useState<any>({})
+  const [facility, setFacility] = useState<IFacility>({} as IFacility)
   const [uploading, setUploading] = useState(false)
   const [files, setFiles] = useState<any>([])
   const [openDialog, setOpenDialog] = useState<boolean>(false)
@@ -71,7 +72,21 @@ export const AdminFacilityImages = () => {
       formData.append('files', files[i])
     }
 
-    const updatedFacility = await RequestService(`facilities/${facilityId}/images`, 'POST', formData, 'binary')
+    const updatedFacilityWithAddedImage = await RequestService(
+      `facilities/${facilityId}/images`,
+      'POST',
+      formData,
+      'binary',
+    )
+
+    if (updatedFacilityWithAddedImage.images.length === 1) {
+      await RequestService(`facilities/${facilityId}`, 'PATCH', {
+        ...updatedFacilityWithAddedImage,
+        main_image: updatedFacilityWithAddedImage.images[0].url,
+      })
+    }
+
+    const updatedFacility = await RequestService(`facilities/${facilityId}`)
 
     setFacility(updatedFacility)
     setFiles([])
@@ -84,7 +99,22 @@ export const AdminFacilityImages = () => {
 
   const handleRemoveImage = async (event: React.MouseEvent<HTMLButtonElement>) => {
     const accept = async () => {
-      const updatedFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
+      const body = {
+        file_type: 'images',
+        file_id: selectedImage.current._id,
+        file_path: selectedImage.current.key,
+      }
+
+      const updatedFacility: IFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
+
+      if (selectedImage.current.url === facility.main_image) {
+        const newMainImage = updatedFacility.images[0] || ''
+        await RequestService(`facilities/${facilityId}`, 'PATCH', {
+          ...facility,
+          main_image: newMainImage.url,
+        })
+        setFacility({ ...updatedFacility, main_image: newMainImage.url })
+      }
 
       setFacility(updatedFacility)
 
@@ -100,11 +130,6 @@ export const AdminFacilityImages = () => {
       acceptClassName: 'p-button-danger',
       accept,
     })
-    const body = {
-      file_type: 'images',
-      file_id: selectedImage.current._id,
-      file_path: selectedImage.current.key,
-    }
   }
 
   const handleFacilityUpdate = async () => {
@@ -159,20 +184,18 @@ export const AdminFacilityImages = () => {
         <Spinner color="success" size="lg" aria-label="Success spinner example" />
       )}
       <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-        {facility?.images?.map((file: any) => (
-          <li key={file._id} className="relative">
+        {facility?.images?.map(file => (
+          <li key={file._id} className="relative ">
             {facility.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
-            <div onClick={() => handleDialogOpen(file)} className="flex max-h-[300px] max-w-[400px]">
+            <div className="flex max-h-[300px] max-w-[400px] ">
               <Image
                 src={file.url}
                 alt="facility"
+                onClick={() => handleDialogOpen(file)}
                 pt={{
-                  image: { className: 'max-h-full max-w-full object-contain rounded-lg' },
+                  image: { className: 'max-h-full max-w-full object-contain rounded-lg cursor-pointer mx-auto' },
                 }}
               />
-              <button type="button" className="absolute inset-0 focus:outline-none">
-                <span className="sr-only">View details for {file.title}</span>
-              </button>
             </div>
           </li>
         ))}

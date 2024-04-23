@@ -102,6 +102,7 @@ export const FacilityDetailsForm = ({
 
   return (
     <form onSubmit={handleForm}>
+      +
       <div className="space-y-4 md:space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
           <div>
@@ -114,6 +115,7 @@ export const FacilityDetailsForm = ({
                 <Image
                   src={facility.main_image}
                   alt="facility"
+                  preview
                   pt={{
                     image: { className: 'max-h-full max-w-full object-contain rounded-lg' },
                   }}
@@ -464,7 +466,6 @@ export const FacilityDetailsForm = ({
           </div>
         ) : null}
       </div>
-
       <div className="mt-6 flex items-center justify-end gap-x-6">
         {updateSuccess ? (
           <div className="rounded-md bg-green-50 p-4">
