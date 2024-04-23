@@ -48,18 +48,18 @@ const adminLinks: INavLink[] = [
 
 const clientLinks: INavLink[] = [
   { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase /> },
-  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
-  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
+  { id: 2, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
+  { id: 3, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
+  { id: 4, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
   {
-    id: 4,
+    id: 5,
     name: 'Timesheets',
     href: '/dashboard/timesheets',
     icon: <BsFillFileEarmarkSpreadsheetFill />,
     disabled: true,
   },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-  { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
+  { id: 6, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
+  { id: 7, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
   { id: 8, name: 'Support', href: '/support', icon: <MdPhone /> },
 ]
 
