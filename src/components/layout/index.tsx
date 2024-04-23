@@ -5,12 +5,14 @@ import { Outlet } from 'react-router-dom'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 import { Toast } from 'primereact/toast'
 
+import { useCoordinates } from '../../store/useCoordinates'
 import { useUtils } from '../../store/useUtils'
 import { AppShell } from './AppShell'
 
 export const Layout = () => {
   const toastRef = useRef<Toast>(null)
   const { toastPosition, setToast, onRemoveToast } = useUtils()
+  useCoordinates()
 
   useEffect(() => {
     setToast(toastRef)
