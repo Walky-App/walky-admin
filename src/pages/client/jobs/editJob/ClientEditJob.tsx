@@ -16,7 +16,7 @@ import { TitleComponent } from '../../../../components/shared/general/TitleCompo
 import { IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 export default function ClientEditJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)

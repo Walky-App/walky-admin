@@ -9,8 +9,8 @@ import { useAuth } from '../../contexts/AuthContext'
 import { type LoginData } from '../../interfaces/global'
 import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
-import { LoginService } from '../../services/AuthService'
-import { SetToken } from '../../utils/TokenUtils'
+import { LoginService } from '../../services/authService'
+import { SetToken } from '../../utils/tokenUtil'
 import { roleChecker } from '../../utils/roleChecker'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE
@@ -73,10 +73,12 @@ export const LoginForm = () => {
             role: user.role,
             access_token: access_token,
             avatar: user.avatar,
+            onboarding: user.onboarding,
           }
 
+
           SetToken(data)
-          setUser({ ...user, access_token: access_token })
+          setUser({ ...user, access_token: access_token, onboarding: user.onboarding})
           setLoading(false)
 
           switch (user.role) {

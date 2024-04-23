@@ -1,5 +1,5 @@
 import { IRequestService } from '../interfaces/services'
-import { GetTokenInfo } from '../utils/TokenUtils'
+import { GetTokenInfo } from '../utils/tokenUtil'
 
 export const RequestService: IRequestService = async (
   path: string,

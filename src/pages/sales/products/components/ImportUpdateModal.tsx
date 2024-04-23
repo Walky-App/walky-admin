@@ -4,7 +4,7 @@ import { Dialog } from 'primereact/dialog'
 import { FileUpload, FileUploadBeforeSendEvent, FileUploadErrorEvent } from 'primereact/fileupload'
 import { Toast } from 'primereact/toast'
 
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 interface WelcomeDialogProps {
   visible: boolean

@@ -1,4 +1,4 @@
-import { GetTokenInfo } from '../utils/TokenUtils'
+import { GetTokenInfo } from '../utils/tokenUtil'
 
 interface IRequestServiceProps {
   path: string
