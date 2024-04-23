@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
-import { ProgressSpinner } from 'primereact/progressspinner'
+import { Skeleton } from 'primereact/skeleton'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
@@ -35,12 +35,12 @@ const jobTitleOptions = [
 ]
 
 const rangeOptions = [
-  { name: '5 miles', code: 5 },
-  { name: '10 miles', code: 10 },
-  { name: '15 miles', code: 15 },
-  { name: '20 miles', code: 20 },
-  { name: '30 miles', code: 30 },
-  { name: '50 miles', code: 50 },
+  { name: '< 5 miles', code: 5 },
+  { name: '< 10 miles', code: 10 },
+  { name: '< 15 miles', code: 15 },
+  { name: '< 20 miles', code: 20 },
+  { name: '< 30 miles', code: 30 },
+  { name: '< 50 miles', code: 50 },
 ]
 
 export const EmployeeJobs = () => {
@@ -57,11 +57,11 @@ export const EmployeeJobs = () => {
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (jobs.length) {
-      setLoading(false)
+      setIsLoading(false)
     }
     if (getLongitudeFromLocalStorage() && getLatitudeFromLocalStorage() && !jobs.length) {
       const getJobs = async () => {
@@ -73,7 +73,7 @@ export const EmployeeJobs = () => {
         if (allJobs) {
           setJobs(allJobs)
         }
-        setLoading(false)
+        setIsLoading(false)
       }
       getJobs()
     }
@@ -105,14 +105,6 @@ export const EmployeeJobs = () => {
     }
     setDisplayedJobs(filteredJobs)
   }, [selectedJobTitle, dates, jobs, selectedRange])
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <ProgressSpinner />
-      </div>
-    )
-  }
 
   return (
     <>
@@ -147,16 +139,16 @@ export const EmployeeJobs = () => {
             onChange={e => setSelectedRange(e.value)}
             options={rangeOptions}
             optionLabel="name"
-            placeholder="Select Range"
+            placeholder="Select Distance"
             className="w-full"
           />
         </div>
       </div>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-          {displayedJobs.map((job: IJob) => (
-            <JobListItem key={job._id} job={job} />
-          ))}
+          {isLoading
+            ? jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
+            : displayedJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
         </ul>
       </div>
     </>
