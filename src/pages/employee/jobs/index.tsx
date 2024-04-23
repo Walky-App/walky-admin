@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
@@ -8,6 +7,7 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { useCoordinates } from '../../../store/useCoordinates'
 import { useJobs } from '../../../store/useJobs'
 import { JobListItem } from './JobListItem'
 
@@ -45,34 +45,32 @@ const rangeOptions = [
 
 export const EmployeeJobs = () => {
   const { jobs, setJobs } = useJobs()
+  const { latitude, longitude, loading: coordinatesLoading } = useCoordinates()
 
   // const [jobs, setJobs] = useState<IJob[]>([])
   const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [latitude, setLatitude] = useState<number | undefined>(undefined)
-  const [longitude, setLongitude] = useState<number | undefined>(undefined)
+  // const [latitude, setLatitude] = useState<number | undefined>(undefined)
+  // const [longitude, setLongitude] = useState<number | undefined>(undefined)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   const [loading, setLoading] = useState(true)
+  // const [isJobsFetched, setIsJobsFetched] = useState(false)
+
+  // useEffect(() => {
+  //   const getLocation = () => {
+  //     navigator.geolocation.getCurrentPosition(position => {
+  //       setLatitude(position.coords.latitude)
+  //       setLongitude(position.coords.longitude)
+  //     })
+  //   }
+
+  //   getLocation()
+  // }, [])
 
   useEffect(() => {
-    const getLocation = () => {
-      navigator.geolocation.getCurrentPosition(position => {
-        setLatitude(position.coords.latitude)
-        setLongitude(position.coords.longitude)
-      })
-    }
-
-    getLocation()
-  }, [])
-
-  useEffect(() => {
-    if (jobs.length) {
+    if (!coordinatesLoading && !jobs.length) {
       const getJobs = async () => {
-        if (typeof longitude !== 'number' || typeof latitude !== 'number' || isNaN(longitude) || isNaN(latitude)) {
-          console.error('Invalid coordinates: ', { longitude, latitude })
-          return
-        }
         const fromCoordinates = [longitude, latitude]
         const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
         if (allJobs) {
@@ -82,7 +80,7 @@ export const EmployeeJobs = () => {
       }
       getJobs()
     }
-  }, [latitude, longitude])
+  }, [jobs, setJobs, coordinatesLoading, latitude, longitude])
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])]
