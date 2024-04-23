@@ -26,7 +26,7 @@ export const AdminAddUnit = () => {
 
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title="Create Unit" />
+      <HeaderComponent title="New Unit" />
       <FormUnits
         control={control}
         errors={errors}

@@ -1,4 +1,4 @@
-/*eslint-disable */
+/*eslint-disable*/
 import { useMemo, useState } from 'react'
 
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
