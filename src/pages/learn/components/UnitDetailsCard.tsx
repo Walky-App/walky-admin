@@ -20,9 +20,10 @@ export const UnitDetailsCard = ({ unit, isAdmin = false }: UnitDetailsCardProps)
       <div className="flex flex-row">
         {unit?.type === 'blog' ? <p className="flex-1 p-3 text-2xl">{unit?.title}</p> : null}
         {isAdmin ? (
-          <div className="flex justify-end text-black hover:text-green-400">
+          <div className="flex flex-1 justify-between py-9">
+            <h2 className="text-xl font-bold">{unit.title}</h2>
             <button
-              className="h-9 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+              className="h-9 rounded-md bg-green-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-green-500"
               onClick={handlerEditUnit}
               type="button">
               Edit

@@ -48,7 +48,7 @@ export const CircularProgressBar = ({ progressData }: ProgressData) => {
         strokeWidth="5"
         transform="rotate(-90 48 48)"
       />
-      <text fill="black" fontSize="0.75em" id="svgText" textAnchor="middle" x="48" y="52">
+      <text fill="black" id="svgText" textAnchor="middle" x="48" y="52">
         {`${progressData.complete} / ${progressData.total}`}
       </text>
     </svg>

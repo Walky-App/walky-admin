@@ -36,6 +36,7 @@ export const Learn = () => {
       search: searchParams.get('search') ?? '',
       selected: '',
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, categories])
 
   return (
@@ -70,7 +71,7 @@ export const Learn = () => {
           </div>
         </div>
 
-        <HeaderComponent search title="Learn" />
+        <HeaderComponent search title="Categories" />
 
         <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
           <div className="order-2 col-span-4 md:order-1 md:col-span-2">
@@ -81,24 +82,24 @@ export const Learn = () => {
           <div className="order-1 col-span-4 md:col-span-1">
             <div className=" h-auto rounded-2xl border border-zinc-100 bg-white">
               <div className="m-3 text-left text-2xl">Explore the courses</div>
-              <div className="m-3 pb-2 text-left text-xs">
+              <div className="m-3 pb-2 text-left">
                 Get content recommendations in a specialized course by taking a targeted skills assessment & Increase
                 your hourly rate by $2 on completion of the course.
               </div>
               <div className="m-3 grid grid-cols-2 gap-3 text-stone-500">
-                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 text-xs sm:h-32">
+                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                   <span>Courses Completed</span>
                   <span className="text-xl font-semibold text-black ">1</span>
                 </div>
-                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 text-xs sm:h-32">
+                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                   <span>Certificate Earns</span>
                   <span className="text-xl font-semibold text-black ">1</span>
                 </div>
-                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 text-xs sm:h-32">
+                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                   <span>Course In Progress</span>
                   <span className="text-xl font-semibold text-black ">1</span>
                 </div>
-                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 text-xs sm:h-32">
+                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                   <span>Recommend Courses</span>
                   <span className="text-xl font-semibold text-black ">1</span>
                 </div>
