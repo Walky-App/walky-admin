@@ -1,11 +1,9 @@
-/* eslint-disable */
 import { useState, useEffect } from 'react'
 
 import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
-import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
@@ -13,9 +11,9 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { classNames } from 'primereact/utils'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { useAuth } from '../../../contexts/AuthContext'
-import { IUser } from '../../../interfaces/User'
-import { RequestService } from '../../../services/RequestService'
+import { type IFacility } from '../../../interfaces/Facility'
+import { type IUser } from '../../../interfaces/User'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
@@ -26,55 +24,44 @@ interface IDNRFormValues {
 
 export const AdminFacilityDNR = () => {
   const { showToast } = useUtils()
-  const { user } = useAuth()
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<any>({})
-  const [formDNR, setFormDNR] = useState<IDNRFormValues>({
-    employee: '',
-    reason: '',
-  })
-
+  const [facility, setFacility] = useState<IFacility>({} as IFacility)
   const [employees, setEmployees] = useState<IUser[]>([])
-  // const [selectedHoliday, setSelectedHoliday] = useState<IHoliday | null>(null)
+
   useEffect(() => {
-    const getFacility = async () => {
+    const getFacilityWithDNRusers = async () => {
       try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
-        setFacility(facilityFound)
+        const response = await requestService({ path: `facilities/${facilityId}/dnr-users` })
+        if (response.status === 200) {
+          const jsonResponse: IFacility = await response.json()
+          setFacility(jsonResponse)
+        }
       } catch (error) {
         console.error('Error fetching facility data:', error)
       }
     }
-    getFacility()
+    getFacilityWithDNRusers()
   }, [facilityId])
 
   useEffect(() => {
     const getEmployees = async () => {
       try {
-        const response = await RequestService('users/employees', 'GET')
-        setEmployees(response)
+        const response = await requestService({ path: 'users/employees' })
+        if (response.status === 200) {
+          const jsonResponse: IUser[] = await response.json()
+          setEmployees(jsonResponse)
+        }
       } catch (error) {
-        console.error('error fetching holidays', error)
+        console.error('Error fetching employees:', error)
       }
     }
+
     getEmployees()
   }, [])
 
-  // const deleteHoliday = async (holiday: IHoliday) => {
-  //   try {
-  //     await RequestService(`holidays/${holiday._id}`, 'DELETE')
-  //     setHolidays(holidays.filter(existingHoliday => existingHoliday._id !== holiday._id))
-
-  //     showToast({ severity: 'success', summary: 'Success', detail: 'Holiday deleted successfully' })
-  //   } catch (error) {
-  //     console.error('error deleting holiday', error)
-  //     showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting holiday' })
-  //   }
-  // }
-
   const defaultValues = {
-    employee: formDNR?.employee,
-    reason: formDNR?.reason,
+    employee: '',
+    reason: '',
   }
 
   const {
@@ -82,15 +69,7 @@ export const AdminFacilityDNR = () => {
     formState: { errors },
     handleSubmit,
     reset,
-    setValue,
   } = useForm({ defaultValues })
-
-  useEffect(() => {
-    if (formDNR) {
-      setValue('employee', formDNR?.employee)
-      setValue('reason', formDNR?.reason)
-    }
-  }, [formDNR, setValue])
 
   function getFormErrorMessage(path: string, errors: FieldErrors) {
     const pathParts = path.split('.')
@@ -106,21 +85,65 @@ export const AdminFacilityDNR = () => {
     if (error?.message) {
       return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
     }
-
     return null
   }
 
   const onSubmit: SubmitHandler<IDNRFormValues> = async data => {
     try {
+      const payload = {
+        user_id: data.employee,
+        reason: data.reason,
+      }
+      const response = await requestService({
+        path: `facilities/${facilityId}/dnr`,
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+      if (response.status === 200) {
+        const jsonResponse = await response.json()
+        setFacility(jsonResponse)
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Employee added to DNR list successfully',
+        })
+        reset()
+      }
     } catch (error) {
       console.error('Error:', error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error adding employee to DNR list' })
+      showToast({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error adding employee to DNR list',
+      })
     }
   }
 
-  // const updatedByTemplate = (rowData: IDNR) => {
-  //   return <span>{rowData.updated_by}</span>
-  // }
+  const deleteFromDNR = async (userId: string) => {
+    try {
+      const response = await requestService({
+        path: `facilities/${facilityId}/dnr`,
+        method: 'DELETE',
+        body: JSON.stringify({ user_id: userId }),
+      })
+      if (response.status === 200) {
+        const jsonResponse = await response.json()
+        setFacility(jsonResponse)
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Employee removed from DNR list successfully',
+        })
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      showToast({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error removing employee from DNR list',
+      })
+    }
+  }
 
   return (
     <>
@@ -155,7 +178,7 @@ export const AdminFacilityDNR = () => {
                         onChange={e => field.onChange(e.target.value)}
                         options={employees.map(employee => ({
                           value: employee._id,
-                          label: `${employee.first_name} ${employee.last_name.charAt(0)}`,
+                          label: `${employee.first_name} ${employee.last_name}`,
                         }))}
                         optionLabel="label"
                         filter
@@ -180,7 +203,7 @@ export const AdminFacilityDNR = () => {
                         value={field.value}
                         name="reason"
                         className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                        onChange={(e: { target: { value: any } }) => field.onChange(e.target.value)}
+                        onChange={e => field.onChange(e.target.value)}
                       />
                     )}
                   />
@@ -196,38 +219,38 @@ export const AdminFacilityDNR = () => {
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
             <div>
               <h1 className="text-xl font-bold leading-7 text-gray-900">DNR Table</h1>
-              {/* <DataTable
-              value={employees}
-              selectionMode="single"
-              selection={selectedEmployee}
-              onSelectionChange={e => setSelectedEmployee(e.value as IHoliday)}
-              onRowSelect={e => setFormHoliday(e.data)}
-              dataKey="_id"
-              paginator
-              rows={5}
-              metaKeySelection={false}
-              tableStyle={{ minWidth: '50rem' }}>
-              <Column field="avatar" header="Avatar" />
-              <Column field="first_name" header="Name" />
-              <Column
-                body={(rowData: IHoliday) => (
-                  <span>{rowData.holiday_date ? new Date(rowData.holiday_date).toLocaleDateString() : ''}</span>
-                )}
-                header="Date Added"
-              />
-              <Column field="created_by" header="Added By" />
-              <Column body={updatedByTemplate} header="Reason" />
-              <Column
-                header="Delete"
-                body={rowData => (
-                  <Button
-                    icon="pi pi-trash"
-                    className="p-button-rounded p-button-danger"
-                    onClick={() => deleteHoliday(rowData)}
-                  />
-                )}
-              />
-            </DataTable> */}
+              <DataTable
+                value={facility.dnr}
+                paginator
+                rows={5}
+                metaKeySelection={false}
+                tableStyle={{ minWidth: '50rem' }}>
+                <Column
+                  field="user_id.avatar"
+                  header="Avatar"
+                  body={rowData =>
+                    rowData.user_id.avatar ? (
+                      <img src={rowData.user_id.avatar} alt="Avatar" style={{ width: '50px', height: '50px' }} />
+                    ) : null
+                  }
+                />
+                <Column field="user_id.first_name" header="First Name" />
+                <Column field="user_id.last_name" header="Last Name" />
+                <Column field="reason" header="Reason" />
+                <Column
+                  header="Delete"
+                  body={rowData => (
+                    <Button
+                      icon="pi pi-trash"
+                      rounded
+                      severity="danger"
+                      onClick={() => {
+                        deleteFromDNR(rowData.user_id._id)
+                      }}
+                    />
+                  )}
+                />
+              </DataTable>
             </div>
           </div>
         </div>

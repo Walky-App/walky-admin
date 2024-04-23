@@ -159,7 +159,7 @@ export const EmployeeOnboarding = () => {
 
   const onboardingSteps = [
     <Fragment key="step1">
-      {currentUser?.onboarding?.step_number === 1 ? (
+      {!currentUser?.onboarding?.step_number || currentUser.onboarding.step_number === 1 ? (
         <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
       ) : null}
       <EmployeeStep1 step={activeIndex} setStep={setActiveIndex} />
