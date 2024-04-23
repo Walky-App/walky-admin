@@ -1,4 +1,4 @@
-import { type Dispatch, Fragment, type SetStateAction, useState } from 'react'
+import { type Dispatch, Fragment, type SetStateAction, useState, useEffect } from 'react'
 
 import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
 import {
@@ -21,6 +21,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import { useAuth } from '../../contexts/AuthContext'
 import { LogoutService } from '../../services/AuthService'
+import { useUtils } from '../../store/useUtils'
 import { getCurrentUserRole } from '../../utils/UserRole'
 import { cn } from '../../utils/cn'
 import { FooterComponent } from './FooterComponent'
@@ -280,6 +281,7 @@ interface HeaderComponentProps {
 
 const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
+  const { avatar, setAvatar } = useUtils()
   const role = getCurrentUserRole()
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
@@ -290,6 +292,13 @@ const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
     LogoutService()
     navigate('/login')
   }
+
+  useEffect(() => {
+    if (!avatar && user?.avatar) {
+      setAvatar(user?.avatar)
+    }
+  }, [avatar, setAvatar, user?.avatar])
+
   return (
     <header
       id="header-shell"
@@ -310,7 +319,7 @@ const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
             <span className="sr-only">Open user menu</span>
             <span className="sr-only">Open user menu</span>
             {user && user.avatar ? (
-              <img className="h-8 w-8 rounded-full" src={user.avatar} alt="avatar" />
+              <img className="h-8 w-8 rounded-full" src={avatar} alt="avatar" />
             ) : (
               <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
                 <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
