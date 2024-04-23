@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
+
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { SelectedOptionInterface } from '../../../interfaces/global'
-import { Module } from '../../../interfaces/module'
-import { RequestService } from '../../../services/RequestService'
-import GlobalTable from '../../../components/shared/GlobalTable'
-import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
-import { Category } from '../../../interfaces/category'
 import { useAdmin } from '../../../contexts/AdminContext'
+import { type Category } from '../../../interfaces/category'
+import { type SelectedOptionInterface } from '../../../interfaces/global'
+import { type Module } from '../../../interfaces/module'
+import { RequestService } from '../../../services/RequestService'
+import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 
 export const AdminModulesLearn = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -60,7 +61,7 @@ export const AdminModulesLearn = () => {
   }
 
   useEffect(() => {
-    if (categories.length === 1 && (modules.length === 0)) {
+    if (categories.length === 1 && modules.length === 0) {
       fetchData()
     }
   }, [modules, categories])
@@ -72,16 +73,16 @@ export const AdminModulesLearn = () => {
           to: '/admin/learn/modules/new',
           text: 'New Module',
         }}
-        title='Manage Modules'
+        title="Manage Modules"
       />
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center h-96">
+        <div className="flex h-96 flex-col items-center justify-center">
           <div className="text-2xl font-semibold text-black">Loading ...</div>
         </div>
       ) : (
         <>
-          {(modules.length === 0 && !isLoading) ? <EmptyState to="/admin/learn/modules/new" type="module" /> : null}
-          {(modules.length > 0 && !isLoading) ? (
+          {modules.length === 0 && !isLoading ? <EmptyState to="/admin/learn/modules/new" type="module" /> : null}
+          {modules.length > 0 && !isLoading ? (
             <div className="w-full">
               <GlobalTable allowClick columns={categoryColumns} data={modules} />
             </div>

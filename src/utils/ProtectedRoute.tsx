@@ -1,5 +1,5 @@
 import { Navigate, Outlet, RouteProps } from 'react-router-dom'
-import { GetTokenInfo } from './TokenUtils'
+import { GetTokenInfo } from './tokenUtil'
 
 type ProtectedRouteProps = RouteProps & { redirectTo?: string }
 

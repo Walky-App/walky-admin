@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ProgressSpinner } from 'primereact/progressspinner'
 
-import GlobalTable from '../GlobalTable'
+import { GlobalTable } from '../GlobalTable'
 
 interface FacilitiesTableProps {
   columns: unknown[]

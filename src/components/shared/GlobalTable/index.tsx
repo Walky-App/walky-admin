@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTable, useGlobalFilter, useSortBy, usePagination } from 'react-table'
 
-import TableComponent from './TableComponent'
-import PaginationNav from './PaginationNav'
-import SelectMenu from './SelectMenu'
 import GlobalSearchFilter from './GlobalSearchFilter'
+import { PaginationNav } from './PaginationNav'
+import SelectMenu from './SelectMenu'
+import { TableComponent } from './TableComponent'
 
 interface ITableProps {
   data: any
@@ -11,7 +12,7 @@ interface ITableProps {
   allowClick?: boolean
 }
 
-export default function GlobalTable({ data, columns, allowClick }: ITableProps) {
+export const GlobalTable = ({ data, columns, allowClick }: ITableProps) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -31,7 +32,7 @@ export default function GlobalTable({ data, columns, allowClick }: ITableProps) 
       columns,
       data,
       // @ts-ignore
-      initialState: { pageSize: 10 },
+      initialState: { pageSize: 20 },
     },
     useGlobalFilter,
     useSortBy,

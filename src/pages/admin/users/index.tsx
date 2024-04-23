@@ -1,9 +1,11 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
-import GlobalTable from '../../../components/shared/GlobalTable'
-import { RequestService } from '../../../services/RequestService'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { useState } from 'react'
+
 import { useNavigate } from 'react-router-dom'
+
+import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { RequestService } from '../../../services/RequestService'
 
 export default function AdminUsers() {
   const [usersData, setUsersData] = useState<any>([])
