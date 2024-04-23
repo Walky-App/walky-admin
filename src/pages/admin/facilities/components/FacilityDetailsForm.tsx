@@ -8,6 +8,7 @@ import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { getCurrentUserRole } from '../../../../utils/UserRole'
 import { PolygonMap } from './PolygonMap'
 
 export const FacilityDetailsForm = ({
@@ -22,6 +23,9 @@ export const FacilityDetailsForm = ({
   const [locationPolygon, setLocationPolygon] = useState<[number, number][]>(
     facility.location_polygon ? facility.location_polygon : [],
   )
+
+  const role = getCurrentUserRole()
+
   const { zip, state, city, location_pin, address } = moreAddressDetails || {
     zip: undefined,
     state: undefined,
@@ -399,8 +403,7 @@ export const FacilityDetailsForm = ({
           </div>
         </div>
 
-        {/* section two */}
-
+        {/* Facility Address */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Address</h2>
@@ -434,7 +437,8 @@ export const FacilityDetailsForm = ({
             </div>
           </div>
         </div>
-        {facility.location_pin.length ? (
+        {/* Geo Fencing */}
+        {facility.location_pin.length && role === 'admin' ? (
           <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
