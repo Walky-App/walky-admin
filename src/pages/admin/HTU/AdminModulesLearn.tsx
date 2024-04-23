@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react'
 
-
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { useAdmin } from '../../../contexts/AdminContext'
@@ -10,7 +10,6 @@ import { type SelectedOptionInterface } from '../../../interfaces/global'
 import { type Module } from '../../../interfaces/module'
 import { RequestService } from '../../../services/RequestService'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 
 export const AdminModulesLearn = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
