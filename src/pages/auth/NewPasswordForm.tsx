@@ -1,22 +1,29 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { RequestService } from '../../services/RequestService'
 
-export default function NewPasswordForm() {
+import { useParams, useNavigate } from 'react-router-dom'
+
+import { requestService } from '../../services/requestServiceNew'
+
+export const NewPasswordForm = () => {
   const { id, at } = useParams()
   const [form, setForm] = useState({ _id: id, access_token: at, password: '', password_confirmed: '' })
-  const [error, setError] = useState<any>()
+  const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
 
-  const navigate =  useNavigate()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
-    const response = await RequestService('auth/new', 'POST', form)
+    const response = await requestService({ path: 'auth/new', method: 'POST', body: JSON.stringify(form) })
 
-    if (response) {
+    const data = await response.json()
+    if (!response.ok) {
+      setError(data)
+      setLoading(false)
+      return
+    } else {
       navigate('/reset-success')
       setLoading(false)
     }
@@ -109,17 +116,17 @@ export default function NewPasswordForm() {
             </span>
           </div>
         </div>
-        {error && (
+        {error ? (
           <div className="flex items-center justify-center">
             <p className="text-sm text-red-500">{error}</p>
           </div>
-        )}
+        ) : null}
       </div>
 
       <button
         type="submit"
         className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'hover:bg-zinc-950 cursor-wait'
+          loading && 'cursor-wait hover:bg-zinc-950'
         }`}>
         {loading ? 'Updating password...' : 'Submit'}
       </button>
