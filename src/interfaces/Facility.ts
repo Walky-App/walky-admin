@@ -11,6 +11,15 @@ export interface IFacilityDNR {
   user_id: string
   reason: string
 }
+
+export interface IFacilityFile {
+  _id?: string
+  url: string
+  key: string
+  timestamp: Date
+  uploaded_by: string
+  FileList?: string[]
+}
 export interface IFacility {
   _id: string
   account_info: string[]
@@ -26,6 +35,7 @@ export interface IFacility {
   country: string
   createdAt: string
   entrance_image: string
+  licenses: IFacilityFile[]
   entrance_pin: number[]
   history: string[]
   images: IFacilityImage[]

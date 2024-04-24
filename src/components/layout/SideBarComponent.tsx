@@ -176,24 +176,30 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
         </ul>
       </nav>
 
-      <Button label="Support" size="small" icon="pi pi-question-circle" onClick={() => setVisible(true)} />
+      <Button
+        label="Support"
+        link
+        iconPos="right"
+        style={{ textAlign: 'left', width: '100px' }}
+        size="small"
+        icon="pi pi-question-circle"
+        onClick={() => setVisible(true)}
+      />
       <Dialog
         blockScroll={true}
         header="New Support Ticket"
         visible={visible}
         style={{ width: '50vw' }}
         onHide={() => setVisible(false)}>
-        <div>
-          <div className="asana-embed-container">
-            <link rel="stylesheet" href="https://form.asana.com/static/asana-form-embed-style.css" />
-            <iframe
-              className="aspect-[4/3] w-5/6"
-              height="800"
-              width="800"
-              src="https://form.asana.com/?k=CsJsKN7JrqEjByWiQLsh6w&d=1206274275339807&embed=true"
-              title="Technical Request Form"
-            />
-          </div>
+        <div className="asana-embed-container">
+          <link rel="stylesheet" href="https://form.asana.com/static/asana-form-embed-style.css" />
+          <iframe
+            className="aspect-[4/3] w-5/6"
+            height="800"
+            width="800"
+            src="https://form.asana.com/?k=CsJsKN7JrqEjByWiQLsh6w&d=1206274275339807&embed=true"
+            title="Technical Request Form"
+          />
         </div>
       </Dialog>
     </div>

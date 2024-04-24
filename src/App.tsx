@@ -51,16 +51,16 @@ import { AdminUserDetails } from './pages/admin/users/AdminUserDetails'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
-import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
-import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
-import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
+import { AdminFacilityActivity } from './pages/admin/facilities/AdminFacilityActivity'
+import { AdminFacilityAddJob } from './pages/admin/facilities/AdminFacilityAddJob'
+import { AdminFacilityContacts } from './pages/admin/facilities/AdminFacilityContacts'
 import { AdminFacilityDNR } from './pages/admin/facilities/AdminFacilityDNR'
 import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import { AdminFacilityImages } from './pages/admin/facilities/AdminFacilityImages'
 import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
 import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
 import { AdminFacilityJobs } from './pages/admin/facilities/AdminFacilityJobs'
-import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
+import { AdminFacilityLicenses } from './pages/admin/facilities/AdminFacilityLicenses'
 
 import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
 import { AdminAddCategory } from './pages/admin/HTU/AdminAddCategory'
@@ -82,8 +82,6 @@ import { AdminMessages } from './pages/admin/messages'
 
 /******************************************* Employee Pages ************************************/
 import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
-
-import { Support } from './pages/Support'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
@@ -112,7 +110,6 @@ export const App = () => {
             <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
-                <Route element={<Support />} path="/support" />
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
                 <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
