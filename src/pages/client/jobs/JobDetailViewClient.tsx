@@ -108,6 +108,7 @@ export default function JobDetailViewClient() {
         if (response.status === 200) {
           const jsonResponse = await response.json()
           setPotentialApplicants(jsonResponse)
+          console.log('Potential Applicants:', potentialApplicants)
         }
       } catch (error) {
         console.error('Error fetching potential applicants', error)
@@ -459,39 +460,41 @@ export default function JobDetailViewClient() {
         <div className="md:col-span-3">
           <TabView>
             <TabPanel header="Pending">
-              <div className="mt-4 flex justify-center space-x-4 md:justify-end">
-                <Controller
-                  name="user_id"
-                  control={control}
-                  rules={{ required: 'Employee selection is required' }}
-                  render={({ field, fieldState }) => (
-                    <Dropdown
-                      id={field.name}
-                      value={field.value}
-                      placeholder="Select an applicant"
-                      name="employee"
-                      className={classNames({ 'p-invalid': fieldState.error }, 'md:w-1/3')}
-                      onChange={e => field.onChange(e.target.value)}
-                      options={potentialApplicants.map(
-                        (potentialApplicant: { _id: any; first_name: any; last_name: any }) => ({
-                          value: potentialApplicant._id,
-                          label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
-                        }),
-                      )}
-                      optionLabel="label"
-                      filter
-                    />
-                  )}
-                />
-                <Button
-                  type="submit"
-                  label="Add New Applicant"
-                  onClick={handleSubmit(data => {
-                    onSubmit(data.user_id)
-                    reset({ user_id: '' })
-                  })}
-                />
-              </div>
+              {userRole === admin_role && (
+                <div className="mt-4 flex justify-center space-x-4 md:justify-end">
+                  <Controller
+                    name="user_id"
+                    control={control}
+                    rules={{ required: 'Employee selection is required' }}
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        value={field.value}
+                        placeholder="Select an applicant"
+                        name="employee"
+                        className={classNames({ 'p-invalid': fieldState.error }, 'md:w-1/3')}
+                        onChange={e => field.onChange(e.target.value)}
+                        options={potentialApplicants.map(
+                          (potentialApplicant: { _id: any; first_name: any; last_name: any }) => ({
+                            value: potentialApplicant._id,
+                            label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
+                          }),
+                        )}
+                        optionLabel="label"
+                        filter
+                      />
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    label="Add New Applicant"
+                    onClick={handleSubmit(data => {
+                      onSubmit(data.user_id)
+                      reset({ user_id: '' })
+                    })}
+                  />
+                </div>
+              )}
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4">
