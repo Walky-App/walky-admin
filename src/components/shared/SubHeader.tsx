@@ -23,11 +23,11 @@ export interface SubHeaderLink {
 }
 
 export interface SubHeaderProps {
+  data: SubHeaderData
   links: SubHeaderLink[]
-  data?: SubHeaderData
 }
 
-export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
+export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderProps) => {
   const { pathname } = useLocation()
   const basePath = pathname.split('/').slice(0, 3).join('/')
 

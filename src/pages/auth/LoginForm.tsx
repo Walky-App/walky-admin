@@ -12,7 +12,7 @@ import { type ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
 import { roleChecker } from '../../utils/roleChecker'
-import { SetToken } from '../../utils/tokenUtil'
+import { GetTokenInfo, SetToken } from '../../utils/tokenUtil'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE
 const client_role = process.env.REACT_APP_CLIENT_ROLE
@@ -29,17 +29,27 @@ export const LoginForm = () => {
   const navigate = useNavigate()
 
   const roleType = roleChecker()
+  const tokenInfo = GetTokenInfo()
 
+  /* This is to persist the user in the app */
   useEffect(() => {
     switch (roleType) {
       case 'admin':
         navigate('/admin/dashboard')
         break
       case 'client':
-        navigate('/client/dashboard')
+        if (tokenInfo.onboarding?.completed === false) {
+          navigate('/client/onboarding')
+        } else {
+          navigate('/client/dashboard')
+        }
         break
       case 'employee':
-        navigate('/employee/dashboard')
+        if (tokenInfo.onboarding?.completed === false) {
+          navigate('/employee/onboarding')
+        } else {
+          navigate('/employee/dashboard')
+        }
         break
       case 'sales':
         navigate('/sales/dashboard')
@@ -47,7 +57,7 @@ export const LoginForm = () => {
       default:
         navigate('/login')
     }
-  }, [navigate, roleType])
+  }, [navigate, roleType, tokenInfo.onboarding?.completed])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
