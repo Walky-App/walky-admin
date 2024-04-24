@@ -5,7 +5,7 @@ import { Column, type ColumnEditorOptions } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
 
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { useAdminUserContext } from '../AdminUserPage'
 
 interface IPunchDetails {
