@@ -12,7 +12,7 @@ import {
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
-import { MdPhone, MdSchool } from 'react-icons/md'
+import { MdSchool } from 'react-icons/md'
 import { NavLink, Link } from 'react-router-dom'
 
 import cn from 'classnames'

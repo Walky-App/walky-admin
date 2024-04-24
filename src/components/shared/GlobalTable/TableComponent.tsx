@@ -49,7 +49,9 @@ export const TableComponent = ({
                     <div className="flex flex-col">
                       <FaSortUp
                         className={`translate-y-1/2 ${
-                          (column.isSorted as boolean) && !(column.isSortedDesc as boolean) ? 'text-green-500' : 'text-gray-300'
+                          (column.isSorted as boolean) && !(column.isSortedDesc as boolean)
+                            ? 'text-green-500'
+                            : 'text-gray-300'
                         }`}
                       />
                       <FaSortDown
@@ -73,7 +75,7 @@ export const TableComponent = ({
                       <td
                         key={cell.column.id}
                         {...cell.getCellProps()}
-                        className="p-3 border-b-2 border-slate-100 text-gray-700 first:rounded-l-lg last:rounded-r-lg">
+                        className="border-b-2 border-slate-100 p-3 text-gray-700 first:rounded-l-lg last:rounded-r-lg">
                         {cell.render('Cell')}
                       </td>
                     )

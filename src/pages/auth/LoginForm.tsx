@@ -10,8 +10,9 @@ import { type LoginData } from '../../interfaces/global'
 import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/authService'
-import { SetToken } from '../../utils/tokenUtil'
+import { useUtils } from '../../store/useUtils'
 import { roleChecker } from '../../utils/roleChecker'
+import { SetToken } from '../../utils/tokenUtil'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE
 const client_role = process.env.REACT_APP_CLIENT_ROLE
@@ -22,6 +23,7 @@ export const LoginForm = () => {
   const [error, setError] = useState<Error>()
   const [loading, setLoading] = useState(false)
   const [value, setValue] = useState<string>('')
+  const { setAvatarImageUrl } = useUtils()
 
   const { setUser } = useAuth()
   const navigate = useNavigate()
@@ -76,10 +78,9 @@ export const LoginForm = () => {
             onboarding: user.onboarding,
           }
 
-
           SetToken(data)
-          setUser({ ...user, access_token: access_token, onboarding: user.onboarding})
-          setLoading(false)
+          setUser({ ...user, access_token: access_token, onboarding: user.onboarding })
+          setAvatarImageUrl(user.avatar as string)
 
           switch (user.role) {
             case admin_role:

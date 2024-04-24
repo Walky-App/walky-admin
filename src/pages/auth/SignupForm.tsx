@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
 import { RequestService } from '../../services/RequestService'
+import { useUtils } from '../../store/useUtils'
 import { SetToken } from '../../utils/tokenUtil'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
@@ -17,6 +18,7 @@ export const Signup = () => {
   const [error, setError] = useState<Error | undefined>()
   const [loading, setLoading] = useState(false)
   const { setUser } = useAuth()
+  const { setAvatarImageUrl } = useUtils()
 
   const { email, role } = useParams()
   const navigate = useNavigate()
@@ -53,6 +55,7 @@ export const Signup = () => {
 
         SetToken(ls_info)
         setUser({ ...user, access_token: access_token })
+        setAvatarImageUrl(user.avatar as string)
         setLoading(false)
 
         switch (user.role) {
