@@ -459,7 +459,7 @@ export default function JobDetailViewClient() {
         <div className="md:col-span-3">
           <TabView>
             <TabPanel header="Pending">
-              <div className="flex justify-center space-x-4 md:justify-end">
+              <div className="mt-4 flex justify-center space-x-4 md:justify-end">
                 <Controller
                   name="user_id"
                   control={control}
@@ -495,7 +495,7 @@ export default function JobDetailViewClient() {
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4">
-                    <p className="mt-1 text-base text-gray-500">
+                    <p className="text-base text-gray-500">
                       You can reject the applicants within X hours of the worker accepted the job. If no reject is done
                       in X hours then worker is automatically accepted and then the contract is created automatically.
                       you and applicant both are notified about the contract.
