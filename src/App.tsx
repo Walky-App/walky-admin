@@ -60,7 +60,7 @@ import { AdminFacilityDNR } from './pages/admin/facilities/AdminFacilityDNR'
 import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import { AdminFacilityImages } from './pages/admin/facilities/AdminFacilityImages'
 import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
-import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
+import { AdminFacilityJobDetails } from './pages/admin/facilities/AdminFacilityJobDetails'
 import { AdminFacilityJobs } from './pages/admin/facilities/AdminFacilityJobs'
 import { AdminFacilityLicenses } from './pages/admin/facilities/AdminFacilityLicenses'
 

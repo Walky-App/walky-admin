@@ -5,7 +5,6 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { Menu, Transition } from '@headlessui/react'
 import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 
-import { type IFacility } from '../../interfaces/Facility'
 import { cn } from '../../utils/cn'
 
 export interface SubHeaderData {
@@ -24,7 +23,7 @@ export interface SubHeaderLink {
 }
 
 export interface SubHeaderProps {
-  data: IFacility
+  data: SubHeaderData
   links: SubHeaderLink[]
 }
 
