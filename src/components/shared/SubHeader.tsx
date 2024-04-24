@@ -1,7 +1,11 @@
 import { Fragment } from 'react'
-import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
-import { Menu, Transition } from '@headlessui/react'
+
 import { Link, NavLink, useLocation } from 'react-router-dom'
+
+import { Menu, Transition } from '@headlessui/react'
+import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
+
+import { type IFacility } from '../../interfaces/Facility'
 import { cn } from '../../utils/cn'
 
 export interface SubHeaderData {
@@ -20,11 +24,11 @@ export interface SubHeaderLink {
 }
 
 export interface SubHeaderProps {
-  data: SubHeaderData
+  data: IFacility
   links: SubHeaderLink[]
 }
 
-export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
+export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderProps) => {
   const { pathname } = useLocation()
   const basePath = pathname.split('/').slice(0, 3).join('/')
 
