@@ -23,7 +23,7 @@ export const LoginForm = () => {
   const [error, setError] = useState<Error>()
   const [loading, setLoading] = useState(false)
   const [value, setValue] = useState<string>('')
-  const { setAvatar } = useUtils()
+  const { setAvatarImageUrl } = useUtils()
 
   const { setUser } = useAuth()
   const navigate = useNavigate()
@@ -80,7 +80,7 @@ export const LoginForm = () => {
 
           SetToken(data)
           setUser({ ...user, access_token: access_token, onboarding: user.onboarding })
-          setAvatar(user.avatar as string)
+          setAvatarImageUrl(user.avatar as string)
 
           switch (user.role) {
             case admin_role:

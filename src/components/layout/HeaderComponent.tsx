@@ -9,12 +9,10 @@ import { ChevronDownIcon, ExclamationTriangleIcon } from '@heroicons/react/20/so
 import { Bars3Icon } from '@heroicons/react/24/outline'
 
 import { useAuth } from '../../contexts/AuthContext'
-
+import { LogoutService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
 import { getCurrentUserRole } from '../../utils/UserRole'
 import { LogosPack } from './LogosPack'
-import { LogoutService } from '../../services/authService'
-
 
 interface HeaderComponentProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>
@@ -27,7 +25,7 @@ export interface UserNavigationItem {
 
 export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
-  const { avatar, setAvatar } = useUtils()
+  const { avatarImageUrl, setAvatarImageUrl } = useUtils()
   const role = getCurrentUserRole()
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
@@ -40,10 +38,10 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   }
 
   useEffect(() => {
-    if (!avatar && user?.avatar) {
-      setAvatar(user?.avatar)
+    if (!avatarImageUrl && user?.avatar) {
+      setAvatarImageUrl(user?.avatar)
     }
-  }, [avatar, setAvatar, user?.avatar])
+  }, [avatarImageUrl, setAvatarImageUrl, user?.avatar])
 
   return (
     <>
@@ -66,7 +64,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
               <span className="sr-only">Open user menu</span>
               <span className="sr-only">Open user menu</span>
               {user && user.avatar ? (
-                <img className="h-8 w-8 rounded-full" src={avatar} alt="avatar" />
+                <img className="h-8 w-8 rounded-full" src={avatarImageUrl} alt="avatar" />
               ) : (
                 <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
                   <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">

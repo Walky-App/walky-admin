@@ -10,7 +10,7 @@ import { useUtils } from '../../../store/useUtils'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const UploadAvatar = ({ formUser, setFormUser }: any) => {
   const [file, setFile] = useState<File | null>(null)
-  const { setAvatar } = useUtils()
+  const { setAvatarImageUrl } = useUtils()
   const [previewUrl, setPreviewUrl] = useState<string>(formUser.avatar || '')
   const [uploading, setUploading] = useState(false)
 
@@ -28,12 +28,12 @@ export const UploadAvatar = ({ formUser, setFormUser }: any) => {
       setFormUser({ ...formUser, avatar: avatar_url })
       setPreviewUrl(avatar_url)
       const temporal = `${avatar_url}?${new Date().getTime()}`
-      setAvatar(temporal)
+      setAvatarImageUrl(temporal)
       setUploading(false)
     }
 
     handleAvatarUpload()
-  }, [file, formUser, setFormUser, setAvatar])
+  }, [file, formUser, setFormUser, setAvatarImageUrl])
 
   const pickedHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length === 1) {
