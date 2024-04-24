@@ -1,7 +1,6 @@
 import { useRef } from 'react'
-import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
-import { FileUpload, FileUploadBeforeSendEvent, FileUploadErrorEvent } from 'primereact/fileupload'
+import { FileUpload, type FileUploadBeforeSendEvent, type FileUploadErrorEvent } from 'primereact/fileupload'
 import { Toast } from 'primereact/toast'
 
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
