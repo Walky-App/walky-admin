@@ -1,11 +1,12 @@
-import { IRequestService } from '../interfaces/services'
-import { GetTokenInfo } from '../utils/TokenUtils'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { type IRequestService } from '../interfaces/services'
+import { GetTokenInfo } from '../utils/tokenUtil'
 
 export const RequestService: IRequestService = async (
   path: string,
-  method: string = 'GET',
+  method = 'GET',
   body: any = null,
-  dataType: string = 'json',
+  dataType = 'json',
 ): Promise<any> => {
   const { access_token } = GetTokenInfo()
 

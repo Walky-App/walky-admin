@@ -33,9 +33,9 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
 
   const unitsCompleted = (_id: string, idCategory: string) => {
     try {
-      const category = record.categories.find(data => data.category == idCategory)
-      const module = category?.modules.find(data => data.module == _id)
-      return module?.units.filter(unit => unit.assessments_completed == true).length ?? 0
+      const category = record.categories.find(data => data.category === idCategory)
+      const module = category?.modules.find(data => data.module === _id)
+      return module?.units.filter(unit => unit.assessments_completed === true).length ?? 0
     } catch (error) {
       return 0
     }
@@ -49,11 +49,11 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
             <div>
               {modulesFilter().map(module => (
                 <Card
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:shadow-lg"
                   key={module._id}
                   onClick={() => handlerSetModule(module)}
                   pt={{
-                    body: { className: 'p-0 mb-4' },
+                    body: { className: 'p-0 mb-16' },
                     content: { className: 'p-0 flex ' },
                   }}>
                   <div className="m-3">
@@ -72,27 +72,22 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                     <div className="inline-flex h-5 w-full items-center justify-start gap-2">
                       <div className="flex items-center justify-start gap-1">
                         <ClockIcon className="h-5" />
-                        <div className="flex h-5 items-center text-xs font-medium text-black">
+                        <div className="flex h-5 items-center font-medium text-black">
                           {secondsToTimeDescription(module.total_time)}
                         </div>
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
                         <NewspaperIcon className="h-5" />
-                        <div className="flex h-5 items-center text-xs font-medium text-black">
-                          {module.units?.length} Units
-                        </div>
+                        <div className="flex h-5 items-center font-medium text-black">{module.units?.length} Units</div>
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
                         <BriefcaseIcon className="h-5" />
-                        <div className="flex h-5 items-center text-xs font-medium text-black">{module.level}</div>
+                        <div className="flex h-5 items-center font-medium text-black">{module.level}</div>
                       </div>
                     </div>
-                    <div className="h-12 text-xs font-normal text-stone-500">
-                      Investigate the cultivation and processing of cannabis, starting from seeds to a diversity of end
-                      products...
-                    </div>
+                    <div className="line-clamp-2 h-12 font-normal text-stone-500">{module.description}</div>
                   </div>
                   <div className="m-3 flex flex-col items-center">
                     <CircularProgressBar

@@ -5,7 +5,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/outline'
 
 import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 import { RequestService } from '../../services/RequestService'
-import { GetTokenInfo } from '../../utils/TokenUtils'
+import { GetTokenInfo } from '../../utils/tokenUtil'
 
 // const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 // const client_role = process.env.REACT_APP_CLIENT_ROLE as string

@@ -58,9 +58,9 @@ export const Units = () => {
 
   const unitsCompleted = (_id: string, idCategory: string) => {
     try {
-      const category = record.categories.find(data => data.category == idCategory)
-      const module = category?.modules.find(data => data.module == _id)
-      setUnitUnlock(module?.units.filter(unit => unit.assessments_completed == true).length ?? 0)
+      const category = record.categories.find(data => data.category === idCategory)
+      const module = category?.modules.find(data => data.module === _id)
+      setUnitUnlock(module?.units.filter(unit => unit.assessments_completed === true).length ?? 0)
     } catch (error) {
       return 0
     }
@@ -150,7 +150,7 @@ export const Units = () => {
                     className={cn('flex h-full rounded-2xl border border-zinc-100  bg-gray-300', {
                       'bg-white hover:bg-gray-100': unitUnlock >= index,
                     })}>
-                    <div className="flex flex-1 items-center justify-start gap-2 pl-2">
+                    <div className="flex flex-1 items-center justify-start gap-6 pl-2">
                       <div className="flex items-center justify-center">
                         {unit?.url_image ? (
                           <img

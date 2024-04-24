@@ -10,7 +10,7 @@ interface TableContentsProps {
 }
 
 export const TableContents = ({ headerTitle }: TableContentsProps) => {
-  const [active, setActive] = useState<number | null>(null)
+  const [active, setActive] = useState<number | null>(0)
   const [dataContents, setDataContents] = useState<NavigationButtonInterface[]>([])
   const { unit } = useAdmin()
 
