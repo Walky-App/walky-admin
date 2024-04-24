@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { RequestService } from '../../../services/RequestService'
+import { GlobalTable } from '../../../components/shared/GlobalTable'
+
 
 export default function AdminUsers() {
   const [usersData, setUsersData] = useState<any>([])
@@ -54,7 +56,7 @@ export default function AdminUsers() {
 
   return (
     <div>
-      <HeaderComponent title={'Users'} />
+      <HeaderComponent title="Users" />
       <button
         type="button"
         onClick={() => {
@@ -65,7 +67,7 @@ export default function AdminUsers() {
       </button>
       {isLoading ? (
         <div className="flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600" />
         </div>
       ) : (
         <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
