@@ -134,25 +134,26 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
         const formattedDate = date.toLocaleDateString()
 
         return (
-          <li key={id} className="group flex p-4 pr-6 focus-within:bg-gray-50 hover:bg-gray-50">
+          <li key={id} className="group flex p-2 focus-within:bg-gray-50 hover:bg-gray-50 sm:p-4">
             <div className="flex-auto">
               <p className="font-semibold text-gray-900">{name}</p>
-              <div className="justify flex items-center justify-between text-gray-700 [&>*]:mt-2">
-                <time dateTime={datetime} className="flex items-center">
-                  <ClockIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                  {event.time}
-                </time>
-                <span className="ml-2 flex items-center">
-                  <CalendarIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                  {formattedDate}
-                </span>
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-y-2 text-gray-700 sm:justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 xs:gap-x-6 sm:justify-around">
+                  <time dateTime={datetime} className="flex items-center">
+                    <ClockIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                    {event.time}
+                  </time>
+                  <span className="flex items-center">
+                    <CalendarIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                    {formattedDate}
+                  </span>
+                </div>
                 <Button
                   size="small"
                   link
                   outlined
                   label="View Details"
                   onClick={() => navigate(`/employee/jobs/${event.id}`)}
-                  className="ml-2"
                 />
               </div>
             </div>
@@ -247,13 +248,13 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
                     {day.events.slice(0, 2).map(event => (
                       <li key={event.id}>
                         <Link to={`/employee/jobs/${event.id}`} className="group flex">
-                          <Button size="small" link raised>
-                            <p className="flex-auto truncate font-medium text-gray-900 group-hover:text-primary">
+                          <Button size="small" link raised className="flex flex-col 2xl:flex-row">
+                            <p className="flex-auto text-nowrap font-medium text-gray-900  group-hover:text-primary group-hover:underline">
                               {event.name}
                             </p>
                             <time
                               dateTime={event.datetime}
-                              className="ml-3 hidden flex-none text-gray-500 group-hover:text-primary xl:block">
+                              className="hidden flex-none text-gray-500 lg:block 2xl:ml-3">
                               {event.time}
                             </time>
                           </Button>
@@ -304,7 +305,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
         </div>
       </div>
       {daysWithJobs.length > 0 ? (
-        <div className="px-4 py-10 sm:px-6 lg:hidden">
+        <div className="mx-auto max-w-lg py-10 sm:px-6 lg:hidden">
           <ol className="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white text-sm shadow ring-1 ring-black ring-opacity-5">
             {renderEventListItems()}
           </ol>
