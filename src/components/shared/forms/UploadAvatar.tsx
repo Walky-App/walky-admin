@@ -5,10 +5,12 @@ import { Spinner } from 'flowbite-react'
 import { UserCircleIcon, PencilIcon } from '@heroicons/react/24/solid'
 
 import { RequestService } from '../../../services/RequestService'
+import { useUtils } from '../../../store/useUtils'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const UploadAvatar = ({ formUser, setFormUser }: any) => {
   const [file, setFile] = useState<File | null>(null)
+  const { setAvatarImageUrl } = useUtils()
   const [previewUrl, setPreviewUrl] = useState<string>(formUser.avatar || '')
   const [uploading, setUploading] = useState(false)
 
@@ -25,11 +27,13 @@ export const UploadAvatar = ({ formUser, setFormUser }: any) => {
 
       setFormUser({ ...formUser, avatar: avatar_url })
       setPreviewUrl(avatar_url)
+      const temporal = `${avatar_url}?${new Date().getTime()}`
+      setAvatarImageUrl(temporal)
       setUploading(false)
     }
 
     handleAvatarUpload()
-  }, [file, formUser, setFormUser])
+  }, [file, formUser, setFormUser, setAvatarImageUrl])
 
   const pickedHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length === 1) {

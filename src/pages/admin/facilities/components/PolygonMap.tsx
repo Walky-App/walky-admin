@@ -25,13 +25,7 @@ export const PolygonMap = ({
     const polygonPointTwo: [number, number] = [locationPin[0] - offset, locationPin[1] + offset]
     const polygonPointThree: [number, number] = [locationPin[0] + offset, locationPin[1] + offset]
     const polygonPointFour: [number, number] = [locationPin[0] + offset, locationPin[1] - offset]
-    const newPolygon: [number, number][] = [
-      polygonPointOne,
-      polygonPointTwo,
-      polygonPointThree,
-      polygonPointFour,
-      polygonPointOne,
-    ]
+    const newPolygon: [number, number][] = [polygonPointOne, polygonPointTwo, polygonPointThree, polygonPointFour]
     setLocationPolygon(newPolygon)
   }
 
@@ -63,7 +57,7 @@ export const PolygonMap = ({
   )
 
   const onUnmount = useCallback(() => {
-    (listenersRef.current as google.maps.MapsEventListener[]).forEach(lis => lis.remove())
+    ;(listenersRef.current as google.maps.MapsEventListener[]).forEach(lis => lis.remove())
     polygonRef.current = null
   }, [])
 

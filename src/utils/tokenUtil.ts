@@ -8,10 +8,11 @@ export const GetTokenInfo = () => {
     access_token,
     role,
     first_name,
-  }: { _id: string; access_token: string; role: string; first_name: string } = ls_data
+    avatar,
+  }: { _id: string; access_token: string; role: string; first_name: string; avatar: string } = ls_data
     ? ls_data
-    : { _id: '', access_token: '', role: '', first_name: '' }
-  return { _id, access_token, role, first_name }
+    : { _id: '', access_token: '', role: '', first_name: '', avatar: '' }
+  return { _id, access_token, role, first_name, avatar }
 }
 
 export const SetToken = (ls_info: ITokenInfo) => {
