@@ -17,6 +17,7 @@ import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { convertToStandardTime } from '../../../utils/timeUtils'
 
 export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -25,8 +26,10 @@ export const JobDetailView = () => {
   const [job, setJob] = useState<IJob | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isClockedIn, setIsClockedIn] = useState(false)
+  const [prevIsClockedIn, setPrevIsClockedIn] = useState<boolean | null>(null)
   const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
   const [checked, setChecked] = useState(true)
+  const [lastTimeSheet, setLastTimeSheet] = useState<ITimeSheet | null>(null)
   const { showToast } = useUtils()
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -74,18 +77,6 @@ export const JobDetailView = () => {
     ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
   }
 
-  function convertToStandardTime(militaryTime: number) {
-    if (militaryTime == null) {
-      return 'Time not set'
-    }
-    const militaryTimeString = militaryTime.toString().padStart(4, '0')
-    const hours = Number(militaryTimeString.slice(0, -2))
-    const minutes = Number(militaryTimeString.slice(-2))
-    const standardHours = ((hours + 11) % 12) + 1
-    const amPm = hours >= 12 ? 'pm' : 'am'
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
-  }
-
   const startTimer = () => {
     return setInterval(() => {
       setCurrentDate(new Date())
@@ -125,8 +116,15 @@ export const JobDetailView = () => {
     getJob()
   }, [id])
 
-  const getLastTimesheet = (array?: ITimeSheet[] | null) => {
-    return array?.length ? array[array.length - 1] : null
+  const getLatestTimeSheet = (array?: ITimeSheet[] | null) => {
+    if (!array?.length) {
+      return null
+    }
+
+    const sortedTimesheets = [...array].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    return sortedTimesheets[0]
   }
 
   const getCurrentJobTimeSheets = useCallback(async () => {
@@ -148,12 +146,11 @@ export const JobDetailView = () => {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      if (response.status === 204) {
-        setTimesheets(null)
-      } else {
+      if (response.status !== 204) {
         const data = await response.json()
         setTimesheets(data)
-        const lastTimesheet = getLastTimesheet(data)
+        const lastTimesheet = getLatestTimeSheet(data)
+
         setIsClockedIn(lastTimesheet?.is_clocked_in || false)
       }
     } catch (error) {
@@ -170,8 +167,9 @@ export const JobDetailView = () => {
 
   const clockInOut = async (endpoint: string) => {
     setIsClockInOutLoading(true)
-    const lastTimesheet = getLastTimesheet(timesheets)
-    const timesheetId = lastTimesheet?._id || null
+    const latestTimesheet = getLatestTimeSheet(timesheets)
+
+    const timesheetId = latestTimesheet?._id || null
     try {
       const body = {
         job_id: job?._id,
@@ -179,10 +177,20 @@ export const JobDetailView = () => {
         location: [latitude, longitude],
       }
       const timeSheet: ITimeSheet = await RequestService(`timesheets/${endpoint}`, 'POST', body)
+      setLastTimeSheet(timeSheet)
 
-      getCurrentJobTimeSheets()
+      await getCurrentJobTimeSheets()
+      setIsClockInOutLoading(false)
 
-      const createdAt = new Date(timeSheet?.punches[timeSheet?.punches.length - 1]?.time_stamp)
+      return timeSheet
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    if (prevIsClockedIn !== isClockedIn && lastTimeSheet) {
+      const createdAt = new Date(lastTimeSheet?.punches[lastTimeSheet?.punches.length - 1]?.time_stamp)
       const formattedTime = createdAt.toLocaleTimeString()
 
       showToast({
@@ -191,11 +199,9 @@ export const JobDetailView = () => {
         detail: formattedTime,
         life: 3000,
       })
-      setIsClockInOutLoading(false)
-    } catch (error) {
-      console.error(error)
     }
-  }
+    setPrevIsClockedIn(isClockedIn)
+  }, [isClockedIn, showToast, lastTimeSheet, prevIsClockedIn])
 
   const clockIn = () => clockInOut('clock-in')
   const clockOut = () => clockInOut('clock-out')
