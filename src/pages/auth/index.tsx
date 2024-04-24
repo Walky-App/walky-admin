@@ -59,11 +59,14 @@ export const Auth = () => {
               </Button>
             ) : null}
 
-            <div className="text-sm text-zinc-500">
+            <div className=" text-zinc-500">
               {userForm !== 'Login' ? (
-                <Button text className="underline hover:text-green-700" onClick={() => setUserForm('Login')}>
-                  Already have an account? &nbsp; Login
-                </Button>
+                <div className="mt-2 text-center">
+                  <p>Already have an account?</p>
+                  <Button text className="underline hover:text-green-700" onClick={() => setUserForm('Login')}>
+                    Login Here
+                  </Button>
+                </div>
               ) : null}
             </div>
           </div>

@@ -11,7 +11,7 @@ import { Error404 } from './pages/Error404'
 
 /******************************************* Auth Pages ************************************/
 import { Auth } from './pages/auth'
-import NewPasswordForm from './pages/auth/NewPasswordForm'
+import { NewPasswordForm } from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import { Signup } from './pages/auth/SignupForm'
 
