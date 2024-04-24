@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
 
-import { classNames } from '../../../utils/Tailwind'
+import { cn } from '../../../utils/cn'
 
 const statusStyles = {
   Approved: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -63,7 +63,7 @@ export const RecentInfoCards: React.FC<Props> = ({ items }) => {
                     {({ active }) => (
                       <button
                         type="button"
-                        className={classNames(
+                        className={cn(
                           active ? 'bg-gray-50' : '',
                           'block px-3 py-1 text-sm leading-6 text-gray-900',
                         )}>
@@ -104,7 +104,7 @@ export const RecentInfoCards: React.FC<Props> = ({ items }) => {
               <dt className="text-gray-500">Status</dt>
               <dd className="flex items-start gap-x-2">
                 <div
-                  className={classNames(
+                  className={cn(
                     statusStyles[item.data.status as keyof typeof statusStyles], // Add type assertion to keyof typeof statuses
                     'rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
                   )}>
