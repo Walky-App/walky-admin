@@ -145,7 +145,6 @@ export const ClientAddJob = () => {
       }
 
       const response = await RequestService('jobs', 'POST', requestData)
-      console.log('THE REQUEST DATA -->', requestData)
       if (response) {
         showToast({ severity: 'success', summary: 'Success', detail: 'Job information submitted successfully' })
         setTimeout(() => {
