@@ -157,16 +157,6 @@ export const AdminUserTimeSheets = () => {
     return [...processedTimeSheets].sort((a, b) => new Date(b.time_stamp).getTime() - new Date(a.time_stamp).getTime())
   }, [processedTimeSheets])
 
-  // const textEditor = (options: ColumnEditorOptions) => {
-  //   return (
-  //     <InputText
-  //       type="text"
-  //       value={options.value}
-  //       onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)}
-  //     />
-  //   )
-  // }
-
   const timeEditor = (options: ColumnEditorOptions) => {
     return <Calendar value={options.value} onChange={e => options.editorCallback!(e.target.value)} timeOnly />
   }
@@ -189,12 +179,12 @@ export const AdminUserTimeSheets = () => {
     { field: 'difference', header: 'Difference', sortable: false },
   ]
 
-  const getEditor = (col: IColumnMeta<IProcessedTimeSheet>) => {
-    if (col.field === 'in_time' || col.field === 'out_time') {
-      return (options: ColumnEditorOptions) => (col.editor ? col.editor(options) : undefined)
-    }
-    return undefined
-  }
+  // const getEditor = (col: IColumnMeta<IProcessedTimeSheet>) => {
+  //   if (col.field === 'in_time' || col.field === 'out_time') {
+  //     return (options: ColumnEditorOptions) => (col.editor ? col.editor(options) : undefined)
+  //   }
+  //   return undefined
+  // }
 
   const getCellValue = (col: IColumnMeta<IProcessedTimeSheet>, rowData: IProcessedTimeSheet) => {
     const field = col.field as keyof IProcessedTimeSheet
@@ -221,9 +211,9 @@ export const AdminUserTimeSheets = () => {
     return (
       <div className="p-4">
         <h5 className="text-sm font-semibold">Punch Details</h5>
-        <DataTable value={data.punchesWithDetails}>
+        <DataTable value={data.punchesWithDetails} sortField="in_time" sortOrder={-1}>
           <Column field="in_time" header="In" />
-          <Column field="out_time" header="Out" />
+          <Column field="out_time" header="Out" body={(rowData: IPunchDetails) => rowData.out_time || 'Clocked In'} />
           <Column field="total_time" header="Total" />
         </DataTable>
       </div>
@@ -235,8 +225,8 @@ export const AdminUserTimeSheets = () => {
       <DataTable
         header="Daily Timesheets"
         value={sortedTimeSheets}
-        editMode="row"
         tableStyle={{ minWidth: '50rem' }}
+        stripedRows
         expandedRows={expandedRows}
         onRowToggle={e => setExpandedRows(e.data)}
         rowExpansionTemplate={rowExpansionTemplate}>
@@ -248,7 +238,7 @@ export const AdminUserTimeSheets = () => {
             header={col.header}
             body={rowData => getCellValue(col, rowData)}
             sortable={col.sortable}
-            editor={getEditor(col)}
+            // editor={getEditor(col)}
           />
         ))}
         <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }} />
