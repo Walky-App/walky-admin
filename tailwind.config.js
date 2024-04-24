@@ -1,5 +1,8 @@
-/* eslint-disable no-undef */
+/* eslint-disable */
 /** @type {import('tailwindcss').Config} */
+
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
@@ -17,6 +20,10 @@ module.exports = {
       backgroundColor: {
         'black-60': 'rgba(0, 0, 0, 0.6)',
       },
+    },
+    screens: {
+      xs: '475px',
+      ...defaultTheme.screens,
     },
   },
   plugins: [require('flowbite/plugin'), require('@tailwindcss/forms'), require('@tailwindcss/typography')],
