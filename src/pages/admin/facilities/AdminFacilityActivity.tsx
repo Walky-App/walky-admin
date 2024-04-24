@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react'
+
 import { useParams } from 'react-router-dom'
 
-import { RequestService } from '../../../services/RequestService'
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
-import GlobalTable from '../../../components/shared/GlobalTable'
 
 export default function AdminFacilityActivity() {
   const { facilityId } = useParams()
@@ -16,7 +18,7 @@ export default function AdminFacilityActivity() {
       try {
         const all_logs = await RequestService(`logs/facility/${facilityId}`)
         setLogs(all_logs)
-        
+
         const facilityFound = await RequestService(`facilities/${facilityId}`)
         setFacility(facilityFound)
       } catch (error) {
@@ -42,8 +44,6 @@ export default function AdminFacilityActivity() {
     ],
     [],
   )
-
-
 
   return (
     <div>

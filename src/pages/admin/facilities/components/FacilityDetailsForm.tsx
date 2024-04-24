@@ -63,8 +63,6 @@ export const FacilityDetailsForm = ({
       .map(dba => dba.trim())
       .filter(dba => dba)
 
-    // locationPolygon.push(locationPolygon[0]) // close the polygon with same as first point
-
     const formValues = {
       tax_id: target.tax_id.value,
       corp_name: target.corp_name.value,

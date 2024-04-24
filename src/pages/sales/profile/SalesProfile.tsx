@@ -1,9 +1,15 @@
-import { useMemo, useState } from 'react'
-import { RequestService } from '../../../services/RequestService'
+/* eslint-disable jsx-a11y/autocomplete-valid */
 
-import { GetTokenInfo } from '../../../utils/TokenUtils'
-import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/* eslint-disable react/jsx-no-leaked-render */
+import { useMemo, useState } from 'react'
+
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
+
+import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
+import { RequestService } from '../../../services/RequestService'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export default function SalesProfile() {
   const [formUser, setFormUser] = useState<any>({})
@@ -331,7 +337,7 @@ export default function SalesProfile() {
                     <p className="text-sm font-medium text-green-800">Profile updated successfully</p>
                   </div>
                   <div className="ml-auto pl-3">
-                    <div className="-mx-1.5 -my-1.5"></div>
+                    <div className="-mx-1.5 -my-1.5" />
                   </div>
                 </div>
               </div>

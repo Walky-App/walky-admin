@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 import { Skeleton } from 'primereact/skeleton'
 
-import GlobalTable from '../../../components/shared/GlobalTable'
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
