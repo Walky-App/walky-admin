@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { useEffect, useState } from 'react'
 
+import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { Avatar } from 'primereact/avatar'
@@ -14,13 +15,24 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { Tag } from 'primereact/tag'
 import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
+import { classNames } from 'primereact/utils'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
+import { IApplicant } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { GetTokenInfo } from '../../../utils/TokenUtils'
+import AdminJobDetails from '../../admin/jobs/AdminJobDetails'
+
+const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
+const client_role = process.env.REACT_APP_CLIENT_ROLE as string
+const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
+const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export default function JobDetailViewClient() {
+  const userRole = GetTokenInfo().role
   const [job, setJob] = useState<any>({})
   const navigate = useNavigate()
   const params = useParams()
@@ -33,19 +45,9 @@ export default function JobDetailViewClient() {
   const [rejectionReason, setRejectionReason] = useState<any>(null)
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
+  const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
   const [checked, setChecked] = useState(false)
-
-  function convertToStandardTime(militaryTime: number) {
-    if (militaryTime == null) {
-      return 'Time not set'
-    }
-    const militaryTimeString = militaryTime.toString().padStart(4, '0')
-    const hours = Number(militaryTimeString.slice(0, -2))
-    const minutes = Number(militaryTimeString.slice(-2))
-    const standardHours = ((hours + 11) % 12) + 1
-    const amPm = hours >= 12 ? 'pm' : 'am'
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
-  }
+  const [submitCount, setSubmitCount] = useState(0)
 
   useEffect(() => {
     const getJob = async () => {
@@ -68,7 +70,64 @@ export default function JobDetailViewClient() {
     rejectionReason,
     lastRejectedApplicantId,
     lastReinstatedApplicantId,
+    submitCount,
   ])
+
+  function getFormErrorMessage(path: string, errors: FieldErrors) {
+    const pathParts = path.split('.')
+    let error: FieldErrors = errors
+
+    for (const part of pathParts) {
+      if (typeof error !== 'object' || error === null) {
+        return null
+      }
+      error = error[part as keyof typeof error] as FieldErrors
+    }
+
+    if (error?.message) {
+      return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
+    }
+    return null
+  }
+
+  function convertToStandardTime(militaryTime: number) {
+    if (militaryTime == null) {
+      return 'Time not set'
+    }
+    const militaryTimeString = militaryTime.toString().padStart(4, '0')
+    const hours = Number(militaryTimeString.slice(0, -2))
+    const minutes = Number(militaryTimeString.slice(-2))
+    const standardHours = ((hours + 11) % 12) + 1
+    const amPm = hours >= 12 ? 'pm' : 'am'
+    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
+  }
+
+  useEffect(() => {
+    const getPotentialApplicants = async () => {
+      try {
+        const response = await requestService({ path: `jobs/${id}/get-potential-applicants` })
+        if (response.status === 200) {
+          const jsonResponse = await response.json()
+          setPotentialApplicants(jsonResponse)
+          console.log('Potential Applicants:', potentialApplicants)
+        }
+      } catch (error) {
+        console.error('Error fetching potential applicants', error)
+      }
+    }
+    getPotentialApplicants()
+  }, [id, submitCount])
+
+  const defaultValues = {
+    user_id: '',
+  }
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm({ defaultValues })
 
   let earliestDate, latestDate
 
@@ -160,6 +219,26 @@ export default function JobDetailViewClient() {
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Reinstated', detail: 'Applicant has been reinstated' })
         setLastReinstatedApplicantId(user_id)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const onSubmit = async (user_id: string) => {
+    try {
+      const requestData = { user_id }
+      const response = await RequestService(`jobs/${id}/add-applicant`, 'POST', requestData)
+      if (response) {
+        const updatedApplicants = job.applicants.map((applicant: any) => {
+          if (applicant.id === user_id) {
+            return { ...applicant, is_approved: false, rejection_reason: '' }
+          }
+          return applicant
+        })
+        setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
+        showToast({ severity: 'success', summary: 'Applicant Added', detail: 'Applicant has been added' })
+        setSubmitCount(prevCount => prevCount + 1)
       }
     } catch (error) {
       console.error(error)
@@ -273,15 +352,19 @@ export default function JobDetailViewClient() {
                 </Card>
                 {/* Job Card End*/}
                 {/* Schedule */}
-                <ToggleButton
-                  checked={checked}
-                  onChange={e => setChecked(e.value)}
-                  onLabel="Close Schedule"
-                  offLabel="Open Schedule"
-                  onIcon="pi pi-times"
-                  offIcon="pi pi-check"
-                  className="w-8rem mt-2"
-                />
+                {userRole === admin_role && (
+                  <div className="mt-4 flex flex-wrap items-center justify-between space-y-4">
+                    <ToggleButton
+                      checked={checked}
+                      onChange={e => setChecked(e.value)}
+                      onLabel="Close Schedule"
+                      offLabel="Open Schedule"
+                      onIcon="pi pi-times"
+                      offIcon="pi pi-check"
+                    />
+                  </div>
+                )}
+
                 {checked && (
                   <section className="mt-12">
                     <h2 className="text-base font-semibold leading-6 text-gray-900">
@@ -330,7 +413,7 @@ export default function JobDetailViewClient() {
                     className="w-full"
                     label="Edit Job"
                     onClick={() => navigate(`/${isAdmin ? 'admin' : 'client'}/jobs/${id}/edit`)}
-                  />{' '}
+                  />
                   {!job.is_active ? (
                     <Button
                       className="w-full"
@@ -374,14 +457,47 @@ export default function JobDetailViewClient() {
           </div>
         </div>
         {/* Control Buttons end */}
+        {/* Applicants and Workers Tab View */}
         <div className="md:col-span-3">
-          {/* Applicants and Workers Tab View */}
           <TabView>
             <TabPanel header="Pending">
+              {userRole === admin_role && (
+                <div className="mt-4 flex justify-center space-x-4 md:justify-end">
+                  <Controller
+                    name="user_id"
+                    control={control}
+                    rules={{ required: 'Employee selection is required' }}
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        value={field.value}
+                        placeholder="Select an applicant"
+                        name="employee"
+                        className={classNames({ 'p-invalid': fieldState.error }, 'md:w-1/3')}
+                        onChange={e => field.onChange(e.target.value)}
+                        options={potentialApplicants.map((potentialApplicant: IApplicant) => ({
+                          value: potentialApplicant._id,
+                          label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
+                        }))}
+                        optionLabel="label"
+                        filter
+                      />
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    label="Add New Applicant"
+                    onClick={handleSubmit(data => {
+                      onSubmit(data.user_id)
+                      reset({ user_id: '' })
+                    })}
+                  />
+                </div>
+              )}
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4">
-                    <p className="mt-1 text-base text-gray-500">
+                    <p className="text-base text-gray-500">
                       You can reject the applicants within X hours of the worker accepted the job. If no reject is done
                       in X hours then worker is automatically accepted and then the contract is created automatically.
                       you and applicant both are notified about the contract.
@@ -392,7 +508,7 @@ export default function JobDetailViewClient() {
                     job.applicants.some(
                       (applicant: any) => !applicant.is_approved && applicant.rejection_reason === '',
                     ) ? (
-                      <Button label="Accept All" size="small" onClick={handleAcceptAll} />
+                      <Button label="Accept All" severity="success" size="small" onClick={handleAcceptAll} />
                     ) : null}
                   </div>
                 </div>
@@ -426,6 +542,7 @@ export default function JobDetailViewClient() {
                                 <Button
                                   size="small"
                                   label="Accept"
+                                  severity="success"
                                   onClick={() => {
                                     handleAccept(applicant.user._id)
                                   }}
@@ -433,7 +550,8 @@ export default function JobDetailViewClient() {
                                 <Button
                                   size="small"
                                   label="Reject"
-                                  severity="secondary"
+                                  severity="danger"
+                                  outlined
                                   className="ml-2"
                                   onClick={() => setVisible(true)}
                                 />
@@ -528,8 +646,8 @@ export default function JobDetailViewClient() {
                               <div className="flex flex-row items-end">
                                 <Button
                                   size="small"
-                                  label="Cancel"
-                                  severity="secondary"
+                                  label="Move back to Pending"
+                                  severity="warning"
                                   onClick={() => {
                                     handleReinstate(applicant.user._id)
                                   }}
@@ -587,8 +705,8 @@ export default function JobDetailViewClient() {
                               <div className="flex flex-row items-end" />
                               <Button
                                 size="small"
-                                label="Cancel"
-                                severity="secondary"
+                                label="Move back to Pending"
+                                severity="warning"
                                 onClick={() => {
                                   handleReinstate(applicant.user._id)
                                 }}
