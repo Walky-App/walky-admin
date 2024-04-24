@@ -18,7 +18,7 @@ export const Signup = () => {
   const [error, setError] = useState<Error | undefined>()
   const [loading, setLoading] = useState(false)
   const { setUser } = useAuth()
-  const { setAvatar } = useUtils()
+  const { setAvatarImageUrl } = useUtils()
 
   const { email, role } = useParams()
   const navigate = useNavigate()
@@ -55,7 +55,7 @@ export const Signup = () => {
 
         SetToken(ls_info)
         setUser({ ...user, access_token: access_token })
-        setAvatar(user.avatar as string)
+        setAvatarImageUrl(user.avatar as string)
         setLoading(false)
 
         switch (user.role) {

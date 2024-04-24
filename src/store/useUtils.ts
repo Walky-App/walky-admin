@@ -10,7 +10,7 @@ type ToastCallback = (toastData: ToastMessage) => void
 interface State {
   toast: MutableRefObject<Toast | null>
   toastPosition: ToastProps['position']
-  avatar: string
+  avatarImageUrl: string
   setToast: (ref: MutableRefObject<Toast | null>) => void
   showToast: (options: IToastParameters) => void
   removeToast: (toastData: ToastMessage) => void
@@ -18,13 +18,13 @@ interface State {
   onRemoveToast: ToastCallback
   setRemoveToastCallback: (callback: ToastCallback) => void
   removeToastCallback?: ToastCallback
-  setAvatar: (avatar: string) => void
+  setAvatarImageUrl: (value: string) => void
 }
 
 export const useUtils = create<State>(set => ({
   toast: {} as MutableRefObject<Toast>,
   toastPosition: 'bottom-right',
-  avatar: '',
+  avatarImageUrl: '',
   setToast: ref => set({ toast: ref }),
   showToast: ({ position = 'bottom-right', ...options }) => {
     set(state => {
@@ -54,7 +54,7 @@ export const useUtils = create<State>(set => ({
   setRemoveToastCallback: (callback: ToastCallback) => {
     set({ removeToastCallback: callback })
   },
-  setAvatar: (value: string) => {
-    set({ avatar: value })
+  setAvatarImageUrl: (value: string) => {
+    set({ avatarImageUrl: value })
   },
 }))

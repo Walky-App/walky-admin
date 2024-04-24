@@ -9,7 +9,7 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ children }) => {
   const { user } = useAuth()
-  const { avatar } = useUtils()
+  const { avatarImageUrl } = useUtils()
 
   return (
     <div className="bg-white px-4 shadow sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
@@ -17,10 +17,10 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ children }) =>
         <div className="min-w-0 flex-1">
           {/* Profile */}
           <div className="flex items-center">
-            <img className="hidden h-16 w-16 rounded-full sm:block" src={avatar} alt="avatar" />
+            <img className="hidden h-16 w-16 rounded-full sm:block" src={avatarImageUrl} alt="avatar" />
             <div>
               <div className="flex items-center">
-                <img className="h-16 w-16 rounded-full sm:hidden" src={avatar} alt="avatar" />
+                <img className="h-16 w-16 rounded-full sm:hidden" src={avatarImageUrl} alt="avatar" />
                 <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
                   Welcome Back, {user?.first_name}
                 </h1>
