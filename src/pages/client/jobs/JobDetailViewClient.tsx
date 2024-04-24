@@ -17,6 +17,7 @@ import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
 import { classNames } from 'primereact/utils'
 
+import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
 import { IApplicant } from '../../../interfaces/job'
@@ -47,24 +48,27 @@ export default function JobDetailViewClient() {
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
   const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
   const [checked, setChecked] = useState(false)
+  const [openFeedback, setOpenFeedback] = useState(false)
+  const [idFeedback, setIdFeedback] = useState('')
   const [submitCount, setSubmitCount] = useState(0)
 
-  useEffect(() => {
-    const getJob = async () => {
-      try {
-        const job = await RequestService(`jobs/${params.id}`)
-        if (job) {
-          setJob(job)
-        }
-      } catch (error) {
-        console.error('Error fetching job:', error)
+  const getJob = async () => {
+    try {
+      const job = await RequestService(`jobs/${params.id}`)
+      if (job) {
+        setJob(job)
       }
+    } catch (error) {
+      console.error('Error fetching job:', error)
     }
+  }
 
+  useEffect(() => {
     getJob()
   }, [
     job.is_active,
     job.is_completed,
+    openFeedback,
     params.id,
     acceptCount,
     rejectionReason,
@@ -225,6 +229,11 @@ export default function JobDetailViewClient() {
     }
   }
 
+  const handleFeedback = (user_id: string) => {
+    setIdFeedback(user_id)
+    setOpenFeedback(true)
+      }
+  
   const onSubmit = async (user_id: string) => {
     try {
       const requestData = { user_id }
@@ -533,7 +542,11 @@ export default function JobDetailViewClient() {
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                 </p>
-                                <Rating value={3} readOnly cancel={false} />
+                                {applicant.user.score_rating ? (
+                                  <Rating value={applicant.user.score_rating} readOnly cancel={false} />
+                                ) : (
+                                  <div className="text-sm font-semibold text-gray-500">No ratings yet</div>
+                                )}
                                 <p className="mt-1 flex text-sm leading-5 text-gray-500" />
                               </div>
                             </div>
@@ -565,7 +578,11 @@ export default function JobDetailViewClient() {
                                       <span className="white-space-nowrap font-bold">
                                         {applicant.user.first_name} {applicant.user.last_name[0]}.
                                       </span>
-                                      <Rating value={3} readOnly cancel={false} />
+                                      {applicant.user.score_rating ? (
+                                        <Rating value={applicant.user.score_rating} readOnly cancel={false} />
+                                      ) : (
+                                        <div className="text-sm font-semibold text-gray-500">No ratings yet</div>
+                                      )}
                                     </div>
                                   }
                                   visible={visibleDialog === applicant.user._id}
@@ -638,7 +655,11 @@ export default function JobDetailViewClient() {
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                   <Tag className="mb-2 ml-2" value="Rejected" severity="danger" />
-                                  <Rating value={3} readOnly cancel={false} />
+                                  {applicant.user.score_rating ? (
+                                    <Rating value={applicant.user.score_rating} readOnly cancel={false} />
+                                  ) : (
+                                    <div className="text-sm font-semibold text-gray-500">No ratings yet</div>
+                                  )}
                                   Reason for rejection: {applicant.rejection_reason}
                                 </p>
                                 <p className="mt-1 flex text-sm leading-5 text-gray-500" />
@@ -698,13 +719,26 @@ export default function JobDetailViewClient() {
                                   <span className="absolute inset-x-0 -top-px bottom-0" />
                                   {applicant.user.first_name} {applicant.user.last_name[0]}.
                                   <Tag className="mb-2 ml-2" value="Accepted" severity="success" />
-                                  <Rating value={3} readOnly cancel={false} />
+                                  {applicant.user.score_rating ? (
+                                    <Rating value={applicant.user.score_rating} readOnly cancel={false} />
+                                  ) : (
+                                    <div className="text-sm font-semibold text-gray-500">No ratings yet</div>
+                                  )}
                                 </p>
                                 <p className="mt-1 flex text-sm leading-5 text-gray-500" />
                               </div>
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                               <div className="flex flex-row items-end" />
+                              {!job.applicants_feedback_ids.includes(applicant.user._id) ? (
+                                <Button
+                                  size="small"
+                                  label="Feedback"
+                                  onClick={() => {
+                                    handleFeedback(applicant.user._id)
+                                  }}
+                                />
+                              ) : null}
                               <Button
                                 size="small"
                                 label="Move back to Pending"
@@ -726,6 +760,7 @@ export default function JobDetailViewClient() {
           </TabView>
         </div>
       </div>
+      <Feedback isOpen={openFeedback} hidden={setOpenFeedback} objectId={idFeedback} job_id={params.id} />
     </>
   )
 }
