@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useEffect, useState } from 'react'
 
-import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
+import { Controller, type SubmitHandler, useForm, type FieldErrors, set } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { Avatar } from 'primereact/avatar'
@@ -41,7 +41,7 @@ export default function JobDetailViewClient() {
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
   const [acceptCount, setAcceptCount] = useState(0)
-  const [visible, setVisible] = useState(false)
+  const [visibleDialog, setVisibleDialog] = useState<string | null>(null)
   const [rejectionReason, setRejectionReason] = useState<any>(null)
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
@@ -197,7 +197,7 @@ export default function JobDetailViewClient() {
         })
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
         showToast({ severity: 'success', summary: 'Applicant Rejected', detail: 'Applicant has been rejected' })
-        setVisible(false)
+        setVisibleDialog(null)
         setLastRejectedApplicantId(user_id)
       }
     } catch (error) {
@@ -553,7 +553,9 @@ export default function JobDetailViewClient() {
                                   severity="danger"
                                   outlined
                                   className="ml-2"
-                                  onClick={() => setVisible(true)}
+                                  onClick={() => {
+                                    setVisibleDialog(applicant.user._id)
+                                  }}
                                 />
 
                                 <Dialog
@@ -566,9 +568,9 @@ export default function JobDetailViewClient() {
                                       <Rating value={3} readOnly cancel={false} />
                                     </div>
                                   }
-                                  visible={visible}
+                                  visible={visibleDialog === applicant.user._id}
                                   style={{ width: '50vw' }}
-                                  onHide={() => setVisible(false)}
+                                  onHide={() => setVisibleDialog(null)}
                                   footer={
                                     <Button
                                       size="small"
