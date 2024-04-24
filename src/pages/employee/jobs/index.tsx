@@ -148,7 +148,7 @@ export const EmployeeJobs = () => {
         <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
           {isLoading
             ? jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
-            : displayedJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+            : displayedJobs.map(job => <JobListItem key={job._id} job={job} />)}
         </ul>
       </div>
     </>
