@@ -3,7 +3,7 @@ import { Button } from 'primereact/button'
 import { BanknotesIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 
 import { type ITransaction } from '../../../pages/admin/dashboard/AdminDashboard'
-import { classNames } from '../../../utils/Tailwind'
+import { cn } from '../../../utils/cn'
 
 const statusStyles = {
   success: 'bg-green-100 text-green-800',
@@ -96,7 +96,7 @@ export const RecentActivityTable: React.FC<Props> = ({ transactions }) => {
                       </td>
                       <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 md:block">
                         <span
-                          className={classNames(
+                          className={cn(
                             statusStyles[transaction.status as keyof typeof statusStyles],
                             'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize',
                           )}>

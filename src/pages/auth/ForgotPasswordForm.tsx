@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 
 import { Toast } from 'primereact/toast'
+import cn from 'classnames'
 
 import { requestService } from '../../services/requestServiceNew'
 
@@ -43,7 +44,10 @@ export const ForgotPassword = () => {
             required
             type="email"
             name="email"
-            className={`w-full rounded-lg p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500 ${error ? 'border-red-500 ring-red-500' : 'border-zinc-200'}`}
+            className={cn(
+              `w-full rounded-lg p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500`,
+              error ? 'border-red-500 ring-red-500' : 'border-zinc-200',
+            )}
             placeholder="Email*"
             onChange={e => setForm({ email: e.target.value })}
           />
