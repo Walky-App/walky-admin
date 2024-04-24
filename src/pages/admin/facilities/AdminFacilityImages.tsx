@@ -24,7 +24,7 @@ import { useUtils } from '../../../store/useUtils'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityImages = () => {
-  const [facility, setFacility] = useState<IFacility>({} as IFacility)
+  const [facility, setFacility] = useState<IFacility>()
   const [uploading, setUploading] = useState(false)
   const [files, setFiles] = useState<any>([])
   const [openDialog, setOpenDialog] = useState<boolean>(false)
@@ -107,7 +107,7 @@ export const AdminFacilityImages = () => {
 
       const updatedFacility: IFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
 
-      if (selectedImage.current.url === facility.main_image) {
+      if (selectedImage.current.url === facility?.main_image) {
         const newMainImage = updatedFacility.images[0] || ''
         await RequestService(`facilities/${facilityId}`, 'PATCH', {
           ...facility,
@@ -152,7 +152,7 @@ export const AdminFacilityImages = () => {
 
   return (
     <div>
-      <SubHeader data={facility} links={adminFacilitiesLinks} />
+      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
       <input
         ref={filesInputRef}
         className="hidden"

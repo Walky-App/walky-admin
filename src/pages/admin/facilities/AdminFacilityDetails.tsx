@@ -24,11 +24,14 @@ export const AdminFacilityDetails = () => {
     getFacility()
   }, [facilityId])
 
-  if (!facility) return <div>Loading...</div>
-  return (
-    <>
-      <SubHeader data={facility} links={adminFacilitiesLinks} />
-      <FacilityDetailsForm facility={facility} setFacility={setFacility} />
-    </>
-  )
+  if (!facility) {
+    return <div>Loading...</div>
+  } else {
+    return (
+      <>
+        {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+        <FacilityDetailsForm facility={facility} setFacility={setFacility} />
+      </>
+    )
+  }
 }

@@ -5,12 +5,13 @@ import { useParams } from 'react-router-dom'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-export default function AdminFacilityActivity() {
+export const AdminFacilityActivity = () => {
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<any>({})
+  const [facility, setFacility] = useState<IFacility>()
   const [logs, setLogs] = useState<any>([])
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function AdminFacilityActivity() {
 
   return (
     <div>
-      <SubHeader data={facility} links={adminFacilitiesLinks} />
+      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
       <GlobalTable data={logs} columns={memoFacilitiesColumns} />
     </div>
   )
