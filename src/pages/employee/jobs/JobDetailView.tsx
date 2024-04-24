@@ -11,6 +11,7 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { ToggleButton } from 'primereact/togglebutton'
 
 import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
+import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
@@ -30,6 +31,8 @@ export const JobDetailView = () => {
   const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
   const [checked, setChecked] = useState(true)
   const [lastTimeSheet, setLastTimeSheet] = useState<ITimeSheet | null>(null)
+  const [openFeedback, setOpenFeedback] = useState(false)
+  const [idFeedback, setIdFeedback] = useState('')
   const { showToast } = useUtils()
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -295,6 +298,11 @@ export const JobDetailView = () => {
     return pairs.reverse()
   }, [timesheets])
 
+  const handleFeedback = () => {
+    setIdFeedback(id as string)
+    setOpenFeedback(true)
+  }
+
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
@@ -487,6 +495,14 @@ export const JobDetailView = () => {
                           />
                         </li>
                       )}
+                      <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                        <Button
+                          label="Feedback"
+                          severity="secondary"
+                          style={{ width: '100%', height: '100%' }}
+                          onClick={handleFeedback}
+                        />
+                      </li>
                     </ul>
                   </div>
                   {job?.facility.location_pin[0] && job?.facility.location_pin[1] ? (
@@ -638,6 +654,7 @@ export const JobDetailView = () => {
           <Skeleton shape="rectangle" height="150px" />
         )}
       </div>
+      <Feedback isOpen={openFeedback} hidden={setOpenFeedback} objectId={idFeedback} job_id={id} />
     </div>
   )
 }
