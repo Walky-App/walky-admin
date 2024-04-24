@@ -19,6 +19,7 @@ import { classNames } from 'primereact/utils'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
+import { IApplicant } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -44,7 +45,7 @@ export default function JobDetailViewClient() {
   const [rejectionReason, setRejectionReason] = useState<any>(null)
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
-  const [potentialApplicants, setPotentialApplicants] = useState<any>([])
+  const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
   const [checked, setChecked] = useState(false)
   const [submitCount, setSubmitCount] = useState(0)
 
@@ -474,12 +475,10 @@ export default function JobDetailViewClient() {
                         name="employee"
                         className={classNames({ 'p-invalid': fieldState.error }, 'md:w-1/3')}
                         onChange={e => field.onChange(e.target.value)}
-                        options={potentialApplicants.map(
-                          (potentialApplicant: { _id: any; first_name: any; last_name: any }) => ({
-                            value: potentialApplicant._id,
-                            label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
-                          }),
-                        )}
+                        options={potentialApplicants.map((potentialApplicant: IApplicant) => ({
+                          value: potentialApplicant._id,
+                          label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
+                        }))}
                         optionLabel="label"
                         filter
                       />
