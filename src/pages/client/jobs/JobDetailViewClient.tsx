@@ -23,7 +23,7 @@ import { IApplicant } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import AdminJobDetails from '../../admin/jobs/AdminJobDetails'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
