@@ -351,7 +351,7 @@ export default function JobDetailViewClient() {
                 {/* Job Card End*/}
                 {/* Schedule */}
                 {userRole === admin_role && (
-                  <div className="flex items-center justify-between">
+                  <div className="mt-4 flex flex-wrap items-center justify-between space-y-4">
                     <ToggleButton
                       checked={checked}
                       onChange={e => setChecked(e.value)}
@@ -359,48 +359,7 @@ export default function JobDetailViewClient() {
                       offLabel="Open Schedule"
                       onIcon="pi pi-times"
                       offIcon="pi pi-check"
-                      className="w-8rem mt-2"
                     />
-                    <div className="mt-4 flex flex-grow justify-end">
-                      <div className="align w-1/2">
-                        <div className="mt-2">
-                          <Controller
-                            name="user_id"
-                            control={control}
-                            rules={{ required: 'Employee selection is required' }}
-                            render={({ field, fieldState }) => (
-                              <Dropdown
-                                id={field.name}
-                                value={field.value}
-                                placeholder="Select an applicant"
-                                name="employee"
-                                className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                                onChange={e => field.onChange(e.target.value)}
-                                options={potentialApplicants.map(
-                                  (potentialApplicant: { _id: any; first_name: any; last_name: any }) => ({
-                                    value: potentialApplicant._id,
-                                    label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
-                                  }),
-                                )}
-                                optionLabel="label"
-                                filter
-                              />
-                            )}
-                          />
-                        </div>
-                        {getFormErrorMessage('applicant', errors)}
-                      </div>
-
-                      <Button
-                        type="submit"
-                        label="Add New Applicant"
-                        onClick={handleSubmit(data => {
-                          onSubmit(data.user_id)
-                          reset({ user_id: '' })
-                        })}
-                        className="ml-4"
-                      />
-                    </div>
                   </div>
                 )}
 
@@ -452,7 +411,7 @@ export default function JobDetailViewClient() {
                     className="w-full"
                     label="Edit Job"
                     onClick={() => navigate(`/${isAdmin ? 'admin' : 'client'}/jobs/${id}/edit`)}
-                  />{' '}
+                  />
                   {!job.is_active ? (
                     <Button
                       className="w-full"
@@ -498,6 +457,39 @@ export default function JobDetailViewClient() {
         {/* Control Buttons end */}
         <div className="md:col-span-3">
           {/* Applicants and Workers Tab View */}
+          <div className="flex justify-center space-x-4 md:justify-end">
+            <Controller
+              name="user_id"
+              control={control}
+              rules={{ required: 'Employee selection is required' }}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id={field.name}
+                  value={field.value}
+                  placeholder="Select an applicant"
+                  name="employee"
+                  className={classNames({ 'p-invalid': fieldState.error }, 'md:w-1/3')}
+                  onChange={e => field.onChange(e.target.value)}
+                  options={potentialApplicants.map(
+                    (potentialApplicant: { _id: any; first_name: any; last_name: any }) => ({
+                      value: potentialApplicant._id,
+                      label: `${potentialApplicant.first_name} ${potentialApplicant.last_name}`,
+                    }),
+                  )}
+                  optionLabel="label"
+                  filter
+                />
+              )}
+            />
+            <Button
+              type="submit"
+              label="Add New Applicant"
+              onClick={handleSubmit(data => {
+                onSubmit(data.user_id)
+                reset({ user_id: '' })
+              })}
+            />
+          </div>
           <TabView>
             <TabPanel header="Pending">
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
@@ -514,7 +506,7 @@ export default function JobDetailViewClient() {
                     job.applicants.some(
                       (applicant: any) => !applicant.is_approved && applicant.rejection_reason === '',
                     ) ? (
-                      <Button label="Accept All" size="small" onClick={handleAcceptAll} />
+                      <Button label="Accept All" severity="success" size="small" onClick={handleAcceptAll} />
                     ) : null}
                   </div>
                 </div>
@@ -548,6 +540,7 @@ export default function JobDetailViewClient() {
                                 <Button
                                   size="small"
                                   label="Accept"
+                                  severity="success"
                                   onClick={() => {
                                     handleAccept(applicant.user._id)
                                   }}
@@ -555,7 +548,8 @@ export default function JobDetailViewClient() {
                                 <Button
                                   size="small"
                                   label="Reject"
-                                  severity="secondary"
+                                  severity="danger"
+                                  outlined
                                   className="ml-2"
                                   onClick={() => setVisible(true)}
                                 />
@@ -650,8 +644,8 @@ export default function JobDetailViewClient() {
                               <div className="flex flex-row items-end">
                                 <Button
                                   size="small"
-                                  label="Cancel"
-                                  severity="secondary"
+                                  label="Move back to Pending"
+                                  severity="warning"
                                   onClick={() => {
                                     handleReinstate(applicant.user._id)
                                   }}
@@ -709,8 +703,8 @@ export default function JobDetailViewClient() {
                               <div className="flex flex-row items-end" />
                               <Button
                                 size="small"
-                                label="Cancel"
-                                severity="secondary"
+                                label="Move back to Pending"
+                                severity="warning"
                                 onClick={() => {
                                   handleReinstate(applicant.user._id)
                                 }}
