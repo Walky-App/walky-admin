@@ -14,8 +14,9 @@ import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacilityFile, type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
-import { classNames } from '../../../utils/Tailwind'
+import { SubHeader } from '../../../components/shared/SubHeader'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
+import { cn } from '../../../utils/cn'
 
 const statuses = {
   Complete: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -108,7 +109,7 @@ export const AdminFacilityLicenses = () => {
                   <p className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">{license.key}</p>
                 </a>
                 <p
-                  className={classNames(
+                  className={cn(
                     statuses['Complete'],
                     'mt-0.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
                   )}>
