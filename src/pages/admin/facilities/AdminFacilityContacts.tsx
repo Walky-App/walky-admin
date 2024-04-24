@@ -1,11 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
+
 import { useParams } from 'react-router-dom'
-import { RequestService } from '../../../services/RequestService'
+
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
+
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-export default function AdminFacilityContacts() {
+export const AdminFacilityContacts = () => {
   const { facilityId } = useParams()
   const [currentContact, setCurrentContact] = useState<string>('')
   const [facilityContacts, setFacilityContacts] = useState<any>([])
@@ -28,7 +34,7 @@ export default function AdminFacilityContacts() {
       }
     }
     getFacilityContacts()
-  }, [])
+  }, [facilityId])
 
   const handleAddContactForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -68,7 +74,7 @@ export default function AdminFacilityContacts() {
 
   return (
     <>
-      <SubHeader data={facilityFound} links={adminFacilitiesLinks} />
+      {facilityFound ? <SubHeader data={facilityFound} links={adminFacilitiesLinks} /> : null}
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold leading-6 text-gray-900">Facility contacts</h1>
@@ -171,7 +177,7 @@ export default function AdminFacilityContacts() {
           </div>
 
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            {updateSuccess && (
+            {updateSuccess ? (
               <div className="rounded-md bg-green-50 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
@@ -181,11 +187,11 @@ export default function AdminFacilityContacts() {
                     <p className="text-sm font-medium text-green-800">Contact successfully added</p>
                   </div>
                   <div className="ml-auto pl-3">
-                    <div className="-mx-1.5 -my-1.5"></div>
+                    <div className="-mx-1.5 -my-1.5" />
                   </div>
                 </div>
               </div>
-            )}
+            ) : null}
             <button
               type="submit"
               className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
@@ -254,7 +260,9 @@ export default function AdminFacilityContacts() {
                           <button
                             onClick={() => handleEditButtonClick(singleContact)}
                             disabled
-                            className="text-green-600 hover:text-green-900"></button>
+                            className="text-green-600 hover:text-green-900"
+                            type="button"
+                          />
                         </td>
                       </tr>
                     ))}

@@ -232,8 +232,8 @@ export default function JobDetailViewClient() {
   const handleFeedback = (user_id: string) => {
     setIdFeedback(user_id)
     setOpenFeedback(true)
-      }
-  
+  }
+
   const onSubmit = async (user_id: string) => {
     try {
       const requestData = { user_id }
