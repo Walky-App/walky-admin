@@ -45,9 +45,11 @@ import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
-import AdminUsers from './pages/admin/users'
-import AdminInviteUser from './pages/admin/users/AdminInviteUser'
-import { AdminUserDetails } from './pages/admin/users/AdminUserDetails'
+import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
+import { AdminUserPage } from './pages/admin/users/AdminUserPage'
+import { AdminInviteUser } from './pages/admin/users/components'
+import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
+import { AdminUserTimeSheets } from './pages/admin/users/components/AdminUserTimeSheets'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
@@ -165,9 +167,12 @@ export const App = () => {
                   <Route element={<AdminProfile />} path="/admin/profile" />
                   <Route element={<AdminHolidays />} path="/admin/holidays" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
-                  <Route element={<AdminUsers />} path="/admin/users" />
+                  <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
-                  <Route element={<AdminUserDetails />} path="/admin/users/:id" />
+                  <Route element={<AdminUserPage />}>
+                    <Route element={<AdminUserDetails />} path="/admin/users/:id" />
+                    <Route element={<AdminUserTimeSheets />} path="/admin/users/:id/timesheets" />
+                  </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<AdminFacilityDetails />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />

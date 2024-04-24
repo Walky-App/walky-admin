@@ -13,4 +13,5 @@ export interface ITimeSheet {
   facility_id: string
   is_clocked_in: boolean
   punches: IPunch[]
+  createdAt: string
 }
