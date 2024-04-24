@@ -11,7 +11,7 @@ import { type IAddressAutoComplete } from '../../../components/shared/forms/Addr
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IUserDocument, type IUser, type IOnboardingStep } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { EmployeeStep1, EmployeeStep2, EmployeeWelcomeDialog } from './components'
 import { EmployeeStep3 } from './components/EmployeeStep3'
 
@@ -159,7 +159,7 @@ export const EmployeeOnboarding = () => {
 
   const onboardingSteps = [
     <Fragment key="step1">
-      {currentUser?.onboarding?.step_number === 1 ? (
+      {!currentUser?.onboarding?.step_number || currentUser.onboarding.step_number === 1 ? (
         <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
       ) : null}
       <EmployeeStep1 step={activeIndex} setStep={setActiveIndex} />

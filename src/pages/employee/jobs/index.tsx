@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
-import { ProgressSpinner } from 'primereact/progressspinner'
+import { Skeleton } from 'primereact/skeleton'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { useCoordinates } from '../../../store/useCoordinates'
+import { useJobs } from '../../../store/useJobs'
 import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
@@ -33,50 +35,57 @@ const jobTitleOptions = [
 ]
 
 const rangeOptions = [
-  { name: '5 miles', code: 5 },
-  { name: '10 miles', code: 10 },
-  { name: '15 miles', code: 15 },
-  { name: '20 miles', code: 20 },
-  { name: '30 miles', code: 30 },
-  { name: '50 miles', code: 50 },
+  { name: '< 5 miles', code: 5 },
+  { name: '< 10 miles', code: 10 },
+  { name: '< 15 miles', code: 15 },
+  { name: '< 20 miles', code: 20 },
+  { name: '< 30 miles', code: 30 },
+  { name: '< 50 miles', code: 50 },
 ]
 
 export const EmployeeJobs = () => {
-  const [jobs, setJobs] = useState<IJob[]>([])
+  const { jobs, setJobs } = useJobs()
+  const {
+    latitude,
+    longitude,
+    loading: coordinatesLoading,
+    getLatitudeFromLocalStorage,
+    getLongitudeFromLocalStorage,
+  } = useCoordinates()
+
   const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [latitude, setLatitude] = useState<number | undefined>(undefined)
-  const [longitude, setLongitude] = useState<number | undefined>(undefined)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const getLocation = () => {
-      navigator.geolocation.getCurrentPosition(position => {
-        setLatitude(position.coords.latitude)
-        setLongitude(position.coords.longitude)
-      })
+    if (jobs.length) {
+      setIsLoading(false)
     }
-
-    getLocation()
-  }, [])
-
-  useEffect(() => {
-    const getJobs = async () => {
-      if (typeof longitude !== 'number' || typeof latitude !== 'number' || isNaN(longitude) || isNaN(latitude)) {
-        console.error('Invalid coordinates: ', { longitude, latitude })
-        return
+    if (getLongitudeFromLocalStorage() && getLatitudeFromLocalStorage() && !jobs.length) {
+      const getJobs = async () => {
+        if (latitude === null || longitude === null) {
+          return
+        }
+        const fromCoordinates = [longitude, latitude]
+        const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
+        if (allJobs) {
+          setJobs(allJobs)
+        }
+        setIsLoading(false)
       }
-      const fromCoordinates = [longitude, latitude]
-      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
-      if (allJobs) {
-        setJobs(allJobs)
-      }
-      setLoading(false)
+      getJobs()
     }
-    getJobs()
-  }, [latitude, longitude])
+  }, [
+    jobs,
+    setJobs,
+    coordinatesLoading,
+    latitude,
+    longitude,
+    getLatitudeFromLocalStorage,
+    getLongitudeFromLocalStorage,
+  ])
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])]
@@ -96,14 +105,6 @@ export const EmployeeJobs = () => {
     }
     setDisplayedJobs(filteredJobs)
   }, [selectedJobTitle, dates, jobs, selectedRange])
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <ProgressSpinner />
-      </div>
-    )
-  }
 
   return (
     <>
@@ -138,16 +139,16 @@ export const EmployeeJobs = () => {
             onChange={e => setSelectedRange(e.value)}
             options={rangeOptions}
             optionLabel="name"
-            placeholder="Select Range"
+            placeholder="Select Distance"
             className="w-full"
           />
         </div>
       </div>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-          {displayedJobs.map((job: IJob) => (
-            <JobListItem key={job._id} job={job} />
-          ))}
+          {isLoading
+            ? jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
+            : displayedJobs.map(job => <JobListItem key={job._id} job={job} />)}
         </ul>
       </div>
     </>

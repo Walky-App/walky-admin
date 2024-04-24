@@ -16,7 +16,7 @@ import { TitleComponent } from '../../../../components/shared/general/TitleCompo
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 export const ClientAddJob = () => {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
@@ -145,7 +145,6 @@ export const ClientAddJob = () => {
       }
 
       const response = await RequestService('jobs', 'POST', requestData)
-      console.log('THE REQUEST DATA -->', requestData)
       if (response) {
         showToast({ severity: 'success', summary: 'Success', detail: 'Job information submitted successfully' })
         setTimeout(() => {

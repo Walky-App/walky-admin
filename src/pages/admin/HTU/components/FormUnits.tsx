@@ -16,14 +16,8 @@ import { getFormErrorMessage } from '../../../../utils/ControlError'
 import { cn } from '../../../../utils/cn'
 
 export const unitsTypePrimeReact = [
-  {
-    title: 'Blog',
-    value: 'blog',
-  },
-  {
-    title: 'Video',
-    value: 'video',
-  },
+  { title: 'Blog', value: 'blog' },
+  { title: 'Video', value: 'video' },
 ]
 
 export interface IUnitFormValues {
@@ -122,7 +116,7 @@ export const FormUnits = ({
   return (
     <form onSubmit={handleSubmit(handleRequest)}>
       <div className="space-y-12">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="gap-y-10border-gray-900/10 grid grid-cols-1 gap-x-8 pb-12 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Unit Information</h2>
           </div>

@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
+
+import { useSearchParams } from 'react-router-dom'
+
+import { BreadCrumbs } from '../../../components/shared/BreadCrumbs'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { Category } from '../../../interfaces/category'
-import { FilterInterface, SelectedOptionInterface } from '../../../interfaces/global'
+import { type Category } from '../../../interfaces/category'
+import { type FilterInterface, type SelectedOptionInterface } from '../../../interfaces/global'
 import { RequestService } from '../../../services/RequestService'
-import { useSearchParams } from 'react-router-dom'
 import { CategoryCards } from '../../learn/components/CategoryCards'
 
 export const AdminCategoryLearn = () => {
@@ -43,12 +46,18 @@ export const AdminCategoryLearn = () => {
 
     setFilter({
       search: searchParams.get('search') || '',
-      selected: searchParams.get('selected') || 'all'
+      selected: searchParams.get('selected') || 'all',
     })
   }, [searchParams, categories])
 
+  const pages = [
+    { name: 'Manage HTU', href: '/admin/learn', current: false },
+    { name: 'Manage Categories', href: '#', current: true },
+  ]
+
   return (
     <div className="w-full sm:overflow-x-hidden">
+      <BreadCrumbs pages={pages} />
       <HeaderComponent
         actionButton={{
           to: '/admin/learn/categories/new',
@@ -56,17 +65,19 @@ export const AdminCategoryLearn = () => {
         }}
         search
         selectedOptions={selectOption}
-        title='Manage Categories'
-
+        title="Manage Categories"
       />
+
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center h-96">
+        <div className="flex h-96 flex-col items-center justify-center">
           <div className="text-2xl font-semibold text-black">Loading ...</div>
         </div>
       ) : (
         <>
-          {(categories.length === 0 && !isLoading) ? <EmptyState to="/admin/learn/categories/new" type="category" /> : null}
-          {(categories.length > 0 && !isLoading) ? (
+          {categories.length === 0 && !isLoading ? (
+            <EmptyState to="/admin/learn/categories/new" type="category" />
+          ) : null}
+          {categories.length > 0 && !isLoading ? (
             <div className="w-full">
               <CategoryCards category={categories} filter={filter} isAdmin isLoading={isLoading} />
             </div>

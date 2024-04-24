@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 
-import GlobalTable from '../../../components/shared/GlobalTable'
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
-import { GetTokenInfo } from '../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export default function Facilities() {
   const navigate = useNavigate()
@@ -23,7 +23,6 @@ export default function Facilities() {
     const getJobs = async () => {
       try {
         const allJobs = await RequestService(`jobs/client/${id}`)
-        console.log('All Jobs:', allJobs)
         setJobsData(allJobs)
       } catch (error) {
         console.error('Error fetching jobs data:', error)
@@ -32,35 +31,39 @@ export default function Facilities() {
     getJobs()
   }, [])
 
+  console.log('jobsData:', jobsData)
+
   const jobsColumns = [
-    { Header: 'Job Title', accessor: 'title' },
-    { Header: 'Facility', accessor: 'facility.name' },
-    //@ts-ignore
+    { Header: 'Start date', accessor: (job: any) => new Date(job.job_dates[0]).toLocaleString() },
+    { Header: 'Job', accessor: 'title' },
+    { Header: 'Facility', width: '300px', accessor: 'facility.name' },
     {
       Header: 'Status',
+      width: '100px',
       accessor: (d: any) => (d.is_active ? 'Active' : 'Disabled'),
       sortType: (a: any, b: any) => {
         if (a.original.is_active === b.original.active) return 0
         return a.original.is_active ? -1 : 1
       },
-    }, //@ts-ignore
+    },
     {
-      Header: 'Past/Present',
-      accessor: (d: any) => (d.is_completed ? 'Past' : 'Present'),
+      Header: 'old/new',
+      accessor: (d: any) => (d.is_completed ? 'Old' : 'Present'),
       sortType: (a: any, b: any) => {
         if (a.original.is_completed === b.original.is_completed) return 0
         return a.original.is_completed ? -1 : 1
       },
-    }, //@ts-ignore
+    },
     {
-      Header: 'Total Hours',
-      accessor: 'total_hours',
-    }, //@ts-ignore
-    { Header: 'Vacancy', accessor: 'vacancy' },
-    { Header: 'Hourly Rate', accessor: 'hourly_rate' },
+      Header: 'Hours',
+      width: '100px',
+      accessor: (d: any) => d.total_hours || 0,
+    },
+    { Header: 'Vacancy', accessor: 'vacancy', width: '70px' },
+    { Header: 'Rate', width: '70px', accessor: (d: any) => (d.hourly_rate ? `$ ${d.hourly_rate}` : '') },
     {
-      Header: 'Availability',
-      accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
+      Header: 'Full',
+      accessor: (d: any) => (d.is_full ? 'yes' : 'no'),
       sortType: (a: any, b: any) => {
         if (a.original.is_full === b.original.is_full) return 0
         return a.original.is_full ? -1 : 1

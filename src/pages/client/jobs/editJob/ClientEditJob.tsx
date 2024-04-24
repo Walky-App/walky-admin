@@ -16,7 +16,7 @@ import { TitleComponent } from '../../../../components/shared/general/TitleCompo
 import { IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo } from '../../../../utils/TokenUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 export default function ClientEditJob() {
   const [startTime, setStartTime] = React.useState<Date | null>(null)
@@ -90,10 +90,6 @@ export default function ClientEditJob() {
 
   const watchAllFields = watch()
   const lunchBreak = watch('lunch_break')
-
-  React.useEffect(() => {
-    console.log(watchAllFields)
-  }, [watchAllFields])
 
   React.useEffect(() => {
     if (startTime && endTime) {
