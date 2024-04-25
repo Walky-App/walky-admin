@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useEffect, useState } from 'react'
 
-import { Controller, type SubmitHandler, useForm, type FieldErrors, set } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { Avatar } from 'primereact/avatar'
@@ -19,22 +19,14 @@ import { classNames } from 'primereact/utils'
 
 import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { type IFacility } from '../../../interfaces/Facility'
-import { IApplicant } from '../../../interfaces/job'
+import { type IJob, type IApplicant } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { GetTokenInfo } from '../../../utils/tokenUtil'
-import AdminJobDetails from '../../admin/jobs/AdminJobDetails'
+import { roleChecker } from '../../../utils/roleChecker'
 
-const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
-const client_role = process.env.REACT_APP_CLIENT_ROLE as string
-const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
-const sales_role = process.env.REACT_APP_SALES_ROLE as string
-
-export default function JobDetailViewClient() {
-  const userRole = GetTokenInfo().role
-  const [job, setJob] = useState<any>({})
+export const JobDetailViewClient = () => {
+  const [job, setJob] = useState<IJob>()
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
@@ -43,7 +35,7 @@ export default function JobDetailViewClient() {
   const { showToast } = useUtils()
   const [acceptCount, setAcceptCount] = useState(0)
   const [visibleDialog, setVisibleDialog] = useState<string | null>(null)
-  const [rejectionReason, setRejectionReason] = useState<any>(null)
+  const [rejectionReason, setRejectionReason] = useState<string>()
   const [lastRejectedApplicantId, setLastRejectedApplicantId] = useState<string | null>(null)
   const [lastReinstatedApplicantId, setLastReinstatedApplicantId] = useState<string | null>(null)
   const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
@@ -63,11 +55,13 @@ export default function JobDetailViewClient() {
     }
   }
 
+  const role = roleChecker()
+
   useEffect(() => {
     getJob()
   }, [
-    job.is_active,
-    job.is_completed,
+    job?.is_active,
+    job?.is_completed,
     openFeedback,
     params.id,
     acceptCount,
@@ -75,24 +69,8 @@ export default function JobDetailViewClient() {
     lastRejectedApplicantId,
     lastReinstatedApplicantId,
     submitCount,
+    getJob,
   ])
-
-  function getFormErrorMessage(path: string, errors: FieldErrors) {
-    const pathParts = path.split('.')
-    let error: FieldErrors = errors
-
-    for (const part of pathParts) {
-      if (typeof error !== 'object' || error === null) {
-        return null
-      }
-      error = error[part as keyof typeof error] as FieldErrors
-    }
-
-    if (error?.message) {
-      return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
-    }
-    return null
-  }
 
   function convertToStandardTime(militaryTime: number) {
     if (militaryTime == null) {
@@ -113,7 +91,6 @@ export default function JobDetailViewClient() {
         if (response.status === 200) {
           const jsonResponse = await response.json()
           setPotentialApplicants(jsonResponse)
-          console.log('Potential Applicants:', potentialApplicants)
         }
       } catch (error) {
         console.error('Error fetching potential applicants', error)
@@ -136,8 +113,8 @@ export default function JobDetailViewClient() {
   let earliestDate, latestDate
 
   if (job && job.job_dates) {
-    earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date))))
-    latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date))))
+    earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date).getTime())))
+    latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date).getTime())))
   }
 
   const handleAccept = async (user_id: string) => {
@@ -145,7 +122,7 @@ export default function JobDetailViewClient() {
       const requestData = { user_id }
       const response = await RequestService(`jobs/${id}/accept`, 'PATCH', requestData)
       if (response) {
-        const updatedApplicants = job.applicants.map((applicant: any) => {
+        const updatedApplicants = job?.applicants.map((applicant: any) => {
           if (applicant.id === user_id) {
             return { ...applicant, is_approved: true }
           }
@@ -164,7 +141,7 @@ export default function JobDetailViewClient() {
     try {
       const response = await RequestService(`jobs/${id}/acceptAll`, 'PATCH')
       if (response) {
-        const updatedApplicants = job.applicants.map((applicant: any) => {
+        const updatedApplicants = job?.applicants.map((applicant: any) => {
           return { ...applicant, is_approved: true }
         })
         setJob((prevJob: any) => ({ ...prevJob, applicants: updatedApplicants }))
@@ -193,7 +170,7 @@ export default function JobDetailViewClient() {
       const requestData = { user_id, rejection_reason: rejectionReason }
       const response = await RequestService(`jobs/${id}/reject`, 'POST', requestData)
       if (response) {
-        const updatedApplicants = job.applicants.map((applicant: any) => {
+        const updatedApplicants = job?.applicants.map((applicant: any) => {
           if (applicant.id === user_id) {
             return { ...applicant, is_approved: false }
           }
@@ -214,7 +191,7 @@ export default function JobDetailViewClient() {
       const requestData = { user_id }
       const response = await RequestService(`jobs/${id}/reinstate`, 'PATCH', requestData)
       if (response) {
-        const updatedApplicants = job.applicants.map((applicant: any) => {
+        const updatedApplicants = job?.applicants.map((applicant: any) => {
           if (applicant.id === user_id) {
             return { ...applicant, is_approved: false, rejection_reason: '' }
           }
@@ -239,7 +216,7 @@ export default function JobDetailViewClient() {
       const requestData = { user_id }
       const response = await RequestService(`jobs/${id}/add-applicant`, 'POST', requestData)
       if (response) {
-        const updatedApplicants = job.applicants.map((applicant: any) => {
+        const updatedApplicants = job?.applicants.map((applicant: any) => {
           if (applicant.id === user_id) {
             return { ...applicant, is_approved: false, rejection_reason: '' }
           }
@@ -269,7 +246,7 @@ export default function JobDetailViewClient() {
                       <div className="flex items-center">
                         <i className="pi pi-users" />
                         <div className="ml-1 text-base font-normal text-stone-500">
-                          {job.applicants.length} / {job.vacancy} Applicants
+                          {job?.applicants.length} / {job?.vacancy} Applicants
                         </div>
                       </div>
                       {job.title}
@@ -361,7 +338,7 @@ export default function JobDetailViewClient() {
                 </Card>
                 {/* Job Card End*/}
                 {/* Schedule */}
-                {userRole === admin_role && (
+                {role === 'admin' ? (
                   <div className="mt-4 flex flex-wrap items-center justify-between space-y-4">
                     <ToggleButton
                       checked={checked}
@@ -372,9 +349,9 @@ export default function JobDetailViewClient() {
                       offIcon="pi pi-check"
                     />
                   </div>
-                )}
+                ) : null}
 
-                {checked && (
+                {checked ? (
                   <section className="mt-12">
                     <h2 className="text-base font-semibold leading-6 text-gray-900">
                       Schedule ({job.job_dates.length} days)
@@ -402,7 +379,7 @@ export default function JobDetailViewClient() {
                       })}
                     </ol>
                   </section>
-                )}
+                ) : null}
               </div>
             ) : (
               <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
@@ -423,7 +400,7 @@ export default function JobDetailViewClient() {
                     label="Edit Job"
                     onClick={() => navigate(`/${isAdmin ? 'admin' : 'client'}/jobs/${id}/edit`)}
                   />
-                  {!job.is_active ? (
+                  {!job?.is_active ? (
                     <Button
                       className="w-full"
                       label="Reopen Job"
@@ -470,7 +447,7 @@ export default function JobDetailViewClient() {
         <div className="md:col-span-3">
           <TabView>
             <TabPanel header="Pending">
-              {userRole === admin_role && (
+              {role === 'admin' ? (
                 <div className="mt-4 flex justify-center space-x-4 md:justify-end">
                   <Controller
                     name="user_id"
@@ -502,7 +479,7 @@ export default function JobDetailViewClient() {
                     })}
                   />
                 </div>
-              )}
+              ) : null}
               <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
                 <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                   <div className="ml-4">
@@ -513,7 +490,7 @@ export default function JobDetailViewClient() {
                     </p>
                   </div>
                   <div className="ml-4 mt-4 flex-shrink-0">
-                    {job.applicants &&
+                    {job?.applicants &&
                     job.applicants.some(
                       (applicant: any) => !applicant.is_approved && applicant.rejection_reason === '',
                     ) ? (
@@ -595,7 +572,7 @@ export default function JobDetailViewClient() {
                                       severity="secondary"
                                       className="ml-2"
                                       onClick={() => {
-                                        handleReject(applicant.user._id, rejectionReason)
+                                        handleReject(applicant.user._id, rejectionReason ?? '')
                                       }}
                                     />
                                   }>
@@ -730,7 +707,7 @@ export default function JobDetailViewClient() {
                             </div>
                             <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                               <div className="flex flex-row items-end" />
-                              {!job.applicants_feedback_ids.includes(applicant.user._id) ? (
+                              {!job?.applicants_feedback_ids.includes(applicant.user._id) ? (
                                 <Button
                                   size="small"
                                   label="Feedback"
