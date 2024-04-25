@@ -1,128 +1,111 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { RequestService } from '../../services/RequestService'
+import { useState, useRef } from 'react'
 
-export default function NewPasswordForm() {
+import { useParams, useNavigate } from 'react-router-dom'
+
+import { Password } from 'primereact/password'
+import { Toast } from 'primereact/toast'
+
+import { requestService } from '../../services/requestServiceNew'
+
+export const NewPasswordForm = () => {
   const { id, at } = useParams()
   const [form, setForm] = useState({ _id: id, access_token: at, password: '', password_confirmed: '' })
-  const [error, setError] = useState<any>()
+  const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
+  const [btnDisabled, setBtnDisabled] = useState(false)
+  const toast = useRef<Toast>(null)
 
-  const navigate =  useNavigate()
+  const show = (message: string) => {
+    toast.current?.show({ severity: 'error', summary: 'Email not found', detail: message })
+  }
+
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
-    const response = await RequestService('auth/new', 'POST', form)
+    const response = await requestService({ path: 'auth/new', method: 'POST', body: JSON.stringify(form) })
+    const data = await response.json()
 
-    if (response) {
-      navigate('/reset-success')
+    if (response.ok) {
+      setBtnDisabled(true)
+      setError(undefined)
+      setLoading(false)
+      toast.current?.show({
+        severity: 'success',
+        summary: 'New Password Updated 👍',
+        detail: data.message,
+      })
+      setTimeout(() => {
+        navigate('/login')
+      }, 5000)
+
+      return
+    } else {
+      show(data.message)
+      setError(data.message)
       setLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
-      <div className="flex justify-center">
-        <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" height={300} />
-      </div>
-
-      <div>
-        <label htmlFor="email" className="sr-only">
-          New Password
-        </label>
+    <div className="flex h-screen items-center justify-center">
+      <form onSubmit={handleSubmit} className="mx-auto mb-0 max-w-md space-y-4">
+        <div className="text-center">
+          <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" height={300} />
+          <h1 className="text-2xl">PASSWORD RESET</h1>
+        </div>
 
         <div>
-          <label htmlFor="password" className=" sr-only">
-            Password
-          </label>
+          <Password
+            inputId="password"
+            placeholder="*Password"
+            value={form.password}
+            onChange={e => setForm({ ...form, password: e.target.value })}
+            toggleMask
+            pt={{
+              panel: { className: 'hidden' },
+              input: {
+                className:
+                  'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+              },
+            }}
+            className="w-full"
+          />
+          <Password
+            inputId="password_confirmed"
+            placeholder="*Password confirmed"
+            value={form.password_confirmed}
+            onChange={e => setForm({ ...form, password_confirmed: e.target.value })}
+            toggleMask
+            pt={{
+              panel: { className: 'hidden' },
+              input: {
+                className:
+                  'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+              },
+            }}
+            className="mt-5 w-full"
+          />
+          <Toast ref={toast} position="bottom-right" />
 
-          <div className="relative">
-            <input
-              required
-              type="password"
-              name="password"
-              className="my-5 w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Password"
-              onChange={e => setForm({ ...form, password: e.target.value })}
-            />
-
-            <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-zinc-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </span>
-          </div>
+          {error ? (
+            <div className="mt-3 flex items-center justify-center">
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
+          ) : null}
         </div>
-        <div>
-          <label htmlFor="password_confirmed" className="sr-only">
-            Password Confirm
-          </label>
 
-          <div className="relative">
-            <input
-              required
-              type="password"
-              name="password_confirmed"
-              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Password Confirmed"
-              onChange={e => setForm({ ...form, password_confirmed: e.target.value })}
-            />
-
-            <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-zinc-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </span>
-          </div>
-        </div>
-        {error && (
-          <div className="flex items-center justify-center">
-            <p className="text-sm text-red-500">{error}</p>
-          </div>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'hover:bg-zinc-950 cursor-wait'
-        }`}>
-        {loading ? 'Updating password...' : 'Submit'}
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={btnDisabled}
+          className={`w-full rounded-lg bg-green-700 py-3 text-sm font-medium text-zinc-50 hover:bg-green-600 ${
+            loading && 'cursor-wait hover:bg-zinc-950'
+          }`}>
+          {loading ? 'Updating password...' : 'Reset Password'}
+        </button>
+      </form>
+    </div>
   )
 }

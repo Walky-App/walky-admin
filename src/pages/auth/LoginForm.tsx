@@ -12,7 +12,7 @@ import { type ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
 import { roleChecker } from '../../utils/roleChecker'
-import { SetToken } from '../../utils/tokenUtil'
+import { GetTokenInfo, SetToken } from '../../utils/tokenUtil'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE
 const client_role = process.env.REACT_APP_CLIENT_ROLE
@@ -29,17 +29,27 @@ export const LoginForm = () => {
   const navigate = useNavigate()
 
   const roleType = roleChecker()
+  const tokenInfo = GetTokenInfo()
 
+  /* This is to persist the user in the app */
   useEffect(() => {
     switch (roleType) {
       case 'admin':
         navigate('/admin/dashboard')
         break
       case 'client':
-        navigate('/client/dashboard')
+        if (tokenInfo.onboarding?.completed === false) {
+          navigate('/client/onboarding')
+        } else {
+          navigate('/client/dashboard')
+        }
         break
       case 'employee':
-        navigate('/employee/dashboard')
+        if (tokenInfo.onboarding?.completed === false) {
+          navigate('/employee/onboarding')
+        } else {
+          navigate('/employee/dashboard')
+        }
         break
       case 'sales':
         navigate('/sales/dashboard')
@@ -47,7 +57,7 @@ export const LoginForm = () => {
       default:
         navigate('/login')
     }
-  }, [navigate, roleType])
+  }, [navigate, roleType, tokenInfo.onboarding?.completed])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -142,22 +152,21 @@ export const LoginForm = () => {
         </div>
       </div>
 
-      <div>
-        <Password
-          inputId="password"
-          placeholder="*Password"
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          toggleMask
-          pt={{
-            panel: { className: 'hidden' },
-            input: {
-              className: 'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
-            },
-          }}
-          className="w-full"
-        />
-      </div>
+      <Password
+        inputId="password"
+        placeholder="*Password"
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        toggleMask
+        pt={{
+          panel: { className: 'hidden' },
+          input: {
+            className: 'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+          },
+        }}
+        className="w-full"
+      />
+
       {error ? (
         <div className="flex items-center justify-center">
           <p className="text-sm text-red-500">{String(error)}</p>

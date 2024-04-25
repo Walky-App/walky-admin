@@ -1,18 +1,35 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
-import { RequestService } from '../../services/RequestService'
+import cn from 'classnames'
+import { Toast } from 'primereact/toast'
+
+import { requestService } from '../../services/requestServiceNew'
 
 export const ForgotPassword = () => {
-  const [form, setForm] = useState({})
+  const [form, setForm] = useState({ email: '' })
+  const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
+  const toast = useRef<Toast>(null)
+
+  const show = (message: string) => {
+    toast.current?.show({ severity: 'error', summary: 'Email not found', detail: message })
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
-    const response = await RequestService('auth/reset', 'POST', form)
+    const response = await requestService({ path: 'auth/reset', method: 'POST', body: JSON.stringify(form) })
 
-    if (response) {
+    const data = await response.json()
+    if (response.ok) {
+      toast.current?.show({ severity: 'success', summary: 'Email sent', detail: data.message })
+      setForm({ email: '' })
+      setLoading(false)
+      return
+    } else {
+      show(data.message)
+      setError(data.message)
       setLoading(false)
     }
   }
@@ -29,11 +46,15 @@ export const ForgotPassword = () => {
             required
             type="email"
             name="email"
-            className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
+            value={form.email}
+            className={cn(
+              `w-full rounded-lg p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500`,
+              error ? 'border-red-500 ring-red-500' : 'border-zinc-200',
+            )}
             placeholder="Email*"
             onChange={e => setForm({ email: e.target.value })}
           />
-
+          <Toast ref={toast} position="bottom-right" />
           <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -50,6 +71,7 @@ export const ForgotPassword = () => {
             </svg>
           </span>
         </div>
+        {error ? <p className="mt-3 text-center text-sm text-red-500">{error}</p> : null}
       </div>
 
       <button

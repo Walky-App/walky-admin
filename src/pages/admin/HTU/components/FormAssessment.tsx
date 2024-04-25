@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { confirmDialog } from 'primereact/confirmdialog'
@@ -13,6 +13,7 @@ import { useAdmin } from '../../../../contexts/AdminContext'
 import { type Questions } from '../../../../interfaces/unit'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
+import { cn } from '../../../../utils/cn'
 import { QuestionDialog } from './QuestionDialog'
 
 interface Props {
@@ -21,7 +22,7 @@ interface Props {
 
 export const FormAssessment = ({ action }: Props) => {
   const { showToast } = useUtils()
-  const { setUnit, assessment } = useAdmin()
+  const { setUnit, assessment, unit, setAssessment } = useAdmin()
   const [visible, setVisible] = useState(false)
   const [questions, setQuestions] = useState<Questions[]>(assessment?.questions || [])
   const [selectedQuestion, setSelectedQuestion] = useState<Questions>()
@@ -46,6 +47,16 @@ export const FormAssessment = ({ action }: Props) => {
     handleSubmit,
   } = useForm({ defaultValues })
 
+  const time_watch = useWatch({
+    control,
+    name: 'time',
+  })
+
+  const min_score_watch = useWatch({
+    control,
+    name: 'min_score',
+  })
+
   const onSubmit = async (data: { time: number; min_score: number }) => {
     if (data.time === 0 || data.min_score === 0) {
       showToast({ severity: 'error', detail: 'Error', summary: 'Please fill all the required fields' })
@@ -61,29 +72,11 @@ export const FormAssessment = ({ action }: Props) => {
       assessments: {
         time: data.time,
         min_score: data.min_score,
-        questions: questions,
       },
-      unitId: params.unitId,
+      assesmentId: unit?.assessments._id,
     }
 
-    if (action === 'create') {
-      try {
-        const response = await RequestService(`units/assessment`, 'POST', bodyRequest)
-        if (response.message === 'Unit not found') {
-          showToast({ severity: 'error', detail: 'Error', summary: 'Unit not found' })
-          return
-        }
-        if (response) {
-          showToast({ severity: 'success', detail: 'Assessment created', summary: 'Assessment created successfully' })
-          setUnit(response)
-          navigate(
-            `/admin/learn/modules/${params.moduleId}/units/${params.unitId}/assessment/${response.assessments?._id}`,
-          )
-        }
-      } catch (error) {
-        showToast({ severity: 'error', detail: 'Error', summary: 'An error occurred' })
-      }
-    } else {
+    if (action === 'update') {
       try {
         const response = await RequestService(`units/assessment`, 'PATCH', bodyRequest)
         if (response.message === 'Unit not found') {
@@ -109,6 +102,10 @@ export const FormAssessment = ({ action }: Props) => {
   }
 
   const handlerSetAssessment = () => {
+    setAssessment({
+      time: time_watch,
+      min_score: min_score_watch,
+    })
     setSelectedQuestion(undefined)
     setActionDialog('create')
     setVisible(true)
@@ -209,8 +206,14 @@ export const FormAssessment = ({ action }: Props) => {
             </label>
             <div className="mt-3 flex h-auto flex-col">
               <button
-                className="mx-3 flex flex-row justify-center rounded-2xl border bg-green-600 p-3 text-left  text-white hover:bg-green-500 "
+                className={cn(
+                  'mx-3 flex flex-row justify-center rounded-2xl border bg-gray-200 p-3 text-left  text-white  ',
+                  {
+                    'bg-green-600 hover:bg-green-500': time_watch !== 0 && min_score_watch !== 0,
+                  },
+                )}
                 onClick={handlerSetAssessment}
+                disabled={time_watch === 0 || min_score_watch === 0}
                 type="button">
                 <PlusIcon className="h-5 w-5" />
                 <div>Add Question</div>

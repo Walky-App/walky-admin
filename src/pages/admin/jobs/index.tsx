@@ -5,10 +5,9 @@ import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { RequestService } from '../../../services/RequestService'
-import { GlobalTable } from '../../../components/shared/GlobalTable'
-
 
 export default function AdminJobs() {
   const [jobsData, setJobsData] = React.useState<any>([])

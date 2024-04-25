@@ -18,7 +18,7 @@ export const UnitDetailsCard = ({ unit, isAdmin = false }: UnitDetailsCardProps)
   return (
     <div>
       <div className="flex flex-row">
-        {unit?.type === 'blog' ? <p className="flex-1 p-3 text-2xl">{unit?.title}</p> : null}
+        {unit?.type === 'blog' && !isAdmin ? <p className="flex-1 p-3 text-2xl">{unit?.title}</p> : null}
         {isAdmin ? (
           <div className="flex flex-1 justify-between py-9">
             <h2 className="text-xl font-bold">{unit.title}</h2>

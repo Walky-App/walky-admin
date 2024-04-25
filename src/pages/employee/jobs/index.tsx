@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 
+import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { Skeleton } from 'primereact/skeleton'
 
+import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
@@ -58,6 +60,29 @@ export const EmployeeJobs = () => {
   const [dates, setDates] = useState<[Date, Date] | null>(null)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
+
+  const handleUseSelectedAddress = async () => {
+    if (moreAddressDetails && moreAddressDetails.location_pin) {
+      const fromCoordinates = [...moreAddressDetails.location_pin].reverse()
+      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
+      if (allJobs) {
+        setJobs(allJobs)
+      }
+      setIsLoading(false)
+    }
+  }
+
+  const handleUseCurrentLocation = async () => {
+    if (latitude !== null && longitude !== null) {
+      const fromCoordinates = [longitude, latitude]
+      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
+      if (allJobs) {
+        setJobs(allJobs)
+      }
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (jobs.length) {
@@ -141,6 +166,18 @@ export const EmployeeJobs = () => {
             optionLabel="name"
             placeholder="Select Distance"
             className="w-full"
+          />
+        </div>
+        <div className="mb-4 mt-4 w-full px-3 md:mb-0 md:w-1/3">
+          <h2> Select address:</h2>
+          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="980 Spaces?" />
+          <Button icon="pi pi-search" aria-label="Set jobs by Selected Address" onClick={handleUseSelectedAddress} />
+          <Button
+            icon="pi pi-map-marker"
+            rounded
+            text
+            aria-label="Set jobs by Current Location "
+            onClick={handleUseCurrentLocation}
           />
         </div>
       </div>

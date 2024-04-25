@@ -11,7 +11,7 @@ import { Error404 } from './pages/Error404'
 
 /******************************************* Auth Pages ************************************/
 import { Auth } from './pages/auth'
-import NewPasswordForm from './pages/auth/NewPasswordForm'
+import { NewPasswordForm } from './pages/auth/NewPasswordForm'
 import ResetSuccess from './pages/auth/ResetSuccess'
 import { Signup } from './pages/auth/SignupForm'
 
@@ -45,22 +45,24 @@ import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
 import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
-import AdminUsers from './pages/admin/users'
-import AdminInviteUser from './pages/admin/users/AdminInviteUser'
-import { AdminUserDetails } from './pages/admin/users/AdminUserDetails'
+import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
+import { AdminUserPage } from './pages/admin/users/AdminUserPage'
+import { AdminInviteUser } from './pages/admin/users/components'
+import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
+import { AdminUserTimeSheets } from './pages/admin/users/components/AdminUserTimeSheets'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
-import AdminFacilityActivity from './pages/admin/facilities/AdminFacilityActivity'
-import AdminFacilityAddJob from './pages/admin/facilities/AdminFacilityAddJob'
-import AdminFacilityContacts from './pages/admin/facilities/AdminFacilityContacts'
+import { AdminFacilityActivity } from './pages/admin/facilities/AdminFacilityActivity'
+import { AdminFacilityAddJob } from './pages/admin/facilities/AdminFacilityAddJob'
+import { AdminFacilityContacts } from './pages/admin/facilities/AdminFacilityContacts'
 import { AdminFacilityDNR } from './pages/admin/facilities/AdminFacilityDNR'
 import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import { AdminFacilityImages } from './pages/admin/facilities/AdminFacilityImages'
 import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
-import AdminFacilityJobDetails from './pages/admin/facilities/AdminFacilityJobDetails'
+import { AdminFacilityJobDetails } from './pages/admin/facilities/AdminFacilityJobDetails'
 import { AdminFacilityJobs } from './pages/admin/facilities/AdminFacilityJobs'
-import AdminFacilityLicenses from './pages/admin/facilities/AdminFacilityLicenses'
+import { AdminFacilityLicenses } from './pages/admin/facilities/AdminFacilityLicenses'
 
 import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
 import { AdminAddCategory } from './pages/admin/HTU/AdminAddCategory'
@@ -82,8 +84,6 @@ import { AdminMessages } from './pages/admin/messages'
 
 /******************************************* Employee Pages ************************************/
 import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
-
-import { Support } from './pages/Support'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
@@ -112,7 +112,6 @@ export const App = () => {
             <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
-                <Route element={<Support />} path="/support" />
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
                 <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
@@ -168,9 +167,12 @@ export const App = () => {
                   <Route element={<AdminProfile />} path="/admin/profile" />
                   <Route element={<AdminHolidays />} path="/admin/holidays" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
-                  <Route element={<AdminUsers />} path="/admin/users" />
+                  <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
-                  <Route element={<AdminUserDetails />} path="/admin/users/:id" />
+                  <Route element={<AdminUserPage />}>
+                    <Route element={<AdminUserDetails />} path="/admin/users/:id" />
+                    <Route element={<AdminUserTimeSheets />} path="/admin/users/:id/timesheets" />
+                  </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<AdminFacilityDetails />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />

@@ -3,16 +3,10 @@ import { type ITokenInfo } from '../interfaces/services'
 export const GetTokenInfo = () => {
   const ls_data = JSON.parse(localStorage.getItem('ht_usr') as string)
 
-  const {
-    _id,
-    access_token,
-    role,
-    first_name,
-    avatar,
-  }: { _id: string; access_token: string; role: string; first_name: string; avatar: string } = ls_data
+  const { _id, access_token, role, first_name, avatar, onboarding }: ITokenInfo = ls_data
     ? ls_data
     : { _id: '', access_token: '', role: '', first_name: '', avatar: '' }
-  return { _id, access_token, role, first_name, avatar }
+  return { _id, access_token, role, first_name, avatar, onboarding }
 }
 
 export const SetToken = (ls_info: ITokenInfo) => {
