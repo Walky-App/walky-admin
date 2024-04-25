@@ -239,43 +239,51 @@ export const AdminUserTimeSheets = () => {
   }
 
   const onCellEditComplete = async (e: ColumnEvent) => {
-    const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: string; field: string }
+    try {
+      const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: string; field: string }
 
-    const isFieldInTime = field === 'in_time'
-    const isFieldOutTime = field === 'out_time'
+      const isFieldInTime = field === 'in_time'
+      const isFieldOutTime = field === 'out_time'
 
-    if ((isFieldInTime && newValue === rowData.in_time) || (isFieldOutTime && newValue === rowData.out_time)) {
-      return
-    }
+      if ((isFieldInTime && newValue === rowData.in_time) || (isFieldOutTime && newValue === rowData.out_time)) {
+        return
+      }
 
-    if (isFieldInTime || isFieldOutTime) {
-      const newTimeStamp = newValue
-      const punchId = rowData._id
-      const timeSheetId = rowData.timesheet_id
+      if (isFieldInTime || isFieldOutTime) {
+        const newTimeStamp = newValue
+        const punchId = rowData._id
+        const timeSheetId = rowData.timesheet_id
 
-      const body = isFieldInTime
-        ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
-        : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
+        const body = isFieldInTime
+          ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
+          : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
 
-      const response = await requestService({
-        path: `timesheets/${timeSheetId}/in-out-punches`,
-        method: 'PATCH',
-        body: JSON.stringify(body),
-      })
+        const response = await requestService({
+          path: `timesheets/${timeSheetId}/in-out-punches`,
+          method: 'PATCH',
+          body: JSON.stringify(body),
+        })
 
-      if (!response.ok) {
-        const message = await response.text()
-        showToast({ severity: 'error', summary: 'Error', detail: message })
-        throw new Error(message)
-      } else {
+        if (!response.ok) {
+          const message = await response.text()
+          showToast({ severity: 'error', summary: 'Error', detail: message })
+          return
+        }
+
         showToast({
           severity: 'success',
           summary: `Updated ${isFieldInTime ? 'In' : 'Out'} time`,
           detail: formatTime(newTimeStamp),
         })
-      }
 
-      fetchTimesheets()
+        fetchTimesheets()
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        showToast({ severity: 'error', summary: 'Error', detail: error.message })
+      } else {
+        showToast({ severity: 'error', summary: 'Error', detail: 'An unknown error occurred' })
+      }
     }
   }
 
