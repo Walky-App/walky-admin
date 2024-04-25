@@ -7,11 +7,6 @@ import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 import { RequestService } from '../../services/RequestService'
 import { GetTokenInfo } from '../../utils/tokenUtil'
 
-// const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
-// const client_role = process.env.REACT_APP_CLIENT_ROLE as string
-const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
-// const sales_role = process.env.REACT_APP_SALES_ROLE as string
-
 export const EmployeeProfile = () => {
   const [formUser, setFormUser] = useState<any>({})
   const [updateSuccess, setUpdateSuccess] = useState(false)

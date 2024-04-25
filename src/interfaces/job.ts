@@ -53,4 +53,5 @@ export interface IJob {
   distance: number
   createdAt: Date
   updatedAt: Date
+  applicants_feedback_ids: string[]
 }
