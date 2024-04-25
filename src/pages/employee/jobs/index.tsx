@@ -60,7 +60,7 @@ export const EmployeeJobs = () => {
   const [dates, setDates] = useState<[Date, Date] | null>(null)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  // const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
 
   useEffect(() => {
     if (jobs.length) {
