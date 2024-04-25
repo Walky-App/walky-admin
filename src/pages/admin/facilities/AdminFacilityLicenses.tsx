@@ -14,9 +14,8 @@ import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacilityFile, type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
-import { SubHeader } from '../../../components/shared/SubHeader'
-import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 import { cn } from '../../../utils/cn'
+import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 const statuses = {
   Complete: 'text-green-700 bg-green-50 ring-green-600/20',
