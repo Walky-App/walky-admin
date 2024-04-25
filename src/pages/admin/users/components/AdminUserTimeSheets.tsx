@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEvent, type ColumnEditorOptions } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
+import { type Nullable } from 'primereact/ts-helpers'
 
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
@@ -19,10 +20,11 @@ interface IPunchDetails {
 
 interface IPunchPair {
   _id: string
-  time_stamp: string
   day: string
   in_time: string
   out_time: string
+  in_time_stamp: string
+  out_time_stamp: string
   total_time: string
   timesheet_id: string
 }
@@ -42,6 +44,8 @@ interface IProcessedTimeSheet {
 export const AdminUserTimeSheets = () => {
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IProcessedTimeSheet[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
+  const [selectedTime, setSelectedTime] = useState<Nullable<Date>>(null)
+  const timeStampRef = useRef<string | null>(null)
 
   const { showToast } = useUtils()
 
@@ -138,10 +142,11 @@ export const AdminUserTimeSheets = () => {
                   const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
                   punchPairs.push({
                     _id: punch._id,
-                    time_stamp: punch.time_stamp,
                     day: formatDate(punch.time_stamp),
                     in_time: formatTime(punchIn.time_stamp),
                     out_time: formatTime(punch.time_stamp),
+                    in_time_stamp: punchIn.time_stamp,
+                    out_time_stamp: punch.time_stamp,
                     total_time: (totalTime / 1000 / 60 / 60).toFixed(2), // total time in hours
                     timesheet_id: timeSheet._id,
                   })
@@ -154,10 +159,11 @@ export const AdminUserTimeSheets = () => {
                 const totalTime = Date.now() - Date.parse(punchIn.time_stamp)
                 punchPairs.push({
                   _id: punchIn._id,
-                  time_stamp: punchIn.time_stamp,
                   day: formatDate(punchIn.time_stamp),
                   in_time: formatTime(punchIn.time_stamp),
                   out_time: '',
+                  in_time_stamp: punchIn.time_stamp,
+                  out_time_stamp: '',
                   total_time: (totalTime / 1000 / 60 / 60).toFixed(2), // total time in hours
                   timesheet_id: timeSheet._id,
                 })
@@ -189,36 +195,67 @@ export const AdminUserTimeSheets = () => {
     editor?: (options: ColumnEditorOptions) => React.ReactNode
   }
 
-  // const getEditor = (col: IColumnMeta<IProcessedTimeSheet>) => {
-  //   if (col.field === 'in_time' || col.field === 'out_time') {
-  //     return (options: ColumnEditorOptions) => (col.editor ? col.editor(options) : undefined)
-  //   }
-  //   return undefined
-  // }
-
   const timeEditor = (options: ColumnEditorOptions) => {
-    const { time_stamp } = options.rowData as IPunchPair
-    let punchPairDate: Date | null = null
+    const { in_time_stamp, out_time_stamp } = options.rowData as IPunchPair
 
-    if (time_stamp && !isNaN(Date.parse(time_stamp))) {
-      punchPairDate = new Date(time_stamp)
+    let timeStamp: string
+    if (options.field === 'in_time') {
+      timeStamp = in_time_stamp
+    } else {
+      timeStamp = out_time_stamp
     }
 
-    return <Calendar value={punchPairDate} hourFormat="12" onChange={e => options.editorCallback!(e.value)} timeOnly />
+    if (timeStamp !== timeStampRef.current) {
+      timeStampRef.current = timeStamp
+      if (timeStamp && !isNaN(Date.parse(timeStamp))) {
+        setTimeout(() => setSelectedTime(new Date(timeStamp)), 0)
+      }
+    }
+
+    return (
+      <Calendar
+        value={selectedTime}
+        hourFormat="12"
+        onChange={e => {
+          if (e.value) {
+            const newTime = e.value
+            const oldDate = new Date(timeStamp)
+            const updatedDate = new Date(
+              oldDate.getFullYear(),
+              oldDate.getMonth(),
+              oldDate.getDate(),
+              newTime.getHours(),
+              newTime.getMinutes(),
+              newTime.getSeconds(),
+            )
+
+            setTimeout(() => setSelectedTime(updatedDate), 0)
+            options.editorCallback!(updatedDate)
+          }
+        }}
+        timeOnly
+      />
+    )
   }
 
   const onCellEditComplete = async (e: ColumnEvent) => {
     const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: string; field: string }
 
-    if (field === 'in_time' || field === 'out_time') {
-      const newTimeStamp = new Date(newValue).toISOString()
+    const isFieldInTime = field === 'in_time'
+    const isFieldOutTime = field === 'out_time'
+
+    if ((isFieldInTime && newValue === rowData.in_time) || (isFieldOutTime && newValue === rowData.out_time)) {
+      return
+    }
+
+    if (isFieldInTime || isFieldOutTime) {
+      const newTimeStamp = newValue
       const punchId = rowData._id
       const timeSheetId = rowData.timesheet_id
 
-      const body =
-        field === 'in_time'
-          ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
-          : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
+      const body = isFieldInTime
+        ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
+        : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
 
       const response = await requestService({
         path: `timesheets/${timeSheetId}/in-out-punches`,
@@ -230,6 +267,12 @@ export const AdminUserTimeSheets = () => {
         const message = await response.text()
         showToast({ severity: 'error', summary: 'Error', detail: message })
         throw new Error(message)
+      } else {
+        showToast({
+          severity: 'success',
+          summary: `Updated ${isFieldInTime ? 'In' : 'Out'} time`,
+          detail: formatTime(newTimeStamp),
+        })
       }
 
       fetchTimesheets()
@@ -239,9 +282,7 @@ export const AdminUserTimeSheets = () => {
   const cols: IColumnMeta<IProcessedTimeSheet>[] = [
     { field: 'day', header: 'Day', sortable: true },
     { field: 'in_time', header: 'In', sortable: false },
-    // { field: 'in_time', header: 'In', sortable: false, editor: timeEditor },
     { field: 'out_time', header: 'Out', sortable: false },
-    // { field: 'out_time', header: 'Out', sortable: false, editor: timeEditor },
     { field: 'total_time', header: 'Total', sortable: false },
     { field: 'details', header: 'Job Details', sortable: false },
     { field: 'worked_time', header: 'Worked', sortable: false },
@@ -271,7 +312,7 @@ export const AdminUserTimeSheets = () => {
   }
 
   const rowExpansionTemplate = (data: IProcessedTimeSheet) => {
-    const commonColumnStyle = 'w-1/12 md:h-20'
+    const commonColumnStyle = 'w-1/12'
     return (
       <div className="p-4">
         <h5 className="text-sm font-semibold">Punch Details</h5>
@@ -283,6 +324,7 @@ export const AdminUserTimeSheets = () => {
             header="In (✎)"
             editor={options => timeEditor(options)}
             onCellEditComplete={onCellEditComplete}
+            onCellEditCancel={() => setSelectedTime(null)}
           />
           <Column
             className={cn([commonColumnStyle])}
@@ -291,6 +333,7 @@ export const AdminUserTimeSheets = () => {
             body={(rowData: IPunchDetails) => rowData.out_time || 'Clocked In'}
             editor={options => timeEditor(options)}
             onCellEditComplete={onCellEditComplete}
+            onCellEditCancel={() => setSelectedTime(null)}
           />
           <Column className={cn([commonColumnStyle, 'w-4/12'])} field="total_time" header="Total" />
         </DataTable>
@@ -302,9 +345,17 @@ export const AdminUserTimeSheets = () => {
     <div className="flex flex-col gap-4">
       <DataTable
         header="Daily Timesheets"
+        dataKey="time_stamp"
         value={sortedTimeSheets}
         tableStyle={{ minWidth: '50rem' }}
+        size="small"
+        paginator
+        rows={14}
+        rowsPerPageOptions={[7, 14, 30, 90]}
         stripedRows
+        showGridlines
+        resizableColumns
+        columnResizeMode="fit"
         expandedRows={expandedRows}
         onRowToggle={e => setExpandedRows(e.data)}
         rowExpansionTemplate={rowExpansionTemplate}>
@@ -316,10 +367,8 @@ export const AdminUserTimeSheets = () => {
             header={col.header}
             body={rowData => getCellValue(col, rowData)}
             sortable={col.sortable}
-            // editor={getEditor(col)}
           />
         ))}
-        <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }} />
       </DataTable>
     </div>
   )
