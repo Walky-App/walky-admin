@@ -16,6 +16,7 @@ import type { Module } from '../../../interfaces/module'
 import type { Unit } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
 import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
+import { cn } from '../../../utils/cn'
 import { UnitDetailsCard } from '../../learn/components/UnitDetailsCard'
 
 export const AdminUnitsLearn = () => {
@@ -168,19 +169,23 @@ export const AdminUnitsLearn = () => {
                               <div className=" font-semibold leading-6 text-gray-900">{question.header}</div>
                             </div>
                             <div className="ml-4 ">
-                              <div className="gap-2">
+                              <div
+                                className={cn('gap-2', { 'text-green-600': question.answer === question.options[0] })}>
                                 <span className="mr-2 font-bold">A)</span>
                                 {question.options[0]}
                               </div>
-                              <div className="gap-2">
+                              <div
+                                className={cn('gap-2', { 'text-green-600': question.answer === question.options[1] })}>
                                 <span className="mr-2 font-bold">B)</span>
                                 {question.options[1]}
                               </div>
-                              <div className="gap-2">
+                              <div
+                                className={cn('gap-2', { 'text-green-600': question.answer === question.options[2] })}>
                                 <span className="mr-2 font-bold">C)</span>
                                 {question.options[2]}
                               </div>
-                              <div className="gap-2">
+                              <div
+                                className={cn('gap-2', { 'text-green-600': question.answer === question.options[3] })}>
                                 <span className="mr-2 font-bold">D)</span>
                                 {question.options[3]}
                               </div>
