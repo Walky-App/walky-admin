@@ -1,9 +1,11 @@
+/*eslint-disable*/
 import { useState, useEffect } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { Skeleton } from 'primereact/skeleton'
 
+import { AddressAutoComplete, IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
@@ -58,6 +60,7 @@ export const EmployeeJobs = () => {
   const [dates, setDates] = useState<[Date, Date] | null>(null)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  // const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
 
   useEffect(() => {
     if (jobs.length) {
@@ -142,6 +145,9 @@ export const EmployeeJobs = () => {
             placeholder="Select Distance"
             className="w-full"
           />
+        </div>
+        <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
+          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress={'980 Spaces?'} />
         </div>
       </div>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
