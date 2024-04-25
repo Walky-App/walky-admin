@@ -2,10 +2,12 @@ import { useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
+// import { Password } from 'primereact/password'
+// import { Toast } from 'primereact/toast'
 import { useAuth } from '../../contexts/AuthContext'
 import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
-import { RequestService } from '../../services/RequestService'
+import { requestService } from '../../services/requestServiceNew'
 import { useUtils } from '../../store/useUtils'
 import { SetToken } from '../../utils/tokenUtil'
 
@@ -40,7 +42,8 @@ export const Signup = () => {
     }
 
     try {
-      const data = await RequestService('auth', 'POST', formData)
+      const response = await requestService({ path: 'auth', method: 'POST', body: JSON.stringify(formData) })
+      const data = await response.json()
 
       const { access_token, user }: ILoginData = data
 
@@ -89,11 +92,11 @@ export const Signup = () => {
   }
 
   return (
-    <div className="w-full">
-      <div className="flex justify-center">
-        <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
-      </div>
+    <div className="flex h-screen items-center justify-center">
       <form onSubmit={handleSignup} className="mx-auto max-w-md">
+        <div className="flex justify-center">
+          <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
+        </div>
         <div className="grid grid-cols-1 gap-4 p-3 sm:grid-cols-2">
           <div>
             <label className="sr-only" htmlFor="firstName">
