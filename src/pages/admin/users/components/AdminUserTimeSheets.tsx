@@ -19,8 +19,9 @@ interface IPunchDetails {
 }
 
 interface IPunchPair {
-  _id: string
   day: string
+  in_id: string
+  out_id: string
   in_time: string
   out_time: string
   in_time_stamp: string
@@ -126,11 +127,11 @@ export const AdminUserTimeSheets = () => {
             day,
             in_time: inTime,
             out_time: outTime,
-            total_time: totalWorkedHours.toFixed(2), // total worked hours
-            details: timeSheet.job_id, // generate details
-            worked_time: totalWorkedHours.toFixed(2), // total worked hours
-            scheduled_time: '', // calculate scheduled
-            difference: '', // calculate difference
+            total_time: totalWorkedHours.toFixed(2),
+            details: timeSheet.job_id,
+            worked_time: totalWorkedHours.toFixed(2),
+            scheduled_time: '',
+            difference: '',
             punchesWithDetails: (() => {
               const punchPairs: IPunchPair[] = [] as IPunchPair[]
               let punchIn = null
@@ -141,13 +142,14 @@ export const AdminUserTimeSheets = () => {
                 } else if (punchIn) {
                   const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
                   punchPairs.push({
-                    _id: punch._id,
                     day: formatDate(punch.time_stamp),
+                    in_id: punchIn._id,
+                    out_id: punch._id,
                     in_time: formatTime(punchIn.time_stamp),
                     out_time: formatTime(punch.time_stamp),
                     in_time_stamp: punchIn.time_stamp,
                     out_time_stamp: punch.time_stamp,
-                    total_time: (totalTime / 1000 / 60 / 60).toFixed(2), // total time in hours
+                    total_time: (totalTime / 1000 / 60 / 60).toFixed(2),
                     timesheet_id: timeSheet._id,
                   })
                   punchIn = null
@@ -158,13 +160,14 @@ export const AdminUserTimeSheets = () => {
               if (punchIn) {
                 const totalTime = Date.now() - Date.parse(punchIn.time_stamp)
                 punchPairs.push({
-                  _id: punchIn._id,
+                  in_id: punchIn._id,
+                  out_id: '',
                   day: formatDate(punchIn.time_stamp),
                   in_time: formatTime(punchIn.time_stamp),
                   out_time: '',
                   in_time_stamp: punchIn.time_stamp,
                   out_time_stamp: '',
-                  total_time: (totalTime / 1000 / 60 / 60).toFixed(2), // total time in hours
+                  total_time: (totalTime / 1000 / 60 / 60).toFixed(2),
                   timesheet_id: timeSheet._id,
                 })
               }
@@ -251,7 +254,7 @@ export const AdminUserTimeSheets = () => {
 
       if (isFieldInTime || isFieldOutTime) {
         const newTimeStamp = newValue
-        const punchId = rowData._id
+        const punchId = isFieldInTime ? rowData.in_id : rowData.out_id
         const timeSheetId = rowData.timesheet_id
 
         const body = isFieldInTime
@@ -289,12 +292,12 @@ export const AdminUserTimeSheets = () => {
 
   const cols: IColumnMeta<IProcessedTimeSheet>[] = [
     { field: 'day', header: 'Day', sortable: true },
-    { field: 'in_time', header: 'In', sortable: false },
-    { field: 'out_time', header: 'Out', sortable: false },
-    { field: 'total_time', header: 'Total', sortable: false },
+    { field: 'in_time', header: 'First In', sortable: false },
+    { field: 'out_time', header: 'Last Out', sortable: false },
+    { field: 'total_time', header: 'Total Hours', sortable: false },
     { field: 'details', header: 'Job Details', sortable: false },
-    { field: 'worked_time', header: 'Worked', sortable: false },
-    { field: 'scheduled_time', header: 'Scheduled', sortable: false },
+    { field: 'worked_time', header: 'Worked Hours', sortable: false },
+    { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
     { field: 'difference', header: 'Difference', sortable: false },
   ]
 
@@ -329,7 +332,7 @@ export const AdminUserTimeSheets = () => {
           <Column
             className={cn([commonColumnStyle])}
             field="in_time"
-            header="In (✎)"
+            header="Punch In (✎)"
             editor={options => timeEditor(options)}
             onCellEditComplete={onCellEditComplete}
             onCellEditCancel={() => setSelectedTime(null)}
@@ -337,22 +340,29 @@ export const AdminUserTimeSheets = () => {
           <Column
             className={cn([commonColumnStyle])}
             field="out_time"
-            header="Out (✎)"
+            header="Punch Out (✎)"
             body={(rowData: IPunchDetails) => rowData.out_time || 'Clocked In'}
             editor={options => timeEditor(options)}
             onCellEditComplete={onCellEditComplete}
             onCellEditCancel={() => setSelectedTime(null)}
           />
-          <Column className={cn([commonColumnStyle, 'w-4/12'])} field="total_time" header="Total" />
+          <Column className={cn([commonColumnStyle, 'w-4/12'])} field="total_time" header="Total Hours" />
         </DataTable>
       </div>
     )
   }
 
+  const totalTimeSum = sortedTimeSheets.reduce((sum, record) => {
+    const hours = parseFloat(record.total_time)
+    return sum + hours
+  }, 0)
+
+  const totalTimeSumString = totalTimeSum.toFixed(2)
+
   return (
     <div className="flex flex-col gap-4">
       <DataTable
-        header="Daily Timesheets"
+        header={`Regular ${totalTimeSumString} | Scheduled 0.00 | Difference 0.00`}
         dataKey="time_stamp"
         value={sortedTimeSheets}
         tableStyle={{ minWidth: '50rem' }}
@@ -366,7 +376,12 @@ export const AdminUserTimeSheets = () => {
         columnResizeMode="fit"
         expandedRows={expandedRows}
         onRowToggle={e => setExpandedRows(e.data)}
-        rowExpansionTemplate={rowExpansionTemplate}>
+        rowExpansionTemplate={rowExpansionTemplate}
+        pt={{
+          header: {
+            className: 'font-normal text-sm text-gray-500',
+          },
+        }}>
         <Column expander={allowExpansion} />
         {cols.map(col => (
           <Column
