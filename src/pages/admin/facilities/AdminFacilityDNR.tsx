@@ -25,7 +25,7 @@ interface IDNRFormValues {
 export const AdminFacilityDNR = () => {
   const { showToast } = useUtils()
   const { facilityId } = useParams()
-  const [facility, setFacility] = useState<IFacility>({} as IFacility)
+  const [facility, setFacility] = useState<IFacility>()
   const [employees, setEmployees] = useState<IUser[]>([])
 
   useEffect(() => {
@@ -147,7 +147,7 @@ export const AdminFacilityDNR = () => {
 
   return (
     <>
-      <SubHeader data={facility} links={adminFacilitiesLinks} />
+      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -220,7 +220,7 @@ export const AdminFacilityDNR = () => {
             <div>
               <h1 className="text-xl font-bold leading-7 text-gray-900">DNR Table</h1>
               <DataTable
-                value={facility.dnr}
+                value={facility?.dnr}
                 paginator
                 rows={5}
                 metaKeySelection={false}

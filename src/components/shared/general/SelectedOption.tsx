@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { BarsArrowUpIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { SelectedOptionInterface } from '../../../interfaces/global'
-import { classNames } from '../../../utils/Tailwind'
+import { cn } from '../../../utils/cn'
 
 interface Props {
   selectedOptions: SelectedOptionInterface[]
@@ -81,7 +81,7 @@ export const SelectedOption = ({
                     <Listbox.Option
                       key={`${select.name}-${index}`}
                       className={({ active }) =>
-                        classNames(
+                        cn(
                           active ? 'bg-green-600 text-white' : 'text-gray-900',
                           'relative cursor-default select-none py-2 pl-3 pr-9',
                         )
@@ -90,7 +90,7 @@ export const SelectedOption = ({
                       {({ selected, active }) => (
                         <>
                           <span
-                            className={classNames(
+                            className={cn(
                               selected ? 'font-semibold' : 'font-normal',
                               'block truncate text-black text-sm font-normal leading-tight',
                             )}>
@@ -99,7 +99,7 @@ export const SelectedOption = ({
 
                           {selected ? (
                             <span
-                              className={classNames(
+                              className={cn(
                                 active ? 'text-white' : 'text-green-800',
                                 'absolute inset-y-0 right-0 flex items-center pr-4',
                               )}>

@@ -28,31 +28,33 @@ interface Feedback {
 interface FeedbackProps {
   isOpen: boolean
   objectId: string
+  hidden: (value: boolean) => void
+  job_id?: string
 }
 
-export const Feedback = ({ isOpen = false, objectId }: FeedbackProps) => {
-  const [visible, setVisible] = useState(isOpen)
+export const Feedback = ({ isOpen = false, hidden, objectId, job_id }: FeedbackProps) => {
   const { user } = useAuth()
   const { showToast } = useUtils()
 
   const submitFeedback = async (feedback: Feedback) => {
-    const response = await requestService({ path: 'feedback', method: 'POST', body: JSON.stringify(feedback) })
+    const objectFeedback = job_id ? { ...feedback, job_id } : feedback
+    const response = await requestService({ path: 'feedback', method: 'POST', body: JSON.stringify(objectFeedback) })
 
     if (!response.ok) {
       showToast({ severity: 'error', summary: 'Error', detail: 'Error submitting feedback' })
-      setVisible(false)
+      hidden(false)
       return
     }
     showToast({ severity: 'success', summary: 'Success', detail: 'Feedback submitted' })
-    setVisible(false)
+    hidden(false)
   }
 
   return (
-    <Dialog header="Feedback" visible={visible} style={{ width: '50vw' }} modal={true} onHide={() => setVisible(false)}>
+    <Dialog header="Feedback" visible={isOpen} style={{ width: '50vw' }} modal={true} onHide={() => hidden(false)}>
       {user?.role !== employee_role ? (
-        <FeedbackFacility submitFeedback={submitFeedback} jobId={objectId} />
-      ) : (
         <FeedbackEmployee submitFeedback={submitFeedback} userId={objectId} />
+      ) : (
+        <FeedbackFacility submitFeedback={submitFeedback} jobId={objectId} />
       )}
     </Dialog>
   )

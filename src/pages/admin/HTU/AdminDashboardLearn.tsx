@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { AcademicCapIcon, TagIcon } from '@heroicons/react/24/outline'
 
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
-import { classNames } from '../../../utils/Tailwind'
+import { cn } from '../../../utils/cn'
 
 export const AdminDashboardLearn = () => {
   const items = [
@@ -31,7 +31,7 @@ export const AdminDashboardLearn = () => {
             <li className="flow-root">
               <div className="relative mx-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-green-500 hover:bg-gray-50">
                 <div
-                  className={classNames(
+                  className={cn(
                     item.background,
                     'flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg',
                   )}>

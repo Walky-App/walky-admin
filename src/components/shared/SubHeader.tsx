@@ -1,7 +1,10 @@
 import { Fragment } from 'react'
-import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
-import { Menu, Transition } from '@headlessui/react'
+
 import { Link, NavLink, useLocation } from 'react-router-dom'
+
+import { Menu, Transition } from '@headlessui/react'
+import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
+
 import { cn } from '../../utils/cn'
 
 export interface SubHeaderData {
@@ -24,48 +27,47 @@ export interface SubHeaderProps {
   links: SubHeaderLink[]
 }
 
-export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
+export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderProps) => {
   const { pathname } = useLocation()
   const basePath = pathname.split('/').slice(0, 3).join('/')
 
   return (
     <div className="mb-10 w-full border-b border-gray-300 p-2 lg:flex lg:items-center lg:justify-between">
-      <div className="min-w-0 flex-1">
-        {data._id && data.name ? (
-          <Link
-            className="text-2xl font-bold leading-7 text-gray-900 hover:text-green-500 sm:truncate sm:text-3xl sm:tracking-tight"
-            to={`${basePath}/${data._id}`}>
-            {data?.name}
-          </Link>
-        ) : null}
-        <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-          {data.city ? (
-            <div className="mt-2 flex items-center text-sm text-gray-500">
-              <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-              {data?.city}
-            </div>
+      {data ? (
+        <div className="min-w-0 flex-1">
+          {data._id && data.name ? (
+            <Link
+              className="text-2xl font-bold leading-7 text-gray-900 hover:text-green-500 sm:truncate sm:text-3xl sm:tracking-tight"
+              to={`${basePath}/${data._id}`}>
+              {data?.name}
+            </Link>
           ) : null}
-          {data.address ? (
-            <div className="mt-2 flex items-center text-sm text-gray-500">
-              <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-              {data?.address}
-            </div>
-          ) : null}
+          <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+            {data.city ? (
+              <div className="mt-2 flex items-center text-sm text-gray-500">
+                <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                {data?.city}
+              </div>
+            ) : null}
+            {data.address ? (
+              <div className="mt-2 flex items-center text-sm text-gray-500">
+                <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                {data?.address}
+              </div>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className="mt-5 flex gap-3 lg:ml-4 lg:mt-0 ">
         {links.map(link => {
           return (
             !link.disabled && (
               <span key={link.id} className="hidden md:block">
                 <NavLink
-                  to={`${basePath}/${data._id}${link.href}`}
+                  to={`${basePath}/${data?._id}${link.href}`}
                   end
                   className={({ isActive }) =>
-                    cn(
-                      'group flex items-center rounded-md  p-2 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-zinc-200 dark:hover:bg-zinc-800',
-                      { 'bg-green-500 text-white hover:bg-green-400': isActive },
-                    )
+                    cn('p-button p-button-sm', { 'p-button-secondary p-button-outlined': !isActive })
                   }>
                   <span className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true">
                     {link.icon}
@@ -99,7 +101,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
                     <Menu.Item key={link.id}>
                       {({ active }) => (
                         <NavLink
-                          to={`${basePath}/${data._id}${link.href}`}
+                          to={`${basePath}/${data?._id}${link.href}`}
                           end
                           className={cn(
                             { 'bg-gray-100': active },

@@ -3,14 +3,12 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { IProduct } from '../../../interfaces/Product'
 import { RequestService } from '../../../services/RequestService'
-import { classNames } from '../../../utils/Tailwind'
 import { EditForm } from './components/EditForm'
 
 const product = {
   breadcrumbs: [{ id: 1, name: 'Products', href: '/admin/products' }],
 }
 
-classNames()
 
 export default function ProductDetail() {
   const [incomingProduct, setIncomingProduct] = useState<IProduct | undefined>()
@@ -74,7 +72,7 @@ export default function ProductDetail() {
                 <img
                   src={incomingProduct?.image_medium}
                   alt={incomingProduct?.name}
-                  className={classNames('rounded-lg lg:col-span-2 lg:row-span-2')}
+                  className='rounded-lg lg:col-span-2 lg:row-span-2'
                 />
               </div>
             </div>
