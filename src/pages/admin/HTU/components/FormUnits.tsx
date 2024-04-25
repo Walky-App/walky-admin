@@ -288,7 +288,7 @@ export const FormUnits = ({
               </>
             ) : null}
           </div>
-          <div className="col-span-6 col-start-1 flex justify-end gap-3">
+          <div className="col-span-6 col-start-1 mt-3 flex justify-end gap-3">
             <Button
               className="rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200"
               onClick={() => redirectToPreviousPath('')}

@@ -1,7 +1,7 @@
 import type { ChangeEvent } from 'react'
 import { useEffect, useState } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
@@ -34,11 +34,12 @@ export const QuestionDialog = ({
   action,
 }: QuestionDialogProps) => {
   const { showToast } = useUtils()
-  const { setUnit, setAssessment } = useAdmin()
+  const { setUnit, setAssessment, unit, assessment } = useAdmin()
   const [header, setHeader] = useState<string>(selectedQuestion?.header ?? '')
   const [options, setOptions] = useState<string[]>(selectedQuestion?.options || [])
   const [answer, setAnswer] = useState<IAnswer>({ code: 99, value: 'No select' })
   const params = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (selectedQuestion && action === 'update') {
@@ -68,16 +69,26 @@ export const QuestionDialog = ({
         options,
         answer: answer.value,
       },
+      assessment: {
+        time: assessment?.time,
+        min_score: assessment?.min_score,
+      },
       unitId: params.unitId,
     }
     if (action === 'create') {
       const response = await RequestService(`units/assessment/questions`, 'POST', newQuestion)
       setAssessment(response.assessments)
       setQuestions(response.assessments.questions)
-      setUnit(response)
       showToast({ severity: 'success', detail: 'Question added', summary: 'The question has been added successfully' })
-      setVisible(false)
+      if (unit?.assessments === undefined) {
+        setUnit(response)
+        navigate(
+          `/admin/learn/modules/${params.moduleId}/units/${params.unitId}/assessment/${response.assessments?._id}`,
+        )
+      }
+      setUnit(response)
       clearStates()
+      setVisible(false)
     } else {
       if (newQuestion.questions.options.includes(newQuestion.questions.answer)) {
         const response = await RequestService(
@@ -206,7 +217,7 @@ export const QuestionDialog = ({
                 </div>
               </div>
             </div>
-            <div className="flex flex-row justify-between">
+            <div className="flex justify-end gap-2">
               <Button label="Cancel" onClick={onCancel} severity="secondary" type="button" />
               <Button disabled={handleDisableControl()} label="Save" onClick={() => onSave()} />
             </div>
