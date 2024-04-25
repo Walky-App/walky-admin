@@ -1,12 +1,12 @@
 import { useState, useRef } from 'react'
 
-import { Toast } from 'primereact/toast'
 import cn from 'classnames'
+import { Toast } from 'primereact/toast'
 
 import { requestService } from '../../services/requestServiceNew'
 
 export const ForgotPassword = () => {
-  const [form, setForm] = useState({})
+  const [form, setForm] = useState({ email: '' })
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
   const toast = useRef<Toast>(null)
@@ -23,6 +23,8 @@ export const ForgotPassword = () => {
 
     const data = await response.json()
     if (response.ok) {
+      toast.current?.show({ severity: 'success', summary: 'Email sent', detail: data.message })
+      setForm({ email: '' })
       setLoading(false)
       return
     } else {
@@ -44,6 +46,7 @@ export const ForgotPassword = () => {
             required
             type="email"
             name="email"
+            value={form.email}
             className={cn(
               `w-full rounded-lg p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500`,
               error ? 'border-red-500 ring-red-500' : 'border-zinc-200',
@@ -68,11 +71,7 @@ export const ForgotPassword = () => {
             </svg>
           </span>
         </div>
-        {error ? (
-          <div className="flex items-center justify-center">
-            <p className="text-sm text-red-500">{error}</p>
-          </div>
-        ) : null}
+        {error ? <p className="mt-3 text-center text-sm text-red-500">{error}</p> : null}
       </div>
 
       <button
