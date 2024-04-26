@@ -6,7 +6,6 @@ import { Dropdown } from 'primereact/dropdown'
 import { Skeleton } from 'primereact/skeleton'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { useCoordinates } from '../../../store/useCoordinates'
@@ -132,62 +131,70 @@ export const EmployeeJobs = () => {
   }, [selectedJobTitle, dates, jobs, selectedRange])
 
   return (
-    <>
-      <HeaderComponent title="Jobs" />
-      <div className="-mx-3 flex flex-wrap">
-        <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
+    <div className="flex">
+      <div className="w-1/4 p-3">
+        <h2>Filter:</h2>
+        <div className="mb-4">
           <Dropdown
             value={selectedJobTitle}
             onChange={e => setSelectedJobTitle(e.value)}
             filter
             options={jobTitleOptions}
             optionLabel="name"
-            placeholder="Select Job Title"
+            placeholder="by Title"
             className="w-full"
           />
         </div>
-        <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
+        <div className="mb-4">
           <Calendar
             value={dates}
             onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
             showButtonBar
             numberOfMonths={2}
-            placeholder="Select Date Range"
+            placeholder="by Date"
             readOnlyInput
             className="w-full"
           />
         </div>
-        <div className="mb-4 w-full px-3 md:mb-0 md:w-1/3">
+        <div className="mb-4">
           <Dropdown
             value={selectedRange}
             onChange={e => setSelectedRange(e.value)}
             options={rangeOptions}
             optionLabel="name"
-            placeholder="Select Distance"
+            placeholder="by Distance"
             className="w-full"
           />
         </div>
-        <div className="mb-4 mt-4 w-full px-3 md:mb-0 md:w-1/3">
-          <h2> Select address:</h2>
-          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="980 Spaces?" />
-          <Button icon="pi pi-search" aria-label="Set jobs by Selected Address" onClick={handleUseSelectedAddress} />
+      </div>
+      <div className="w-3/4 p-3">
+        <div className="flex items-center justify-center">
+          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="Type in address" />
+          <Button
+            className="mx-1"
+            icon="pi pi-search"
+            aria-label="Set jobs by Selected Address"
+            tooltip="Set Jobs with distance from the address location"
+            onClick={handleUseSelectedAddress}
+          />
           <Button
             icon="pi pi-map-marker"
             rounded
             text
             aria-label="Set jobs by Current Location "
+            tooltip="Set Jobs with distance from your current location"
             onClick={handleUseCurrentLocation}
           />
         </div>
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
+            {isLoading
+              ? jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
+              : displayedJobs.map(job => <JobListItem key={job._id} job={job} />)}
+          </ul>
+        </div>
       </div>
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-          {isLoading
-            ? jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
-            : displayedJobs.map(job => <JobListItem key={job._id} job={job} />)}
-        </ul>
-      </div>
-    </>
+    </div>
   )
 }
