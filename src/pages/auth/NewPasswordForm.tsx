@@ -25,26 +25,32 @@ export const NewPasswordForm = () => {
     e.preventDefault()
     setLoading(true)
 
-    const response = await requestService({ path: 'auth/new', method: 'POST', body: JSON.stringify(form) })
-    const data = await response.json()
+    try {
+      const response = await requestService({ path: 'auth/new', method: 'POST', body: JSON.stringify(form) })
+      const data = await response.json()
 
-    if (response.ok) {
-      setBtnDisabled(true)
-      setError(undefined)
-      setLoading(false)
-      toast.current?.show({
-        severity: 'success',
-        summary: 'New Password Updated 👍',
-        detail: data.message,
-      })
-      setTimeout(() => {
-        navigate('/login')
-      }, 5000)
+      if (response.ok) {
+        setBtnDisabled(true)
+        setError(undefined)
+        setLoading(false)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'New Password Updated 👍',
+          detail: data.message,
+        })
+        setTimeout(() => {
+          navigate('/login')
+        }, 5000)
 
-      return
-    } else {
-      show(data.message)
-      setError(data.message)
+        return
+      } else {
+        show(data.message)
+        setError(data.message)
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      show('An error occurred. Please try again.')
       setLoading(false)
     }
   }

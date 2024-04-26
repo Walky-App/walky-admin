@@ -1,9 +1,13 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-// import { Password } from 'primereact/password'
-// import { Toast } from 'primereact/toast'
+import { InputMask } from 'primereact/inputmask'
+import { InputText } from 'primereact/inputtext'
+import { Password } from 'primereact/password'
+import { Toast } from 'primereact/toast'
+
+import { AddressAutoComplete, type IAddressAutoComplete } from '../../components/shared/forms/AddressAutoComplete'
 import { useAuth } from '../../contexts/AuthContext'
 import { type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
@@ -17,10 +21,24 @@ const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export const Signup = () => {
-  const [error, setError] = useState<Error | undefined>()
+  const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
+  const [form, setForm] = useState({
+    _id: '',
+    access_token: '',
+    password: '',
+    password_confirmed: '',
+    phone_number: '',
+    address: '',
+  })
   const { setUser } = useAuth()
   const { setAvatarImageUrl } = useUtils()
+  const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
+  const toast = useRef<Toast>(null)
+
+  const show = (message: string) => {
+    toast.current?.show({ severity: 'error', summary: 'Email not found', detail: message })
+  }
 
   const { email, role } = useParams()
   const navigate = useNavigate()
@@ -82,11 +100,8 @@ export const Signup = () => {
         setLoading(false)
       }
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error)
-      } else {
-        setError(new Error('An unknown error occurred.'))
-      }
+      console.error('Error:', error)
+      show('An error occurred. Please try again.')
       setLoading(false)
     }
   }
@@ -97,103 +112,111 @@ export const Signup = () => {
         <div className="flex justify-center">
           <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
         </div>
-        <div className="grid grid-cols-1 gap-4 p-3 sm:grid-cols-2">
-          <div>
-            <label className="sr-only" htmlFor="firstName">
-              First Name
-            </label>
-            <input
-              required
-              className="w-full rounded-lg border-zinc-200 p-4 text-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="First Name"
-              type="text"
-              name="firstName"
-            />
-          </div>
-          <div>
-            <label className="sr-only" htmlFor="lastName">
-              Last Name
-            </label>
-            <input
-              required
-              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500 "
-              placeholder="Last Name"
-              type="text"
-              name="lastName"
-            />
-          </div>
+        <div className="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <InputText
+            required
+            type="text"
+            name="first_name"
+            className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+            placeholder="*First Name"
+          />
+
+          <InputText
+            required
+            type="text"
+            name="last_name"
+            className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+            placeholder="*Last Name"
+          />
         </div>
 
-        <div className="p-3">
-          <label htmlFor="email" className="sr-only">
-            Email
-          </label>
-
-          <div className="relative">
-            <input
-              disabled
-              value={email}
-              required
-              type="email"
-              name="email"
-              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Email"
-            />
-          </div>
+        <div className="relative mb-5">
+          <InputText
+            required
+            type="email"
+            name="email"
+            className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+            placeholder="*Email"
+          />
+          <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 text-zinc-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+              />
+            </svg>
+          </span>
         </div>
+        <div className="relative my-5">
+          {/* <InputText
+            required
+            type="tel"
+            name="phone"
+            className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+            placeholder="*Phone Number"
+          /> */}
 
-        <div className="p-3">
-          <label htmlFor="phone" className="sr-only">
-            Phone
-          </label>
-
-          <div className="relative">
-            <input
-              required
-              type="tel"
-              name="phone"
-              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Phone Number"
-            />
-          </div>
+          <InputMask
+            value={form.phone_number}
+            onChange={e => setForm({ ...form, phone_number: e.target.value || '' })}
+            mask="(999) 999-9999"
+            placeholder="(561) 999-9999"
+            className="w-full"
+          />
         </div>
-
-        <div className="p-3">
-          <label htmlFor="password" className="sr-only">
-            Password
-          </label>
-
-          <div className="relative">
-            <input
-              required
-              type="password"
-              name="password"
-              className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Password"
-            />
-          </div>
+        <div className="p-fluid mb-5">
+          <AddressAutoComplete
+            setMoreAddressDetails={setMoreAddressDetails}
+            className="rounded-lg border-zinc-200  focus:border-green-500 focus:ring-green-500"
+            currentAddress={'*Home Address'}
+          />
         </div>
-
         <div>
-          <label htmlFor="password_confirmed" className="sr-only">
-            password_confirmed
-          </label>
+          <Password
+            inputId="password"
+            placeholder="*Password"
+            value={form.password}
+            onChange={e => setForm({ ...form, password: e.target.value })}
+            toggleMask
+            pt={{
+              panel: { className: 'hidden' },
+              input: {
+                className:
+                  'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+              },
+            }}
+            className="w-full"
+          />
+          <Password
+            inputId="password_confirmed"
+            placeholder="*Password confirmed"
+            value={form.password_confirmed}
+            onChange={e => setForm({ ...form, password_confirmed: e.target.value })}
+            toggleMask
+            pt={{
+              panel: { className: 'hidden' },
+              input: {
+                className:
+                  'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+              },
+            }}
+            className="my-5 w-full"
+          />
+          <Toast ref={toast} position="bottom-right" />
 
-          <div className="relative p-3">
-            <input
-              required
-              type="password"
-              name="password_confirmed"
-              className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Verify Password"
-            />
-          </div>
+          {error ? (
+            <div className="mt-3 flex items-center justify-center">
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
+          ) : null}
         </div>
-        {error ? (
-          <div className="flex items-center justify-center">
-            <p className="text-sm text-red-500">{error.message}</p>
-          </div>
-        ) : null}
         <div className="flex items-center justify-center">
           <button
             disabled={loading}
