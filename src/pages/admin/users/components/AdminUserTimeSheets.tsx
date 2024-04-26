@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEvent, type ColumnEditorOptions } from 'primereact/column'
@@ -46,7 +46,6 @@ export const AdminUserTimeSheets = () => {
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IProcessedTimeSheet[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<Nullable<Date>>(null)
-  const timeStampRef = useRef<string | null>(null)
 
   const { showToast } = useUtils()
 
@@ -202,22 +201,20 @@ export const AdminUserTimeSheets = () => {
     const { in_time_stamp, out_time_stamp } = options.rowData as IPunchPair
 
     let timeStamp: string
-    if (options.field === 'in_time') {
-      timeStamp = in_time_stamp
-    } else {
-      timeStamp = out_time_stamp
+    switch (options.field) {
+      case 'in_time':
+        timeStamp = options.value ? in_time_stamp : new Date().toISOString()
+        break
+      default:
+        timeStamp = options.value ? out_time_stamp : new Date().toISOString()
+        break
     }
 
-    if (timeStamp !== timeStampRef.current) {
-      timeStampRef.current = timeStamp
-      if (timeStamp && !isNaN(Date.parse(timeStamp))) {
-        setTimeout(() => setSelectedTime(new Date(timeStamp)), 0)
-      }
-    }
+    const initialTimeValue = selectedTime || new Date(timeStamp)
 
     return (
       <Calendar
-        value={selectedTime}
+        value={initialTimeValue}
         hourFormat="12"
         onChange={e => {
           if (e.value) {
@@ -232,7 +229,7 @@ export const AdminUserTimeSheets = () => {
               newTime.getSeconds(),
             )
 
-            setTimeout(() => setSelectedTime(updatedDate), 0)
+            setSelectedTime(updatedDate)
             options.editorCallback!(updatedDate)
           }
         }}
@@ -280,6 +277,7 @@ export const AdminUserTimeSheets = () => {
         })
 
         fetchTimesheets()
+        setSelectedTime(null)
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -330,7 +328,7 @@ export const AdminUserTimeSheets = () => {
         <DataTable value={data.punchesWithDetails} sortField="in_time" sortOrder={-1} editMode="cell">
           <Column className={cn([commonColumnStyle])} field="day" header="Day" />
           <Column
-            className={cn([commonColumnStyle])}
+            className={cn([commonColumnStyle, 'cursor-pointer hover:text-primary'])}
             field="in_time"
             header="Punch In (✎)"
             editor={options => timeEditor(options)}
@@ -338,7 +336,7 @@ export const AdminUserTimeSheets = () => {
             onCellEditCancel={() => setSelectedTime(null)}
           />
           <Column
-            className={cn([commonColumnStyle])}
+            className={cn([commonColumnStyle, 'cursor-pointer hover:text-primary'])}
             field="out_time"
             header="Punch Out (✎)"
             body={(rowData: IPunchDetails) => rowData.out_time || 'Clocked In'}
