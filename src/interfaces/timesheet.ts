@@ -1,4 +1,5 @@
 export interface IPunch {
+  _id: string
   punch_in: boolean
   location: number[]
   in_range: boolean
