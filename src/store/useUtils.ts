@@ -55,6 +55,11 @@ export const useUtils = create<State>(set => ({
     set({ removeToastCallback: callback })
   },
   setAvatarImageUrl: (value: string) => {
+    const ht_usr = JSON.parse(localStorage.getItem('ht_usr') || '{}')
+    if (ht_usr.avatar === undefined) {
+      ht_usr.avatar = value
+      localStorage.setItem('ht_usr', JSON.stringify(ht_usr))
+    }
     set({ avatarImageUrl: value })
   },
 }))
