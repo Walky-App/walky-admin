@@ -192,7 +192,7 @@ export const AdminFacilityImages = () => {
       )}
       <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
         {sortedImagesWithMainImageFirst?.map(file => (
-          <li key={file._id} className="relative ">
+          <li key={file._id} className="relative transform transition-transform hover:scale-105 hover:shadow-xl">
             {facility?.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
             <div className="flex justify-center">
               <Image
