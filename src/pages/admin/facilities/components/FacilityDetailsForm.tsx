@@ -116,7 +116,7 @@ export const FacilityDetailsForm = ({
                   pt={{
                     image: {
                       className:
-                        'aspect-[4/3] w-full xs:w-3/4 sm:w-1/2 md:w-full object-cover rounded-lg cursor-pointer md:mx-auto',
+                        'aspect-[4/3] w-full xs:w-3/4 sm:w-1/2 md:w-full 2xl:w-3/4 object-cover rounded-lg cursor-pointer',
                     },
                   }}
                 />
@@ -125,7 +125,7 @@ export const FacilityDetailsForm = ({
 
             {facility.location_pin[0] && facility.location_pin[1] ? (
               <div className="col-span-1 mt-8 hidden h-64 md:col-span-1 md:block">
-                <div className="flex h-full max-w-[400px] flex-row md:flex-col">
+                <div className="flex h-full flex-row md:flex-col 2xl:w-3/4">
                   <GoogleMapComponent
                     locationPin={facility.location_pin}
                     containerStyle={{ width: '100%', height: '100%' }}
