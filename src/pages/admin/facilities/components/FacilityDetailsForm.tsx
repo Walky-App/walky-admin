@@ -108,13 +108,13 @@ export const FacilityDetailsForm = ({
               Please see the information about this particular facility.
             </p>
             <div className="relative mt-6">
-              <div className="flex max-h-[300px] max-w-[400px]">
+              <div className="flex justify-center">
                 <Image
                   src={facility.main_image}
                   alt="facility"
                   preview
                   pt={{
-                    image: { className: 'max-h-full max-w-full object-contain rounded-lg' },
+                    image: { className: 'aspect-[4/3] max-w-full object-cover rounded-lg cursor-pointer mx-auto' },
                   }}
                 />
               </div>
