@@ -17,7 +17,13 @@ import { type IJob } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
-import { convertToStandardTime } from '../../../utils/timeUtils'
+import {
+  convertMillisecondsToReadableTime,
+  convertToStandardTime,
+  formatDate,
+  formatTime,
+  isValidDate,
+} from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const JobDetailView = () => {
@@ -246,28 +252,6 @@ export const JobDetailView = () => {
     }
   }
 
-  const isValidDate = (dateString: string): boolean => {
-    const date = new Date(dateString)
-    return !isNaN(date.getTime())
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString()
-  }
-
-  function formatTime(timeStamp: string | number) {
-    const date = new Date(timeStamp)
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
-  }
-
-  const formatDuration = (milliseconds: number): string => {
-    const hours = Math.floor(milliseconds / 3600000)
-    const minutes = Math.floor((milliseconds % 3600000) / 60000)
-    const seconds = Math.floor((milliseconds % 60000) / 1000)
-    return `${hours}h ${minutes}m ${seconds}s`
-  }
-
   const punchPairsAndTotalTime = useMemo(() => {
     if (!timesheets) {
       return []
@@ -286,7 +270,7 @@ export const JobDetailView = () => {
         punchIn = punch
       } else if (punchIn) {
         const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
-        pairs.push({ punchIn, punchOut: punch, totalTime: formatDuration(totalTime) })
+        pairs.push({ punchIn, punchOut: punch, totalTime: convertMillisecondsToReadableTime(totalTime) })
         punchIn = null
       }
     }

@@ -9,6 +9,7 @@ import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { cn } from '../../../../utils/cn'
+import { formatDate, formatTime } from '../../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { useAdminUserContext } from '../AdminUserPage'
 
@@ -50,15 +51,6 @@ export const AdminUserTimeSheets = () => {
   const { showToast } = useUtils()
 
   const { selectedUserId } = useAdminUserContext()
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString()
-  }
-  function formatTime(timeStamp: string | number) {
-    const date = new Date(timeStamp)
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
-  }
 
   const fetchTimesheets = useCallback(async () => {
     if (!selectedUserId) {
