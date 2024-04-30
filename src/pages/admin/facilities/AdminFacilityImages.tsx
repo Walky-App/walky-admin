@@ -175,7 +175,7 @@ export const AdminFacilityImages = () => {
         <div className="my-5 flex items-center">
           {files.length === 0 ? (
             <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
-              <PlusCircleIcon className="h-20 w-20 text-green-500 hover:text-green-400" aria-hidden="true" />
+              <PlusCircleIcon className="h-20 w-20 text-primaryDark hover:text-primary" aria-hidden="true" />
             </span>
           ) : (
             <button
