@@ -116,7 +116,10 @@ export const FacilityDetailsForm = ({
                   pt={{
                     image: {
                       className:
-                        'aspect-[4/3] w-full xs:w-3/4 sm:w-1/2 md:w-full 2xl:w-3/4 object-cover rounded-lg cursor-pointer',
+                        'aspect-[4/3] w-3/4 sm:w-1/2 md:w-full 2xl:w-3/4 object-cover rounded-lg cursor-pointer',
+                    },
+                    button: {
+                      className: 'w-3/4 sm:w-1/2 md:w-full 2xl:w-3/4 rounded-lg',
                     },
                   }}
                 />
