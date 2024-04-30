@@ -37,7 +37,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderPr
         <div className="min-w-0 flex-1">
           {data._id && data.name ? (
             <Link
-              className="text-2xl font-bold leading-7 text-gray-900 hover:text-green-500 sm:truncate sm:text-3xl sm:tracking-tight"
+              className="text-2xl font-bold leading-7 text-gray-900 hover:text-primary sm:truncate sm:text-3xl sm:tracking-tight"
               to={`${basePath}/${data._id}`}>
               {data?.name}
             </Link>
