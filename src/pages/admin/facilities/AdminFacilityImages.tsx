@@ -5,7 +5,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
@@ -150,6 +150,14 @@ export const AdminFacilityImages = () => {
     })
   }
 
+  const sortedImagesWithMainImageFirst = useMemo(() => {
+    return facility?.images?.sort((a, b) => {
+      if (a.url === facility.main_image) return -1
+      if (b.url === facility.main_image) return 1
+      return 0
+    })
+  }, [facility?.images, facility?.main_image])
+
   return (
     <div>
       {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
@@ -167,7 +175,7 @@ export const AdminFacilityImages = () => {
         <div className="my-5 flex items-center">
           {files.length === 0 ? (
             <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
-              <PlusCircleIcon className="h-20 w-20 text-green-500 hover:text-green-400" aria-hidden="true" />
+              <PlusCircleIcon className="h-20 w-20 text-primaryDark hover:text-primary" aria-hidden="true" />
             </span>
           ) : (
             <button
@@ -183,16 +191,18 @@ export const AdminFacilityImages = () => {
         <Spinner color="success" size="lg" aria-label="Success spinner example" />
       )}
       <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-        {facility?.images?.map(file => (
-          <li key={file._id} className="relative ">
-            {facility.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
-            <div className="flex max-h-[300px] max-w-[400px] ">
+        {sortedImagesWithMainImageFirst?.map(file => (
+          <li key={file._id} className="relative transform transition-transform hover:scale-105 hover:shadow-xl">
+            {facility?.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
+            <div className="flex justify-center">
               <Image
                 src={file.url}
                 alt="facility"
                 onClick={() => handleDialogOpen(file)}
                 pt={{
-                  image: { className: 'max-h-full max-w-full object-contain rounded-lg cursor-pointer mx-auto' },
+                  image: {
+                    className: 'aspect-[4/3] max-w-full object-cover rounded-lg cursor-pointer mx-auto',
+                  },
                 }}
               />
             </div>
