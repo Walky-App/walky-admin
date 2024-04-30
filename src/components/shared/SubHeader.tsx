@@ -32,7 +32,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderPr
   const basePath = pathname.split('/').slice(0, 3).join('/')
 
   return (
-    <div className="mb-10 w-full border-b border-gray-300 p-2 lg:flex lg:items-center lg:justify-between">
+    <div className="mb-10 w-full border-b border-gray-300 py-4 2xl:flex 2xl:items-center 2xl:justify-between">
       {data ? (
         <div className="min-w-0 flex-1">
           {data._id && data.name ? (
@@ -42,7 +42,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderPr
               {data?.name}
             </Link>
           ) : null}
-          <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+          <div className="mt-1 flex flex-col xs:flex-row xs:flex-wrap xs:space-x-6 sm:mt-0">
             {data.city ? (
               <div className="mt-2 flex items-center text-sm text-gray-500">
                 <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
@@ -58,11 +58,11 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderPr
           </div>
         </div>
       ) : null}
-      <div className="mt-5 flex gap-3 lg:ml-4 lg:mt-0 ">
+      <div className="mt-3 flex flex-wrap gap-3 2xl:mt-0">
         {links.map(link => {
           return (
             !link.disabled && (
-              <span key={link.id} className="hidden md:block">
+              <span key={link.id} className="hidden xs:block">
                 <NavLink
                   to={`${basePath}/${data?._id}${link.href}`}
                   end
@@ -80,8 +80,8 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }: SubHeaderPr
         })}
 
         {/* Mobile Dropdown */}
-        <Menu as="div" className="relative w-full md:hidden">
-          <Menu.Button className="inline-flex items-center  rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
+        <Menu as="div" className="relative xs:hidden">
+          <Menu.Button className="inline-flex w-full items-center justify-between rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-gray-400">
             More
             <ChevronDownIcon className="-mr-1 ml-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
           </Menu.Button>
