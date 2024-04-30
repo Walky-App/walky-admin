@@ -478,7 +478,7 @@ export const JobDetailView = () => {
                         <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                           <Button
                             label="Clock Out"
-                            severity="danger"
+                            severity="warning"
                             onClick={() => clockOut()}
                             loading={isClockInOutLoading}
                             className="w-full"
@@ -488,7 +488,6 @@ export const JobDetailView = () => {
                         <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                           <Button
                             label="Clock In"
-                            severity="success"
                             onClick={() => clockIn()}
                             loading={isClockInOutLoading}
                             className="w-full"
