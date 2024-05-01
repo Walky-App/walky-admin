@@ -32,12 +32,11 @@ export const formatDate = (dateString: string) => {
 
 export const formatTime = (timeStamp: string | number) => {
   const date = new Date(timeStamp)
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
 }
 
 export const convertMillisecondsToReadableTime = (milliseconds: number): string => {
   const hours = Math.floor(milliseconds / 3600000)
   const minutes = Math.floor((milliseconds % 3600000) / 60000)
-  const seconds = Math.floor((milliseconds % 60000) / 1000)
-  return `${hours}h ${minutes}m ${seconds}s`
+  return `${hours}h ${minutes}m`
 }
