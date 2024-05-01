@@ -74,6 +74,7 @@ export const Signup = () => {
             role: user.role,
             access_token: access_token,
             avatar: user.avatar,
+            onboarding: user.onboarding,
           }
           SetToken(ls_info)
           setUser({ ...user, access_token: access_token })
