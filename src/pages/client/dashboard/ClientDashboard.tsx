@@ -34,10 +34,10 @@ export const ClientDashboard = () => {
   const { user } = useAuth()
 
   useEffect(() => {
-    if (user?.isOnboarded === false) {
+    if (user?.onboarding.completed === false) {
       navigate('/client/onboarding')
     }
-  }, [navigate, user?.isOnboarded])
+  }, [navigate, user?.onboarding.completed])
 
   // useEffect(() => {
   //   const getCounts = async () => {

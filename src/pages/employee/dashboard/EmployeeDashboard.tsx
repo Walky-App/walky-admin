@@ -34,10 +34,10 @@ export const EmployeeDashboard = () => {
   const { user } = useAuth()
 
   useEffect(() => {
-    if (user?.isOnboarded === false) {
+    if (user?.onboarding.completed === false) {
       navigate('/employee/onboarding')
     }
-  }, [navigate, user?.isOnboarded])
+  }, [navigate, user?.onboarding.completed])
 
   // useEffect(() => {
   //   const getCounts = async () => {
