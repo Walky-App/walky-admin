@@ -106,6 +106,7 @@ export const AddressAutoComplete = ({
       onChange={e => setSelectedAddresses(e.value)}
       onSelect={e => handleGetAddressDetails(e.value, predictions)}
       forceSelection
+      className={className}
     />
   )
 }
