@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react'
 
 import { Link } from 'react-router-dom'
@@ -9,6 +8,7 @@ import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
+import { roleTxt } from '../../../utils/roleChecker'
 
 export const AdminUserListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -36,14 +36,10 @@ export const AdminUserListPage = () => {
     () => [
       { Header: 'First Name', accessor: 'first_name' },
       { Header: 'Last Name', accessor: 'last_name' },
-      { Header: 'Role', accessor: 'role' },
+      { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
       {
         Header: 'Status',
-        accessor: (d: any) => (d.active ? 'Active' : 'Disabled'),
-        sortType: (a: any, b: any) => {
-          if (a.original.active === b.original.active) return 0
-          return a.original.active ? -1 : 1
-        },
+        accessor: (d: IUser) => (d.active ? 'Active' : 'Disabled'),
       },
       { Header: 'Email', accessor: 'email' },
       { Header: 'Phone Number', accessor: 'phone_number' },

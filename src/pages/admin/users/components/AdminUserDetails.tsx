@@ -4,6 +4,7 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
+import { roleTxt } from '../../../../utils/roleChecker'
 import { useAdminUserContext } from '../AdminUserPage'
 
 export const AdminUserDetails = () => {
@@ -121,7 +122,7 @@ export const AdminUserDetails = () => {
               </div>
             </div>
 
-            {formUser.role === '6473' ? (
+            {roleTxt(formUser.role) !== 'Admin' ? (
               <div className="sm:col-span-3">
                 <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
                   Onboarding Status
@@ -216,7 +217,7 @@ export const AdminUserDetails = () => {
               </label>
               <div className="mt-2">
                 <input
-                  value={formUser.role || ''}
+                  value={roleTxt(formUser.role)}
                   onChange={handleInputChange}
                   type="text"
                   disabled

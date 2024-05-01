@@ -2,7 +2,8 @@ import * as React from 'react'
 
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
-import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -11,6 +12,7 @@ const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export const AdminInviteUser = () => {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const { showToast } = useUtils()
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -24,12 +26,16 @@ export const AdminInviteUser = () => {
     const formData = { email: target.email.value, role: target.role.value }
 
     try {
-      const response = await RequestService(`auth/invite`, 'POST', formData)
-      if (response) {
+      const response = await requestService({ path: 'auth/invite', method: 'POST', body: JSON.stringify(formData) })
+      const jsonResponse = await response.json()
+
+      if (jsonResponse.status === 200) {
         setUpdateSuccess(true)
         form.reset()
+        showToast({ severity: 'success', summary: 'Success', detail: 'Invite sent successfully' })
         setTimeout(() => setUpdateSuccess(false), 5000)
       } else {
+        showToast({ severity: 'error', summary: 'Error', detail: jsonResponse.message })
         throw new Error('Failed to invite user')
       }
     } catch (error) {
