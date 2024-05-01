@@ -1,7 +1,10 @@
+//eslint-disable
 import { useState, useEffect } from 'react'
 
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
+import { Checkbox } from 'primereact/checkbox'
+// import { type CheckboxChangeParams } from 'primereact/checkbox';
 import { Dropdown } from 'primereact/dropdown'
 import { Skeleton } from 'primereact/skeleton'
 
@@ -54,12 +57,13 @@ export const EmployeeJobs = () => {
     getLongitudeFromLocalStorage,
   } = useCoordinates()
 
-  const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
+  const [selectedJobTitles, setSelectedJobTitles] = useState([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
   const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
+  const [seeMore, setSeeMore] = useState(false)
 
   const handleUseSelectedAddress = async () => {
     if (moreAddressDetails && moreAddressDetails.location_pin) {
@@ -113,8 +117,9 @@ export const EmployeeJobs = () => {
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])]
-    if (selectedJobTitle && selectedJobTitle.code !== 'all') {
-      filteredJobs = filteredJobs.filter(job => job.title === selectedJobTitle.name)
+    if (selectedJobTitles.length > 0) {
+      // @ts-ignore
+      filteredJobs = filteredJobs.filter(job => selectedJobTitles.includes(job.title))
     }
     if (dates) {
       filteredJobs = filteredJobs.filter(job => {
@@ -128,48 +133,22 @@ export const EmployeeJobs = () => {
       filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange.code)
     }
     setDisplayedJobs(filteredJobs)
-  }, [selectedJobTitle, dates, jobs, selectedRange])
+  }, [selectedJobTitles, dates, jobs, selectedRange])
+  // @ts-ignore
+  const onJobTitleChange = (e: CheckboxChangeParams) => {
+    const { checked, value } = e
+    if (checked) {
+      // @ts-ignore
+      setSelectedJobTitles(prevJobTitles => [...prevJobTitles, value])
+    } else {
+      setSelectedJobTitles(prevJobTitles => prevJobTitles.filter(jobTitle => jobTitle !== value))
+    }
+  }
 
   return (
-    <div className="flex">
-      <div className="w-1/4 p-3">
-        <h2>Filter:</h2>
-        <div className="mb-4">
-          <Dropdown
-            value={selectedJobTitle}
-            onChange={e => setSelectedJobTitle(e.value)}
-            filter
-            options={jobTitleOptions}
-            optionLabel="name"
-            placeholder="by Title"
-            className="w-full"
-          />
-        </div>
-        <div className="mb-4">
-          <Calendar
-            value={dates}
-            onChange={e => setDates(e.value as [Date, Date] | null)}
-            selectionMode="range"
-            showButtonBar
-            numberOfMonths={2}
-            placeholder="by Date"
-            readOnlyInput
-            className="w-full"
-          />
-        </div>
-        <div className="mb-4">
-          <Dropdown
-            value={selectedRange}
-            onChange={e => setSelectedRange(e.value)}
-            options={rangeOptions}
-            optionLabel="name"
-            placeholder="by Distance"
-            className="w-full"
-          />
-        </div>
-      </div>
-      <div className="w-3/4 p-3">
-        <div className="flex items-center justify-center">
+    <div className="flex flex-col md:flex-row">
+      <div className="w-full p-3 md:w-1/4">
+        <div className="flex items-center">
           <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="Type in address" />
           <Button
             className="mx-1"
@@ -187,6 +166,75 @@ export const EmployeeJobs = () => {
             onClick={handleUseCurrentLocation}
           />
         </div>
+        <h2>Filter:</h2>
+        <div className="mb-4">
+          {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 7).map(jobTitle => {
+            return (
+              <div key={jobTitle.code} className="flex items-center">
+                <Checkbox
+                  inputId={jobTitle.code}
+                  name="jobTitle"
+                  value={jobTitle.code}
+                  onChange={onJobTitleChange}
+                  // @ts-ignore
+                  checked={selectedJobTitles.includes(jobTitle.code)}
+                />
+                <label htmlFor={jobTitle.code} className="ml-2">
+                  {jobTitle.name}
+                </label>
+              </div>
+            )
+          })}
+          {jobTitleOptions.length > 7 ? (
+            <Button
+              text
+              icon={seeMore ? 'pi pi-chevron-up' : 'pi pi-chevron-down'}
+              label={seeMore ? 'See less' : 'See more'}
+              size="small"
+              onClick={() => setSeeMore(!seeMore)}
+            />
+          ) : null}{' '}
+        </div>
+        <div className="mb-4 hidden md:block">
+          <Calendar
+            //big screen inline Calendar
+            value={dates}
+            onChange={e => setDates(e.value as [Date, Date] | null)}
+            selectionMode="range"
+            showButtonBar
+            inline={true}
+            numberOfMonths={1}
+            placeholder="by Date"
+            readOnlyInput
+            className="w-full"
+          />
+        </div>
+        <div className="mb-4 md:hidden">
+          <Calendar
+            //small screen Calendar hidden into dropdown
+            value={dates}
+            onChange={e => setDates(e.value as [Date, Date] | null)}
+            selectionMode="range"
+            showButtonBar
+            inline={false}
+            numberOfMonths={1}
+            placeholder="by Date"
+            readOnlyInput
+            className="w-full"
+          />
+        </div>
+        <div className="mb-4">
+          <Dropdown
+            value={selectedRange}
+            onChange={e => setSelectedRange(e.value)}
+            options={rangeOptions}
+            optionLabel="name"
+            placeholder="by Distance"
+            className="w-full"
+          />
+        </div>
+      </div>
+      <div className="w-full p-3 md:w-3/4">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
             {isLoading
