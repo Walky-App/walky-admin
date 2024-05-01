@@ -14,7 +14,7 @@ import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
 import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
-import { type ITimeSheet } from '../../../interfaces/timesheet'
+import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import {
@@ -47,11 +47,17 @@ export const JobDetailView = () => {
   const [longitude, setLongitude] = useState<number>()
   const [error, setError] = useState<string>()
 
+  interface IPunchPairWithTotalTime {
+    punchIn: IPunch
+    punchOut: IPunch | null
+    totalTime: string | undefined
+  }
+
   useEffect(() => {
     let isMounted = true
 
     const getLocation = () => {
-      if (!navigator.geolocation) {
+      if (navigator.geolocation == null) {
         setError('Geolocation is not supported by your browser')
         console.error(error)
         return
@@ -108,8 +114,8 @@ export const JobDetailView = () => {
   useEffect(() => {
     const getJob = async () => {
       try {
-        const job = await RequestService(`jobs/${id}`)
-        if (job) {
+        const job: IJob = await RequestService(`jobs/${id}`)
+        if (job._id) {
           setJob(job)
         } else {
           console.error('Job not found')
@@ -126,7 +132,7 @@ export const JobDetailView = () => {
   }, [id])
 
   const getLatestTimeSheet = (array?: ITimeSheet[] | null) => {
-    if (!array?.length) {
+    if (array?.length == null) {
       return null
     }
 
@@ -160,7 +166,11 @@ export const JobDetailView = () => {
         setTimesheets(data)
         const lastTimesheet = getLatestTimeSheet(data)
 
-        setIsClockedIn(lastTimesheet?.is_clocked_in || false)
+        const timeStampOfLastPunchIn = lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp
+
+        setIsClockedIn(
+          lastTimesheet?.is_clocked_in === true ? checkIfTodaysDateIsSameAsTimeStamp(timeStampOfLastPunchIn) : false,
+        )
       }
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
@@ -178,7 +188,7 @@ export const JobDetailView = () => {
     setIsClockInOutLoading(true)
     const latestTimesheet = getLatestTimeSheet(timesheets)
 
-    const timesheetId = latestTimesheet?._id || null
+    const timesheetId = latestTimesheet?._id ?? null
     try {
       const body = {
         job_id: job?._id,
@@ -252,12 +262,12 @@ export const JobDetailView = () => {
     }
   }
 
-  const punchPairsAndTotalTime = useMemo(() => {
+  const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
     if (!timesheets) {
       return []
     }
 
-    const allPunches = timesheets.flatMap(timesheet => timesheet.punches || [])
+    const allPunches = timesheets.flatMap(timesheet => (timesheet.punches.length > 0 ? timesheet.punches : []))
 
     const sortedPunches = [...allPunches].sort(
       (a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime(),
@@ -265,18 +275,22 @@ export const JobDetailView = () => {
 
     const pairs = []
     let punchIn = null
+    let i = 0
     for (const punch of sortedPunches) {
       if (punch.punch_in) {
+        if (punchIn) {
+          pairs.push({ punchIn, punchOut: null, totalTime: undefined })
+        }
         punchIn = punch
       } else if (punchIn) {
         const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
         pairs.push({ punchIn, punchOut: punch, totalTime: convertMillisecondsToReadableTime(totalTime) })
         punchIn = null
       }
-    }
-
-    if (punchIn) {
-      pairs.push({ punchIn, punchOut: null, totalTime: undefined })
+      if (punchIn && i === sortedPunches.length - 1) {
+        pairs.push({ punchIn, punchOut: null, totalTime: undefined })
+      }
+      i++
     }
 
     return pairs.reverse()
@@ -285,6 +299,15 @@ export const JobDetailView = () => {
   const handleFeedback = () => {
     setIdFeedback(id as string)
     setOpenFeedback(true)
+  }
+
+  const checkIfTodaysDateIsSameAsTimeStamp = (timeStamp?: string) => {
+    if (timeStamp == null) {
+      return false
+    }
+    const date = new Date(timeStamp)
+    const todaysDate = new Date()
+    return date.getDate() === todaysDate.getDate()
   }
 
   return (
@@ -594,7 +617,7 @@ export const JobDetailView = () => {
                         <Column
                           field="punchIn.time_stamp"
                           header="Date"
-                          body={rowData =>
+                          body={(rowData: IPunchPairWithTotalTime) =>
                             isValidDate(rowData.punchIn.time_stamp)
                               ? formatDate(rowData.punchIn.time_stamp)
                               : 'No Timestamp'
@@ -603,9 +626,18 @@ export const JobDetailView = () => {
                         <Column header="Time In" body={rowData => formatTime(rowData.punchIn.time_stamp)} />
                         <Column
                           header="Time Out"
-                          body={rowData => (rowData.punchOut ? formatTime(rowData.punchOut.time_stamp) : 'Clocked In')}
+                          body={(rowData: IPunchPairWithTotalTime) =>
+                            rowData.punchOut
+                              ? formatTime(rowData.punchOut.time_stamp)
+                              : checkIfTodaysDateIsSameAsTimeStamp(rowData.punchIn.time_stamp)
+                                ? 'Clocked In'
+                                : 'Clock Out not recorded'
+                          }
                         />
-                        <Column header="Total Time" body={rowData => rowData.totalTime || ''} />
+                        <Column
+                          header="Total Time"
+                          body={(rowData: IPunchPairWithTotalTime) => rowData.totalTime ?? ''}
+                        />
                       </DataTable>
                     </section>
                   </TabPanel>
