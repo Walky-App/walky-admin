@@ -58,14 +58,21 @@ export const ClientAddJob = () => {
     getFacilities()
   }, [id, location.pathname])
 
+  let now = new Date()
+  let start_time = new Date(now)
+  start_time.setHours(8, 0, 0, 0)
+
+  let end_time = new Date(now)
+  end_time.setHours(17, 0, 0, 0)
+
   let defaultValues: JobFormDefaultValues = {
     title: '',
     facility_id: '',
     vacancy: 0,
     hourly_rate: 0,
     job_dates: [],
-    start_time: new Date(),
-    end_time: new Date(),
+    start_time: start_time,
+    end_time: end_time,
     lunch_break: 0,
     job_tips: [],
     total_hours: 0,
