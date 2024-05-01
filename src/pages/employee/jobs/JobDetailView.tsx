@@ -310,6 +310,86 @@ export const JobDetailView = () => {
     return date.getDate() === todaysDate.getDate()
   }
 
+  const isUserApprovedApplicant = (job: IJob) =>
+    job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
+
+  const scheduleListTemplate = (job: IJob) => {
+    return (
+      <>
+        <h2 className="text-base font-semibold leading-6 text-gray-900">Schedule ({job.job_dates.length} days)</h2>
+        <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+          {job.job_dates.map((date, index) => {
+            const dateObj = new Date(date)
+            const formattedDate = dateObj.toLocaleDateString()
+            const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+
+            return (
+              <li key={index} className="py-4 sm:flex">
+                <time dateTime={date} className="w-28 flex-none">
+                  {dayOfWeek}, {formattedDate}
+                </time>
+                <p className="flex-none sm:ml-6">
+                  <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
+                  <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                </p>
+                <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                  Lunch: {job.lunch_break} minutes
+                </p>
+                <p className="text-green-500">Confirmed</p>
+              </li>
+            )
+          })}
+        </ol>
+      </>
+    )
+  }
+
+  const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[]) => {
+    return (
+      <>
+        <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
+        <DataTable value={punchPairsAndTotalTime} stripedRows paginator rows={7} rowsPerPageOptions={[7, 14, 30]}>
+          <Column
+            field="punchIn.time_stamp"
+            header="Date"
+            body={(rowData: IPunchPairWithTotalTime) =>
+              isValidDate(rowData.punchIn.time_stamp) ? formatDate(rowData.punchIn.time_stamp) : 'No Timestamp'
+            }
+          />
+          <Column header="Time In" body={rowData => formatTime(rowData.punchIn.time_stamp)} />
+          <Column
+            header="Time Out"
+            body={(rowData: IPunchPairWithTotalTime) =>
+              rowData.punchOut
+                ? formatTime(rowData.punchOut.time_stamp)
+                : checkIfTodaysDateIsSameAsTimeStamp(rowData.punchIn.time_stamp)
+                  ? 'Clocked In'
+                  : 'Clock Out not recorded'
+            }
+          />
+          <Column header="Total Time" body={(rowData: IPunchPairWithTotalTime) => rowData.totalTime ?? ''} />
+        </DataTable>
+      </>
+    )
+  }
+
+  const facilityImagesTemplate = (job: IJob) => {
+    return (
+      <>
+        <h2 className="text-base font-semibold leading-6 text-gray-900">Facility Images</h2>
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+          {job?.facility?.images?.map(image => (
+            <li key={image._id} className="relative">
+              <div className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                <img src={image.url} alt="" className="pointer-events-none h-80 object-cover group-hover:opacity-75" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
@@ -328,16 +408,13 @@ export const JobDetailView = () => {
                         {job.applicants.length} / {job.vacancy} Applicants
                       </div>
                     </div>
-                    {!job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
-                      ? job.title
-                      : null}
+                    {!isUserApprovedApplicant(job) ? job.title : null}
                   </>
                 }>
                 {/* Job Facility */}
                 <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex">
-                    {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) &&
-                    job.facility?.main_image ? (
+                    {isUserApprovedApplicant(job) && job.facility?.main_image ? (
                       <div className="max-w-screen-xl">
                         <img
                           className="mb-2 mr-8 h-32 w-32 flex-none rounded-lg bg-gray-50 object-cover"
@@ -348,7 +425,7 @@ export const JobDetailView = () => {
                     ) : null}
 
                     <div className="align-center flex flex-col items-start justify-start gap-1">
-                      {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                      {isUserApprovedApplicant(job) ? (
                         <>
                           <div className="flex items-center text-2xl font-bold">{job.title}</div>
                           <div className="flex items-center">
@@ -403,8 +480,7 @@ export const JobDetailView = () => {
                   </div>
                 </div>
                 {/* Arrival Notes */}
-                {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) &&
-                job.facility?.notes ? (
+                {isUserApprovedApplicant(job) && job.facility?.notes ? (
                   <>
                     <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                     <div className="flex flex-wrap gap-4">
@@ -529,7 +605,7 @@ export const JobDetailView = () => {
                   <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
                     <ul className="w-full divide-y divide-gray-200">
                       <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                        {isUserApprovedApplicant(job) ? (
                           <p>You have been accepted!</p>
                         ) : job?.applicants.some(
                             applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
@@ -574,92 +650,16 @@ export const JobDetailView = () => {
                     offIcon="pi pi-check"
                     className="w-8rem mt-2"
                   />
-                  {checked ? (
-                    <section className="mt-12">
-                      <h2 className="text-base font-semibold leading-6 text-gray-900">
-                        Schedule ({job.job_dates.length} days)
-                      </h2>
-                      <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
-                        {job.job_dates.map((date, index) => {
-                          const dateObj = new Date(date)
-                          const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
-                          const formattedDate = dateObj.toLocaleDateString()
-                          return (
-                            <li key={index} className="py-4 sm:flex">
-                              <time dateTime={date} className="w-28 flex-none">
-                                {dayOfWeek}, {formattedDate}
-                              </time>
-                              <p className="flex-none sm:ml-6">
-                                <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                                <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
-                              </p>
-                              <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                                Lunch: {job.lunch_break} minutes
-                              </p>
-                              <p className="text-green-500">Confirmed</p>
-                            </li>
-                          )
-                        })}
-                      </ol>
-                    </section>
-                  ) : null}
+                  {checked ? <section className="mt-12">{scheduleListTemplate(job)}</section> : null}
                 </TabPanel>
-                {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                {isUserApprovedApplicant(job) ? (
                   <TabPanel header="Timesheet">
-                    <section className="mt-4">
-                      <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
-                      <DataTable
-                        value={punchPairsAndTotalTime}
-                        stripedRows
-                        paginator
-                        rows={10}
-                        rowsPerPageOptions={[5, 10, 25, 50]}>
-                        <Column
-                          field="punchIn.time_stamp"
-                          header="Date"
-                          body={(rowData: IPunchPairWithTotalTime) =>
-                            isValidDate(rowData.punchIn.time_stamp)
-                              ? formatDate(rowData.punchIn.time_stamp)
-                              : 'No Timestamp'
-                          }
-                        />
-                        <Column header="Time In" body={rowData => formatTime(rowData.punchIn.time_stamp)} />
-                        <Column
-                          header="Time Out"
-                          body={(rowData: IPunchPairWithTotalTime) =>
-                            rowData.punchOut
-                              ? formatTime(rowData.punchOut.time_stamp)
-                              : checkIfTodaysDateIsSameAsTimeStamp(rowData.punchIn.time_stamp)
-                                ? 'Clocked In'
-                                : 'Clock Out not recorded'
-                          }
-                        />
-                        <Column
-                          header="Total Time"
-                          body={(rowData: IPunchPairWithTotalTime) => rowData.totalTime ?? ''}
-                        />
-                      </DataTable>
-                    </section>
+                    <section className="mt-4">{timesheetTableTemplate(punchPairsAndTotalTime)}</section>
                   </TabPanel>
                 ) : null}
-                {job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved) ? (
+                {isUserApprovedApplicant(job) ? (
                   <TabPanel header="Facility Images">
-                    <section className="mt-4">
-                      <h2 className="text-base font-semibold leading-6 text-gray-900">Facility Images</h2>
-                      <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-                        {job?.facility?.images?.map(image => (
-                          <li key={image._id} className="relative">
-                            <div className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                              <img
-                                src={image.url}
-                                alt=""
-                                className="pointer-events-none h-80 object-cover group-hover:opacity-75"
-                              />
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
+                    <section className="mt-4">{facilityImagesTemplate(job)}</section>
                   </TabPanel>
                 ) : null}
               </TabView>
