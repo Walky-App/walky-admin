@@ -1,9 +1,11 @@
 import * as React from 'react'
-import { TitleComponent } from '../../../components/shared/general/TitleComponent'
+
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
+
+import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
 
-export default function AdminAddJob() {
+export const AdminAddJob = () => {
   const [updateSuccess, setUpdateSuccess] = React.useState(false)
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -55,7 +57,7 @@ export default function AdminAddJob() {
 
   return (
     <>
-      <TitleComponent title={'Add Job'} />
+      <TitleComponent title="Add Job" />
 
       <form onSubmit={handleForm}>
         <div className="space-y-12">
@@ -250,7 +252,7 @@ export default function AdminAddJob() {
                     name="description"
                     rows={3}
                     className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                    defaultValue={''}
+                    defaultValue=""
                   />
                 </div>
 
@@ -261,7 +263,7 @@ export default function AdminAddJob() {
         </div>
 
         <div className="mt-6 flex items-center justify-center gap-x-6">
-          {updateSuccess && (
+          {updateSuccess ? (
             <div className="rounded-md bg-green-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -271,11 +273,11 @@ export default function AdminAddJob() {
                   <p className="text-sm font-medium text-green-800">Job successfully posted</p>
                 </div>
                 <div className="ml-auto pl-3">
-                  <div className="-mx-1.5 -my-1.5"></div>
+                  <div className="-mx-1.5 -my-1.5" />
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
           <button
             type="submit"
             className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
