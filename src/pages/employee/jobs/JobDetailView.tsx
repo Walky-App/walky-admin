@@ -18,7 +18,7 @@ import {
   getAllPunches,
   sortPunches,
   createPunchPairsWithTotalTime,
-} from '../../../components/shared/timesheets/timesheetUtils'
+} from '../../../components/shared/timesheets/timesheetsUtils'
 import { type IJob } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'

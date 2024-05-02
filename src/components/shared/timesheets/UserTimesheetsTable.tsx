@@ -18,7 +18,7 @@ import {
   type IAdminUserTimesheetsColumnMeta,
   type IPunchDetails,
   type IPunchPairsWithData,
-} from './timesheetUtils'
+} from './timesheetsUtils'
 
 const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'day', header: 'Day', sortable: true },
