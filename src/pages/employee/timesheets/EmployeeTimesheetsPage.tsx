@@ -6,9 +6,9 @@ export const EmployeeTimesheets = () => {
   const currentUserId = GetTokenInfo()._id
 
   return (
-    <div>
+    <>
       <HeaderComponent title="Timesheets" />
       <UserTimesheetsTable selectedUserId={currentUserId} />
-    </div>
+    </>
   )
 }
