@@ -46,9 +46,8 @@ import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
 import { AdminUserPage } from './pages/admin/users/AdminUserPage'
-import { AdminInviteUser } from './pages/admin/users/components'
+import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/components'
 import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
-import { AdminUserTimeSheets } from './pages/admin/users/components/AdminUserTimeSheets'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
@@ -169,7 +168,7 @@ export const App = () => {
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<AdminUserPage />}>
                     <Route element={<AdminUserDetails />} path="/admin/users/:id" />
-                    <Route element={<AdminUserTimeSheets />} path="/admin/users/:id/timesheets" />
+                    <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
                   </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<AdminFacilityDetails />} path="/admin/facilities/:facilityId" />
