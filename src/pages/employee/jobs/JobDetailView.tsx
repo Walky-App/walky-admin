@@ -13,17 +13,17 @@ import { ToggleButton } from 'primereact/togglebutton'
 import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
 import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import {
+  type IPunchPairWithTotalTime,
+  getAllPunches,
+  sortPunches,
+  createPunchPairsWithTotalTime,
+} from '../../../components/shared/timesheets/timesheetUtils'
 import { type IJob } from '../../../interfaces/job'
-import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
+import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
-import {
-  convertMillisecondsToReadableTime,
-  convertToStandardTime,
-  formatDate,
-  formatTime,
-  isValidDate,
-} from '../../../utils/timeUtils'
+import { convertToStandardTime, formatDate, formatTime, isValidDate } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const JobDetailView = () => {
@@ -46,12 +46,6 @@ export const JobDetailView = () => {
   const [latitude, setLatitude] = useState<number>()
   const [longitude, setLongitude] = useState<number>()
   const [error, setError] = useState<string>()
-
-  interface IPunchPairWithTotalTime {
-    punchIn: IPunch
-    punchOut: IPunch | null
-    totalTime: string | undefined
-  }
 
   useEffect(() => {
     let isMounted = true
@@ -267,33 +261,10 @@ export const JobDetailView = () => {
       return []
     }
 
-    const allPunches = timesheets.flatMap(timesheet => (timesheet.punches.length > 0 ? timesheet.punches : []))
+    const allPunches = getAllPunches(timesheets)
+    const sortedPunches = sortPunches(allPunches)
 
-    const sortedPunches = [...allPunches].sort(
-      (a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime(),
-    )
-
-    const pairs = []
-    let punchIn = null
-    let i = 0
-    for (const punch of sortedPunches) {
-      if (punch.punch_in) {
-        if (punchIn) {
-          pairs.push({ punchIn, punchOut: null, totalTime: undefined })
-        }
-        punchIn = punch
-      } else if (punchIn) {
-        const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
-        pairs.push({ punchIn, punchOut: punch, totalTime: convertMillisecondsToReadableTime(totalTime) })
-        punchIn = null
-      }
-      if (punchIn && i === sortedPunches.length - 1) {
-        pairs.push({ punchIn, punchOut: null, totalTime: undefined })
-      }
-      i++
-    }
-
-    return pairs.reverse()
+    return createPunchPairsWithTotalTime(sortedPunches)
   }, [timesheets])
 
   const handleFeedback = () => {
