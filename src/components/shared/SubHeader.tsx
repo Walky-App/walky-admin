@@ -51,29 +51,28 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
   ) : null
 
   const renderAddress = isValid(address) ? (
-    <div className="flex items-center text-sm text-gray-500">
+    <div className="flex items-center text-balance text-sm text-gray-500">
       <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
       {address}
     </div>
   ) : null
 
-  const renderNavigationLinks = links.map(
-    link =>
-      link.disabled !== false && (
-        <span key={link.id} className="hidden xs:block">
-          <NavLink
-            to={`${basePath}/${data?._id}${link.href}`}
-            end
-            className={({ isActive }) =>
-              cn('p-button p-button-sm', { 'p-button-secondary p-button-outlined': !isActive })
-            }>
-            <span className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true">
-              {link.icon}
-            </span>
-            {link.name}
-          </NavLink>
-        </span>
-      ),
+  const renderNavigationLinks = links.map(link =>
+    link.disabled === true ? null : (
+      <span key={link.id} className="hidden xs:block">
+        <NavLink
+          to={`${basePath}/${data?._id}${link.href}`}
+          end
+          className={({ isActive }) =>
+            cn('p-button p-button-sm', { 'p-button-secondary p-button-outlined': !isActive })
+          }>
+          <span className="-ml-0.5 mr-1.5 h-5 w-5 " aria-hidden="true">
+            {link.icon}
+          </span>
+          {link.name}
+        </NavLink>
+      </span>
+    ),
   )
 
   const renderMobileDropdown = (
