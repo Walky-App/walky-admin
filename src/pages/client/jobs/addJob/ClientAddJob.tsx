@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useRef } from 'react'
 
 import { Controller, type FieldErrors, useForm } from 'react-hook-form'
@@ -307,8 +306,6 @@ export const ClientAddJob = () => {
                             dateFormat="mm/dd/yy"
                             selectionMode="multiple"
                             className={classNames({ 'p-invalid': fieldState.error })}
-                            showIcon
-                            showButtonBar
                             minDate={new Date()} // Disabling past dates
                             inline
                           />

@@ -77,7 +77,7 @@ import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 import { Certification } from './pages/admin/HTU/components/Certification'
 
-import AdminJobs from './pages/admin/jobs'
+import { AdminJobs } from './pages/admin/jobs'
 
 import { AdminMessages } from './pages/admin/messages'
 
