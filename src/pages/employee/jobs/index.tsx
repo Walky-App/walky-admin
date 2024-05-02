@@ -1,12 +1,10 @@
-//eslint-disable
 import { useState, useEffect } from 'react'
 
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
-// import { type CheckboxChangeParams } from 'primereact/checkbox';
-import { Dropdown } from 'primereact/dropdown'
 import { Skeleton } from 'primereact/skeleton'
+import { Slider } from 'primereact/slider'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { type IJob } from '../../../interfaces/job'
@@ -60,7 +58,7 @@ export const EmployeeJobs = () => {
   const [selectedJobTitles, setSelectedJobTitles] = useState([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
+  const [selectedRange, setSelectedRange] = useState(rangeOptions[0].code)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
@@ -130,7 +128,7 @@ export const EmployeeJobs = () => {
       })
     }
     if (selectedRange) {
-      filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange.code)
+      filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange)
     }
     setDisplayedJobs(filteredJobs)
   }, [selectedJobTitles, dates, jobs, selectedRange])
@@ -148,24 +146,6 @@ export const EmployeeJobs = () => {
   return (
     <div className="flex flex-col md:flex-row">
       <div className="w-full p-3 md:w-1/4">
-        <div className="flex items-center">
-          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="Type in address" />
-          <Button
-            className="mx-1"
-            icon="pi pi-search"
-            aria-label="Set jobs by Selected Address"
-            tooltip="Set Jobs with distance from the address location"
-            onClick={handleUseSelectedAddress}
-          />
-          <Button
-            icon="pi pi-map-marker"
-            rounded
-            text
-            aria-label="Set jobs by Current Location "
-            tooltip="Set Jobs with distance from your current location"
-            onClick={handleUseCurrentLocation}
-          />
-        </div>
         <h2>Filter:</h2>
         <div className="mb-4">
           {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 7).map(jobTitle => {
@@ -197,7 +177,6 @@ export const EmployeeJobs = () => {
         </div>
         <div className="mb-4 hidden md:block">
           <Calendar
-            //big screen inline Calendar
             value={dates}
             onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
@@ -211,7 +190,6 @@ export const EmployeeJobs = () => {
         </div>
         <div className="mb-4 md:hidden">
           <Calendar
-            //small screen Calendar hidden into dropdown
             value={dates}
             onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
@@ -223,15 +201,40 @@ export const EmployeeJobs = () => {
             className="w-full"
           />
         </div>
-        <div className="mb-4">
-          <Dropdown
-            value={selectedRange}
-            onChange={e => setSelectedRange(e.value)}
-            options={rangeOptions}
-            optionLabel="name"
-            placeholder="by Distance"
-            className="w-full"
+        <div className="mb-4 flex items-center">
+          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="Type in address" />
+          <Button
+            className="mx-1"
+            icon="pi pi-search"
+            aria-label="Set jobs by Selected Address"
+            tooltip="Set Jobs with distance from the address location"
+            onClick={handleUseSelectedAddress}
           />
+          <Button
+            icon="pi pi-map-marker"
+            rounded
+            text
+            aria-label="Set jobs by Current Location "
+            tooltip="Set Jobs with distance from your current location"
+            onClick={handleUseCurrentLocation}
+          />
+        </div>
+        <div className="mb-4">
+          <Slider
+            value={selectedRange}
+            onChange={e => {
+              if (Array.isArray(e.value)) {
+                setSelectedRange(e.value[0])
+              } else {
+                setSelectedRange(e.value)
+              }
+            }}
+            className="w-full"
+            step={10}
+            min={rangeOptions[0].code}
+            max={rangeOptions[rangeOptions.length - 1].code}
+          />
+          <div>Selected Range: {selectedRange} miles</div>
         </div>
       </div>
       <div className="w-full p-3 md:w-3/4">
