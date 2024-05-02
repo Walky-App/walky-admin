@@ -218,37 +218,43 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     const commonColumnStyle = 'w-1/12'
     const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
     const editableCellColumnProps = getEditableProps(currentUserRole)
+    const punchColumns = [
+      {
+        field: 'in_time',
+        header: 'Punch In',
+      },
+      {
+        field: 'out_time',
+        header: 'Punch Out',
+        body: (rowData: IPunchDetails) =>
+          rowData.out_time
+            ? rowData.out_time
+            : isTodaysDateSameAsTimeStamp(rowData.in_time)
+              ? 'Clocked In'
+              : 'Clock Out not recorded',
+      },
+    ]
 
     return (
       <div className="p-4">
         <h5 className="text-sm font-semibold">Punch Details</h5>
         <DataTable value={data.punchesWithDetails} sortField="in_time" sortOrder={-1} editMode="cell">
           <Column className={cn([commonColumnStyle])} field="day" header="Day" />
-          <Column
-            className={cn([commonColumnStyle, editableCellColumnStyle])}
-            field="in_time"
-            header="Punch In (✎)"
-            {...editableCellColumnProps}
-          />
-          <Column
-            className={cn([commonColumnStyle, editableCellColumnStyle])}
-            field="out_time"
-            header="Punch Out (✎)"
-            body={(rowData: IPunchDetails) =>
-              rowData.out_time
-                ? rowData.out_time
-                : isTodaysDateSameAsTimeStamp(rowData.in_time)
-                  ? 'Clocked In'
-                  : 'Clock Out not recorded'
-            }
-            {...editableCellColumnProps}
-          />
+          {punchColumns.map(({ field, header, body }) => (
+            <Column
+              key={field}
+              className={cn([commonColumnStyle, editableCellColumnStyle])}
+              field={field}
+              header={`${header} ${currentUserRole === 'admin' ? '(✎)' : ''}`}
+              body={body}
+              {...editableCellColumnProps}
+            />
+          ))}
           <Column className={cn([commonColumnStyle, 'w-4/12'])} field="total_time" header="Total Hours" />
         </DataTable>
       </div>
     )
   }
-
   const totalTimeSum = sortedTimeSheets.reduce((sum, record) => {
     const hours = parseFloat(record.total_time)
     return sum + hours
