@@ -27,3 +27,18 @@ export const roleChecker = () => {
     return roleType
   }
 }
+
+export const roleTxt = (role: string) => {
+  switch (role) {
+    case admin_role:
+      return 'Admin'
+    case client_role:
+      return 'Client'
+    case sales_role:
+      return 'Sales'
+    case employee_role:
+      return 'Employee'
+    default:
+      return 'Unknown'
+  }
+}

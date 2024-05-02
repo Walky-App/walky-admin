@@ -1,11 +1,17 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
+import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { InputMask } from 'primereact/inputmask'
+import { InputText } from 'primereact/inputtext'
+import { Password } from 'primereact/password'
+import { Toast } from 'primereact/toast'
+
 import { useAuth } from '../../contexts/AuthContext'
-import { type ILoginData } from '../../interfaces/loginData'
+import { type ISignupData, type ILoginData } from '../../interfaces/loginData'
 import { type ITokenInfo } from '../../interfaces/services'
-import { RequestService } from '../../services/RequestService'
+import { requestService } from '../../services/requestServiceNew'
 import { useUtils } from '../../store/useUtils'
 import { SetToken } from '../../utils/tokenUtil'
 
@@ -15,182 +21,254 @@ const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export const Signup = () => {
-  const [error, setError] = useState<Error | undefined>()
+  const { showToast } = useUtils()
   const [loading, setLoading] = useState(false)
   const { setUser } = useAuth()
   const { setAvatarImageUrl } = useUtils()
+  const toast = useRef<Toast>(null)
+
+  const show = (message: string) => {
+    toast.current?.show({ severity: 'error', summary: 'Email not found', detail: message })
+  }
 
   const { email, role } = useParams()
   const navigate = useNavigate()
 
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const defaultValues: ISignupData = {
+    first_name: '',
+    last_name: '',
+    password: '',
+    password_confirmed: '',
+    email: email as string,
+    role: role as string,
+    phone_number: '',
+    otp: '',
+  }
+
+  const { control, handleSubmit, reset } = useForm({ defaultValues })
+
+  const onSubmit: SubmitHandler<ISignupData> = async data => {
     await setLoading(true)
 
-    const target = e.target as HTMLFormElement
-
-    const formData = {
-      email: email,
-      phone_number: target.phone.value,
-      password: target.password.value,
-      password_confirmed: target.password_confirmed.value,
-      first_name: target.firstName.value,
-      last_name: target.lastName.value,
-      role: role,
-    }
-
     try {
-      const data = await RequestService('auth', 'POST', formData)
+      const payload = {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        password: data.password,
+        password_confirmed: data.password_confirmed,
+        email: email as string,
+        role: role as string,
+        phone_number: data.phone_number,
+        otp: data.otp,
+      }
 
-      const { access_token, user }: ILoginData = data
+      const response = await requestService({ path: 'auth', method: 'POST', body: JSON.stringify(payload) })
+      const jsonResponse = await response.json()
 
-      if (access_token) {
-        const ls_info: ITokenInfo = {
-          first_name: user.first_name,
-          _id: user._id,
-          role: user.role,
-          access_token: access_token,
-          avatar: user.avatar,
-        }
-
-        SetToken(ls_info)
-        setUser({ ...user, access_token: access_token })
-        setAvatarImageUrl(user.avatar as string)
-        setLoading(false)
-
-        switch (user.role) {
-          case client_role:
-            navigate('/client/dashboard')
-            break
-          case admin_role:
-            navigate('/admin/dashboard')
-            break
-          case employee_role:
-            navigate('/employee/dashboard')
-            break
-          case sales_role:
-            navigate('/sales/dashboard')
-            break
-          default:
-            navigate('/login')
+      if (response.status === 201) {
+        const { access_token, user }: ILoginData = jsonResponse
+        if (access_token) {
+          const ls_info: ITokenInfo = {
+            first_name: user.first_name,
+            _id: user._id,
+            role: user.role,
+            access_token: access_token,
+            avatar: user.avatar,
+            onboarding: user.onboarding,
+          }
+          SetToken(ls_info)
+          setUser({ ...user, access_token: access_token })
+          setAvatarImageUrl(user.avatar as string)
+          setLoading(false)
+          switch (user.role) {
+            case client_role:
+              navigate('/client/dashboard')
+              break
+            case admin_role:
+              navigate('/admin/dashboard')
+              break
+            case employee_role:
+              navigate('/employee/dashboard')
+              break
+            case sales_role:
+              navigate('/sales/dashboard')
+              break
+            default:
+              navigate('/login')
+          }
+          showToast({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Employee added to DNR list successfully',
+          })
+          reset()
         }
       } else {
-        setError(data.message)
         setLoading(false)
       }
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error)
-      } else {
-        setError(new Error('An unknown error occurred.'))
-      }
+      showToast({ severity: 'error', summary: 'Error', detail: 'An error occurred. Please try again.' })
+      show('An error occurred. Please try again.')
       setLoading(false)
     }
   }
 
   return (
-    <div className="w-full">
-      <div className="flex justify-center">
-        <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
-      </div>
-      <form onSubmit={handleSignup} className="mx-auto max-w-md">
-        <div className="grid grid-cols-1 gap-4 p-3 sm:grid-cols-2">
-          <div>
-            <label className="sr-only" htmlFor="firstName">
-              First Name
-            </label>
-            <input
-              required
-              className="w-full rounded-lg border-zinc-200 p-4 text-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="First Name"
-              type="text"
-              name="firstName"
-            />
-          </div>
-          <div>
-            <label className="sr-only" htmlFor="lastName">
-              Last Name
-            </label>
-            <input
-              required
-              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500 "
-              placeholder="Last Name"
-              type="text"
-              name="lastName"
-            />
-          </div>
+    <div className="flex h-screen items-center justify-center">
+      <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-md">
+        <div className="flex justify-center">
+          <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
         </div>
-
-        <div className="p-3">
-          <label htmlFor="email" className="sr-only">
-            Email
-          </label>
-
-          <div className="relative">
-            <input
-              disabled
-              value={email}
-              required
-              type="email"
-              name="email"
-              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Email"
-            />
-          </div>
+        <div className="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <Controller
+            name="first_name"
+            control={control}
+            rules={{ required: 'First Name is required' }}
+            render={({ field }) => (
+              <InputText
+                required
+                type="text"
+                name="first_name"
+                onChange={e => field.onChange(e.target.value)}
+                className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+                placeholder="*First Name"
+              />
+            )}
+          />
+          <Controller
+            name="last_name"
+            control={control}
+            rules={{ required: 'Last Name is required' }}
+            render={({ field }) => (
+              <InputText
+                required
+                type="text"
+                name="last_name"
+                onChange={e => field.onChange(e.target.value)}
+                className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+                placeholder="*Last Name"
+              />
+            )}
+          />
         </div>
-
-        <div className="p-3">
-          <label htmlFor="phone" className="sr-only">
-            Phone
-          </label>
-
-          <div className="relative">
-            <input
-              required
-              type="tel"
-              name="phone"
-              className="w-full rounded-lg border-zinc-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Phone Number"
-            />
-          </div>
+        <div className="relative mb-5">
+          <Controller
+            name="email"
+            control={control}
+            rules={{ required: 'Email is required' }}
+            render={({ field }) => (
+              <InputText
+                required
+                disabled
+                defaultValue={email}
+                type="email"
+                name="email"
+                onChange={e => field.onChange(e.target.value)}
+                className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
+                placeholder="*Email"
+              />
+            )}
+          />
+          <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 text-zinc-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+              />
+            </svg>
+          </span>
         </div>
-
-        <div className="p-3">
-          <label htmlFor="password" className="sr-only">
-            Password
-          </label>
-
-          <div className="relative">
-            <input
-              required
-              type="password"
-              name="password"
-              className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Password"
-            />
-          </div>
+        <div className="relative my-5">
+          <Controller
+            name="phone_number"
+            control={control}
+            rules={{ required: 'Phone Number is required' }}
+            render={({ field }) => (
+              <InputMask
+                required
+                mask="(999) 999-9999"
+                onChange={e => field.onChange(e.target.value)}
+                placeholder="(561) 999-9999"
+                className="w-full"
+              />
+            )}
+          />
         </div>
-
         <div>
-          <label htmlFor="password_confirmed" className="sr-only">
-            password_confirmed
-          </label>
-
-          <div className="relative p-3">
-            <input
-              required
-              type="password"
-              name="password_confirmed"
-              className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm  focus:border-green-500 focus:ring-green-500"
-              placeholder="Verify Password"
+          <Controller
+            name="password"
+            control={control}
+            rules={{ required: 'Password is required' }}
+            render={({ field }) => (
+              <Password
+                required
+                inputId="password"
+                placeholder="*Password"
+                toggleMask
+                onChange={e => field.onChange(e.target.value)}
+                pt={{
+                  panel: { className: 'hidden' },
+                  input: {
+                    className:
+                      'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+                  },
+                }}
+                className="w-full"
+              />
+            )}
+          />
+          <Controller
+            name="password_confirmed"
+            control={control}
+            rules={{ required: 'Password Verify is required' }}
+            render={({ field }) => (
+              <Password
+                required
+                inputId="password_confirmed"
+                placeholder="*Password confirmed"
+                toggleMask
+                onChange={e => field.onChange(e.target.value)}
+                pt={{
+                  panel: { className: 'hidden' },
+                  input: {
+                    className:
+                      'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+                  },
+                }}
+                className="my-5 w-full"
+              />
+            )}
+          />
+          {/* <div className="relative my-5">
+            <label htmlFor="employee" className="block text-sm font-medium leading-6 text-gray-900">
+              One Time Passcode
+            </label>
+            <Controller
+              name="otp"
+              control={control}
+              rules={{ required: 'One time passcode is required' }}
+              render={({ field }) => (
+                <InputMask
+                  required
+                  mask="999-999"
+                  onChange={e => field.onChange(e.target.value)}
+                  placeholder="123-456"
+                  className="w-full"
+                />
+              )}
             />
-          </div>
+
+          </div> */}
+
+          <Toast ref={toast} position="bottom-right" />
         </div>
-        {error ? (
-          <div className="flex items-center justify-center">
-            <p className="text-sm text-red-500">{error.message}</p>
-          </div>
-        ) : null}
         <div className="flex items-center justify-center">
           <button
             disabled={loading}
