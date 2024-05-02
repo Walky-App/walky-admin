@@ -6,6 +6,7 @@ import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IProduct } from '../../../interfaces/Product'
 import { RequestService } from '../../../services/RequestService'
+import { LoadingLogo } from '../../../utils/LoadingLogo'
 import { ImportUpdateModal } from './components/ImportUpdateModal'
 
 interface IRow {
@@ -78,36 +79,36 @@ export const ProductList = () => {
     <div className="">
       <ImportUpdateModal setVisible={setVisible} visible={visible} />
       <HeaderComponent title={`${productsData.length} Products `} />
-      <button
-        className="mb-4 rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-        disabled
-        onClick={() => {
-          // navigate('/admin/facilities/new')
-        }}
-        type="button">
-        New Product
-      </button>
-      <button
-        className="mb-4 ml-2 rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-        onClick={() => {
-          setVisible(true)
-        }}
-        type="button">
-        Import / Update
-      </button>
-      <button
-        className="mb-4 ml-2 rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-        onClick={() => navigate('/admin/products/categories')}
-        type="button">
-        Categories
-      </button>
 
       {isLoading ? (
-        <div className="flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600" />
-        </div>
+        <LoadingLogo />
       ) : (
-        <GlobalTable allowClick columns={memoProductsColumns} data={memoProductsData} />
+        <>
+          <button
+            className="mb-4 rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+            disabled
+            onClick={() => {
+              // navigate('/admin/facilities/new')
+            }}
+            type="button">
+            New Product
+          </button>
+          <button
+            className="mb-4 ml-2 rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+            onClick={() => {
+              setVisible(true)
+            }}
+            type="button">
+            Import / Update
+          </button>
+          <button
+            className="mb-4 ml-2 rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+            onClick={() => navigate('/admin/products/categories')}
+            type="button">
+            Categories
+          </button>
+          <GlobalTable allowClick columns={memoProductsColumns} data={memoProductsData} />
+        </>
       )}
     </div>
   )
