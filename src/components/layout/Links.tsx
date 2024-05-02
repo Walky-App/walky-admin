@@ -1,0 +1,81 @@
+import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
+import {
+  FaBusinessTime,
+  FaBriefcase,
+  FaFileContract,
+  FaFileInvoiceDollar,
+  FaBuilding,
+  FaUserGraduate,
+} from 'react-icons/fa'
+import { FaUserGroup } from 'react-icons/fa6'
+import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
+import { IoMdMail } from 'react-icons/io'
+import { MdSchool } from 'react-icons/md'
+
+import { Cog6ToothIcon } from '@heroicons/react/20/solid'
+
+import { roleChecker } from '../../utils/roleChecker'
+import { GetTokenInfo } from '../../utils/tokenUtil'
+
+interface INavLink {
+  id: number
+  name: string
+  href: string
+  icon?: JSX.Element
+  disabled?: boolean
+}
+
+const tokenInfo = GetTokenInfo()
+const userIsOnboarded = tokenInfo?.onboarding?.completed
+
+const adminLinks: INavLink[] = [
+  { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
+  { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
+  { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
+  { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
+  { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
+  { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
+  { id: 7, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
+  { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
+]
+
+const clientLinks: INavLink[] = [
+  { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase />, disabled: !userIsOnboarded },
+  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: !userIsOnboarded },
+  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: !userIsOnboarded },
+  {
+    id: 4,
+    name: 'Timesheets',
+    href: '/dashboard/timesheets',
+    icon: <BsFillFileEarmarkSpreadsheetFill />,
+    disabled: !userIsOnboarded,
+  },
+  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: !userIsOnboarded },
+  { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
+  { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding />, disabled: !userIsOnboarded },
+]
+
+const employeeLinks: INavLink[] = [
+  { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime /> },
+  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+  { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
+  { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+]
+
+const salesLinks: INavLink[] = [
+  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
+  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
+  { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: !userIsOnboarded },
+  { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: !userIsOnboarded },
+  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: !userIsOnboarded },
+  { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
+]
+
+export const userLinks = () => {
+  const role = roleChecker()
+  if (role === 'admin') return adminLinks
+  if (role === 'client') return clientLinks
+  if (role === 'employee') return employeeLinks
+  if (role === 'sales') return salesLinks
+  return []
+}

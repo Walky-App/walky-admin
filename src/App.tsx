@@ -12,7 +12,6 @@ import { Error404 } from './pages/Error404'
 /******************************************* Auth Pages ************************************/
 import { Auth } from './pages/auth'
 import { NewPasswordForm } from './pages/auth/NewPasswordForm'
-import ResetSuccess from './pages/auth/ResetSuccess'
 import { Signup } from './pages/auth/SignupForm'
 
 /******************************************* HTU Pages ************************************/
@@ -28,7 +27,7 @@ import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
+import { JobDetailViewClient } from './pages/client/jobs/JobDetailViewClient'
 import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
 import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
 import { ClientMessages } from './pages/client/messages'
@@ -107,7 +106,6 @@ export const App = () => {
             <Route element={<Auth />} path="/" />
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
-            <Route element={<ResetSuccess />} path="/reset-success" />
             <Route element={<Signup />} path="/invite/:email/:role" />
             <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>

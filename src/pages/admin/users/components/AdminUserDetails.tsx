@@ -4,6 +4,7 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
+import { roleTxt } from '../../../../utils/roleChecker'
 import { useAdminUserContext } from '../AdminUserPage'
 
 export const AdminUserDetails = () => {
@@ -121,7 +122,7 @@ export const AdminUserDetails = () => {
               </div>
             </div>
 
-            {formUser.role === '6473' ? (
+            {roleTxt(formUser.role) !== 'Admin' ? (
               <div className="sm:col-span-3">
                 <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
                   Onboarding Status
@@ -130,7 +131,7 @@ export const AdminUserDetails = () => {
                   <select
                     id="status"
                     name="active"
-                    value={formUser.isOnboarded?.toString() ?? 'false'}
+                    value={formUser.onboarding.completed?.toString() ?? 'false'}
                     onChange={handleInputChange as unknown as React.ChangeEventHandler<HTMLSelectElement>}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                     <option value="true">Approved</option>
@@ -216,7 +217,7 @@ export const AdminUserDetails = () => {
               </label>
               <div className="mt-2">
                 <input
-                  value={formUser.role || ''}
+                  value={roleTxt(formUser.role)}
                   onChange={handleInputChange}
                   type="text"
                   disabled
