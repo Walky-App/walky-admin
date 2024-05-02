@@ -5,13 +5,13 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { roleTxt } from '../../../../utils/roleChecker'
-import { useAdminUserContext } from '../AdminUserPage'
+import { useAdminUserPageContext } from '../AdminUserPage'
 
 export const AdminUserDetails = () => {
   const [formUser, setFormUser] = useState<IUser>()
   const [updateSuccess, setUpdateSuccess] = useState(false)
 
-  const { selectedUserData } = useAdminUserContext()
+  const { selectedUserData } = useAdminUserPageContext()
 
   useEffect(() => {
     if (selectedUserData) {
