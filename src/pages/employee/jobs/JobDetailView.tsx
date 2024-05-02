@@ -23,7 +23,13 @@ import { type IJob } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
-import { convertToStandardTime, formatDate, formatTime, isValidDate } from '../../../utils/timeUtils'
+import {
+  isTodaysDateSameAsTimeStamp,
+  convertMilitaryTimeToStandardTime,
+  formatDate,
+  formatTime,
+  isValidDate,
+} from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const JobDetailView = () => {
@@ -163,7 +169,7 @@ export const JobDetailView = () => {
         const timeStampOfLastPunchIn = lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp
 
         setIsClockedIn(
-          lastTimesheet?.is_clocked_in === true ? checkIfTodaysDateIsSameAsTimeStamp(timeStampOfLastPunchIn) : false,
+          lastTimesheet?.is_clocked_in === true ? isTodaysDateSameAsTimeStamp(timeStampOfLastPunchIn) : false,
         )
       }
     } catch (error) {
@@ -272,15 +278,6 @@ export const JobDetailView = () => {
     setOpenFeedback(true)
   }
 
-  const checkIfTodaysDateIsSameAsTimeStamp = (timeStamp?: string) => {
-    if (timeStamp == null) {
-      return false
-    }
-    const date = new Date(timeStamp)
-    const todaysDate = new Date()
-    return date.getDate() === todaysDate.getDate()
-  }
-
   const isUserApprovedApplicant = (job: IJob) =>
     job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
 
@@ -300,8 +297,8 @@ export const JobDetailView = () => {
                   {dayOfWeek}, {formattedDate}
                 </time>
                 <p className="flex-none sm:ml-6">
-                  <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                  <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.start_time)}</time> -
+                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.end_time)}</time>
                 </p>
                 <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                   Lunch: {job.lunch_break} minutes
@@ -333,7 +330,7 @@ export const JobDetailView = () => {
             body={(rowData: IPunchPairWithTotalTime) =>
               rowData.punchOut
                 ? formatTime(rowData.punchOut.time_stamp)
-                : checkIfTodaysDateIsSameAsTimeStamp(rowData.punchIn.time_stamp)
+                : isTodaysDateSameAsTimeStamp(rowData.punchIn.time_stamp)
                   ? 'Clocked In'
                   : 'Clock Out not recorded'
             }
@@ -476,7 +473,8 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-sm font-normal text-stone-500">Job Time</div>
                     <div className="text-sm font-normal text-black">
-                      {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                      {convertMilitaryTimeToStandardTime(job.start_time)} -{' '}
+                      {convertMilitaryTimeToStandardTime(job.end_time)}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
