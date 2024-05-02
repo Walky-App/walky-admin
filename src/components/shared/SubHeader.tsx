@@ -57,8 +57,8 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
     </div>
   ) : null
 
-  const renderNavigationLinks = links.map(link => {
-    return (
+  const renderNavigationLinks = links.map(
+    link =>
       link.disabled !== false && (
         <span key={link.id} className="hidden xs:block">
           <NavLink
@@ -73,9 +73,8 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
             {link.name}
           </NavLink>
         </span>
-      )
-    )
-  })
+      ),
+  )
 
   const renderMobileDropdown = (
     <Menu as="div" className="relative xs:hidden">
