@@ -16,11 +16,11 @@ import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { cn } from '../../../../utils/cn'
-import { formatTime } from '../../../../utils/timeUtils'
+import { formatTime, isTodaysDateSameAsTimeStamp } from '../../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { useAdminUserContext } from '../AdminUserPage'
 
-export const AdminUserTimeSheets = () => {
+export const AdminUserTimesheets = () => {
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<Nullable<Date>>(null)
@@ -182,7 +182,7 @@ export const AdminUserTimeSheets = () => {
     const field = col.field as keyof IPunchPairsWithData
 
     if (field === 'out_time' && (!rowData[field] || rowData[field] === '')) {
-      return 'Clocked in'
+      return isTodaysDateSameAsTimeStamp(rowData['in_time']) ? 'Clocked In' : 'Clock Out not recorded'
     } else if (field === 'total_time' && (!rowData['out_time'] || rowData['out_time'] === '')) {
       return ''
     } else {
@@ -218,7 +218,13 @@ export const AdminUserTimeSheets = () => {
             className={cn([commonColumnStyle, 'cursor-pointer hover:text-primary'])}
             field="out_time"
             header="Punch Out (✎)"
-            body={(rowData: IPunchDetails) => rowData.out_time || 'Clocked In'}
+            body={(rowData: IPunchDetails) =>
+              rowData.out_time
+                ? rowData.out_time
+                : isTodaysDateSameAsTimeStamp(rowData.in_time)
+                  ? 'Clocked In'
+                  : 'Clock Out not recorded'
+            }
             editor={options => timeEditor(options)}
             onCellEditComplete={onCellEditComplete}
             onCellEditCancel={() => setSelectedTime(null)}
