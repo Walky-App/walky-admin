@@ -180,177 +180,171 @@ export const FormSettings = () => {
         />
       </div>
       {settings._id === '' ? (
-        <div className="pt-10 text-center">Select a state to view settings</div>
+        <div className="pt-10 text-center">{isLoading ? 'Loading...' : 'Select a state to view settings'}</div>
       ) : (
-        <div>
-          {isLoading ? (
-            <div>Loading settings...</div>
-          ) : (
-            <div className="space-y-12">
-              <div className="mt-5 grid grid-cols-1 gap-x-8 gap-y-10 border-y border-gray-900/10 pb-12 pt-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">General settings</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">configuration for the entire application</p>
-                </div>
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                  <div className="sm:col-span-3">
-                    <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Minimum wage
-                    </label>
-                    <InputNumber
-                      tooltip="Enter the minimum pay rate for all USD jobs in this state."
-                      tooltipOptions={{ position: 'mouse' }}
-                      mode="currency"
-                      currency="USD"
-                      showButtons
-                      name="minimum_wage"
-                      min={1}
-                      step={0.1}
-                      onChange={e => setMinimunWage(Number(e.value))}
-                      value={minimunWage}
-                    />
-                  </div>
-                  <div className="sm:col-span-3">
-                    <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Licenses required
-                    </label>
-                    <ToggleButton
-                      className={cn('mt-1 text-white ', lisenceRequiredChecked ? 'bg-primary ' : 'bg-gray-400')}
-                      onLabel="Enabled"
-                      offLabel="Disabled"
-                      checked={lisenceRequiredChecked}
-                      onChange={e => setLisenceRequiredChecked(e.value)}
-                    />
-                  </div>
-                  <div className="sm:col-span-3">
-                    <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Limit work hours per week
-                    </label>
-                    <InputNumber
-                      mode="decimal"
-                      name="limit_work_hours_per_week"
-                      onChange={e => setMaxHoursPerDay(Number(e.value))}
-                      value={maxHoursPerDay}
-                    />
-                  </div>
-                </div>
+        <div className="space-y-12">
+          <div className="mt-5 grid grid-cols-1 gap-x-8 gap-y-10 border-y border-gray-900/10 pb-12 pt-12 md:grid-cols-3">
+            <div>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">General settings</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">configuration for the entire application</p>
+            </div>
+            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+              <div className="sm:col-span-3">
+                <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+                  Minimum wage
+                </label>
+                <InputNumber
+                  tooltip="Enter the minimum pay rate for all USD jobs in this state."
+                  tooltipOptions={{ position: 'mouse' }}
+                  mode="currency"
+                  currency="USD"
+                  showButtons
+                  name="minimum_wage"
+                  min={1}
+                  step={0.1}
+                  onChange={e => setMinimunWage(Number(e.value))}
+                  value={minimunWage}
+                />
               </div>
-
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Admin Cost</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Total Admin cost is <strong>{sumAdminCost}%</strong>
-                  </p>
-                </div>
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                  <div className="col-span-4 ">
-                    <DataTable ref={dt} value={adminCost} editMode="cell">
-                      {columns.map((field, header) => {
-                        return (
-                          <Column
-                            key={header}
-                            field={field.field}
-                            header={field.header}
-                            editor={options => cellEditor(options)}
-                            onCellEditComplete={onCellEditComplete}
-                          />
-                        )
-                      })}
-                    </DataTable>
-                  </div>
-                </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+                  Licenses required
+                </label>
+                <ToggleButton
+                  className={cn('mt-1 text-white ', lisenceRequiredChecked ? 'bg-primary ' : 'bg-gray-400')}
+                  onLabel="Enabled"
+                  offLabel="Disabled"
+                  checked={lisenceRequiredChecked}
+                  onChange={e => setLisenceRequiredChecked(e.value)}
+                />
               </div>
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Fees Manager</h2>
-                </div>
-                <div className="grid max-w-2xl grid-cols-6 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                  <div className="col-span-3">
-                    <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
-                      Our fees
-                    </label>
-                    <InputNumber
-                      className="mt-1 block w-full"
-                      maxFractionDigits={2}
-                      min={0}
-                      max={100}
-                      name="our_fees"
-                      prefix="% "
-                      value={ourFees}
-                      onChange={e => setOurFees(Number(e.value))}
-                    />
-                  </div>
-                  <div className="col-span-3">
-                    <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
-                      Processing fees
-                    </label>
-                    <InputNumber
-                      className="mt-1 block w-full"
-                      maxFractionDigits={2}
-                      min={0}
-                      max={100}
-                      name="processing_fees"
-                      prefix="% "
-                      value={processingFees}
-                      onChange={e => setProcessingFees(Number(e.value))}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Overtime</h2>
-                </div>
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                  <div className="col-span-3">
-                    <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
-                      Holidays rate
-                    </label>
-                    <InputNumber
-                      className="mt-1 block w-full"
-                      maxFractionDigits={2}
-                      min={0}
-                      max={1}
-                      name="holidays_rate"
-                      value={holidaysRate}
-                      onChange={e => setHolidaysRate(Number(e.value))}
-                    />
-                  </div>
-                  <div className="col-span-3">
-                    <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
-                      Overtime rate
-                    </label>
-                    <InputNumber
-                      className="mt-1 block w-full"
-                      maxFractionDigits={2}
-                      min={0}
-                      max={1}
-                      name="over_time_rate"
-                      value={overTimeRate}
-                      onChange={e => setOverTimeRate(Number(e.value))}
-                    />
-                  </div>
-                  <div className="sm:col-span-3">
-                    <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Minimum hours for overtime
-                    </label>
-                    <InputNumber
-                      mode="decimal"
-                      name="minimum_hours_for_overtime"
-                      value={minimumHoursForOvertime}
-                      onChange={e => setMinimumHoursForOvertime(Number(e.value))}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-                <div className="col-span-6">
-                  <AdminHolidays />
-                </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+                  Limit work hours per week
+                </label>
+                <InputNumber
+                  mode="decimal"
+                  name="limit_work_hours_per_week"
+                  onChange={e => setMaxHoursPerDay(Number(e.value))}
+                  value={maxHoursPerDay}
+                />
               </div>
             </div>
-          )}
+          </div>
+
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+            <div>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Admin Cost</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Total Admin cost is <strong>{sumAdminCost}%</strong>
+              </p>
+            </div>
+            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+              <div className="col-span-4 ">
+                <DataTable ref={dt} value={adminCost} editMode="cell">
+                  {columns.map((field, header) => {
+                    return (
+                      <Column
+                        key={header}
+                        field={field.field}
+                        header={field.header}
+                        editor={options => cellEditor(options)}
+                        onCellEditComplete={onCellEditComplete}
+                      />
+                    )
+                  })}
+                </DataTable>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+            <div>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Fees Manager</h2>
+            </div>
+            <div className="grid max-w-2xl grid-cols-6 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+              <div className="col-span-3">
+                <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+                  Our fees
+                </label>
+                <InputNumber
+                  className="mt-1 block w-full"
+                  maxFractionDigits={2}
+                  min={0}
+                  max={100}
+                  name="our_fees"
+                  prefix="% "
+                  value={ourFees}
+                  onChange={e => setOurFees(Number(e.value))}
+                />
+              </div>
+              <div className="col-span-3">
+                <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+                  Processing fees
+                </label>
+                <InputNumber
+                  className="mt-1 block w-full"
+                  maxFractionDigits={2}
+                  min={0}
+                  max={100}
+                  name="processing_fees"
+                  prefix="% "
+                  value={processingFees}
+                  onChange={e => setProcessingFees(Number(e.value))}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+            <div>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Overtime</h2>
+            </div>
+            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+              <div className="col-span-3">
+                <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+                  Holidays rate
+                </label>
+                <InputNumber
+                  className="mt-1 block w-full"
+                  maxFractionDigits={2}
+                  min={0}
+                  max={1}
+                  name="holidays_rate"
+                  value={holidaysRate}
+                  onChange={e => setHolidaysRate(Number(e.value))}
+                />
+              </div>
+              <div className="col-span-3">
+                <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+                  Overtime rate
+                </label>
+                <InputNumber
+                  className="mt-1 block w-full"
+                  maxFractionDigits={2}
+                  min={0}
+                  max={1}
+                  name="over_time_rate"
+                  value={overTimeRate}
+                  onChange={e => setOverTimeRate(Number(e.value))}
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+                  Minimum hours for overtime
+                </label>
+                <InputNumber
+                  mode="decimal"
+                  name="minimum_hours_for_overtime"
+                  value={minimumHoursForOvertime}
+                  onChange={e => setMinimumHoursForOvertime(Number(e.value))}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+            <div className="col-span-6">
+              <AdminHolidays />
+            </div>
+          </div>
         </div>
       )}
     </div>
