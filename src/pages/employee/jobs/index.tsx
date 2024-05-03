@@ -202,7 +202,10 @@ export const EmployeeJobs = () => {
           />
         </div>
         <div className="mb-4 flex items-center">
-          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="Type in address" />
+          <AddressAutoComplete
+            setMoreAddressDetails={setMoreAddressDetails}
+            currentAddress="Set distance to this address"
+          />
           <Button
             className="mx-1"
             icon="pi pi-search"
@@ -234,15 +237,19 @@ export const EmployeeJobs = () => {
             min={rangeOptions[0].code}
             max={rangeOptions[rangeOptions.length - 1].code}
           />
-          <div>Selected Range: {selectedRange} miles</div>
+          <div className="mt-2">Selected Range: {selectedRange} miles</div>
         </div>
       </div>
       <div className="w-full p-3 md:w-3/4">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-            {isLoading
-              ? jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
-              : displayedJobs.map(job => <JobListItem key={job._id} job={job} />)}
+            {isLoading ? (
+              jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
+            ) : displayedJobs.length > 0 ? (
+              displayedJobs.map(job => <JobListItem key={job._id} job={job} />)
+            ) : (
+              <div>No jobs found for the selected filters.</div>
+            )}
           </ul>
         </div>
       </div>
