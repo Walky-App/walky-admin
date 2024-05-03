@@ -10,7 +10,7 @@ import {
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
 import { IoMdMail } from 'react-icons/io'
-import { MdSchool } from 'react-icons/md'
+import { MdOutlineAccessTimeFilled, MdSchool } from 'react-icons/md'
 
 import { Cog6ToothIcon } from '@heroicons/react/20/solid'
 
@@ -60,6 +60,7 @@ const employeeLinks: INavLink[] = [
   { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
   { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+  { id: 5, name: 'Timesheets', href: '/employee/timesheets', icon: <MdOutlineAccessTimeFilled /> },
 ]
 
 const salesLinks: INavLink[] = [
