@@ -46,9 +46,8 @@ import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
 import { AdminUserPage } from './pages/admin/users/AdminUserPage'
-import { AdminInviteUser } from './pages/admin/users/components'
+import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/components'
 import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
-import { AdminUserTimeSheets } from './pages/admin/users/components/AdminUserTimeSheets'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
@@ -92,6 +91,7 @@ import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
 import { EmployeeMessages } from './pages/employee/messages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
+import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -117,6 +117,7 @@ export const App = () => {
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />
                 <Route element={<EmployeeProfile />} path="/employee/profile" />
                 <Route element={<EmployeeMessages />} path="/employee/messages" />
+                <Route element={<EmployeeTimesheets />} path="/employee/timesheets" />
                 {/* LMS Module */}
                 <Route element={<Learn />} path="/learn" />
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
@@ -169,7 +170,7 @@ export const App = () => {
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<AdminUserPage />}>
                     <Route element={<AdminUserDetails />} path="/admin/users/:id" />
-                    <Route element={<AdminUserTimeSheets />} path="/admin/users/:id/timesheets" />
+                    <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
                   </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<AdminFacilityDetails />} path="/admin/facilities/:facilityId" />
