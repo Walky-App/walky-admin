@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
+import { type CheckboxChangeEvent } from 'primereact/checkbox'
 import { Skeleton } from 'primereact/skeleton'
 import { Slider } from 'primereact/slider'
 
@@ -55,7 +56,7 @@ export const EmployeeJobs = () => {
     getLongitudeFromLocalStorage,
   } = useCoordinates()
 
-  const [selectedJobTitles, setSelectedJobTitles] = useState([])
+  const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
   const [selectedRange, setSelectedRange] = useState(rangeOptions[0].code)
@@ -116,7 +117,6 @@ export const EmployeeJobs = () => {
   useEffect(() => {
     let filteredJobs = [...(jobs || [])]
     if (selectedJobTitles.length > 0) {
-      // @ts-ignore
       filteredJobs = filteredJobs.filter(job => selectedJobTitles.includes(job.title))
     }
     if (dates) {
@@ -132,15 +132,14 @@ export const EmployeeJobs = () => {
     }
     setDisplayedJobs(filteredJobs)
   }, [selectedJobTitles, dates, jobs, selectedRange])
-  // @ts-ignore
-  const onJobTitleChange = (e: CheckboxChangeParams) => {
-    const { checked, value } = e
-    if (checked) {
-      // @ts-ignore
-      setSelectedJobTitles(prevJobTitles => [...prevJobTitles, value])
-    } else {
-      setSelectedJobTitles(prevJobTitles => prevJobTitles.filter(jobTitle => jobTitle !== value))
-    }
+
+  const onJobTitleChange = (e: CheckboxChangeEvent) => {
+    let _selectedJobTitles = [...selectedJobTitles]
+
+    if (e.checked ?? false) _selectedJobTitles.push(e.value as string)
+    else _selectedJobTitles = _selectedJobTitles.filter(jobTitle => jobTitle !== e.value)
+
+    setSelectedJobTitles(_selectedJobTitles)
   }
 
   return (
@@ -156,8 +155,7 @@ export const EmployeeJobs = () => {
                   name="jobTitle"
                   value={jobTitle.code}
                   onChange={onJobTitleChange}
-                  // @ts-ignore
-                  checked={selectedJobTitles.includes(jobTitle.code)}
+                  checked={selectedJobTitles.includes(jobTitle.code as never)}
                 />
                 <label htmlFor={jobTitle.code} className="ml-2">
                   {jobTitle.name}
@@ -173,7 +171,7 @@ export const EmployeeJobs = () => {
               size="small"
               onClick={() => setSeeMore(!seeMore)}
             />
-          ) : null}{' '}
+          ) : null}
         </div>
         <div className="mb-4 hidden md:block">
           <Calendar
