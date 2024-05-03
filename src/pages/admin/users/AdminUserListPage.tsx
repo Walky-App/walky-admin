@@ -2,12 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { Link } from 'react-router-dom'
 
-import { Skeleton } from 'primereact/skeleton'
-
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
+import { LoadingLogo } from '../../../utils/LoadingLogo'
 import { roleTxt } from '../../../utils/roleChecker'
 
 export const AdminUserListPage = () => {
@@ -51,19 +50,21 @@ export const AdminUserListPage = () => {
     [],
   )
 
-  if (isLoading) {
-    return <Skeleton width="100%" height="100%" />
-  }
-
   return (
     <>
       <HeaderComponent title="Users" />
-      <div className="text-right">
-        <Link to="/admin/users/invite" className="p-button mb-4 font-bold">
-          Invite User
-        </Link>
-      </div>
-      <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
+      {isLoading ? (
+        <LoadingLogo />
+      ) : (
+        <>
+          <div className="text-right">
+            <Link to="/admin/users/invite" className="p-button mb-4 font-bold">
+              Invite User
+            </Link>
+          </div>
+          <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
+        </>
+      )}
     </>
   )
 }
