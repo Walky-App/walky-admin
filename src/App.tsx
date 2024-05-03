@@ -80,9 +80,9 @@ import { Certification } from './pages/admin/HTU/components/Certification'
 import AdminJobs from './pages/admin/jobs'
 
 import { AdminMessages } from './pages/admin/messages'
+import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 /******************************************* Employee Pages ************************************/
-import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
@@ -163,7 +163,7 @@ export const App = () => {
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
                   <Route element={<AdminDashboard />} path="/admin/dashboard" />
                   <Route element={<AdminProfile />} path="/admin/profile" />
-                  <Route element={<AdminHolidays />} path="/admin/holidays" />
+                  <Route element={<AdminSettings />} path="/admin/settings" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
