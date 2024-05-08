@@ -10,7 +10,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { getCurrentUserRole } from '../../../utils/UserRole'
 import { cn } from '../../../utils/cn'
-import { formatTime } from '../../../utils/timeUtils'
+import { formatToDateTime, formatToTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import {
   type IPunchPair,
@@ -133,55 +133,60 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const onCellEditComplete = async (e: ColumnEvent) => {
     try {
-      const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: string; field: string }
-
-      if (!isEditorValid || !isValid(newValue)) {
-        showToast({
-          severity: 'error',
-          summary: 'Invalid date/time value',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm)',
-        })
-        return
-      }
+      const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: Date | null; field: string }
 
       const isFieldInTime = field === 'in_time'
       const isFieldOutTime = field === 'out_time'
 
-      if (
-        (isFieldInTime && rowData.in_time && newValue === format(rowData.in_time, 'hh:mm a')) ||
-        (isFieldOutTime && rowData.out_time && newValue === format(rowData.out_time, 'hh:mm a'))
-      ) {
-        return
-      }
+      if (newValue) {
+        const newValueDateString = newValue.toISOString()
+        const formattedNewValue = formatToDateTime(newValueDateString)
 
-      if (isFieldInTime || isFieldOutTime) {
-        const newTimeStamp = newValue
-        const punchId = isFieldInTime ? rowData.in_id : rowData.out_id
-        const timeSheetId = rowData.timesheet_id
-
-        const body = isFieldInTime
-          ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
-          : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
-
-        const response = await requestService({
-          path: `timesheets/${timeSheetId}/in-out-punches`,
-          method: 'PATCH',
-          body: JSON.stringify(body),
-        })
-
-        if (!response.ok) {
-          const message = await response.text()
-          showToast({ severity: 'error', summary: 'Error', detail: message })
+        if (
+          (isFieldInTime && rowData.in_time && formattedNewValue === format(rowData.in_time, 'hh:mm a')) ||
+          (isFieldOutTime && rowData.out_time && formattedNewValue === format(rowData.out_time, 'hh:mm a'))
+        ) {
           return
         }
 
-        showToast({
-          severity: 'success',
-          summary: `Updated ${isFieldInTime ? 'In' : 'Out'} time`,
-          detail: formatTime(newTimeStamp),
-        })
+        if (!isEditorValid) {
+          showToast({
+            severity: 'error',
+            summary: 'Invalid date/time value',
+            detail: 'Please use correct format (mm/dd/yyyy hh:mm)',
+          })
+          return
+        }
 
-        fetchTimesheets()
+        if (isFieldInTime || isFieldOutTime) {
+          const newTimeStamp: string = newValue.toISOString()
+          const punchId = isFieldInTime ? rowData.in_id : rowData.out_id
+          const timeSheetId = rowData.timesheet_id
+
+          const body = isFieldInTime
+            ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
+            : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
+
+          const response = await requestService({
+            path: `timesheets/${timeSheetId}/in-out-punches`,
+            method: 'PATCH',
+            body: JSON.stringify(body),
+          })
+
+          if (!response.ok) {
+            const message = await response.text()
+            showToast({ severity: 'error', summary: 'Error', detail: message })
+            return
+          }
+
+          showToast({
+            severity: 'success',
+            summary: `Updated ${isFieldInTime ? 'In' : 'Out'} time`,
+            detail: formatToTime(newTimeStamp),
+          })
+
+          fetchTimesheets()
+        }
       }
     } catch (error) {
       if (error instanceof Error) {
