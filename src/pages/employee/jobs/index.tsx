@@ -1,10 +1,14 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react'
+
+import { useMediaQuery } from 'react-responsive'
 
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { type CheckboxChangeEvent } from 'primereact/checkbox'
 import { ScrollPanel } from 'primereact/scrollpanel'
+import { Sidebar } from 'primereact/sidebar'
 import { Skeleton } from 'primereact/skeleton'
 import { Slider } from 'primereact/slider'
 
@@ -64,6 +68,9 @@ export const EmployeeJobs = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
+  const [visibleFilterSidebarForMobile, setVisibleFilterSidebarForMobile] = useState(false)
+
+  const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
 
   const handleUseSelectedAddress = async () => {
     if (moreAddressDetails && moreAddressDetails.location_pin) {
@@ -143,122 +150,235 @@ export const EmployeeJobs = () => {
     setSelectedJobTitles(_selectedJobTitles)
   }
 
-  return (
-    <div className="flex flex-col md:flex-row">
-      <ScrollPanel style={{ width: '25%', height: '100vh' }} className="w-full p-3">
-        <div className="mb-4 flex flex-col">
-          <div>
-            <Button
-              icon="pi pi-map-marker"
-              rounded
-              text
-              aria-label="Set jobs by Current Location "
-              tooltip="Set Jobs with distance from your current location"
-              onClick={handleUseCurrentLocation}>
-              Use Current Location
-            </Button>
-            <p> OR: </p>
-          </div>
-          <div>
-            <AddressAutoComplete
-              setMoreAddressDetails={setMoreAddressDetails}
-              currentAddress="Set distance to this address"
-            />
-            <Button
-              className="mx-1"
-              icon="pi pi-search"
-              aria-label="Set jobs by Selected Address"
-              tooltip="Set Jobs with distance from the address location"
-              onClick={handleUseSelectedAddress}
-            />
-          </div>
-        </div>
-        <div className="mb-4">
-          <Slider
-            value={selectedRange}
-            onChange={e => {
-              if (Array.isArray(e.value)) {
-                setSelectedRange(e.value[0])
-              } else {
-                setSelectedRange(e.value)
-              }
-            }}
-            className="w-full"
-            step={10}
-            min={rangeOptions[0].code}
-            max={rangeOptions[rangeOptions.length - 1].code}
-          />
-          <div className="mt-2">Selected Range: {selectedRange} miles</div>
-        </div>
-        <h2>Filter:</h2>
-        <div className="mb-4 hidden md:block">
-          <Calendar
-            value={dates}
-            onChange={e => setDates(e.value as [Date, Date] | null)}
-            selectionMode="range"
-            showButtonBar
-            inline={true}
-            numberOfMonths={1}
-            placeholder="by Date"
-            readOnlyInput
-            className="w-full"
-          />
-        </div>
-        <div className="mb-4 md:hidden">
-          <Calendar
-            value={dates}
-            onChange={e => setDates(e.value as [Date, Date] | null)}
-            selectionMode="range"
-            showButtonBar
-            inline={false}
-            numberOfMonths={1}
-            placeholder="by Date"
-            readOnlyInput
-            className="w-full"
-          />
-        </div>
-        <div className="mb-4">
-          {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 7).map(jobTitle => {
-            return (
-              <div key={jobTitle.code} className="flex items-center">
-                <Checkbox
-                  inputId={jobTitle.code}
-                  name="jobTitle"
-                  value={jobTitle.code}
-                  onChange={onJobTitleChange}
-                  checked={selectedJobTitles.includes(jobTitle.code as never)}
-                />
-                <label htmlFor={jobTitle.code} className="ml-2">
-                  {jobTitle.name}
-                </label>
-              </div>
-            )
-          })}
-          {jobTitleOptions.length > 7 ? (
-            <Button
-              text
-              icon={seeMore ? 'pi pi-chevron-up' : 'pi pi-chevron-down'}
-              label={seeMore ? 'See less' : 'See more'}
-              size="small"
-              onClick={() => setSeeMore(!seeMore)}
-            />
-          ) : null}
-        </div>
-      </ScrollPanel>
+  const renderJobCards = () => {
+    return (
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-1">
+          {isLoading ? (
+            jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
+          ) : displayedJobs.length > 0 ? (
+            displayedJobs.map(job => <JobListItem key={job._id} job={job} />)
+          ) : (
+            <div>No jobs found for the selected filters.</div>
+          )}
+        </ul>
+      </div>
+    )
+  }
 
-      <ScrollPanel style={{ width: '75%', height: '100vh' }} className="w-full p-3">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-            {isLoading ? (
-              jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
-            ) : displayedJobs.length > 0 ? (
-              displayedJobs.map(job => <JobListItem key={job._id} job={job} />)
-            ) : (
-              <div>No jobs found for the selected filters.</div>
-            )}
-          </ul>
+  return (
+    <>
+      {isMobile ? (
+        <div className="flex flex-col items-start md:flex-row">
+          <Button
+            icon="pi pi-arrow-right"
+            className="inline-flex"
+            rounded
+            text
+            onClick={() => setVisibleFilterSidebarForMobile(true)}>
+            Filter & Sort
+          </Button>
+          <Sidebar
+            visible={visibleFilterSidebarForMobile}
+            onHide={() => setVisibleFilterSidebarForMobile(false)}
+            fullScreen>
+            <h2 className="text-center">Filter && Sort:</h2>
+            <ScrollPanel style={{ width: '100%', height: '100vh' }} className="w-full">
+              <div className="mb-4 flex flex-col">
+                <div>
+                  <Button
+                    icon="pi pi-map-marker"
+                    rounded
+                    text
+                    aria-label="Set jobs by Current Location "
+                    tooltip="Set Jobs with distance from your current location"
+                    onClick={handleUseCurrentLocation}>
+                    Use Current Location
+                  </Button>
+                  <p className=""> OR: </p>
+                </div>
+                <div>
+                  <AddressAutoComplete
+                    setMoreAddressDetails={setMoreAddressDetails}
+                    currentAddress="Set jobs by Selected Address"
+                  />
+                  <Button
+                    className="mx-1"
+                    icon="pi pi-search"
+                    aria-label="Set jobs by Selected Address"
+                    tooltip="Set Jobs with distance from the address location"
+                    onClick={handleUseSelectedAddress}
+                  />
+                </div>
+              </div>
+              <div className="mb-4">
+                <Slider
+                  value={selectedRange}
+                  onChange={e => {
+                    if (Array.isArray(e.value)) {
+                      setSelectedRange(e.value[0])
+                    } else {
+                      setSelectedRange(e.value)
+                    }
+                  }}
+                  className="w-full"
+                  step={10}
+                  min={rangeOptions[0].code}
+                  max={rangeOptions[rangeOptions.length - 1].code}
+                />
+                <div className="mt-2">Selected Range: {selectedRange} miles</div>
+              </div>
+              <div className="mb-4 md:hidden">
+                <Calendar
+                  value={dates}
+                  onChange={e => setDates(e.value as [Date, Date] | null)}
+                  selectionMode="range"
+                  showButtonBar
+                  inline={true}
+                  numberOfMonths={1}
+                  placeholder="by Date"
+                  readOnlyInput
+                  className="w-full"
+                />
+              </div>
+              <div className="mb-4">
+                {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 7).map(jobTitle => {
+                  return (
+                    <div key={jobTitle.code} className="flex items-center">
+                      <Checkbox
+                        inputId={jobTitle.code}
+                        name="jobTitle"
+                        value={jobTitle.code}
+                        onChange={onJobTitleChange}
+                        checked={selectedJobTitles.includes(jobTitle.code as never)}
+                      />
+                      <label htmlFor={jobTitle.code} className="ml-2">
+                        {jobTitle.name}
+                      </label>
+                    </div>
+                  )
+                })}
+                {jobTitleOptions.length > 7 ? (
+                  <Button
+                    text
+                    icon={seeMore ? 'pi pi-chevron-up' : 'pi pi-chevron-down'}
+                    label={seeMore ? 'See less' : 'See more'}
+                    size="small"
+                    onClick={() => setSeeMore(!seeMore)}
+                  />
+                ) : null}
+              </div>
+            </ScrollPanel>
+          </Sidebar>
+          {renderJobCards()}
         </div>
-      </ScrollPanel>
-    </div>
+      ) : (
+        <div className="flex flex-col md:flex-row">
+          <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
+            <div className="mb-4 flex flex-col">
+              <div>
+                <Button
+                  icon="pi pi-map-marker"
+                  rounded
+                  text
+                  aria-label="Set jobs by Current Location "
+                  tooltip="Set Jobs with distance from your current location"
+                  onClick={handleUseCurrentLocation}>
+                  Use Current Location
+                </Button>
+                <p> OR: </p>
+              </div>
+              <div>
+                <AddressAutoComplete
+                  setMoreAddressDetails={setMoreAddressDetails}
+                  currentAddress="Set jobs by Selected Address"
+                />
+                <Button
+                  className="mx-1"
+                  icon="pi pi-search"
+                  aria-label="Set jobs by Selected Address"
+                  tooltip="Set Jobs with distance from the address location"
+                  onClick={handleUseSelectedAddress}
+                />
+              </div>
+            </div>
+            <div className="mb-4">
+              <Slider
+                value={selectedRange}
+                onChange={e => {
+                  if (Array.isArray(e.value)) {
+                    setSelectedRange(e.value[0])
+                  } else {
+                    setSelectedRange(e.value)
+                  }
+                }}
+                className="w-full"
+                step={10}
+                min={rangeOptions[0].code}
+                max={rangeOptions[rangeOptions.length - 1].code}
+              />
+              <div className="mt-2">Selected Range: {selectedRange} miles</div>
+            </div>
+            <h2>Filter:</h2>
+            <div className="mb-4 hidden md:block">
+              <Calendar
+                value={dates}
+                onChange={e => setDates(e.value as [Date, Date] | null)}
+                selectionMode="range"
+                showButtonBar
+                inline={true}
+                numberOfMonths={1}
+                placeholder="by Date"
+                readOnlyInput
+                className="w-full"
+              />
+            </div>
+            <div className="mb-4 md:hidden">
+              <Calendar
+                value={dates}
+                onChange={e => setDates(e.value as [Date, Date] | null)}
+                selectionMode="range"
+                showButtonBar
+                inline={false}
+                numberOfMonths={1}
+                placeholder="by Date"
+                readOnlyInput
+                className="w-full"
+              />
+            </div>
+            <div className="mb-4">
+              {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 7).map(jobTitle => {
+                return (
+                  <div key={jobTitle.code} className="flex items-center">
+                    <Checkbox
+                      inputId={jobTitle.code}
+                      name="jobTitle"
+                      value={jobTitle.code}
+                      onChange={onJobTitleChange}
+                      checked={selectedJobTitles.includes(jobTitle.code as never)}
+                    />
+                    <label htmlFor={jobTitle.code} className="ml-2">
+                      {jobTitle.name}
+                    </label>
+                  </div>
+                )
+              })}
+              {jobTitleOptions.length > 7 ? (
+                <Button
+                  text
+                  icon={seeMore ? 'pi pi-chevron-up' : 'pi pi-chevron-down'}
+                  label={seeMore ? 'See less' : 'See more'}
+                  size="small"
+                  onClick={() => setSeeMore(!seeMore)}
+                />
+              ) : null}
+            </div>
+          </ScrollPanel>
+          <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
+            {renderJobCards()}
+          </ScrollPanel>
+        </div>
+      )}
+    </>
   )
 }
