@@ -4,7 +4,6 @@ import { format, isToday, isValid } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
-import { type Nullable } from 'primereact/ts-helpers'
 
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
@@ -39,8 +38,7 @@ interface IUserTimesheetsProps {
 export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
-  const [selectedTime, setSelectedTime] = useState<Nullable<Date>>(null)
-  const [isEditorValid, setIsEditorValid] = useState(true)
+  const [isEditorValid, setIsEditorValid] = useState(false)
 
   const { showToast } = useUtils()
 
@@ -106,18 +104,19 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         break
     }
 
-    const initialTimeValue = selectedTime || new Date(timeStamp)
+    const cellTimeValue = options.value || new Date(timeStamp)
 
     return (
       <Calendar
-        value={initialTimeValue}
+        value={cellTimeValue}
         hourFormat="12"
         invalid={!isEditorValid}
         onChange={e => {
-          if (e.value !== null && isValid(e.value)) {
+          const newValue = e.value as Date
+          const isValidDate = newValue !== null && isValid(newValue)
+          if (isValidDate) {
+            options.editorCallback!(newValue)
             setIsEditorValid(true)
-            setSelectedTime(e.value)
-            options.editorCallback!(e.value)
           } else {
             setIsEditorValid(false)
           }
@@ -135,6 +134,15 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   const onCellEditComplete = async (e: ColumnEvent) => {
     try {
       const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: string; field: string }
+
+      if (!isEditorValid || !isValid(newValue)) {
+        showToast({
+          severity: 'error',
+          summary: 'Invalid date/time value',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm)',
+        })
+        return
+      }
 
       const isFieldInTime = field === 'in_time'
       const isFieldOutTime = field === 'out_time'
@@ -174,7 +182,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         })
 
         fetchTimesheets()
-        setSelectedTime(null)
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -197,7 +204,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       if (Array.isArray(value)) {
         return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
       } else if (value instanceof Date) {
-        return format(value, 'hh:mm a') // Format the Date object into "hh:mm a" format
+        return format(value, 'hh:mm a')
       } else {
         return value
       }
@@ -208,12 +215,20 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return !rowData['out_time'] || rowData['out_time'] !== null
   }
 
+  const cellEditValidator = (e: ColumnEvent) => {
+    const { newValue } = e as { newValue: Date }
+    const isValidDate = newValue && isValid(new Date(newValue))
+    setIsEditorValid(isValidDate)
+    return isValidDate
+  }
+
   const getEditableProps = (currentUserRole: string) => {
     if (currentUserRole === 'admin') {
       return {
         editor: (options: ColumnEditorOptions) => timeEditor(options),
+        editorValidator: cellEditValidator,
+        cellEditValidatorEvent: 'blur',
         onCellEditComplete: onCellEditComplete,
-        onCellEditCancel: () => setSelectedTime(null),
       }
     }
     return {}
