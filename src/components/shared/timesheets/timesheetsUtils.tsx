@@ -1,7 +1,7 @@
 import { type ColumnEditorOptions } from 'primereact/column'
 
 import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
-import { convertMillisecondsToReadableTime, formatDate, formatTime } from '../../../utils/timeUtils'
+import { convertMillisecondsToReadableTime, formatDate } from '../../../utils/timeUtils'
 
 export interface IAdminUserTimesheetsColumnMeta<T> {
   field: keyof T
@@ -11,8 +11,8 @@ export interface IAdminUserTimesheetsColumnMeta<T> {
 }
 
 export interface IPunchDetails {
-  in_time: string
-  out_time: string
+  in_time: Date | null
+  out_time: Date | null
   total_time: string
 }
 
@@ -20,8 +20,8 @@ export interface IPunchPair {
   day: string
   in_id: string
   out_id: string
-  in_time: string
-  out_time: string
+  in_time: Date | null
+  out_time: Date | null
   in_time_stamp: string
   out_time_stamp: string
   total_time: string
@@ -30,8 +30,8 @@ export interface IPunchPair {
 export interface IPunchPairsWithData {
   time_stamp: string
   day: string
-  in_time: string
-  out_time: string
+  in_time: Date | null
+  out_time: Date | null
   total_time: string
   details: string
   worked_time: string
@@ -99,53 +99,56 @@ export function createPunchPairsWithTotalTime(punches: IPunch[]): IPunchPairWith
  * @param {string} jobId - The job ID associated with the timesheet.
  * @returns {IPunchPairsWithData} A processed timesheet.
  */
-export function processPunchPairsWithData(punches: IPunch[], jobId: string): IPunchPairsWithData {
+export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWithData {
+  const { punches, job_id, _id } = timesheet
+
   const sortedPunches = sortPunches(punches)
 
   let totalWorkedTime = 0
   let punchIn = null
-  let inTime = ''
-  let outTime = ''
+  let punchOut = null
+  let inTime: Date | null = null
+  let outTime: Date | null = null
   const punchPairs: IPunchPair[] = []
+
   for (const punch of sortedPunches) {
     if (punch.punch_in) {
       punchIn = punch
       if (!inTime) {
-        inTime = formatTime(punch.time_stamp)
+        inTime = new Date(punch.time_stamp)
       }
-      outTime = ''
+      outTime = null
     } else if (punchIn) {
-      const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
+      punchOut = punch
+      const totalTime = Date.parse(punchOut.time_stamp) - Date.parse(punchIn.time_stamp)
       totalWorkedTime += totalTime
-      outTime = formatTime(punch.time_stamp)
+      outTime = new Date(punchOut.time_stamp)
       punchPairs.push({
-        day: formatDate(punch.time_stamp),
+        day: formatDate(punchOut.time_stamp),
         in_id: punchIn._id,
-        out_id: punch._id,
-        in_time: formatTime(punchIn.time_stamp),
-        out_time: formatTime(punch.time_stamp),
+        out_id: punchOut._id,
+        in_time: new Date(punchIn.time_stamp),
+        out_time: new Date(punchOut.time_stamp),
         in_time_stamp: punchIn.time_stamp,
-        out_time_stamp: punch.time_stamp,
+        out_time_stamp: punchOut.time_stamp,
         total_time: (totalTime / 1000 / 60 / 60).toFixed(2),
-        timesheet_id: jobId,
+        timesheet_id: _id,
       })
       punchIn = null
     }
   }
 
   if (!outTime && punchIn) {
-    const totalTime = Date.now() - Date.parse(punchIn.time_stamp)
-    totalWorkedTime += totalTime
     punchPairs.push({
       in_id: punchIn._id,
       out_id: '',
       day: formatDate(punchIn.time_stamp),
-      in_time: formatTime(punchIn.time_stamp),
-      out_time: '',
+      in_time: new Date(punchIn.time_stamp),
+      out_time: null,
       in_time_stamp: punchIn.time_stamp,
       out_time_stamp: '',
-      total_time: (totalTime / 1000 / 60 / 60).toFixed(2),
-      timesheet_id: jobId,
+      total_time: '',
+      timesheet_id: _id,
     })
   }
 
@@ -159,7 +162,7 @@ export function processPunchPairsWithData(punches: IPunch[], jobId: string): IPu
     in_time: inTime,
     out_time: outTime,
     total_time: totalWorkedHours.toFixed(2),
-    details: jobId,
+    details: job_id,
     worked_time: totalWorkedHours.toFixed(2),
     scheduled_time: '',
     difference: '',

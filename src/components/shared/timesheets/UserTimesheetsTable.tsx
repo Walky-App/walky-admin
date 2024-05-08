@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { format, isToday, isValid } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
@@ -10,7 +11,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { getCurrentUserRole } from '../../../utils/UserRole'
 import { cn } from '../../../utils/cn'
-import { formatTime, isTodaysDateSameAsTimeStamp } from '../../../utils/timeUtils'
+import { formatTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import {
   type IPunchPair,
@@ -39,6 +40,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<Nullable<Date>>(null)
+  const [isEditorValid, setIsEditorValid] = useState(true)
 
   const { showToast } = useUtils()
 
@@ -72,8 +74,8 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       } else {
         const timesheets: ITimeSheet[] = await response.json()
 
-        const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timeSheet => {
-          return processPunchPairsWithData(timeSheet.punches, timeSheet.job_id)
+        const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
+          return processPunchPairsWithData(timesheet)
         })
 
         setProcessedTimeSheets(punchPairsAndData)
@@ -96,11 +98,11 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
     let timeStamp: string
     switch (options.field) {
-      case 'in_time':
-        timeStamp = options.value ? in_time_stamp : new Date().toISOString()
+      case 'out_time':
+        timeStamp = out_time_stamp || in_time_stamp || new Date().toISOString()
         break
       default:
-        timeStamp = options.value ? out_time_stamp : new Date().toISOString()
+        timeStamp = in_time_stamp || new Date().toISOString()
         break
     }
 
@@ -110,24 +112,22 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       <Calendar
         value={initialTimeValue}
         hourFormat="12"
+        invalid={!isEditorValid}
         onChange={e => {
-          if (e.value) {
-            const newTime = e.value
-            const oldDate = new Date(timeStamp)
-            const updatedDate = new Date(
-              oldDate.getFullYear(),
-              oldDate.getMonth(),
-              oldDate.getDate(),
-              newTime.getHours(),
-              newTime.getMinutes(),
-              newTime.getSeconds(),
-            )
-
-            setSelectedTime(updatedDate)
-            options.editorCallback!(updatedDate)
+          if (e.value !== null && isValid(e.value)) {
+            setIsEditorValid(true)
+            setSelectedTime(e.value)
+            options.editorCallback!(e.value)
+          } else {
+            setIsEditorValid(false)
           }
         }}
-        timeOnly
+        showTime
+        pt={{
+          panel: {
+            className: 'hidden',
+          },
+        }}
       />
     )
   }
@@ -139,7 +139,10 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       const isFieldInTime = field === 'in_time'
       const isFieldOutTime = field === 'out_time'
 
-      if ((isFieldInTime && newValue === rowData.in_time) || (isFieldOutTime && newValue === rowData.out_time)) {
+      if (
+        (isFieldInTime && rowData.in_time && newValue === format(rowData.in_time, 'hh:mm a')) ||
+        (isFieldOutTime && rowData.out_time && newValue === format(rowData.out_time, 'hh:mm a'))
+      ) {
         return
       }
 
@@ -185,14 +188,16 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   const getCellValue = (col: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>, rowData: IPunchPairsWithData) => {
     const field = col.field as keyof IPunchPairsWithData
 
-    if (field === 'out_time' && (!rowData[field] || rowData[field] === '')) {
-      return isTodaysDateSameAsTimeStamp(rowData['in_time']) ? 'Clocked In' : 'Clock Out not recorded'
-    } else if (field === 'total_time' && (!rowData['out_time'] || rowData['out_time'] === '')) {
+    if (field === 'out_time' && (!rowData[field] || rowData[field] === null)) {
+      return rowData['in_time'] && isToday(rowData['in_time']) ? 'Clocked In' : 'Clock Out not recorded'
+    } else if (field === 'total_time' && (!rowData['out_time'] || rowData['out_time'] === null)) {
       return ''
     } else {
       const value = rowData[field]
       if (Array.isArray(value)) {
         return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
+      } else if (value instanceof Date) {
+        return format(value, 'hh:mm a') // Format the Date object into "hh:mm a" format
       } else {
         return value
       }
@@ -200,7 +205,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }
 
   const allowExpansion = (rowData: IPunchPairsWithData) => {
-    return !rowData['out_time'] || rowData['out_time'] !== ''
+    return !rowData['out_time'] || rowData['out_time'] !== null
   }
 
   const getEditableProps = (currentUserRole: string) => {
@@ -215,21 +220,25 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }
 
   const rowExpansionTemplate = (data: IPunchPairsWithData) => {
-    const commonColumnStyle = 'w-1/12'
+    const commonColumnStyle = 'w-3/12'
     const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
     const editableCellColumnProps = getEditableProps(currentUserRole)
     const punchColumns = [
       {
         field: 'in_time',
         header: 'Punch In',
+        body: (rowData: IPunchDetails) =>
+          rowData.in_time
+            ? rowData.in_time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            : 'Not recorded',
       },
       {
         field: 'out_time',
         header: 'Punch Out',
         body: (rowData: IPunchDetails) =>
           rowData.out_time
-            ? rowData.out_time
-            : isTodaysDateSameAsTimeStamp(rowData.in_time)
+            ? rowData.out_time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            : rowData.in_time && isToday(rowData.in_time)
               ? 'Clocked In'
               : 'Clock Out not recorded',
       },
@@ -250,11 +259,12 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
               {...editableCellColumnProps}
             />
           ))}
-          <Column className={cn([commonColumnStyle, 'w-4/12'])} field="total_time" header="Total Hours" />
+          <Column className={cn([commonColumnStyle, 'w-3/12'])} field="total_time" header="Total Hours" />
         </DataTable>
       </div>
     )
   }
+
   const totalTimeSum = sortedTimeSheets.reduce((sum, record) => {
     const hours = parseFloat(record.total_time)
     return sum + hours
