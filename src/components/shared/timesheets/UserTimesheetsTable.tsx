@@ -215,19 +215,10 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return !rowData['out_time'] || rowData['out_time'] !== null
   }
 
-  const cellEditValidator = (e: ColumnEvent) => {
-    const { newValue } = e as { newValue: Date }
-    const isValidDate = newValue && isValid(new Date(newValue))
-    setIsEditorValid(isValidDate)
-    return isValidDate
-  }
-
   const getEditableProps = (currentUserRole: string) => {
     if (currentUserRole === 'admin') {
       return {
         editor: (options: ColumnEditorOptions) => timeEditor(options),
-        editorValidator: cellEditValidator,
-        cellEditValidatorEvent: 'blur',
         onCellEditComplete: onCellEditComplete,
       }
     }
