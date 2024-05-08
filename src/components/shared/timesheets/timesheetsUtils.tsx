@@ -1,7 +1,7 @@
 import { type ColumnEditorOptions } from 'primereact/column'
 
 import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
-import { convertMillisecondsToReadableTime, formatDate } from '../../../utils/timeUtils'
+import { convertMillisecondsToReadableTime, formatToDate } from '../../../utils/timeUtils'
 
 export interface IAdminUserTimesheetsColumnMeta<T> {
   field: keyof T
@@ -124,7 +124,7 @@ export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWit
       totalWorkedTime += totalTime
       outTime = new Date(punchOut.time_stamp)
       punchPairs.push({
-        day: formatDate(punchOut.time_stamp),
+        day: formatToDate(punchOut.time_stamp),
         in_id: punchIn._id,
         out_id: punchOut._id,
         in_time: new Date(punchIn.time_stamp),
@@ -142,7 +142,7 @@ export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWit
     punchPairs.push({
       in_id: punchIn._id,
       out_id: '',
-      day: formatDate(punchIn.time_stamp),
+      day: formatToDate(punchIn.time_stamp),
       in_time: new Date(punchIn.time_stamp),
       out_time: null,
       in_time_stamp: punchIn.time_stamp,
@@ -154,7 +154,7 @@ export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWit
 
   const totalWorkedHours = totalWorkedTime / 1000 / 60 / 60
 
-  const day = formatDate(sortedPunches[0].time_stamp)
+  const day = formatToDate(sortedPunches[0].time_stamp)
 
   return {
     time_stamp: sortedPunches[0].time_stamp,
