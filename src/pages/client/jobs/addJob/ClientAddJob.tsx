@@ -58,11 +58,11 @@ export const ClientAddJob = () => {
     getFacilities()
   }, [id, location.pathname])
 
-  let now = new Date()
-  let start_time = new Date(now)
+  const now = new Date()
+  const start_time = new Date(now)
   start_time.setHours(8, 0, 0, 0)
 
-  let end_time = new Date(now)
+  const end_time = new Date(now)
   end_time.setHours(17, 0, 0, 0)
 
   let defaultValues: JobFormDefaultValues = {
@@ -228,9 +228,6 @@ export const ClientAddJob = () => {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                  Job Title:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="title"
@@ -238,6 +235,9 @@ export const ClientAddJob = () => {
                     rules={{ required: 'Job Title is required.' }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Job Title:
+                        </label>
                         <Dropdown
                           id={field.name}
                           value={field.value}
@@ -256,9 +256,6 @@ export const ClientAddJob = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="facility" className="block text-sm font-medium leading-6 text-gray-900">
-                  Select Facility:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="facility_id"
@@ -266,6 +263,9 @@ export const ClientAddJob = () => {
                     rules={{ required: 'Facility is required.' }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Select Facility:
+                        </label>
                         <Dropdown
                           id={field.name}
                           value={field.value}
@@ -279,7 +279,7 @@ export const ClientAddJob = () => {
                         {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
-                  />{' '}
+                  />
                 </div>
               </div>
             </div>
@@ -315,6 +315,7 @@ export const ClientAddJob = () => {
                             className={classNames({ 'p-invalid': fieldState.error })}
                             minDate={new Date()} // Disabling past dates
                             inline
+                            showButtonBar
                           />
                           {field.value.length > 0 ? (
                             <div className="mt-2">
@@ -359,73 +360,74 @@ export const ClientAddJob = () => {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label htmlFor="start_time" className="block text-sm font-medium leading-6 text-gray-900">
-                  Start time:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="start_time"
                     control={control}
                     rules={{ required: 'Start Time is required.' }}
                     render={({ field, fieldState }) => (
-                      <div className="mt-6">
-                        <div>
-                          <Calendar
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.value ?? null)
-                              setStartTime(e.value ?? null)
-                            }}
-                            timeOnly
-                            hourFormat="12"
-                            showIcon
-                            icon={() => <i className="pi pi-clock" />}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          {getFormErrorMessage(field.name, errors)}
+                      <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Start time:
+                        </label>
+                        <div className="mt-6">
+                          <div>
+                            <Calendar
+                              value={field.value}
+                              onChange={e => {
+                                field.onChange(e.value ?? null)
+                                setStartTime(e.value ?? null)
+                              }}
+                              timeOnly
+                              hourFormat="12"
+                              showIcon
+                              icon={() => <i className="pi pi-clock" />}
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                            />
+                            {getFormErrorMessage(field.name, errors)}
+                          </div>
                         </div>
-                      </div>
+                      </>
                     )}
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="end_time" className="block text-sm font-medium leading-6 text-gray-900">
-                  End Time:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="end_time"
                     control={control}
                     rules={{ required: 'End Time is required.' }}
                     render={({ field, fieldState }) => (
-                      <div className="mt-6">
-                        <div>
-                          <Calendar
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.value ?? null)
-                              setEndTime(e.value ?? null)
-                            }}
-                            timeOnly
-                            hourFormat="12"
-                            showIcon
-                            icon={() => <i className="pi pi-clock" />}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          {getFormErrorMessage(field.name, errors)}
+                      <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          End Time:
+                        </label>
+                        <div className="mt-6">
+                          <div>
+                            <Calendar
+                              value={field.value}
+                              onChange={e => {
+                                field.onChange(e.value ?? null)
+                                setEndTime(e.value ?? null)
+                              }}
+                              timeOnly
+                              hourFormat="12"
+                              showIcon
+                              icon={() => <i className="pi pi-clock" />}
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                            />
+                            {getFormErrorMessage(field.name, errors)}
+                          </div>
                         </div>
-                      </div>
+                      </>
                     )}
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
-                  Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="vacancy"
@@ -438,6 +440,9 @@ export const ClientAddJob = () => {
                     }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
+                        </label>
                         <div>
                           <InputNumber
                             id={field.name}
@@ -467,9 +472,6 @@ export const ClientAddJob = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="hourly_rate" className="block text-sm font-medium leading-6 text-gray-900">
-                  Pay Rate:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="hourly_rate"
@@ -481,6 +483,9 @@ export const ClientAddJob = () => {
                     }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Pay Rate:
+                        </label>
                         <div>
                           <InputNumber
                             id={field.name}
@@ -511,9 +516,6 @@ export const ClientAddJob = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                  Job tips:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="job_tips"
@@ -521,6 +523,9 @@ export const ClientAddJob = () => {
                     rules={{ required: 'Job tips required.' }}
                     render={({ field }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Job tips:
+                        </label>
                         <MultiSelect
                           id={field.name}
                           name="value"
@@ -541,9 +546,6 @@ export const ClientAddJob = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="lunch_break" className="block text-sm font-medium leading-6 text-gray-900">
-                  Lunch Break:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="lunch_break"
@@ -553,8 +555,11 @@ export const ClientAddJob = () => {
                       validate: value =>
                         (value !== null && value >= 0 && value <= 90) || 'Enter lunch break time in minutes',
                     }}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Lunch Break:
+                        </label>
                         <div className="card justify-content-center flex">
                           <div className="flex flex-wrap gap-3">
                             {lunchTimes.map((lunchTime, index) => (
