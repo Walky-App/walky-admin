@@ -24,10 +24,10 @@ import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import {
-  isTodaysDateSameAsTimeStamp,
+  isTodaySameAsTimeStamp,
   convertMilitaryTimeToStandardTime,
-  formatDate,
-  formatTime,
+  formatToDate,
+  formatToTime,
   isValidDate,
 } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -168,9 +168,7 @@ export const JobDetailView = () => {
 
         const timeStampOfLastPunchIn = lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp
 
-        setIsClockedIn(
-          lastTimesheet?.is_clocked_in === true ? isTodaysDateSameAsTimeStamp(timeStampOfLastPunchIn) : false,
-        )
+        setIsClockedIn(lastTimesheet?.is_clocked_in === true ? isTodaySameAsTimeStamp(timeStampOfLastPunchIn) : false)
       }
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
@@ -321,16 +319,16 @@ export const JobDetailView = () => {
             field="punchIn.time_stamp"
             header="Date"
             body={(rowData: IPunchPairWithTotalTime) =>
-              isValidDate(rowData.punchIn.time_stamp) ? formatDate(rowData.punchIn.time_stamp) : 'No Timestamp'
+              isValidDate(rowData.punchIn.time_stamp) ? formatToDate(rowData.punchIn.time_stamp) : 'No Timestamp'
             }
           />
-          <Column header="Time In" body={rowData => formatTime(rowData.punchIn.time_stamp)} />
+          <Column header="Time In" body={rowData => formatToTime(rowData.punchIn.time_stamp)} />
           <Column
             header="Time Out"
             body={(rowData: IPunchPairWithTotalTime) =>
               rowData.punchOut
-                ? formatTime(rowData.punchOut.time_stamp)
-                : isTodaysDateSameAsTimeStamp(rowData.punchIn.time_stamp)
+                ? formatToTime(rowData.punchOut.time_stamp)
+                : isTodaySameAsTimeStamp(rowData.punchIn.time_stamp)
                   ? 'Clocked In'
                   : 'Clock Out not recorded'
             }
