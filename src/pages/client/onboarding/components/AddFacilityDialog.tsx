@@ -18,7 +18,8 @@ import { AddressAutoComplete } from '../../../../components/shared/forms/Address
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { services } from '../../../../utils/formOptions'
-import { FormDataContext, type IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '../ClientOnboardingPage'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
+import { FormDataContext, type IFacilityFormInputs, tooltipOptions } from '../ClientOnboardingPage'
 
 interface AddFacilityDialogProps {
   visible: boolean

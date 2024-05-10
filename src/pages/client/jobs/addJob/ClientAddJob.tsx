@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 
-import { Controller, type FieldErrors, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
@@ -16,6 +16,8 @@ import { TitleComponent } from '../../../../components/shared/general/TitleCompo
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
+import { jobTipsOptions, lunchTimeOptions } from '../../../../utils/formOptions'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 export const ClientAddJob = () => {
@@ -106,24 +108,6 @@ export const ClientAddJob = () => {
     }
   }, [startTime, endTime, lunchBreak])
 
-  function getFormErrorMessage(path: string, errors: FieldErrors) {
-    const pathParts = path.split('.')
-    let error: FieldErrors = errors
-
-    for (const part of pathParts) {
-      if (typeof error !== 'object' || error === null) {
-        return null
-      }
-      error = error[part as keyof typeof error] as FieldErrors
-    }
-
-    if (error?.message) {
-      return <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>
-    }
-
-    return null
-  }
-
   const onSubmit = async (data: JobFormDefaultValues) => {
     try {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
@@ -163,54 +147,6 @@ export const ClientAddJob = () => {
     }
   }
 
-  const options = [
-    { title: 'Harvester', value: 'Harvester' },
-    { title: 'Budtender', value: 'Budtender' },
-    { title: 'Trimmer', value: 'Trimmer' },
-    { title: 'Packager', value: 'Packager' },
-    { title: 'Gardener', value: 'Gardener' },
-    { title: 'Cultivator', value: 'Cultivator' },
-    { title: 'Extractor', value: 'Extractor' },
-    { title: 'Front desk', value: 'Front desk' },
-    { title: 'Greeter', value: 'Greeter' },
-    { title: 'Id checker', value: 'Id checker' },
-    { title: 'Inventory', value: 'Inventory' },
-    { title: 'Data entry', value: 'Data entry' },
-    { title: 'Event staff', value: 'Event staff' },
-    { title: 'Promo representative', value: 'Promo representative' },
-    { title: 'Cleaning', value: 'Cleaning' },
-    { title: 'Joint roller', value: 'Joint roller' },
-    { title: 'Grow tech', value: 'Grow tech' },
-    { title: 'Clone tech', value: 'Clone tech' },
-    { title: 'Sign spinner', value: 'Sign spinner' },
-  ]
-
-  const lunchTimes = [
-    { label: 'No lunch', value: 0 },
-    { label: '30 minutes', value: 30 },
-    { label: '45 minutes', value: 45 },
-    { label: '60 minutes', value: 60 },
-  ]
-
-  const jobTips = [
-    { label: 'Change Required Upon Entry', value: 'Change Required Upon Entry' },
-    { label: 'Lunch Included', value: 'Lunch Included' },
-    { label: 'Lunch Room Available', value: 'Lunch Room Available' },
-    { label: 'Lunch Will Be Off-Premise', value: 'Lunch Will Be Off-Premise' },
-    { label: 'Pack a Lunch', value: 'Pack a Lunch' },
-    { label: 'Parking on Street', value: 'Parking on Street' },
-    { label: 'Parking Onsite', value: 'Parking Onsite' },
-    { label: 'Required Identification', value: 'Required Identification' },
-    { label: 'Special Equipment', value: 'Special Equipment' },
-    { label: 'No gas stations nearby', value: 'No gas stations nearby' },
-    { label: 'Water is provided', value: 'Water is provided' },
-    { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
-    { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
-    { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
-    { label: 'Labcoat Provided', value: 'Labcoat Provided' },
-    { label: 'Head / Beard net required', value: 'Head / Beard net required' },
-  ]
-
   return (
     <>
       <TitleComponent title="Add a new job" />
@@ -242,7 +178,7 @@ export const ClientAddJob = () => {
                           id={field.name}
                           value={field.value}
                           optionLabel="title"
-                          options={options}
+                          options={jobTipsOptions}
                           filter
                           focusInputRef={field.ref}
                           onChange={e => field.onChange(e.value)}
@@ -530,7 +466,7 @@ export const ClientAddJob = () => {
                           id={field.name}
                           name="value"
                           value={field.value}
-                          options={jobTips}
+                          options={jobTipsOptions}
                           filter
                           onChange={e => field.onChange(e.value)}
                           optionLabel="label"
@@ -562,7 +498,7 @@ export const ClientAddJob = () => {
                         </label>
                         <div className="card justify-content-center flex">
                           <div className="flex flex-wrap gap-3">
-                            {lunchTimes.map((lunchTime, index) => (
+                            {lunchTimeOptions.map((lunchTime, index) => (
                               <div className="align-items-center flex" key={index}>
                                 <RadioButton
                                   inputId={`lunchTime${index}`}

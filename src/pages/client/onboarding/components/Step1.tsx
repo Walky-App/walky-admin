@@ -15,13 +15,8 @@ import { AddressAutoComplete } from '../../../../components/shared/forms/Address
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { services } from '../../../../utils/formOptions'
-import {
-  FormDataContext,
-  type IFacilityFormInputs,
-  type StepProps,
-  getFormErrorMessage,
-  tooltipOptions,
-} from '../ClientOnboardingPage'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
+import { FormDataContext, type IFacilityFormInputs, type StepProps, tooltipOptions } from '../ClientOnboardingPage'
 
 export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
