@@ -158,6 +158,7 @@ export const LoginForm = () => {
           input: {
             className: 'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
           },
+          iconField: { root: { className: 'w-full' } },
         }}
         className="w-full"
       />
