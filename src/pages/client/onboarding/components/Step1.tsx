@@ -356,7 +356,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 render={({ field, fieldState }) => (
                   <>
                     <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      Facility notes:
+                      Arrival notes:
                     </label>
                     <InputTextarea
                       id={field.name}
