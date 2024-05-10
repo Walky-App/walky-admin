@@ -1,7 +1,5 @@
 import { createContext, type Dispatch, Fragment, type SetStateAction, useState, useEffect } from 'react'
 
-import { type FieldErrors } from 'react-hook-form'
-
 import { type MenuItem } from 'primereact/menuitem'
 import { Steps } from 'primereact/steps'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
@@ -200,24 +198,6 @@ export const FormDataContext = createContext<FormDataContextProps>({
 export interface StepProps {
   step: number
   setStep: (step: number) => void
-}
-
-export function getFormErrorMessage(path: string, errors: FieldErrors) {
-  const pathParts = path.split('.')
-  let error: FieldErrors = errors
-
-  for (const part of pathParts) {
-    if (typeof error !== 'object' || error === null) {
-      return null
-    }
-    error = error[part as keyof typeof error] as FieldErrors
-  }
-
-  if (error?.message) {
-    return <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>
-  }
-
-  return null
 }
 
 export const tooltipOptions: TooltipOptions = {
