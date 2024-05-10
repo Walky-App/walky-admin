@@ -167,128 +167,19 @@ export const EmployeeJobs = () => {
     )
   }
 
-  return isMobile ? (
-    <div className="flex flex-col items-start md:flex-row">
-      <Button className="inline-flex" rounded text onClick={() => setVisibleFilterSidebarForMobile(true)}>
-        Filter & Sort
-      </Button>
-      <Sidebar
-        visible={visibleFilterSidebarForMobile}
-        onHide={() => setVisibleFilterSidebarForMobile(false)}
-        fullScreen>
-        <ScrollPanel style={{ width: '100%', height: '100vh' }} className="w-full">
-          <div className="mb-4 flex flex-col items-center pr-4">
-            <Button
-              rounded
-              text
-              aria-label="Set jobs by Current Location"
-              tooltip="Set Jobs with distance from your current location"
-              onClick={handleUseCurrentLocation}>
-              Use Current Location
-            </Button>
-            <Divider layout="horizontal" align="center" className="my-2">
-              <p>or:</p>
-            </Divider>
-            <div className="flex w-full gap-x-2">
-              <AddressAutoComplete
-                setMoreAddressDetails={setMoreAddressDetails}
-                currentAddress="Select Address"
-                className="flex-1"
-              />
-              <Button
-                aria-label="Set jobs by Selected Address"
-                tooltip="Set Jobs with distance from the address location"
-                onClick={handleUseSelectedAddress}>
-                Set Distance
-              </Button>
-            </div>
-          </div>
-          <div className="mb-4 mt-6 px-6">
-            <Slider
-              value={selectedRange}
-              onChange={e => {
-                if (Array.isArray(e.value)) {
-                  setSelectedRange(e.value[0])
-                } else {
-                  setSelectedRange(e.value)
-                }
-              }}
-              className="w-full"
-              step={10}
-              min={rangeOptions[0].code}
-              max={rangeOptions[rangeOptions.length - 1].code}
-            />
-            <div className="mt-2">Selected Range: &lt;{selectedRange} miles</div>
-          </div>
-          <h2>Date range:</h2>
-          <Tooltip target=".custom-target-icon" />
-          <i
-            className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge"
-            data-pr-tooltip="No notifications"
-            data-pr-position="right"
-            data-pr-at="right+5 top"
-            data-pr-my="left center-2"
-            style={{ fontSize: '2rem', cursor: 'pointer' }}
-          />
-
-          <div className="mb-4 pr-4 md:block">
-            <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
-            <Calendar
-              value={dates}
-              onChange={e => setDates(e.value as [Date, Date] | null)}
-              selectionMode="range"
-              showButtonBar
-              inline={true}
-              numberOfMonths={1}
-              placeholder="by Date"
-              readOnlyInput
-              className="w-full"
-            />
-          </div>
-          <div className="mb-2 grid grid-cols-3 items-center pr-4">
-            {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 9).map(jobTitle => {
-              return (
-                <div key={jobTitle.code} className="flex items-center">
-                  <Checkbox
-                    inputId={jobTitle.code}
-                    name="jobTitle"
-                    value={jobTitle.code}
-                    onChange={onJobTitleChange}
-                    checked={selectedJobTitles.includes(jobTitle.code as never)}
-                  />
-                  <label htmlFor={jobTitle.code} className="ml-2">
-                    {jobTitle.name}
-                  </label>
-                </div>
-              )
-            })}
-          </div>
-          {jobTitleOptions.length > 9 ? (
-            <Button
-              text
-              icon={seeMore ? 'pi pi-chevron-up' : 'pi pi-chevron-down'}
-              label={seeMore ? 'See less' : 'See more'}
-              size="small"
-              onClick={() => setSeeMore(!seeMore)}
-            />
-          ) : null}
-        </ScrollPanel>
-      </Sidebar>
-      {renderJobCards()}
-    </div>
-  ) : (
-    <div className="flex flex-col md:flex-row">
-      <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
+  const renderFiltersContent = () => {
+    return (
+      <>
         <div className="mb-4 flex flex-col items-center pr-4">
           <Button
-            rounded
+            label="Use Current Location"
             text
+            outlined
+            link
             aria-label="Set jobs by Current Location"
             tooltip="Set Jobs with distance from your current location"
-            onClick={handleUseCurrentLocation}>
-            Use Current Location
-          </Button>
-          {/* <p> or: </p> */}
+            onClick={handleUseCurrentLocation}
+          />
           <Divider layout="horizontal" align="center" className="my-2">
             <p>or:</p>
           </Divider>
@@ -298,15 +189,12 @@ export const EmployeeJobs = () => {
               currentAddress="Select Address"
               className="flex-1"
             />
-            <Button
-              aria-label="Set jobs by Selected Address"
-              tooltip="Set Jobs with distance from the address location"
-              onClick={handleUseSelectedAddress}>
+            <Button aria-label="Set jobs by Selected Address" onClick={handleUseSelectedAddress}>
               Set Distance
             </Button>
           </div>
         </div>
-        <div className="mb-4 mt-6 px-6">
+        <div className="mb-4 mt-6 px-4">
           <div className="mb-2">Selected Range: &lt;{selectedRange} miles</div>
           <Slider
             value={selectedRange}
@@ -335,7 +223,7 @@ export const EmployeeJobs = () => {
           />
           <h2>Date range:</h2>
         </div>
-        <div className="mb-4 hidden pr-4 md:block">
+        <div className="mb-4 pr-4">
           <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
           <Calendar
             value={dates}
@@ -376,6 +264,26 @@ export const EmployeeJobs = () => {
             onClick={() => setSeeMore(!seeMore)}
           />
         ) : null}
+      </>
+    )
+  }
+
+  return isMobile ? (
+    <div className="flex flex-col items-start md:flex-row">
+      <Button label="Filter & Sort" text outlined link onClick={() => setVisibleFilterSidebarForMobile(true)} />
+      <Sidebar
+        visible={visibleFilterSidebarForMobile}
+        onHide={() => setVisibleFilterSidebarForMobile(false)}
+        blockScroll={true}
+        fullScreen={true}>
+        {renderFiltersContent()}
+      </Sidebar>
+      {renderJobCards()}
+    </div>
+  ) : (
+    <div className="flex flex-col md:flex-row">
+      <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
+        {renderFiltersContent()}
       </ScrollPanel>
       <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
         {renderJobCards()}
