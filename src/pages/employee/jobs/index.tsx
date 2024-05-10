@@ -7,6 +7,7 @@ import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { type CheckboxChangeEvent } from 'primereact/checkbox'
+import { Divider } from 'primereact/divider'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { Sidebar } from 'primereact/sidebar'
 import { Skeleton } from 'primereact/skeleton'
@@ -177,37 +178,34 @@ export const EmployeeJobs = () => {
             visible={visibleFilterSidebarForMobile}
             onHide={() => setVisibleFilterSidebarForMobile(false)}
             fullScreen>
-            <h2 className="text-center">Filter & Sort:</h2>
             <ScrollPanel style={{ width: '100%', height: '100vh' }} className="w-full">
-              <div className="mb-4 flex flex-col">
-                <div className="flex justify-center">
+              <div className="mb-4 flex flex-col items-center pr-4">
+                <Button
+                  rounded
+                  text
+                  aria-label="Set jobs by Current Location"
+                  tooltip="Set Jobs with distance from your current location"
+                  onClick={handleUseCurrentLocation}>
+                  Use Current Location
+                </Button>
+                <Divider layout="horizontal" align="center" className="my-2">
+                  <p>or:</p>
+                </Divider>
+                <div className="flex w-full gap-x-2">
+                  <AddressAutoComplete
+                    setMoreAddressDetails={setMoreAddressDetails}
+                    currentAddress="Select Address"
+                    className="flex-1"
+                  />
                   <Button
-                    rounded
-                    text
-                    aria-label="Set jobs by Current Location "
-                    tooltip="Set Jobs with distance from your current location"
-                    onClick={handleUseCurrentLocation}>
-                    Use Current Location
+                    aria-label="Set jobs by Selected Address"
+                    tooltip="Set Jobs with distance from the address location"
+                    onClick={handleUseSelectedAddress}>
+                    Set Distance
                   </Button>
                 </div>
-                <div className="mb-4 flex flex-col items-center">
-                  <p className="mb-4"> OR: </p>
-                  <div>
-                    <AddressAutoComplete
-                      setMoreAddressDetails={setMoreAddressDetails}
-                      currentAddress="Select Address"
-                    />
-                    <Button
-                      className="mx-1"
-                      aria-label="Find and Select Address to set Jobs with distance from the address location"
-                      tooltip="Find and Select Address to set Jobs with distance from the address location"
-                      onClick={handleUseSelectedAddress}>
-                      Set Distance
-                    </Button>
-                  </div>
-                </div>
               </div>
-              <div className="mb-4 px-4">
+              <div className="mb-4 mt-6 px-6">
                 <Slider
                   value={selectedRange}
                   onChange={e => {
@@ -222,9 +220,10 @@ export const EmployeeJobs = () => {
                   min={rangeOptions[0].code}
                   max={rangeOptions[rangeOptions.length - 1].code}
                 />
-                <div className="mt-2">Selected Range: &lt; {selectedRange} miles</div>
+                <div className="mt-2">Selected Range: {selectedRange} miles</div>
               </div>
-              <div className="mb-4 md:hidden">
+              <h2>Date range:</h2>
+              <div className="mb-4 pr-4 md:block">
                 <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
                 <Calendar
                   value={dates}
@@ -238,8 +237,8 @@ export const EmployeeJobs = () => {
                   className="w-full"
                 />
               </div>
-              <div className="grid grid-cols-3 items-center">
-                {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 7).map(jobTitle => {
+              <div className="mb-2 grid grid-cols-3 items-center pr-4">
+                {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 9).map(jobTitle => {
                   return (
                     <div key={jobTitle.code} className="flex items-center">
                       <Checkbox
@@ -256,6 +255,15 @@ export const EmployeeJobs = () => {
                   )
                 })}
               </div>
+              {jobTitleOptions.length > 9 ? (
+                <Button
+                  text
+                  icon={seeMore ? 'pi pi-chevron-up' : 'pi pi-chevron-down'}
+                  label={seeMore ? 'See less' : 'See more'}
+                  size="small"
+                  onClick={() => setSeeMore(!seeMore)}
+                />
+              ) : null}
             </ScrollPanel>
           </Sidebar>
           {renderJobCards()}
@@ -263,21 +271,26 @@ export const EmployeeJobs = () => {
       ) : (
         <div className="flex flex-col md:flex-row">
           <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
-            <p>Distance:</p>
-            <div className="mb-4 flex flex-col items-center">
+            <div className="mb-4 flex flex-col items-center pr-4">
               <Button
                 rounded
                 text
-                aria-label="Set jobs by Current Location "
+                aria-label="Set jobs by Current Location"
                 tooltip="Set Jobs with distance from your current location"
                 onClick={handleUseCurrentLocation}>
                 Use Current Location
               </Button>
-              <p> OR: </p>
-              <div>
-                <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="Select Address" />
+              {/* <p> or: </p> */}
+              <Divider layout="horizontal" align="center" className="my-2">
+                <p>or:</p>
+              </Divider>
+              <div className="flex w-full gap-x-2">
+                <AddressAutoComplete
+                  setMoreAddressDetails={setMoreAddressDetails}
+                  currentAddress="Select Address"
+                  className="flex-1"
+                />
                 <Button
-                  className="mx-1"
                   aria-label="Set jobs by Selected Address"
                   tooltip="Set Jobs with distance from the address location"
                   onClick={handleUseSelectedAddress}>
@@ -285,7 +298,7 @@ export const EmployeeJobs = () => {
                 </Button>
               </div>
             </div>
-            <div className="mb-4 px-4">
+            <div className="mb-4 mt-6 px-6">
               <Slider
                 value={selectedRange}
                 onChange={e => {
@@ -303,7 +316,7 @@ export const EmployeeJobs = () => {
               <div className="mt-2">Selected Range: {selectedRange} miles</div>
             </div>
             <h2>Date range:</h2>
-            <div className="mb-4 hidden md:block">
+            <div className="mb-4 hidden pr-4 md:block">
               <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
               <Calendar
                 value={dates}
@@ -317,7 +330,7 @@ export const EmployeeJobs = () => {
                 className="w-full"
               />
             </div>
-            <div className="mb-2 grid grid-cols-3 items-center">
+            <div className="mb-2 grid grid-cols-3 items-center pr-4">
               {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 9).map(jobTitle => {
                 return (
                   <div key={jobTitle.code} className="flex items-center">
