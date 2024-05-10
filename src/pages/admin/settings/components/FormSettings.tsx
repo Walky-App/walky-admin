@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useMemo, useState } from 'react'
 
 import { AutoComplete, type AutoCompleteChangeEvent, type AutoCompleteCompleteEvent } from 'primereact/autocomplete'
+import { Button } from 'primereact/button'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { InputNumber } from 'primereact/inputnumber'
@@ -183,6 +184,9 @@ export const FormSettings = () => {
         <div className="pt-10 text-center">{isLoading ? 'Loading...' : 'Select a state to view settings'}</div>
       ) : (
         <div className="space-y-12">
+          <div className="sticky top-16 z-50 flex justify-end">
+            <Button label="Save" />
+          </div>
           <div className="mt-5 grid grid-cols-1 gap-x-8 gap-y-10 border-y border-gray-900/10 pb-12 pt-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">General settings</h2>
@@ -261,7 +265,7 @@ export const FormSettings = () => {
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Fees Manager</h2>
             </div>
-            <div className="grid max-w-2xl grid-cols-6 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="col-span-3">
                 <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
                   Our fees
