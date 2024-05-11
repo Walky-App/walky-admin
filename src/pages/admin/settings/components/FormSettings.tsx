@@ -10,8 +10,10 @@ import { ToggleButton } from 'primereact/togglebutton'
 
 import { HeaderComponent } from '../../../../components/shared/general/HeaderComponent'
 import { type SelectedOptionInterface } from '../../../../interfaces/global'
-import { type StatesSettingsDocument } from '../../../../interfaces/setting'
+import { type HolidayDocument, type StatesSettingsDocument } from '../../../../interfaces/setting'
 import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
 import { states } from '../../../../utils/VariablesUtils'
 import { cn } from '../../../../utils/cn'
 import { AdminHolidays } from '../AdminHolidays'
@@ -59,6 +61,7 @@ export const FormSettings = () => {
   const [processingFees, setProcessingFees] = useState<number>(settings.processing_fee || 0)
   const [holidaysRate, setHolidaysRate] = useState<number>(settings.overtime_rate.holiday_rate || 0)
   const [overTimeRate, setOverTimeRate] = useState<number>(settings.overtime_rate.overtime_rate || 0)
+  const [holidays, setHolidays] = useState<HolidayDocument[]>(settings.holiday || [])
   const [minimumHoursForOvertime, setMinimumHoursForOvertime] = useState<number>(
     settings.overtime_rate.overtime_rate || 0,
   )
@@ -88,6 +91,7 @@ export const FormSettings = () => {
       value: 0,
     },
   ])
+  const { showToast } = useUtils()
 
   const columns: ColumnMeta[] = [
     { field: 'name', header: 'name' },
@@ -165,6 +169,35 @@ export const FormSettings = () => {
     )
   }
 
+  const HandlerSetSettings = async () => {
+    const data = {
+      admin_costs: {
+        total: sumAdminCost,
+        fees: adminCost,
+      },
+      our_fee: ourFees,
+      processing_fee: processingFees,
+      overtime_rate: {
+        holiday_rate: holidaysRate,
+        overtime_rate: overTimeRate,
+        minimun_hours: minimumHoursForOvertime,
+      },
+      minimun_wage: minimunWage,
+      holiday: holidays,
+      licenses_required: lisenceRequiredChecked,
+      max_hours_per_day: maxHoursPerDay,
+    }
+    const response = await requestService({
+      path: `settings/${selectedCountry?.code}`,
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+
+    if (response.ok) {
+      showToast({ severity: 'success', summary: 'Success', detail: 'Settings updated successfully' })
+    }
+  }
+
   return (
     <div>
       <HeaderComponent title="Settings" />
@@ -185,7 +218,7 @@ export const FormSettings = () => {
       ) : (
         <div className="space-y-12">
           <div className="sticky top-16 z-50 flex justify-end">
-            <Button label="Save" />
+            <Button label="Save" onClick={HandlerSetSettings} />
           </div>
           <div className="mt-5 grid grid-cols-1 gap-x-8 gap-y-10 border-y border-gray-900/10 pb-12 pt-12 md:grid-cols-3">
             <div>
@@ -346,7 +379,7 @@ export const FormSettings = () => {
           </div>
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div className="col-span-6">
-              <AdminHolidays />
+              <AdminHolidays holidays={holidays} setHolidays={setHolidays} />
             </div>
           </div>
         </div>
