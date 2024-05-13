@@ -11,14 +11,17 @@ import { ScrollPanel } from 'primereact/scrollpanel'
 import { Sidebar } from 'primereact/sidebar'
 import { Skeleton } from 'primereact/skeleton'
 import { Slider } from 'primereact/slider'
-import { Tooltip } from 'primereact/tooltip'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
+import { HtScrollTop } from '../../../components/shared/general/HtScrollTop'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { useCoordinates } from '../../../store/useCoordinates'
 import { useJobs } from '../../../store/useJobs'
 import { isNew } from '../../../utils/timeUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
@@ -68,6 +71,7 @@ export const EmployeeJobs = () => {
     getLatitudeFromLocalStorage,
     getLongitudeFromLocalStorage,
   } = useCoordinates()
+  const { _id } = GetTokenInfo()
 
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
@@ -76,6 +80,9 @@ export const EmployeeJobs = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
+  const [isNewChecked, setIsNewChecked] = useState(false)
+  const [isAppliedChecked, setIsAppliedChecked] = useState(false)
+  const [isApprovedChecked, setIsApprovedChecked] = useState(false)
   const [visibleFilterSidebarForMobile, setVisibleFilterSidebarForMobile] = useState(false)
 
   const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
@@ -146,8 +153,21 @@ export const EmployeeJobs = () => {
     if (selectedRange) {
       filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange)
     }
+    if (isNewChecked) {
+      filteredJobs = filteredJobs.filter(job => isNew(job.createdAt))
+    }
+    if (isAppliedChecked) {
+      filteredJobs = filteredJobs.filter(job =>
+        job.applicants.some(applicant => applicant.user.toString() === _id && !applicant.is_approved),
+      )
+    }
+    if (isApprovedChecked) {
+      filteredJobs = filteredJobs.filter(job =>
+        job.applicants.some(applicant => applicant.user.toString() === _id && applicant.is_approved),
+      )
+    }
     setDisplayedJobs(filteredJobs)
-  }, [selectedJobTitles, dates, jobs, selectedRange])
+  }, [selectedJobTitles, dates, jobs, selectedRange, isNewChecked, isAppliedChecked, isApprovedChecked, _id])
 
   const onJobTitleChange = (e: CheckboxChangeEvent) => {
     let _selectedJobTitles = [...selectedJobTitles]
@@ -190,7 +210,7 @@ export const EmployeeJobs = () => {
             onClick={handleUseCurrentLocation}
           />
           <Divider layout="horizontal" align="center" className="my-2">
-            <p>or:</p>
+            or
           </Divider>
           <div className="flex w-full gap-x-2">
             <AddressAutoComplete
@@ -220,18 +240,9 @@ export const EmployeeJobs = () => {
             max={rangeOptions[rangeOptions.length - 1].code}
           />
         </div>
-        <Tooltip target=".custom-target-icon" />
-        <div className="flex flex-row items-center gap-x-1">
-          <i
-            className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge"
-            data-pr-tooltip="Select a start and end date to filter jobs by date range."
-            data-pr-position="right"
-            data-pr-at="right+5 top"
-            data-pr-my="left center-2"
-            style={{ fontSize: '1rem', cursor: 'pointer' }}
-          />
-          <h2>Date range:</h2>
-        </div>
+        <HtInfoTooltip message="Select a start and end date to filter jobs by date range.">
+          <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-sm" />
+        </HtInfoTooltip>
         <div className="mb-4 pr-4">
           <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
           <Calendar
@@ -273,6 +284,43 @@ export const EmployeeJobs = () => {
             onClick={() => setSeeMore(!seeMore)}
           />
         ) : null}
+        <div className="mb-2 grid grid-cols-3 items-center pr-4">
+          <div className="flex items-center">
+            <Checkbox
+              inputId="new"
+              name="new"
+              onChange={e => setIsNewChecked(e.checked || false)}
+              checked={isNewChecked || false}
+            />
+            <label htmlFor="new" className="ml-2">
+              New
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <Checkbox
+              inputId="applied"
+              name="applied"
+              onChange={e => setIsAppliedChecked(e.checked || false)}
+              checked={isAppliedChecked}
+            />
+            <label htmlFor="applied" className="ml-2">
+              Applied
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <Checkbox
+              inputId="approved"
+              name="approved"
+              onChange={e => setIsApprovedChecked(e.checked || false)}
+              checked={isApprovedChecked}
+            />
+            <label htmlFor="approved" className="ml-2">
+              Approved
+            </label>
+          </div>
+        </div>
       </>
     )
   }
@@ -296,6 +344,7 @@ export const EmployeeJobs = () => {
       </ScrollPanel>
       <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
         {renderJobCards()}
+        <HtScrollTop className="" />
       </ScrollPanel>
     </div>
   )
