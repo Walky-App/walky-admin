@@ -15,10 +15,15 @@ import { Panel } from 'primereact/panel'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { HtScrollTop } from '../../../../components/shared/general/HtScrollTop'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { services } from '../../../../utils/formOptions'
-import { FormDataContext, type IFacilityFormInputs, getFormErrorMessage, tooltipOptions } from '../ClientOnboardingPage'
+import { facilityContactRoles, services } from '../../../../utils/formOptions'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
+import { FormDataContext, type IFacilityFormInputs } from '../ClientOnboardingPage'
 
 interface AddFacilityDialogProps {
   visible: boolean
@@ -38,7 +43,15 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
 
   const { showToast } = useUtils()
 
-  const { corp_name, tax_id } = facilitiesArray[0]
+  let corp_name: IFacilityFormInputs['corp_name'], tax_id: IFacilityFormInputs['tax_id']
+
+  if (facilitiesArray && facilitiesArray.length > 0) {
+    // eslint-disable-next-line no-extra-semi
+    ;({ corp_name, tax_id } = facilitiesArray[0] as IFacilityFormInputs)
+  } else {
+    corp_name = 'Default Corp Name'
+    tax_id = 'Default Tax ID'
+  }
 
   const {
     control,
@@ -85,7 +98,6 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
       tax_id,
     }
     if (selectedFacility?._id) {
-      // If we're in "edit" mode, update the facility
       try {
         const facilityFound = await RequestService(`facilities/${selectedFacility?._id}`)
 
@@ -118,7 +130,6 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
       setVisible(false)
       setSelectedFacility(undefined)
     } else {
-      // If we're in "add" mode, add a new facility
       try {
         const response = await RequestService(`facilities`, 'POST', newFacilityData)
 
@@ -145,16 +156,25 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
     </div>
   )
 
+  const headerTemplate = (
+    <>
+      {selectedFacility?._id ?? '' ? <h3>Edit Facility Information</h3> : <h3>Add Facility Information</h3>}
+      <p className="mt-1 text-sm leading-6 text-gray-600">
+        <span style={{ color: 'red' }}>*</span> indicates a required field.
+      </p>
+    </>
+  )
+
   return (
     <Dialog
-      header={selectedFacility?._id ?? '' ? 'Edit Facility Information' : 'Add Facility Information'}
+      header={headerTemplate}
       visible={visible}
       draggable={false}
       blockScroll
       breakpoints={{ '960px': '75vw', '641px': '100vw' }}
       onHide={() => setVisible(false)}
       footer={footerContent}>
-      <div className="flex flex-col gap-y-4">
+      <div className="flex-col gap-y-4 first-letter:flex">
         {/* Facility Info */}
         <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2 [&>*]:mb-4">
           <div className="sm:col-span-3">
@@ -164,13 +184,14 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
               rules={{ required: 'Facility Name is required' }}
               render={({ field, fieldState }) => (
                 <>
-                  <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                    *Facility Name:
-                  </label>
+                  <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Name" />
+                  </HtInfoTooltip>
                   <InputText
                     id={field.name}
                     {...field}
                     className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
+                    autoComplete="off"
                   />
                 </>
               )}
@@ -191,17 +212,16 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
               }}
               render={({ field, fieldState }) => (
                 <>
-                  <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                    *Facility Phone Number:
-                  </label>
+                  <HtInfoTooltip message="The phone number of your facility. This is the number that workers will call if they have questions or need to contact you.">
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Phone Number" />
+                  </HtInfoTooltip>
                   <InputMask
                     id={field.name}
                     {...field}
                     mask="(999) 999-9999"
                     slotChar="x"
-                    tooltip="E.g. (281) 330-8004"
-                    tooltipOptions={tooltipOptions}
                     className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
+                    autoComplete="off"
                   />
                 </>
               )}
@@ -222,18 +242,21 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
               }}
               render={({ field, fieldState }) => (
                 <>
-                  <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                    *Facility Square Footage:
-                  </label>
+                  <HtInfoTooltip message="The square footage of your facility. This is the total area of your facility in square feet.">
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Square Footage" />
+                  </HtInfoTooltip>
                   <InputNumber
                     id={field.name}
                     {...field}
                     onChange={e => field.onChange(Number(e.value))}
                     min={0}
-                    tooltip="E.g. 10000"
-                    tooltipOptions={tooltipOptions}
+                    max={1000000}
                     className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
+                    pt={{
+                      input: { root: { autoComplete: 'off' } },
+                    }}
                   />
+                  <HtInputHelpText fieldName={field.name} helpText="Enter a number. Max 1,000,000" />
                 </>
               )}
             />
@@ -247,9 +270,9 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
               rules={{ required: 'At least one Serivce is required' }}
               render={({ field, fieldState }) => (
                 <>
-                  <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                    *Services:
-                  </label>
+                  <HtInfoTooltip message="The services that your facility offers.">
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Services" />
+                  </HtInfoTooltip>
                   <MultiSelect
                     id={field.name}
                     {...field}
@@ -261,6 +284,10 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                     onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
                     placeholder="Select Services"
                     className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
+                  />
+                  <HtInputHelpText
+                    fieldName={field.name}
+                    helpText="Please select all services that your facility offers."
                   />
                 </>
               )}
@@ -275,15 +302,19 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
               rules={{ required: false }}
               render={({ field, fieldState }) => (
                 <>
-                  <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                    Facility notes:
-                  </label>
+                  <HtInfoTooltip message="Any additional notes that you would like to provide about your facility. This information will be verified before application approval.">
+                    <HtInputLabel htmlFor={field.name} labelText="Arrival notes" />
+                  </HtInfoTooltip>
                   <InputTextarea
                     id={field.name}
                     {...field}
                     rows={4}
                     cols={30}
                     className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
+                  />
+                  <HtInputHelpText
+                    fieldName={field.name}
+                    helpText="Max 500 characters. Please do not enter contact information into this field."
                   />
                 </>
               )}
@@ -296,7 +327,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
           <div className="sm:col-span-6">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please provide your business address information below.
+              Please provide your facility business address information below.
             </p>
           </div>
 
@@ -307,9 +338,9 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
               rules={{ required: 'Address is required' }}
               render={({ field, fieldState }) => (
                 <>
-                  <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                    *Street Address:
-                  </label>
+                  <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Address" />
+                  </HtInfoTooltip>
                   <AddressAutoComplete
                     controlled
                     setMoreAddressDetails={setMoreAddressDetails}
@@ -318,6 +349,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                     value={field.value}
                     className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
                   />
+                  <HtInputHelpText fieldName={field.name} helpText="No Residential Addresses allowed" />
                 </>
               )}
             />
@@ -341,9 +373,9 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                   rules={{ required: 'First Name is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *First Name:
-                      </label>
+                      <HtInfoTooltip message="The first name of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="First Name" />
+                      </HtInfoTooltip>
                       <InputText
                         id={field.name}
                         {...field}
@@ -362,9 +394,9 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                   rules={{ required: 'Last Name is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Last Name:
-                      </label>
+                      <HtInfoTooltip message="The last name of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Last Name" />
+                      </HtInfoTooltip>
                       <InputText
                         id={field.name}
                         {...field}
@@ -383,14 +415,15 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                   rules={{ required: 'Role is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Role:
-                      </label>
+                      <HtInfoTooltip message="The role of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Role" />
+                      </HtInfoTooltip>
                       <Dropdown
                         id={field.name}
                         {...field}
                         filter
-                        options={['Owner', 'AP', 'Onsite', 'Security', 'Other']}
+                        options={facilityContactRoles}
+                        optionLabel="label"
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
                       />
                     </>
@@ -411,16 +444,14 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Phone Number:
-                      </label>
+                      <HtInfoTooltip message="The phone number of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Phone Number" />
+                      </HtInfoTooltip>
                       <InputMask
                         id={field.name}
                         {...field}
                         mask="(999) 999-9999"
                         slotChar="x"
-                        tooltip="E.g. (281) 330-8004"
-                        tooltipOptions={tooltipOptions}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
                       />
                     </>
@@ -441,9 +472,9 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Email:
-                      </label>
+                      <HtInfoTooltip message="The email address of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Email" />
+                      </HtInfoTooltip>
                       <InputText
                         id={field.name}
                         {...field}
@@ -485,6 +516,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
           </div>
         ) : null}
       </div>
+      <HtScrollTop />
     </Dialog>
   )
 }

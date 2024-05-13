@@ -9,67 +9,40 @@ import { DataTable } from 'primereact/datatable'
 import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
 
-import { useAuth } from '../../../contexts/AuthContext'
-import { RequestService } from '../../../services/RequestService'
-import { useUtils } from '../../../store/useUtils'
+import { type HolidayDocument } from '../../../interfaces/setting'
 
 interface IHoliday {
   _id: string
   holiday_name: string
-  holiday_date: Date | undefined
-  created_by: string
-  updated_by: string
+  holiday_date: Date
 }
 interface IHolidayFormValues {
   holiday_name: string
   holiday_date: Date | undefined
-  created_by: string
-  updated_by: string
 }
 
-export const AdminHolidays = () => {
-  const { showToast } = useUtils()
-  const { user } = useAuth()
+interface HolidaysProps {
+  holidays: HolidayDocument[]
+  setHolidays: (holidays: HolidayDocument[]) => void
+}
 
+export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
   const [formHoliday, setFormHoliday] = useState<IHolidayFormValues>({
     holiday_name: '',
     holiday_date: undefined,
-    created_by: user?.email != null ? user.email : '',
-    updated_by: '',
   })
-
-  const [holidays, setHolidays] = useState<IHoliday[]>([])
   const [selectedHoliday, setSelectedHoliday] = useState<IHoliday | null>(null)
 
-  useEffect(() => {
-    const getHolidays = async () => {
-      try {
-        const response = await RequestService('holidays', 'GET')
-        setHolidays(response)
-      } catch (error) {
-        console.error('error fetching holidays', error)
-      }
-    }
-    getHolidays()
-  }, [])
-
   const deleteHoliday = async (holiday: IHoliday) => {
-    try {
-      await RequestService(`holidays/${holiday._id}`, 'DELETE')
-      setHolidays(holidays.filter(existingHoliday => existingHoliday._id !== holiday._id))
-
-      showToast({ severity: 'success', summary: 'Success', detail: 'Holiday deleted successfully' })
-    } catch (error) {
-      console.error('error deleting holiday', error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting holiday' })
-    }
+    const newHolidays = holidays.filter(
+      h => h.holiday_date !== holiday.holiday_date && h.holiday_name !== holiday.holiday_name,
+    )
+    setHolidays(newHolidays)
   }
 
   const defaultValues = {
     holiday_name: formHoliday?.holiday_name,
     holiday_date: formHoliday?.holiday_date,
-    created_by: formHoliday?.created_by,
-    updated_by: formHoliday?.updated_by,
   }
 
   const {
@@ -84,8 +57,6 @@ export const AdminHolidays = () => {
     if (formHoliday) {
       setValue('holiday_name', formHoliday.holiday_name)
       setValue('holiday_date', formHoliday.holiday_date)
-      setValue('created_by', formHoliday.created_by)
-      setValue('updated_by', formHoliday.updated_by)
     }
   }, [formHoliday, setValue])
 
@@ -109,44 +80,42 @@ export const AdminHolidays = () => {
 
   const onSubmit: SubmitHandler<IHolidayFormValues> = async data => {
     try {
-      let response: IHoliday
-      if (selectedHoliday) {
-        const updatedData = { ...data, updated_by: user?.email || '' }
-        response = await RequestService(`holidays/${selectedHoliday._id}`, 'PATCH', updatedData)
-      } else {
-        const newData = { ...data, created_by: user?.email || '' }
-        response = await RequestService('holidays', 'POST', newData)
+      if (!data.holiday_date || !data.holiday_name) {
+        return
       }
-      if (response) {
-        setFormHoliday({
-          holiday_name: '',
-          holiday_date: undefined,
-          created_by: user?.email || '',
-          updated_by: '',
+      const dataForm: HolidayDocument = {
+        holiday_name: data.holiday_name,
+        holiday_date: data.holiday_date,
+      }
+      if (selectedHoliday) {
+        const newData: HolidayDocument[] = holidays.map(holiday => {
+          if (holiday.holiday_date === selectedHoliday.holiday_date) {
+            return dataForm
+          }
+          return holiday
         })
-        if (selectedHoliday) {
-          setHolidays(holidays.map(holiday => (holiday._id === response._id ? response : holiday)))
-        } else {
-          setHolidays([...holidays, response])
-        }
-        showToast({ severity: 'success', summary: 'Success', detail: 'Holiday created successfully' })
-        reset()
+        setHolidays(newData)
         setSelectedHoliday(null)
+        reset()
+      } else {
+        const newData: HolidayDocument[] = [...holidays, dataForm]
+        setHolidays(newData)
+        setSelectedHoliday(null)
+        reset()
       }
     } catch (error) {
       console.error('Error:', error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error creating holiday' })
     }
   }
 
-  const updatedByTemplate = (rowData: IHoliday) => {
-    return <span>{rowData.updated_by}</span>
+  const handlerSelectHoliday = (holiday: IHoliday) => {
+    setSelectedHoliday(holiday)
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-12">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10  md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Holidays </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Select date to define holidays.</p>
@@ -176,30 +145,6 @@ export const AdminHolidays = () => {
               {getFormErrorMessage('holiday_name', errors)}
             </div>
 
-            <div className="sm:col-span-3">
-              <label htmlFor="created_by" className="block text-sm font-medium leading-6 text-gray-900">
-                Created By
-              </label>
-              <div className="mt-2">
-                <Controller
-                  name="created_by"
-                  control={control}
-                  defaultValue={user?.first_name}
-                  render={({ field, fieldState }) => (
-                    <InputText
-                      disabled
-                      id={field.name}
-                      value={field.value}
-                      name="created_by"
-                      className={classNames({ 'p-invalid': fieldState.error }, 'w-full')}
-                      onChange={e => field.onChange(e.target.value)}
-                    />
-                  )}
-                />
-              </div>
-              {getFormErrorMessage('created_by', errors)}
-            </div>
-
             <div className="sm:col-span-6 sm:col-start-1">
               <label htmlFor="holiday_date" className="block text-sm font-medium leading-6 text-gray-900">
                 Holiday Date
@@ -226,24 +171,23 @@ export const AdminHolidays = () => {
               {getFormErrorMessage('holiday_date', errors)}
             </div>
             <div className="flex justify-end sm:col-span-6">
-              <Button type="submit" label="Submit" />
+              <Button type="submit" label={selectedHoliday ? 'Update' : 'Add'} />
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10  md:grid-cols-1">
           <div>
             <h1 className="text-xl font-bold leading-7 text-gray-900">Holidays Table</h1>
             <DataTable
               value={holidays}
               selectionMode="single"
               selection={selectedHoliday}
-              onSelectionChange={e => setSelectedHoliday(e.value as IHoliday)}
+              onSelectionChange={e => handlerSelectHoliday(e.value as IHoliday)}
               onRowSelect={e => setFormHoliday(e.data)}
               dataKey="_id"
               paginator
               rows={5}
-              metaKeySelection={false}
-              tableStyle={{ minWidth: '50rem' }}>
+              metaKeySelection={false}>
               <Column field="holiday_name" header="Name" />
               <Column
                 body={(rowData: IHoliday) => (
@@ -251,12 +195,11 @@ export const AdminHolidays = () => {
                 )}
                 header="Date"
               />
-              <Column field="created_by" header="Created By" />
-              <Column body={updatedByTemplate} header="Updated By" />
               <Column
                 header="Delete"
                 body={rowData => (
                   <Button
+                    type="button"
                     icon="pi pi-trash"
                     className="p-button-rounded p-button-danger"
                     onClick={() => deleteHoliday(rowData)}

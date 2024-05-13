@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react'
 
+import { useMediaQuery } from 'react-responsive'
+
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
-import { Dropdown } from 'primereact/dropdown'
+import { Checkbox } from 'primereact/checkbox'
+import { type CheckboxChangeEvent } from 'primereact/checkbox'
+import { Divider } from 'primereact/divider'
+import { ScrollPanel } from 'primereact/scrollpanel'
+import { Sidebar } from 'primereact/sidebar'
 import { Skeleton } from 'primereact/skeleton'
+import { Slider } from 'primereact/slider'
+import { Tooltip } from 'primereact/tooltip'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { type IJob } from '../../../interfaces/job'
@@ -54,12 +62,16 @@ export const EmployeeJobs = () => {
     getLongitudeFromLocalStorage,
   } = useCoordinates()
 
-  const [selectedJobTitle, setSelectedJobTitle] = useState<{ name: string; code: string } | null>(null)
+  const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [selectedRange, setSelectedRange] = useState<{ name: string; code: number } | null>(null)
+  const [selectedRange, setSelectedRange] = useState(rangeOptions[0].code)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
+  const [seeMore, setSeeMore] = useState(false)
+  const [visibleFilterSidebarForMobile, setVisibleFilterSidebarForMobile] = useState(false)
+
+  const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
 
   const handleUseSelectedAddress = async () => {
     if (moreAddressDetails && moreAddressDetails.location_pin) {
@@ -113,8 +125,8 @@ export const EmployeeJobs = () => {
 
   useEffect(() => {
     let filteredJobs = [...(jobs || [])]
-    if (selectedJobTitle && selectedJobTitle.code !== 'all') {
-      filteredJobs = filteredJobs.filter(job => job.title === selectedJobTitle.name)
+    if (selectedJobTitles.length > 0) {
+      filteredJobs = filteredJobs.filter(job => selectedJobTitles.includes(job.title))
     }
     if (dates) {
       filteredJobs = filteredJobs.filter(job => {
@@ -125,76 +137,157 @@ export const EmployeeJobs = () => {
       })
     }
     if (selectedRange) {
-      filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange.code)
+      filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange)
     }
     setDisplayedJobs(filteredJobs)
-  }, [selectedJobTitle, dates, jobs, selectedRange])
+  }, [selectedJobTitles, dates, jobs, selectedRange])
 
-  return (
-    <div className="flex">
-      <div className="w-1/4 p-3">
-        <h2>Filter:</h2>
-        <div className="mb-4">
-          <Dropdown
-            value={selectedJobTitle}
-            onChange={e => setSelectedJobTitle(e.value)}
-            filter
-            options={jobTitleOptions}
-            optionLabel="name"
-            placeholder="by Title"
+  const onJobTitleChange = (e: CheckboxChangeEvent) => {
+    let _selectedJobTitles = [...selectedJobTitles]
+
+    if (e.checked ?? false) _selectedJobTitles.push(e.value as string)
+    else _selectedJobTitles = _selectedJobTitles.filter(jobTitle => jobTitle !== e.value)
+
+    setSelectedJobTitles(_selectedJobTitles)
+  }
+
+  const renderJobCards = () => {
+    return (
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
+          {isLoading ? (
+            jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
+          ) : displayedJobs.length > 0 ? (
+            displayedJobs.map(job => <JobListItem key={job._id} job={job} />)
+          ) : (
+            <div>No jobs found for the selected filters.</div>
+          )}
+        </ul>
+      </div>
+    )
+  }
+
+  const renderFiltersContent = () => {
+    return (
+      <>
+        <div className="mb-4 flex flex-col items-center pr-4">
+          <Button
+            label="Use Current Location"
+            text
+            outlined
+            link
+            aria-label="Set jobs by Current Location"
+            tooltip="Set Jobs with distance from your current location"
+            onClick={handleUseCurrentLocation}
+          />
+          <Divider layout="horizontal" align="center" className="my-2">
+            <p>or:</p>
+          </Divider>
+          <div className="flex w-full gap-x-2">
+            <AddressAutoComplete
+              setMoreAddressDetails={setMoreAddressDetails}
+              currentAddress="Select Address"
+              className="flex-1"
+            />
+            <Button aria-label="Set jobs by Selected Address" onClick={handleUseSelectedAddress}>
+              Set Distance
+            </Button>
+          </div>
+        </div>
+        <div className="mb-4 mt-6 px-4">
+          <div className="mb-2">Selected Range: &lt;{selectedRange} miles</div>
+          <Slider
+            value={selectedRange}
+            onChange={e => {
+              if (Array.isArray(e.value)) {
+                setSelectedRange(e.value[0])
+              } else {
+                setSelectedRange(e.value)
+              }
+            }}
             className="w-full"
+            step={10}
+            min={rangeOptions[0].code}
+            max={rangeOptions[rangeOptions.length - 1].code}
           />
         </div>
-        <div className="mb-4">
+        <Tooltip target=".custom-target-icon" />
+        <div className="flex flex-row items-center gap-x-1">
+          <i
+            className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge"
+            data-pr-tooltip="Select a start and end date to filter jobs by date range."
+            data-pr-position="right"
+            data-pr-at="right+5 top"
+            data-pr-my="left center-2"
+            style={{ fontSize: '1rem', cursor: 'pointer' }}
+          />
+          <h2>Date range:</h2>
+        </div>
+        <div className="mb-4 pr-4">
+          <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
           <Calendar
             value={dates}
             onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
             showButtonBar
-            numberOfMonths={2}
+            inline={true}
+            numberOfMonths={1}
             placeholder="by Date"
             readOnlyInput
             className="w-full"
           />
         </div>
-        <div className="mb-4">
-          <Dropdown
-            value={selectedRange}
-            onChange={e => setSelectedRange(e.value)}
-            options={rangeOptions}
-            optionLabel="name"
-            placeholder="by Distance"
-            className="w-full"
-          />
+        <div className="mb-2 grid grid-cols-3 items-center pr-4">
+          {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 9).map(jobTitle => {
+            return (
+              <div key={jobTitle.code} className="flex items-center">
+                <Checkbox
+                  inputId={jobTitle.code}
+                  name="jobTitle"
+                  value={jobTitle.code}
+                  onChange={onJobTitleChange}
+                  checked={selectedJobTitles.includes(jobTitle.code as never)}
+                />
+                <label htmlFor={jobTitle.code} className="ml-2">
+                  {jobTitle.name}
+                </label>
+              </div>
+            )
+          })}
         </div>
-      </div>
-      <div className="w-3/4 p-3">
-        <div className="flex items-center justify-center">
-          <AddressAutoComplete setMoreAddressDetails={setMoreAddressDetails} currentAddress="Type in address" />
+        {jobTitleOptions.length > 9 ? (
           <Button
-            className="mx-1"
-            icon="pi pi-search"
-            aria-label="Set jobs by Selected Address"
-            tooltip="Set Jobs with distance from the address location"
-            onClick={handleUseSelectedAddress}
-          />
-          <Button
-            icon="pi pi-map-marker"
-            rounded
             text
-            aria-label="Set jobs by Current Location "
-            tooltip="Set Jobs with distance from your current location"
-            onClick={handleUseCurrentLocation}
+            icon={seeMore ? 'pi pi-chevron-up' : 'pi pi-chevron-down'}
+            label={seeMore ? 'See less' : 'See more'}
+            size="small"
+            onClick={() => setSeeMore(!seeMore)}
           />
-        </div>
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-            {isLoading
-              ? jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
-              : displayedJobs.map(job => <JobListItem key={job._id} job={job} />)}
-          </ul>
-        </div>
-      </div>
+        ) : null}
+      </>
+    )
+  }
+
+  return isMobile ? (
+    <div className="flex flex-col items-start md:flex-row">
+      <Button label="Filter & Sort" text outlined link onClick={() => setVisibleFilterSidebarForMobile(true)} />
+      <Sidebar
+        visible={visibleFilterSidebarForMobile}
+        onHide={() => setVisibleFilterSidebarForMobile(false)}
+        blockScroll={true}
+        fullScreen={true}>
+        {renderFiltersContent()}
+      </Sidebar>
+      {renderJobCards()}
+    </div>
+  ) : (
+    <div className="flex flex-col md:flex-row">
+      <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
+        {renderFiltersContent()}
+      </ScrollPanel>
+      <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
+        {renderJobCards()}
+      </ScrollPanel>
     </div>
   )
 }
