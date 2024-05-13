@@ -1,80 +1,15 @@
 import { type Dispatch, type SetStateAction, useState } from 'react'
 
-import { BsFillFileEarmarkSpreadsheetFill } from 'react-icons/bs'
-import {
-  FaBusinessTime,
-  FaBriefcase,
-  FaFileContract,
-  FaFileInvoiceDollar,
-  FaBuilding,
-  FaUserGraduate,
-} from 'react-icons/fa'
-import { FaUserGroup } from 'react-icons/fa6'
-import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
-import { IoMdMail } from 'react-icons/io'
-import { MdSchool } from 'react-icons/md'
 import { NavLink, Link } from 'react-router-dom'
 
 import cn from 'classnames'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 
-import { Cog6ToothIcon } from '@heroicons/react/20/solid'
-
 import { useAuth } from '../../contexts/AuthContext'
 import { getCurrentUserRole } from '../../utils/UserRole'
+import { userLinks } from './Links'
 import { LogosPack } from './LogosPack'
-
-interface INavLink {
-  id: number
-  name: string
-  href: string
-  icon?: JSX.Element
-  disabled?: boolean
-}
-
-const adminLinks: INavLink[] = [
-  { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
-  { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
-  { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
-  { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
-  { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
-  { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Settings', href: '/admin/settings', icon: <Cog6ToothIcon /> },
-  { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
-]
-
-const clientLinks: INavLink[] = [
-  { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase /> },
-  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
-  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
-  {
-    id: 4,
-    name: 'Timesheets',
-    href: '/dashboard/timesheets',
-    icon: <BsFillFileEarmarkSpreadsheetFill />,
-    disabled: true,
-  },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-  { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding /> },
-]
-
-const employeeLinks: INavLink[] = [
-  { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime /> },
-  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
-  { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-  { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-]
-
-const salesLinks: INavLink[] = [
-  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
-  { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
-  { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: true },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-  { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
-]
 
 interface SidebarComponentProps {
   sidebarOpen: boolean
@@ -86,22 +21,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
   const { user } = useAuth()
   const role = getCurrentUserRole()
 
-  const getLinksByRole = () => {
-    switch (role) {
-      case 'admin':
-        return adminLinks
-      case 'client':
-        return clientLinks
-      case 'employee':
-        return employeeLinks
-      case 'sales':
-        return salesLinks
-      default:
-        return []
-    }
-  }
-
-  const links = getLinksByRole()
+  const links = userLinks()
 
   return (
     <div
@@ -139,8 +59,9 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
             </ul>
           </li>
           <li>
-            {role !== 'employee' ? (
-              <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
+            {role === 'admin' ? <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div> : null}
+            {role === 'client' ? (
+              <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
             ) : null}
 
             <ul className="-mx-2 mt-2 space-y-1">

@@ -9,15 +9,15 @@ import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { adminUserLinks } from './adminUserSubHeaderLinks'
 
-interface IAdminUserContext {
+interface IAdminUserPageContext {
   selectedUserData: IUser
   selectedUserId?: string
 }
 
-const AdminUserContext = createContext<IAdminUserContext>({} as IAdminUserContext)
+const AdminUserPageContext = createContext<IAdminUserPageContext>({} as IAdminUserPageContext)
 
-export const useAdminUserContext = () => {
-  return useContext(AdminUserContext)
+export const useAdminUserPageContext = () => {
+  return useContext(AdminUserPageContext)
 }
 
 export const AdminUserPage = () => {
@@ -52,7 +52,7 @@ export const AdminUserPage = () => {
   }
 
   return (
-    <AdminUserContext.Provider value={{ selectedUserId, selectedUserData }}>
+    <AdminUserPageContext.Provider value={{ selectedUserId, selectedUserData }}>
       {isLoading ? (
         <Skeleton width="100%" height="100%" />
       ) : (
@@ -61,6 +61,6 @@ export const AdminUserPage = () => {
           <Outlet />
         </>
       )}
-    </AdminUserContext.Provider>
+    </AdminUserPageContext.Provider>
   )
 }
