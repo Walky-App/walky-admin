@@ -13,15 +13,21 @@ import { ToggleButton } from 'primereact/togglebutton'
 import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
 import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import {
+  type IPunchPairWithTotalTime,
+  getAllPunches,
+  sortPunches,
+  createPunchPairsWithTotalTime,
+} from '../../../components/shared/timesheets/timesheetsUtils'
 import { type IJob } from '../../../interfaces/job'
-import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
+import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import {
-  convertMillisecondsToReadableTime,
-  convertToStandardTime,
-  formatDate,
-  formatTime,
+  isTodaySameAsTimeStamp,
+  convertMilitaryTimeToStandardTime,
+  formatToDate,
+  formatToTime,
   isValidDate,
 } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -46,12 +52,6 @@ export const JobDetailView = () => {
   const [latitude, setLatitude] = useState<number>()
   const [longitude, setLongitude] = useState<number>()
   const [error, setError] = useState<string>()
-
-  interface IPunchPairWithTotalTime {
-    punchIn: IPunch
-    punchOut: IPunch | null
-    totalTime: string | undefined
-  }
 
   useEffect(() => {
     let isMounted = true
@@ -168,9 +168,7 @@ export const JobDetailView = () => {
 
         const timeStampOfLastPunchIn = lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp
 
-        setIsClockedIn(
-          lastTimesheet?.is_clocked_in === true ? checkIfTodaysDateIsSameAsTimeStamp(timeStampOfLastPunchIn) : false,
-        )
+        setIsClockedIn(lastTimesheet?.is_clocked_in === true ? isTodaySameAsTimeStamp(timeStampOfLastPunchIn) : false)
       }
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
@@ -267,47 +265,15 @@ export const JobDetailView = () => {
       return []
     }
 
-    const allPunches = timesheets.flatMap(timesheet => (timesheet.punches.length > 0 ? timesheet.punches : []))
+    const allPunches = getAllPunches(timesheets)
+    const sortedPunches = sortPunches(allPunches)
 
-    const sortedPunches = [...allPunches].sort(
-      (a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime(),
-    )
-
-    const pairs = []
-    let punchIn = null
-    let i = 0
-    for (const punch of sortedPunches) {
-      if (punch.punch_in) {
-        if (punchIn) {
-          pairs.push({ punchIn, punchOut: null, totalTime: undefined })
-        }
-        punchIn = punch
-      } else if (punchIn) {
-        const totalTime = Date.parse(punch.time_stamp) - Date.parse(punchIn.time_stamp)
-        pairs.push({ punchIn, punchOut: punch, totalTime: convertMillisecondsToReadableTime(totalTime) })
-        punchIn = null
-      }
-      if (punchIn && i === sortedPunches.length - 1) {
-        pairs.push({ punchIn, punchOut: null, totalTime: undefined })
-      }
-      i++
-    }
-
-    return pairs.reverse()
+    return createPunchPairsWithTotalTime(sortedPunches)
   }, [timesheets])
 
   const handleFeedback = () => {
     setIdFeedback(id as string)
     setOpenFeedback(true)
-  }
-
-  const checkIfTodaysDateIsSameAsTimeStamp = (timeStamp?: string) => {
-    if (timeStamp == null) {
-      return false
-    }
-    const date = new Date(timeStamp)
-    const todaysDate = new Date()
-    return date.getDate() === todaysDate.getDate()
   }
 
   const isUserApprovedApplicant = (job: IJob) =>
@@ -329,8 +295,8 @@ export const JobDetailView = () => {
                   {dayOfWeek}, {formattedDate}
                 </time>
                 <p className="flex-none sm:ml-6">
-                  <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                  <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.start_time)}</time> -
+                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.end_time)}</time>
                 </p>
                 <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                   Lunch: {job.lunch_break} minutes
@@ -353,16 +319,16 @@ export const JobDetailView = () => {
             field="punchIn.time_stamp"
             header="Date"
             body={(rowData: IPunchPairWithTotalTime) =>
-              isValidDate(rowData.punchIn.time_stamp) ? formatDate(rowData.punchIn.time_stamp) : 'No Timestamp'
+              isValidDate(rowData.punchIn.time_stamp) ? formatToDate(rowData.punchIn.time_stamp) : 'No Timestamp'
             }
           />
-          <Column header="Time In" body={rowData => formatTime(rowData.punchIn.time_stamp)} />
+          <Column header="Time In" body={rowData => formatToTime(rowData.punchIn.time_stamp)} />
           <Column
             header="Time Out"
             body={(rowData: IPunchPairWithTotalTime) =>
               rowData.punchOut
-                ? formatTime(rowData.punchOut.time_stamp)
-                : checkIfTodaysDateIsSameAsTimeStamp(rowData.punchIn.time_stamp)
+                ? formatToTime(rowData.punchOut.time_stamp)
+                : isTodaySameAsTimeStamp(rowData.punchIn.time_stamp)
                   ? 'Clocked In'
                   : 'Clock Out not recorded'
             }
@@ -505,7 +471,8 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-sm font-normal text-stone-500">Job Time</div>
                     <div className="text-sm font-normal text-black">
-                      {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                      {convertMilitaryTimeToStandardTime(job.start_time)} -{' '}
+                      {convertMilitaryTimeToStandardTime(job.end_time)}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">

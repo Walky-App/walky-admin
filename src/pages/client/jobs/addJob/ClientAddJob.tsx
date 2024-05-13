@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 
-import { Controller, type FieldErrors, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
@@ -8,6 +8,7 @@ import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
 import { MultiSelect } from 'primereact/multiselect'
+import { RadioButton } from 'primereact/radiobutton'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
@@ -15,6 +16,8 @@ import { TitleComponent } from '../../../../components/shared/general/TitleCompo
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
+import { jobTipsOptions, lunchTimeOptions } from '../../../../utils/formOptions'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 export const ClientAddJob = () => {
@@ -57,14 +60,21 @@ export const ClientAddJob = () => {
     getFacilities()
   }, [id, location.pathname])
 
+  const now = new Date()
+  const start_time = new Date(now)
+  start_time.setHours(8, 0, 0, 0)
+
+  const end_time = new Date(now)
+  end_time.setHours(17, 0, 0, 0)
+
   let defaultValues: JobFormDefaultValues = {
     title: '',
     facility_id: '',
     vacancy: 0,
     hourly_rate: 0,
     job_dates: [],
-    start_time: new Date(),
-    end_time: new Date(),
+    start_time: start_time,
+    end_time: end_time,
     lunch_break: 0,
     job_tips: [],
     total_hours: 0,
@@ -97,24 +107,6 @@ export const ClientAddJob = () => {
       setTotalHours(Math.round(totalHoursCalc * 100) / 100)
     }
   }, [startTime, endTime, lunchBreak])
-
-  function getFormErrorMessage(path: string, errors: FieldErrors) {
-    const pathParts = path.split('.')
-    let error: FieldErrors = errors
-
-    for (const part of pathParts) {
-      if (typeof error !== 'object' || error === null) {
-        return null
-      }
-      error = error[part as keyof typeof error] as FieldErrors
-    }
-
-    if (error?.message) {
-      return <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>
-    }
-
-    return null
-  }
 
   const onSubmit = async (data: JobFormDefaultValues) => {
     try {
@@ -155,55 +147,6 @@ export const ClientAddJob = () => {
     }
   }
 
-  const options = [
-    { title: 'Harvester', value: 'Harvester' },
-    { title: 'Budtender', value: 'Budtender' },
-    { title: 'Trimmer', value: 'Trimmer' },
-    { title: 'Packager', value: 'Packager' },
-    { title: 'Gardener', value: 'Gardener' },
-    { title: 'Cultivator', value: 'Cultivator' },
-    { title: 'Extractor', value: 'Extractor' },
-    { title: 'Front desk', value: 'Front desk' },
-    { title: 'Greeter', value: 'Greeter' },
-    { title: 'Id checker', value: 'Id checker' },
-    { title: 'Inventory', value: 'Inventory' },
-    { title: 'Data entry', value: 'Data entry' },
-    { title: 'Event staff', value: 'Event staff' },
-    { title: 'Promo representative', value: 'Promo representative' },
-    { title: 'Cleaning', value: 'Cleaning' },
-    { title: 'Joint roller', value: 'Joint roller' },
-    { title: 'Grow tech', value: 'Grow tech' },
-    { title: 'Clone tech', value: 'Clone tech' },
-    { title: 'Sign spinner', value: 'Sign spinner' },
-  ]
-
-  const lunchTimes = [
-    { label: '0 minutes', value: 0 },
-    { label: '15 minutes', value: 15 },
-    { label: '30 minutes', value: 30 },
-    { label: '45 minutes', value: 45 },
-    { label: '60 minutes', value: 60 },
-  ]
-
-  const jobTips = [
-    { label: 'Change Required Upon Entry', value: 'Change Required Upon Entry' },
-    { label: 'Lunch Included', value: 'Lunch Included' },
-    { label: 'Lunch Room Available', value: 'Lunch Room Available' },
-    { label: 'Lunch Will Be Off-Premise', value: 'Lunch Will Be Off-Premise' },
-    { label: 'Pack a Lunch', value: 'Pack a Lunch' },
-    { label: 'Parking on Street', value: 'Parking on Street' },
-    { label: 'Parking Onsite', value: 'Parking Onsite' },
-    { label: 'Required Identification', value: 'Required Identification' },
-    { label: 'Special Equipment', value: 'Special Equipment' },
-    { label: 'No gas stations nearby', value: 'No gas stations nearby' },
-    { label: 'Water is provided', value: 'Water is provided' },
-    { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
-    { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
-    { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
-    { label: 'Labcoat Provided', value: 'Labcoat Provided' },
-    { label: 'Head / Beard net required', value: 'Head / Beard net required' },
-  ]
-
   return (
     <>
       <TitleComponent title="Add a new job" />
@@ -221,9 +164,6 @@ export const ClientAddJob = () => {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                  Job Title:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="title"
@@ -231,11 +171,14 @@ export const ClientAddJob = () => {
                     rules={{ required: 'Job Title is required.' }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Job Title:
+                        </label>
                         <Dropdown
                           id={field.name}
                           value={field.value}
                           optionLabel="title"
-                          options={options}
+                          options={jobTipsOptions}
                           filter
                           focusInputRef={field.ref}
                           onChange={e => field.onChange(e.value)}
@@ -249,9 +192,6 @@ export const ClientAddJob = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="facility" className="block text-sm font-medium leading-6 text-gray-900">
-                  Select Facility:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="facility_id"
@@ -259,6 +199,9 @@ export const ClientAddJob = () => {
                     rules={{ required: 'Facility is required.' }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Select Facility:
+                        </label>
                         <Dropdown
                           id={field.name}
                           value={field.value}
@@ -272,7 +215,7 @@ export const ClientAddJob = () => {
                         {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
-                  />{' '}
+                  />
                 </div>
               </div>
             </div>
@@ -308,6 +251,7 @@ export const ClientAddJob = () => {
                             className={classNames({ 'p-invalid': fieldState.error })}
                             minDate={new Date()} // Disabling past dates
                             inline
+                            showButtonBar
                           />
                           {field.value.length > 0 ? (
                             <div className="mt-2">
@@ -352,97 +296,33 @@ export const ClientAddJob = () => {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">
-                <label htmlFor="start_time" className="block text-sm font-medium leading-6 text-gray-900">
-                  Start time:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="start_time"
                     control={control}
                     rules={{ required: 'Start Time is required.' }}
                     render={({ field, fieldState }) => (
-                      <div className="mt-6">
-                        <div>
-                          <Calendar
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.value ?? null)
-                              setStartTime(e.value ?? null)
-                            }}
-                            timeOnly
-                            hourFormat="12"
-                            showIcon
-                            icon={() => <i className="pi pi-clock" />}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          {getFormErrorMessage(field.name, errors)}
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="end_time" className="block text-sm font-medium leading-6 text-gray-900">
-                  End Time:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="end_time"
-                    control={control}
-                    rules={{ required: 'End Time is required.' }}
-                    render={({ field, fieldState }) => (
-                      <div className="mt-6">
-                        <div>
-                          <Calendar
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.value ?? null)
-                              setEndTime(e.value ?? null)
-                            }}
-                            timeOnly
-                            hourFormat="12"
-                            showIcon
-                            icon={() => <i className="pi pi-clock" />}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          {getFormErrorMessage(field.name, errors)}
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="lunch_break" className="block text-sm font-medium leading-6 text-gray-900">
-                  Lunch Break:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="lunch_break"
-                    control={control}
-                    rules={{
-                      required: 'Enter lunch break time in minutes.',
-                      validate: value =>
-                        (value !== null && value >= 0 && value <= 90) || 'Enter lunch break time in minutes',
-                    }}
-                    render={({ field, fieldState }) => (
                       <>
-                        <div>
-                          <Dropdown
-                            id={field.name}
-                            inputRef={field.ref}
-                            value={field.value}
-                            onChange={e => field.onChange(e.value)}
-                            options={lunchTimes}
-                            optionLabel="label"
-                            optionValue="value"
-                            placeholder="Select lunch break duration"
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Start time:
+                        </label>
+                        <div className="mt-6">
+                          <div>
+                            <Calendar
+                              value={field.value}
+                              onChange={e => {
+                                field.onChange(e.value ?? null)
+                                setStartTime(e.value ?? null)
+                              }}
+                              timeOnly
+                              hourFormat="12"
+                              showIcon
+                              icon={() => <i className="pi pi-clock" />}
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                            />
+                            {getFormErrorMessage(field.name, errors)}
+                          </div>
                         </div>
-                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
@@ -450,9 +330,40 @@ export const ClientAddJob = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
-                  Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
-                </label>
+                <div className="mt-2">
+                  <Controller
+                    name="end_time"
+                    control={control}
+                    rules={{ required: 'End Time is required.' }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          End Time:
+                        </label>
+                        <div className="mt-6">
+                          <div>
+                            <Calendar
+                              value={field.value}
+                              onChange={e => {
+                                field.onChange(e.value ?? null)
+                                setEndTime(e.value ?? null)
+                              }}
+                              timeOnly
+                              hourFormat="12"
+                              showIcon
+                              icon={() => <i className="pi pi-clock" />}
+                              className={classNames({ 'p-invalid': fieldState.error })}
+                            />
+                            {getFormErrorMessage(field.name, errors)}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="sm:col-span-3">
                 <div className="mt-2">
                   <Controller
                     name="vacancy"
@@ -465,6 +376,9 @@ export const ClientAddJob = () => {
                     }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
+                        </label>
                         <div>
                           <InputNumber
                             id={field.name}
@@ -494,9 +408,6 @@ export const ClientAddJob = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="hourly_rate" className="block text-sm font-medium leading-6 text-gray-900">
-                  Pay Rate:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="hourly_rate"
@@ -508,6 +419,9 @@ export const ClientAddJob = () => {
                     }}
                     render={({ field, fieldState }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Pay Rate:
+                        </label>
                         <div>
                           <InputNumber
                             id={field.name}
@@ -536,10 +450,8 @@ export const ClientAddJob = () => {
                   />
                 </div>
               </div>
+
               <div className="sm:col-span-3">
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                  Job tips:
-                </label>
                 <div className="mt-2">
                   <Controller
                     name="job_tips"
@@ -547,11 +459,14 @@ export const ClientAddJob = () => {
                     rules={{ required: 'Job tips required.' }}
                     render={({ field }) => (
                       <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Job tips:
+                        </label>
                         <MultiSelect
                           id={field.name}
                           name="value"
                           value={field.value}
-                          options={jobTips}
+                          options={jobTipsOptions}
                           filter
                           onChange={e => field.onChange(e.value)}
                           optionLabel="label"
@@ -559,6 +474,46 @@ export const ClientAddJob = () => {
                           maxSelectedLabels={8}
                           className="md:w-20rem w-full"
                         />
+                        {getFormErrorMessage(field.name, errors)}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="sm:col-span-3">
+                <div className="mt-2">
+                  <Controller
+                    name="lunch_break"
+                    control={control}
+                    rules={{
+                      required: 'Enter lunch break time in minutes.',
+                      validate: value =>
+                        (value !== null && value >= 0 && value <= 90) || 'Enter lunch break time in minutes',
+                    }}
+                    render={({ field }) => (
+                      <>
+                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                          Lunch Break:
+                        </label>
+                        <div className="card justify-content-center flex">
+                          <div className="flex flex-wrap gap-3">
+                            {lunchTimeOptions.map((lunchTime, index) => (
+                              <div className="align-items-center flex" key={index}>
+                                <RadioButton
+                                  inputId={`lunchTime${index}`}
+                                  name={field.name}
+                                  value={lunchTime.value}
+                                  onChange={e => field.onChange(e.value)}
+                                  checked={field.value === lunchTime.value}
+                                />
+                                <label htmlFor={`lunchTime${index}`} className="ml-2">
+                                  {lunchTime.label}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                         {getFormErrorMessage(field.name, errors)}
                       </>
                     )}

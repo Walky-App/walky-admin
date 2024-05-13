@@ -28,7 +28,7 @@ import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
 import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
-import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
+import { ClientEditJob } from './pages/client/jobs/editJob/ClientEditJob'
 import { ClientJobDetailView } from './pages/client/jobs/jobDetailView'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
@@ -46,9 +46,8 @@ import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
 import { AdminUserPage } from './pages/admin/users/AdminUserPage'
-import { AdminInviteUser } from './pages/admin/users/components'
+import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/components'
 import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
-import { AdminUserTimeSheets } from './pages/admin/users/components/AdminUserTimeSheets'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
@@ -80,9 +79,9 @@ import { Certification } from './pages/admin/HTU/components/Certification'
 import { AdminJobs } from './pages/admin/jobs'
 
 import { AdminMessages } from './pages/admin/messages'
+import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 /******************************************* Employee Pages ************************************/
-import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
@@ -92,6 +91,7 @@ import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
 import { EmployeeMessages } from './pages/employee/messages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
+import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -117,6 +117,7 @@ export const App = () => {
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />
                 <Route element={<EmployeeProfile />} path="/employee/profile" />
                 <Route element={<EmployeeMessages />} path="/employee/messages" />
+                <Route element={<EmployeeTimesheets />} path="/employee/timesheets" />
                 {/* LMS Module */}
                 <Route element={<Learn />} path="/learn" />
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
@@ -163,13 +164,13 @@ export const App = () => {
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
                   <Route element={<AdminDashboard />} path="/admin/dashboard" />
                   <Route element={<AdminProfile />} path="/admin/profile" />
-                  <Route element={<AdminHolidays />} path="/admin/holidays" />
+                  <Route element={<AdminSettings />} path="/admin/settings" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<AdminUserPage />}>
                     <Route element={<AdminUserDetails />} path="/admin/users/:id" />
-                    <Route element={<AdminUserTimeSheets />} path="/admin/users/:id/timesheets" />
+                    <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
                   </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<AdminFacilityDetails />} path="/admin/facilities/:facilityId" />
