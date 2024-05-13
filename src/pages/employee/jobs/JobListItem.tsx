@@ -9,6 +9,7 @@ import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outlin
 
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { isNew } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
@@ -77,28 +78,34 @@ export const JobListItem = ({ job }: JobListItemProps) => {
                 {job.applicants.length} / {job.vacancy} Applicants
               </p>
             </div>
-            {job.applicants?.map(applicant => {
-              if (
-                applicant.user.toString() === _id &&
-                applicant.is_approved === false &&
-                applicant.is_working === false &&
-                applicant.rejection_reason === ''
-              ) {
-                return (
-                  <Badge key={applicant.user.toString()} value="Pending" size="normal" className="p-badge-secondary" />
-                )
-              } else if (
-                applicant.user.toString() === _id &&
-                applicant.is_approved === true &&
-                applicant.is_working === false &&
-                applicant.rejection_reason === ''
-              ) {
-                return (
-                  <Badge key={applicant.user.toString()} value="Approved" size="normal" className="p-badge-success" />
-                )
-              }
-              return null
-            })}
+            <div className="flex flex-row space-x-2 ">
+              {isNew(job.createdAt) ? <Badge value="New" size="normal" /> : null}
+              {job.applicants?.map(applicant => {
+                if (
+                  applicant.user.toString() === _id &&
+                  applicant.is_approved === false &&
+                  applicant.is_working === false &&
+                  applicant.rejection_reason === ''
+                ) {
+                  return (
+                    <Badge
+                      key={applicant.user.toString()}
+                      value="Pending"
+                      size="normal"
+                      className="p-badge-secondary"
+                    />
+                  )
+                } else if (
+                  applicant.user.toString() === _id &&
+                  applicant.is_approved === true &&
+                  applicant.is_working === false &&
+                  applicant.rejection_reason === ''
+                ) {
+                  return <Badge key={applicant.user.toString()} value="Approved" size="normal" />
+                }
+                return null
+              })}
+            </div>
           </div>
 
           {/* Job Details */}

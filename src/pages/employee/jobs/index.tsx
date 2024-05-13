@@ -43,6 +43,12 @@ const jobTitleOptions = [
   { name: 'Sign spinner', code: 'Sign spinner' },
 ]
 
+// const applicationStatusOptions = [
+//   { name: 'All', code: 'all' },
+//   { name: 'Pending', code: 'pending' },
+//   { name: 'Accepted', code: 'accepted' },
+// ]
+
 const rangeOptions = [
   { name: '< 5 miles', code: 5 },
   { name: '< 10 miles', code: 10 },
