@@ -53,7 +53,7 @@ export const JobDetailViewClient = () => {
     } catch (error) {
       console.error('Error fetching job:', error)
     }
-  }, [params.id]) // add any other dependencies of getJob here
+  }, [params.id])
 
   const role = roleChecker()
 
