@@ -74,6 +74,7 @@ export const Signup = () => {
             role: user.role,
             access_token: access_token,
             avatar: user.avatar,
+            onboarding: user.onboarding,
           }
           SetToken(ls_info)
           setUser({ ...user, access_token: access_token })
@@ -218,6 +219,7 @@ export const Signup = () => {
                     className:
                       'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
                   },
+                  iconField: { root: { className: 'w-full' } },
                 }}
                 className="w-full"
               />
@@ -240,6 +242,7 @@ export const Signup = () => {
                     className:
                       'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
                   },
+                  iconField: { root: { className: 'w-full' } },
                 }}
                 className="my-5 w-full"
               />

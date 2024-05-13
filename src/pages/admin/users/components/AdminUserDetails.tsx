@@ -5,13 +5,13 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { roleTxt } from '../../../../utils/roleChecker'
-import { useAdminUserContext } from '../AdminUserPage'
+import { useAdminUserPageContext } from '../AdminUserPage'
 
 export const AdminUserDetails = () => {
   const [formUser, setFormUser] = useState<IUser>()
   const [updateSuccess, setUpdateSuccess] = useState(false)
 
-  const { selectedUserData } = useAdminUserContext()
+  const { selectedUserData } = useAdminUserPageContext()
 
   useEffect(() => {
     if (selectedUserData) {
@@ -131,7 +131,7 @@ export const AdminUserDetails = () => {
                   <select
                     id="status"
                     name="active"
-                    value={formUser.isOnboarded?.toString() ?? 'false'}
+                    value={formUser.onboarding.completed?.toString() ?? 'false'}
                     onChange={handleInputChange as unknown as React.ChangeEventHandler<HTMLSelectElement>}
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                     <option value="true">Approved</option>

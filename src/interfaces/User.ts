@@ -27,7 +27,6 @@ export interface IUser {
   updated_at: string
   experience_level?: string
   verified: boolean
-  isOnboarded: boolean
   onboarding: IOnboardingStep
   job_preferences: string[]
   address?: string
