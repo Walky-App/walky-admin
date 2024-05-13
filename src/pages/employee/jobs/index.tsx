@@ -223,8 +223,16 @@ export const EmployeeJobs = () => {
             </Button>
           </div>
         </div>
-        <div className="mb-4 mt-6 px-4">
-          <div className="mb-2">Selected Range: &lt;{selectedRange} miles</div>
+        <div className="mb-4 mt-6">
+          <div className="mb-2">
+            <HtInfoTooltip message="Select a range to filter jobs by distance from your location.">
+              <HtInputLabel
+                htmlFor="range"
+                labelText={`Distance Range:  <${selectedRange} miles`}
+                className="text-md"
+              />
+            </HtInfoTooltip>
+          </div>
           <Slider
             value={selectedRange}
             onChange={e => {
@@ -234,14 +242,14 @@ export const EmployeeJobs = () => {
                 setSelectedRange(e.value)
               }
             }}
-            className="w-full"
+            className="mx-2 w-full"
             step={10}
             min={rangeOptions[0].code}
             max={rangeOptions[rangeOptions.length - 1].code}
           />
         </div>
         <HtInfoTooltip message="Select a start and end date to filter jobs by date range.">
-          <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-sm" />
+          <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-md" />
         </HtInfoTooltip>
         <div className="mb-4 pr-4">
           <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
