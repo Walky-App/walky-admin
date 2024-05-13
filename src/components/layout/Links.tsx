@@ -23,14 +23,35 @@ interface INavLink {
   href: string
   icon?: JSX.Element
   disabled?: boolean
+  children?: { name: string; href: string }[]
 }
 
 const tokenInfo = GetTokenInfo()
 const userIsOnboarded = tokenInfo?.onboarding?.completed
 
 const adminLinks: INavLink[] = [
-  { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
-  { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
+  {
+    id: 1,
+    name: 'Users',
+    href: '/admin/users',
+    icon: <FaUserGroup />,
+    children: [
+      { name: 'Engineering', href: '#' },
+      { name: 'Human Resources', href: '#' },
+      { name: 'Customer Success', href: '#' },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Facilities',
+    href: '/admin/facilities',
+    icon: <FaBuilding />,
+    children: [
+      { name: 'Engineering', href: '#' },
+      { name: 'Human Resources', href: '#' },
+      { name: 'Customer Success', href: '#' },
+    ],
+  },
   { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
   { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
   { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
