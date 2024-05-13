@@ -206,7 +206,7 @@ export const tooltipOptions: TooltipOptions = {
   hideDelay: 500,
   pt: {
     text: {
-      className: 'bg-green-500 max-w-lg text-sm',
+      className: 'max-w-lg text-sm',
     },
   },
 }

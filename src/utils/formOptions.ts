@@ -22,6 +22,14 @@ export const job_preferences = [
   'Sign spinner',
 ]
 
+export const facilityContactRoles = [
+  { label: 'Owner', value: 'Owner' },
+  { label: 'AP', value: 'AP' },
+  { label: 'Onsite', value: 'Onsite' },
+  { label: 'Security', value: 'Security' },
+  { label: 'Other', value: 'Other' },
+]
+
 export const services = ['Trimming', 'Harvesting', 'Packaging', 'Budtending', 'Gardening', 'General Labor', 'Other']
 
 export const countries = [

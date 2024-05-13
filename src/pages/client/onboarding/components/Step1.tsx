@@ -12,11 +12,14 @@ import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { services } from '../../../../utils/formOptions'
+import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
-import { FormDataContext, type IFacilityFormInputs, type StepProps, tooltipOptions } from '../ClientOnboardingPage'
+import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
 
 export const Step1 = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -145,6 +148,12 @@ export const Step1 = ({ step, setStep }: StepProps) => {
     }
   }
 
+  const requiredFieldsNoticeText = (
+    <p className="mt-1 text-sm leading-6 text-gray-600">
+      <span style={{ color: 'red' }}>*</span> indicates a required field.
+    </p>
+  )
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <div className="space-y-4 sm:space-y-12">
@@ -155,6 +164,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please provide information about your business so that we can verify you on the platform.
             </p>
+            {requiredFieldsNoticeText}
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -171,17 +181,16 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Tax ID:
-                    </label>
+                    <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Tax ID" />
+                    </HtInfoTooltip>
                     <InputMask
                       id={field.name}
                       {...field}
                       mask="99-9999999"
                       slotChar="x"
-                      tooltip="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions."
-                      tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      autoComplete="off"
                     />
                   </>
                 )}
@@ -196,9 +205,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'Corporate Name is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Corporate Name:
-                    </label>
+                    <HtInfoTooltip message="A corporate name is the legal name of a corporation. It is the name that appears on the corporation's formation documents and is the name that appears on the corporation's state-issued certificate of incorporation.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Corporate Name" />
+                    </HtInfoTooltip>
                     <InputText
                       id={field.name}
                       {...field}
@@ -217,16 +226,19 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'Company DBAs is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Company DBAs:
-                    </label>
+                    <HtInfoTooltip message="Doing Business As (DBA) is a company name that is different from the legal name of the business. DBA is also known as a trade name, fictitious business name, or assumed business name.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Company DBAs" />
+                    </HtInfoTooltip>
                     <InputText
                       id={field.name}
                       value={field.value.join(', ')}
                       onChange={e => field.onChange(e.target.value.split(', '))}
-                      tooltip="Enter company DBAs separated by comma"
-                      tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      aria-describedby={`${field.name}-help`}
+                    />
+                    <HtInputHelpText
+                      fieldName={field.name}
+                      helpText="Enter DBAs separated by a comma: dba1, dba2, dba3"
                     />
                   </>
                 )}
@@ -241,13 +253,14 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'Facility Name is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Facility Name:
-                    </label>
+                    <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Name" />
+                    </HtInfoTooltip>
                     <InputText
                       id={field.name}
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      autoComplete="off"
                     />
                   </>
                 )}
@@ -265,18 +278,17 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Facility Phone Number:
-                    </label>
+                    <HtInfoTooltip message="The phone number of your facility. This is the number that workers will call if they have questions or need to contact you.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Phone Number" />
+                    </HtInfoTooltip>
                     <InputMask
                       id={field.name}
                       {...field}
                       mask="(999) 999-9999"
                       slotChar="x"
                       unmask={true}
-                      tooltip="E.g. (281) 330-8004"
-                      tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      autoComplete="off"
                     />
                   </>
                 )}
@@ -297,18 +309,21 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Facility Square Footage:
-                    </label>
+                    <HtInfoTooltip message="The square footage of your facility. This is the total area of your facility in square feet.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Square Footage" />
+                    </HtInfoTooltip>
                     <InputNumber
                       id={field.name}
                       {...field}
                       onChange={e => field.onChange(Number(e.value))}
                       min={0}
-                      tooltip="E.g. 10000"
-                      tooltipOptions={tooltipOptions}
+                      max={1000000}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      pt={{
+                        input: { root: { autoComplete: 'off' } },
+                      }}
                     />
+                    <HtInputHelpText fieldName={field.name} helpText="Enter a number. Max 1,000,000" />
                   </>
                 )}
               />
@@ -322,20 +337,25 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'At least one Service is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Services:
-                    </label>
+                    <HtInfoTooltip message="The services that your facility offers.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Services" />
+                    </HtInfoTooltip>
                     <MultiSelect
                       id={field.name}
                       {...field}
                       value={field.value}
-                      options={services}
+                      optionLabel="title"
+                      options={jobTitlesOptions}
                       display="chip"
                       selectAll
                       selectAllLabel="Select All"
                       onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
                       placeholder="Select Services"
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                    />
+                    <HtInputHelpText
+                      fieldName={field.name}
+                      helpText="Please select all services that your facility offers."
                     />
                   </>
                 )}
@@ -350,15 +370,21 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: false }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      Arrival notes:
-                    </label>
+                    <HtInfoTooltip message="Any additional notes that you would like to provide about your facility. This information will be verified before application approval.">
+                      <HtInputLabel htmlFor={field.name} labelText="Arrival notes" />
+                    </HtInfoTooltip>
                     <InputTextarea
                       id={field.name}
                       {...field}
                       rows={4}
                       cols={30}
+                      maxLength={500}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      autoComplete="off"
+                    />
+                    <HtInputHelpText
+                      fieldName={field.name}
+                      helpText="Max 500 characters. Please do not enter contact information into this field."
                     />
                   </>
                 )}
@@ -372,7 +398,10 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your business address information.</p>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please provide your facility business address information.
+            </p>
+            {requiredFieldsNoticeText}
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -383,9 +412,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'Address is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Business Address:
-                    </label>
+                    <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Address" />
+                    </HtInfoTooltip>
                     <AddressAutoComplete
                       controlled
                       setMoreAddressDetails={setMoreAddressDetails}
@@ -393,8 +422,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       onChange={field.onChange}
                       value={field.value}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      aria-describedby={`${field.name}-help`}
                     />
-                    <small>No Residential Addresses allowed</small>
+                    <HtInputHelpText fieldName={field.name} helpText="No Residential Addresses allowed" />
                   </>
                 )}
               />
@@ -408,6 +438,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Contact Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information below.</p>
+            {requiredFieldsNoticeText}
           </div>
 
           {fields.map((field, index) => (
@@ -419,13 +450,14 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   rules={{ required: 'First Name is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *First Name:
-                      </label>
+                      <HtInfoTooltip message="The first name of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="First Name" />
+                      </HtInfoTooltip>
                       <InputText
                         id={field.name}
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        autoComplete="off"
                       />
                     </>
                   )}
@@ -440,9 +472,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   rules={{ required: 'Last Name is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Last Name:
-                      </label>
+                      <HtInfoTooltip message="The last name of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Last Name" />
+                      </HtInfoTooltip>
                       <InputText
                         id={field.name}
                         {...field}
@@ -461,14 +493,15 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   rules={{ required: 'Role is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Role:
-                      </label>
+                      <HtInfoTooltip message="The role of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Role" />
+                      </HtInfoTooltip>
                       <Dropdown
                         id={field.name}
                         {...field}
                         filter
-                        options={['Owner', 'AP', 'Onsite', 'Security', 'Other']}
+                        options={facilityContactRoles}
+                        optionLabel="label"
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
                     </>
@@ -486,18 +519,17 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Phone Number:
-                      </label>
+                      <HtInfoTooltip message="The phone number of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Phone Number" />
+                      </HtInfoTooltip>
                       <InputMask
                         id={field.name}
                         {...field}
                         mask="(999) 999-9999"
                         slotChar="x"
                         unmask={true}
-                        tooltip="E.g. (281) 330-8004"
-                        tooltipOptions={tooltipOptions}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        autoComplete="off"
                       />
                     </>
                   )}
@@ -517,9 +549,9 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Email:
-                      </label>
+                      <HtInfoTooltip message="The email address of the contact person.">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Email" />
+                      </HtInfoTooltip>
                       <InputText
                         id={field.name}
                         {...field}
