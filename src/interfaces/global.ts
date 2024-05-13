@@ -47,3 +47,7 @@ export type IToastParameters = ToastMessageOptions &
 export interface IToastData extends ToastMessage {
   message: ToastMessage
 }
+
+export interface IParams {
+  id?: string
+}

@@ -6,9 +6,9 @@ export interface IApplicant {
   is_approved: boolean
   is_working: boolean
   rejection_reason: string
+  _id: string
   first_name: string
   last_name: string
-  _id: string
 }
 
 export interface IFeedback {
