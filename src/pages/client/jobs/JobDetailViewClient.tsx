@@ -508,7 +508,14 @@ export const JobDetailViewClient = () => {
                           <li
                             key={applicant.user._id}
                             className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
-                            <div className="flex min-w-0 gap-x-4">
+                            <div
+                              className="flex min-w-0 cursor-pointer gap-x-4"
+                              onClick={() => {
+                                if (role === 'admin') {
+                                  navigate(`/admin/users/${applicant.user._id}`)
+                                }
+                              }}>
+                              {' '}
                               <img
                                 className="h-12 w-12 flex-none rounded-full bg-gray-50"
                                 src={applicant.user.avatar}
