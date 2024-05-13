@@ -92,6 +92,7 @@ export const AddressAutoComplete = ({
         forceSelection
         inputStyle={{ width: '100%' }}
         className={className}
+        autoComplete="off"
       />
     )
   }
@@ -108,6 +109,7 @@ export const AddressAutoComplete = ({
       forceSelection
       inputStyle={{ width: '100%', height: '100%' }}
       className={className}
+      autoComplete="off"
     />
   )
 }
