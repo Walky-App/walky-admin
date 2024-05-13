@@ -15,6 +15,9 @@ import { Panel } from 'primereact/panel'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { HtScrollDownIndicator } from '../../../../components/shared/general/HtScrollDownIndicator'
+import { HtScrollTop } from '../../../../components/shared/general/HtScrollTop'
+import useScrollDownIndicator from '../../../../components/shared/hooks/useScrollDownIndicator'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { services } from '../../../../utils/formOptions'
@@ -28,6 +31,8 @@ interface AddFacilityDialogProps {
 }
 
 export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDialogProps) => {
+  const { isIndicatorVisible, scrollableContentRef } = useScrollDownIndicator(true)
+
   const {
     facilitiesArray,
     setFacilitiesArray,
@@ -39,7 +44,15 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
 
   const { showToast } = useUtils()
 
-  const { corp_name, tax_id } = facilitiesArray[0]
+  let corp_name: IFacilityFormInputs['corp_name'], tax_id: IFacilityFormInputs['tax_id']
+
+  if (facilitiesArray && facilitiesArray.length > 0) {
+    // eslint-disable-next-line no-extra-semi
+    ;({ corp_name, tax_id } = facilitiesArray[0] as IFacilityFormInputs)
+  } else {
+    corp_name = 'Default Corp Name'
+    tax_id = 'Default Tax ID'
+  }
 
   const {
     control,
@@ -155,7 +168,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
       breakpoints={{ '960px': '75vw', '641px': '100vw' }}
       onHide={() => setVisible(false)}
       footer={footerContent}>
-      <div className="flex flex-col gap-y-4">
+      <div ref={scrollableContentRef} className="flex-col gap-y-4 first-letter:flex">
         {/* Facility Info */}
         <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2 [&>*]:mb-4">
           <div className="sm:col-span-3">
@@ -486,6 +499,8 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
           </div>
         ) : null}
       </div>
+      <HtScrollDownIndicator position="center" isIndicatorVisible={isIndicatorVisible} />
+      <HtScrollTop />
     </Dialog>
   )
 }
