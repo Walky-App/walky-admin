@@ -78,26 +78,24 @@ export const JobListItem = ({ job }: JobListItemProps) => {
               </p>
             </div>
             {job.applicants?.map(applicant => {
-              {
-                /* @ts-ignore */
-              }
               if (
-                applicant.user === _id &&
+                applicant.user.toString() === _id &&
                 applicant.is_approved === false &&
                 applicant.is_working === false &&
                 applicant.rejection_reason === ''
               ) {
-                return <Badge key={applicant.user} value="Pending" size="normal" className="p-badge-secondary" />
-                {
-                  /* @ts-ignore */
-                }
+                return (
+                  <Badge key={applicant.user.toString()} value="Pending" size="normal" className="p-badge-secondary" />
+                )
               } else if (
-                applicant.user === _id &&
+                applicant.user.toString() === _id &&
                 applicant.is_approved === true &&
                 applicant.is_working === false &&
                 applicant.rejection_reason === ''
               ) {
-                return <Badge key={applicant.user} value="Approved" size="normal" className="p-badge-success" />
+                return (
+                  <Badge key={applicant.user.toString()} value="Approved" size="normal" className="p-badge-success" />
+                )
               }
               return null
             })}
