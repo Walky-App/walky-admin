@@ -18,6 +18,7 @@ import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { useCoordinates } from '../../../store/useCoordinates'
 import { useJobs } from '../../../store/useJobs'
+import { isNew } from '../../../utils/timeUtils'
 import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
@@ -164,7 +165,9 @@ export const EmployeeJobs = () => {
           {isLoading ? (
             jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
           ) : displayedJobs.length > 0 ? (
-            displayedJobs.map(job => <JobListItem key={job._id} job={job} />)
+            [...displayedJobs]
+              .sort((a, b) => (isNew(b.createdAt) ? 1 : -1))
+              .map(job => <JobListItem key={job._id} job={job} />)
           ) : (
             <div>No jobs found for the selected filters.</div>
           )}
