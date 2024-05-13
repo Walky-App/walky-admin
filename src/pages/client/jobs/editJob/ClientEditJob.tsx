@@ -1,5 +1,4 @@
-/*eslint-disable */
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Controller, useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -14,27 +13,35 @@ import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
-import { IFacility } from '../../../../interfaces/Facility'
+import { type IJob } from '../../../../interfaces/job'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo } from '../../../../utils/tokenUtil'
+import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../../utils/formOptions'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
 
-export default function ClientEditJob() {
-  const [startTime, setStartTime] = React.useState<Date | null>(null)
-  const [endTime, setEndTime] = React.useState<Date | null>(null)
-  const [totalHours, setTotalHours] = React.useState(0)
-  const [job, setJob] = React.useState<any>({})
+interface IJobEditFormInputs {
+  title: string
+  vacancy: number
+  hourly_rate: number
+  job_dates: Date[]
+  start_time: Date
+  end_time: Date
+  lunch_break: number
+  job_tips: string[]
+}
+
+export const ClientEditJob = () => {
+  const [startTime, setStartTime] = useState<Date | null>(null)
+  const [endTime, setEndTime] = useState<Date | null>(null)
+  const [totalHours, setTotalHours] = useState(0)
   const params = useParams()
-  const user = GetTokenInfo()
-  const id = user?._id
   const toast = useRef<Toast>(null)
   const { showToast } = useUtils()
-  const [facilities, setFacilities] = React.useState<IFacility[]>([])
   const navigate = useNavigate()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
 
-  function militaryToStandardDate(time: any, date: any) {
+  function militaryToStandardDate(time: number, date: Date) {
     const hours = Math.floor(time / 100)
     const minutes = time % 100
     const dateObj = new Date(date)
@@ -43,42 +50,22 @@ export default function ClientEditJob() {
     return dateObj
   }
 
-  useEffect(() => {
-    const getJob = async () => {
-      const job = await RequestService(`jobs/${params.id}`)
-      if (job) {
-        setJob(job)
+  const now = new Date()
+  const start_time = new Date(now)
+  start_time.setHours(8, 0, 0, 0)
 
-        const jobDates = job.job_dates.map((dateString: string) => new Date(dateString))
-        const startTime = militaryToStandardDate(job.start_time, jobDates[0])
-        const endTime = militaryToStandardDate(job.end_time, jobDates[0])
+  const end_time = new Date(now)
+  end_time.setHours(17, 0, 0, 0)
 
-        setStartTime(startTime)
-        setEndTime(endTime)
-
-        setValue('title', job.title)
-        setValue('vacancy', job.vacancy)
-        setValue('hourly_rate', job.hourly_rate)
-        setValue('lunch_break', job.lunch_break)
-        setValue('job_dates', jobDates)
-        setValue('start_time', startTime)
-        setValue('end_time', endTime)
-        setValue('job_tips', job.job_tips)
-      }
-    }
-    getJob()
-  }, [params.id])
-
-  const defaultValues = {
-    title: job.title,
-    facility_id: job.facility_id,
-    vacancy: job.vacancy,
-    hourly_rate: job.hourly_rate,
-    job_dates: job.job_dates,
-    start_time: job.start_time,
-    end_time: job.end_time,
-    lunch_break: job.lunch_break,
-    job_tips: job.job_tips,
+  const defaultValues: IJobEditFormInputs = {
+    title: '',
+    vacancy: 0,
+    hourly_rate: 0,
+    job_dates: [],
+    start_time: start_time,
+    end_time: end_time,
+    lunch_break: 0,
+    job_tips: [],
   }
 
   const {
@@ -89,12 +76,38 @@ export default function ClientEditJob() {
     watch,
   } = useForm({ defaultValues })
 
-  const watchAllFields = watch()
+  useEffect(() => {
+    const getJob = async () => {
+      const jobFound: IJob = await RequestService(`jobs/${params.id}`)
+
+      if (jobFound._id) {
+        const { title, vacancy, hourly_rate, lunch_break, job_dates, job_tips, start_time, end_time } = jobFound
+
+        const jobDates = job_dates.map((dateString: string) => new Date(dateString))
+        const startTime = militaryToStandardDate(start_time, jobDates[0])
+        const endTime = militaryToStandardDate(end_time, jobDates[0])
+
+        setStartTime(startTime)
+        setEndTime(endTime)
+
+        if (title) setValue('title', title)
+        if (vacancy) setValue('vacancy', vacancy)
+        if (hourly_rate) setValue('hourly_rate', hourly_rate)
+        if (lunch_break) setValue('lunch_break', lunch_break)
+        if (jobDates.length > 0) setValue('job_dates', jobDates)
+        if (startTime !== null) setValue('start_time', startTime)
+        if (startTime !== null) setValue('end_time', endTime)
+        if (startTime !== null) setValue('job_tips', job_tips)
+      }
+    }
+    getJob()
+  }, [params.id, setValue])
+
   const lunchBreak = watch('lunch_break')
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (startTime && endTime) {
-      let startHours = startTime.getHours() + startTime.getMinutes() / 60
+      const startHours = startTime.getHours() + startTime.getMinutes() / 60
       let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
       if (endHours <= startHours) {
@@ -107,17 +120,7 @@ export default function ClientEditJob() {
     }
   }, [startTime, endTime, lunchBreak])
 
-  const getFormErrorMessage = (name: string) => {
-    //@ts-ignore
-    return errors[name] ? (
-      //@ts-ignore
-      <small className="p-error">{errors[name].message}</small>
-    ) : (
-      <small className="p-error">&nbsp;</small>
-    )
-  }
-
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: IJobEditFormInputs) => {
     try {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
@@ -133,9 +136,11 @@ export default function ClientEditJob() {
         }
         const lunchBreakHours = data.lunch_break / 60
         const totalHours = endHours - startHours - lunchBreakHours
-        requestData.total_hours = Math.round(totalHours * 100) / 100
-        setTotalHours(requestData.total_hours)
-        if (requestData.total_hours < 7) {
+
+        const formattedTotalHours = Math.round(totalHours * 100) / 100
+
+        setTotalHours(formattedTotalHours)
+        if (formattedTotalHours < 7) {
           showToast({
             severity: 'error',
             summary: 'Error',
@@ -161,57 +166,9 @@ export default function ClientEditJob() {
     }
   }
 
-  const options = [
-    { title: 'Harvester', value: 'Harvester' },
-    { title: 'Budtender', value: 'Budtender' },
-    { title: 'Trimmer', value: 'Trimmer' },
-    { title: 'Packager', value: 'Packager' },
-    { title: 'Gardener', value: 'Gardener' },
-    { title: 'Cultivator', value: 'Cultivator' },
-    { title: 'Extractor', value: 'Extractor' },
-    { title: 'Front desk', value: 'Front desk' },
-    { title: 'Greeter', value: 'Greeter' },
-    { title: 'Id checker', value: 'Id checker' },
-    { title: 'Inventory', value: 'Inventory' },
-    { title: 'Data entry', value: 'Data entry' },
-    { title: 'Event staff', value: 'Event staff' },
-    { title: 'Promo representative', value: 'Promo representative' },
-    { title: 'Cleaning', value: 'Cleaning' },
-    { title: 'Joint roller', value: 'Joint roller' },
-    { title: 'Grow tech', value: 'Grow tech' },
-    { title: 'Clone tech', value: 'Clone tech' },
-    { title: 'Sign spinner', value: 'Sign spinner' },
-  ]
-
-  const lunchTimes = [
-    { label: 'No lunch', value: 0 },
-    { label: '30 minutes', value: 30 },
-    { label: '45 minutes', value: 45 },
-    { label: '60 minutes', value: 60 },
-  ]
-
-  const jobTips = [
-    { label: 'Change Required Upon Entry', value: 'Change Required Upon Entry' },
-    { label: 'Lunch Included', value: 'Lunch Included' },
-    { label: 'Lunch Room Available', value: 'Lunch Room Available' },
-    { label: 'Lunch Will Be Off-Premise', value: 'Lunch Will Be Off-Premise' },
-    { label: 'Pack a Lunch', value: 'Pack a Lunch' },
-    { label: 'Parking on Street', value: 'Parking on Street' },
-    { label: 'Parking Onsite', value: 'Parking Onsite' },
-    { label: 'Required Identification', value: 'Required Identification' },
-    { label: 'Special Equipment', value: 'Special Equipment' },
-    { label: 'No gas stations nearby', value: 'No gas stations nearby' },
-    { label: 'Water is provided', value: 'Water is provided' },
-    { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
-    { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
-    { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
-    { label: 'Labcoat Provided', value: 'Labcoat Provided' },
-    { label: 'Head / Beard net required', value: 'Head / Beard net required' },
-  ]
-
   return (
     <>
-      <TitleComponent title={'Edit the job'} />
+      <TitleComponent title="Edit the job" />
       <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
         <Toast ref={toast} />
         <div className="space-y-12">
@@ -241,12 +198,12 @@ export default function ClientEditJob() {
                             id={field.name}
                             value={field.value}
                             optionLabel="title"
-                            options={options}
+                            options={jobTitlesOptions}
                             focusInputRef={field.ref}
                             onChange={e => field.onChange(e.value)}
                             className={classNames({ 'p-invalid': fieldState.error })}
                           />
-                          <div>{getFormErrorMessage(field.name)}</div>
+                          <div>{getFormErrorMessage(field.name, errors)}</div>
                         </div>
                       </>
                     )}
@@ -288,7 +245,7 @@ export default function ClientEditJob() {
                             minDate={new Date()} // Disabling past dates
                             inline
                           />
-                          {field.value && field.value.length > 0 && (
+                          {field.value && field.value.length > 0 ? (
                             <div className="mt-2">
                               <h4>Selected Dates:</h4>
                               <ul className="mt-2 grid grid-cols-5 gap-2">
@@ -299,8 +256,8 @@ export default function ClientEditJob() {
                                   ))}
                               </ul>
                             </div>
-                          )}
-                          {getFormErrorMessage(field.name)}
+                          ) : null}
+                          {getFormErrorMessage(field.name, errors)}
                         </div>
                       )}
                     />
@@ -355,7 +312,7 @@ export default function ClientEditJob() {
                               icon={() => <i className="pi pi-clock" />}
                               className={classNames({ 'p-invalid': fieldState.error })}
                             />
-                            {getFormErrorMessage(field.name)}
+                            {getFormErrorMessage(field.name, errors)}
                           </div>
                         </div>
                       </>
@@ -389,7 +346,7 @@ export default function ClientEditJob() {
                               icon={() => <i className="pi pi-clock" />}
                               className={classNames({ 'p-invalid': fieldState.error })}
                             />
-                            {getFormErrorMessage(field.name)}
+                            {getFormErrorMessage(field.name, errors)}
                           </div>
                         </div>
                       </>
@@ -435,7 +392,7 @@ export default function ClientEditJob() {
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
-                        {getFormErrorMessage(field.name)}
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
@@ -475,7 +432,7 @@ export default function ClientEditJob() {
                             inputClassName={classNames({ 'p-invalid': fieldState.error })}
                           />
                         </div>
-                        {getFormErrorMessage(field.name)}
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
@@ -497,7 +454,7 @@ export default function ClientEditJob() {
                           id={field.name}
                           name="value"
                           value={field.value}
-                          options={jobTips}
+                          options={jobTipsOptions}
                           filter
                           onChange={e => field.onChange(e.value)}
                           optionLabel="label"
@@ -509,7 +466,7 @@ export default function ClientEditJob() {
                     )}
                   />
 
-                  {getFormErrorMessage('value')}
+                  {getFormErrorMessage('value', errors)}
                 </div>
               </div>
               <div className="sm:col-span-3">
@@ -522,14 +479,14 @@ export default function ClientEditJob() {
                       validate: value =>
                         (value !== null && value >= 0 && value <= 90) || 'Enter lunch break time in minutes',
                     }}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <>
                         <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
                           Lunch Break:
                         </label>
                         <div className="card justify-content-center flex">
                           <div className="flex flex-wrap gap-3">
-                            {lunchTimes.map((lunchTime, index) => (
+                            {lunchTimeOptions.map((lunchTime, index) => (
                               <div className="align-items-center flex" key={index}>
                                 <RadioButton
                                   inputId={`lunchTime${index}`}
@@ -545,7 +502,7 @@ export default function ClientEditJob() {
                             ))}
                           </div>
                         </div>
-                        {getFormErrorMessage(field.name)}
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />

@@ -29,7 +29,7 @@ import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
 import { JobDetailViewClient } from './pages/client/jobs/JobDetailViewClient'
 import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
-import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
+import { ClientEditJob } from './pages/client/jobs/editJob/ClientEditJob'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
