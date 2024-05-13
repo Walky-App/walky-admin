@@ -90,7 +90,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
                   return (
                     <Badge
                       key={applicant.user.toString()}
-                      value="Pending"
+                      value="Applied"
                       size="normal"
                       className="p-badge-secondary"
                     />

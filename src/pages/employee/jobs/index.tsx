@@ -160,7 +160,7 @@ export const EmployeeJobs = () => {
 
   const renderJobCards = () => {
     return (
-      <div className="mx-auto mb-10 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto mb-10 mt-4 px-4 sm:px-6 lg:px-8">
         <ul className="grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
           {isLoading ? (
             jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
