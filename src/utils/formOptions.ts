@@ -22,6 +22,14 @@ export const job_preferences = [
   'Sign spinner',
 ]
 
+export const facilityContactRoles = [
+  { label: 'Owner', value: 'Owner' },
+  { label: 'AP', value: 'AP' },
+  { label: 'Onsite', value: 'Onsite' },
+  { label: 'Security', value: 'Security' },
+  { label: 'Other', value: 'Other' },
+]
+
 export const services = ['Trimming', 'Harvesting', 'Packaging', 'Budtending', 'Gardening', 'General Labor', 'Other']
 
 export const countries = [
@@ -81,4 +89,52 @@ export const states = [
   { label: 'West Virginia', value: 'WV' },
   { label: 'Wisconsin', value: 'WI' },
   { label: 'Wyoming', value: 'WY' },
+]
+
+export const jobTitlesOptions = [
+  { title: 'Harvester', value: 'Harvester' },
+  { title: 'Budtender', value: 'Budtender' },
+  { title: 'Trimmer', value: 'Trimmer' },
+  { title: 'Packager', value: 'Packager' },
+  { title: 'Gardener', value: 'Gardener' },
+  { title: 'Cultivator', value: 'Cultivator' },
+  { title: 'Extractor', value: 'Extractor' },
+  { title: 'Front desk', value: 'Front desk' },
+  { title: 'Greeter', value: 'Greeter' },
+  { title: 'Id checker', value: 'Id checker' },
+  { title: 'Inventory', value: 'Inventory' },
+  { title: 'Data entry', value: 'Data entry' },
+  { title: 'Event staff', value: 'Event staff' },
+  { title: 'Promo representative', value: 'Promo representative' },
+  { title: 'Cleaning', value: 'Cleaning' },
+  { title: 'Joint roller', value: 'Joint roller' },
+  { title: 'Grow tech', value: 'Grow tech' },
+  { title: 'Clone tech', value: 'Clone tech' },
+  { title: 'Sign spinner', value: 'Sign spinner' },
+]
+
+export const lunchTimeOptions = [
+  { label: 'No lunch', value: 0 },
+  { label: '30 minutes', value: 30 },
+  { label: '45 minutes', value: 45 },
+  { label: '60 minutes', value: 60 },
+]
+
+export const jobTipsOptions = [
+  { label: 'Change Required Upon Entry', value: 'Change Required Upon Entry' },
+  { label: 'Lunch Included', value: 'Lunch Included' },
+  { label: 'Lunch Room Available', value: 'Lunch Room Available' },
+  { label: 'Lunch Will Be Off-Premise', value: 'Lunch Will Be Off-Premise' },
+  { label: 'Pack a Lunch', value: 'Pack a Lunch' },
+  { label: 'Parking on Street', value: 'Parking on Street' },
+  { label: 'Parking Onsite', value: 'Parking Onsite' },
+  { label: 'Required Identification', value: 'Required Identification' },
+  { label: 'Special Equipment', value: 'Special Equipment' },
+  { label: 'No gas stations nearby', value: 'No gas stations nearby' },
+  { label: 'Water is provided', value: 'Water is provided' },
+  { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
+  { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
+  { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
+  { label: 'Labcoat Provided', value: 'Labcoat Provided' },
+  { label: 'Head / Beard net required', value: 'Head / Beard net required' },
 ]
