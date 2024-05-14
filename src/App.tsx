@@ -144,7 +144,7 @@ export const App = () => {
                   <Route element={<Jobs />} path="/client/jobs" />
                   <Route element={<ClientAddJob />} path="/client/jobs/new" />
                   <Route element={<ClientEditJob />} path="/client/jobs/:id/edit" />
-                  <Route element={<JobDetailView />} path="/client/jobs/:id" />
+                  <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route element={<SalesDashboard />} path="/sales/dashboard" />
