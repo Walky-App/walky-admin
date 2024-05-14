@@ -27,9 +27,9 @@ import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import { JobDetailViewClient } from './pages/client/jobs/JobDetailViewClient'
 import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
 import { ClientEditJob } from './pages/client/jobs/editJob/ClientEditJob'
+import { ClientJobDetailView } from './pages/client/jobs/jobDetailView'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
@@ -144,7 +144,7 @@ export const App = () => {
                   <Route element={<Jobs />} path="/client/jobs" />
                   <Route element={<ClientAddJob />} path="/client/jobs/new" />
                   <Route element={<ClientEditJob />} path="/client/jobs/:id/edit" />
-                  <Route element={<JobDetailViewClient />} path="/client/jobs/:id" />
+                  <Route element={<JobDetailView />} path="/client/jobs/:id" />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route element={<SalesDashboard />} path="/sales/dashboard" />
@@ -186,7 +186,7 @@ export const App = () => {
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<ClientAddJob />} path="/admin/jobs/new" />
-                  <Route element={<JobDetailViewClient />} path="/admin/jobs/:id" />
+                  <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<ClientEditJob />} path="/admin/jobs/:id/edit" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
