@@ -27,9 +27,9 @@ export const AdminInviteUser = () => {
 
     try {
       const response = await requestService({ path: 'auth/invite', method: 'POST', body: JSON.stringify(formData) })
-      const jsonResponse = await response.json()
 
-      if (jsonResponse.status === 200) {
+      const jsonResponse = await response.json()
+      if (response.status === 200) {
         setUpdateSuccess(true)
         form.reset()
         showToast({ severity: 'success', summary: 'Success', detail: 'Invite sent successfully' })
