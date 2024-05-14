@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Controller, useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -44,7 +44,7 @@ export const JobDetailViewClient = () => {
   const [idFeedback, setIdFeedback] = useState('')
   const [submitCount, setSubmitCount] = useState(0)
 
-  const getJob = async () => {
+  const getJob = useCallback(async () => {
     try {
       const job = await RequestService(`jobs/${params.id}`)
       if (job) {
@@ -53,7 +53,7 @@ export const JobDetailViewClient = () => {
     } catch (error) {
       console.error('Error fetching job:', error)
     }
-  }
+  }, [params.id])
 
   const role = roleChecker()
 
@@ -508,7 +508,13 @@ export const JobDetailViewClient = () => {
                           <li
                             key={applicant.user._id}
                             className="relative flex flex-col justify-between gap-x-6 py-5 sm:flex-row">
-                            <div className="flex min-w-0 gap-x-4">
+                            <div
+                              className="flex min-w-0 cursor-pointer gap-x-4"
+                              onClick={() => {
+                                if (role === 'admin') {
+                                  navigate(`/admin/users/${applicant.user._id}`)
+                                }
+                              }}>
                               <img
                                 className="h-12 w-12 flex-none rounded-full bg-gray-50"
                                 src={applicant.user.avatar}
@@ -547,7 +553,6 @@ export const JobDetailViewClient = () => {
                                     setVisibleDialog(applicant.user._id)
                                   }}
                                 />
-
                                 <Dialog
                                   header={
                                     <div className="align-items-center justify-content-center inline-flex gap-2">

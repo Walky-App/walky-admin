@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react'
 
 import { Link } from 'react-router-dom'
 
+import { Badge } from 'primereact/badge'
+
 import { MapPinIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
 import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outline'
 
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { isNew } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
@@ -65,14 +68,44 @@ export const JobListItem = ({ job }: JobListItemProps) => {
       key={job._id}
       className="col-span-1 divide-y divide-gray-200 rounded-lg transition delay-150 ease-in-out hover:shadow-2xl">
       {/* Job Card */}
-      <div className="flex h-full flex-col items-start justify-center rounded-lg border border-zinc-100 bg-white">
+      <div className="h-full flex-col items-start justify-center rounded-lg border border-zinc-100 bg-white">
         <Link to={`/employee/jobs/${job._id}`}>
           {/* Job Skills */}
-          <div className="mb-3 flex basis-1/3 flex-wrap gap-2 px-5 pt-5">
-            <span className="pi pi-users" />
-            <p className="text-xs font-normal text-stone-500">
-              {job.applicants.length} / {job.vacancy} Applicants
-            </p>
+          <div className="mb-3 flex basis-1/3 flex-wrap justify-between gap-2 px-5 pt-5">
+            <div className="flex flex-row">
+              <span className="pi pi-users" />
+              <p className="ml-1 text-xs font-normal text-stone-500">
+                {job.applicants.length} / {job.vacancy} Applicants
+              </p>
+            </div>
+            <div className="flex flex-row space-x-2 ">
+              {isNew(job.createdAt) ? <Badge value="New" size="normal" /> : null}
+              {job.applicants?.map(applicant => {
+                if (
+                  applicant.user.toString() === _id &&
+                  applicant.is_approved === false &&
+                  applicant.is_working === false &&
+                  applicant.rejection_reason === ''
+                ) {
+                  return (
+                    <Badge
+                      key={applicant.user.toString()}
+                      value="Applied"
+                      size="normal"
+                      className="p-badge-secondary"
+                    />
+                  )
+                } else if (
+                  applicant.user.toString() === _id &&
+                  applicant.is_approved === true &&
+                  applicant.is_working === false &&
+                  applicant.rejection_reason === ''
+                ) {
+                  return <Badge key={applicant.user.toString()} value="Approved" size="normal" />
+                }
+                return null
+              })}
+            </div>
           </div>
 
           {/* Job Details */}
@@ -103,7 +136,7 @@ export const JobListItem = ({ job }: JobListItemProps) => {
                 <div className="text-xs font-normal text-stone-500">Job Time</div>
                 <div className="text-xs font-normal text-black">
                   {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
-                </div>{' '}
+                </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-xs font-normal text-stone-500">Hours Daily</div>
