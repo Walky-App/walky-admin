@@ -36,9 +36,7 @@ export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
   const [selectedHoliday, setSelectedHoliday] = useState<IHoliday | null>(null)
 
   const deleteHoliday = async (holiday: IHoliday) => {
-    const newHolidays = holidays.filter(
-      h => h.holiday_date !== holiday.holiday_date && h.holiday_name !== holiday.holiday_name,
-    )
+    const newHolidays = holidays.filter(h => h.holiday_date !== holiday.holiday_date)
     setHolidays(newHolidays)
   }
 
