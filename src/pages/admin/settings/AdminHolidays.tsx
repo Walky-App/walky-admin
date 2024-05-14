@@ -10,6 +10,7 @@ import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
 
 import { type HolidayDocument } from '../../../interfaces/setting'
+import { useUtils } from '../../../store/useUtils'
 
 interface IHoliday {
   _id: string
@@ -27,6 +28,7 @@ interface HolidaysProps {
 }
 
 export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
+  const { showToast } = useUtils()
   const [formHoliday, setFormHoliday] = useState<IHolidayFormValues>({
     holiday_name: '',
     holiday_date: undefined,
@@ -87,6 +89,14 @@ export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
         holiday_name: data.holiday_name,
         holiday_date: data.holiday_date,
       }
+      if (holidayExistsForDate(dataForm.holiday_date)) {
+        showToast({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Holiday already exists for this date',
+        })
+        return
+      }
       if (selectedHoliday) {
         const newData: HolidayDocument[] = holidays.map(holiday => {
           if (holiday.holiday_date === selectedHoliday.holiday_date) {
@@ -106,6 +116,11 @@ export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
     } catch (error) {
       console.error('Error:', error)
     }
+  }
+
+  const holidayExistsForDate = (date: Date): boolean => {
+    const dateString: string = date.toISOString()
+    return holidays.some(holiday => holiday.holiday_date.toISOString() === dateString)
   }
 
   const handlerSelectHoliday = (holiday: IHoliday) => {
