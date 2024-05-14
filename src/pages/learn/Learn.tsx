@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useSearchParams } from 'react-router-dom'
 
@@ -14,7 +14,7 @@ export const Learn = () => {
   const [searchParams] = useSearchParams()
   const [filter, setFilter] = useState<FilterInterface>({ search: '', selected: '' })
   const [categories, setCategories] = useState<Category[]>([])
-  const { setRecord } = useLearn()
+  const { setRecord, record } = useLearn()
 
   const fetchData = async () => {
     const response: Category[] = await RequestService('categories')
@@ -38,6 +38,22 @@ export const Learn = () => {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, categories])
+
+  const getCategoryCompleted = useMemo(() => {
+    return record.categories.filter(category => category.is_completed).length
+  }, [record])
+
+  const getModuleCompleted = useMemo(() => {
+    return record.categories.map(category => category.modules.filter(module => module.is_completed)).flat().length
+  }, [record])
+
+  const getModuleInProgress = useMemo(() => {
+    return record.categories.map(category => category.modules.filter(module => !module.is_completed)).flat().length
+  }, [record])
+
+  const getCertification = useMemo(() => {
+    return record.categories.map(category => category.url_certificate).filter(url => url !== '').length
+  }, [record])
 
   return (
     <div>
@@ -89,19 +105,19 @@ export const Learn = () => {
               <div className="m-3 grid grid-cols-2 gap-3 text-stone-500">
                 <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                   <span>Courses Completed</span>
-                  <span className="text-xl font-semibold text-black ">1</span>
+                  <span className="text-xl font-semibold text-black ">{getCategoryCompleted}</span>
+                </div>
+                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
+                  <span>Modules Completed</span>
+                  <span className="text-xl font-semibold text-black ">{getModuleCompleted}</span>
+                </div>
+                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
+                  <span>Modules In Progress</span>
+                  <span className="text-xl font-semibold text-black ">{getModuleInProgress}</span>
                 </div>
                 <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                   <span>Certificate Earns</span>
-                  <span className="text-xl font-semibold text-black ">1</span>
-                </div>
-                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
-                  <span>Course In Progress</span>
-                  <span className="text-xl font-semibold text-black ">1</span>
-                </div>
-                <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
-                  <span>Recommend Courses</span>
-                  <span className="text-xl font-semibold text-black ">1</span>
+                  <span className="text-xl font-semibold text-black ">{getCertification}</span>
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ChangeEvent } from 'react'
 
 import { Button } from 'primereact/button'
@@ -49,10 +49,34 @@ export const Feedback = ({ isOpen = false, hidden, objectId, job_id }: FeedbackP
     hidden(false)
   }
 
+  const [ratingStars, setRatingStars] = useState<number>(0)
+
+  const headerFeedback = () => {
+    return (
+      <div className="flex">
+        <p> Feedback</p>
+
+        {user?.role !== employee_role ? (
+          <Rating
+            value={ratingStars}
+            cancel={false}
+            onChange={(e: RatingChangeEvent) => setRatingStars(e.value as number)}
+            stars={5}
+          />
+        ) : null}
+      </div>
+    )
+  }
+
   return (
-    <Dialog header="Feedback" visible={isOpen} style={{ width: '50vw' }} modal={true} onHide={() => hidden(false)}>
+    <Dialog
+      header={headerFeedback}
+      visible={isOpen}
+      style={{ width: '50vw' }}
+      modal={true}
+      onHide={() => hidden(false)}>
       {user?.role !== employee_role ? (
-        <FeedbackEmployee submitFeedback={submitFeedback} userId={objectId} />
+        <FeedbackEmployee submitFeedback={submitFeedback} userId={objectId} ratingStars={ratingStars} />
       ) : (
         <FeedbackFacility submitFeedback={submitFeedback} jobId={objectId} />
       )}
@@ -107,9 +131,10 @@ const FeedbackFacility = ({ submitFeedback, jobId }: FeedbackFacilityProps) => {
 interface FeedbackEmployeeProps {
   submitFeedback: (feedback: Feedback) => void
   userId: string | undefined
+  ratingStars: number
 }
 
-const FeedbackEmployee = ({ submitFeedback, userId }: FeedbackEmployeeProps) => {
+const FeedbackEmployee = ({ submitFeedback, userId, ratingStars }: FeedbackEmployeeProps) => {
   const [comment, setComment] = useState<string>('')
   const [performance, setPerformance] = useState<number>(0)
   const [colaboration, setColaboration] = useState<number>(0)
@@ -130,6 +155,14 @@ const FeedbackEmployee = ({ submitFeedback, userId }: FeedbackEmployeeProps) => 
 
     submitFeedback(feedback)
   }
+
+  useEffect(() => {
+    setPerformance(ratingStars)
+    setColaboration(ratingStars)
+    setCommunication(ratingStars)
+    setPunctuality(ratingStars)
+    setKnowledgeSkills(ratingStars)
+  }, [ratingStars])
 
   return (
     <div className="mt-3 flex flex-1 flex-col gap-3 ">
