@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
 import { Rating } from 'primereact/rating'
@@ -46,9 +48,16 @@ export const PanelAcceptedContent = ({
 
                   <div className="min-w-0 flex-auto">
                     <p className="text-base font-semibold leading-6 text-gray-900">
-                      <span className="absolute inset-x-0 -top-px bottom-0" />
-                      {applicant?.user.first_name + ' '}
-                      {role === 'admin' ? applicant?.user.last_name : applicant?.user.last_name[0] + '.'}
+                      {role === 'admin' ? (
+                        <Link
+                          to={`/admin/users/${applicant?.user?._id}`}
+                          className="text-base font-semibold leading-6 text-gray-900 hover:underline">
+                          <span className="absolute inset-x-0 -top-px bottom-0" />
+                          {applicant?.user.first_name + ' ' + applicant?.user.last_name}
+                        </Link>
+                      ) : (
+                        applicant?.user.first_name + ' ' + applicant?.user.last_name[0] + '.'
+                      )}
                       <Tag className="mb-2 ml-2" value="Accepted" severity="success" />
                       {applicant?.user.score_rating != null ? (
                         <Rating value={applicant.user.score_rating} readOnly cancel={false} />

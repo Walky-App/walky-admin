@@ -401,7 +401,7 @@ export const ClientJobDetailView = () => {
             </TabPanel>
 
             <TabPanel header="Rejected">
-              <PanelRejectedContent applicants={job?.applicants} handleReinstate={handleReinstate} />
+              <PanelRejectedContent role={role} applicants={job?.applicants} handleReinstate={handleReinstate} />
             </TabPanel>
 
             <TabPanel header="Accepted">
