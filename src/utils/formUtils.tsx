@@ -17,3 +17,9 @@ export function getFormErrorMessage(path: string, errors: FieldErrors) {
 
   return null
 }
+
+export const requiredFieldsNoticeText = (
+  <p className="mt-1 text-sm leading-6 text-gray-600">
+    <span style={{ color: 'red' }}>*</span> indicates a required field.
+  </p>
+)
