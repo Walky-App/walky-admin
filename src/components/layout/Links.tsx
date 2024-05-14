@@ -35,7 +35,7 @@ const adminLinks: INavLink[] = [
   { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
   { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
   { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
+  { id: 7, name: 'Settings', href: '/admin/settings', icon: <Cog6ToothIcon /> },
   { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
 ]
 

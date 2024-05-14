@@ -17,8 +17,8 @@ export const HtInputLabel: React.FC<HtInputLabelProps> = ({
 }) => {
   return (
     <label htmlFor={htmlFor} className={cn('block text-sm font-medium leading-6 text-gray-900', className)}>
-      {asterisk ? <span style={{ color: asteriskColor }}>*</span> : null}
-      &nbsp;{labelText}
+      {asterisk ? <span style={{ color: asteriskColor }}>*&nbsp;</span> : null}
+      {labelText}
     </label>
   )
 }
