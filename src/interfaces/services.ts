@@ -13,6 +13,7 @@ export interface ITokenInfo {
   access_token: string
   role: string
   first_name: string
+  state: string
   avatar?: string
   onboarding?: IOnboarding
 }

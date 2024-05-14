@@ -35,7 +35,7 @@ const adminLinks: INavLink[] = [
   { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
   { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
   { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
+  { id: 7, name: 'Settings', href: '/admin/settings', icon: <Cog6ToothIcon /> },
   { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
 ]
 
@@ -64,8 +64,8 @@ const employeeLinks: INavLink[] = [
 ]
 
 const salesLinks: INavLink[] = [
-  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
+  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding />, disabled: !userIsOnboarded },
+  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: !userIsOnboarded },

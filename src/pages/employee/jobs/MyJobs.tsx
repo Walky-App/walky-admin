@@ -82,31 +82,51 @@ export const EmployeeMyJobs = () => {
           <TabView>
             <TabPanel header="Active & Upcoming">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-                {activeJobs?.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+                {activeJobs?.length > 0 ? (
+                  activeJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                ) : (
+                  <div>There are no active or upcoming jobs yet.</div>
+                )}
               </ul>
             </TabPanel>
           </TabView>
           <TabView>
             <TabPanel header="Pending">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-                {pendingJobs?.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+                {pendingJobs?.length > 0 ? (
+                  pendingJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                ) : (
+                  <div>There are no jobs pending yet.</div>
+                )}
               </ul>
             </TabPanel>
             {role === adminRole ? (
               <TabPanel header="Rejected">
                 <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-                  {rejectedJobs?.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+                  {rejectedJobs?.length > 0 ? (
+                    rejectedJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                  ) : (
+                    <div>There are no jobs with rejections yet.</div>
+                  )}
                 </ul>
               </TabPanel>
             ) : null}
             <TabPanel header="Saved Jobs">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-                {savedJobs?.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+                {savedJobs?.length > 0 ? (
+                  savedJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                ) : (
+                  <div>There are no jobs saved yet.</div>
+                )}
               </ul>
             </TabPanel>
             <TabPanel header="Past Jobs">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-                {pastJobs?.map((job: IJob) => <JobListItem key={job._id} job={job} />)}
+                {pastJobs?.length > 0 ? (
+                  pastJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                ) : (
+                  <div>There are no jobs completed in the past yet.</div>
+                )}
               </ul>
             </TabPanel>
           </TabView>

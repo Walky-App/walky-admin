@@ -9,6 +9,7 @@ import { Toast } from 'primereact/toast'
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { useSettings } from '../../../../store/useSettings'
 import { useUtils } from '../../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
@@ -40,9 +41,10 @@ export const ClientAddJob = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
+  const { settings } = useSettings()
 
   if (isAdmin) {
-    defaultValues = { ...defaultValues, created_by: '' }
+    defaultValues = { ...defaultValues, created_by: '', hourly_rate: (settings?.minimun_wage as number) || 0 }
   }
 
   const {
