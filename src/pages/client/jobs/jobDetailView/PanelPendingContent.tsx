@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import { Controller, useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
@@ -135,11 +136,17 @@ export const PanelPendingContent = ({
                     />
 
                     <div className="min-w-0 flex-auto">
-                      <p className="text-base font-semibold leading-6 text-gray-900">
-                        <span className="absolute inset-x-0 -top-px bottom-0" />
-                        {applicant?.user.first_name + ' '}
-                        {role === 'admin' ? applicant.user.last_name : applicant.user.last_name[0] + '.'}
-                      </p>
+                      {role === 'admin' ? (
+                        <Link
+                          to={`/admin/users/${applicant?.user?._id}`}
+                          className="text-base font-semibold leading-6 text-gray-900 hover:underline">
+                          <span className="absolute inset-x-0 -top-px bottom-0" />
+                          {applicant?.user.first_name + ' ' + applicant.user.last_name}
+                        </Link>
+                      ) : (
+                        applicant?.user.first_name + ' ' + applicant.user.last_name[0] + '.'
+                      )}
+
                       {applicant.user.score_rating ?? 0 ? (
                         <Rating value={applicant.user.score_rating} readOnly cancel={false} />
                       ) : (
