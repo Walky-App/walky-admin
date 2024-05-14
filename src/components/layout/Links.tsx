@@ -64,8 +64,8 @@ const employeeLinks: INavLink[] = [
 ]
 
 const salesLinks: INavLink[] = [
-  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
+  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding />, disabled: !userIsOnboarded },
+  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: !userIsOnboarded },
