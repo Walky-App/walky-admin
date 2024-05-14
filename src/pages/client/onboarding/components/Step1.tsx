@@ -424,7 +424,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
-                    <HtInputHelpText fieldName={field.name} helpText="No Residential Addresses allowed" />
+                    <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
                   </>
                 )}
               />

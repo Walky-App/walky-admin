@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
 import { Rating } from 'primereact/rating'
@@ -6,11 +8,12 @@ import { Tag } from 'primereact/tag'
 import { type IApplicant } from '../../../../interfaces/job'
 
 interface IPanelRejected {
+  role: string
   applicants?: IApplicant[] | undefined
   handleReinstate: (user_id: string) => Promise<void>
 }
 
-export const PanelRejectedContent = ({ applicants, handleReinstate }: IPanelRejected) => {
+export const PanelRejectedContent = ({ role, applicants, handleReinstate }: IPanelRejected) => {
   return (
     <div>
       <div className="mt-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
@@ -43,8 +46,16 @@ export const PanelRejectedContent = ({ applicants, handleReinstate }: IPanelReje
 
                       <div className="min-w-0 flex-auto">
                         <p className="text-base font-semibold leading-6 text-gray-900">
-                          <span className="absolute inset-x-0 -top-px bottom-0" />
-                          {applicant?.user.first_name} {applicant?.user.last_name[0]}.
+                          {role === 'admin' ? (
+                            <Link
+                              to={`/admin/users/${applicant?.user?._id}`}
+                              className="text-base font-semibold leading-6 text-gray-900 hover:underline">
+                              <span className="absolute inset-x-0 -top-px bottom-0" />
+                              {applicant?.user.first_name + ' ' + applicant?.user.last_name}
+                            </Link>
+                          ) : (
+                            applicant?.user.first_name + ' ' + applicant?.user.last_name[0] + '.'
+                          )}
                           <Tag className="mb-2 ml-2" value="Rejected" severity="danger" />
                           {applicant?.user.score_rating ? (
                             <Rating value={applicant?.user.score_rating} readOnly cancel={false} />
