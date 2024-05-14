@@ -15,6 +15,7 @@ import { classNames } from 'primereact/utils'
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { useSettings } from '../../../../store/useSettings'
 import { useUtils } from '../../../../store/useUtils'
 import { jobTipsOptions, lunchTimeOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
@@ -32,6 +33,7 @@ export const ClientAddJob = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
+  const { settings } = useSettings()
 
   interface JobFormDefaultValues {
     title: string
@@ -71,7 +73,7 @@ export const ClientAddJob = () => {
     title: '',
     facility_id: '',
     vacancy: 0,
-    hourly_rate: 0,
+    hourly_rate: (settings?.minimun_wage as number) || 0,
     job_dates: [],
     start_time: start_time,
     end_time: end_time,
