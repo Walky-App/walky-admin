@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
@@ -8,10 +8,12 @@ import { Checkbox } from 'primereact/checkbox'
 import { type CheckboxChangeEvent } from 'primereact/checkbox'
 import { Divider } from 'primereact/divider'
 import { ScrollPanel } from 'primereact/scrollpanel'
+import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { Sidebar } from 'primereact/sidebar'
 import { Skeleton } from 'primereact/skeleton'
 import { Slider } from 'primereact/slider'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
@@ -56,6 +58,16 @@ const rangeOptions = [
   { name: '< 50 miles', code: 50 },
 ]
 
+interface ViewOption {
+  icon: string
+  value: string
+}
+
+const viewOptions: ViewOption[] = [
+  { icon: 'pi pi-bars', value: 'list' },
+  { icon: 'pi pi-table', value: 'grid' },
+]
+
 export const EmployeeJobs = () => {
   const { jobs, setJobs } = useJobs()
   const {
@@ -66,6 +78,11 @@ export const EmployeeJobs = () => {
     getLongitudeFromLocalStorage,
   } = useCoordinates()
   const { _id } = GetTokenInfo()
+  const [view, setView] = useState<string>('list')
+
+  const viewOptionsTemplate = (option: ViewOption) => {
+    return <i className={option.icon} />
+  }
 
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
@@ -327,6 +344,42 @@ export const EmployeeJobs = () => {
     )
   }
 
+  const memoEmployeeJobsColumns = useMemo(
+    () => [
+      { Header: 'Job Title', accessor: 'title' },
+      {
+        Header: 'Status',
+        accessor: (d: IJob) => (d.is_active ? 'Active' : 'Disabled'),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sortType: (a: any, b: any) => {
+          if (a.original.is_active === b.original.active) return 0
+          return a.original.is_active ? -1 : 1
+        },
+      },
+      {
+        Header: 'Hours per Day',
+        accessor: 'total_hours',
+      },
+      {
+        Header: 'Hourly Rate ($)',
+        accessor: 'hourly_rate',
+      },
+      { Header: 'Vacancy', accessor: 'vacancy' },
+
+      {
+        Header: 'Availability',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sortType: (a: any, b: any) => {
+          if (a.original.is_full === b.original.is_full) return 0
+          return a.original.is_full ? -1 : 1
+        },
+      },
+    ],
+    [],
+  )
+
   return isMobile ? (
     <div className="flex flex-col items-start md:flex-row">
       <Button label="Filter & Sort" text outlined link onClick={() => setVisibleFilterSidebarForMobile(true)} />
@@ -340,14 +393,30 @@ export const EmployeeJobs = () => {
       {renderJobCards()}
     </div>
   ) : (
-    <div className="flex flex-col md:flex-row">
-      <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
-        {renderFiltersContent()}
-      </ScrollPanel>
-      <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
-        {renderJobCards()}
-        <HtScrollTop className="" />
-      </ScrollPanel>
-    </div>
+    <>
+      <div className="flex w-full justify-end">
+        <SelectButton
+          value={view}
+          onChange={(e: SelectButtonChangeEvent) => setView(e.value)}
+          options={viewOptions}
+          optionLabel="value"
+          itemTemplate={viewOptionsTemplate}
+          pt={{ button: { className: 'justify-center' } }}
+        />
+      </div>
+      {view === 'grid' ? (
+        <GlobalTable data={jobs} columns={memoEmployeeJobsColumns} allowClick />
+      ) : (
+        <div className="flex flex-col md:flex-row">
+          <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
+            {renderFiltersContent()}
+          </ScrollPanel>
+          <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
+            {renderJobCards()}
+            <HtScrollTop className="" />
+          </ScrollPanel>
+        </div>
+      )}
+    </>
   )
 }
