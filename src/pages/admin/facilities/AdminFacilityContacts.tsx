@@ -168,6 +168,7 @@ export const AdminFacilityContacts = () => {
                       <option value="Owner">Owner</option>
                       <option value="AP">AP</option>
                       <option value="Onsite">Onsite</option>
+                      <option value="Manager">Manager</option>
                       <option value="Security">Security</option>
                     </select>
                   </div>
