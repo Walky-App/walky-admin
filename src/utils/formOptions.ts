@@ -27,6 +27,7 @@ export const facilityContactRoles = [
   { label: 'AP', value: 'AP' },
   { label: 'Onsite', value: 'Onsite' },
   { label: 'Security', value: 'Security' },
+  { label: 'Manager', value: 'Manager' },
   { label: 'Other', value: 'Other' },
 ]
 
