@@ -90,6 +90,7 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                     <div className="line-clamp-2 h-12 font-normal text-stone-500">{module.description}</div>
                   </div>
                   <div className="m-3 flex flex-col items-center">
+                    Units Completed
                     <CircularProgressBar
                       progressData={{
                         total: module.units?.length || 0,
