@@ -1,7 +1,8 @@
+import { Avatar } from 'primereact/avatar'
+
 import { BuildingOfficeIcon, CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { useAuth } from '../../../contexts/AuthContext'
-import { useUtils } from '../../../store/useUtils'
 
 interface DashboardHeaderProps {
   children?: React.ReactNode
@@ -9,18 +10,16 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ children }) => {
   const { user } = useAuth()
-  const { avatarImageUrl } = useUtils()
 
   return (
     <div className="bg-white px-4 shadow sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
       <div className="py-6 md:flex md:items-center md:justify-between">
         <div className="min-w-0 flex-1">
           {/* Profile */}
-          <div className="flex items-center">
-            <img className="hidden h-16 w-16 rounded-full sm:block" src={avatarImageUrl} alt="avatar" />
+          <div className="flex">
+            <Avatar label={user?.first_name[0]} image={user?.avatar} size="large" shape="circle" />
             <div>
               <div className="flex items-center">
-                <img className="h-16 w-16 rounded-full sm:hidden" src={avatarImageUrl} alt="avatar" />
                 <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
                   Welcome Back, {user?.first_name}
                 </h1>

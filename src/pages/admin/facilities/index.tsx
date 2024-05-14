@@ -6,6 +6,7 @@ import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTab
 import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
+import { LoadingLogo } from '../../../utils/LoadingLogo'
 
 interface IRow {
   row: { original: IFacility }
@@ -76,11 +77,13 @@ export const AdminFacilities = () => {
       accessor: (d: IFacility) => (d.active ? 'Active' : 'Disabled'),
     },
     {
-      Header: 'Approval Status',
+      Header: 'Approved',
       accessor: (d: IFacility) => (d.isApproved ? 'Approved' : 'Pending'),
+      width: '40px',
     },
     { Header: 'Name', accessor: 'name' },
-    { Header: 'Address', accessor: 'address', width: '200px' },
+    { Header: 'DBAs', accessor: 'company_dbas' },
+    { Header: 'Address', accessor: 'address', width: '300px' },
     { Header: 'City', accessor: 'city' },
     { Header: 'State', accessor: 'state', width: '10px' },
     { Header: 'Zip', accessor: 'zip' },
@@ -89,46 +92,53 @@ export const AdminFacilities = () => {
   return (
     <>
       <HeaderComponent title="Facilities" />
-      <button
-        type="button"
-        onClick={() => navigate('/admin/facilities/new')}
-        className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        Add New Facility
-      </button>
+      {facilities.length === 0 ? (
+        <LoadingLogo />
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={() => navigate('/admin/facilities/new')}
+            className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+            Add New Facility
+          </button>
 
-      <button
-        type="button"
-        onClick={handleDisabledFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        Disabled
-      </button>
+          <button
+            type="button"
+            onClick={handleDisabledFacilities}
+            className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+            Disabled
+          </button>
 
-      <button
-        type="button"
-        onClick={handleActiveFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        Active
-      </button>
-      <button
-        type="button"
-        onClick={handleNolocationFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        No Coordinates
-      </button>
-      <button
-        type="button"
-        onClick={handleMissingImages}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        No Images
-      </button>
+          <button
+            type="button"
+            onClick={handleActiveFacilities}
+            className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+            Active
+          </button>
+          <button
+            type="button"
+            onClick={handleNolocationFacilities}
+            className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+            No Coordinates
+          </button>
+          <button
+            type="button"
+            onClick={handleMissingImages}
+            className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+            No Images
+          </button>
 
-      <button
-        type="button"
-        onClick={handleAllFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        All
-      </button>
-      <FacilitiesTable columns={adminColumns} data={facilities} />
+          <button
+            type="button"
+            onClick={handleAllFacilities}
+            className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+            All
+          </button>
+
+          <FacilitiesTable columns={adminColumns} data={facilities} />
+        </>
+      )}
     </>
   )
 }

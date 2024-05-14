@@ -14,11 +14,6 @@ import { useUtils } from '../../store/useUtils'
 import { roleChecker } from '../../utils/roleChecker'
 import { GetTokenInfo, SetToken } from '../../utils/tokenUtil'
 
-const admin_role = process.env.REACT_APP_ADMIN_ROLE
-const client_role = process.env.REACT_APP_CLIENT_ROLE
-const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE
-const sales_role = process.env.REACT_APP_SALES_ROLE
-
 export const LoginForm = () => {
   const [error, setError] = useState<Error>()
   const [loading, setLoading] = useState(false)
@@ -28,12 +23,12 @@ export const LoginForm = () => {
   const { setUser } = useAuth()
   const navigate = useNavigate()
 
-  const roleType = roleChecker()
+  const role = roleChecker()
   const tokenInfo = GetTokenInfo()
 
   /* This is to persist the user in the app */
   useEffect(() => {
-    switch (roleType) {
+    switch (role) {
       case 'admin':
         navigate('/admin/dashboard')
         break
@@ -57,7 +52,7 @@ export const LoginForm = () => {
       default:
         navigate('/login')
     }
-  }, [navigate, roleType, tokenInfo.onboarding?.completed])
+  }, [navigate, role, tokenInfo.onboarding?.completed])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -84,6 +79,7 @@ export const LoginForm = () => {
             _id: user._id,
             role: user.role,
             access_token: access_token,
+            state: user.state,
             avatar: user.avatar,
             onboarding: user.onboarding,
           }
@@ -92,17 +88,17 @@ export const LoginForm = () => {
           setUser({ ...user, access_token: access_token, onboarding: user.onboarding })
           setAvatarImageUrl(user.avatar as string)
 
-          switch (user.role) {
-            case admin_role:
+          switch (role) {
+            case 'admin':
               navigate('/admin/dashboard')
               break
-            case client_role:
+            case 'client':
               navigate('/client/dashboard')
               break
-            case employee_role:
+            case 'employee':
               navigate('/employee/dashboard')
               break
-            case sales_role:
+            case 'sales':
               navigate('/sales/dashboard')
               break
             default:
@@ -163,6 +159,7 @@ export const LoginForm = () => {
           input: {
             className: 'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
           },
+          iconField: { root: { className: 'w-full' } },
         }}
         className="w-full"
       />

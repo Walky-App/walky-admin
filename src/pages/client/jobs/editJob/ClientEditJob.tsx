@@ -1,84 +1,42 @@
-/*eslint-disable */
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
-import { Calendar } from 'primereact/calendar'
-import { Dropdown } from 'primereact/dropdown'
-import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
-import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
-import { classNames } from 'primereact/utils'
 
 import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
-import { IFacility } from '../../../../interfaces/Facility'
+import { type IJob } from '../../../../interfaces/job'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo } from '../../../../utils/tokenUtil'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import {
+  type JobFormDefaultValues,
+  defaultJobFormValues,
+  renderJobTitleController,
+  renderJobDatesController,
+  convertMilitaryTimeToStandardDate,
+  renderEndTimeController,
+  renderJobTipsController,
+  renderLunchBreakController,
+  renderPayRateController,
+  renderStartTimeController,
+  renderVacancyController,
+} from '../jobsUtils'
 
-export default function ClientEditJob() {
-  const [startTime, setStartTime] = React.useState<Date | null>(null)
-  const [endTime, setEndTime] = React.useState<Date | null>(null)
-  const [totalHours, setTotalHours] = React.useState(0)
-  const [job, setJob] = React.useState<any>({})
+const defaultValues = defaultJobFormValues
+
+export const ClientEditJob = () => {
+  const [startTime, setStartTime] = useState<Date | null>(defaultValues.start_time)
+  const [endTime, setEndTime] = useState<Date | null>(defaultValues.end_time)
+  const [totalHours, setTotalHours] = useState(0)
   const params = useParams()
-  const user = GetTokenInfo()
-  const id = user?._id
   const toast = useRef<Toast>(null)
   const { showToast } = useUtils()
-  const [facilities, setFacilities] = React.useState<IFacility[]>([])
   const navigate = useNavigate()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
-
-  function militaryToStandardDate(time: any, date: any) {
-    const hours = Math.floor(time / 100)
-    const minutes = time % 100
-    const dateObj = new Date(date)
-    dateObj.setHours(hours)
-    dateObj.setMinutes(minutes)
-    return dateObj
-  }
-
-  useEffect(() => {
-    const getJob = async () => {
-      const job = await RequestService(`jobs/${params.id}`)
-      if (job) {
-        setJob(job)
-
-        const jobDates = job.job_dates.map((dateString: string) => new Date(dateString))
-        const startTime = militaryToStandardDate(job.start_time, jobDates[0])
-        const endTime = militaryToStandardDate(job.end_time, jobDates[0])
-
-        setStartTime(startTime)
-        setEndTime(endTime)
-
-        setValue('title', job.title)
-        setValue('vacancy', job.vacancy)
-        setValue('hourly_rate', job.hourly_rate)
-        setValue('lunch_break', job.lunch_break)
-        setValue('job_dates', jobDates)
-        setValue('start_time', startTime)
-        setValue('end_time', endTime)
-        setValue('job_tips', job.job_tips)
-      }
-    }
-    getJob()
-  }, [params.id])
-
-  const defaultValues = {
-    title: job.title,
-    facility_id: job.facility_id,
-    vacancy: job.vacancy,
-    hourly_rate: job.hourly_rate,
-    job_dates: job.job_dates,
-    start_time: job.start_time,
-    end_time: job.end_time,
-    lunch_break: job.lunch_break,
-    job_tips: job.job_tips,
-  }
 
   const {
     control,
@@ -88,12 +46,38 @@ export default function ClientEditJob() {
     watch,
   } = useForm({ defaultValues })
 
-  const watchAllFields = watch()
+  useEffect(() => {
+    const getJob = async () => {
+      const jobFound: IJob = await RequestService(`jobs/${params.id}`)
+
+      if (jobFound._id) {
+        const { title, vacancy, hourly_rate, lunch_break, job_dates, job_tips, start_time, end_time } = jobFound
+
+        const jobDates = job_dates.map((dateString: string) => new Date(dateString))
+        const startTime = convertMilitaryTimeToStandardDate(start_time, jobDates[0])
+        const endTime = convertMilitaryTimeToStandardDate(end_time, jobDates[0])
+
+        setStartTime(startTime)
+        setEndTime(endTime)
+
+        if (title) setValue('title', title)
+        if (vacancy) setValue('vacancy', vacancy)
+        if (hourly_rate) setValue('hourly_rate', hourly_rate)
+        if (lunch_break) setValue('lunch_break', lunch_break)
+        if (jobDates.length > 0) setValue('job_dates', jobDates)
+        if (startTime !== null) setValue('start_time', startTime)
+        if (startTime !== null) setValue('end_time', endTime)
+        if (startTime !== null) setValue('job_tips', job_tips)
+      }
+    }
+    getJob()
+  }, [params.id, setValue])
+
   const lunchBreak = watch('lunch_break')
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (startTime && endTime) {
-      let startHours = startTime.getHours() + startTime.getMinutes() / 60
+      const startHours = startTime.getHours() + startTime.getMinutes() / 60
       let endHours = endTime.getHours() + endTime.getMinutes() / 60
 
       if (endHours <= startHours) {
@@ -106,17 +90,7 @@ export default function ClientEditJob() {
     }
   }, [startTime, endTime, lunchBreak])
 
-  const getFormErrorMessage = (name: string) => {
-    //@ts-ignore
-    return errors[name] ? (
-      //@ts-ignore
-      <small className="p-error">{errors[name].message}</small>
-    ) : (
-      <small className="p-error">&nbsp;</small>
-    )
-  }
-
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: JobFormDefaultValues) => {
     try {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
@@ -132,9 +106,11 @@ export default function ClientEditJob() {
         }
         const lunchBreakHours = data.lunch_break / 60
         const totalHours = endHours - startHours - lunchBreakHours
-        requestData.total_hours = Math.round(totalHours * 100) / 100
-        setTotalHours(requestData.total_hours)
-        if (requestData.total_hours < 7) {
+
+        const formattedTotalHours = Math.round(totalHours * 100) / 100
+
+        setTotalHours(formattedTotalHours)
+        if (formattedTotalHours < 7) {
           showToast({
             severity: 'error',
             summary: 'Error',
@@ -160,99 +136,24 @@ export default function ClientEditJob() {
     }
   }
 
-  const options = [
-    { title: 'Harvester', value: 'Harvester' },
-    { title: 'Budtender', value: 'Budtender' },
-    { title: 'Trimmer', value: 'Trimmer' },
-    { title: 'Packager', value: 'Packager' },
-    { title: 'Gardener', value: 'Gardener' },
-    { title: 'Cultivator', value: 'Cultivator' },
-    { title: 'Extractor', value: 'Extractor' },
-    { title: 'Front desk', value: 'Front desk' },
-    { title: 'Greeter', value: 'Greeter' },
-    { title: 'Id checker', value: 'Id checker' },
-    { title: 'Inventory', value: 'Inventory' },
-    { title: 'Data entry', value: 'Data entry' },
-    { title: 'Event staff', value: 'Event staff' },
-    { title: 'Promo representative', value: 'Promo representative' },
-    { title: 'Cleaning', value: 'Cleaning' },
-    { title: 'Joint roller', value: 'Joint roller' },
-    { title: 'Grow tech', value: 'Grow tech' },
-    { title: 'Clone tech', value: 'Clone tech' },
-    { title: 'Sign spinner', value: 'Sign spinner' },
-  ]
-
-  const lunchTimes = [
-    { label: '0 minutes', value: 0 },
-    { label: '15 minutes', value: 15 },
-    { label: '30 minutes', value: 30 },
-    { label: '45 minutes', value: 45 },
-    { label: '60 minutes', value: 60 },
-  ]
-
-  const jobTips = [
-    { label: 'Change Required Upon Entry', value: 'Change Required Upon Entry' },
-    { label: 'Lunch Included', value: 'Lunch Included' },
-    { label: 'Lunch Room Available', value: 'Lunch Room Available' },
-    { label: 'Lunch Will Be Off-Premise', value: 'Lunch Will Be Off-Premise' },
-    { label: 'Pack a Lunch', value: 'Pack a Lunch' },
-    { label: 'Parking on Street', value: 'Parking on Street' },
-    { label: 'Parking Onsite', value: 'Parking Onsite' },
-    { label: 'Required Identification', value: 'Required Identification' },
-    { label: 'Special Equipment', value: 'Special Equipment' },
-    { label: 'No gas stations nearby', value: 'No gas stations nearby' },
-    { label: 'Water is provided', value: 'Water is provided' },
-    { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
-    { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
-    { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
-    { label: 'Labcoat Provided', value: 'Labcoat Provided' },
-    { label: 'Head / Beard net required', value: 'Head / Beard net required' },
-  ]
-
   return (
     <>
-      <TitleComponent title={'Edit the job'} />
+      <TitleComponent title="Edit the job" />
       <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
         <Toast ref={toast} />
         <div className="space-y-12">
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please take a moment to provide the essential information to update the job posting. We require you to
-                specify the job title in this section.
+                Please take a moment to provide the essential information for the job posting. We require you to specify
+                the job title and provide a facility this job pertains to.
               </p>
+              {requiredFieldsNoticeText}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                  Job Title:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="title"
-                    control={control}
-                    rules={{ required: 'Facility is required.' }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <div>
-                          <Dropdown
-                            id={field.name}
-                            value={field.value}
-                            optionLabel="title"
-                            options={options}
-                            focusInputRef={field.ref}
-                            onChange={e => field.onChange(e.value)}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          <div>{getFormErrorMessage(field.name)}</div>
-                        </div>
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
+              <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
             </div>
           </div>
           {/* Job Dates */}
@@ -262,286 +163,51 @@ export default function ClientEditJob() {
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Please select the dates you need temps at your facility. You can select one or multiple dates.
               </p>
+              {requiredFieldsNoticeText}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">
-                <div className="card">
-                  <div className="mt-2">
-                    <Controller
-                      name="job_dates"
-                      control={control}
-                      rules={{
-                        required: 'Date is required.',
-                        validate: value => value.length > 0 || 'At least one date must be selected.',
-                      }}
-                      render={({ field, fieldState }) => (
-                        <div>
-                          <Calendar
-                            inputId={field.name}
-                            value={field.value}
-                            onChange={field.onChange}
-                            dateFormat="mm/dd/yy"
-                            selectionMode="multiple"
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                            showIcon
-                            showButtonBar
-                            minDate={new Date()} // Disabling past dates
-                            inline
-                          />
-                          {field.value && field.value.length > 0 && (
-                            <div className="mt-2">
-                              <h4>Selected Dates:</h4>
-                              <ul className="mt-2 grid grid-cols-5 gap-2">
-                                {field.value
-                                  .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-                                  .map((date: Date, index: number) => (
-                                    <li key={index}>{date.toLocaleDateString()}</li>
-                                  ))}
-                              </ul>
-                            </div>
-                          )}
-                          {getFormErrorMessage(field.name)}
-                        </div>
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
+              <div className="sm:col-span-5">{renderJobDatesController(control, errors)}</div>
             </div>
           </div>
+        </div>
 
-          {/* Shift Details */}
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
-                select the pay rate you are choosing to list your job.
-              </p>
-              {totalHours !== 0 ? (
-                <div className="mt-10">
-                  <div
-                    className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
-                    Total Hours: {totalHours}
-                  </div>
-                  <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
+        {/* Shift Details */}
+        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
+              select the pay rate you are choosing to list your job.
+            </p>
+            {requiredFieldsNoticeText}
+            {totalHours !== 0 ? (
+              <div className="mt-10">
+                <div
+                  className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
+                  Total Hours: {totalHours}
                 </div>
-              ) : null}
-            </div>
-
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <label htmlFor="start_time" className="block text-sm font-medium leading-6 text-gray-900">
-                  Start time:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="start_time"
-                    control={control}
-                    rules={{ required: 'Start Time is required.' }}
-                    render={({ field, fieldState }) => (
-                      <div className="mt-6">
-                        <div>
-                          <Calendar
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.value ?? null)
-                              setStartTime(e.value ?? null)
-                            }}
-                            timeOnly
-                            hourFormat="12"
-                            showIcon
-                            icon={() => <i className="pi pi-clock" />}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          {getFormErrorMessage(field.name)}
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
+                <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
               </div>
+            ) : null}
+          </div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="end_time" className="block text-sm font-medium leading-6 text-gray-900">
-                  End Time:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="end_time"
-                    control={control}
-                    rules={{ required: 'End Time is required.' }}
-                    render={({ field, fieldState }) => (
-                      <div className="mt-6">
-                        <div>
-                          <Calendar
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.value ?? null)
-                              setEndTime(e.value ?? null)
-                            }}
-                            timeOnly
-                            hourFormat="12"
-                            showIcon
-                            icon={() => <i className="pi pi-clock" />}
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                          {getFormErrorMessage(field.name)}
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3">
-                <label htmlFor="lunch_break" className="block text-sm font-medium leading-6 text-gray-900">
-                  Lunch Break:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="lunch_break"
-                    control={control}
-                    rules={{
-                      required: 'Enter lunch break time in minutes.',
-                      validate: value =>
-                        (value !== null && value >= 0 && value <= 90) || 'Enter lunch break time in minutes',
-                    }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <div>
-                          <Dropdown
-                            id={field.name}
-                            inputRef={field.ref}
-                            value={field.value}
-                            onChange={e => field.onChange(e.value)}
-                            options={lunchTimes}
-                            optionLabel="label"
-                            optionValue="value"
-                            placeholder="Select lunch break duration"
-                            className={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                        </div>
-                        {getFormErrorMessage(field.name)}
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            {startTime ? (
+              <div className="sm:col-span-3">{renderStartTimeController(control, errors, startTime, setStartTime)}</div>
+            ) : null}
 
-              <div className="sm:col-span-3">
-                <label htmlFor="vacancy" className="block text-sm font-medium leading-6 text-gray-900">
-                  Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="vacancy"
-                    control={control}
-                    rules={{
-                      required: 'Enter a valid number of vacancies.',
-                      validate: value =>
-                        (value !== null && value >= 1 && value <= 10) ||
-                        'Enter a valid number of vacancies. Max 10 vacancies allowed.',
-                    }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <div>
-                          <InputNumber
-                            id={field.name}
-                            inputRef={field.ref}
-                            tooltip="Enter a valid number of vacancies from 1 to 10. If you need more than 10 vacancies, please contact Customer Service at (999)999-99-99."
-                            tooltipOptions={{ position: 'mouse' }}
-                            value={field.value}
-                            onBlur={field.onBlur}
-                            onValueChange={(e: InputNumberValueChangeEvent) => {
-                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
-                                field.onChange(e.value)
-                              }
-                            }}
-                            useGrouping={false}
-                            mode="decimal"
-                            showButtons
-                            min={1}
-                            max={10}
-                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                        </div>
-                        {getFormErrorMessage(field.name)}
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
+            {endTime ? (
+              <div className="sm:col-span-3">{renderEndTimeController(control, errors, endTime, setEndTime)}</div>
+            ) : null}
 
-              <div className="sm:col-span-3">
-                <label htmlFor="hourly_rate" className="block text-sm font-medium leading-6 text-gray-900">
-                  Pay Rate:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="hourly_rate"
-                    control={control}
-                    rules={{
-                      required: 'Enter hourly pay rate.',
-                      validate: value =>
-                        (value !== null && value >= 1 && value <= 40) || 'Enter a valid hourly pay rate amount.',
-                    }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <div>
-                          <InputNumber
-                            id={field.name}
-                            inputRef={field.ref}
-                            tooltip="Enter pay rate for this job in USD."
-                            tooltipOptions={{ position: 'mouse' }}
-                            value={field.value}
-                            onBlur={field.onBlur}
-                            onValueChange={e => field.onChange(e)}
-                            useGrouping={false}
-                            mode="currency"
-                            currency="USD"
-                            showButtons
-                            min={1}
-                            max={40}
-                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                        </div>
-                        {getFormErrorMessage(field.name)}
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
+            <div className="sm:col-span-3">{renderVacancyController(control, errors)}</div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                  Job tips:
-                </label>
-                <div className="mt-2">
-                  <Controller
-                    name="job_tips"
-                    control={control}
-                    rules={{ required: 'Value is required.' }}
-                    render={({ field }) => (
-                      <MultiSelect
-                        id={field.name}
-                        name="value"
-                        value={field.value}
-                        options={jobTips}
-                        filter
-                        onChange={e => field.onChange(e.value)}
-                        optionLabel="label"
-                        placeholder="Select Job Tips"
-                        maxSelectedLabels={8}
-                        className="md:w-20rem w-full"
-                      />
-                    )}
-                  />
+            <div className="sm:col-span-3">{renderPayRateController(control, errors)}</div>
 
-                  {getFormErrorMessage('value')}
-                </div>
-              </div>
-            </div>
+            <div className="sm:col-span-3">{renderJobTipsController(control, errors)}</div>
+
+            <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
           </div>
         </div>
 

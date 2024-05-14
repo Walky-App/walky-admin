@@ -92,6 +92,7 @@ export const AddressAutoComplete = ({
         forceSelection
         inputStyle={{ width: '100%' }}
         className={className}
+        autoComplete="off"
       />
     )
   }
@@ -106,6 +107,9 @@ export const AddressAutoComplete = ({
       onChange={e => setSelectedAddresses(e.value)}
       onSelect={e => handleGetAddressDetails(e.value, predictions)}
       forceSelection
+      inputStyle={{ width: '100%', height: '100%' }}
+      className={className}
+      autoComplete="off"
     />
   )
 }

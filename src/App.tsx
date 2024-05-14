@@ -12,7 +12,6 @@ import { Error404 } from './pages/Error404'
 /******************************************* Auth Pages ************************************/
 import { Auth } from './pages/auth'
 import { NewPasswordForm } from './pages/auth/NewPasswordForm'
-import ResetSuccess from './pages/auth/ResetSuccess'
 import { Signup } from './pages/auth/SignupForm'
 
 /******************************************* HTU Pages ************************************/
@@ -28,9 +27,9 @@ import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import JobDetailViewClient from './pages/client/jobs/JobDetailViewClient'
 import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
-import ClientEditJob from './pages/client/jobs/editJob/ClientEditJob'
+import { ClientEditJob } from './pages/client/jobs/editJob/ClientEditJob'
+import { ClientJobDetailView } from './pages/client/jobs/jobDetailView'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
@@ -47,9 +46,8 @@ import { AdminProfile } from './pages/admin/profile/AdminProfile'
 
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
 import { AdminUserPage } from './pages/admin/users/AdminUserPage'
-import { AdminInviteUser } from './pages/admin/users/components'
+import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/components'
 import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
-import { AdminUserTimeSheets } from './pages/admin/users/components/AdminUserTimeSheets'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
@@ -78,12 +76,12 @@ import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 import { Certification } from './pages/admin/HTU/components/Certification'
 
-import AdminJobs from './pages/admin/jobs'
+import { AdminJobs } from './pages/admin/jobs'
 
 import { AdminMessages } from './pages/admin/messages'
+import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 /******************************************* Employee Pages ************************************/
-import { AdminHolidays } from './pages/admin/settings/AdminHolidays'
 
 /** Employee Pages */
 import { EmployeeProfile } from './pages/employee/EmployeeProfile'
@@ -93,6 +91,7 @@ import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
 import { EmployeeMessages } from './pages/employee/messages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
+import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -107,7 +106,6 @@ export const App = () => {
             <Route element={<Auth />} path="/" />
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
-            <Route element={<ResetSuccess />} path="/reset-success" />
             <Route element={<Signup />} path="/invite/:email/:role" />
             <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
@@ -119,6 +117,7 @@ export const App = () => {
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />
                 <Route element={<EmployeeProfile />} path="/employee/profile" />
                 <Route element={<EmployeeMessages />} path="/employee/messages" />
+                <Route element={<EmployeeTimesheets />} path="/employee/timesheets" />
                 {/* LMS Module */}
                 <Route element={<Learn />} path="/learn" />
                 <Route element={<Modules />} path="/learn/category/:categoryId" />
@@ -145,7 +144,7 @@ export const App = () => {
                   <Route element={<Jobs />} path="/client/jobs" />
                   <Route element={<ClientAddJob />} path="/client/jobs/new" />
                   <Route element={<ClientEditJob />} path="/client/jobs/:id/edit" />
-                  <Route element={<JobDetailViewClient />} path="/client/jobs/:id" />
+                  <Route element={<JobDetailView />} path="/client/jobs/:id" />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route element={<SalesDashboard />} path="/sales/dashboard" />
@@ -165,13 +164,13 @@ export const App = () => {
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
                   <Route element={<AdminDashboard />} path="/admin/dashboard" />
                   <Route element={<AdminProfile />} path="/admin/profile" />
-                  <Route element={<AdminHolidays />} path="/admin/holidays" />
+                  <Route element={<AdminSettings />} path="/admin/settings" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<AdminUserPage />}>
                     <Route element={<AdminUserDetails />} path="/admin/users/:id" />
-                    <Route element={<AdminUserTimeSheets />} path="/admin/users/:id/timesheets" />
+                    <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
                   </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<AdminFacilityDetails />} path="/admin/facilities/:facilityId" />
@@ -187,7 +186,7 @@ export const App = () => {
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<ClientAddJob />} path="/admin/jobs/new" />
-                  <Route element={<JobDetailViewClient />} path="/admin/jobs/:id" />
+                  <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<ClientEditJob />} path="/admin/jobs/:id/edit" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
