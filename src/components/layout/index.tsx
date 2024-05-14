@@ -23,10 +23,15 @@ export const Layout = () => {
       getLocation()
     }
     const fetchStateSettings = async () => {
-      const reponse = await requestService({ path: `settings/user` })
-      if (reponse.ok) {
-        const data = await reponse.json()
-        setSettings(data)
+      try {
+        const reponse = await requestService({ path: `settings/user` })
+        if (reponse.ok) {
+          const data = await reponse.json()
+          setSettings(data)
+        }
+      } catch (error) {
+        setSettings(null)
+        console.error('Error fetching settings', error)
       }
     }
     if (!settings) {

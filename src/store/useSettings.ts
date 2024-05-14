@@ -4,7 +4,7 @@ import { type StatesSettingsDocument } from '../interfaces/setting'
 
 interface State {
   settings: StatesSettingsDocument | null
-  setSettings: (settings: StatesSettingsDocument) => void
+  setSettings: (settings: StatesSettingsDocument | null) => void
 }
 
 export const useSettings = create<State>(set => ({
