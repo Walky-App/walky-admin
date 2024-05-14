@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState, useEffect, useMemo } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
@@ -351,6 +350,7 @@ export const EmployeeJobs = () => {
       {
         Header: 'Status',
         accessor: (d: IJob) => (d.is_active ? 'Active' : 'Disabled'),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sortType: (a: any, b: any) => {
           if (a.original.is_active === b.original.active) return 0
           return a.original.is_active ? -1 : 1
@@ -368,7 +368,9 @@ export const EmployeeJobs = () => {
 
       {
         Header: 'Availability',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sortType: (a: any, b: any) => {
           if (a.original.is_full === b.original.is_full) return 0
           return a.original.is_full ? -1 : 1
