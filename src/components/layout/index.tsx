@@ -29,10 +29,10 @@ export const Layout = () => {
         setSettings(data)
       }
     }
-    if (settings.length === 0) {
+    if (!settings) {
       fetchStateSettings()
     }
-  }, [setToast, latitude, longitude, getLocation, settings.length, setSettings])
+  }, [setToast, latitude, longitude, getLocation, settings, setSettings])
 
   return (
     <>

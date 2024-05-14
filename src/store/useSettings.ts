@@ -3,11 +3,11 @@ import { create } from 'zustand'
 import { type StatesSettingsDocument } from '../interfaces/setting'
 
 interface State {
-  settings: StatesSettingsDocument[]
-  setSettings: (settings: StatesSettingsDocument[]) => void
+  settings: StatesSettingsDocument | null
+  setSettings: (settings: StatesSettingsDocument) => void
 }
 
 export const useSettings = create<State>(set => ({
-  settings: [],
+  settings: null,
   setSettings: settings => set({ settings }),
 }))
