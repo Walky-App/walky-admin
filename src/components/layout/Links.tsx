@@ -41,16 +41,16 @@ const adminLinks: INavLink[] = [
 
 const clientLinks: INavLink[] = [
   { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase />, disabled: !userIsOnboarded },
-  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: userIsOnboarded },
-  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: userIsOnboarded },
+  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: !userIsOnboarded },
+  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: !userIsOnboarded },
   {
     id: 4,
     name: 'Timesheets',
     href: '/dashboard/timesheets',
     icon: <BsFillFileEarmarkSpreadsheetFill />,
-    disabled: userIsOnboarded,
+    disabled: !userIsOnboarded,
   },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: userIsOnboarded },
+  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: !userIsOnboarded },
   { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
   { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding />, disabled: !userIsOnboarded },
 ]
