@@ -223,11 +223,10 @@ export const Step1 = ({ step, setStep }: StepProps) => {
               <Controller
                 control={control}
                 name="company_dbas"
-                rules={{ required: 'Company DBAs is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="Doing Business As (DBA) is a company name that is different from the legal name of the business. DBA is also known as a trade name, fictitious business name, or assumed business name.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Company DBAs" />
+                      <HtInputLabel htmlFor={field.name} labelText="Company DBAs" />
                     </HtInfoTooltip>
                     <InputText
                       id={field.name}
@@ -323,7 +322,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                         input: { root: { autoComplete: 'off' } },
                       }}
                     />
-                    <HtInputHelpText fieldName={field.name} helpText="Enter a number. Max 1,000,000" />
+                    <HtInputHelpText fieldName={field.name} helpText="Max 1,000,000" />
                   </>
                 )}
               />
@@ -515,7 +514,6 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                   name={`contacts.${index}.phone_number`}
                   rules={{
                     required: 'Phone Number is required, should be 10 digits.',
-                    pattern: /^\d{10}$/,
                   }}
                   render={({ field, fieldState }) => (
                     <>
