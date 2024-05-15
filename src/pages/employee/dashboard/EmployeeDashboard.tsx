@@ -6,6 +6,9 @@ import { Button } from 'primereact/button'
 
 import { DashboardHeader } from '../../../components/shared/dashboard'
 import { useAuth } from '../../../contexts/AuthContext'
+import { type IUser } from '../../../interfaces/User'
+import { requestService } from '../../../services/requestServiceNew'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export type Status = string
 
@@ -31,13 +34,27 @@ export const EmployeeDashboard = () => {
   // const [facilities, setFacilities] = useState<IFacility[]>([])
 
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
+  const userId = GetTokenInfo()?._id
 
   useEffect(() => {
-    if (user?.onboarding?.completed === false || user?.onboarding === undefined) {
-      navigate('/employee/onboarding')
+    const fetchUser = async () => {
+      try {
+        const response = await requestService({ path: `users/${userId}` })
+        if (!response.ok) throw new Error('User not found')
+        const userFound: IUser = await response.json()
+        setUser(userFound)
+      } catch (error) {
+        console.error('Error fetching user:', error)
+      }
     }
-  }, [navigate, user])
+
+    if (userId != null) fetchUser()
+  }, [setUser, user?._id, userId])
+
+  useEffect(() => {
+    if (!user?.onboarding?.completed) navigate('/employee/onboarding')
+  }, [navigate, user?.onboarding?.completed])
 
   // useEffect(() => {
   //   const getCounts = async () => {

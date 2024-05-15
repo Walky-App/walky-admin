@@ -12,7 +12,7 @@ import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useAuth } from '../../contexts/AuthContext'
 import { LogoutService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
-import { getCurrentUserRole } from '../../utils/UserRole'
+import { roleChecker } from '../../utils/roleChecker'
 import { LogosPack } from './LogosPack'
 
 interface HeaderComponentProps {
@@ -27,7 +27,8 @@ export interface UserNavigationItem {
 export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
   const { avatarImageUrl, setAvatarImageUrl } = useUtils()
-  const role = getCurrentUserRole()
+
+  const role = roleChecker()
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
@@ -137,7 +138,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
           </div>
         </div>
       </header>
-      {user?.onboarding?.completed || !user?.onboarding ? null : (
+      {!user?.onboarding?.completed ? (
         <div className="rounded-md bg-yellow-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -150,7 +151,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
                   You will <strong>NOT</strong> be able to apply for jobs until Onboarding is complete &nbsp;
                   <span aria-hidden="true"> &rarr;</span>
                   <a
-                    href="/employee/onboarding"
+                    {...(role === 'client' ? { href: `/client/onboarding` } : { href: `/employee/onboarding` })}
                     className="ml-3 font-medium text-yellow-700 underline hover:text-yellow-600">
                     Complete Onboarding
                   </a>
@@ -159,7 +160,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   )
 }

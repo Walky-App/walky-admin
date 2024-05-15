@@ -87,7 +87,7 @@ export const EmployeeJobs = () => {
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [selectedRange, setSelectedRange] = useState(rangeOptions[0].code)
+  const [selectedRange, setSelectedRange] = useState(rangeOptions[3].code)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
@@ -361,10 +361,20 @@ export const EmployeeJobs = () => {
         accessor: 'total_hours',
       },
       {
-        Header: 'Hourly Rate ($)',
+        Header: 'Number of Days',
+        accessor: (row: { job_dates: string[] }) => row.job_dates.length,
+      },
+      {
+        Header: 'Rate ($/h)',
         accessor: 'hourly_rate',
       },
+      {
+        Header: 'Lunch (min)',
+        accessor: 'lunch_break',
+      },
+
       { Header: 'Vacancy', accessor: 'vacancy' },
+      { Header: 'Job ID', accessor: 'uid' },
 
       {
         Header: 'Availability',

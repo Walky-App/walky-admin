@@ -59,10 +59,11 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
             </ul>
           </li>
           <li>
-            {role === 'admin' ? <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div> : null}
-            {role === 'client' ? (
+            {role === 'admin' ? (
+              <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
+            ) : (
               <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
-            ) : null}
+            )}
 
             <ul className="-mx-2 mt-2 space-y-1">
               {user?.role
