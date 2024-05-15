@@ -41,26 +41,32 @@ const adminLinks: INavLink[] = [
 
 const clientLinks: INavLink[] = [
   { id: 1, name: 'My Jobs', href: '/client/jobs', icon: <FaBriefcase />, disabled: !userIsOnboarded },
-  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: !userIsOnboarded },
-  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: !userIsOnboarded },
+  { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: userIsOnboarded },
+  { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: userIsOnboarded },
   {
     id: 4,
     name: 'Timesheets',
     href: '/dashboard/timesheets',
     icon: <BsFillFileEarmarkSpreadsheetFill />,
-    disabled: !userIsOnboarded,
+    disabled: userIsOnboarded,
   },
-  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: !userIsOnboarded },
+  { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: userIsOnboarded },
   { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
   { id: 7, name: 'Facilities', href: `/client/facilities/`, icon: <FaBuilding />, disabled: !userIsOnboarded },
 ]
 
 const employeeLinks: INavLink[] = [
-  { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime /> },
-  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+  { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime />, disabled: !userIsOnboarded },
+  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle />, disabled: userIsOnboarded },
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
   { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-  { id: 5, name: 'Timesheets', href: '/employee/timesheets', icon: <MdOutlineAccessTimeFilled /> },
+  {
+    id: 5,
+    name: 'Timesheets',
+    href: '/employee/timesheets',
+    icon: <MdOutlineAccessTimeFilled />,
+    disabled: !userIsOnboarded,
+  },
 ]
 
 const salesLinks: INavLink[] = [
