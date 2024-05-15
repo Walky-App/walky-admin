@@ -137,7 +137,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
           </div>
         </div>
       </header>
-      {user?.onboarding?.completed || !user?.onboarding ? null : (
+      {!user?.onboarding?.completed ? (
         <div className="rounded-md bg-yellow-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -159,7 +159,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   )
 }

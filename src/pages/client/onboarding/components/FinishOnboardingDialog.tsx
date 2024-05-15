@@ -1,8 +1,15 @@
+import { useContext, useState } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Image } from 'primereact/image'
+
+import { type IUser } from '../../../../interfaces/User'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
+import { FormDataContext, clientOnboardingSteps } from '../ClientOnboardingPage'
 
 interface FinishedOnboardingDialogProps {
   visible: boolean
@@ -10,7 +17,72 @@ interface FinishedOnboardingDialogProps {
 }
 
 export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardingDialogProps) => {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const { currentUser, setCurrentUser } = useContext(FormDataContext)
+
+  const { showToast } = useUtils()
+
   const navigate = useNavigate()
+
+  const updateUserFinishOnboarding = async () => {
+    const userId = currentUser?._id
+    if (userId != null) {
+      try {
+        const response = await requestService({ path: `users/${userId}` })
+
+        if (!response.ok) {
+          throw new Error('User not found')
+        }
+
+        const userFound: IUser = await response.json()
+
+        const updatedUserObject: IUser = {
+          ...userFound,
+          onboarding: {
+            ...userFound.onboarding,
+            step_number: 5,
+            description: clientOnboardingSteps[4].label ?? '',
+            type: 'client',
+            completed: true,
+          },
+        }
+
+        const updateResponse = await requestService({
+          path: `users/${userId}`,
+          method: 'PATCH',
+          body: JSON.stringify(updatedUserObject),
+        })
+
+        if (!updateResponse.ok) {
+          throw new Error('Failed to update user')
+        }
+
+        const updatedUser: IUser = await updateResponse.json()
+
+        setCurrentUser(updatedUser)
+        navigate('/client/dashboard')
+      } catch (error) {
+        console.error('Error updating user:', error)
+
+        showToast({
+          severity: 'error',
+          summary: 'Error saving changes',
+          detail: `Information could not be updated.`,
+          life: 2000,
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  }
+
+  const onSubmit = async () => {
+    setIsLoading(true)
+
+    await updateUserFinishOnboarding()
+  }
+
   return (
     <div className="flex justify-center">
       <Dialog
@@ -35,13 +107,7 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
               </div>
             </div>
             <div className="mx-auto">
-              <Button
-                label="Close"
-                onClick={() => {
-                  setVisible(false)
-                  navigate('/client/dashboard')
-                }}
-              />
+              <Button label="Continue" loading={isLoading} onClick={onSubmit} />
             </div>
           </div>
         }
