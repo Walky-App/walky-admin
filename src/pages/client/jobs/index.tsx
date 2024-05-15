@@ -31,8 +31,6 @@ export default function Facilities() {
     getJobs()
   }, [])
 
-  console.log('jobsData:', jobsData)
-
   const jobsColumns = [
     { Header: 'Start date', accessor: (job: any) => new Date(job.job_dates[0]).toLocaleString() },
     { Header: 'Job', accessor: 'title' },
