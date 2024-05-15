@@ -48,6 +48,7 @@ export const JobDetailView = () => {
   const { showToast } = useUtils()
   const { id } = useParams()
   const user = GetTokenInfo()
+  const userIsOnboarded = user?.onboarding?.completed
 
   const [latitude, setLatitude] = useState<number>()
   const [longitude, setLongitude] = useState<number>()
@@ -583,6 +584,7 @@ export const JobDetailView = () => {
                         ) : (
                           <Button
                             label="Apply now"
+                            disabled={!userIsOnboarded}
                             onClick={() => applyForJob(user._id)}
                             style={{ width: '100%', height: '100%' }}
                             loading={isApplyForJobLoading}
