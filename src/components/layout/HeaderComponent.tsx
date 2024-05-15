@@ -138,7 +138,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
           </div>
         </div>
       </header>
-      {!user?.onboarding?.completed ? (
+      {!user?.onboarding?.completed && role !== 'admin' ? (
         <div className="rounded-md bg-yellow-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
