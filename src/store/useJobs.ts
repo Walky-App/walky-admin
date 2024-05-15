@@ -9,5 +9,11 @@ interface State {
 
 export const useJobs = create<State>(set => ({
   jobs: [],
-  setJobs: jobs => set({ jobs }),
+  setJobs: jobs => {
+    if (!Array.isArray(jobs)) {
+      console.error('setJobs was called with a non-array value:', jobs)
+      return
+    }
+    set({ jobs })
+  },
 }))
