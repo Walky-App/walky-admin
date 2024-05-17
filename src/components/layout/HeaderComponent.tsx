@@ -56,7 +56,9 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
           <div className="flex shrink-0 items-center justify-center">
             <Link to={user ? `/${role}/dashboard` : '/'}>{LogosPack('header')}</Link>
           </div>
-          / &nbsp; <h3 className="text-base font-semibold leading-6 text-gray-900">{activePage}</h3>
+          {activePage !== '' ? (
+            <h3 className="text-base font-semibold leading-6 text-gray-900"> /&nbsp; {activePage}</h3>
+          ) : null}
         </div>
 
         {/* Right hand side header */}
