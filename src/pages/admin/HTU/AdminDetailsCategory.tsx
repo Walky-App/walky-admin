@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom"
-import { HeaderComponent } from "../../../components/shared/general/HeaderComponent"
+import { HeadingComponent } from "../../../components/shared/general/HeadingComponent"
 import { useEffect } from "react"
 import { FormCategory } from "./components/FormCategory"
 import { useAdmin } from "../../../contexts/AdminContext"
-import { DisableButtonInterface } from '../../../interfaces/global';
+import { type DisableButtonInterface } from '../../../interfaces/global';
 
 
 
@@ -25,7 +25,7 @@ export const AdminDetailsCategory = () => {
 
     return (
         <div className="w-full sm:overflow-x-hidden">
-            <HeaderComponent disableButton={disableButtonData} title='Update Category' />
+            <HeadingComponent disableButton={disableButtonData} title='Update Category' />
             <FormCategory action="edit" category={category} />
         </div>
     )

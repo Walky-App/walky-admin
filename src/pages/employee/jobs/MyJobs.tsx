@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { TabPanel, TabView } from 'primereact/tabview'
 
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -64,7 +64,7 @@ export const EmployeeMyJobs = () => {
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
-      <HeaderComponent title="My Jobs" />
+      <HeadingComponent title="My Jobs" />
       <div className="flex w-full justify-end">
         <SelectButton
           value={view}

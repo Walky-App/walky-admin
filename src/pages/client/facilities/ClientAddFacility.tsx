@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
-import { TitleComponent } from '../../../components/shared/general/TitleComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -68,7 +68,7 @@ export default function ClientAddFacility() {
 
   return (
     <>
-      <TitleComponent title="Add Facility" />
+      <HeadingComponent title="Add Facility" />
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">

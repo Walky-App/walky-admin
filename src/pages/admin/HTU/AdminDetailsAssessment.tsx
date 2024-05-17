@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { useAdmin } from '../../../contexts/AdminContext'
 import { RequestService } from '../../../services/RequestService'
 import { FormAssessment } from './components/FormAssessment'
@@ -24,7 +24,7 @@ export const AdminDetailsAssessment = () => {
 
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title="Details Assessment" />
+      <HeadingComponent title="Details Assessment" />
       <FormAssessment action="update" />
     </div>
   )

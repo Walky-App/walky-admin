@@ -16,7 +16,7 @@ interface Props {
   disableButton?: DisableButtonInterface
 }
 
-export const HeaderComponent = ({ title, selectedOptions, search = false, actionButton, disableButton }: Props) => {
+export const HeadingComponent = ({ title, selectedOptions, search = false, actionButton, disableButton }: Props) => {
   return (
     <div className="mb-4 border-b border-gray-200 pb-5 sm:mb-10 sm:flex sm:items-center sm:justify-between">
       <h3 className="text-base font-semibold leading-6 text-gray-900">{title}</h3>

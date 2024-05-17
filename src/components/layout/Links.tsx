@@ -9,13 +9,17 @@ import {
 } from 'react-icons/fa'
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
-import { IoMdMail } from 'react-icons/io'
+import { IoMdMail, IoMdCog } from 'react-icons/io'
 import { MdOutlineAccessTimeFilled, MdSchool } from 'react-icons/md'
-
-import { Cog6ToothIcon } from '@heroicons/react/20/solid'
 
 import { roleChecker } from '../../utils/roleChecker'
 import { GetTokenInfo } from '../../utils/tokenUtil'
+
+interface INavLinkChildren {
+  name: string
+  href: string
+  disabled?: boolean
+}
 
 interface INavLink {
   id: number
@@ -23,7 +27,8 @@ interface INavLink {
   href: string
   icon?: JSX.Element
   disabled?: boolean
-  children?: { name: string; href: string }[]
+  current?: boolean
+  children?: INavLinkChildren[]
 }
 
 const tokenInfo = GetTokenInfo()
@@ -32,31 +37,62 @@ const userIsOnboarded = tokenInfo?.onboarding?.completed
 const adminLinks: INavLink[] = [
   {
     id: 1,
+    name: 'Messages',
+    href: '/admin/messages',
+    icon: <IoMdMail />,
+  },
+  {
+    id: 2,
     name: 'Users',
     href: '/admin/users',
     icon: <FaUserGroup />,
     children: [
-      { name: 'Engineering', href: '#' },
-      { name: 'Human Resources', href: '#' },
-      { name: 'Customer Success', href: '#' },
+      { name: 'All Users', href: '/admin/users' },
+      { name: 'Invite User', href: '/admin/users/invite' },
     ],
   },
   {
-    id: 2,
+    id: 3,
     name: 'Facilities',
     href: '/admin/facilities',
     icon: <FaBuilding />,
     children: [
-      { name: 'Engineering', href: '#' },
-      { name: 'Human Resources', href: '#' },
-      { name: 'Customer Success', href: '#' },
+      { name: 'All Facilities', href: '/admin/facilities' },
+      { name: 'Add Facility', href: '/admin/facilities/new' },
     ],
   },
-  { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
-  { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
-  { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },
-  { id: 6, name: 'Messages', href: '/admin/messages', icon: <IoMdMail /> },
-  { id: 7, name: 'Settings', href: '/admin/holidays', icon: <Cog6ToothIcon /> },
+  {
+    id: 4,
+    name: 'Jobs',
+    href: '/admin/jobs',
+    icon: <FaBriefcase />,
+    children: [
+      { name: 'All Jobs', href: '/admin/jobs' },
+      { name: 'Add Job', href: '/admin/jobs/new' },
+    ],
+  },
+  {
+    id: 5,
+    name: 'HTU',
+    href: '/admin/learn',
+    icon: <FaUserGraduate />,
+    children: [
+      { name: 'Categories', href: '/admin/learn/categories' },
+      { name: 'Modules', href: '/admin/learn/modules' },
+    ],
+  },
+  {
+    id: 6,
+    name: 'Products',
+    href: '/admin/products',
+    icon: <MdSchool />,
+    children: [
+      { name: 'All Products', href: '/admin/products' },
+      { name: 'New Product', href: '/admin/products', disabled: true },
+      { name: 'Categories', href: '/admin/products', disabled: true },
+    ],
+  },
+  { id: 7, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
   { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
 ]
 

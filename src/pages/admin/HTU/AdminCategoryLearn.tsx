@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { BreadCrumbs } from '../../../components/shared/BreadCrumbs'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type Category } from '../../../interfaces/category'
 import { type FilterInterface, type SelectedOptionInterface } from '../../../interfaces/global'
 import { RequestService } from '../../../services/RequestService'
@@ -58,7 +58,7 @@ export const AdminCategoryLearn = () => {
   return (
     <div className="w-full sm:overflow-x-hidden">
       <BreadCrumbs pages={pages} />
-      <HeaderComponent
+      <HeadingComponent
         actionButton={{
           to: '/admin/learn/categories/new',
           text: 'New Category',

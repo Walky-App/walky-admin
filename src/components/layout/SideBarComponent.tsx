@@ -9,14 +9,6 @@ import { Dialog } from 'primereact/dialog'
 
 import { Disclosure } from '@headlessui/react'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
-import {
-  CalendarIcon,
-  ChartPieIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
-  HomeIcon,
-  UsersIcon,
-} from '@heroicons/react/24/outline'
 
 import { useAuth } from '../../contexts/AuthContext'
 import { getCurrentUserRole } from '../../utils/UserRole'
@@ -26,37 +18,10 @@ import { LogosPack } from './LogosPack'
 interface SidebarComponentProps {
   sidebarOpen: boolean
   setSidebarOpen: Dispatch<SetStateAction<boolean>>
+  setActivePage: Dispatch<SetStateAction<string>>
 }
 
-const navigation = [
-  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  {
-    name: 'Teams',
-    icon: UsersIcon,
-    current: false,
-    children: [
-      { name: 'Engineering', href: '#' },
-      { name: 'Human Resources', href: '#' },
-      { name: 'Customer Success', href: '#' },
-    ],
-  },
-  {
-    name: 'Projects',
-    icon: FolderIcon,
-    current: false,
-    children: [
-      { name: 'GraphQL API', href: '#' },
-      { name: 'iOS App', href: '#' },
-      { name: 'Android App', href: '#' },
-      { name: 'New Customer Portal', href: '#' },
-    ],
-  },
-  { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-  { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-  { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
-]
-
-export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarComponentProps) => {
+export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }: SidebarComponentProps) => {
   const [visible, setVisible] = useState(false)
   const { user } = useAuth()
   const role = getCurrentUserRole()
@@ -75,124 +40,118 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
         <ul className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul className="-mx-2 space-y-1">
-              {user?.role != null
-                ? links?.map(link => (
-                    <li key={link.id}>
-                      {!link.disabled ? (
-                        <NavLink
-                          to={link.href}
-                          onClick={() => setSidebarOpen(false)}
-                          className={({ isActive }) =>
-                            cn(
-                              isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                            )
-                          }>
-                          <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                          {link.name}
-                        </NavLink>
-                      ) : null}
-                    </li>
-                  ))
-                : null}
-            </ul>
-          </li>
-          <li>
-            {role === 'admin' ? <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div> : null}
-            {role === 'client' ? (
-              <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
-            ) : null}
-
-            <ul className="-mx-2 mt-2 space-y-1">
-              {user?.role
-                ? links?.map(link => {
-                    const unread = 3
-
-                    if (link.disabled) {
-                      return (
-                        <li key={link.id}>
-                          <span
-                            className={cn(
-                              'bg-gray-900 text-gray-700',
-                              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                            )}>
-                            <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                            {link.name}
-                            {link.name === 'Messages' && unread > 0 ? (
-                              <span className="ms-3 inline-flex h-3 w-3 items-center justify-center rounded-full bg-green-100/10 p-3 text-sm font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
-                                {unread}
-                              </span>
-                            ) : null}
-                          </span>
-                        </li>
-                      )
-                    } else {
-                      return null
-                    }
-                  })
-                : null}
-            </ul>
-          </li>
-        </ul>
-      </nav>
-
-      <nav className="flex flex-1 flex-col">
-        <ul className="flex flex-1 flex-col gap-y-7">
-          <li>
-            <ul className="-mx-2 space-y-1">
-              {links.map(item => (
-                <li key={item.name}>
-                  {item.children ? (
-                    <a
-                      href={item.href}
-                      className={cn(
-                        // item.current ? 'bg-gray-50' : 'hover:bg-gray-50',
-                        'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700',
-                      )}>
-                      {item.icon}
-                      {item.name}
-                    </a>
-                  ) : (
-                    <Disclosure as="div">
-                      {({ open }) => (
-                        <>
-                          <Disclosure.Button
-                            className={cn(
-                              // item.current ? 'bg-gray-50' : 'hover:bg-gray-50',
-                              'flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700',
-                            )}>
-                            {item.icon}
-                            {item.name}
-                            <ChevronRightIcon
+              {links.map(link => {
+                if (link.disabled) return null
+                return (
+                  <li key={link.name}>
+                    {!link.children ? (
+                      <NavLink
+                        to={link.href}
+                        onClick={() => {
+                          setSidebarOpen(false)
+                          setActivePage(link.name)
+                        }}
+                        className={({ isActive }) =>
+                          cn(
+                            isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                            'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                          )
+                        }>
+                        <span className="h-5 w-5 text-2xl">{link.icon}</span>
+                        {link.name}
+                      </NavLink>
+                    ) : (
+                      <Disclosure as="div">
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button
                               className={cn(
-                                open ? 'rotate-90 text-gray-500' : 'text-gray-400',
-                                'ml-auto h-5 w-5 shrink-0',
-                              )}
-                              aria-hidden="true"
-                            />
-                          </Disclosure.Button>
-                          <Disclosure.Panel as="ul" className="mt-1 px-2">
-                            {item?.children?.map(subItem => (
-                              <li key={subItem.name}>
-                                {/* 44px */}
-                                <Disclosure.Button
-                                  as="a"
-                                  href={subItem.href}
-                                  className={cn(
-                                    // subItem.current ? 'bg-gray-50' : 'hover:bg-gray-50',
-                                    'block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700',
-                                  )}>
-                                  {subItem.name}
-                                </Disclosure.Button>
-                              </li>
-                            ))}
-                          </Disclosure.Panel>
-                        </>
-                      )}
-                    </Disclosure>
-                  )}
-                </li>
-              ))}
+                                link.current ? 'bg-gray-50' : 'hover:bg-gray-800',
+                                'links-center flex w-full gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-400',
+                              )}>
+                              <span className="h-5 w-5 text-2xl">{link.icon}</span>
+                              {link.name}
+                              <ChevronRightIcon
+                                className={cn(
+                                  open ? 'rotate-90 text-gray-500' : 'text-gray-400',
+                                  'ml-auto h-5 w-5 shrink-0',
+                                )}
+                                aria-hidden="true"
+                              />
+                            </Disclosure.Button>
+                            <Disclosure.Panel as="ul" className="mt-1 pl-10">
+                              {link?.children?.map(subItem => (
+                                <li key={subItem.name}>
+                                  <NavLink
+                                    to={subItem.href}
+                                    onClick={() => {
+                                      setSidebarOpen(false)
+                                      setActivePage(subItem.name)
+                                    }}
+                                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                    className={({ isActive, isPending }) => {
+                                      return cn(
+                                        'text-gray-400 hover:bg-gray-800 hover:text-white',
+                                        'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                                      )
+
+                                      // cn(
+                                      //   isActive
+                                      //     ? 'bg-gray-800 text-white'
+                                      //     : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                                      //   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                                      // )
+                                    }}>
+                                    {subItem.name}
+                                  </NavLink>
+                                </li>
+                              ))}
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                    )}
+                  </li>
+                )
+              })}
+              <li>
+                {role === 'admin' ? (
+                  <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
+                ) : null}
+                {role === 'client' ? (
+                  <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
+                ) : null}
+
+                <ul className="-mx-2 mt-2 space-y-1">
+                  {user?.role
+                    ? links?.map(link => {
+                        const unread = 3
+
+                        if (link.disabled) {
+                          return (
+                            <li key={link.id}>
+                              <span
+                                className={cn(
+                                  'bg-gray-900 text-gray-700',
+                                  'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                                )}>
+                                <span className="h-5 w-5 text-2xl">{link.icon}</span>
+                                {link.name}
+                                {link.name === 'Messages' && unread > 0 ? (
+                                  <span className="ms-3 inline-flex h-3 w-3 items-center justify-center rounded-full bg-green-100/10 p-3 text-sm font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
+                                    {unread}
+                                  </span>
+                                ) : null}
+                              </span>
+                            </li>
+                          )
+                        } else {
+                          return null
+                        }
+                      })
+                    : null}
+                </ul>
+              </li>
             </ul>
           </li>
         </ul>

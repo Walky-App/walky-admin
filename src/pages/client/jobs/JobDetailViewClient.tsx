@@ -18,7 +18,7 @@ import { Tooltip } from 'primereact/tooltip'
 import { classNames } from 'primereact/utils'
 
 import { Feedback } from '../../../components/shared/dialog/Feedback'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IJob, type IApplicant } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
@@ -233,7 +233,7 @@ export const JobDetailViewClient = () => {
 
   return (
     <>
-      <HeaderComponent title="Job Details" />
+      <HeadingComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="md:col-span-3">
           <div>

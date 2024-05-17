@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { AcademicCapIcon, TagIcon } from '@heroicons/react/24/outline'
 
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { cn } from '../../../utils/cn'
 
 export const AdminDashboardLearn = () => {
@@ -24,7 +24,7 @@ export const AdminDashboardLearn = () => {
   ]
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title="Manage HTU" />
+      <HeadingComponent title="Manage HTU" />
       <ul className="grid grid-cols-1 gap-6 border-gray-200 pb-6 sm:grid-cols-2">
         {items.map((item, itemIdx) => (
           <Link key={itemIdx} to={item.to}>

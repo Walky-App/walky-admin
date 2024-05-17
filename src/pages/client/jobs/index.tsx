@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
-import { TitleComponent } from '../../../components/shared/general/TitleComponent'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -73,7 +72,6 @@ export default function Facilities() {
 
   return (
     <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
-      <TitleComponent title={'Jobs'} />
       <Button
         label="Add Job"
         onClick={() => {
