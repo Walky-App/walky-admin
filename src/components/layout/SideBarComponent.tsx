@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { type Dispatch, type SetStateAction, useState } from 'react'
 
 import { NavLink, Link } from 'react-router-dom'

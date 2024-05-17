@@ -113,16 +113,22 @@ const clientLinks: INavLink[] = [
 ]
 
 const employeeLinks: INavLink[] = [
-  { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime /> },
-  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
+  { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime />, disabled: !userIsOnboarded },
+  { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle />, disabled: userIsOnboarded },
   { id: 3, name: 'Learn', href: '/learn', icon: <MdSchool /> },
   { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
-  { id: 5, name: 'Timesheets', href: '/employee/timesheets', icon: <MdOutlineAccessTimeFilled /> },
+  {
+    id: 5,
+    name: 'Timesheets',
+    href: '/employee/timesheets',
+    icon: <MdOutlineAccessTimeFilled />,
+    disabled: !userIsOnboarded,
+  },
 ]
 
 const salesLinks: INavLink[] = [
-  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
+  { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding />, disabled: !userIsOnboarded },
+  { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool />, disabled: !userIsOnboarded },
   { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: !userIsOnboarded },

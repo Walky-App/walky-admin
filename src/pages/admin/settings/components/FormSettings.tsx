@@ -118,12 +118,25 @@ export const FormSettings = () => {
         setIsLoading(true)
         const response = await RequestService(`settings/${event.value.code}`)
         setSettings(response)
-        setAdminCost(response.admin_costs.fees)
+        setStateSettings(response)
         setIsLoading(false)
       }
     } catch (error) {
       console.error('error fetching settings', error)
     }
+  }
+
+  const setStateSettings = (data: StatesSettingsDocument) => {
+    setMaxHoursPerDay(data.max_hours_per_day)
+    setLisenceRequiredChecked(data.licenses_required)
+    setMinimunWage(data.minimun_wage)
+    setOurFees(data.our_fee)
+    setProcessingFees(data.processing_fee)
+    setHolidaysRate(data.overtime_rate.holiday_rate)
+    setOverTimeRate(data.overtime_rate.overtime_rate)
+    setHolidays(data.holiday)
+    setMinimumHoursForOvertime(data.overtime_rate.minimun_hours)
+    setAdminCost(data.admin_costs.fees)
   }
 
   const sumAdminCost = useMemo(() => {
@@ -342,7 +355,7 @@ export const FormSettings = () => {
                   className="mt-1 block w-full"
                   maxFractionDigits={2}
                   min={0}
-                  max={1}
+                  max={2}
                   name="holidays_rate"
                   value={holidaysRate}
                   onChange={e => setHolidaysRate(Number(e.value))}
@@ -356,7 +369,7 @@ export const FormSettings = () => {
                   className="mt-1 block w-full"
                   maxFractionDigits={2}
                   min={0}
-                  max={1}
+                  max={2}
                   name="over_time_rate"
                   value={overTimeRate}
                   onChange={e => setOverTimeRate(Number(e.value))}

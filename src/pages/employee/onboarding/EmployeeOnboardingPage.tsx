@@ -1,6 +1,7 @@
 import { createContext, type Dispatch, Fragment, type SetStateAction, useState, useEffect } from 'react'
 
 import { type FieldErrors } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 import { type MenuItem } from 'primereact/menuitem'
 import { Skeleton } from 'primereact/skeleton'
@@ -157,9 +158,17 @@ export const EmployeeOnboarding = () => {
     defaultMoreAddressDetails,
   )
 
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (currentUser?.onboarding?.completed ?? false) {
+      navigate('/employee/dashboard')
+    }
+  }, [currentUser?.onboarding?.completed, navigate])
+
   const onboardingSteps = [
     <Fragment key="step1">
-      {!currentUser?.onboarding?.step_number || currentUser.onboarding.step_number === 1 ? (
+      {currentUser?.onboarding?.step_number == null || currentUser.onboarding.step_number === 1 ? (
         <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
       ) : null}
       <EmployeeStep1 step={activeIndex} setStep={setActiveIndex} />

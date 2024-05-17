@@ -33,14 +33,14 @@ export const LoginForm = () => {
         navigate('/admin/dashboard')
         break
       case 'client':
-        if (tokenInfo.onboarding?.completed === false) {
+        if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
           navigate('/client/onboarding')
         } else {
           navigate('/client/dashboard')
         }
         break
       case 'employee':
-        if (tokenInfo.onboarding?.completed === false) {
+        if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
           navigate('/employee/onboarding')
         } else {
           navigate('/employee/dashboard')
@@ -52,7 +52,7 @@ export const LoginForm = () => {
       default:
         navigate('/login')
     }
-  }, [navigate, role, tokenInfo.onboarding?.completed])
+  }, [navigate, role, tokenInfo.onboarding])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -79,6 +79,7 @@ export const LoginForm = () => {
             _id: user._id,
             role: user.role,
             access_token: access_token,
+            state: user.state,
             avatar: user.avatar,
             onboarding: user.onboarding,
           }

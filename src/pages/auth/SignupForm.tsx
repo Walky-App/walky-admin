@@ -73,6 +73,7 @@ export const Signup = () => {
             _id: user._id,
             role: user.role,
             access_token: access_token,
+            state: user.state,
             avatar: user.avatar,
             onboarding: user.onboarding,
           }
