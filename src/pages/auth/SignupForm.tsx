@@ -20,15 +20,20 @@ const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
 const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
+interface IShowToast {
+  message: string
+  severity: 'success' | 'info' | 'warn' | 'error' | undefined
+  summary: string
+}
+
 export const Signup = () => {
-  const { showToast } = useUtils()
   const [loading, setLoading] = useState(false)
   const { setUser } = useAuth()
   const { setAvatarImageUrl } = useUtils()
   const toast = useRef<Toast>(null)
 
-  const show = (message: string) => {
-    toast.current?.show({ severity: 'error', summary: 'Email not found', detail: message })
+  const show = ({ message, severity, summary }: IShowToast) => {
+    toast.current?.show({ severity: severity, summary: summary, detail: message })
   }
 
   const { email, role } = useParams()
@@ -63,53 +68,54 @@ export const Signup = () => {
       }
 
       const response = await requestService({ path: 'auth', method: 'POST', body: JSON.stringify(payload) })
-      const jsonResponse = await response.json()
+      if (response.ok) {
+        const jsonResponse = await response.json()
 
-      if (response.status === 201) {
-        const { access_token, user }: ILoginData = jsonResponse
-        if (access_token) {
-          const ls_info: ITokenInfo = {
-            first_name: user.first_name,
-            _id: user._id,
-            role: user.role,
-            access_token: access_token,
-            state: user.state,
-            avatar: user.avatar,
-            onboarding: user.onboarding,
+        if (response.status === 201) {
+          const { access_token, user }: ILoginData = jsonResponse
+          if (access_token) {
+            const ls_info: ITokenInfo = {
+              first_name: user.first_name,
+              _id: user._id,
+              role: user.role,
+              access_token: access_token,
+              state: user.state,
+              avatar: user.avatar,
+              onboarding: user.onboarding,
+            }
+            SetToken(ls_info)
+            setUser({ ...user, access_token: access_token })
+            setAvatarImageUrl(user.avatar as string)
+            setLoading(false)
+            switch (user.role) {
+              case client_role:
+                navigate('/client/dashboard')
+                break
+              case admin_role:
+                navigate('/admin/dashboard')
+                break
+              case employee_role:
+                navigate('/employee/dashboard')
+                break
+              case sales_role:
+                navigate('/sales/dashboard')
+                break
+              default:
+                navigate('/login')
+            }
+            show({ message: 'Account created successfully', severity: 'success', summary: 'Success' })
+            reset()
           }
-          SetToken(ls_info)
-          setUser({ ...user, access_token: access_token })
-          setAvatarImageUrl(user.avatar as string)
+        } else {
           setLoading(false)
-          switch (user.role) {
-            case client_role:
-              navigate('/client/dashboard')
-              break
-            case admin_role:
-              navigate('/admin/dashboard')
-              break
-            case employee_role:
-              navigate('/employee/dashboard')
-              break
-            case sales_role:
-              navigate('/sales/dashboard')
-              break
-            default:
-              navigate('/login')
-          }
-          showToast({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Employee added to DNR list successfully',
-          })
-          reset()
         }
       } else {
+        const jsonResponse = await response.json()
+        show({ message: jsonResponse.message, severity: 'error', summary: 'Error' })
         setLoading(false)
       }
     } catch (error) {
-      showToast({ severity: 'error', summary: 'Error', detail: 'An error occurred. Please try again.' })
-      show('An error occurred. Please try again.')
+      show({ message: 'An error occurred. Please try again.' + error, severity: 'error', summary: 'Error' })
       setLoading(false)
     }
   }
