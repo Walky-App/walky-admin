@@ -310,7 +310,7 @@ export const ClientOnboarding = () => {
           const body = {
             name: 'HempTemps Client Agreement',
             type: 'sales',
-            template_id: 'ke36vcj367m3',
+            template_id: 'ke36vc68zqyw',
             email: docRecipient.email,
             first_name: docRecipient.first_name,
             last_name: docRecipient.last_name,
