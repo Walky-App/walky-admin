@@ -11,6 +11,7 @@ import { ChevronRightIcon } from '@heroicons/react/20/solid'
 
 import { useAuth } from '../../contexts/AuthContext'
 import { getCurrentUserRole } from '../../utils/UserRole'
+import { GetTokenInfo } from '../../utils/tokenUtil'
 import { userLinks } from './Links'
 import { LogosPack } from './LogosPack'
 
@@ -26,6 +27,9 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
   const role = getCurrentUserRole()
 
   const links = userLinks()
+
+  const tokenInfo = GetTokenInfo()
+  const userIsOnboarded = tokenInfo?.onboarding?.completed
 
   return (
     <div
@@ -43,7 +47,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
                 if (link.disabled) return null
                 return (
                   <li key={link.name}>
-                    {!link.children ? (
+                    {!link.subLinks ? (
                       <NavLink
                         to={link.href}
                         onClick={() => {
@@ -79,7 +83,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
                               />
                             </Disclosure.Button>
                             <Disclosure.Panel as="ul" className="mt-1 pl-10">
-                              {link?.children?.map(subItem => (
+                              {link?.subLinks?.map(subItem => (
                                 <li key={subItem.name}>
                                   <NavLink
                                     to={subItem.href}
@@ -118,7 +122,11 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
                   <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
                 ) : null}
                 {role === 'client' ? (
-                  <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
+                  userIsOnboarded ? (
+                    <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
+                  ) : (
+                    <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
+                  )
                 ) : null}
 
                 <ul className="-mx-2 mt-2 space-y-1">
