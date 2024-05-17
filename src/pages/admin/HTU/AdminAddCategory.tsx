@@ -1,11 +1,10 @@
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { FormCategory } from './components/FormCategory'
 
 export const AdminAddCategory = () => {
-
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title='Create Category' />
+      <HeadingComponent title="Create Category" />
       <FormCategory action="add" />
     </div>
   )

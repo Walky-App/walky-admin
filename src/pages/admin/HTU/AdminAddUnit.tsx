@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { FormUnits } from './components/FormUnits'
 import type { IUnitFormValues } from './components/FormUnits'
 
@@ -26,7 +26,7 @@ export const AdminAddUnit = () => {
 
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent title="New Unit" />
+      <HeadingComponent title="New Unit" />
       <FormUnits
         control={control}
         errors={errors}
