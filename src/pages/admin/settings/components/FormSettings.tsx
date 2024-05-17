@@ -8,7 +8,6 @@ import { DataTable } from 'primereact/datatable'
 import { InputNumber } from 'primereact/inputnumber'
 import { ToggleButton } from 'primereact/togglebutton'
 
-import { HeaderComponent } from '../../../../components/shared/general/HeaderComponent'
 import { type SelectedOptionInterface } from '../../../../interfaces/global'
 import { type HolidayDocument, type StatesSettingsDocument } from '../../../../interfaces/setting'
 import { RequestService } from '../../../../services/RequestService'
@@ -213,7 +212,6 @@ export const FormSettings = () => {
 
   return (
     <div>
-      <HeaderComponent title="Settings" />
       <div className="flex flex-col items-center justify-center">
         <label htmlFor="select_state" className="block text-sm font-medium leading-6 text-gray-900">
           Select a state
