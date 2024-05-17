@@ -22,7 +22,7 @@ import { jobTitlesOptions, facilityContactRoles } from '../../../utils/formOptio
 import { getFormErrorMessage } from '../../../utils/formUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 
-export interface IFacilityFormInputs {
+interface IFacilityFormInputs {
   user_id: string
   name: string
   country: string
@@ -45,14 +45,14 @@ export interface IFacilityFormInputs {
   _id?: string
 }
 
-export interface ILicenseDocument {
+interface ILicenseDocument {
   id: number
   url: string
   key: string
   timestamp: string
 }
 
-export interface IContact {
+interface IContact {
   first_name: string
   last_name: string
   role: string
@@ -60,7 +60,7 @@ export interface IContact {
   email: string
 }
 
-export interface IImage {
+interface IImage {
   id: number
   url: string
   key: string
