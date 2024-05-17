@@ -1,5 +1,7 @@
 import { createContext, type Dispatch, Fragment, type SetStateAction, useState, useEffect } from 'react'
 
+import { useNavigate } from 'react-router-dom'
+
 import { type MenuItem } from 'primereact/menuitem'
 import { Steps } from 'primereact/steps'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
@@ -220,6 +222,24 @@ const defaultMoreAddressDetails: IAddressAutoComplete = {
   country: undefined,
 }
 
+export const clientOnboardingSteps: MenuItem[] = [
+  {
+    label: 'Business Information',
+  },
+  {
+    label: 'Documents and Images',
+  },
+  {
+    label: 'Locations',
+  },
+  {
+    label: 'Payment Information',
+  },
+  {
+    label: 'Terms and Conditions',
+  },
+]
+
 export const ClientOnboarding = () => {
   const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined)
   const [formData, setFormData] = useState<IFacilityFormInputs>(defaultFacilityFormValues)
@@ -234,6 +254,14 @@ export const ClientOnboarding = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
   )
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (currentUser?.onboarding?.completed ?? false) {
+      navigate('/client/dashboard')
+    }
+  }, [currentUser?.onboarding?.completed, navigate])
 
   useEffect(() => {
     const userId = GetTokenInfo()._id
@@ -347,24 +375,6 @@ export const ClientOnboarding = () => {
     }
   }, [activeIndex, documentData, setDocumentUrl])
 
-  const steps: MenuItem[] = [
-    {
-      label: 'Business Information',
-    },
-    {
-      label: 'Documents and Images',
-    },
-    {
-      label: 'Locations',
-    },
-    {
-      label: 'Payment Information',
-    },
-    {
-      label: 'Terms and Conditions',
-    },
-  ]
-
   const onboardingSteps = [
     <Fragment key="step1">
       <WelcomeDialog visible={visible} setVisible={setVisible} />
@@ -401,7 +411,7 @@ export const ClientOnboarding = () => {
       }}>
       <HeadingComponent title="Client Onboarding" />
       <Steps
-        model={steps}
+        model={clientOnboardingSteps}
         activeIndex={activeIndex}
         onSelect={e => setActiveIndex(e.index)}
         readOnly={true}

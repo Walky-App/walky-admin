@@ -35,6 +35,7 @@ import { GetTokenInfo } from '../../../utils/tokenUtil'
 export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isApplyForJobLoading, setIsApplyForJobLoading] = useState(false)
+  const [hasApplied, setHasApplied] = useState(false)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -48,6 +49,7 @@ export const JobDetailView = () => {
   const { showToast } = useUtils()
   const { id } = useParams()
   const user = GetTokenInfo()
+  const userIsOnboarded = user?.onboarding?.completed
 
   const [latitude, setLatitude] = useState<number>()
   const [longitude, setLongitude] = useState<number>()
@@ -246,7 +248,11 @@ export const JobDetailView = () => {
 
       showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for the job' })
       setIsApplyForJobLoading(true)
+      setTimeout(() => {
+        setIsApplyForJobLoading(false)
+      }, 1500)
     } catch (error: unknown) {
+      setIsApplyForJobLoading(false)
       if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
         const err = error as { status: number; message: string }
         if (err.status === 400) {
@@ -582,8 +588,12 @@ export const JobDetailView = () => {
                           <p>Your application is pending. Please wait for response.</p>
                         ) : (
                           <Button
-                            label="Apply now"
-                            onClick={() => applyForJob(user._id)}
+                            label={!userIsOnboarded ? 'Apply now' : hasApplied ? 'Application sent' : 'Apply now'}
+                            disabled={!userIsOnboarded || hasApplied}
+                            onClick={() => {
+                              applyForJob(user._id)
+                              setHasApplied(true)
+                            }}
                             style={{ width: '100%', height: '100%' }}
                             loading={isApplyForJobLoading}
                           />

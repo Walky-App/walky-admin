@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
@@ -8,16 +8,22 @@ import { Checkbox } from 'primereact/checkbox'
 import { type CheckboxChangeEvent } from 'primereact/checkbox'
 import { Divider } from 'primereact/divider'
 import { ScrollPanel } from 'primereact/scrollpanel'
+import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { Sidebar } from 'primereact/sidebar'
 import { Skeleton } from 'primereact/skeleton'
 import { Slider } from 'primereact/slider'
-import { Tooltip } from 'primereact/tooltip'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
+import { HtScrollTop } from '../../../components/shared/general/HtScrollTop'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { useCoordinates } from '../../../store/useCoordinates'
 import { useJobs } from '../../../store/useJobs'
+import { isNew } from '../../../utils/timeUtils'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
@@ -52,6 +58,16 @@ const rangeOptions = [
   { name: '< 50 miles', code: 50 },
 ]
 
+interface ViewOption {
+  icon: string
+  value: string
+}
+
+const viewOptions: ViewOption[] = [
+  { icon: 'pi pi-bars', value: 'list' },
+  { icon: 'pi pi-table', value: 'grid' },
+]
+
 export const EmployeeJobs = () => {
   const { jobs, setJobs } = useJobs()
   const {
@@ -61,14 +77,23 @@ export const EmployeeJobs = () => {
     getLatitudeFromLocalStorage,
     getLongitudeFromLocalStorage,
   } = useCoordinates()
+  const { _id } = GetTokenInfo()
+  const [view, setView] = useState<string>('list')
+
+  const viewOptionsTemplate = (option: ViewOption) => {
+    return <i className={option.icon} />
+  }
 
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [selectedRange, setSelectedRange] = useState(rangeOptions[0].code)
+  const [selectedRange, setSelectedRange] = useState(rangeOptions[3].code)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
+  const [isNewChecked, setIsNewChecked] = useState(false)
+  const [isAppliedChecked, setIsAppliedChecked] = useState(false)
+  const [isApprovedChecked, setIsApprovedChecked] = useState(false)
   const [visibleFilterSidebarForMobile, setVisibleFilterSidebarForMobile] = useState(false)
 
   const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
@@ -139,8 +164,21 @@ export const EmployeeJobs = () => {
     if (selectedRange) {
       filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange)
     }
+    if (isNewChecked) {
+      filteredJobs = filteredJobs.filter(job => isNew(job.createdAt))
+    }
+    if (isAppliedChecked) {
+      filteredJobs = filteredJobs.filter(job =>
+        job.applicants.some(applicant => applicant.user.toString() === _id && !applicant.is_approved),
+      )
+    }
+    if (isApprovedChecked) {
+      filteredJobs = filteredJobs.filter(job =>
+        job.applicants.some(applicant => applicant.user.toString() === _id && applicant.is_approved),
+      )
+    }
     setDisplayedJobs(filteredJobs)
-  }, [selectedJobTitles, dates, jobs, selectedRange])
+  }, [selectedJobTitles, dates, jobs, selectedRange, isNewChecked, isAppliedChecked, isApprovedChecked, _id])
 
   const onJobTitleChange = (e: CheckboxChangeEvent) => {
     let _selectedJobTitles = [...selectedJobTitles]
@@ -153,12 +191,14 @@ export const EmployeeJobs = () => {
 
   const renderJobCards = () => {
     return (
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <ul className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
+      <div className="mx-auto mb-10 mt-4 px-4 sm:px-6 lg:px-8">
+        <ul className="grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
           {isLoading ? (
             jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
           ) : displayedJobs.length > 0 ? (
-            displayedJobs.map(job => <JobListItem key={job._id} job={job} />)
+            [...displayedJobs]
+              .sort((a, b) => (isNew(b.createdAt) ? 1 : -1))
+              .map(job => <JobListItem key={job._id} job={job} />)
           ) : (
             <div>No jobs found for the selected filters.</div>
           )}
@@ -181,7 +221,7 @@ export const EmployeeJobs = () => {
             onClick={handleUseCurrentLocation}
           />
           <Divider layout="horizontal" align="center" className="my-2">
-            <p>or:</p>
+            or
           </Divider>
           <div className="flex w-full gap-x-2">
             <AddressAutoComplete
@@ -194,8 +234,16 @@ export const EmployeeJobs = () => {
             </Button>
           </div>
         </div>
-        <div className="mb-4 mt-6 px-4">
-          <div className="mb-2">Selected Range: &lt;{selectedRange} miles</div>
+        <div className="mb-4 mt-6">
+          <div className="mb-2">
+            <HtInfoTooltip message="Select a range to filter jobs by distance from your location.">
+              <HtInputLabel
+                htmlFor="range"
+                labelText={`Distance Range:  <${selectedRange} miles`}
+                className="text-md"
+              />
+            </HtInfoTooltip>
+          </div>
           <Slider
             value={selectedRange}
             onChange={e => {
@@ -205,24 +253,15 @@ export const EmployeeJobs = () => {
                 setSelectedRange(e.value)
               }
             }}
-            className="w-full"
+            className="mx-2 w-full"
             step={10}
             min={rangeOptions[0].code}
             max={rangeOptions[rangeOptions.length - 1].code}
           />
         </div>
-        <Tooltip target=".custom-target-icon" />
-        <div className="flex flex-row items-center gap-x-1">
-          <i
-            className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge"
-            data-pr-tooltip="Select a start and end date to filter jobs by date range."
-            data-pr-position="right"
-            data-pr-at="right+5 top"
-            data-pr-my="left center-2"
-            style={{ fontSize: '1rem', cursor: 'pointer' }}
-          />
-          <h2>Date range:</h2>
-        </div>
+        <HtInfoTooltip message="Select a start and end date to filter jobs by date range.">
+          <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-md" />
+        </HtInfoTooltip>
         <div className="mb-4 pr-4">
           <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
           <Calendar
@@ -264,9 +303,92 @@ export const EmployeeJobs = () => {
             onClick={() => setSeeMore(!seeMore)}
           />
         ) : null}
+        <div className="mb-2 grid grid-cols-3 items-center pr-4">
+          <div className="flex items-center">
+            <Checkbox
+              inputId="new"
+              name="new"
+              onChange={e => setIsNewChecked(e.checked || false)}
+              checked={isNewChecked || false}
+            />
+            <label htmlFor="new" className="ml-2">
+              New
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <Checkbox
+              inputId="applied"
+              name="applied"
+              onChange={e => setIsAppliedChecked(e.checked || false)}
+              checked={isAppliedChecked}
+            />
+            <label htmlFor="applied" className="ml-2">
+              Applied
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <Checkbox
+              inputId="approved"
+              name="approved"
+              onChange={e => setIsApprovedChecked(e.checked || false)}
+              checked={isApprovedChecked}
+            />
+            <label htmlFor="approved" className="ml-2">
+              Approved
+            </label>
+          </div>
+        </div>
       </>
     )
   }
+
+  const memoEmployeeJobsColumns = useMemo(
+    () => [
+      { Header: 'Job Title', accessor: 'title' },
+      {
+        Header: 'Status',
+        accessor: (d: IJob) => (d.is_active ? 'Active' : 'Disabled'),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sortType: (a: any, b: any) => {
+          if (a.original.is_active === b.original.active) return 0
+          return a.original.is_active ? -1 : 1
+        },
+      },
+      {
+        Header: 'Hours per Day',
+        accessor: 'total_hours',
+      },
+      {
+        Header: 'Number of Days',
+        accessor: (row: { job_dates: string[] }) => row.job_dates.length,
+      },
+      {
+        Header: 'Rate ($/h)',
+        accessor: 'hourly_rate',
+      },
+      {
+        Header: 'Lunch (min)',
+        accessor: 'lunch_break',
+      },
+
+      { Header: 'Vacancy', accessor: 'vacancy' },
+      { Header: 'Job ID', accessor: 'uid' },
+
+      {
+        Header: 'Availability',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sortType: (a: any, b: any) => {
+          if (a.original.is_full === b.original.is_full) return 0
+          return a.original.is_full ? -1 : 1
+        },
+      },
+    ],
+    [],
+  )
 
   return isMobile ? (
     <div className="flex flex-col items-start md:flex-row">
@@ -281,13 +403,30 @@ export const EmployeeJobs = () => {
       {renderJobCards()}
     </div>
   ) : (
-    <div className="flex flex-col md:flex-row">
-      <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
-        {renderFiltersContent()}
-      </ScrollPanel>
-      <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
-        {renderJobCards()}
-      </ScrollPanel>
-    </div>
+    <>
+      <div className="flex w-full justify-end">
+        <SelectButton
+          value={view}
+          onChange={(e: SelectButtonChangeEvent) => setView(e.value)}
+          options={viewOptions}
+          optionLabel="value"
+          itemTemplate={viewOptionsTemplate}
+          pt={{ button: { className: 'justify-center' } }}
+        />
+      </div>
+      {view === 'grid' ? (
+        <GlobalTable data={jobs} columns={memoEmployeeJobsColumns} allowClick />
+      ) : (
+        <div className="flex flex-col md:flex-row">
+          <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
+            {renderFiltersContent()}
+          </ScrollPanel>
+          <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
+            {renderJobCards()}
+            <HtScrollTop className="" />
+          </ScrollPanel>
+        </div>
+      )}
+    </>
   )
 }

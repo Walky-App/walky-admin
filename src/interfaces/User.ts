@@ -27,6 +27,7 @@ export interface IUser {
   updated_at: string
   experience_level?: string
   verified: boolean
+  isOnboarded?: boolean
   onboarding: IOnboardingStep
   job_preferences: string[]
   address?: string
@@ -43,4 +44,5 @@ export interface IUser {
   zip?: string
   documents?: IUserDocument[]
   student_record?: ProgressHTU
+  score_rating?: number
 }

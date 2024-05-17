@@ -11,7 +11,7 @@ import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useAuth } from '../../contexts/AuthContext'
 import { LogoutService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
-import { getCurrentUserRole } from '../../utils/UserRole'
+import { roleChecker } from '../../utils/roleChecker'
 import { LogosPack } from './LogosPack'
 
 interface HeaderComponentProps {
@@ -27,7 +27,8 @@ export interface UserNavigationItem {
 export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
   const { avatarImageUrl, setAvatarImageUrl } = useUtils()
-  const role = getCurrentUserRole()
+
+  const role = roleChecker()
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
@@ -163,7 +164,7 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
                   You will <strong>NOT</strong> be able to apply for jobs until Onboarding is complete &nbsp;
                   <span aria-hidden="true"> &rarr;</span>
                   <a
-                    href="/employee/onboarding"
+                    {...(role === 'client' ? { href: `/client/onboarding` } : { href: `/employee/onboarding` })}
                     className="ml-3 font-medium text-yellow-700 underline hover:text-yellow-600">
                     Complete Onboarding
                   </a>
