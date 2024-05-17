@@ -157,8 +157,7 @@ export const Messages = () => {
     <>
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
         <div className="flex justify-between">
-          <h1 className="text-xl font-bold leading-7 text-gray-900">Messages</h1>
-          <Button onClick={() => setNewMessageVisible(true)}>+ New</Button>
+          <Button onClick={() => setNewMessageVisible(true)}>+ New Message</Button>
         </div>
 
         <TabView className="mt-4">

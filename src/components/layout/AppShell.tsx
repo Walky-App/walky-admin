@@ -26,6 +26,7 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [activePage, setActivePage] = useState<string>('')
 
   return (
     <>
@@ -68,7 +69,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                     </button>
                   </div>
                 </Transition.Child>
-                <SidebarComponent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+                <SidebarComponent
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                  setActivePage={setActivePage}
+                />
               </Dialog.Panel>
             </Transition.Child>
           </div>
@@ -77,12 +82,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-60 lg:flex-col">
-        <SidebarComponent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <SidebarComponent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} setActivePage={setActivePage} />
       </div>
 
       {/* App Side */}
       <div className="lg:pl-60">
-        <HeaderComponent setSidebarOpen={setSidebarOpen} />
+        <HeaderComponent setSidebarOpen={setSidebarOpen} activePage={activePage} />
         <main className="py-10">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>

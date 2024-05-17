@@ -12,7 +12,6 @@ import { RadioButton } from 'primereact/radiobutton'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
-import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
@@ -148,388 +147,385 @@ export const ClientAddJob = () => {
   }
 
   return (
-    <>
-      <TitleComponent title="Add a new job" />
-      <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-        <Toast ref={toast} />
-        <div className="space-y-12">
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please take a moment to provide the essential information for the job posting. We require you to specify
-                the job title and provide a facility this job pertains to.
-              </p>
+    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
+      <Toast ref={toast} />
+      <div className="space-y-12">
+        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please take a moment to provide the essential information for the job posting. We require you to specify
+              the job title and provide a facility this job pertains to.
+            </p>
+          </div>
+
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="title"
+                  control={control}
+                  rules={{ required: 'Job Title is required.' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        Job Title:
+                      </label>
+                      <Dropdown
+                        id={field.name}
+                        value={field.value}
+                        optionLabel="title"
+                        options={jobTipsOptions}
+                        filter
+                        focusInputRef={field.ref}
+                        onChange={e => field.onChange(e.value)}
+                        className={classNames({ 'p-invalid': fieldState.error })}
+                      />
+                      {getFormErrorMessage(field.name, errors)}
+                    </>
+                  )}
+                />{' '}
+              </div>
             </div>
 
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <div className="mt-2">
-                  <Controller
-                    name="title"
-                    control={control}
-                    rules={{ required: 'Job Title is required.' }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          Job Title:
-                        </label>
-                        <Dropdown
-                          id={field.name}
-                          value={field.value}
-                          optionLabel="title"
-                          options={jobTipsOptions}
-                          filter
-                          focusInputRef={field.ref}
-                          onChange={e => field.onChange(e.value)}
-                          className={classNames({ 'p-invalid': fieldState.error })}
-                        />
-                        {getFormErrorMessage(field.name, errors)}
-                      </>
-                    )}
-                  />{' '}
-                </div>
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="facility_id"
+                  control={control}
+                  rules={{ required: 'Facility is required.' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        Select Facility:
+                      </label>
+                      <Dropdown
+                        id={field.name}
+                        value={field.value}
+                        optionLabel="name"
+                        options={facilities}
+                        filter
+                        focusInputRef={field.ref}
+                        onChange={e => field.onChange(e.value)}
+                        className={classNames({ 'p-invalid': fieldState.error })}
+                      />
+                      {getFormErrorMessage(field.name, errors)}
+                    </>
+                  )}
+                />
               </div>
+            </div>
+          </div>
+        </div>
+        {/* Job Dates */}
+        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please select the dates you need temps at your facility. You can select one or multiple dates.
+            </p>
+          </div>
 
-              <div className="sm:col-span-3">
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-5">
+              <div className="card">
                 <div className="mt-2">
                   <Controller
-                    name="facility_id"
+                    name="job_dates"
                     control={control}
-                    rules={{ required: 'Facility is required.' }}
+                    rules={{
+                      required: 'Date is required.',
+                      validate: value => value.length > 0 || 'At least one date must be selected.',
+                    }}
                     render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          Select Facility:
-                        </label>
-                        <Dropdown
-                          id={field.name}
+                      <div>
+                        <Calendar
+                          inputId={field.name}
                           value={field.value}
-                          optionLabel="name"
-                          options={facilities}
-                          filter
-                          focusInputRef={field.ref}
-                          onChange={e => field.onChange(e.value)}
+                          onChange={field.onChange}
+                          dateFormat="mm/dd/yy"
+                          selectionMode="multiple"
                           className={classNames({ 'p-invalid': fieldState.error })}
+                          minDate={new Date()} // Disabling past dates
+                          inline
+                          showButtonBar
                         />
+                        {field.value.length > 0 ? (
+                          <div className="mt-2">
+                            <h4>Selected Dates:</h4>
+                            <ul className="mt-2 grid grid-cols-5 gap-2">
+                              {field.value
+                                .sort((a: Date, b: Date) => a.getTime() - b.getTime())
+                                .map((date: Date, index: number) => (
+                                  <li key={index}>{date.toLocaleDateString()}</li>
+                                ))}
+                            </ul>
+                          </div>
+                        ) : null}
                         {getFormErrorMessage(field.name, errors)}
-                      </>
+                      </div>
                     )}
                   />
                 </div>
               </div>
             </div>
           </div>
-          {/* Job Dates */}
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please select the dates you need temps at your facility. You can select one or multiple dates.
-              </p>
-            </div>
+        </div>
 
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">
-                <div className="card">
-                  <div className="mt-2">
-                    <Controller
-                      name="job_dates"
-                      control={control}
-                      rules={{
-                        required: 'Date is required.',
-                        validate: value => value.length > 0 || 'At least one date must be selected.',
-                      }}
-                      render={({ field, fieldState }) => (
+        {/* Shift Details */}
+        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
+              select the pay rate you are choosing to list your job.
+            </p>
+            {totalHours !== 0 ? (
+              <div className="mt-10">
+                <div
+                  className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
+                  Total Hours: {totalHours}
+                </div>
+                <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="start_time"
+                  control={control}
+                  rules={{ required: 'Start Time is required.' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        Start time:
+                      </label>
+                      <div className="mt-6">
                         <div>
                           <Calendar
-                            inputId={field.name}
                             value={field.value}
-                            onChange={field.onChange}
-                            dateFormat="mm/dd/yy"
-                            selectionMode="multiple"
+                            onChange={e => {
+                              field.onChange(e.value ?? null)
+                              setStartTime(e.value ?? null)
+                            }}
+                            timeOnly
+                            hourFormat="12"
+                            showIcon
+                            icon={() => <i className="pi pi-clock" />}
                             className={classNames({ 'p-invalid': fieldState.error })}
-                            minDate={new Date()} // Disabling past dates
-                            inline
-                            showButtonBar
                           />
-                          {field.value.length > 0 ? (
-                            <div className="mt-2">
-                              <h4>Selected Dates:</h4>
-                              <ul className="mt-2 grid grid-cols-5 gap-2">
-                                {field.value
-                                  .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-                                  .map((date: Date, index: number) => (
-                                    <li key={index}>{date.toLocaleDateString()}</li>
-                                  ))}
-                              </ul>
-                            </div>
-                          ) : null}
                           {getFormErrorMessage(field.name, errors)}
                         </div>
-                      )}
-                    />
-                  </div>
-                </div>
+                      </div>
+                    </>
+                  )}
+                />
               </div>
             </div>
-          </div>
 
-          {/* Shift Details */}
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
-                select the pay rate you are choosing to list your job.
-              </p>
-              {totalHours !== 0 ? (
-                <div className="mt-10">
-                  <div
-                    className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
-                    Total Hours: {totalHours}
-                  </div>
-                  <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
-                </div>
-              ) : null}
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="end_time"
+                  control={control}
+                  rules={{ required: 'End Time is required.' }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        End Time:
+                      </label>
+                      <div className="mt-6">
+                        <div>
+                          <Calendar
+                            value={field.value}
+                            onChange={e => {
+                              field.onChange(e.value ?? null)
+                              setEndTime(e.value ?? null)
+                            }}
+                            timeOnly
+                            hourFormat="12"
+                            showIcon
+                            icon={() => <i className="pi pi-clock" />}
+                            className={classNames({ 'p-invalid': fieldState.error })}
+                          />
+                          {getFormErrorMessage(field.name, errors)}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <div className="mt-2">
-                  <Controller
-                    name="start_time"
-                    control={control}
-                    rules={{ required: 'Start Time is required.' }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          Start time:
-                        </label>
-                        <div className="mt-6">
-                          <div>
-                            <Calendar
-                              value={field.value}
-                              onChange={e => {
-                                field.onChange(e.value ?? null)
-                                setStartTime(e.value ?? null)
-                              }}
-                              timeOnly
-                              hourFormat="12"
-                              showIcon
-                              icon={() => <i className="pi pi-clock" />}
-                              className={classNames({ 'p-invalid': fieldState.error })}
-                            />
-                            {getFormErrorMessage(field.name, errors)}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <div className="mt-2">
-                  <Controller
-                    name="end_time"
-                    control={control}
-                    rules={{ required: 'End Time is required.' }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          End Time:
-                        </label>
-                        <div className="mt-6">
-                          <div>
-                            <Calendar
-                              value={field.value}
-                              onChange={e => {
-                                field.onChange(e.value ?? null)
-                                setEndTime(e.value ?? null)
-                              }}
-                              timeOnly
-                              hourFormat="12"
-                              showIcon
-                              icon={() => <i className="pi pi-clock" />}
-                              className={classNames({ 'p-invalid': fieldState.error })}
-                            />
-                            {getFormErrorMessage(field.name, errors)}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <div className="mt-2">
-                  <Controller
-                    name="vacancy"
-                    control={control}
-                    rules={{
-                      required: 'Enter a valid number of vacancies.',
-                      validate: value =>
-                        (value !== null && value >= 1 && value <= 10) ||
-                        'Enter a valid number of vacancies. Max 10 vacancies allowed.',
-                    }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
-                        </label>
-                        <div>
-                          <InputNumber
-                            id={field.name}
-                            inputRef={field.ref}
-                            tooltip="Enter a valid number of vacancies from 1 to 10. If you need more than 10 vacancies, please contact Customer Service at (999)999-99-99."
-                            tooltipOptions={{ position: 'mouse' }}
-                            value={field.value}
-                            onBlur={field.onBlur}
-                            onValueChange={(e: InputNumberValueChangeEvent) => {
-                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
-                                field.onChange(e.value)
-                              }
-                            }}
-                            useGrouping={false}
-                            mode="decimal"
-                            showButtons
-                            min={1}
-                            max={10}
-                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                        </div>
-                        {getFormErrorMessage(field.name, errors)}
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <div className="mt-2">
-                  <Controller
-                    name="hourly_rate"
-                    control={control}
-                    rules={{
-                      required: 'Enter hourly pay rate.',
-                      validate: value =>
-                        (value !== null && value >= 1 && value <= 40) || 'Enter a valid pay rate amount.',
-                    }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          Pay Rate:
-                        </label>
-                        <div>
-                          <InputNumber
-                            id={field.name}
-                            inputRef={field.ref}
-                            tooltip="Enter hourly pay rate for this job in USD."
-                            tooltipOptions={{ position: 'mouse' }}
-                            value={field.value}
-                            onBlur={field.onBlur}
-                            onValueChange={(e: InputNumberValueChangeEvent) => {
-                              if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 40) {
-                                field.onChange(e.value)
-                              }
-                            }}
-                            useGrouping={false}
-                            mode="currency"
-                            currency="USD"
-                            showButtons
-                            min={1}
-                            max={40}
-                            inputClassName={classNames({ 'p-invalid': fieldState.error })}
-                          />
-                        </div>
-                        {getFormErrorMessage(field.name, errors)}
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <div className="mt-2">
-                  <Controller
-                    name="job_tips"
-                    control={control}
-                    rules={{ required: 'Job tips required.' }}
-                    render={({ field }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          Job tips:
-                        </label>
-                        <MultiSelect
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="vacancy"
+                  control={control}
+                  rules={{
+                    required: 'Enter a valid number of vacancies.',
+                    validate: value =>
+                      (value !== null && value >= 1 && value <= 10) ||
+                      'Enter a valid number of vacancies. Max 10 vacancies allowed.',
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        Number of Vacancies: <small>(Max 10 vacancies allowed) </small>
+                      </label>
+                      <div>
+                        <InputNumber
                           id={field.name}
-                          name="value"
+                          inputRef={field.ref}
+                          tooltip="Enter a valid number of vacancies from 1 to 10. If you need more than 10 vacancies, please contact Customer Service at (999)999-99-99."
+                          tooltipOptions={{ position: 'mouse' }}
                           value={field.value}
-                          options={jobTipsOptions}
-                          filter
-                          onChange={e => field.onChange(e.value)}
-                          optionLabel="label"
-                          placeholder="Select Job Tips"
-                          maxSelectedLabels={8}
-                          className="md:w-20rem w-full"
+                          onBlur={field.onBlur}
+                          onValueChange={(e: InputNumberValueChangeEvent) => {
+                            if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
+                              field.onChange(e.value)
+                            }
+                          }}
+                          useGrouping={false}
+                          mode="decimal"
+                          showButtons
+                          min={1}
+                          max={10}
+                          inputClassName={classNames({ 'p-invalid': fieldState.error })}
                         />
-                        {getFormErrorMessage(field.name, errors)}
-                      </>
-                    )}
-                  />
-                </div>
+                      </div>
+                      {getFormErrorMessage(field.name, errors)}
+                    </>
+                  )}
+                />
               </div>
+            </div>
 
-              <div className="sm:col-span-3">
-                <div className="mt-2">
-                  <Controller
-                    name="lunch_break"
-                    control={control}
-                    rules={{
-                      required: 'Enter lunch break time in minutes.',
-                      validate: value =>
-                        (value !== null && value >= 0 && value <= 90) || 'Enter lunch break time in minutes',
-                    }}
-                    render={({ field }) => (
-                      <>
-                        <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                          Lunch Break:
-                        </label>
-                        <div className="card justify-content-center flex">
-                          <div className="flex flex-wrap gap-3">
-                            {lunchTimeOptions.map((lunchTime, index) => (
-                              <div className="align-items-center flex" key={index}>
-                                <RadioButton
-                                  inputId={`lunchTime${index}`}
-                                  name={field.name}
-                                  value={lunchTime.value}
-                                  onChange={e => field.onChange(e.value)}
-                                  checked={field.value === lunchTime.value}
-                                />
-                                <label htmlFor={`lunchTime${index}`} className="ml-2">
-                                  {lunchTime.label}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="hourly_rate"
+                  control={control}
+                  rules={{
+                    required: 'Enter hourly pay rate.',
+                    validate: value =>
+                      (value !== null && value >= 1 && value <= 40) || 'Enter a valid pay rate amount.',
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        Pay Rate:
+                      </label>
+                      <div>
+                        <InputNumber
+                          id={field.name}
+                          inputRef={field.ref}
+                          tooltip="Enter hourly pay rate for this job in USD."
+                          tooltipOptions={{ position: 'mouse' }}
+                          value={field.value}
+                          onBlur={field.onBlur}
+                          onValueChange={(e: InputNumberValueChangeEvent) => {
+                            if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 40) {
+                              field.onChange(e.value)
+                            }
+                          }}
+                          useGrouping={false}
+                          mode="currency"
+                          currency="USD"
+                          showButtons
+                          min={1}
+                          max={40}
+                          inputClassName={classNames({ 'p-invalid': fieldState.error })}
+                        />
+                      </div>
+                      {getFormErrorMessage(field.name, errors)}
+                    </>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="job_tips"
+                  control={control}
+                  rules={{ required: 'Job tips required.' }}
+                  render={({ field }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        Job tips:
+                      </label>
+                      <MultiSelect
+                        id={field.name}
+                        name="value"
+                        value={field.value}
+                        options={jobTipsOptions}
+                        filter
+                        onChange={e => field.onChange(e.value)}
+                        optionLabel="label"
+                        placeholder="Select Job Tips"
+                        maxSelectedLabels={8}
+                        className="md:w-20rem w-full"
+                      />
+                      {getFormErrorMessage(field.name, errors)}
+                    </>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <div className="mt-2">
+                <Controller
+                  name="lunch_break"
+                  control={control}
+                  rules={{
+                    required: 'Enter lunch break time in minutes.',
+                    validate: value =>
+                      (value !== null && value >= 0 && value <= 90) || 'Enter lunch break time in minutes',
+                  }}
+                  render={({ field }) => (
+                    <>
+                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
+                        Lunch Break:
+                      </label>
+                      <div className="card justify-content-center flex">
+                        <div className="flex flex-wrap gap-3">
+                          {lunchTimeOptions.map((lunchTime, index) => (
+                            <div className="align-items-center flex" key={index}>
+                              <RadioButton
+                                inputId={`lunchTime${index}`}
+                                name={field.name}
+                                value={lunchTime.value}
+                                onChange={e => field.onChange(e.value)}
+                                checked={field.value === lunchTime.value}
+                              />
+                              <label htmlFor={`lunchTime${index}`} className="ml-2">
+                                {lunchTime.label}
+                              </label>
+                            </div>
+                          ))}
                         </div>
-                        {getFormErrorMessage(field.name, errors)}
-                      </>
-                    )}
-                  />
-                </div>
+                      </div>
+                      {getFormErrorMessage(field.name, errors)}
+                    </>
+                  )}
+                />
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <div>
-            <Button type="submit" label="Submit" />
-          </div>
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <div>
+          <Button type="submit" label="Submit" />
         </div>
-      </form>
-    </>
+      </div>
+    </form>
   )
 }

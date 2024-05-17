@@ -6,7 +6,7 @@ import { Button } from 'primereact/button'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { ProgressBar } from 'primereact/progressbar'
 
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { IAssessmentResponse } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
@@ -139,7 +139,7 @@ export const Assessment = () => {
     <div>
       {!finishAssessment ? (
         <div>
-          <HeaderComponent title={`Assessement - ${unit?.title}`} />
+          <HeadingComponent title={`Assessement - ${unit?.title}`} />
           <Timer initialSeconds={unit?.time ?? 0} />
           <p className="gray-500 mb-2 text-sm">
             {indexQuestion + 1} / {unit?.assessments.questions?.length}

@@ -12,7 +12,7 @@ import { RadioButton } from 'primereact/radiobutton'
 import { Toast } from 'primereact/toast'
 import { classNames } from 'primereact/utils'
 
-import { TitleComponent } from '../../../../components/shared/general/TitleComponent'
+import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
 import { type IJob } from '../../../../interfaces/job'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
@@ -168,7 +168,7 @@ export const ClientEditJob = () => {
 
   return (
     <>
-      <TitleComponent title="Edit the job" />
+      <HeadingComponent title="Edit the job" />
       <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
         <Toast ref={toast} />
         <div className="space-y-12">
