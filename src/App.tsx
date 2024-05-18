@@ -50,7 +50,7 @@ import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/compon
 import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
 
 import { AdminFacilities } from './pages/admin/facilities'
-import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
+import { AdminAddFacility } from './pages/admin/facilities/AdminAddFacility'
 import { AdminFacilityActivity } from './pages/admin/facilities/AdminFacilityActivity'
 import { AdminFacilityAddJob } from './pages/admin/facilities/AdminFacilityAddJob'
 import { AdminFacilityContacts } from './pages/admin/facilities/AdminFacilityContacts'
