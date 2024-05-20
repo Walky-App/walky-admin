@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useSearchParams } from 'react-router-dom'
 
-import { HeaderComponent } from '../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../components/shared/general/HeadingComponent'
 import type { Category } from '../../interfaces/category'
 import type { FilterInterface } from '../../interfaces/global'
 import { RequestService } from '../../services/RequestService'
@@ -87,7 +87,7 @@ export const Learn = () => {
           </div>
         </div>
 
-        <HeaderComponent search title="Categories" />
+        <HeadingComponent search title="Categories" />
 
         <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
           <div className="order-2 col-span-4 md:order-1 md:col-span-2">

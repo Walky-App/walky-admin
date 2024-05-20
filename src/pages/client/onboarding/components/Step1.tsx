@@ -16,6 +16,7 @@ import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelp
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
@@ -123,16 +124,26 @@ export const Step1 = ({ step, setStep }: StepProps) => {
       }
     } else {
       try {
-        const response = await RequestService(`facilities`, 'POST', data)
+        const response = await requestService({ method: 'POST', path: 'facilities', body: JSON.stringify(data) })
 
-        if (response?._id !== null) {
-          facilityId = response._id
+        if (response.ok) {
+          const data = await response.json()
+          if (data?._id !== null) {
+            facilityId = data._id
 
-          setFacilitiesArray([response])
-          setTimeout(() => {
-            setStep(step + 1)
-          }, 1000)
+            setFacilitiesArray([data])
+            setTimeout(() => {
+              setStep(step + 1)
+            }, 1000)
+          } else {
+            throw new Error('Failed to add facility')
+          }
         } else {
+          showToast({
+            severity: 'error',
+            summary: 'Error adding facility',
+            detail: `Name or Address already exists.`,
+          })
           throw new Error('Failed to add facility')
         }
       } catch (error) {

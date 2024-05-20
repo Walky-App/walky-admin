@@ -3,7 +3,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IProduct } from '../../../interfaces/Product'
 import { RequestService } from '../../../services/RequestService'
 import { LoadingLogo } from '../../../utils/LoadingLogo'
@@ -78,7 +78,7 @@ export const ProductList = () => {
   return (
     <div className="">
       <ImportUpdateModal setVisible={setVisible} visible={visible} />
-      <HeaderComponent title={`${productsData.length} Products `} />
+      <HeadingComponent title={`${productsData.length} Products `} />
 
       {isLoading ? (
         <LoadingLogo />

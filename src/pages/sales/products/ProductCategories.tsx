@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { RequestService } from '../../../services/RequestService'
 
 interface ISubCategory {
@@ -68,16 +67,11 @@ export const ProductCategories = () => {
     [],
   )
 
-  return (
-    <>
-      <HeaderComponent title="Product Categories" />
-      {isLoading ? (
-        <div className="flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600" />
-        </div>
-      ) : (
-        <GlobalTable allowClick columns={memoProductsColumns} data={categories} />
-      )}
-    </>
+  return isLoading ? (
+    <div className="flex items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-green-600" />
+    </div>
+  ) : (
+    <GlobalTable allowClick columns={memoProductsColumns} data={categories} />
   )
 }
