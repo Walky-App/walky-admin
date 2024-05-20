@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -6,18 +6,15 @@ import { Button } from 'primereact/button'
 
 import { BriefcaseIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 
-import {
-  type IStatCard,
-  type IRecentInfoCard,
-  DashboardHeader,
-  StatCards,
-  RecentActivityTable,
-  RecentInfoCards,
-} from '../../../components/shared/dashboard'
+import { type IStatCard, DashboardHeader, StatCards } from '../../../components/shared/dashboard'
 import { type IFacility } from '../../../interfaces/Facility'
-import { RequestService } from '../../../services/RequestService'
-
-export type Status = string
+import { type IUser } from '../../../interfaces/User'
+import { type IJob } from '../../../interfaces/job'
+import { type ILog } from '../../../interfaces/logs'
+import { requestService } from '../../../services/requestServiceNew'
+import { DashboardActivity } from './DashboardActivity'
+import { DashboardFacilityTable } from './DashboardFacilityTable'
+import { DashboardUserTable } from './DashboardUserTable'
 
 export interface ITransaction {
   id: number
@@ -25,109 +22,57 @@ export interface ITransaction {
   href: string
   amount: string
   currency: string
-  status: Status
+  status: string
   date: string
   dateTime: string
 }
 
-interface ICounts {
-  facilities: string
-  jobs: string
-  users: string
+interface IDashboardData {
+  logs: ILog[]
+  facilities_count: string
+  jobs_count: string
+  users_count: string
+  disabled_users: IUser[]
+  disabled_facilities: IFacility[]
+  disabled_jobs: IJob[]
 }
 
 export const AdminDashboard = () => {
-  const [counts, setCounts] = useState<ICounts>()
-  const [facilities, setFacilities] = useState<IFacility[]>([])
+  const [dashboardData, setDashboardData] = useState<IDashboardData>()
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const getCounts = async () => {
+  useMemo(() => {
+    const getDashboardData = async () => {
       try {
-        const response = await RequestService('dashboard')
-        setCounts({
-          facilities: response.facilities,
-          jobs: response.jobs,
-          users: response.users,
-        })
+        const response = await requestService({ path: 'dashboard' })
+
+        if (response.ok) {
+          const data = await response.json()
+          setDashboardData(data)
+        }
       } catch (error) {
         console.error('error', error)
       }
     }
 
-    getCounts()
-
-    const get3Facilities = async () => {
-      try {
-        const response = await RequestService('dashboard/facilities')
-        setFacilities(response)
-      } catch (error) {
-        console.error('error', error)
-      }
-    }
-
-    get3Facilities()
+    getDashboardData()
   }, [])
 
   const statCardsData: IStatCard[] = [
-    { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: counts?.users },
-    { name: 'Facilities', href: '/admin/facilities', icon: InformationCircleIcon, amount: counts?.facilities },
-    { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon, amount: counts?.jobs },
-  ]
-
-  const transactionsData: ITransaction[] = [
+    { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: dashboardData?.users_count },
     {
-      id: 1,
-      name: facilities[0]?.name,
-      href: '#',
-      amount: '$20,000',
-      currency: 'USD',
-      status: facilities[0]?.isApproved ? 'Approved' : 'Pending',
-      date: new Date(facilities[0]?.createdAt).toLocaleDateString(),
-      dateTime: facilities[0]?.createdAt,
+      name: 'Facilities',
+      href: '/admin/facilities',
+      icon: InformationCircleIcon,
+      amount: dashboardData?.facilities_count,
     },
-  ]
-
-  const facilitiesData: IRecentInfoCard[] = [
-    {
-      id: 1,
-      name: facilities[0]?.name,
-      imageUrl: facilities[0]?.images[0]?.url,
-      data: {
-        date: new Date(facilities[0]?.createdAt).toLocaleDateString(),
-        dateTime: facilities[0]?.createdAt,
-        address: facilities[0]?.address,
-        status: facilities[0]?.isApproved ? 'Approved' : 'Pending',
-      },
-    },
-    {
-      id: 2,
-      name: facilities[1]?.name,
-      imageUrl: facilities[1]?.images[1]?.url,
-      data: {
-        date: new Date(facilities[1]?.createdAt).toLocaleDateString(),
-        dateTime: facilities[1]?.createdAt,
-        address: facilities[1]?.address,
-        status: facilities[1]?.isApproved ? 'Approved' : 'Pending',
-      },
-    },
-    {
-      id: 3,
-      name: facilities[2]?.name,
-      imageUrl: facilities[2]?.images[2]?.url,
-      data: {
-        date: new Date(facilities[2]?.createdAt).toLocaleDateString(),
-        dateTime: facilities[2]?.createdAt,
-        address: facilities[2]?.address,
-        status: facilities[2]?.isApproved ? 'Approved' : 'Pending',
-      },
-    },
+    { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon, amount: dashboardData?.jobs_count },
   ]
 
   return (
-    <div className="min-h-full">
-      <main className="flex-1 pb-8">
+    <div className="">
+      <main className="">
         <DashboardHeader>
           <Button
             label="Facilities"
@@ -140,34 +85,18 @@ export const AdminDashboard = () => {
         </DashboardHeader>
 
         {/* Overview Statistics section*/}
-        <div className="mt-8">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-lg font-medium leading-6 text-gray-900">Overview</h2>
-            <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              <StatCards cards={statCardsData} />
-            </div>
+        <div className="mt-8 flex">
+          <div className="">
+            <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} />
+            <hr />
+            <DashboardUserTable data={dashboardData?.disabled_users ?? []} />
           </div>
+          <div className="mx-auto sm:px-6 lg:px-8">
+            <h2 className="text-lg font-medium leading-6 text-gray-900">Active Records</h2>
+            <div className="mt-2 grid grid-cols-1">
+              <StatCards cards={statCardsData} />
 
-          <h2 className="mx-auto mt-8 max-w-6xl px-4 text-lg font-medium leading-6 text-gray-900 sm:px-6 lg:px-8">
-            Recent activity
-          </h2>
-          <RecentActivityTable transactions={transactionsData} />
-
-          {/* Recently added section*/}
-          <div className="mx-auto mt-8 max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">Recently added</h2>
-                <Button
-                  text
-                  label="View all"
-                  link
-                  size="small"
-                  onClick={() => navigate('/admin/facilities')}
-                  className="p-0"
-                />
-              </div>
-              <RecentInfoCards items={facilitiesData} />
+              <DashboardActivity data={dashboardData?.logs ?? []} />
             </div>
           </div>
         </div>
