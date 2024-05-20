@@ -11,6 +11,7 @@ import { type IJob } from '../../../../interfaces/job'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
 import {
   type JobFormDefaultValues,
   defaultJobFormValues,
@@ -28,6 +29,7 @@ import {
 const defaultValues = defaultJobFormValues
 
 export const ClientEditJob = () => {
+  const [jobFound, setJobFound] = useState<IJob | null>(null)
   const [startTime, setStartTime] = useState<Date | null>(defaultValues.start_time)
   const [endTime, setEndTime] = useState<Date | null>(defaultValues.end_time)
   const [totalHours, setTotalHours] = useState(0)
@@ -37,6 +39,7 @@ export const ClientEditJob = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
+  const role = roleChecker()
 
   const {
     control,
@@ -48,10 +51,11 @@ export const ClientEditJob = () => {
 
   useEffect(() => {
     const getJob = async () => {
-      const jobFound: IJob = await RequestService(`jobs/${params.id}`)
+      const job: IJob = await RequestService(`jobs/${params.id}`)
 
-      if (jobFound._id) {
-        const { title, vacancy, hourly_rate, lunch_break, job_dates, job_tips, start_time, end_time } = jobFound
+      if (job._id) {
+        setJobFound(job)
+        const { title, vacancy, hourly_rate, lunch_break, job_dates, job_tips, start_time, end_time } = job
 
         const jobDates = job_dates.map((dateString: string) => new Date(dateString))
         const startTime = convertMilitaryTimeToStandardDate(start_time, jobDates[0])
@@ -91,10 +95,30 @@ export const ClientEditJob = () => {
   }, [startTime, endTime, lunchBreak])
 
   const onSubmit = async (data: JobFormDefaultValues) => {
+    if (jobFound?._id) {
+      const { job_dates } = jobFound
+
+      const jobDates = job_dates.map((dateString: string) => new Date(dateString))
+
+      const earliestJobDate = jobDates.sort((a, b) => a.getTime() - b.getTime())[0]
+
+      const now = new Date()
+      const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+      const isWithin24Hours = earliestJobDate && earliestJobDate.getTime() <= twentyFourHoursFromNow.getTime()
+      if (role === 'client' && isWithin24Hours) {
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'You cannot edit a job within 24 hours of its start time.',
+        })
+        return
+      }
+    }
+
     try {
       const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
       const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
+      let requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
 
       // Calculating total hours and sending with payload
       if (startTime && endTime && data.lunch_break !== null) {
@@ -118,6 +142,7 @@ export const ClientEditJob = () => {
           })
           return
         }
+        requestData = { ...requestData, total_hours: formattedTotalHours }
       }
 
       const response = await RequestService(`jobs/${params.id}`, 'PATCH', requestData)

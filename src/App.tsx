@@ -184,6 +184,7 @@ export const App = () => {
                   <Route element={<AdminFacilityImages />} path="/admin/facilities/:facilityId/images" />
                   <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
+                  {/* <Route element={<AdminCompanies />} path="/admin/companies" /> */}
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<ClientAddJob />} path="/admin/jobs/new" />
                   <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
