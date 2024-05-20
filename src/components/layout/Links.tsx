@@ -31,6 +31,7 @@ const userIsOnboarded = tokenInfo?.onboarding?.completed
 const adminLinks: INavLink[] = [
   { id: 1, name: 'Users', href: '/admin/users', icon: <FaUserGroup /> },
   { id: 2, name: 'Facilities', href: '/admin/facilities', icon: <FaBuilding /> },
+  { id: 2, name: 'Companies', href: '/admin/companies', icon: <FaBuilding /> },
   { id: 3, name: 'Jobs', href: '/admin/jobs', icon: <FaBriefcase /> },
   { id: 4, name: 'HTU', href: '/admin/learn', icon: <FaUserGraduate /> },
   { id: 5, name: 'Products', href: '/admin/products', icon: <MdSchool /> },

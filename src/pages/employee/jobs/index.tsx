@@ -87,7 +87,8 @@ export const EmployeeJobs = () => {
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [selectedRange, setSelectedRange] = useState(rangeOptions[3].code)
+  const [isDistanceRelatedButtonClicked, setIsDistanceRelatedButtonClicked] = useState(false)
+  const [selectedRange, setSelectedRange] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
@@ -106,6 +107,7 @@ export const EmployeeJobs = () => {
         setJobs(allJobs)
       }
       setIsLoading(false)
+      setIsDistanceRelatedButtonClicked(true)
     }
   }
 
@@ -117,6 +119,7 @@ export const EmployeeJobs = () => {
         setJobs(allJobs)
       }
       setIsLoading(false)
+      setIsDistanceRelatedButtonClicked(true)
     }
   }
 
@@ -198,7 +201,9 @@ export const EmployeeJobs = () => {
           ) : displayedJobs.length > 0 ? (
             [...displayedJobs]
               .sort((a, b) => (isNew(b.createdAt) ? 1 : -1))
-              .map(job => <JobListItem key={job._id} job={job} />)
+              .map(job => (
+                <JobListItem key={job._id} job={job} isDistanceRelatedButtonClicked={isDistanceRelatedButtonClicked} />
+              ))
           ) : (
             <div>No jobs found for the selected filters.</div>
           )}
@@ -208,9 +213,21 @@ export const EmployeeJobs = () => {
   }
 
   const renderFiltersContent = () => {
+    const resetFilters = () => {
+      setSelectedJobTitles([])
+      setDates(null)
+      setIsDistanceRelatedButtonClicked(false)
+      setSelectedRange(null)
+      setIsNewChecked(false)
+      setIsAppliedChecked(false)
+      setIsApprovedChecked(false)
+    }
     return (
       <>
         <div className="mb-4 flex flex-col items-center pr-4">
+          <div className="flex w-full justify-start">
+            <Button label="Clear All Filters" text outlined link onClick={resetFilters} />
+          </div>
           <Button
             label="Use Current Location"
             text
@@ -234,31 +251,33 @@ export const EmployeeJobs = () => {
             </Button>
           </div>
         </div>
-        <div className="mb-4 mt-6">
-          <div className="mb-2">
-            <HtInfoTooltip message="Select a range to filter jobs by distance from your location.">
-              <HtInputLabel
-                htmlFor="range"
-                labelText={`Distance Range:  <${selectedRange} miles`}
-                className="text-md"
-              />
-            </HtInfoTooltip>
+        {isDistanceRelatedButtonClicked ? (
+          <div className="mb-4 mt-6">
+            <div className="mb-2">
+              <HtInfoTooltip message="Select a range using slider below to filter jobs by distance from the selected location.">
+                <HtInputLabel
+                  htmlFor="range"
+                  labelText={selectedRange != null ? `Distance Range:  <${selectedRange} miles` : 'No range selected'}
+                  className="text-md"
+                />
+              </HtInfoTooltip>
+            </div>
+            <Slider
+              value={selectedRange ?? undefined}
+              onChange={e => {
+                if (Array.isArray(e.value)) {
+                  setSelectedRange(e.value[0])
+                } else {
+                  setSelectedRange(e.value)
+                }
+              }}
+              className="w-full"
+              step={1}
+              min={rangeOptions[0].code}
+              max={rangeOptions[rangeOptions.length - 1].code}
+            />
           </div>
-          <Slider
-            value={selectedRange}
-            onChange={e => {
-              if (Array.isArray(e.value)) {
-                setSelectedRange(e.value[0])
-              } else {
-                setSelectedRange(e.value)
-              }
-            }}
-            className="mx-2 w-full"
-            step={10}
-            min={rangeOptions[0].code}
-            max={rangeOptions[rangeOptions.length - 1].code}
-          />
-        </div>
+        ) : null}
         <HtInfoTooltip message="Select a start and end date to filter jobs by date range.">
           <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-md" />
         </HtInfoTooltip>
