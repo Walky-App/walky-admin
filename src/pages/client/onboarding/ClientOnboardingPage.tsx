@@ -7,7 +7,7 @@ import { Steps } from 'primereact/steps'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -310,7 +310,7 @@ export const ClientOnboarding = () => {
           const body = {
             name: 'HempTemps Client Agreement',
             type: 'sales',
-            template_id: 'ke36vcj367m3',
+            template_id: 'ke36vc68zqyw',
             email: docRecipient.email,
             first_name: docRecipient.first_name,
             last_name: docRecipient.last_name,
@@ -409,7 +409,7 @@ export const ClientOnboarding = () => {
         moreAddressDetails,
         setMoreAddressDetails,
       }}>
-      <HeaderComponent title="Client Onboarding" />
+      <HeadingComponent title="Client Onboarding" />
       <Steps
         model={clientOnboardingSteps}
         activeIndex={activeIndex}

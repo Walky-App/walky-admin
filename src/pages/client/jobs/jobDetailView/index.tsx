@@ -10,6 +10,7 @@ import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
 
 import { Feedback } from '../../../../components/shared/dialog/Feedback'
+import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
 import { type IJob } from '../../../../interfaces/job'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
@@ -194,8 +195,7 @@ export const ClientJobDetailView = () => {
 
   return (
     <>
-      {/* <HeaderComponent title="Job Details" />
-       */}
+      <HeadingComponent title="Job Details" />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="md:col-span-3">

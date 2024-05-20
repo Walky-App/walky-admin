@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 
 import { CheckIcon } from '@heroicons/react/20/solid'
 
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type Module } from '../../../interfaces/module'
 import { RequestService } from '../../../services/RequestService'
 import { useLearn } from '../../../store/useLearn'
@@ -42,7 +42,7 @@ export const Modules = () => {
   return (
     <div>
       <div className="w-full sm:overflow-x-hidden">
-        <HeaderComponent search title="Modules" />
+        <HeadingComponent search title="Modules" />
 
         <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
           <div className="order-2 col-span-4 md:order-1 md:col-span-2">

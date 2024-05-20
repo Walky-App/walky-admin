@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -63,7 +62,6 @@ export const ClientFacilities = () => {
 
   return (
     <>
-      <HeaderComponent title="Facilities" />
       <button
         type="button"
         onClick={() => navigate('/client/facilities/new')}

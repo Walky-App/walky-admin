@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { EmptyState } from '../../../components/shared/general/EmptyState'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { useAdmin } from '../../../contexts/AdminContext'
 import { type Category } from '../../../interfaces/category'
 import { type SelectedOptionInterface } from '../../../interfaces/global'
@@ -69,7 +69,7 @@ export const AdminModulesLearn = () => {
 
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent
+      <HeadingComponent
         actionButton={{
           to: '/admin/learn/modules/new',
           text: 'New Module',

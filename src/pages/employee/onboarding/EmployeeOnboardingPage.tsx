@@ -9,7 +9,7 @@ import { Steps } from 'primereact/steps'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IUserDocument, type IUser, type IOnboardingStep } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -229,7 +229,7 @@ export const EmployeeOnboarding = () => {
         moreAddressDetails,
         setMoreAddressDetails,
       }}>
-      <HeaderComponent title="Employee Onboarding" />
+      <HeadingComponent title="Employee Onboarding" />
       {loading ? (
         <Skeleton />
       ) : (

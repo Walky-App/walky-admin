@@ -37,10 +37,10 @@ export const TableComponent = ({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup: any) => (
-            <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
+            <tr key={headerGroup.headers} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column: any) => (
                 <th
-                  key={column.id}
+                  key={column.Header}
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                   className="cursor-pointe text-start uppercase"
                   style={{ width: column.width }}>
@@ -69,7 +69,7 @@ export const TableComponent = ({
             prepareRow(row)
             if (allowClick) {
               return (
-                <tr key={row._id} className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>
+                <tr key={row.id} className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>
                   {row.cells.map((cell: any) => {
                     return (
                       <td

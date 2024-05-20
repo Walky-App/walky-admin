@@ -12,7 +12,7 @@ import { ToggleButton } from 'primereact/togglebutton'
 
 import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
 import { Feedback } from '../../../components/shared/dialog/Feedback'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import {
   type IPunchPairWithTotalTime,
   getAllPunches,
@@ -365,7 +365,7 @@ export const JobDetailView = () => {
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
       {/* <BreadCrumbs /> */}
-      <HeaderComponent title="Job Details" />
+      <HeadingComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         {job ? (
           <>
