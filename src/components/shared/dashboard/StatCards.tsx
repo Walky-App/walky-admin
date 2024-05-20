@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
@@ -17,30 +15,30 @@ interface StatCardsProps {
 
 export const StatCards: React.FC<StatCardsProps> = ({ cards }) => {
   return (
-    <>
+    <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {cards.map(card => (
         <Card key={card.name} name={card.name} amount={card.amount} href={card.href} icon={card.icon} />
       ))}
-    </>
+    </div>
   )
 }
 
 type CardProps = IStatCard
 
-const Card: React.FC<CardProps> = ({ name, amount, href, icon: Icon }) => {
+const Card = ({ name, amount, href, icon: Icon }: CardProps) => {
   const navigate = useNavigate()
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow">
-      <div className="p-5">
+    <div className="overflow-hidden rounded-lg bg-white shadow ">
+      <div className="">
         <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <Icon className="h-6 w-6 text-gray-400" aria-hidden="true" />
-          </div>
           <div className="ml-5 w-0 flex-1">
             <dl>
-              <dt className="truncate text-sm font-medium text-gray-500">{name}</dt>
-              <dd>
+              <dt className="mb-3 truncate text-sm font-medium text-gray-500">{name}</dt>
+              <dd className="flex">
+                <div className="mr-3 flex-shrink-0">
+                  <Icon className="h-6 w-6 text-gray-400" aria-hidden="true" />
+                </div>
                 <div className="text-lg font-medium text-gray-900">{amount}</div>
               </dd>
             </dl>
