@@ -74,8 +74,6 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
             <Menu.Button className="-m-1.5 flex items-center p-1.5">
               <span className="sr-only">Open user menu</span>
               <span className="sr-only">Open user menu</span>
-
-              {/* <Avatar shape="circle" imageFallback={user?.first_name[0]} image={user?.avatar} /> */}
               <Avatar label={user?.first_name[0]} image={user?.avatar} size="normal" shape="circle" />
               <span className="hidden lg:flex lg:items-center">
                 {user?.first_name != null ? (
