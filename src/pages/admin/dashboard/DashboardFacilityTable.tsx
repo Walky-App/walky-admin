@@ -1,16 +1,23 @@
 import { Avatar } from 'primereact/avatar'
 
+import { BuildingLibraryIcon } from '@heroicons/react/20/solid'
+
 import { type IFacility } from '../../../interfaces/Facility'
 
 export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
   return (
     <div className=" px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">{data.length} Facilities Pending Approval</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all the facilities that are currently pending approval.
-          </p>
+        <div className="flex">
+          <BuildingLibraryIcon className="mr-4 h-7 w-7 flex-shrink-0 text-gray-400" aria-hidden="true" />
+          <div>
+            <h1 className="text-xl font-semibold leading-6 text-gray-900">
+              {data.length} - Facilities Pending Approval
+            </h1>
+            <p className="mt-2 text-sm text-gray-700">
+              A list of all the facilities that are currently pending approval.
+            </p>
+          </div>
         </div>
       </div>
       <div className="mt-8 flow-root">

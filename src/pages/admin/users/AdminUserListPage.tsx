@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
-import { LoadingLogo } from '../../../utils/LoadingLogo'
 import { roleTxt } from '../../../utils/roleChecker'
 
 export const AdminUserListPage = () => {
@@ -48,7 +48,7 @@ export const AdminUserListPage = () => {
   )
 
   return isLoading ? (
-    <LoadingLogo />
+    <HTLoadingLogo />
   ) : (
     <>
       <div className="text-right" />
