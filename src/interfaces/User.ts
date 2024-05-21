@@ -18,7 +18,7 @@ export interface IUser {
   _id: string
   access_token: string
   active: boolean
-  created_at: string
+  createdAt: string
   email: string
   first_name: string
   last_name: string
