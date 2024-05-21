@@ -3,10 +3,10 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IProduct } from '../../../interfaces/Product'
 import { RequestService } from '../../../services/RequestService'
-import { LoadingLogo } from '../../../utils/LoadingLogo'
 import { ImportUpdateModal } from './components/ImportUpdateModal'
 
 interface IRow {
@@ -81,7 +81,7 @@ export const ProductList = () => {
       <HeadingComponent title={`${productsData.length} Products `} />
 
       {isLoading ? (
-        <LoadingLogo />
+        <HTLoadingLogo />
       ) : (
         <>
           <button
