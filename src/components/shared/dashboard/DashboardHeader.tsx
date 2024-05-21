@@ -12,7 +12,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ children }) =>
   const { user } = useAuth()
 
   return (
-    <div className="bg-white px-4 shadow sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
+    <div className="bg-white px-4 shadow sm:px-6 lg:mx-auto  lg:px-8">
       <div className="py-6 md:flex md:items-center md:justify-between">
         <div className="min-w-0 flex-1">
           {/* Profile */}

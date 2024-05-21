@@ -55,14 +55,46 @@ export const AdminFacilityJobs = () => {
   const memoFacilityJobsColumns = useMemo(
     () => [
       { Header: 'Job Title', accessor: 'title' },
-      { Header: 'Status', accessor: 'status' },
-      { Header: 'Salary', accessor: 'salary' },
       {
-        Header: 'Skills',
-        accessor: 'skills',
-        Cell: ({ value }: { value: string[] }) => (value ? value.join(', ') : ''),
+        Header: 'Status',
+        accessor: (d: any) => (d.is_active ? 'Active' : 'Disabled'),
+        sortType: (a: any, b: any) => {
+          if (a.original.is_active === b.original.active) return 0
+          return a.original.is_active ? -1 : 1
+        },
       },
-      { Header: 'Employment Type', accessor: 'employment_type' },
+      {
+        Header: 'Hours per Day',
+        accessor: 'total_hours',
+      },
+      {
+        Header: 'Facility',
+        accessor: 'facility.name',
+      },
+      {
+        Header: 'Number of Days',
+        accessor: (row: { job_dates: string[] }) => row.job_dates.length,
+      },
+      {
+        Header: 'Rate ($/h)',
+        accessor: 'hourly_rate',
+      },
+      {
+        Header: 'Lunch (min)',
+        accessor: 'lunch_break',
+      },
+
+      { Header: 'Vacancy', accessor: 'vacancy' },
+      { Header: 'Job ID', accessor: 'uid' },
+
+      {
+        Header: 'Availability',
+        accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
+        sortType: (a: any, b: any) => {
+          if (a.original.is_full === b.original.is_full) return 0
+          return a.original.is_full ? -1 : 1
+        },
+      },
     ],
     [],
   )

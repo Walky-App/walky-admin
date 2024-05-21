@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { Link } from 'react-router-dom'
-
 import { GlobalTable } from '../../../components/shared/GlobalTable'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { LoadingLogo } from '../../../utils/LoadingLogo'
@@ -50,21 +47,12 @@ export const AdminUserListPage = () => {
     [],
   )
 
-  return (
+  return isLoading ? (
+    <LoadingLogo />
+  ) : (
     <>
-      <HeaderComponent title="Users" />
-      {isLoading ? (
-        <LoadingLogo />
-      ) : (
-        <>
-          <div className="text-right">
-            <Link to="/admin/users/invite" className="p-button mb-4 font-bold">
-              Invite User
-            </Link>
-          </div>
-          <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
-        </>
-      )}
+      <div className="text-right" />
+      <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
     </>
   )
 }

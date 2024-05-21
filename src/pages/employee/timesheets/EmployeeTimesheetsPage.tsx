@@ -1,4 +1,4 @@
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { UserTimesheetsTable } from '../../../components/shared/timesheets/UserTimesheetsTable'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -7,7 +7,7 @@ export const EmployeeTimesheets = () => {
 
   return (
     <>
-      <HeaderComponent title="Timesheets" />
+      <HeadingComponent title="Timesheets" />
       <UserTimesheetsTable selectedUserId={currentUserId} />
     </>
   )

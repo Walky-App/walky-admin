@@ -50,17 +50,17 @@ import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/compon
 import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
 
 import { AdminFacilities } from './pages/admin/facilities'
-import AdminAddFacility from './pages/admin/facilities/AdminAddFacility'
+import { AdminAddFacility } from './pages/admin/facilities/AdminAddFacility'
 import { AdminFacilityActivity } from './pages/admin/facilities/AdminFacilityActivity'
 import { AdminFacilityAddJob } from './pages/admin/facilities/AdminFacilityAddJob'
 import { AdminFacilityContacts } from './pages/admin/facilities/AdminFacilityContacts'
 import { AdminFacilityDNR } from './pages/admin/facilities/AdminFacilityDNR'
-import { AdminFacilityDetails } from './pages/admin/facilities/AdminFacilityDetails'
 import { AdminFacilityImages } from './pages/admin/facilities/AdminFacilityImages'
 import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
 import { AdminFacilityJobDetails } from './pages/admin/facilities/AdminFacilityJobDetails'
 import { AdminFacilityJobs } from './pages/admin/facilities/AdminFacilityJobs'
 import { AdminFacilityLicenses } from './pages/admin/facilities/AdminFacilityLicenses'
+import { FacilityDetailsPage } from './pages/admin/facilities/FacilityDetailsPage'
 
 import { AdminAddAssessment } from './pages/admin/HTU/AdminAddAssessment'
 import { AdminAddCategory } from './pages/admin/HTU/AdminAddCategory'
@@ -131,7 +131,7 @@ export const App = () => {
                   <Route element={<ClientProfile />} path="/client/profile" />
                   <Route element={<ClientFacilities />} path="/client/facilities" />
                   <Route element={<ClientAddFacility />} path="/client/facilities/new" />
-                  <Route element={<AdminFacilityDetails />} path="/client/facilities/:facilityId" />
+                  <Route element={<FacilityDetailsPage />} path="/client/facilities/:facilityId" />
                   <Route element={<AdminFacilityContacts />} path="/client/facilities/:facilityId/contacts" />
                   <Route element={<AdminFacilityImages />} path="/client/facilities/:facilityId/images" />
                   <Route element={<AdminFacilityJobs />} path="/client/facilities/:facilityId/jobs" />
@@ -151,7 +151,7 @@ export const App = () => {
                   <Route element={<ClientProfile />} path="/sales/profile" />
                   <Route element={<AdminFacilities />} path="/sales/facilities" />
                   <Route element={<ClientAddFacility />} path="/sales/facilities/new" />
-                  <Route element={<AdminFacilityDetails />} path="/sales/facilities/:facilityId" />
+                  <Route element={<FacilityDetailsPage />} path="/sales/facilities/:facilityId" />
                   <Route element={<AdminFacilityContacts />} path="/sales/facilities/:facilityId/contacts" />
                   <Route element={<AdminFacilityImages />} path="/sales/facilities/:facilityId/images" />
                   <Route element={<AdminFacilityJobs />} path="/sales/facilities/:facilityId/jobs" />
@@ -173,7 +173,7 @@ export const App = () => {
                     <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
                   </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
-                  <Route element={<AdminFacilityDetails />} path="/admin/facilities/:facilityId" />
+                  <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />
                   <Route element={<AdminFacilityContacts />} path="/admin/facilities/:facilityId/contacts" />
                   <Route element={<AdminAddFacility />} path="/admin/facilities/new" />
