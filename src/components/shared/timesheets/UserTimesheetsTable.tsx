@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { endOfWeek, format, isToday, isValid, startOfWeek } from 'date-fns'
+import { format, isToday, isValid } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
@@ -14,6 +14,7 @@ import { getCurrentUserRole } from '../../../utils/UserRole'
 import { cn } from '../../../utils/cn'
 import { formatToDateTime, formatToTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { HtInputLabel } from '../forms/HtInputLabel'
 import {
   type IPunchPair,
   processPunchPairsWithData,
@@ -21,6 +22,16 @@ import {
   type IPunchDetails,
   type IPunchPairsWithData,
 } from './timesheetsUtils'
+
+interface IUserTimesheetsProps {
+  selectedUserId: string
+}
+
+interface IPayPeriod {
+  label: string
+  start: string
+  end: string
+}
 
 const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'day', header: 'Day', sortable: true },
@@ -33,86 +44,54 @@ const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'difference', header: 'Difference', sortable: false },
 ]
 
-interface IUserTimesheetsProps {
-  selectedUserId: string
-}
-
-// const generatePayPeriods = () => {
-//   const now = new Date()
-//   const startOfCurrentWeek = startOfWeek(now, { weekStartsOn: 1 })
-//   const endOfCurrentWeek = endOfWeek(now, { weekStartsOn: 1 })
-//   const startOfPreviousWeek = subWeeks(startOfCurrentWeek, 1)
-//   const endOfPreviousWeek = subWeeks(endOfCurrentWeek, 1)
-//   const startOfNextWeek = addWeeks(startOfCurrentWeek, 1)
-//   const endOfNextWeek = addWeeks(endOfCurrentWeek, 1)
-
-//   return {
-//     current: `${format(startOfCurrentWeek, 'MMM dd')} - ${format(endOfCurrentWeek, 'MMM dd, yyyy')}`,
-//     previous: `${format(startOfPreviousWeek, 'MMM dd')} - ${format(endOfPreviousWeek, 'MMM dd, yyyy')}`,
-//     next: `${format(startOfNextWeek, 'MMM dd')} - ${format(endOfNextWeek, 'MMM dd, yyyy')}`,
-//   }
-// }
-
-const generateAllPayPeriods = (timeSheets: IPunchPairsWithData[]) => {
-  return timeSheets.reduce(
-    (acc, sheet) => {
-      const date = new Date(sheet.day)
-      const startOfWeekDate = startOfWeek(date, { weekStartsOn: 1 })
-      const endOfWeekDate = endOfWeek(date, { weekStartsOn: 1 })
-
-      const payPeriod = `${format(startOfWeekDate, 'MMM dd')} - ${format(endOfWeekDate, 'MMM dd, yyyy')}`
-
-      if (!acc[payPeriod]) {
-        acc[payPeriod] = payPeriod
-      }
-
-      return acc
-    },
-    {} as Record<string, string>,
-  )
-}
-
 export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [isEditorValid, setIsEditorValid] = useState(false)
-
-  // lets create a dropdown using the primereact dropdown component and use it to filter the timesheets visible in the table based on the 2 week pay period, for example like April 21 - May 04, 2024
-  // the dropdown should be able to filter the timesheets based on the pay period selected
-  // the pay period should be generated dynamically based on the current date
-  // the pay period should be generated in the format "MMM dd - MMM dd, yyyy"
-  // the dropdown should have the following options:
-  // - Current Pay Period
-  // - Previous Pay Period
-  // - Next Pay Period
-  // - Custom Pay Period
-  // - All Pay Periods
-  // the default selected option should be "Current Pay Period"
-  // the dropdown should be placed above the table
-  // the dropdown should have a label "Pay Period"
-
-  const [payPeriods, setPayPeriods] = useState({} as Record<string, string>)
-  const [selectedPayPeriod, setSelectedPayPeriod] = useState('')
-
-  // const payPeriodOptions = [
-  //   { label: `Current Pay Period (${payPeriods.current})`, value: 'current' },
-  //   { label: `Previous Pay Period (${payPeriods.previous})`, value: 'previous' },
-  //   { label: `Next Pay Period (${payPeriods.next})`, value: 'next' },
-  //   { label: 'Custom Pay Period', value: 'custom' },
-  //   { label: 'All Pay Periods', value: 'all' },
-  // ]
-
-  const payPeriodOptions = Object.keys(payPeriods).map(period => ({ label: period, value: period }))
-  payPeriodOptions.unshift({ label: 'All Pay Periods', value: 'all' })
-
-  useEffect(() => {
-    const allPayPeriods = generateAllPayPeriods(processedTimeSheets)
-    setPayPeriods(allPayPeriods)
-  }, [processedTimeSheets])
+  const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
+  const [selectedPayPeriod, setSelectedPayPeriod] = useState<IPayPeriod>()
 
   const { showToast } = useUtils()
 
   const currentUserRole = getCurrentUserRole()
+
+  const fetchPayPeriodsByEmployee = useCallback(async () => {
+    if (!selectedUserId) {
+      console.error('selectedUserId is undefined')
+      return
+    }
+    const { access_token } = GetTokenInfo()
+
+    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}/pay-periods`
+
+    const options: RequestInit = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+
+    try {
+      const response = await fetch(url, options)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const payPeriods: IPayPeriod[] = await response.json()
+
+      const noPayPeriodsObject = { label: 'No pay periods found', start: '', end: '' }
+
+      const [newPayPeriods, newSelectedPayPeriod] =
+        payPeriods.length > 0 ? [payPeriods, payPeriods[0]] : [[noPayPeriodsObject], noPayPeriodsObject]
+
+      setPayPeriods(newPayPeriods)
+      setSelectedPayPeriod(newSelectedPayPeriod)
+    } catch (error) {
+      console.error('Failed to fetch pay periods:', error)
+    }
+  }, [selectedUserId])
 
   const fetchTimesheets = useCallback(async () => {
     if (!selectedUserId) {
@@ -121,9 +100,10 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     }
     const { access_token } = GetTokenInfo()
 
-    // const { start, end } = payPeriods[selectedPayPeriod]
+    const selectedPayPeriodStart = selectedPayPeriod?.start
+    const selectedPayPeriodEnd = selectedPayPeriod?.end
 
-    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}`
+    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
 
     const options: RequestInit = {
       method: 'GET',
@@ -154,11 +134,15 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
     }
-  }, [selectedUserId])
+  }, [selectedPayPeriod?.end, selectedPayPeriod?.start, selectedUserId])
+
+  useEffect(() => {
+    fetchPayPeriodsByEmployee()
+  }, [fetchPayPeriodsByEmployee])
 
   useEffect(() => {
     fetchTimesheets()
-  }, [fetchTimesheets, selectedUserId])
+  }, [fetchTimesheets])
 
   const sortedTimeSheets = useMemo(() => {
     return [...processedTimeSheets].sort((a, b) => new Date(b.time_stamp).getTime() - new Date(a.time_stamp).getTime())
@@ -357,12 +341,17 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   const totalTimeSumString = totalTimeSum.toFixed(2)
 
   const startContent = (
-    <Dropdown
-      value={selectedPayPeriod}
-      options={payPeriodOptions}
-      onChange={e => setSelectedPayPeriod(e.value)}
-      placeholder="Select a pay period"
-    />
+    <div className="flex flex-col items-baseline gap-y-2">
+      <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" className="text-base" />
+      <Dropdown
+        id="pay-period-dropdown"
+        value={selectedPayPeriod}
+        options={payPeriods}
+        onChange={e => setSelectedPayPeriod(e.value)}
+        placeholder="Select a pay period"
+        className="w-60"
+      />
+    </div>
   )
 
   return (
