@@ -6,6 +6,7 @@ import { Button } from 'primereact/button'
 
 import { BriefcaseIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IStatCard, DashboardHeader, StatCards } from '../../../components/shared/dashboard'
 import { type IFacility } from '../../../interfaces/Facility'
 import { type IUser } from '../../../interfaces/User'
@@ -14,6 +15,7 @@ import { type ILog } from '../../../interfaces/logs'
 import { requestService } from '../../../services/requestServiceNew'
 import { DashboardActivity } from './DashboardActivity'
 import { DashboardFacilityTable } from './DashboardFacilityTable'
+import { DashboardReleasesList } from './DashboardReleasesList'
 import { DashboardUserTable } from './DashboardUserTable'
 
 export interface ITransaction {
@@ -71,36 +73,38 @@ export const AdminDashboard = () => {
   ]
 
   return (
-    <div className="">
-      <main className="">
-        <DashboardHeader>
-          <Button
-            label="Facilities"
-            severity="secondary"
-            outlined
-            size="small"
-            onClick={() => navigate('/admin/facilities')}
-          />
-          <Button label="Jobs" size="small" onClick={() => navigate('/admin/jobs')} />
-        </DashboardHeader>
+    <main>
+      <DashboardHeader>
+        <Button
+          label="Facilities"
+          severity="secondary"
+          outlined
+          size="small"
+          onClick={() => navigate('/admin/facilities')}
+        />
+        <Button label="Jobs" size="small" onClick={() => navigate('/admin/jobs')} />
+      </DashboardHeader>
 
-        {/* Overview Statistics section*/}
-        <div className="mt-8 flex">
-          <div className="">
+      {dashboardData ? (
+        <div className="mt-8 md:flex">
+          <div>
             <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} />
             <hr />
             <DashboardUserTable data={dashboardData?.disabled_users ?? []} />
+            <hr />
+            <DashboardReleasesList />
           </div>
           <div className="mx-auto sm:px-6 lg:px-8">
             <h2 className="text-lg font-medium leading-6 text-gray-900">Active Records</h2>
             <div className="mt-2 grid grid-cols-1">
               <StatCards cards={statCardsData} />
-
               <DashboardActivity data={dashboardData?.logs ?? []} />
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      ) : (
+        <HTLoadingLogo />
+      )}
+    </main>
   )
 }
