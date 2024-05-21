@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { format, isToday, isValid } from 'date-fns'
+import { endOfWeek, format, isToday, isValid, startOfWeek } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
+import { Dropdown } from 'primereact/dropdown'
+import { Toolbar } from 'primereact/toolbar'
 
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
@@ -35,10 +37,78 @@ interface IUserTimesheetsProps {
   selectedUserId: string
 }
 
+// const generatePayPeriods = () => {
+//   const now = new Date()
+//   const startOfCurrentWeek = startOfWeek(now, { weekStartsOn: 1 })
+//   const endOfCurrentWeek = endOfWeek(now, { weekStartsOn: 1 })
+//   const startOfPreviousWeek = subWeeks(startOfCurrentWeek, 1)
+//   const endOfPreviousWeek = subWeeks(endOfCurrentWeek, 1)
+//   const startOfNextWeek = addWeeks(startOfCurrentWeek, 1)
+//   const endOfNextWeek = addWeeks(endOfCurrentWeek, 1)
+
+//   return {
+//     current: `${format(startOfCurrentWeek, 'MMM dd')} - ${format(endOfCurrentWeek, 'MMM dd, yyyy')}`,
+//     previous: `${format(startOfPreviousWeek, 'MMM dd')} - ${format(endOfPreviousWeek, 'MMM dd, yyyy')}`,
+//     next: `${format(startOfNextWeek, 'MMM dd')} - ${format(endOfNextWeek, 'MMM dd, yyyy')}`,
+//   }
+// }
+
+const generateAllPayPeriods = (timeSheets: IPunchPairsWithData[]) => {
+  return timeSheets.reduce(
+    (acc, sheet) => {
+      const date = new Date(sheet.day)
+      const startOfWeekDate = startOfWeek(date, { weekStartsOn: 1 })
+      const endOfWeekDate = endOfWeek(date, { weekStartsOn: 1 })
+
+      const payPeriod = `${format(startOfWeekDate, 'MMM dd')} - ${format(endOfWeekDate, 'MMM dd, yyyy')}`
+
+      if (!acc[payPeriod]) {
+        acc[payPeriod] = payPeriod
+      }
+
+      return acc
+    },
+    {} as Record<string, string>,
+  )
+}
+
 export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [isEditorValid, setIsEditorValid] = useState(false)
+
+  // lets create a dropdown using the primereact dropdown component and use it to filter the timesheets visible in the table based on the 2 week pay period, for example like April 21 - May 04, 2024
+  // the dropdown should be able to filter the timesheets based on the pay period selected
+  // the pay period should be generated dynamically based on the current date
+  // the pay period should be generated in the format "MMM dd - MMM dd, yyyy"
+  // the dropdown should have the following options:
+  // - Current Pay Period
+  // - Previous Pay Period
+  // - Next Pay Period
+  // - Custom Pay Period
+  // - All Pay Periods
+  // the default selected option should be "Current Pay Period"
+  // the dropdown should be placed above the table
+  // the dropdown should have a label "Pay Period"
+
+  const [payPeriods, setPayPeriods] = useState({} as Record<string, string>)
+  const [selectedPayPeriod, setSelectedPayPeriod] = useState('')
+
+  // const payPeriodOptions = [
+  //   { label: `Current Pay Period (${payPeriods.current})`, value: 'current' },
+  //   { label: `Previous Pay Period (${payPeriods.previous})`, value: 'previous' },
+  //   { label: `Next Pay Period (${payPeriods.next})`, value: 'next' },
+  //   { label: 'Custom Pay Period', value: 'custom' },
+  //   { label: 'All Pay Periods', value: 'all' },
+  // ]
+
+  const payPeriodOptions = Object.keys(payPeriods).map(period => ({ label: period, value: period }))
+  payPeriodOptions.unshift({ label: 'All Pay Periods', value: 'all' })
+
+  useEffect(() => {
+    const allPayPeriods = generateAllPayPeriods(processedTimeSheets)
+    setPayPeriods(allPayPeriods)
+  }, [processedTimeSheets])
 
   const { showToast } = useUtils()
 
@@ -50,6 +120,9 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       return
     }
     const { access_token } = GetTokenInfo()
+
+    // const { start, end } = payPeriods[selectedPayPeriod]
+
     const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}`
 
     const options: RequestInit = {
@@ -283,38 +356,51 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const totalTimeSumString = totalTimeSum.toFixed(2)
 
+  const startContent = (
+    <Dropdown
+      value={selectedPayPeriod}
+      options={payPeriodOptions}
+      onChange={e => setSelectedPayPeriod(e.value)}
+      placeholder="Select a pay period"
+    />
+  )
+
   return (
-    <DataTable
-      header={`Regular ${totalTimeSumString} | Scheduled 0.00 | Difference 0.00`}
-      dataKey="time_stamp"
-      value={sortedTimeSheets}
-      tableStyle={{ minWidth: '50rem' }}
-      size="small"
-      paginator
-      rows={14}
-      rowsPerPageOptions={[7, 14, 30, 90]}
-      stripedRows
-      showGridlines
-      resizableColumns
-      columnResizeMode="fit"
-      expandedRows={expandedRows}
-      onRowToggle={e => setExpandedRows(e.data)}
-      rowExpansionTemplate={rowExpansionTemplate}
-      pt={{
-        header: {
-          className: 'font-normal text-sm text-gray-500',
-        },
-      }}>
-      <Column expander={allowExpansion} />
-      {cols.map(col => (
-        <Column
-          key={col.field}
-          field={col.field}
-          header={col.header}
-          body={rowData => getCellValue(col, rowData)}
-          sortable={col.sortable}
-        />
-      ))}
-    </DataTable>
+    <>
+      <Toolbar end={startContent} />
+
+      <DataTable
+        header={`Regular ${totalTimeSumString} | Scheduled 0.00 | Difference 0.00`}
+        dataKey="time_stamp"
+        value={sortedTimeSheets}
+        tableStyle={{ minWidth: '50rem' }}
+        size="small"
+        paginator
+        rows={14}
+        rowsPerPageOptions={[7, 14, 30, 90]}
+        stripedRows
+        showGridlines
+        resizableColumns
+        columnResizeMode="fit"
+        expandedRows={expandedRows}
+        onRowToggle={e => setExpandedRows(e.data)}
+        rowExpansionTemplate={rowExpansionTemplate}
+        pt={{
+          header: {
+            className: 'font-normal text-sm text-gray-500',
+          },
+        }}>
+        <Column expander={allowExpansion} />
+        {cols.map(col => (
+          <Column
+            key={col.field}
+            field={col.field}
+            header={col.header}
+            body={rowData => getCellValue(col, rowData)}
+            sortable={col.sortable}
+          />
+        ))}
+      </DataTable>
+    </>
   )
 }
