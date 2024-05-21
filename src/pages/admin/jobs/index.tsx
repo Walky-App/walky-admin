@@ -66,9 +66,5 @@ export const AdminJobs = () => {
     [],
   )
 
-  return isLoading ? (
-    <LoadingLogo />
-  ) : (
-    <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
-  )
+  return isLoading ? <LoadingLogo /> : <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
 }
