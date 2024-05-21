@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
 import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
-import { LoadingLogo } from '../../../utils/LoadingLogo'
 
 interface IRow {
   row: { original: IFacility }
@@ -85,7 +85,7 @@ export const AdminFacilities = () => {
   ]
 
   return facilities.length === 0 ? (
-    <LoadingLogo />
+    <HTLoadingLogo />
   ) : (
     <>
       <button
