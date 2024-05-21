@@ -7,7 +7,7 @@ import { TabPanel, TabView } from 'primereact/tabview'
 
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/20/solid'
 
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
+import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { DisableButtonInterface, SelectedOptionInterface } from '../../../interfaces/global'
 import type { Section } from '../../../interfaces/unit'
@@ -137,7 +137,7 @@ export const AdminDetailsUnit = () => {
 
   return (
     <div className="w-full sm:overflow-x-hidden">
-      <HeaderComponent disableButton={disableButtonData} title="Unit details" />
+      <HeadingComponent disableButton={disableButtonData} title="Unit details" />
       <FormUnits
         control={control}
         errors={errors}

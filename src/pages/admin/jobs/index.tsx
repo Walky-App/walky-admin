@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 
-import { useNavigate } from 'react-router-dom'
-
-import { Button } from 'primereact/button'
-
 import { GlobalTable } from '../../../components/shared/GlobalTable'
-import { HeaderComponent } from '../../../components/shared/general/HeaderComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { LoadingLogo } from '../../../utils/LoadingLogo'
@@ -14,7 +9,6 @@ import { LoadingLogo } from '../../../utils/LoadingLogo'
 export const AdminJobs = () => {
   const [jobsData, setJobsData] = React.useState<any>([])
   const [isLoading, setIsLoading] = React.useState(true)
-  const navigate = useNavigate()
 
   React.useEffect(() => {
     const getJobs = async () => {
@@ -72,23 +66,5 @@ export const AdminJobs = () => {
     [],
   )
 
-  return (
-    <>
-      <HeaderComponent title="Jobs" />
-      {isLoading ? (
-        <LoadingLogo />
-      ) : (
-        <>
-          <Button
-            label="Add Job"
-            onClick={() => {
-              navigate('/admin/jobs/new')
-            }}
-            size="small"
-          />
-          <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
-        </>
-      )}
-    </>
-  )
+  return isLoading ? <LoadingLogo /> : <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
 }

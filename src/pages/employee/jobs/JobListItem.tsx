@@ -14,9 +14,10 @@ import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
   job: IJob
+  isDistanceRelatedButtonClicked?: boolean
 }
 
-export const JobListItem = ({ job }: JobListItemProps) => {
+export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItemProps) => {
   const [savedJob, setSavedJob] = useState(false)
   const { _id } = GetTokenInfo()
 
@@ -116,7 +117,9 @@ export const JobListItem = ({ job }: JobListItemProps) => {
                 <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                 <div className="mt-0.5 flex flex-col gap-1">
                   <span className="text-xs font-medium text-black">{job?.facility?.city}</span>
-                  <span className="text-xs font-normal text-stone-500">{job.distance} miles</span>
+                  {isDistanceRelatedButtonClicked && job.distance ? (
+                    <span className="text-xs font-normal text-stone-500">{job.distance} miles</span>
+                  ) : null}
                 </div>
               </div>
             </div>
