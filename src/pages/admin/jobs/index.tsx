@@ -2,9 +2,9 @@
 import React from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { LoadingLogo } from '../../../utils/LoadingLogo'
 
 export const AdminJobs = () => {
   const [jobsData, setJobsData] = React.useState<any>([])
@@ -66,5 +66,5 @@ export const AdminJobs = () => {
     [],
   )
 
-  return isLoading ? <LoadingLogo /> : <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
+  return isLoading ? <HTLoadingLogo /> : <GlobalTable data={memoJobsData} columns={memoJobsColumns} allowClick />
 }
