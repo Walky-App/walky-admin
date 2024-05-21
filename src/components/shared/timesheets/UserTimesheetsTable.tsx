@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { useMediaQuery } from 'react-responsive'
+
 import { format, isToday, isValid } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
@@ -45,6 +47,7 @@ const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
 ]
 
 export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
+  const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [isEditorValid, setIsEditorValid] = useState(false)
@@ -55,7 +58,11 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const currentUserRole = getCurrentUserRole()
 
+  const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
+
   const fetchPayPeriodsByEmployee = useCallback(async () => {
+    setIsLoading(true)
+
     if (!selectedUserId) {
       console.error('selectedUserId is undefined')
       return
@@ -71,7 +78,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         Authorization: `Bearer ${access_token}`,
       },
     }
-
+    let initialSelectedPayPeriod
     try {
       const response = await fetch(url, options)
 
@@ -86,63 +93,82 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       const [newPayPeriods, newSelectedPayPeriod] =
         payPeriods.length > 0 ? [payPeriods, payPeriods[0]] : [[noPayPeriodsObject], noPayPeriodsObject]
 
+      initialSelectedPayPeriod = newSelectedPayPeriod
       setPayPeriods(newPayPeriods)
       setSelectedPayPeriod(newSelectedPayPeriod)
     } catch (error) {
       console.error('Failed to fetch pay periods:', error)
+    } finally {
+      setIsLoading(false)
     }
+
+    return initialSelectedPayPeriod
   }, [selectedUserId])
 
-  const fetchTimesheets = useCallback(async () => {
-    if (!selectedUserId) {
-      console.error('selectedUserId is undefined')
-      return
-    }
-    const { access_token } = GetTokenInfo()
+  const fetchTimesheets = useCallback(
+    async (selectedPayPeriod: IPayPeriod) => {
+      setIsLoading(true)
 
-    const selectedPayPeriodStart = selectedPayPeriod?.start
-    const selectedPayPeriodEnd = selectedPayPeriod?.end
+      if (!selectedUserId) {
+        console.error('selectedUserId is undefined')
+        return
+      }
+      const { access_token } = GetTokenInfo()
 
-    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
+      const selectedPayPeriodStart = selectedPayPeriod?.start
+      const selectedPayPeriodEnd = selectedPayPeriod?.end
 
-    const options: RequestInit = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-    }
+      const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
 
-    try {
-      const response = await fetch(url, options)
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+      const options: RequestInit = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`,
+        },
       }
 
-      if (response.status === 204) {
-        console.error('No timesheets found')
-      } else {
-        const timesheets: ITimeSheet[] = await response.json()
+      try {
+        const response = await fetch(url, options)
 
-        const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
-          return processPunchPairsWithData(timesheet)
-        })
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
 
-        setProcessedTimeSheets(punchPairsAndData)
+        if (response.status === 204) {
+          console.error('No timesheets found')
+        } else {
+          const timesheets: ITimeSheet[] = await response.json()
+
+          const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
+            return processPunchPairsWithData(timesheet)
+          })
+
+          setProcessedTimeSheets(punchPairsAndData)
+        }
+      } catch (error) {
+        console.error('Failed to fetch timesheet:', error)
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error) {
-      console.error('Failed to fetch timesheet:', error)
-    }
-  }, [selectedPayPeriod?.end, selectedPayPeriod?.start, selectedUserId])
+    },
+    [selectedUserId],
+  )
 
   useEffect(() => {
-    fetchPayPeriodsByEmployee()
+    const fetchPayPeriodsAndTimesheets = async () => {
+      const fetchedPayPeriod = await fetchPayPeriodsByEmployee()
+      setSelectedPayPeriod(fetchedPayPeriod)
+    }
+
+    fetchPayPeriodsAndTimesheets()
   }, [fetchPayPeriodsByEmployee])
 
   useEffect(() => {
-    fetchTimesheets()
-  }, [fetchTimesheets])
+    if (selectedPayPeriod) {
+      fetchTimesheets(selectedPayPeriod)
+    }
+  }, [selectedPayPeriod, fetchTimesheets])
 
   const sortedTimeSheets = useMemo(() => {
     return [...processedTimeSheets].sort((a, b) => new Date(b.time_stamp).getTime() - new Date(a.time_stamp).getTime())
@@ -242,7 +268,11 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             detail: formatToTime(newTimeStamp),
           })
 
-          fetchTimesheets()
+          if (selectedPayPeriod) {
+            fetchTimesheets(selectedPayPeriod)
+          } else {
+            showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
+          }
         }
       }
     } catch (error) {
@@ -356,12 +386,13 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   return (
     <>
-      <Toolbar end={startContent} />
+      {isMobile ? <Toolbar start={startContent} /> : <Toolbar end={startContent} />}
 
       <DataTable
         header={`Regular ${totalTimeSumString} | Scheduled 0.00 | Difference 0.00`}
         dataKey="time_stamp"
         value={sortedTimeSheets}
+        emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
         tableStyle={{ minWidth: '50rem' }}
         size="small"
         paginator
