@@ -12,6 +12,8 @@ export interface SubHeaderData {
   name?: string
   city?: string
   address?: string
+  corp_name?: string
+  dba?: string
 }
 
 export interface SubHeaderLink {
