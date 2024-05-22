@@ -14,8 +14,10 @@ import { Tag } from 'primereact/tag'
 import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface IUserSlim {
   _id: string
@@ -60,6 +62,8 @@ export const Messages = () => {
 
   const { showToast } = useUtils()
 
+  const { _id } = GetTokenInfo()
+
   const defaultValues: IMessageFormValues = {
     name: 'message',
     recipients: [],
@@ -75,27 +79,28 @@ export const Messages = () => {
 
   const roleType = roleChecker()
 
-  useEffect(() => {
-    const getMessages = async () => {
-      try {
-        if (roleType === 'admin') {
-          const allUsers = await RequestService(`users`)
-          if (allUsers.length !== 0) {
-            setAllUsers(allUsers)
-          }
+  const getMessages = async () => {
+    try {
+      if (roleType === 'admin') {
+        const allUsers = await RequestService(`users`)
+        if (allUsers.length !== 0) {
+          setAllUsers(allUsers)
         }
-
-        const data = await RequestService(`messages`)
-
-        if (data.length !== 0) {
-          setAllMessages(data)
-        }
-      } catch (error) {
-        console.error('error fetching messages', error)
       }
+
+      const data = await RequestService(`messages`)
+
+      if (data.length !== 0) {
+        setAllMessages(data)
+      }
+    } catch (error) {
+      console.error('error fetching messages', error)
     }
+  }
+
+  useEffect(() => {
     getMessages()
-  }, [roleType])
+  }, [])
 
   const handleMessageRecepients = () => {
     if (roleType === 'admin') {
@@ -124,15 +129,20 @@ export const Messages = () => {
 
   const onSubmit: SubmitHandler<IMessageFormValues> = async data => {
     try {
-      const response = await RequestService('messages', 'POST', { ...data, recipients: handleMessageRecepients() })
-      if (response !== null && response !== undefined) {
-        setAllMessages(response)
+      const response = await requestService({
+        path: 'messages',
+        method: 'POST',
+        body: JSON.stringify({ ...data, recipients: handleMessageRecepients() }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setAllMessages(data)
         showToast({ severity: 'success', summary: 'Success', detail: 'message sent successfully!' })
         reset()
       }
     } catch (error) {
       console.error('Error:', error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error creating holiday' })
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error sending message' })
     }
   }
 
@@ -156,8 +166,11 @@ export const Messages = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
-        <div className="flex justify-between">
-          <Button onClick={() => setNewMessageVisible(true)}>+ New Message</Button>
+        <div className="flex">
+          <Button onClick={() => setNewMessageVisible(true)} className="mr-3">
+            + New Message
+          </Button>
+          <Button icon="pi pi-refresh" severity="secondary" aria-label="Refresh" onClick={() => getMessages()} />
         </div>
 
         <TabView className="mt-4">
@@ -176,9 +189,12 @@ export const Messages = () => {
                 rows={20}
                 className="bg-gray-100"
                 metaKeySelection={false}
-                rowClassName={(rowData: IMessageDocument) =>
-                  rowData.recipients.map((recipient: IRecipient) => (recipient.read === false ? ' font-bold' : ''))
-                }
+                rowClassName={(rowData: IMessageDocument) => {
+                  const idFound = rowData.recipients.find(recipient => recipient?.user_id?._id === _id)
+                  if (idFound && idFound.read === false) {
+                    return 'font-bold'
+                  }
+                }}
                 tableStyle={{ minWidth: '50rem' }}>
                 <Column field="sender_id.first_name" header="From" />
                 <Column field="message_content" header="Message" style={{ width: '70%' }} />
@@ -206,7 +222,7 @@ export const Messages = () => {
                 header="To"
                 body={(rowData: IMessageDocument) =>
                   rowData.recipients.map((recipient: IRecipient) => (
-                    <span key={rowData._id}> {recipient.user_id.email}</span>
+                    <span key={rowData._id}> {recipient?.user_id?.email}</span>
                   ))
                 }
               />
