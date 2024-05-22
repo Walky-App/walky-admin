@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { useMediaQuery } from 'react-responsive'
+
 import { format, isToday, isValid } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
+import { Dropdown } from 'primereact/dropdown'
+import { Toolbar } from 'primereact/toolbar'
 
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
@@ -11,7 +15,7 @@ import { useUtils } from '../../../store/useUtils'
 import { getCurrentUserRole } from '../../../utils/UserRole'
 import { cn } from '../../../utils/cn'
 import { formatToDateTime, formatToTime } from '../../../utils/timeUtils'
-import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { HtInputLabel } from '../forms/HtInputLabel'
 import {
   type IPunchPair,
   processPunchPairsWithData,
@@ -19,6 +23,16 @@ import {
   type IPunchDetails,
   type IPunchPairsWithData,
 } from './timesheetsUtils'
+
+interface IUserTimesheetsProps {
+  selectedUserId: string
+}
+
+interface IPayPeriod {
+  label: string
+  start: string
+  end: string
+}
 
 const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'day', header: 'Day', sortable: true },
@@ -31,61 +45,113 @@ const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'difference', header: 'Difference', sortable: false },
 ]
 
-interface IUserTimesheetsProps {
-  selectedUserId: string
-}
-
 export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
+  const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [isEditorValid, setIsEditorValid] = useState(false)
+  const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
+  const [selectedPayPeriod, setSelectedPayPeriod] = useState<IPayPeriod>()
 
   const { showToast } = useUtils()
 
   const currentUserRole = getCurrentUserRole()
 
-  const fetchTimesheets = useCallback(async () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
+
+  const fetchPayPeriodsByEmployee = useCallback(async () => {
+    setIsLoading(true)
+
     if (!selectedUserId) {
       console.error('selectedUserId is undefined')
       return
     }
-    const { access_token } = GetTokenInfo()
-    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}`
 
-    const options: RequestInit = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-    }
+    const pathString = `timesheets/employee/${selectedUserId}/pay-periods`
+
+    let initialSelectedPayPeriod
 
     try {
-      const response = await fetch(url, options)
+      const response = await requestService({ path: pathString })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      if (response.status === 204) {
-        console.error('No timesheets found')
-      } else {
-        const timesheets: ITimeSheet[] = await response.json()
+      const payPeriods: IPayPeriod[] = await response.json()
 
-        const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
-          return processPunchPairsWithData(timesheet)
-        })
+      const noPayPeriodsObject = { label: 'No pay periods found', start: '', end: '' }
 
-        setProcessedTimeSheets(punchPairsAndData)
-      }
+      const [newPayPeriods, newSelectedPayPeriod] =
+        payPeriods.length > 0 ? [payPeriods, payPeriods[0]] : [[noPayPeriodsObject], noPayPeriodsObject]
+
+      initialSelectedPayPeriod = newSelectedPayPeriod
+      setPayPeriods(newPayPeriods)
+      setSelectedPayPeriod(newSelectedPayPeriod)
     } catch (error) {
-      console.error('Failed to fetch timesheet:', error)
+      console.error('Failed to fetch pay periods:', error)
+    } finally {
+      setIsLoading(false)
     }
+
+    return initialSelectedPayPeriod
   }, [selectedUserId])
 
+  const fetchTimesheets = useCallback(
+    async (selectedPayPeriod: IPayPeriod) => {
+      setIsLoading(true)
+
+      if (!selectedUserId) {
+        console.error('selectedUserId is undefined')
+        return
+      }
+
+      const selectedPayPeriodStart = selectedPayPeriod?.start
+      const selectedPayPeriodEnd = selectedPayPeriod?.end
+
+      const pathString = `timesheets/employee/${selectedUserId}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
+
+      try {
+        const response = await requestService({ path: pathString })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        if (response.status === 204) {
+          console.error('No timesheets found')
+        } else {
+          const timesheets: ITimeSheet[] = await response.json()
+
+          const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
+            return processPunchPairsWithData(timesheet)
+          })
+
+          setProcessedTimeSheets(punchPairsAndData)
+        }
+      } catch (error) {
+        console.error('Failed to fetch timesheet:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [selectedUserId],
+  )
+
   useEffect(() => {
-    fetchTimesheets()
-  }, [fetchTimesheets, selectedUserId])
+    const fetchPayPeriodsAndTimesheets = async () => {
+      const fetchedPayPeriod = await fetchPayPeriodsByEmployee()
+      setSelectedPayPeriod(fetchedPayPeriod)
+    }
+
+    fetchPayPeriodsAndTimesheets()
+  }, [fetchPayPeriodsByEmployee])
+
+  useEffect(() => {
+    if (selectedPayPeriod) {
+      fetchTimesheets(selectedPayPeriod)
+    }
+  }, [selectedPayPeriod, fetchTimesheets])
 
   const sortedTimeSheets = useMemo(() => {
     return [...processedTimeSheets].sort((a, b) => new Date(b.time_stamp).getTime() - new Date(a.time_stamp).getTime())
@@ -185,7 +251,11 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             detail: formatToTime(newTimeStamp),
           })
 
-          fetchTimesheets()
+          if (selectedPayPeriod) {
+            fetchTimesheets(selectedPayPeriod)
+          } else {
+            showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
+          }
         }
       }
     } catch (error) {
@@ -283,38 +353,57 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const totalTimeSumString = totalTimeSum.toFixed(2)
 
+  const startContent = (
+    <div className="flex flex-col items-baseline gap-y-2">
+      <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" className="text-base" />
+      <Dropdown
+        id="pay-period-dropdown"
+        value={selectedPayPeriod}
+        options={payPeriods}
+        onChange={e => setSelectedPayPeriod(e.value)}
+        placeholder="Select a pay period"
+        className="w-60"
+      />
+    </div>
+  )
+
   return (
-    <DataTable
-      header={`Regular ${totalTimeSumString} | Scheduled 0.00 | Difference 0.00`}
-      dataKey="time_stamp"
-      value={sortedTimeSheets}
-      tableStyle={{ minWidth: '50rem' }}
-      size="small"
-      paginator
-      rows={14}
-      rowsPerPageOptions={[7, 14, 30, 90]}
-      stripedRows
-      showGridlines
-      resizableColumns
-      columnResizeMode="fit"
-      expandedRows={expandedRows}
-      onRowToggle={e => setExpandedRows(e.data)}
-      rowExpansionTemplate={rowExpansionTemplate}
-      pt={{
-        header: {
-          className: 'font-normal text-sm text-gray-500',
-        },
-      }}>
-      <Column expander={allowExpansion} />
-      {cols.map(col => (
-        <Column
-          key={col.field}
-          field={col.field}
-          header={col.header}
-          body={rowData => getCellValue(col, rowData)}
-          sortable={col.sortable}
-        />
-      ))}
-    </DataTable>
+    <>
+      {isMobile ? <Toolbar start={startContent} /> : <Toolbar end={startContent} />}
+
+      <DataTable
+        header={`Regular ${totalTimeSumString} | Scheduled 0.00 | Difference 0.00`}
+        dataKey="time_stamp"
+        value={sortedTimeSheets}
+        emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
+        tableStyle={{ minWidth: '50rem' }}
+        size="small"
+        paginator
+        rows={14}
+        rowsPerPageOptions={[7, 14, 30, 90]}
+        stripedRows
+        showGridlines
+        resizableColumns
+        columnResizeMode="fit"
+        expandedRows={expandedRows}
+        onRowToggle={e => setExpandedRows(e.data)}
+        rowExpansionTemplate={rowExpansionTemplate}
+        pt={{
+          header: {
+            className: 'font-normal text-sm text-gray-500',
+          },
+        }}>
+        <Column expander={allowExpansion} />
+        {cols.map(col => (
+          <Column
+            key={col.field}
+            field={col.field}
+            header={col.header}
+            body={rowData => getCellValue(col, rowData)}
+            sortable={col.sortable}
+          />
+        ))}
+      </DataTable>
+    </>
   )
 }

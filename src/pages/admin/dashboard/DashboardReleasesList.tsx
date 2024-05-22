@@ -58,7 +58,7 @@ export const DashboardReleasesList = () => {
         <div className="flex">
           <CodeBracketSquareIcon className="mr-4 h-7 w-7 flex-shrink-0 text-gray-400" aria-hidden="true" />
           <div>
-            <h1 className="text-xl font-semibold leading-6 text-gray-900">{releases.length} Latest Releases</h1>
+            <h3 className="text-xl font-semibold leading-6 text-gray-900">{releases.length} Latest Releases</h3>
             <p className="mt-2 text-sm text-gray-700">
               A list of all the releases here &nbsp;
               <a
