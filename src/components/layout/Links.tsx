@@ -53,6 +53,16 @@ const adminLinks: INavLink[] = [
   },
   {
     id: 3,
+    name: 'Companies',
+    href: '/admin/companies',
+    icon: <FaBusinessTime />,
+    subLinks: [
+      { name: 'All Companies', href: '/admin/companies' },
+      { name: 'Add Company', href: '/admin/companies/new' },
+    ],
+  },
+  {
+    id: 3,
     name: 'Facilities',
     href: '/admin/facilities',
     icon: <FaBuilding />,
