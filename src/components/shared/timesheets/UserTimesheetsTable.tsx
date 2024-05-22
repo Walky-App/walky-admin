@@ -15,7 +15,6 @@ import { useUtils } from '../../../store/useUtils'
 import { getCurrentUserRole } from '../../../utils/UserRole'
 import { cn } from '../../../utils/cn'
 import { formatToDateTime, formatToTime } from '../../../utils/timeUtils'
-import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { HtInputLabel } from '../forms/HtInputLabel'
 import {
   type IPunchPair,
@@ -67,20 +66,13 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       console.error('selectedUserId is undefined')
       return
     }
-    const { access_token } = GetTokenInfo()
 
-    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}/pay-periods`
+    const pathString = `timesheets/employee/${selectedUserId}/pay-periods`
 
-    const options: RequestInit = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-    }
     let initialSelectedPayPeriod
+
     try {
-      const response = await fetch(url, options)
+      const response = await requestService({ path: pathString })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -113,23 +105,14 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         console.error('selectedUserId is undefined')
         return
       }
-      const { access_token } = GetTokenInfo()
 
       const selectedPayPeriodStart = selectedPayPeriod?.start
       const selectedPayPeriodEnd = selectedPayPeriod?.end
 
-      const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${selectedUserId}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
-
-      const options: RequestInit = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
+      const pathString = `timesheets/employee/${selectedUserId}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
 
       try {
-        const response = await fetch(url, options)
+        const response = await requestService({ path: pathString })
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
