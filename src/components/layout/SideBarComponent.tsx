@@ -26,7 +26,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
   const { user } = useAuth()
   const role = getCurrentUserRole()
 
-  const links = userLinks()
+  const links = user ? userLinks(user?.onboarding.completed, role) : userLinks(false, role)
 
   const tokenInfo = GetTokenInfo()
   const userIsOnboarded = tokenInfo?.onboarding?.completed
@@ -120,14 +120,11 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
               <li>
                 {role === 'admin' ? (
                   <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
-                ) : null}
-                {role === 'client' ? (
-                  userIsOnboarded ? (
-                    <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
-                  ) : (
-                    <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
-                  )
-                ) : null}
+                ) : userIsOnboarded ? (
+                  <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
+                ) : (
+                  <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
+                )}
 
                 <ul className="-mx-2 mt-2 space-y-1">
                   {user?.role
