@@ -15,9 +15,10 @@ import { GetTokenInfo } from '../../../utils/tokenUtil'
 interface JobListItemProps {
   job: IJob
   isDistanceRelatedButtonClicked?: boolean
+  handleSaveUnsaveJob?: (jobId: string, isSaved: boolean) => void
 }
 
-export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItemProps) => {
+export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUnsaveJob }: JobListItemProps) => {
   const [savedJob, setSavedJob] = useState(false)
   const { _id } = GetTokenInfo()
 
@@ -38,6 +39,10 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItem
       if (!responseContent || responseContent.message.includes('error')) {
         setSavedJob(currentSavedState)
         console.error('Failed to change save state:', responseContent.message)
+      } else {
+        if (handleSaveUnsaveJob) {
+          handleSaveUnsaveJob(job._id, !savedJob)
+        }
       }
     } catch (error) {
       setSavedJob(currentSavedState)
