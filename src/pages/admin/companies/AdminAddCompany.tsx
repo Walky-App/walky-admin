@@ -15,6 +15,7 @@ import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { getFormErrorMessage } from '../../../utils/formUtils'
+import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 
 export interface ICompanyFormInputs {
   corp_name: string
@@ -73,12 +74,6 @@ export const AdminAddCompany = () => {
       setMoreAddressDetails(undefined)
     }
   }, [moreAddressDetails, setValue])
-
-  const requiredFieldsNoticeText = (
-    <p className="mt-1 text-sm leading-6 text-gray-600">
-      <span style={{ color: 'red' }}>*</span> indicates a required field.
-    </p>
-  )
 
   const onSubmit: SubmitHandler<ICompanyFormInputs> = async (data: ICompanyFormInputs) => {
     try {
