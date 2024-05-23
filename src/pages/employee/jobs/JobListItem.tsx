@@ -75,7 +75,7 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItem
           <div className="mb-3 flex basis-1/3 flex-wrap justify-between gap-2 px-5 pt-5">
             <div className="flex flex-row">
               <span className="pi pi-users" />
-              <p className="ml-1   text-stone-500">
+              <p className="ml-1 text-stone-500">
                 {job.applicants.length} / {job.vacancy} Applicants
               </p>
             </div>
@@ -175,9 +175,9 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItem
             }}
             className="flex h-4 cursor-pointer items-center justify-start gap-1">
             {savedJob ? (
-              <BookmarkIconSolid className="w-5text-stone-500 h-5" />
+              <BookmarkIconSolid className="h-5 w-5 text-stone-500" />
             ) : (
-              <BookmarkIconOutlined className="w-5text-stone-500 h-5" />
+              <BookmarkIconOutlined className="h-5 w-5 text-stone-500" />
             )}
             <div className="text-stone-500">{savedJob ? 'Un-save' : 'Save Job'}</div>
           </div>
