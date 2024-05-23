@@ -61,7 +61,6 @@ export const Messages = () => {
   const [messageDetailIsVisible, setMessageDetailIsVisible] = useState(false)
 
   const { showToast } = useUtils()
-
   const { _id } = GetTokenInfo()
 
   const defaultValues: IMessageFormValues = {
@@ -217,15 +216,24 @@ export const Messages = () => {
               rows={20}
               metaKeySelection={false}
               tableStyle={{ minWidth: '50rem' }}>
-              <Column
-                field="sender_id.first_name"
-                header="To"
-                body={(rowData: IMessageDocument) =>
-                  rowData.recipients.map((recipient: IRecipient) => (
-                    <span key={rowData._id}> {recipient?.user_id?.email}</span>
-                  ))
-                }
-              />
+              {roleType === 'employee' ? (
+                <Column
+                  field="sender_id.first_name"
+                  header="To"
+                  body={(rowData: IMessageDocument) => <span key={rowData._id}>Admins</span>}
+                />
+              ) : (
+                <Column
+                  field="sender_id.first_name"
+                  header="To"
+                  body={(rowData: IMessageDocument) =>
+                    rowData.recipients.map((recipient: IRecipient) => (
+                      <span key={rowData._id}>{roleType === 'employee' ? 'Admins' : recipient?.user_id?.email}</span>
+                    ))
+                  }
+                />
+              )}
+
               <Column field="message_content" header="Message" />
               <Column
                 body={(rowData: IMessageDocument) => <span>{new Date(rowData.createdAt).toLocaleString()}</span>}
@@ -245,9 +253,9 @@ export const Messages = () => {
       </div>
 
       <Dialog
-        header="New Message"
+        header="New Message to Admins"
         visible={newMessageVisible}
-        style={{ width: '50vw' }}
+        className="w-full md:w-1/2"
         onHide={() => setNewMessageVisible(false)}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-gray-900/10 pb-12 md:grid-cols-2">
@@ -280,9 +288,9 @@ export const Messages = () => {
                 </div>
               ) : null}
               <div className="sm:col-span-6">
-                <label htmlFor="message_content" className="block text-sm font-medium leading-6 text-gray-900">
+                {/* <label htmlFor="message_content" className="block text-sm font-medium leading-6 text-gray-900">
                   New Message
-                </label>
+                </label> */}
                 <div className="mt-2">
                   <Controller
                     name="message_content"
@@ -310,7 +318,7 @@ export const Messages = () => {
       <Dialog
         header="Message Details"
         visible={messageDetailIsVisible}
-        style={{ width: '50vw' }}
+        className="w-full md:w-1/2"
         onHide={() => setMessageDetailIsVisible(false)}>
         <h2>
           <strong> From: </strong> {selectedMessage?.sender_id?.email ?? ''}
