@@ -26,7 +26,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
   const { user } = useAuth()
   const role = getCurrentUserRole()
 
-  const links = user ? userLinks(user?.onboarding.completed, role) : userLinks(false, role)
+  const links = user ? userLinks(user?.onboarding?.completed, role) : userLinks(false, role)
 
   const tokenInfo = GetTokenInfo()
   const userIsOnboarded = tokenInfo?.onboarding?.completed
