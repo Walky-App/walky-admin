@@ -5,7 +5,7 @@ import { Outlet, useParams } from 'react-router-dom'
 import { Skeleton } from 'primereact/skeleton'
 
 import { type SubHeaderData, SubHeader } from '../../../components/shared/SubHeader'
-import { type ICompany } from '../../../interfaces/company'
+import { type ICompany } from '../../../interfaces/companyTypes'
 import { requestService } from '../../../services/requestServiceNew'
 import { adminCompanyLinks } from './adminCompanySubHeaderLinks'
 
