@@ -89,12 +89,12 @@ export const CategoryCards = ({
                   body: { className: 'p-0 mb-4 ' },
                   content: { className: 'p-0' },
                 }}>
-                <div className="flex h-auto sm:h-32  ">
-                  <div className="m-3" onClick={() => handlerSetCategory(category)} aria-hidden="true">
+                <div className="h-auto sm:h-32 md:flex  ">
+                  <div className="md:m-3" onClick={() => handlerSetCategory(category)} aria-hidden="true">
                     {category.image ? (
                       <img
                         alt={`Hemp Temp ${category.title} category`}
-                        className="h-24 w-24 rounded-xl object-cover object-center"
+                        className="h-96 w-full object-cover object-center  md:h-24 md:w-24 md:rounded-xl"
                         src={category.image}
                       />
                     ) : (
@@ -106,14 +106,12 @@ export const CategoryCards = ({
                     onClick={() => handlerSetCategory(category)}
                     aria-hidden="true">
                     <div className="text-xl font-semibold text-black">{category.title}</div>
-                    <div className=" h-12 overflow-hidden text-ellipsis font-normal text-stone-500">
-                      {category.description}
-                    </div>
+                    <div className=" h-12 overflow-hidden text-ellipsis  text-stone-500">{category.description}</div>
                   </div>
                   {isAdmin ? (
                     <div className="m-3 flex flex-col items-center gap-y-5 p-3">
                       <Badge color={category.is_disabled ? 'red' : 'green'} size="sm">
-                        <p className="font-normal text-stone-500">{category.is_disabled ? 'Disabled' : 'Active'}</p>
+                        <p className=" text-stone-500">{category.is_disabled ? 'Disabled' : 'Active'}</p>
                       </Badge>
                     </div>
                   ) : (
@@ -122,7 +120,7 @@ export const CategoryCards = ({
                       onClick={() => handlerCertification(category)}
                       type="button">
                       <div className="flex items-center justify-start gap-2">
-                        <div className="text-right font-normal text-black">
+                        <div className="text-right  text-black">
                           {categoryProgress(category._id) !== 0 && category.modules_number !== 0
                             ? (categoryProgress(category._id) / category.modules_number) * 100
                             : 0}
@@ -140,7 +138,7 @@ export const CategoryCards = ({
                         </div>
                       </div>
                       {categoryCompleted(category._id) ? (
-                        <div className="flex items-center text-center font-normal">
+                        <div className="flex items-center text-center ">
                           <ShieldCheckIcon className="h-4 w-4 text-green-600" />
                           <div>Completed</div>
                         </div>

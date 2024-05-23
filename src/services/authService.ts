@@ -12,5 +12,6 @@ export const LoginService = async (body: LoginData) => {
 
 export const LogoutService = async () => {
   localStorage.removeItem('ht_usr')
+  localStorage.clear()
   return true
 }
