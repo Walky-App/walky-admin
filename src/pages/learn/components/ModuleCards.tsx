@@ -54,13 +54,13 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                   onClick={() => handlerSetModule(module)}
                   pt={{
                     body: { className: 'p-0 mb-16' },
-                    content: { className: 'p-0 flex ' },
+                    content: { className: 'p-0 md:flex' },
                   }}>
-                  <div className="m-3">
+                  <div className="md:m-3">
                     {module.image ? (
                       <img
                         alt={`Hemp Temp ${module.title} module`}
-                        className="h-30 h-full w-36 rounded-xl sm:h-32"
+                        className="h-72 w-full object-cover sm:h-32 md:h-full md:w-36 md:rounded-xl"
                         src={module.image}
                       />
                     ) : (
@@ -87,9 +87,9 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                         <div className="flex h-5 items-center font-medium text-black">{module.level}</div>
                       </div>
                     </div>
-                    <div className="line-clamp-2 h-12 font-normal text-stone-500">{module.description}</div>
+                    <div className="line-clamp-2 h-12 text-stone-500">{module.description}</div>
                   </div>
-                  <div className="m-3 flex flex-col items-center">
+                  <div className="m-8 flex-col items-center md:m-3">
                     Units Completed
                     <CircularProgressBar
                       progressData={{
@@ -105,9 +105,7 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
             <div>
               <div className="flex h-96 flex-col items-center justify-center">
                 <div className="text-2xl font-semibold text-black">No modules found</div>
-                <div className="text-sm font-normal text-stone-500">
-                  We are working on the modules for you, coming soon
-                </div>
+                <div className=" text-stone-500">We are working on the modules for you, coming soon</div>
               </div>
             </div>
           )}

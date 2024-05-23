@@ -119,9 +119,9 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
           </Menu>
           {/* Responsive Separator */}
           <div className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
-          <div className="flex gap-x-4 self-stretch lg:justify-end lg:gap-x-6">
-            {/* Search Form *OPTIONAL* */}
-            {/* <form className="relative flex flex-1" action="#" method="GET">
+          {/* Search Form *OPTIONAL* */}
+          {/* <div className="flex self-stretch lg:justify-end lg:gap-x-6">
+            <form className="relative flex flex-1" action="#" method="GET">
                 <label htmlFor="search-field" className="sr-only">
                   Search
                 </label>
@@ -136,8 +136,8 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
                   type="search"
                   name="search"
                 />
-              </form> */}
-          </div>
+              </form>
+          </div> */}
 
           <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
             <span className="sr-only">Open sidebar</span>
