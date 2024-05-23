@@ -21,7 +21,7 @@ export interface IPaymentMethod {
 export interface ICompany {
   _id: string
   corp_name: string
-  company_dbas?: string[]
+  company_dbas: string[]
   tax_id: string
   phone_number: string
   payment_information: IPaymentMethod[]
@@ -32,6 +32,6 @@ export interface ICompany {
   zip: string
   facilities: IFacility[]
   users: IUser[]
-  createdAt?: string
-  updatedAt?: string
+  createdAt: string
+  updatedAt: string
 }

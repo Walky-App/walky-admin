@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { type ICompany } from '../../../interfaces/companyTypes'
-import { RequestService } from '../../../services/RequestService'
+import { type ICompany } from '../../../interfaces/company'
+import { requestService } from '../../../services/requestServiceNew'
 import { formatPhoneNumber } from '../../../utils/dataUtils'
 import { formatToDateTime } from '../../../utils/timeUtils'
 
@@ -15,7 +15,9 @@ export const AdminCompanyListPage = () => {
     setIsLoading(true)
     const getCompanies = async () => {
       try {
-        const allCompanies = await RequestService('companies')
+        const response = await requestService({ path: 'companies' })
+        if (!response.ok) throw new Error('Failed to fetch companies')
+        const allCompanies: ICompany[] = await response.json()
         setCompanies(allCompanies)
       } catch (error) {
         console.error('Error fetching companies', error)
@@ -59,9 +61,6 @@ export const AdminCompanyListPage = () => {
   return isLoading ? (
     <HTLoadingLogo />
   ) : (
-    <>
-      <div className="text-right" />
-      <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} allowClick />
-    </>
+    <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} allowClick />
   )
 }
