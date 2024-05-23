@@ -116,9 +116,9 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItem
               <div className="flex items-start gap-2">
                 <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                 <div className="mt-0.5 flex flex-col gap-1">
-                  <span className=" font-medium text-black">{job?.facility?.city}</span>
+                  <span className="font-medium text-black">{job?.facility?.city}</span>
                   {isDistanceRelatedButtonClicked && job.distance ? (
-                    <span className="  text-stone-500">{job.distance} miles</span>
+                    <span className="text-stone-500">{job.distance} miles</span>
                   ) : null}
                 </div>
               </div>
@@ -130,28 +130,28 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItem
             {/* Shift Schedule */}
             <div className="flex flex-wrap items-center justify-start gap-3">
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                <div className="  text-stone-500">Job Dates</div>
-                <div className="  text-black">
+                <div className="text-stone-500">Job Dates</div>
+                <div className="text-black">
                   {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
                 </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                <div className="  text-stone-500">Job Time</div>
-                <div className="  text-black">
+                <div className="text-stone-500">Job Time</div>
+                <div className="text-black">
                   {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
                 </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                <div className="  text-stone-500">Hours Daily</div>
-                <div className="  text-black">{job.total_hours}</div>
+                <div className="text-stone-500">Hours Daily</div>
+                <div className="text-black">{job.total_hours}</div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                <div className="  text-stone-500">Hourly Rate</div>
-                <div className="  text-black">{job.hourly_rate || 0} USD</div>
+                <div className="text-stone-500">Hourly Rate</div>
+                <div className="text-black">{job.hourly_rate || 0} USD</div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                <div className="  text-stone-500">Number of Days</div>
-                <div className="  text-black">{job.job_dates.length}</div>
+                <div className="text-stone-500">Number of Days</div>
+                <div className="text-black">{job.job_dates.length}</div>
               </div>
             </div>
           </div>
@@ -160,9 +160,7 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItem
         {/* Job Card Footer */}
         <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
           <div className="flex flex-wrap items-center justify-start gap-1">
-            <div className="text-balance   text-stone-500">
-              Posted on {new Date(job.createdAt).toLocaleDateString()}{' '}
-            </div>
+            <div className="text-balance text-stone-500">Posted on {new Date(job.createdAt).toLocaleDateString()} </div>
             <div className="h-1 w-1 rounded-full bg-stone-500" />
             <div className="  text-stone-500">#{job.uid}</div>
           </div>
@@ -177,11 +175,11 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked }: JobListItem
             }}
             className="flex h-4 cursor-pointer items-center justify-start gap-1">
             {savedJob ? (
-              <BookmarkIconSolid className="h-5 w-5 text-stone-500" />
+              <BookmarkIconSolid className="w-5text-stone-500 h-5" />
             ) : (
-              <BookmarkIconOutlined className="h-5 w-5 text-stone-500" />
+              <BookmarkIconOutlined className="w-5text-stone-500 h-5" />
             )}
-            <div className="  text-stone-500">{savedJob ? 'Un-save' : 'Save Job'}</div>
+            <div className="text-stone-500">{savedJob ? 'Un-save' : 'Save Job'}</div>
           </div>
         </div>
       </div>
