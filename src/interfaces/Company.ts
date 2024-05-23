@@ -1,4 +1,3 @@
-/* eslint-disable filename-rules/match */
 import { type IFacility } from './Facility'
 import { type IUser } from './User'
 

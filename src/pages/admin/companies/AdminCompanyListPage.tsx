@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { type ICompany } from '../../../interfaces/Company'
+import { type ICompany } from '../../../interfaces/company'
 import { RequestService } from '../../../services/RequestService'
 
 export const AdminCompanyListPage = () => {
