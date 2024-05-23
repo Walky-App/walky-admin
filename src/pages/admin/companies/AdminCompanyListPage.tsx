@@ -4,6 +4,8 @@ import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type ICompany } from '../../../interfaces/companyTypes'
 import { RequestService } from '../../../services/RequestService'
+import { formatPhoneNumber } from '../../../utils/dataUtils'
+import { formatToDateTime } from '../../../utils/timeUtils'
 
 export const AdminCompanyListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -35,7 +37,10 @@ export const AdminCompanyListPage = () => {
         accessor: (company: ICompany) => company.company_dbas?.join(', ') ?? '',
       },
       { Header: 'Tax ID', accessor: 'tax_id' },
-      { Header: 'Phone Number', accessor: 'phone_number' },
+      {
+        Header: 'Phone Number',
+        accessor: (company: ICompany) => (company.phone_number?.length ? formatPhoneNumber(company.phone_number) : ''),
+      },
       { Header: 'Payment Information', accessor: (company: ICompany) => company.payment_information.length },
       { Header: 'Country', accessor: 'country' },
       { Header: 'Address', accessor: 'address' },
@@ -43,7 +48,10 @@ export const AdminCompanyListPage = () => {
       { Header: 'State', accessor: 'state' },
       { Header: 'Zip', accessor: 'zip' },
       { Header: 'Facilities', accessor: (company: ICompany) => company.facilities.length },
-      { Header: 'Created At', accessor: 'createdAt' },
+      {
+        Header: 'Created At',
+        accessor: (company: ICompany) => (company.createdAt != null ? formatToDateTime(company.createdAt) : ''),
+      },
     ],
     [],
   )
