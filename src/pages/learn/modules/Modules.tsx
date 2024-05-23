@@ -56,8 +56,7 @@ export const Modules = () => {
             <div className="h-auto rounded-2xl border border-zinc-100 bg-white p-4">
               <div className="m-3 text-left text-2xl">Evaluate your skills with assessments</div>
               <div className="m-3 pb-2 text-left">
-                Get content recommendations in a specialized course by taking a targeted skills assessment & Increase
-                your hourly rate by <strong>$2</strong> on completion of the course.
+                Get content recommendations in a specialized course by taking a targeted skills assessment.
               </div>
               <div className="m-3 gap-2">
                 <div className="flex">
