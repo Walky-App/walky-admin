@@ -20,6 +20,7 @@ import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import { jobTitlesOptions, facilityContactRoles } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
+import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 
 interface IFacilityFormInputs {
@@ -234,12 +235,6 @@ export const AdminAddFacility = () => {
       }
     }
   }
-
-  const requiredFieldsNoticeText = (
-    <p className="mt-1 text-sm leading-6 text-gray-600">
-      <span style={{ color: 'red' }}>*</span> indicates a required field.
-    </p>
-  )
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">

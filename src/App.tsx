@@ -78,6 +78,9 @@ import { Certification } from './pages/admin/HTU/components/Certification'
 
 import { AdminJobs } from './pages/admin/jobs'
 
+import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
+import { AdminCompanyListPage } from './pages/admin/companies/AdminCompanyListPage'
+import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
@@ -172,6 +175,9 @@ export const App = () => {
                     <Route element={<AdminUserDetails />} path="/admin/users/:id" />
                     <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
                   </Route>
+                  <Route element={<AdminCompanyListPage />} path="/admin/companies" />
+                  <Route element={<AdminAddCompany />} path="/admin/companies/new" />
+                  <Route element={<AdminCompanyPage />} />
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />
