@@ -1,5 +1,4 @@
 import { type Documents } from './global'
-import { type ITimeSheet } from './timesheet'
 
 interface HistoryShifts extends Documents {
   date: Date
@@ -9,7 +8,7 @@ interface HistoryShifts extends Documents {
 
 export interface UserShifts extends Documents {
   user_id: string
-  timesheet_id: ITimeSheet
+  timesheet_id: string
   notes: string
   bonus: number
 }

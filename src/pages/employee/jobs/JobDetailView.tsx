@@ -20,6 +20,7 @@ import {
   createPunchPairsWithTotalTime,
 } from '../../../components/shared/timesheets/timesheetsUtils'
 import { type JobShiftDay, type IJob } from '../../../interfaces/job'
+import { type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
@@ -38,7 +39,7 @@ export const JobDetailView = () => {
   const [hasApplied, setHasApplied] = useState(false)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
-  const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: string } | null>(null)
+  const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: Shifts | string } | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isClockedIn, setIsClockedIn] = useState(false)
   const [prevIsClockedIn, setPrevIsClockedIn] = useState<boolean | null>(null)
@@ -120,7 +121,7 @@ export const JobDetailView = () => {
         const job: IJob = await RequestService(`jobs/${id}`)
         if (job._id) {
           setJob(job)
-          setShiftId(getShiftIdForToday(job.job_days))
+          getShiftIdForToday(job.job_days)
         } else {
           console.error('Job not found')
         }
@@ -146,7 +147,7 @@ export const JobDetailView = () => {
     return sortedTimesheets[0]
   }
 
-  const getShiftIdForToday = (jobDays: JobShiftDay[]): { isTodayShift: boolean; message: string } => {
+  const getShiftIdForToday = (jobDays: JobShiftDay[]): { isTodayShift: boolean; message: string | Shifts } => {
     const today = new Date().toISOString().split('T')[0]
 
     let upcomingDay: string | null = null
@@ -157,6 +158,7 @@ export const JobDetailView = () => {
     for (let i = 0; i < jobDays.length; i++) {
       const jobDayDate = new Date(jobDays[i].day).toISOString().split('T')[0]
       if (jobDayDate === today) {
+        setShiftId({ isTodayShift: true, message: jobDays[i].shifts_id })
         return { isTodayShift: true, message: jobDays[i].shifts_id }
       } else if (jobDayDate > today) {
         if (!upcomingDay || jobDayDate < upcomingDay) {
@@ -183,6 +185,12 @@ export const JobDetailView = () => {
     return { isTodayShift: false, message: 'No shifts available.' }
   }
 
+  const getIdTimeSheetForToday = () => {
+    const shift: Shifts = shiftId?.message as Shifts
+    const userShift = shift.user_shifts?.find(us => us.user_id === user._id)
+    return userShift ? (userShift.timesheet_id as string) : null
+  }
+
   const getCurrentJobTimeSheets = useCallback(async () => {
     const { access_token } = GetTokenInfo()
     const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
@@ -203,13 +211,22 @@ export const JobDetailView = () => {
       }
 
       if (response.status !== 204) {
-        const data = await response.json()
+        const data: ITimeSheet[] = await response.json()
+
+        const lastTimesheetId = getIdTimeSheetForToday()
+
         setTimesheets(data)
-        const lastTimesheet = getLatestTimeSheet(data)
 
-        const timeStampOfLastPunchIn = lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp
-
-        setIsClockedIn(lastTimesheet?.is_clocked_in === true ? isTodaySameAsTimeStamp(timeStampOfLastPunchIn) : false)
+        if (lastTimesheetId) {
+          const lastTimesheet = data.find(timesheet => timesheet._id === lastTimesheetId)
+          if (lastTimesheet) {
+            setIsClockedIn(
+              lastTimesheet.is_clocked_in === true
+                ? isTodaySameAsTimeStamp(lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp)
+                : false,
+            )
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
@@ -594,7 +611,7 @@ export const JobDetailView = () => {
                         </>
                       ) : (
                         <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          {getShiftIdForToday(job.job_days)?.message}
+                          {shiftId?.message as string}
                         </li>
                       )}
 
