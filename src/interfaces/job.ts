@@ -27,6 +27,11 @@ export interface IDnr {
   reason: string
 }
 
+export interface JobShiftDay {
+  day: Date
+  shifts_id: string
+}
+
 export interface IJob {
   _id: string
   uid: string
@@ -37,6 +42,7 @@ export interface IJob {
   end_time: number
   total_hours: number
   lunch_break: number
+  job_days: JobShiftDay[]
   job_dates: string[]
   job_tips: string[]
   vacancy: number
