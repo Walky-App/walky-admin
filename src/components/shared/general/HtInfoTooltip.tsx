@@ -18,7 +18,7 @@ export const HtInfoTooltip: React.FC<HtInfoTooltipProps> = ({ message, children,
           data-pr-tooltip={message}
           data-pr-position="top"
           data-pr-my="left bottom"
-          data-pr-at="left top-2"
+          data-pr-at="left top-5"
           data-pr-classname="text-sm text-wrap"
         />
         {children}
