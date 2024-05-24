@@ -553,7 +553,7 @@ export const JobDetailView = () => {
             {/* Clock in and Map */}
             {isLoading ? (
               <Skeleton shape="rectangle" height="150px" />
-            ) : job?.applicants[0]?.is_approved === true ? (
+            ) : isUserApprovedApplicant(job) ? (
               <div className="col-span-1 md:col-span-1">
                 <div className="flex flex-col">
                   <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
