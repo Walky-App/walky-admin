@@ -1,24 +1,27 @@
 import { Tooltip } from 'primereact/tooltip'
 
+import { cn } from '../../../utils/cn'
+
 interface HtInfoTooltipProps {
   message: string
   children?: React.ReactNode
+  className?: string
 }
 
-export const HtInfoTooltip: React.FC<HtInfoTooltipProps> = ({ message, children }) => {
+export const HtInfoTooltip: React.FC<HtInfoTooltipProps> = ({ message, children, className }) => {
   return (
     <>
-      <Tooltip target=".custom-target-icon" />
-      <div className="flex flex-row items-center gap-x-1">
-        {children}
+      <Tooltip target=".custom-target-icon" hideDelay={100} />
+      <div className={cn('mt-2 flex flex-row items-center gap-x-2', className)}>
         <i
-          className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-sm"
+          className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg sm:text-sm"
           data-pr-tooltip={message}
           data-pr-position="top"
-          data-pr-at="right+5 top"
-          data-pr-my="left center-2"
-          data-pr-classname="max-w-lg text-sm"
+          data-pr-my="left bottom"
+          data-pr-at="left top-2"
+          data-pr-classname="text-sm text-wrap"
         />
+        {children}
       </div>
     </>
   )
