@@ -423,7 +423,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
                       <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Address" />
                     </HtInfoTooltip>
                     <AddressAutoComplete
-                      fieldName={field.name}
+                      inputId={field.name}
                       controlled
                       setMoreAddressDetails={setMoreAddressDetails}
                       currentAddress={field.value}
