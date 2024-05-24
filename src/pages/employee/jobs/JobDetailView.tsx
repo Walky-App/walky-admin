@@ -611,7 +611,7 @@ export const JobDetailView = () => {
                         </>
                       ) : (
                         <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          {shiftId?.message as string}
+                          {getShiftIdForToday(job.job_days).message as string}
                         </li>
                       )}
 
