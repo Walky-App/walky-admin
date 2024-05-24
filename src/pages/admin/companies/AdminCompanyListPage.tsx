@@ -58,9 +58,5 @@ export const AdminCompanyListPage = () => {
     [],
   )
 
-  return isLoading ? (
-    <HTLoadingLogo />
-  ) : (
-    <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} allowClick />
-  )
+  return isLoading ? <HTLoadingLogo /> : <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} />
 }
