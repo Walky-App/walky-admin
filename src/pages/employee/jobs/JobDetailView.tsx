@@ -235,8 +235,10 @@ export const JobDetailView = () => {
   }, [job?._id, user._id])
 
   useEffect(() => {
-    if (job?.applicants[0]?.is_approved === true && user._id) {
-      getCurrentJobTimeSheets()
+    if (job) {
+      if (isUserApprovedApplicant()) {
+        getCurrentJobTimeSheets()
+      }
     }
   }, [getCurrentJobTimeSheets, job?.applicants, user._id])
 
@@ -338,8 +340,9 @@ export const JobDetailView = () => {
     setOpenFeedback(true)
   }
 
-  const isUserApprovedApplicant = (job: IJob) =>
-    job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
+  const isUserApprovedApplicant = () => {
+    return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
+  }
 
   const scheduleListTemplate = (job: IJob) => {
     return (
@@ -436,13 +439,13 @@ export const JobDetailView = () => {
                         {job.applicants.length} / {job.vacancy} Applicants
                       </div>
                     </div>
-                    {!isUserApprovedApplicant(job) ? job.title : null}
+                    {!isUserApprovedApplicant() ? job.title : null}
                   </>
                 }>
                 {/* Job Facility */}
                 <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex">
-                    {isUserApprovedApplicant(job) && job.facility?.main_image ? (
+                    {isUserApprovedApplicant() && job.facility?.main_image ? (
                       <div className="max-w-screen-xl">
                         <img
                           className="mb-2 mr-8 h-32 w-32 flex-none rounded-lg bg-gray-50 object-cover"
@@ -453,7 +456,7 @@ export const JobDetailView = () => {
                     ) : null}
 
                     <div className="align-center flex flex-col items-start justify-start gap-1">
-                      {isUserApprovedApplicant(job) ? (
+                      {isUserApprovedApplicant() ? (
                         <>
                           <div className="flex items-center text-2xl font-bold">{job.title}</div>
                           <div className="flex items-center">
@@ -508,7 +511,7 @@ export const JobDetailView = () => {
                   </div>
                 </div>
                 {/* Arrival Notes */}
-                {isUserApprovedApplicant(job) && job.facility?.notes ? (
+                {isUserApprovedApplicant() && job.facility?.notes ? (
                   <>
                     <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                     <div className="flex flex-wrap gap-4">
@@ -570,7 +573,7 @@ export const JobDetailView = () => {
             {/* Clock in and Map */}
             {isLoading ? (
               <Skeleton shape="rectangle" height="150px" />
-            ) : isUserApprovedApplicant(job) ? (
+            ) : isUserApprovedApplicant() ? (
               <div className="col-span-1 md:col-span-1">
                 <div className="flex flex-col">
                   <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
@@ -643,7 +646,7 @@ export const JobDetailView = () => {
                   <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
                     <ul className="w-full divide-y divide-gray-200">
                       <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        {isUserApprovedApplicant(job) ? (
+                        {isUserApprovedApplicant() ? (
                           <p>You have been accepted!</p>
                         ) : job?.applicants.some(
                             applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
@@ -694,12 +697,12 @@ export const JobDetailView = () => {
                   />
                   {checked ? <section className="mt-12">{scheduleListTemplate(job)}</section> : null}
                 </TabPanel>
-                {isUserApprovedApplicant(job) ? (
+                {isUserApprovedApplicant() ? (
                   <TabPanel header="Timesheet">
                     <section className="mt-4">{timesheetTableTemplate(punchPairsAndTotalTime)}</section>
                   </TabPanel>
                 ) : null}
-                {isUserApprovedApplicant(job) ? (
+                {isUserApprovedApplicant() ? (
                   <TabPanel header="Facility Images">
                     <section className="mt-4">{facilityImagesTemplate(job)}</section>
                   </TabPanel>
