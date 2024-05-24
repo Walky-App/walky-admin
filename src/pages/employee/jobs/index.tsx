@@ -222,12 +222,15 @@ export const EmployeeJobs = () => {
       setIsAppliedChecked(false)
       setIsApprovedChecked(false)
     }
+
+    const resetDistanceRelatedFilters = () => {
+      setIsDistanceRelatedButtonClicked(false)
+      setSelectedRange(null)
+    }
+
     return (
       <>
         <div className="mb-4 flex flex-col items-center pr-4">
-          <div className="flex w-full justify-start">
-            <Button label="Clear All Filters" text outlined link onClick={resetFilters} />
-          </div>
           <Button
             label="Use Current Location"
             text
@@ -252,7 +255,7 @@ export const EmployeeJobs = () => {
           </div>
         </div>
         {isDistanceRelatedButtonClicked ? (
-          <div className="mb-4 mt-6">
+          <div className="mb-4">
             <div className="mb-2">
               <HtInfoTooltip message="Select a range using slider below to filter jobs by distance from the selected location.">
                 <HtInputLabel
@@ -278,23 +281,33 @@ export const EmployeeJobs = () => {
             />
           </div>
         ) : null}
+        <div className="flex w-full justify-center">
+          {isDistanceRelatedButtonClicked ? (
+            <Button
+              label="Clear Distance"
+              className="align flex flex-row"
+              text
+              link
+              onClick={resetDistanceRelatedFilters}
+            />
+          ) : null}
+        </div>
         <HtInfoTooltip message="Select a start and end date to filter jobs by date range.">
           <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-md" />
         </HtInfoTooltip>
         <div className="mb-4 pr-4">
-          <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
           <Calendar
             value={dates}
             onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
             showButtonBar
-            inline={true}
             numberOfMonths={1}
             placeholder="by Date"
             readOnlyInput
             className="w-full"
           />
         </div>
+
         <div className="mb-2 grid grid-cols-3 items-center pr-4">
           {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 9).map(jobTitle => {
             return (
@@ -358,6 +371,9 @@ export const EmployeeJobs = () => {
               Approved
             </label>
           </div>
+        </div>
+        <div className="flex w-full justify-end">
+          <Button label="Clear All Filters" text link onClick={resetFilters} />
         </div>
       </>
     )
