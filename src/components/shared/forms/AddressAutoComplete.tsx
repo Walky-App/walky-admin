@@ -21,7 +21,7 @@ export interface AddressAutoCompleteProps {
   onChange?: (value: string) => void
   value?: string
   controlled?: boolean
-  fieldName?: string
+  inputId?: string
   className?: string
 }
 
@@ -31,7 +31,7 @@ export const AddressAutoComplete = ({
   onChange,
   value,
   controlled,
-  fieldName,
+  inputId,
   className,
 }: AddressAutoCompleteProps) => {
   const [predictions, setPredictions] = useState<IAddress[]>([])
@@ -82,7 +82,7 @@ export const AddressAutoComplete = ({
     return (
       <AutoComplete
         name="address"
-        inputId={fieldName}
+        inputId={inputId}
         placeholder={currentAddress}
         value={value}
         suggestions={filteredAddresses}
@@ -103,7 +103,7 @@ export const AddressAutoComplete = ({
   return (
     <AutoComplete
       name="address"
-      inputId={fieldName}
+      inputId={inputId}
       placeholder={currentAddress}
       value={selectedAddresses}
       suggestions={filteredAddresses}
