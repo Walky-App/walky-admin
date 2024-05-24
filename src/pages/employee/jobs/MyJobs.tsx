@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { TabPanel, TabView } from 'primereact/tabview'
 
-import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -42,6 +41,16 @@ export const EmployeeMyJobs = () => {
     getJobs()
   }, [_id])
 
+  const handleSaveUnsaveJob = (jobId: string, isSaved: boolean) => {
+    setJobs(
+      jobs.map(job =>
+        job._id === jobId
+          ? { ...job, saved_by: isSaved ? [...job.saved_by, _id] : job.saved_by.filter(id => id !== _id) }
+          : job,
+      ),
+    )
+  }
+
   const activeJobs = jobs?.filter(
     job => job.applicants.length > 0 && job.applicants[0].is_approved === true && job.is_completed === false,
   )
@@ -64,7 +73,6 @@ export const EmployeeMyJobs = () => {
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
-      <HeadingComponent title="My Jobs" />
       <div className="flex w-full justify-end">
         <SelectButton
           value={view}
@@ -83,7 +91,9 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Active & Upcoming">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {activeJobs?.length > 0 ? (
-                  activeJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                  activeJobs.map(job => (
+                    <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />
+                  ))
                 ) : (
                   <div>There are no active or upcoming jobs yet.</div>
                 )}
@@ -94,7 +104,9 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Pending">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {pendingJobs?.length > 0 ? (
-                  pendingJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                  pendingJobs.map(job => (
+                    <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />
+                  ))
                 ) : (
                   <div>There are no jobs pending yet.</div>
                 )}
@@ -104,7 +116,7 @@ export const EmployeeMyJobs = () => {
               <TabPanel header="Rejected">
                 <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                   {rejectedJobs?.length > 0 ? (
-                    rejectedJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                    rejectedJobs.map(job => <JobListItem key={job._id} job={job} />)
                   ) : (
                     <div>There are no jobs with rejections yet.</div>
                   )}
@@ -114,7 +126,9 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Saved Jobs">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {savedJobs?.length > 0 ? (
-                  savedJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                  savedJobs.map(job => (
+                    <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />
+                  ))
                 ) : (
                   <div>There are no jobs saved yet.</div>
                 )}
@@ -123,7 +137,7 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Past Jobs">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {pastJobs?.length > 0 ? (
-                  pastJobs.map((job: IJob) => <JobListItem key={job._id} job={job} />)
+                  pastJobs.map(job => <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />)
                 ) : (
                   <div>There are no jobs completed in the past yet.</div>
                 )}
