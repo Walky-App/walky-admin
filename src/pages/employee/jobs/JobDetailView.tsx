@@ -19,7 +19,7 @@ import {
   sortPunches,
   createPunchPairsWithTotalTime,
 } from '../../../components/shared/timesheets/timesheetsUtils'
-import { type IJob } from '../../../interfaces/job'
+import { type JobShiftDay, type IJob } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
@@ -38,6 +38,7 @@ export const JobDetailView = () => {
   const [hasApplied, setHasApplied] = useState(false)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
+  const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: string } | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isClockedIn, setIsClockedIn] = useState(false)
   const [prevIsClockedIn, setPrevIsClockedIn] = useState<boolean | null>(null)
@@ -119,6 +120,7 @@ export const JobDetailView = () => {
         const job: IJob = await RequestService(`jobs/${id}`)
         if (job._id) {
           setJob(job)
+          setShiftId(getShiftIdForToday(job.job_days))
         } else {
           console.error('Job not found')
         }
@@ -142,6 +144,43 @@ export const JobDetailView = () => {
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )
     return sortedTimesheets[0]
+  }
+
+  const getShiftIdForToday = (jobDays: JobShiftDay[]): { isTodayShift: boolean; message: string } => {
+    const today = new Date().toISOString().split('T')[0]
+
+    let upcomingDay: string | null = null
+    let pastDay: string | null = null
+
+    jobDays.sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
+
+    for (let i = 0; i < jobDays.length; i++) {
+      const jobDayDate = new Date(jobDays[i].day).toISOString().split('T')[0]
+      if (jobDayDate === today) {
+        return { isTodayShift: true, message: jobDays[i].shifts_id }
+      } else if (jobDayDate > today) {
+        if (!upcomingDay || jobDayDate < upcomingDay) {
+          upcomingDay = jobDayDate
+        }
+        if (i > 0) {
+          const previousDayDate = new Date(jobDays[i - 1].day).toISOString().split('T')[0]
+          if (previousDayDate < today && jobDayDate > today) {
+            return { isTodayShift: false, message: `There is no work today. The next shift is on ${jobDayDate}.` }
+          }
+        }
+      } else if (jobDayDate < today) {
+        if (!pastDay || jobDayDate > pastDay) {
+          pastDay = jobDayDate
+        }
+      }
+    }
+    if (upcomingDay) {
+      return { isTodayShift: false, message: `There are still days left until your job starts on ${upcomingDay}.` }
+    }
+    if (pastDay) {
+      return { isTodayShift: false, message: `The job has already ended.` }
+    }
+    return { isTodayShift: false, message: 'No shifts available.' }
   }
 
   const getCurrentJobTimeSheets = useCallback(async () => {
@@ -519,37 +558,46 @@ export const JobDetailView = () => {
                 <div className="flex flex-col">
                   <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
                     <ul className="w-full divide-y divide-gray-200">
-                      <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
-                        <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
-                        <p className="text-sm font-medium">
-                          {currentDate.toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </li>
-                      {isClockedIn ? (
-                        <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          <Button
-                            label="Clock Out"
-                            severity="warning"
-                            onClick={() => clockOut()}
-                            loading={isClockInOutLoading}
-                            className="w-full"
-                          />
-                        </li>
+                      {shiftId?.isTodayShift ? (
+                        <>
+                          <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
+                            <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
+                            <p className="text-sm font-medium">
+                              {currentDate.toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          </li>
+                          {isClockedIn ? (
+                            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                              <Button
+                                label="Clock Out"
+                                severity="warning"
+                                onClick={() => clockOut()}
+                                loading={isClockInOutLoading}
+                                className="w-full"
+                              />
+                            </li>
+                          ) : (
+                            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                              <Button
+                                label="Clock In"
+                                onClick={() => clockIn()}
+                                loading={isClockInOutLoading}
+                                className="w-full"
+                              />
+                            </li>
+                          )}
+                        </>
                       ) : (
                         <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          <Button
-                            label="Clock In"
-                            onClick={() => clockIn()}
-                            loading={isClockInOutLoading}
-                            className="w-full"
-                          />
+                          {getShiftIdForToday(job.job_days)?.message}
                         </li>
                       )}
+
                       <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                         <Button
                           label="Feedback"
