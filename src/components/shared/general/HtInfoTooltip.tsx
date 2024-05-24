@@ -14,7 +14,7 @@ export const HtInfoTooltip: React.FC<HtInfoTooltipProps> = ({ message, children,
       <Tooltip target=".custom-target-icon" hideDelay={100} />
       <div className={cn('mt-2 flex flex-row items-center gap-x-2', className)}>
         <i
-          className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg sm:text-sm"
+          className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg lg:text-sm"
           data-pr-tooltip={message}
           data-pr-position="top"
           data-pr-my="left bottom"
