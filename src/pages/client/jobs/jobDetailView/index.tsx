@@ -92,12 +92,15 @@ export const ClientJobDetailView = () => {
         method: 'PATCH',
         body: JSON.stringify(requestData),
       })
-      if (response !== null && response !== undefined) {
+      if (response.ok) {
         const updatedJob = await response.json()
         if (job && job._id) {
           setJob({ ...job, applicants: updatedJob.applicants })
         }
         showToast({ severity: 'success', summary: 'Applicant Accepted', detail: 'Applicant has been accepted' })
+      } else {
+        const responseError = await response.json()
+        showToast({ severity: 'error', summary: 'Completed job vacancies', detail: responseError.message })
       }
     } catch (error) {
       console.error(error)
