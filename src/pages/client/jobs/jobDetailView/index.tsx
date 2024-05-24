@@ -129,7 +129,7 @@ export const ClientJobDetailView = () => {
     }
   }
 
-  const handleAcceptAll = async () => {
+  /* const handleAcceptAll = async () => {
     try {
       const response = await requestService({ path: `jobs/${id}/acceptAll`, method: 'PATCH' })
       if (response !== null && response !== undefined) {
@@ -147,7 +147,7 @@ export const ClientJobDetailView = () => {
     } catch (error) {
       console.error(error)
     }
-  }
+  } */
 
   const onSubmit = async (userId: string) => {
     try {
@@ -398,7 +398,6 @@ export const ClientJobDetailView = () => {
                 id={id}
                 onSubmit={onSubmit}
                 handleAccept={handleAccept}
-                handleAcceptAll={handleAcceptAll}
                 handleReject={handleReject}
               />
             </TabPanel>
