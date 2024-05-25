@@ -15,6 +15,8 @@ import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
 import { useAuth } from '../../../contexts/AuthContext'
 import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 import { tooltipOptions } from '../../client/onboarding/ClientOnboardingPage'
 
 interface IUserFormValues {
@@ -48,6 +50,7 @@ export const AdminProfile = () => {
     notifications: [],
   })
   const { user } = useAuth()
+  const { showToast } = useUtils()
 
   const toast = useRef<Toast>(null)
 
@@ -106,15 +109,30 @@ export const AdminProfile = () => {
       const response = await RequestService(`users/${user?._id}`, 'PATCH', data)
       if (response._id) {
         setFormUser(response)
-        toast.current?.show({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'User information updated successfully',
-          life: 3000,
-        })
+        showToast({ severity: 'success', summary: 'Success', detail: 'User updated' })
       }
     } catch (error) {
       console.error('Error updating user:', error)
+    }
+  }
+
+  const handlePasswordReset = async () => {
+    try {
+      const request = await requestService({
+        path: '/auth/reset',
+        method: 'POST',
+        body: JSON.stringify({ email: formUser.email }),
+      })
+
+      if (request.ok) {
+        const data = await request.json()
+        if (data.message) {
+          showToast({ severity: 'success', summary: 'Success', detail: 'Password reset email sent' })
+        }
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error resetting password' })
     }
   }
 
@@ -126,8 +144,9 @@ export const AdminProfile = () => {
 
   return (
     <>
-      <div className="mb-12 w-full border-b border-gray-200 pb-5 ">
+      <div className="mb-12 flex w-full items-center justify-between border-b border-gray-200 pb-5 ">
         <h3 className="text-base font-semibold leading-6 text-gray-900">Your Profile Details</h3>
+        <Button label="Reset Password" severity="secondary" icon="pi pi-lock" onClick={handlePasswordReset} />
       </div>
 
       {user?.role ? (
@@ -324,6 +343,8 @@ export const AdminProfile = () => {
                       render={({ field, fieldState }) => (
                         <div>
                           <Calendar
+                            maxDate={new Date(2008, 0, 1)}
+                            minDate={new Date(1940, 0, 1)}
                             inputId={field.name}
                             value={field.value ? new Date(field.value) : undefined}
                             onChange={field.onChange}

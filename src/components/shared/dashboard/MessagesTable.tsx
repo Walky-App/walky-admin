@@ -59,24 +59,20 @@ export const MessagesTable: React.FC<Props> = ({ transactions }) => {
   }
 
   useEffect(() => {
-    const newSocket = io('ws://localhost:4040' as string)
-
-    newSocket.on('connect', () => {
-      newSocket.emit('join-chat', { channel_id: '660ec8eff5dbd8c67a5bac55', user_id: '65b2adf55b4bf7bf54d111f6' })
-    })
-
-    newSocket.on('660ec8eff5dbd8c67a5bac55', () => {
-      // console.log('message received')
-    })
-
-    newSocket.on('disconnect', () => {
-      // console.log('disconnected')
-    })
-
-    setSocket(newSocket)
-    return () => {
-      newSocket.disconnect()
-    }
+    // const newSocket = io('ws://localhost:4040' as string)
+    // newSocket.on('connect', () => {
+    //   newSocket.emit('join-chat', { channel_id: '660ec8eff5dbd8c67a5bac55', user_id: '65b2adf55b4bf7bf54d111f6' })
+    // })
+    // newSocket.on('660ec8eff5dbd8c67a5bac55', () => {
+    //   // console.log('message received')
+    // })
+    // newSocket.on('disconnect', () => {
+    //   // console.log('disconnected')
+    // })
+    // setSocket(newSocket)
+    // return () => {
+    //   newSocket.disconnect()
+    // }
   }, [])
 
   return (
