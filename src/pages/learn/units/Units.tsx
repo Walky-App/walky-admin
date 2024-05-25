@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Badge } from 'flowbite-react'
+import { Badge } from 'primereact/badge'
 
 import { ArrowRightIcon, CheckIcon } from '@heroicons/react/20/solid'
 import { BriefcaseIcon, ClockIcon, LockClosedIcon, NewspaperIcon } from '@heroicons/react/24/outline'
@@ -80,7 +80,7 @@ export const Units = () => {
           <div className="m-3 flex flex-1 flex-row gap-3">
             <div className="flex flex-1 flex-col justify-evenly">
               <div className="flex basis-1/3 flex-wrap ">
-                <Badge color="gray" size="sm">
+                <Badge color="gray">
                   <p className="text-xs font-normal text-stone-500">{module?.category?.title}</p>
                 </Badge>
               </div>

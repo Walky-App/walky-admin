@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { Spinner } from 'flowbite-react'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
@@ -97,7 +97,7 @@ export const AdminFacilityLicenses = () => {
           )}
         </div>
       ) : (
-        <Spinner color="success" size="lg" aria-label="Success spinner example" />
+        <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
       )}
       <ul className="divide-y divide-gray-100">
         {facility?.licenses?.map((license: IFacilityFile) => (
