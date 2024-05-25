@@ -2,21 +2,26 @@ import { useNavigate } from 'react-router-dom'
 
 import { Avatar } from 'primereact/avatar'
 
+import { UserGroupIcon } from '@heroicons/react/20/solid'
+
 import { type IUser } from '../../../interfaces/User'
 import { roleTxt } from '../../../utils/roleChecker'
 
 export const DashboardUserTable = ({ data }: { data: IUser[] }) => {
   const navigate = useNavigate()
   return (
-    <div className="mt-12 px-4 sm:px-6 lg:px-8">
+    <div className="mt-24 px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">
-            {data.length} - Employees / Clients Onboarding
-          </h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all the employees and clients that are currently onboarding.
-          </p>
+        <div className="flex">
+          <UserGroupIcon className="mr-4 h-7 w-7 flex-shrink-0 text-gray-400" aria-hidden="true" />
+          <div>
+            <h3 className="text-xl font-semibold leading-6 text-gray-900">
+              {data.length} - Employees / Clients Onboarding
+            </h3>
+            <p className="mt-2 text-sm text-gray-700">
+              A list of all the employees and clients that are currently onboarding.
+            </p>
+          </div>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button

@@ -131,8 +131,13 @@ export const AdminUserDetails = () => {
                   <select
                     id="status"
                     name="active"
-                    value={formUser.onboarding.completed?.toString() ?? 'false'}
-                    onChange={handleInputChange as unknown as React.ChangeEventHandler<HTMLSelectElement>}
+                    defaultValue={formUser.onboarding.completed?.toString() ?? 'false'}
+                    onChange={() =>
+                      setFormUser({
+                        ...formUser,
+                        onboarding: { ...formUser.onboarding, completed: !formUser.onboarding.completed },
+                      })
+                    }
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                     <option value="true">Approved</option>
                     <option value="false">Pending</option>
@@ -204,7 +209,6 @@ export const AdminUserDetails = () => {
                   type="tel"
                   name="phone_number"
                   id="phone_number"
-                  pattern="\d{10}"
                   title="Phone number should be 10 digits"
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />

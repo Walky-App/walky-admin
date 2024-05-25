@@ -14,8 +14,10 @@ import { Tag } from 'primereact/tag'
 import { classNames } from 'primereact/utils'
 
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface IUserSlim {
   _id: string
@@ -59,6 +61,7 @@ export const Messages = () => {
   const [messageDetailIsVisible, setMessageDetailIsVisible] = useState(false)
 
   const { showToast } = useUtils()
+  const { _id } = GetTokenInfo()
 
   const defaultValues: IMessageFormValues = {
     name: 'message',
@@ -75,27 +78,28 @@ export const Messages = () => {
 
   const roleType = roleChecker()
 
-  useEffect(() => {
-    const getMessages = async () => {
-      try {
-        if (roleType === 'admin') {
-          const allUsers = await RequestService(`users`)
-          if (allUsers.length !== 0) {
-            setAllUsers(allUsers)
-          }
+  const getMessages = async () => {
+    try {
+      if (roleType === 'admin') {
+        const allUsers = await RequestService(`users`)
+        if (allUsers.length !== 0) {
+          setAllUsers(allUsers)
         }
-
-        const data = await RequestService(`messages`)
-
-        if (data.length !== 0) {
-          setAllMessages(data)
-        }
-      } catch (error) {
-        console.error('error fetching messages', error)
       }
+
+      const data = await RequestService(`messages`)
+
+      if (data.length !== 0) {
+        setAllMessages(data)
+      }
+    } catch (error) {
+      console.error('error fetching messages', error)
     }
+  }
+
+  useEffect(() => {
     getMessages()
-  }, [roleType])
+  }, [])
 
   const handleMessageRecepients = () => {
     if (roleType === 'admin') {
@@ -124,15 +128,20 @@ export const Messages = () => {
 
   const onSubmit: SubmitHandler<IMessageFormValues> = async data => {
     try {
-      const response = await RequestService('messages', 'POST', { ...data, recipients: handleMessageRecepients() })
-      if (response !== null && response !== undefined) {
-        setAllMessages(response)
+      const response = await requestService({
+        path: 'messages',
+        method: 'POST',
+        body: JSON.stringify({ ...data, recipients: handleMessageRecepients() }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setAllMessages(data)
         showToast({ severity: 'success', summary: 'Success', detail: 'message sent successfully!' })
         reset()
       }
     } catch (error) {
       console.error('Error:', error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error creating holiday' })
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error sending message' })
     }
   }
 
@@ -156,8 +165,11 @@ export const Messages = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-1">
-        <div className="flex justify-between">
-          <Button onClick={() => setNewMessageVisible(true)}>+ New Message</Button>
+        <div className="flex">
+          <Button onClick={() => setNewMessageVisible(true)} className="mr-3">
+            + New Message
+          </Button>
+          <Button icon="pi pi-refresh" severity="secondary" aria-label="Refresh" onClick={() => getMessages()} />
         </div>
 
         <TabView className="mt-4">
@@ -176,9 +188,12 @@ export const Messages = () => {
                 rows={20}
                 className="bg-gray-100"
                 metaKeySelection={false}
-                rowClassName={(rowData: IMessageDocument) =>
-                  rowData.recipients.map((recipient: IRecipient) => (recipient.read === false ? ' font-bold' : ''))
-                }
+                rowClassName={(rowData: IMessageDocument) => {
+                  const idFound = rowData.recipients.find(recipient => recipient?.user_id?._id === _id)
+                  if (idFound && idFound.read === false) {
+                    return 'font-bold'
+                  }
+                }}
                 tableStyle={{ minWidth: '50rem' }}>
                 <Column field="sender_id.first_name" header="From" />
                 <Column field="message_content" header="Message" style={{ width: '70%' }} />
@@ -201,15 +216,24 @@ export const Messages = () => {
               rows={20}
               metaKeySelection={false}
               tableStyle={{ minWidth: '50rem' }}>
-              <Column
-                field="sender_id.first_name"
-                header="To"
-                body={(rowData: IMessageDocument) =>
-                  rowData.recipients.map((recipient: IRecipient) => (
-                    <span key={rowData._id}> {recipient.user_id.email}</span>
-                  ))
-                }
-              />
+              {roleType === 'employee' ? (
+                <Column
+                  field="sender_id.first_name"
+                  header="To"
+                  body={(rowData: IMessageDocument) => <span key={rowData._id}>Admins</span>}
+                />
+              ) : (
+                <Column
+                  field="sender_id.first_name"
+                  header="To"
+                  body={(rowData: IMessageDocument) =>
+                    rowData.recipients.map((recipient: IRecipient) => (
+                      <span key={rowData._id}>{roleType === 'employee' ? 'Admins' : recipient?.user_id?.email}</span>
+                    ))
+                  }
+                />
+              )}
+
               <Column field="message_content" header="Message" />
               <Column
                 body={(rowData: IMessageDocument) => <span>{new Date(rowData.createdAt).toLocaleString()}</span>}
@@ -229,9 +253,9 @@ export const Messages = () => {
       </div>
 
       <Dialog
-        header="New Message"
+        header="New Message to Admins"
         visible={newMessageVisible}
-        style={{ width: '50vw' }}
+        className="w-full md:w-1/2"
         onHide={() => setNewMessageVisible(false)}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-gray-900/10 pb-12 md:grid-cols-2">
@@ -264,9 +288,9 @@ export const Messages = () => {
                 </div>
               ) : null}
               <div className="sm:col-span-6">
-                <label htmlFor="message_content" className="block text-sm font-medium leading-6 text-gray-900">
+                {/* <label htmlFor="message_content" className="block text-sm font-medium leading-6 text-gray-900">
                   New Message
-                </label>
+                </label> */}
                 <div className="mt-2">
                   <Controller
                     name="message_content"
@@ -294,7 +318,7 @@ export const Messages = () => {
       <Dialog
         header="Message Details"
         visible={messageDetailIsVisible}
-        style={{ width: '50vw' }}
+        className="w-full md:w-1/2"
         onHide={() => setMessageDetailIsVisible(false)}>
         <h2>
           <strong> From: </strong> {selectedMessage?.sender_id?.email ?? ''}
