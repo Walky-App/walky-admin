@@ -213,11 +213,8 @@ export const EmployeeJobs = () => {
   }
 
   const renderFiltersContent = () => {
-    const resetFilters = () => {
+    const resetAllFilters = () => {
       setSelectedJobTitles([])
-      setDates(null)
-      setIsDistanceRelatedButtonClicked(false)
-      setSelectedRange(null)
       setIsNewChecked(false)
       setIsAppliedChecked(false)
       setIsApprovedChecked(false)
@@ -307,7 +304,6 @@ export const EmployeeJobs = () => {
             className="w-full"
           />
         </div>
-
         <div className="mb-2 grid grid-cols-3 items-center pr-4">
           {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 9).map(jobTitle => {
             return (
@@ -373,7 +369,7 @@ export const EmployeeJobs = () => {
           </div>
         </div>
         <div className="flex w-full justify-end">
-          <Button label="Clear All Filters" text link onClick={resetFilters} />
+          <Button label="Clear Checkboxes" text link onClick={resetAllFilters} />
         </div>
       </>
     )
