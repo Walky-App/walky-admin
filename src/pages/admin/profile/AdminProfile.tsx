@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, type SetStateAction, type Dispatch } from 'react'
 
 import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
 
@@ -13,6 +13,7 @@ import { classNames } from 'primereact/utils'
 
 import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
 import { useAuth } from '../../../contexts/AuthContext'
+import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -159,7 +160,7 @@ export const AdminProfile = () => {
                 </p>
               </div>
               <div>
-                <UploadAvatar formUser={user} setFormUser={setFormUser} />
+                <UploadAvatar formUser={user} setFormUser={setFormUser as Dispatch<SetStateAction<IUser>>} />
               </div>
             </div>
 

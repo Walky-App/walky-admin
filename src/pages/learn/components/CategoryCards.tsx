@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 
-import { Badge } from 'flowbite-react'
+import { Badge } from 'primereact/badge'
 import { Card } from 'primereact/card'
 
 import { ShieldCheckIcon } from '@heroicons/react/20/solid'
@@ -110,8 +110,8 @@ export const CategoryCards = ({
                   </div>
                   {isAdmin ? (
                     <div className="m-3 flex flex-col items-center gap-y-5 p-3">
-                      <Badge color={category.is_disabled ? 'red' : 'green'} size="sm">
-                        <p className=" text-stone-500">{category.is_disabled ? 'Disabled' : 'Active'}</p>
+                      <Badge color={category.is_disabled ? 'red' : 'green'}>
+                        <p className="font-normal text-stone-500">{category.is_disabled ? 'Disabled' : 'Active'}</p>
                       </Badge>
                     </div>
                   ) : (
