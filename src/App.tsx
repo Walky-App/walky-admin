@@ -13,6 +13,7 @@ import { Error404 } from './pages/Error404'
 import { Auth } from './pages/auth'
 import { NewPasswordForm } from './pages/auth/NewPasswordForm'
 import { Signup } from './pages/auth/SignupForm'
+import { TermsAndConditions } from './pages/auth/TermAndConditions'
 
 /******************************************* HTU Pages ************************************/
 import { Learn } from './pages/learn/Learn'
@@ -107,6 +108,7 @@ export const App = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<Auth />} path="/" />
+            <Route element={<TermsAndConditions />} path="/terms-and-conditions" />
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/invite/:email/:role" />
