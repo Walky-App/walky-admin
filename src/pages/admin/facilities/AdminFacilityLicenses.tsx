@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState, useRef, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
