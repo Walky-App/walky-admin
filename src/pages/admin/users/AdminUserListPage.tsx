@@ -38,7 +38,7 @@ export const AdminUserListPage = () => {
         accessor: (d: IUser) => (d.active ? 'Active' : 'Disabled'),
       },
       { Header: 'Email', accessor: 'email' },
-      { Header: 'Phone Number', accessor: 'phone_number' },
+      { Header: 'Phone', accessor: 'phone_number' },
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
       { Header: 'Zip', accessor: 'zip' },
