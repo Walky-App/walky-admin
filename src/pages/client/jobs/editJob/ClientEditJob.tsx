@@ -228,11 +228,11 @@ export const ClientEditJob = () => {
 
             <div className="sm:col-span-3">{renderVacancyController(control, errors)}</div>
 
+            <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
+
             <div className="sm:col-span-3">{renderPayRateController(control, errors)}</div>
 
-            <div className="sm:col-span-3">{renderJobTipsController(control, errors)}</div>
-
-            <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
+            <div className="sm:col-span-6 sm:col-start-1">{renderJobTipsController(control, errors)}</div>
           </div>
         </div>
 

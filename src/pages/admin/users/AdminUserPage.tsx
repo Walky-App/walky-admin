@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect, createContext, useContext } from 'react'
 
 import { Outlet, useParams } from 'react-router-dom'
