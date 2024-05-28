@@ -10,6 +10,9 @@ import {
 import { Image } from 'primereact/image'
 import { Panel } from 'primereact/panel'
 
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
@@ -41,7 +44,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
       const data: IFacilityFormInputs = JSON.parse(event.xhr.response)
 
       showToast({
-        severity: 'info',
+        severity: 'success',
         summary: 'File Uploaded',
         detail: `${event.files[0].name} has been uploaded successfully.`,
         life: 2000,
@@ -81,9 +84,8 @@ export const Step2 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business License Documents</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please upload your business license documents. Please make sure your upload is clear without any warped or
-              blur portions and shows all relevant information.
+            <p className="mt-4 text-sm leading-6 text-gray-600">
+              Upload a copy of the facility's valid business license issued by the appropriate regulatory authority.
             </p>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -104,28 +106,35 @@ export const Step2 = ({ step, setStep }: StepProps) => {
             ) : null}
 
             <div className="sm:col-span-6">
-              <label htmlFor="stateLicenseDocument" className="block text-sm font-medium leading-6 text-gray-900">
-                Upload Licenses:
-              </label>
+              <HtInfoTooltip message="A valid business license is crucial for verifying legitimacy.">
+                <HtInputLabel htmlFor="stateLicenseDocument" labelText="Upload Licenses:" />
+              </HtInfoTooltip>
               <div className="mt-2">
                 <FileUpload
                   id="stateLicenseDocument"
                   name="files"
                   ref={fileUploadRef}
-                  maxFileSize={1000000}
+                  maxFileSize={5000000}
                   accept="application/pdf, image/*"
                   multiple={true}
                   mode="advanced"
+                  auto={true}
                   url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`}
                   onBeforeSend={handleBeforeSend}
                   onUpload={handleUploadSuccess}
                   onError={handleUploadError}
                   emptyTemplate={
                     <p>
-                      Drag and drop <u>State and/or City License</u> PDF files to upload. Max size: 1MB
+                      Drag-and-drop or choose your <u>State and/or City License</u> PDF files to upload. Max size: 5MB
                     </p>
                   }
                   previewWidth={200}
+                  pt={{ actions: { className: 'hidden' } }}
+                />
+                <HtInputHelpText
+                  fieldName="stateLicenseDocument"
+                  helpText="Please make sure your upload is clear without any warped or blur portions and shows all relevant
+                        information."
                 />
               </div>
             </div>
@@ -136,10 +145,15 @@ export const Step2 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Images</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please upload your business license documents. Please make sure your upload is clear without any warped or
-              blur portions and shows all relevant information.
-            </p>
+            <h3 className="mt-4 text-sm leading-6 text-gray-600">Please upload images of:</h3>
+            <ul className="mt-3 space-y-2 [&>li]:text-balance">
+              <li className="mt-1 text-sm leading-6 text-gray-600">
+                Interior of the facility, showcasing the layout, equipment, and safety features.
+              </li>
+              <li className="mt-1 text-sm leading-6 text-gray-600">
+                Exterior of the facility, including the entrance door temps will use to enter.
+              </li>
+            </ul>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             {facilitiesArray[0]?.images.length > 0 ? (
@@ -168,25 +182,34 @@ export const Step2 = ({ step, setStep }: StepProps) => {
               <label htmlFor="facilityImages" className="block text-sm font-medium leading-6 text-gray-900">
                 Upload Images:
               </label>
+              <HtInfoTooltip message="Images should showcase the layout, equipment, and safety features of the facility.">
+                <HtInputLabel htmlFor="facilityImages" labelText="Upload Images:" />
+              </HtInfoTooltip>
               <div className="mt-2">
                 <FileUpload
                   id="facilityImages"
                   name="files"
                   ref={fileUploadRef}
-                  maxFileSize={2000000}
+                  maxFileSize={5000000}
                   accept="image/*"
                   multiple={true}
                   mode="advanced"
+                  auto={true}
                   url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/images`}
                   onBeforeSend={handleBeforeSend}
                   onUpload={handleUploadSuccess}
                   onError={handleUploadError}
                   emptyTemplate={
                     <p>
-                      Drag and drop <u>Facility Image</u> files to upload. Max file size: 2MB
+                      Drag-and-drop or choose your <u> Facility</u> image files to upload. Max file size: 5MB
                     </p>
                   }
                   previewWidth={200}
+                  pt={{ actions: { className: 'hidden' } }}
+                />
+                <HtInputHelpText
+                  fieldName="facilityImages"
+                  helpText="Please make sure your upload is clear without any warped or blur portions and shows all relevant information."
                 />
               </div>
             </div>

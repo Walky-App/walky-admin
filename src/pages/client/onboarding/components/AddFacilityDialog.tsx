@@ -112,7 +112,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
 
         if (response?._id) {
           showToast({
-            severity: 'info',
+            severity: 'success',
             summary: 'Changes saved for:',
             detail: getValues('name'),
           })
@@ -134,7 +134,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
         const response = await RequestService(`facilities`, 'POST', newFacilityData)
 
         if (response?._id) {
-          showToast({ severity: 'info', summary: 'Facility Added', detail: getValues('name') })
+          showToast({ severity: 'success', summary: 'Facility Added', detail: getValues('name') })
 
           setFacilitiesArray(prevState => [...prevState, response])
         } else {

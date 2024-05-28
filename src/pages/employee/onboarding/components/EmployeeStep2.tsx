@@ -89,7 +89,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
       const response: IUser = JSON.parse(event.xhr.response)
 
       showToast({
-        severity: 'info',
+        severity: 'success',
         summary: 'File Uploaded',
         detail: `${event.files[0].name} has been uploaded successfully.`,
         life: 2000,
