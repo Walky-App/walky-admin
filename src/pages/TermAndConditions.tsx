@@ -11,7 +11,7 @@ export const TermsAndConditions = () => {
   return (
     <div data-id="6954587d-f5fb-4c69-81ce-7831091f07bf" data-type="iframe">
       <a href="https://app.termly.io/policy-viewer/policy.html?policyUUID=6954587d-f5fb-4c69-81ce-7831091f07bf">
-        Terms and conditons
+        Terms and conditions
       </a>
     </div>
   )

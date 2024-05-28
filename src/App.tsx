@@ -13,7 +13,6 @@ import { Error404 } from './pages/Error404'
 import { Auth } from './pages/auth'
 import { NewPasswordForm } from './pages/auth/NewPasswordForm'
 import { Signup } from './pages/auth/SignupForm'
-import { TermsAndConditions } from './pages/auth/TermAndConditions'
 
 /******************************************* HTU Pages ************************************/
 import { Learn } from './pages/learn/Learn'
@@ -85,6 +84,9 @@ import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
+import { Pricing } from './pages/Pricing'
+import { TermsAndConditions } from './pages/TermAndConditions'
+
 /******************************************* Employee Pages ************************************/
 
 /** Employee Pages */
@@ -108,6 +110,7 @@ export const App = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<Auth />} path="/" />
+            <Route element={<Pricing />} path="/pricing" />
             <Route element={<TermsAndConditions />} path="/terms-and-conditions" />
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
