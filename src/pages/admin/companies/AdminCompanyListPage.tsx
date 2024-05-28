@@ -32,14 +32,15 @@ export const AdminCompanyListPage = () => {
 
   const memoCompaniesColumns = useMemo(
     () => [
-      { Header: 'Corp Name', accessor: 'corp_name' },
+      { Header: 'Name', accessor: 'corp_name' },
       {
         Header: 'DBA',
+        width: '200px',
         accessor: (company: ICompany) => company.company_dbas?.join(', ') ?? '',
       },
       { Header: 'Tax ID', accessor: 'tax_id' },
       {
-        Header: 'Phone Number',
+        Header: 'Phone',
         accessor: (company: ICompany) => (company.phone_number?.length ? formatPhoneNumber(company.phone_number) : ''),
       },
       { Header: 'Payment Information', accessor: (company: ICompany) => company.payment_information.length },
@@ -47,7 +48,7 @@ export const AdminCompanyListPage = () => {
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
       { Header: 'Zip', accessor: 'zip' },
-      { Header: 'Facilities', accessor: (company: ICompany) => company.facilities.length },
+      { Header: 'Facilities', width: '10px', accessor: (company: ICompany) => company.facilities.length },
       {
         Header: 'Created At',
         accessor: (company: ICompany) => (company.createdAt != null ? formatToDateTime(company.createdAt) : ''),

@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 import { useState, useRef, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { Spinner } from 'flowbite-react'
+import { Button } from 'primereact/button'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacilityFile, type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
@@ -30,6 +29,7 @@ export const AdminFacilityLicenses = () => {
   const { facilityId } = useParams()
 
   const filesInputRef = useRef<any>()
+  const { showToast } = useUtils()
 
   useEffect(() => {
     const getFacility = async () => {
@@ -67,6 +67,29 @@ export const AdminFacilityLicenses = () => {
     filesInputRef.current.click()
   }
 
+  const handleDelete = async (fileKey: string, licenseId: string) => {
+    const body = {
+      file_type: 'licenses',
+      file_id: licenseId,
+      file_path: fileKey,
+    }
+    try {
+      const response = await requestService({
+        path: `facilities/${facilityId}/file`,
+        method: 'DELETE',
+        body: JSON.stringify(body),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setFacility(data)
+        showToast({ severity: 'success', summary: 'Success', detail: 'File deleted successfully' })
+      }
+    } catch (error) {
+      showToast({ severity: 'error', summary: 'Error', detail: 'An error occurred while deleting the file' })
+    }
+  }
+
   return (
     <>
       {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
@@ -83,9 +106,9 @@ export const AdminFacilityLicenses = () => {
       {!uploading ? (
         <div className="my-5 flex items-center">
           {files.length === 0 ? (
-            <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
-              <PlusCircleIcon className="h-20 w-20 text-green-500 hover:text-green-400" aria-hidden="true" />
-            </span>
+            <Button className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
+              <PlusCircleIcon aria-hidden="true" />
+            </Button>
           ) : (
             <button
               onClick={handleImagesUpload}
@@ -97,7 +120,7 @@ export const AdminFacilityLicenses = () => {
           )}
         </div>
       ) : (
-        <Spinner color="success" size="lg" aria-label="Success spinner example" />
+        <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
       )}
       <ul className="divide-y divide-gray-100">
         {facility?.licenses?.map((license: IFacilityFile) => (
@@ -130,14 +153,14 @@ export const AdminFacilityLicenses = () => {
                 ) : null}
               </div>
             </div>
-            {/* <div className="disabled flex flex-none items-center gap-x-4">
-              <a
-                href="/"
-                target="_blank"
-                className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
-                Delete
-              </a>
-            </div> */}
+
+            <Button
+              label="Delete"
+              severity="secondary"
+              outlined
+              size="small"
+              onClick={() => handleDelete(license.key ?? '', license._id ?? '')}
+            />
           </li>
         ))}
       </ul>

@@ -58,7 +58,7 @@ export const GlobalTable = ({ data, columns, allowClick }: ITableProps) => {
           ]}
         />
       </div>
-      <div className="mx-auto max-w-6xl overflow-x-auto">
+      <div className="w-full">
         <TableComponent
           getTableProps={getTableProps}
           headerGroups={headerGroups}

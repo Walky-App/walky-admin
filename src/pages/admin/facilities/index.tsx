@@ -17,28 +17,6 @@ const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
 export const AdminFacilities = () => {
   const [facilities, setFacilities] = useState<IFacility[]>([])
 
-  const handleDisabledFacilities = async () => {
-    const disabledFacilities = await RequestService('facilities/inactive')
-    setFacilities(disabledFacilities)
-  }
-
-  const handleAllFacilities = async () => {
-    const disabledFacilities = await RequestService('facilities')
-    setFacilities(disabledFacilities)
-  }
-  const handleActiveFacilities = async () => {
-    const allFacilities = await RequestService('facilities/active')
-    setFacilities(allFacilities)
-  }
-  const handleNolocationFacilities = async () => {
-    const allFacilities = await RequestService('facilities/nolocation')
-    setFacilities(allFacilities)
-  }
-  const handleMissingImages = async () => {
-    const allFacilities = await RequestService('facilities/noimages')
-    setFacilities(allFacilities)
-  }
-
   useMemo(() => {
     const getFacilities = async () => {
       const allFacilities = await RequestService('facilities/active')
@@ -51,8 +29,8 @@ export const AdminFacilities = () => {
   const adminColumns = [
     {
       Header: 'Image',
-      width: '100px',
-      height: '100px',
+      width: '200px',
+      height: '200px',
       Cell: ({ row, value }: IRow) => {
         return (
           <div className="flex items-center gap-2">
@@ -66,6 +44,15 @@ export const AdminFacilities = () => {
         )
       },
     },
+    { Header: 'Name', accessor: 'name', width: '200px' },
+    { Header: 'DBAs', accessor: 'company_dbas' },
+    { Header: 'Address', accessor: 'address', width: '300px' },
+    { Header: 'State', accessor: 'state', width: '10px' },
+    {
+      Header: 'Polygon',
+      accessor: (a: IFacility) => (a.location_polygon.length > 0 ? 'Yes' : 'No'),
+      width: '10px',
+    },
     {
       Header: 'Status',
       width: '10px',
@@ -76,52 +63,9 @@ export const AdminFacilities = () => {
       accessor: (d: IFacility) => (d.isApproved ? 'Approved' : 'Pending'),
       width: '40px',
     },
-    { Header: 'Name', accessor: 'name' },
-    { Header: 'DBAs', accessor: 'company_dbas' },
-    { Header: 'Address', accessor: 'address', width: '300px' },
-    { Header: 'City', accessor: 'city' },
-    { Header: 'State', accessor: 'state', width: '10px' },
-    { Header: 'Zip', accessor: 'zip' },
+    { Header: 'Images', width: '10px', accessor: (a: IFacility) => a.images.length },
+    { Header: 'Licenses', width: '10px', accessor: (a: IFacility) => a.licenses.length },
   ]
 
-  return facilities.length === 0 ? (
-    <HTLoadingLogo />
-  ) : (
-    <>
-      <button
-        type="button"
-        onClick={handleDisabledFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        Disabled
-      </button>
-
-      <button
-        type="button"
-        onClick={handleActiveFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        Active
-      </button>
-      <button
-        type="button"
-        onClick={handleNolocationFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        No Coordinates
-      </button>
-      <button
-        type="button"
-        onClick={handleMissingImages}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        No Images
-      </button>
-
-      <button
-        type="button"
-        onClick={handleAllFacilities}
-        className="mb-4 ml-3 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-        All
-      </button>
-
-      <FacilitiesTable columns={adminColumns} data={facilities} />
-    </>
-  )
+  return facilities.length === 0 ? <HTLoadingLogo /> : <FacilitiesTable columns={adminColumns} data={facilities} />
 }
