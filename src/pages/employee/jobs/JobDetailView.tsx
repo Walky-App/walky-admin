@@ -495,7 +495,7 @@ export const JobDetailView = () => {
                 {/* Job Card Footer */}
                 <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
                   <div className="flex flex-wrap items-center justify-start gap-1">
-                    <div className="text-balance  text-stone-500">
+                    <div className="text-balance text-stone-500">
                       Last update on {new Date(job.createdAt).toLocaleDateString()}
                     </div>
                     <div className="h-1 w-1 rounded-full bg-stone-500" />
