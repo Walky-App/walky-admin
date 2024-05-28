@@ -376,7 +376,7 @@ export const JobDetailView = () => {
                   <>
                     <div className="flex items-center">
                       <i className="pi pi-users" />
-                      <div className="mb-2 ml-1 mt-2 text-sm  text-stone-500">
+                      <div className="mb-2 ml-1 mt-2 text-sm text-stone-500">
                         {job.applicants.length} / {job.vacancy} Applicants
                       </div>
                     </div>
