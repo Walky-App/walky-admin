@@ -4,7 +4,7 @@ import { FaClipboardCheck, FaClock } from 'react-icons/fa'
 import { FaFileLines } from 'react-icons/fa6'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Badge } from 'flowbite-react'
+import { Badge } from 'primereact/badge'
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { Bars2Icon, PlusIcon } from '@heroicons/react/20/solid'
@@ -73,7 +73,7 @@ export const AdminUnitsLearn = () => {
           </div>
           <div className="m-6 flex flex-1 flex-col justify-center gap-3">
             <div className="flex basis-1/3 flex-wrap ">
-              <Badge color="gray" size="sm">
+              <Badge color="gray">
                 <p className="font-normal text-stone-500">{category?.title}</p>
               </Badge>
             </div>

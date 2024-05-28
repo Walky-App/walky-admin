@@ -9,10 +9,10 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { Spinner } from 'flowbite-react'
 import { Badge } from 'primereact/badge'
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Image } from 'primereact/image'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { Dialog, Transition } from '@headlessui/react'
 import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
@@ -188,7 +188,7 @@ export const AdminFacilityImages = () => {
           )}
         </div>
       ) : (
-        <Spinner color="success" size="lg" aria-label="Success spinner example" />
+        <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
       )}
       <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
         {sortedImagesWithMainImageFirst?.map(file => (
