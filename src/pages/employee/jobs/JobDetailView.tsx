@@ -364,7 +364,7 @@ export const JobDetailView = () => {
 
   return (
     <div className="mx-auto px-2 sm:px-6 lg:px-2">
-      {/* <BreadCrumbs /> */}
+      {/* <BreadCrumbs/> */}
       <HeadingComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         {job ? (
@@ -458,7 +458,7 @@ export const JobDetailView = () => {
                         <i className="pi pi-info-circle" />
                         <span className="text-base font-medium text-black">
                           Arrival notes: <span className="font-normal">{job.facility.notes}</span>
-                        </span>{' '}
+                        </span>
                       </div>
                     </div>
                   </>
@@ -467,29 +467,29 @@ export const JobDetailView = () => {
                 <hr className="mt-3 h-px w-full bg-zinc-100" />
                 <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className=" text-stone-500">Job Dates</div>
-                    <div className=" text-black">
+                    <div className="text-stone-500">Job Dates</div>
+                    <div className="text-black">
                       {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className=" text-stone-500">Job Time</div>
-                    <div className=" text-black">
+                    <div className="text-stone-500">Job Time</div>
+                    <div className="text-black">
                       {convertMilitaryTimeToStandardTime(job.start_time)} -{' '}
                       {convertMilitaryTimeToStandardTime(job.end_time)}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className=" text-stone-500">Lunch Break</div>
-                    <div className=" text-black">{job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}</div>
+                    <div className="text-stone-500">Lunch Break</div>
+                    <div className="text-black">{job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}</div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className=" text-stone-500">Hours Daily</div>
-                    <div className=" text-black">{job.total_hours} hours </div>
+                    <div className="text-stone-500">Hours Daily</div>
+                    <div className="text-black">{job.total_hours} hours </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className=" text-stone-500">Hourly Rate</div>
-                    <div className=" text-black">{job.hourly_rate || 0} USD </div>
+                    <div className="text-stone-500">Hourly Rate</div>
+                    <div className="text-black">{job.hourly_rate || 0} USD </div>
                   </div>
                 </div>
                 {/* Job Card Footer */}
@@ -499,7 +499,7 @@ export const JobDetailView = () => {
                       Last update on {new Date(job.createdAt).toLocaleDateString()}
                     </div>
                     <div className="h-1 w-1 rounded-full bg-stone-500" />
-                    <div className=" text-stone-500">#{job.uid}</div>
+                    <div className="text-stone-500">#{job.uid}</div>
                   </div>
                 </div>
               </Card>
