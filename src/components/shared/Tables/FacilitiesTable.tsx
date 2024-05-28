@@ -16,7 +16,7 @@ export const FacilitiesTable: React.FC<FacilitiesTableProps> = ({ columns, data 
     </div>
   ) : (
     <>
-      <h2 className="prose text-gray-500"> Total Items {data.length}</h2>
+      <h2 className="prose text-gray-500"> Total Facilities {data.length}</h2>
       <GlobalTable data={data} columns={columns} allowClick />
     </>
   )
