@@ -167,7 +167,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
+            <p className="mt-4 text-sm leading-6 text-gray-600">
               Please provide information about your business so that we can verify you on the platform.
             </p>
             {requiredFieldsNoticeText}
@@ -405,7 +405,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
+            <p className="mt-4 text-sm leading-6 text-gray-600">
               Please provide your facility business address information.
             </p>
             {requiredFieldsNoticeText}
@@ -445,7 +445,7 @@ export const Step1 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Contact Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information below.</p>
+            <p className="mt-4 text-sm leading-6 text-gray-600">Please provide your contact information below.</p>
             {requiredFieldsNoticeText}
           </div>
 
