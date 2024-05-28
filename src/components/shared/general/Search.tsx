@@ -1,6 +1,8 @@
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useSearchParams } from 'react-router-dom'
+
 import { useDebouncedCallback } from 'use-debounce'
+
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
 interface Props {
   searchQuery: string
@@ -28,7 +30,7 @@ export const Search = ({ searchQuery, roundedOrientation }: Props) => {
         <MagnifyingGlassIcon aria-hidden="true" className="h-5 w-5 text-gray-400" />
       </div>
       <input
-        className={`hidden w-full ${roundedOrientation ? roundedOrientation : 'rounded'} border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-800 sm:block`}
+        className={`w-full ${roundedOrientation ? roundedOrientation : 'rounded'} border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-800 sm:block`}
         defaultValue={searchParams.get(searchQuery) as string}
         id="search-component"
         name="search-component"

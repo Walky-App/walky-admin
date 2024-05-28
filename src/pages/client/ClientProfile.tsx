@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, type SetStateAction, type Dispatch } from 'react'
 
 import { Controller, type FieldErrors, type SubmitHandler, useForm } from 'react-hook-form'
 
@@ -13,6 +13,7 @@ import { classNames } from 'primereact/utils'
 
 import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 import { useAuth } from '../../contexts/AuthContext'
+import { type IUser } from '../../interfaces/User'
 import { RequestService } from '../../services/RequestService'
 import { tooltipOptions } from './onboarding/ClientOnboardingPage'
 
@@ -141,7 +142,7 @@ export default function ClientProfile() {
                 </p>
               </div>
               <div>
-                <UploadAvatar formUser={user} setFormUser={setFormUser} />
+                <UploadAvatar formUser={user} setFormUser={setFormUser as Dispatch<SetStateAction<IUser>>} />
               </div>
             </div>
 
