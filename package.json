@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@headlessui/react": "^1.7.18",
+    "@headlessui/react": "^0.0.0-insiders.e8c7661",
     "@hello-pangea/dnd": "^16.5.0",
     "@heroicons/react": "^2.1.1",
     "@nextui-org/chip": "^2.0.25",
