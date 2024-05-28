@@ -10,7 +10,6 @@ import { formatToDateTime } from '../../../utils/timeUtils'
 export const AdminCompanyListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [companies, setCompanies] = useState<ICompany[]>([])
-
   useEffect(() => {
     setIsLoading(true)
     const getCompanies = async () => {
@@ -44,7 +43,6 @@ export const AdminCompanyListPage = () => {
         accessor: (company: ICompany) => (company.phone_number?.length ? formatPhoneNumber(company.phone_number) : ''),
       },
       { Header: 'Payment Information', accessor: (company: ICompany) => company.payment_information.length },
-      { Header: 'Country', accessor: 'country' },
       { Header: 'Address', accessor: 'address' },
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
@@ -58,5 +56,9 @@ export const AdminCompanyListPage = () => {
     [],
   )
 
-  return isLoading ? <HTLoadingLogo /> : <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} />
+  return isLoading ? (
+    <HTLoadingLogo />
+  ) : (
+    <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} allowClick />
+  )
 }

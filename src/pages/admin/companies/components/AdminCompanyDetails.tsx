@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
-import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
+import { useForm, type SubmitHandler, Controller } from 'react-hook-form'
+import { useParams, useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { InputMask } from 'primereact/inputmask'
@@ -9,19 +9,20 @@ import { InputText } from 'primereact/inputtext'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
 import { classNames } from 'primereact/utils'
 
-import { AddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
-import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
-import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IFacility } from '../../../interfaces/Facility'
-import { type IUser } from '../../../interfaces/User'
-import { requestService } from '../../../services/requestServiceNew'
-import { useUtils } from '../../../store/useUtils'
-import { getFormErrorMessage } from '../../../utils/formUtils'
-import { requiredFieldsNoticeText } from '../../../utils/formUtils'
+import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IFacility } from '../../../../interfaces/Facility'
+import { type IUser } from '../../../../interfaces/User'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { useAdminCompanyPageContext } from '../AdminCompanyPage'
 
-export interface ICompanyFormInputs {
+interface ICompanyFormInputs {
   corp_name: string
   company_dbas: string[]
   tax_id: string
@@ -31,15 +32,20 @@ export interface ICompanyFormInputs {
   state: string
   zip: string
   country: string
-  facilities: IFacility[]
-  clients: IUser[]
+  facilities: string[]
+  clients: string[]
 }
 
-export const AdminAddCompany = () => {
+export const AdminCompanyDetails = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
+  const params = useParams()
+  const navigate = useNavigate()
+  const { showToast } = useUtils()
+
   const [allFacilities, setFacilities] = useState<IFacility[]>([])
   const [allClients, setClients] = useState<IUser[]>([])
-  const navigate = useNavigate()
+
+  const { selectedCompanyData } = useAdminCompanyPageContext()
 
   useEffect(() => {
     const getAllFacilities = async () => {
@@ -74,9 +80,7 @@ export const AdminAddCompany = () => {
     getAllClients()
   }, [])
 
-  const { showToast } = useUtils()
-
-  const defaultValues: ICompanyFormInputs = {
+  const defaultCompanyFormValues: ICompanyFormInputs = {
     corp_name: '',
     company_dbas: [],
     tax_id: '',
@@ -95,7 +99,9 @@ export const AdminAddCompany = () => {
     formState: { errors },
     handleSubmit,
     setValue,
-  } = useForm<ICompanyFormInputs>({ defaultValues })
+  } = useForm<ICompanyFormInputs>({
+    defaultValues: defaultCompanyFormValues,
+  })
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -119,21 +125,42 @@ export const AdminAddCompany = () => {
     }
   }, [moreAddressDetails, setValue])
 
-  const onSubmit: SubmitHandler<ICompanyFormInputs> = async (data: ICompanyFormInputs) => {
+  useEffect(() => {
+    if (selectedCompanyData) {
+      setValue('corp_name', selectedCompanyData.corp_name)
+      setValue('company_dbas', selectedCompanyData.company_dbas)
+      setValue('tax_id', selectedCompanyData.tax_id)
+      setValue('address', selectedCompanyData.address)
+      setValue('phone_number', selectedCompanyData.phone_number)
+      setValue('city', selectedCompanyData.city)
+      setValue('state', selectedCompanyData.state)
+      setValue('zip', selectedCompanyData.zip)
+      setValue('country', selectedCompanyData.country)
+      setValue('facilities', selectedCompanyData.facilities)
+      setValue('clients', selectedCompanyData.clients)
+    }
+  }, [selectedCompanyData, setValue])
+
+  const onSubmit: SubmitHandler<ICompanyFormInputs> = async data => {
     try {
-      const response = await requestService({ path: 'companies', method: 'POST', body: JSON.stringify(data) })
+      const response = await requestService({
+        path: `companies/${params.id}`,
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      })
       if (!response.ok) {
-        throw new Error('Failed to add company')
+        throw new Error('Failed to update company')
       }
-      showToast({ severity: 'success', summary: 'Company added successfully' })
+      showToast({ severity: 'success', summary: 'Company updated successfully' })
       setTimeout(() => {
-        navigate('/admin/companies')
-      }, 2000);
+        navigate(`/admin/companies`)
+      }, 2000)
     } catch (error) {
-      console.error('Error adding company: ', error)
-      showToast({ severity: 'error', summary: 'Failed to add company' })
+      console.error('Error updating company: ', error)
+      showToast({ severity: 'error', summary: 'Failed to update company' })
     }
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <div className="space-y-4 sm:space-y-12">
@@ -278,38 +305,44 @@ export const AdminAddCompany = () => {
               {getFormErrorMessage('phone_number', errors)}
             </div>
 
+            
             <div className="sm:col-span-3">
               <Controller
                 control={control}
                 name="clients"
                 rules={{ required: 'At least one client is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="All clients related to this company">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Clients" />
-                    </HtInfoTooltip>
-                    <MultiSelect
-                      id={field.name}
-                      {...field}
-                      value={field.value}
-                      optionLabel="email"
-                      options={allClients}
-                      display="chip"
-                      selectAll
-                      selectAllLabel="Select All"
-                      onChange={(e: MultiSelectChangeEvent) => {
-                        field.onChange(e.value)
-                      }}
-                      placeholder="Select Services"
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                    />
-                    <HtInputHelpText
-                      fieldName={field.name}
-                      helpText="Please select all clients related to this company."
-                    />
-                    {getFormErrorMessage('services', errors)}
-                  </>
-                )}
+                render={({ field, fieldState }) => {
+                  const selectedClients = field.value
+                    .map(id => allClients.find(client => client._id === id))
+                    .filter(Boolean)
+                  return (
+                    <>
+                      <HtInfoTooltip message="All clients related to this company">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Clients" />
+                      </HtInfoTooltip>
+                      <MultiSelect
+                        id={field.name}
+                        {...field}
+                        value={selectedClients}
+                        optionLabel="email"
+                        options={allClients}
+                        display="chip"
+                        selectAll
+                        selectAllLabel="Select All"
+                        onChange={(e: MultiSelectChangeEvent) => {
+                          field.onChange(e.value.map((client: IUser) => client._id))
+                        }}
+                        placeholder="Select Services"
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      />
+                      <HtInputHelpText
+                        fieldName={field.name}
+                        helpText="Please select all clients related to this company."
+                      />
+                      {getFormErrorMessage('services', errors)}
+                    </>
+                  )
+                }}
               />
             </div>
 
@@ -318,35 +351,41 @@ export const AdminAddCompany = () => {
                 control={control}
                 name="facilities"
                 rules={{ required: 'At least one facility is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="All facilities related to this company">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facilities" />
-                    </HtInfoTooltip>
-                    <MultiSelect
-                      id={field.name}
-                      {...field}
-                      value={field.value}
-                      optionLabel="name"
-                      options={allFacilities}
-                      display="chip"
-                      selectAll
-                      selectAllLabel="Select All"
-                      onChange={(e: MultiSelectChangeEvent) => {
-                        field.onChange(e.value)
-                      }}
-                      placeholder="Select Services"
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                    />
-                    <HtInputHelpText
-                      fieldName={field.name}
-                      helpText="Please select all facilities that this company owns."
-                    />
-                    {getFormErrorMessage('services', errors)}
-                  </>
-                )}
+                render={({ field, fieldState }) => {
+                  const selectedFacilities = field.value
+                    .map(item => allFacilities.find(facility => facility._id === item))
+                    .filter(Boolean)
+                  return (
+                    <>
+                      <HtInfoTooltip message="All facilities related to this company">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Facilities" />
+                      </HtInfoTooltip>
+                      <MultiSelect
+                        id={field.name}
+                        {...field}
+                        value={selectedFacilities}
+                        optionLabel="name"
+                        options={allFacilities}
+                        display="chip"
+                        selectAll
+                        selectAllLabel="Select All"
+                        onChange={(e: MultiSelectChangeEvent) => {
+                          field.onChange(e.value.map((facility: IFacility) => facility._id))
+                        }}
+                        placeholder="Select Services"
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      />
+                      <HtInputHelpText
+                        fieldName={field.name}
+                        helpText="Please select all facilities that this company owns."
+                      />
+                      {getFormErrorMessage('services', errors)}
+                    </>
+                  )
+                }}
               />
             </div>
+
           </div>
         </div>
       </div>

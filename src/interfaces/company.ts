@@ -1,6 +1,3 @@
-import { type IFacility } from './Facility'
-import { type IUser } from './User'
-
 export interface IPaymentMethod {
   method: 'CC' | 'ACH'
   card_number?: string
@@ -30,8 +27,8 @@ export interface ICompany {
   city: string
   state: string
   zip: string
-  facilities: IFacility[]
-  users: IUser[]
+  facilities: string[]
+  clients: string[]
   createdAt: string
   updatedAt: string
 }
