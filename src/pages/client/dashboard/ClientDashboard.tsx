@@ -5,9 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
 
 import { DashboardHeader } from '../../../components/shared/dashboard'
-import { useAuth } from '../../../contexts/AuthContext'
-import { type IUser } from '../../../interfaces/User'
-import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export type Status = string
@@ -34,26 +31,25 @@ export const ClientDashboard = () => {
   // const [facilities, setFacilities] = useState<IFacility[]>([])
 
   const navigate = useNavigate()
-  const { user, setUser } = useAuth()
-  const userId = GetTokenInfo()?._id
+  const user = GetTokenInfo()
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const response = await requestService({ path: `users/${userId}` })
+  //       if (!response.ok) throw new Error('User not found')
+  //       const userFound: IUser = await response.json()
+  //       setUser(userFound)
+  //     } catch (error) {
+  //       console.error('Error fetching user:', error)
+  //     }
+  //   }
+
+  //   if (userId != null) fetchUser()
+  // }, [setUser, user?._id, userId])
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await requestService({ path: `users/${userId}` })
-        if (!response.ok) throw new Error('User not found')
-        const userFound: IUser = await response.json()
-        setUser(userFound)
-      } catch (error) {
-        console.error('Error fetching user:', error)
-      }
-    }
-
-    if (userId != null) fetchUser()
-  }, [setUser, user?._id, userId])
-
-  useEffect(() => {
-    if (!user?.onboarding?.completed) navigate('/client/onboarding')
+    if (user?.onboarding?.completed === false) navigate('/client/onboarding')
   }, [navigate, user?.onboarding?.completed])
 
   // useEffect(() => {
