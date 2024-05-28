@@ -84,6 +84,9 @@ import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
+import { Pricing } from './pages/Pricing'
+import { TermsAndConditions } from './pages/TermAndConditions'
+
 /******************************************* Employee Pages ************************************/
 
 /** Employee Pages */
@@ -107,6 +110,8 @@ export const App = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<Auth />} path="/" />
+            <Route element={<Pricing />} path="/pricing" />
+            <Route element={<TermsAndConditions />} path="/terms-and-conditions" />
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/invite/:email/:role" />

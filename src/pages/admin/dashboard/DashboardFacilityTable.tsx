@@ -52,7 +52,13 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
                     <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                       <div className="flex items-center">
                         <div className="h-11 w-11 flex-shrink-0">
-                          <Avatar label={facility?.name[0]} image={facility?.main_image} size="large" shape="circle" />
+                          <Avatar
+                            label={facility?.name[0]}
+                            image={facility?.main_image}
+                            className="object-cover"
+                            size="large"
+                            shape="circle"
+                          />
                         </div>
                         <div className="ml-4">
                           <div className="font-medium text-gray-900">{facility.name}</div>

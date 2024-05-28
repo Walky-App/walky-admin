@@ -1,15 +1,21 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, type Dispatch, type SetStateAction } from 'react'
 
-import { Spinner } from 'flowbite-react'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { UserCircleIcon, PencilIcon } from '@heroicons/react/24/solid'
 
 import { useAuth } from '../../../contexts/AuthContext'
+import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const UploadAvatar = ({ formUser, setFormUser }: any) => {
+export const UploadAvatar = ({
+  formUser,
+  setFormUser,
+}: {
+  formUser: IUser
+  setFormUser: Dispatch<SetStateAction<IUser>>
+}) => {
   const [file, setFile] = useState<File | null>(null)
   const { setUser, user } = useAuth()
   const { setAvatarImageUrl } = useUtils()
@@ -87,7 +93,7 @@ export const UploadAvatar = ({ formUser, setFormUser }: any) => {
             </span>
           </button>
         ) : (
-          <Spinner color="success" size="lg" aria-label="Success spinner example" />
+          <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
         )}
       </div>
     </div>
