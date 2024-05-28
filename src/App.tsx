@@ -84,6 +84,7 @@ import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
+import { LayoutPublic } from './components/layoutPublic'
 import { Pricing } from './pages/Pricing'
 import { TermsAndConditions } from './pages/TermAndConditions'
 
@@ -110,12 +111,15 @@ export const App = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<Auth />} path="/" />
-            <Route element={<Pricing />} path="/pricing" />
-            <Route element={<TermsAndConditions />} path="/terms-and-conditions" />
             <Route element={<Auth />} path="/login" />
-            <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
-            <Route element={<Signup />} path="/invite/:email/:role" />
-            <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
+            <Route element={<LayoutPublic />}>
+              <Route element={<Pricing />} path="/pricing" />
+              <Route element={<TermsAndConditions />} path="/terms-and-conditions" />
+              <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
+              <Route element={<Signup />} path="/invite/:email/:role" />
+              <Route element={<Signup />} path="/signup" />
+              <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
+            </Route>
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
