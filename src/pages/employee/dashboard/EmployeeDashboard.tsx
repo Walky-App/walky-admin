@@ -25,7 +25,7 @@ export const EmployeeDashboard = () => {
   const user = GetTokenInfo()
 
   useEffect(() => {
-    if (user?.onboarding?.completed === false) navigate('/employee/onboarding')
+    if (!(user?.onboarding?.completed ?? false)) navigate('/employee/onboarding')
   }, [navigate, user?.onboarding?.completed])
 
   return (
