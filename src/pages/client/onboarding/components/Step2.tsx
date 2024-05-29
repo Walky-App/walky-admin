@@ -114,7 +114,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
                   id="stateLicenseDocument"
                   name="files"
                   ref={fileUploadRef}
-                  maxFileSize={5000000}
+                  maxFileSize={5242880}
                   accept="application/pdf, image/*"
                   multiple={true}
                   mode="advanced"
@@ -125,7 +125,8 @@ export const Step2 = ({ step, setStep }: StepProps) => {
                   onError={handleUploadError}
                   emptyTemplate={
                     <p>
-                      Drag-and-drop or choose your <u>State and/or City License</u> PDF files to upload. Max size: 5MB
+                      Drag-and-drop or choose your <u>State and/or City License</u> PDF files to upload. Maximum file
+                      size: 5MB
                     </p>
                   }
                   previewWidth={200}
@@ -190,7 +191,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
                   id="facilityImages"
                   name="files"
                   ref={fileUploadRef}
-                  maxFileSize={5000000}
+                  maxFileSize={5242880}
                   accept="image/*"
                   multiple={true}
                   mode="advanced"
@@ -201,7 +202,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
                   onError={handleUploadError}
                   emptyTemplate={
                     <p>
-                      Drag-and-drop or choose your <u> Facility</u> image files to upload. Max file size: 5MB
+                      Drag-and-drop or choose your <u> Facility</u> image files to upload. Maximum file size: 5MB
                     </p>
                   }
                   previewWidth={200}
