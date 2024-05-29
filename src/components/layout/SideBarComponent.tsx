@@ -37,7 +37,9 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
         'ring-1 ring-white/10': sidebarOpen,
       })}>
       <div className="mt-4 flex shrink-0 items-center justify-center">
-        <Link to={user ? `/${role}/dashboard` : '/'}>{LogosPack('sidebar')}</Link>
+        <Link to={user ? `/${role}/dashboard` : '/'} onClick={() => setActivePage('')}>
+          {LogosPack('sidebar')}
+        </Link>
       </div>
       <nav className="flex flex-1 flex-col">
         <ul className="flex flex-1 flex-col gap-y-7">
