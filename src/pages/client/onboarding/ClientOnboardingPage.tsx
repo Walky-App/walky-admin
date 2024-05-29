@@ -15,6 +15,11 @@ import { Step1, Step2, Step3, Step4, Step5, WelcomeDialog } from './components'
 
 const defaultFacilityFormValues: IFacilityFormInputs = {
   user_id: '',
+  corp_name: '',
+  company_dbas: [],
+  company_phone_number: '',
+  company_address: '',
+  tax_id: '',
   name: '',
   country: '',
   address: '',
@@ -22,13 +27,10 @@ const defaultFacilityFormValues: IFacilityFormInputs = {
   state: '',
   zip: '',
   location_pin: [],
-  tax_id: '',
   phone_number: '',
   notes: '',
   active: false,
   sqft: undefined,
-  corp_name: '',
-  company_dbas: [],
   services: [],
   images: [],
   contacts: [
@@ -67,20 +69,23 @@ export interface IImage {
 
 export interface IFacilityFormInputs {
   user_id: string
+  corp_name: string
+  company_dbas: string[]
+  tax_id: string
+  company_phone_number: string
+  company_address: string
   name: string
   country: string
   address: string
   city: string
   state: string
   zip: string
-  tax_id: string
   location_pin: number[]
   phone_number: string
   notes: string
   active: boolean
   sqft: number | undefined
-  corp_name: string
-  company_dbas: string[]
+
   services: string[]
   images: IImage[]
   contacts: IContact[]
