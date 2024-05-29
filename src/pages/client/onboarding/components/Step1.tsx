@@ -50,22 +50,22 @@ export const Step1 = ({ step, setStep }: StepProps) => {
 
   useEffect(() => {
     if (moreAddressDetails) {
-      if (moreAddressDetails.zip) {
+      if (moreAddressDetails.zip != null) {
         setValue('zip', moreAddressDetails.zip)
       }
-      if (moreAddressDetails.state) {
+      if (moreAddressDetails.state != null) {
         setValue('state', moreAddressDetails.state)
       }
-      if (moreAddressDetails.city) {
+      if (moreAddressDetails.city != null) {
         setValue('city', moreAddressDetails.city)
       }
-      if (moreAddressDetails.location_pin) {
+      if (moreAddressDetails.location_pin != null) {
         setValue('location_pin', moreAddressDetails.location_pin)
       }
-      if (moreAddressDetails.address) {
+      if (moreAddressDetails.address != null) {
         setValue('address', moreAddressDetails.address)
       }
-      if (moreAddressDetails.country) {
+      if (moreAddressDetails.country != null) {
         setValue('country', moreAddressDetails.country)
       }
 
