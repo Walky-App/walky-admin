@@ -15,7 +15,7 @@ export const ImportUpdateModal = ({ visible, setVisible }: WelcomeDialogProps) =
   const toast = useRef<Toast>(null)
 
   const handleOnUpload = async () => {
-    toast.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' })
+    toast.current?.show({ severity: 'success', summary: 'Success', detail: 'File Uploaded' })
     setVisible(false)
   }
 

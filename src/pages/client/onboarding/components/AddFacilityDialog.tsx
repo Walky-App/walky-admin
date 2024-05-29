@@ -112,7 +112,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
 
         if (response?._id) {
           showToast({
-            severity: 'info',
+            severity: 'success',
             summary: 'Changes saved for:',
             detail: getValues('name'),
           })
@@ -134,7 +134,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
         const response = await RequestService(`facilities`, 'POST', newFacilityData)
 
         if (response?._id) {
-          showToast({ severity: 'info', summary: 'Facility Added', detail: getValues('name') })
+          showToast({ severity: 'success', summary: 'Facility Added', detail: getValues('name') })
 
           setFacilitiesArray(prevState => [...prevState, response])
         } else {
@@ -159,7 +159,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
   const headerTemplate = (
     <>
       {selectedFacility?._id ?? '' ? <h3>Edit Facility Information</h3> : <h3>Add Facility Information</h3>}
-      <p className="mt-1 text-sm leading-6 text-gray-600">
+      <p className="mt-4 text-sm leading-6 text-gray-600">
         <span style={{ color: 'red' }}>*</span> indicates a required field.
       </p>
     </>
@@ -326,7 +326,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
         <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2 [&>*]:mb-4">
           <div className="sm:col-span-6">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Location</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
+            <p className="mt-4 text-sm leading-6 text-gray-600">
               Please provide your facility business address information below.
             </p>
           </div>
@@ -361,7 +361,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
         <div className="grid max-w-lg grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-6 md:col-span-2 [&>*]:mb-4">
           <div className="sm:col-span-6">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Person</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please enter contact person detail for this address.</p>
+            <p className="mt-4 text-sm leading-6 text-gray-600">Please enter contact person detail for this address.</p>
           </div>
 
           {fields.map((field, index) => (

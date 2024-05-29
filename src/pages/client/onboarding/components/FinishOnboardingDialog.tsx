@@ -7,8 +7,10 @@ import { Dialog } from 'primereact/dialog'
 import { Image } from 'primereact/image'
 
 import { type IUser } from '../../../../interfaces/User'
+import { type ITokenInfo } from '../../../../interfaces/services'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
+import { GetTokenInfo, SetToken } from '../../../../utils/tokenUtil'
 import { FormDataContext, clientOnboardingSteps } from '../ClientOnboardingPage'
 
 interface FinishedOnboardingDialogProps {
@@ -24,6 +26,8 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
   const { showToast } = useUtils()
 
   const navigate = useNavigate()
+
+  const currentToken = GetTokenInfo()
 
   const updateUserFinishOnboarding = async () => {
     const userId = currentUser?._id
@@ -61,6 +65,14 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
         const updatedUser: IUser = await updateResponse.json()
 
         setCurrentUser(updatedUser)
+
+        const updatedUserData: ITokenInfo = {
+          ...currentToken,
+          onboarding: {
+            ...updatedUser.onboarding,
+          },
+        }
+        SetToken(updatedUserData)
         navigate('/client/dashboard')
       } catch (error) {
         console.error('Error updating user:', error)
