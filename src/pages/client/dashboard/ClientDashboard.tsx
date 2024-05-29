@@ -25,7 +25,7 @@ export const ClientDashboard = () => {
   const user = GetTokenInfo()
 
   useEffect(() => {
-    if (user?.onboarding?.completed === false) navigate('/client/onboarding')
+    if (!(user?.onboarding?.completed ?? false)) navigate('/client/onboarding')
   }, [navigate, user?.onboarding?.completed])
 
   return (
