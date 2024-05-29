@@ -19,7 +19,6 @@ interface IPanelPending {
   id: string | undefined
   onSubmit: (user_id: string) => void
   handleAccept: (user_id: string) => void
-  handleAcceptAll: () => void
   handleReject: (user_id: string, rejection_reason: string) => void
 }
 
@@ -33,15 +32,7 @@ const rejectionReasons = [
   { name: 'Low ratings', value: 'Low ratings' },
 ]
 
-export const PanelPendingContent = ({
-  role,
-  applicants,
-  id,
-  onSubmit,
-  handleAccept,
-  handleAcceptAll,
-  handleReject,
-}: IPanelPending) => {
+export const PanelPendingContent = ({ role, applicants, id, onSubmit, handleAccept, handleReject }: IPanelPending) => {
   const [rejectionReason, setRejectionReason] = useState<string>()
   const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
   const [visibleDialog, setVisibleDialog] = useState<string | null>(null)
@@ -109,12 +100,12 @@ export const PanelPendingContent = ({
               applicant both are notified about the contract.
             </p>
           </div>
-          <div className="ml-4 mt-4 flex-shrink-0">
+          {/* <div className="ml-4 mt-4 flex-shrink-0">
             {applicants &&
             applicants.some((applicant: IApplicant) => !applicant.is_approved && applicant.rejection_reason === '') ? (
               <Button label="Accept All" severity="success" size="small" onClick={handleAcceptAll} />
             ) : null}
-          </div>
+          </div> */}
         </div>
 
         <ul className="divide-y divide-gray-100">
