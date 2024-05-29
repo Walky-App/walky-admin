@@ -1,26 +1,4 @@
-import { useEffect, useState } from 'react'
-
 export const FooterComponent = () => {
-  const [latitude, setLatitude] = useState<number>()
-  const [longitude, setLongitude] = useState<number>()
-  const [error, setError] = useState<string>()
-
-  useEffect(() => {
-    const getLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          setLatitude(position.coords.latitude)
-          setLongitude(position.coords.longitude)
-        },
-        error => {
-          setError(error.message)
-        },
-      )
-    }
-
-    getLocation()
-  }, [])
-
   return (
     <footer className="bg-white py-6" aria-labelledby="footer-heading">
       <div className="border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
@@ -33,8 +11,7 @@ export const FooterComponent = () => {
           ))}
         </div>
         <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
-          &nbsp; &copy; {new Date().getFullYear()} Hemp Temps. All rights reserved.{' '}
-          {latitude && longitude ? `Lat: ${latitude}, Lon ${longitude}` : error}
+          &nbsp; &copy; {new Date().getFullYear()} Hemp Temps. All rights reserved.
         </p>
       </div>
     </footer>
