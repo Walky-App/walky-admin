@@ -13,6 +13,7 @@ import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type IFacility } from '../../../interfaces/Facility'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
+import { formatToTimeUTC } from '../../../utils/timeUtils'
 
 export interface JobFormDefaultValues {
   title: string
@@ -28,9 +29,9 @@ export interface JobFormDefaultValues {
   total_hours: number
 }
 
-export const setTime = (hours: number, minutes = 0, seconds = 0, milliseconds = 0) => {
+export const setTimeToUTC = (hours: number, minutes = 0, seconds = 0, milliseconds = 0): Date => {
   const date = new Date()
-  date.setHours(hours, minutes, seconds, milliseconds)
+  date.setUTCHours(hours, minutes, seconds, milliseconds)
   return date
 }
 
@@ -49,8 +50,8 @@ export const defaultJobFormValues: JobFormDefaultValues = {
   vacancy: 1,
   hourly_rate: 18.0,
   job_dates: [],
-  start_time: setTime(8, 30),
-  end_time: setTime(17),
+  start_time: setTimeToUTC(8, 30),
+  end_time: setTimeToUTC(17),
   lunch_break: 30,
   job_tips: [],
   total_hours: 0,
@@ -177,6 +178,7 @@ export const renderStartTimeController = (
           }}
           timeOnly
           hourFormat="12"
+          formatDateTime={date => formatToTimeUTC(date.toISOString())}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
@@ -208,6 +210,7 @@ export const renderEndTimeController = (
           }}
           timeOnly
           hourFormat="12"
+          formatDateTime={date => formatToTimeUTC(date.toISOString())}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
