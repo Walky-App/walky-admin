@@ -1,7 +1,5 @@
 import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
-import { format, parseISO } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
@@ -15,6 +13,7 @@ import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type IFacility } from '../../../interfaces/Facility'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
+import { formatToTimeUTC } from '../../../utils/timeUtils'
 
 export interface JobFormDefaultValues {
   title: string
@@ -158,12 +157,6 @@ export const renderJobDatesController = (
   />
 )
 
-const formatTimeUTC = (dateString: string) => {
-  const date = parseISO(dateString)
-  const utcDate = toZonedTime(date, 'UTC')
-  return format(utcDate, 'hh:mm a')
-}
-
 export const renderStartTimeController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
@@ -185,7 +178,7 @@ export const renderStartTimeController = (
           }}
           timeOnly
           hourFormat="12"
-          formatDateTime={date => formatTimeUTC(date.toISOString())}
+          formatDateTime={date => formatToTimeUTC(date.toISOString())}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
@@ -217,7 +210,7 @@ export const renderEndTimeController = (
           }}
           timeOnly
           hourFormat="12"
-          formatDateTime={date => formatTimeUTC(date.toISOString())}
+          formatDateTime={date => formatToTimeUTC(date.toISOString())}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
