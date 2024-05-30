@@ -6,6 +6,8 @@ export interface Category extends Documents {
   image: string
   is_disabled?: boolean
   modules_number: number
+  total_units: number
+  total_time: number
   progress: number
   state_tags: TagsInterface[]
   title: string
