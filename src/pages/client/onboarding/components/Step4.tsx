@@ -28,7 +28,7 @@ export const Step4 = ({ step, setStep }: StepProps) => {
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
         <div>
           <h2 className="text-base font-semibold leading-7 text-gray-900">Payment Information</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">Please choose a payment method.</p>
+          <p className="mt-4 text-sm leading-6 text-gray-600">Please choose a payment method.</p>
         </div>
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
           <div className="sm:col-span-full">

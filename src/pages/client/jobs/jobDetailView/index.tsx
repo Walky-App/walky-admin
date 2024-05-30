@@ -92,12 +92,15 @@ export const ClientJobDetailView = () => {
         method: 'PATCH',
         body: JSON.stringify(requestData),
       })
-      if (response !== null && response !== undefined) {
+      if (response.ok) {
         const updatedJob = await response.json()
         if (job && job._id) {
           setJob({ ...job, applicants: updatedJob.applicants })
         }
         showToast({ severity: 'success', summary: 'Applicant Accepted', detail: 'Applicant has been accepted' })
+      } else {
+        const responseError = await response.json()
+        showToast({ severity: 'error', summary: 'Completed job vacancies', detail: responseError.message })
       }
     } catch (error) {
       console.error(error)
@@ -126,7 +129,7 @@ export const ClientJobDetailView = () => {
     }
   }
 
-  const handleAcceptAll = async () => {
+  /* const handleAcceptAll = async () => {
     try {
       const response = await requestService({ path: `jobs/${id}/acceptAll`, method: 'PATCH' })
       if (response !== null && response !== undefined) {
@@ -144,7 +147,7 @@ export const ClientJobDetailView = () => {
     } catch (error) {
       console.error(error)
     }
-  }
+  } */
 
   const onSubmit = async (userId: string) => {
     try {
@@ -395,7 +398,6 @@ export const ClientJobDetailView = () => {
                 id={id}
                 onSubmit={onSubmit}
                 handleAccept={handleAccept}
-                handleAcceptAll={handleAcceptAll}
                 handleReject={handleReject}
               />
             </TabPanel>

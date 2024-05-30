@@ -1,9 +1,9 @@
 import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
 import { Calendar } from 'primereact/calendar'
+import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
 import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
-import { MultiSelect } from 'primereact/multiselect'
 import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
@@ -309,23 +309,31 @@ export const renderJobTipsController = (
     rules={{ required: 'Job tips required.' }}
     render={({ field }) => (
       <>
-        <HtInfoTooltip message="Provide common job notes to accepted employees">
+        <HtInfoTooltip message="Provide common job notes to accepted employees. Select at least one job tip.">
           <HtInputLabel htmlFor={field.name} labelText="Job tips" asterisk />
         </HtInfoTooltip>
-        <MultiSelect
-          id={field.name}
-          name="value"
-          value={field.value}
-          options={jobTipsOptions}
-          filter
-          onChange={e => field.onChange(e.value)}
-          optionLabel="label"
-          placeholder="Select Job Tips"
-          maxSelectedLabels={8}
-          className="md:w-20rem mt-2 w-full"
-        />
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {jobTipsOptions.map(option => (
+            <div className="flex items-center" key={option.value}>
+              <Checkbox
+                inputId={option.value}
+                checked={field.value?.includes(option.value) || false}
+                onChange={e => {
+                  const value = field.value || []
+                  if (e.checked) {
+                    field.onChange([...value, option.value])
+                  } else {
+                    field.onChange(value.filter((item: string) => item !== option.value))
+                  }
+                }}
+              />
+              <label className="ml-2.5 text-balance" htmlFor={option.value}>
+                {option.label}
+              </label>
+            </div>
+          ))}
+        </div>
         {getFormErrorMessage(field.name, errors)}
-        <HtInputHelpText fieldName={field.name} helpText="Select at least one job tip" />
       </>
     )}
   />

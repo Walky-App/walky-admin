@@ -81,11 +81,10 @@ import { AdminJobs } from './pages/admin/jobs'
 import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
 import { AdminCompanyListPage } from './pages/admin/companies/AdminCompanyListPage'
 import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
+import { AdminCompanyPaymentMethodsPage } from './pages/admin/companies/components'
+import { AdminCompanyDetails } from './pages/admin/companies/components/AdminCompanyDetails'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
-
-import { Pricing } from './pages/Pricing'
-import { TermsAndConditions } from './pages/TermAndConditions'
 
 /******************************************* Employee Pages ************************************/
 
@@ -110,8 +109,6 @@ export const App = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<Auth />} path="/" />
-            <Route element={<Pricing />} path="/pricing" />
-            <Route element={<TermsAndConditions />} path="/terms-and-conditions" />
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/invite/:email/:role" />
@@ -182,7 +179,10 @@ export const App = () => {
                   </Route>
                   <Route element={<AdminCompanyListPage />} path="/admin/companies" />
                   <Route element={<AdminAddCompany />} path="/admin/companies/new" />
-                  <Route element={<AdminCompanyPage />} />
+                  <Route element={<AdminCompanyPage />}>
+                    <Route element={<AdminCompanyDetails />} path="/admin/companies/:id" />
+                    <Route element={<AdminCompanyPaymentMethodsPage />} path="/admin/companies/:id/payment" />
+                  </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />

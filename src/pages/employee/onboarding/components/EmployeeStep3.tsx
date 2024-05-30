@@ -7,10 +7,14 @@ import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect
 import { classNames } from 'primereact/utils'
 
 import { EmployeeFinishOnboardingDialog } from '.'
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { job_preferences, notifications_preferences } from '../../../../utils/formOptions'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import {
   FormDataContext,
   getFormErrorMessage,
@@ -103,7 +107,7 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Jobs</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
+              <p className="mt-4 text-sm leading-6 text-gray-600">
                 Please let us know what type of positions you may be interested in.
               </p>
             </div>
@@ -116,11 +120,11 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
                   rules={{ required: 'At least one choice is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Preferred Jobs:
-                      </label>
+                      <HtInfoTooltip message="Please select the type of jobs you are interested in. ">
+                        <HtInputLabel htmlFor={field.name} labelText="Preferred Jobs:" />
+                      </HtInfoTooltip>
                       <MultiSelect
-                        id={field.name}
+                        inputId={field.name}
                         {...field}
                         value={field.value}
                         options={job_preferences}
@@ -131,6 +135,7 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
                         placeholder="Select Services"
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      <HtInputHelpText fieldName={field.name} helpText="Optional" />
                     </>
                   )}
                 />
@@ -143,9 +148,10 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
+              <p className="mt-4 text-sm leading-6 text-gray-600">
                 Please let us know the preferred notifications you would like to receive.
               </p>
+              {requiredFieldsNoticeText}
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -156,11 +162,11 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
                   rules={{ required: false }}
                   render={({ field, fieldState }) => (
                     <>
-                      <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                        *Preferred Notifications:
-                      </label>
+                      <HtInfoTooltip message="Please select the type of notifications you would like to receive.">
+                        <HtInputLabel htmlFor={field.name} labelText="Preferred Notifications:" />
+                      </HtInfoTooltip>
                       <MultiSelect
-                        id={field.name}
+                        inputId={field.name}
                         {...field}
                         value={field.value}
                         options={notifications_preferences}
@@ -171,6 +177,7 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
                         placeholder="Select Notifications"
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      <HtInputHelpText fieldName={field.name} helpText="Optional" />
                     </>
                   )}
                 />

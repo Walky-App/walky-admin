@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect, createContext, useContext } from 'react'
 
 import { Outlet, useParams } from 'react-router-dom'
@@ -35,6 +36,7 @@ export const AdminCompanyPage = () => {
         }
         const companyFound: ICompany = await response.json()
         setSelectedCompanyData(companyFound)
+        console.log('Company data fetched: ', companyFound)
       } catch (error) {
         console.error('Error fetching company data: ', error)
       } finally {
@@ -47,7 +49,7 @@ export const AdminCompanyPage = () => {
   const subheaderUserDetails: SubHeaderData = {
     _id: selectedCompanyData?._id,
     corp_name: selectedCompanyData?.corp_name,
-    dba: selectedCompanyData?.company_dbas?.join(', ') ?? '',
+    company_dbas: selectedCompanyData?.company_dbas?.join(', ') ?? '',
     address: selectedCompanyData?.address,
   }
 
