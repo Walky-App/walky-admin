@@ -145,11 +145,11 @@ export const CategoryCards = ({
                         onClick={() => handlerCertification(category)}
                         type="button">
                         <div className="flex items-center justify-start gap-2">
-                          <div className="text-right  text-black">
+                          <div className="pr-2  text-right text-black">
                             {categoryProgress(category._id) !== 0 && category.modules_number !== 0
                               ? (categoryProgress(category._id) / category.modules_number) * 100
                               : 0}
-                            %{' '}
+                            %
                           </div>
                           <div className="relative h-1 w-10">
                             <div className="absolute left-0 top-0 h-1 w-10 rounded-2xl bg-neutral-100" />
