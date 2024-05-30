@@ -69,7 +69,7 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
             <div className="flex flex-row">
               <span className="pi pi-users" />
               <p className="ml-1 text-stone-500">
-                {job.applicants.length} / {job.vacancy} Applicants
+                {job.applicants.length} Applicants / {job.vacancy} Slots
               </p>
             </div>
             <div className="flex flex-row space-x-2 ">
