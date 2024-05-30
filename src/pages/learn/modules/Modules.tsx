@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 
 import { CheckIcon } from '@heroicons/react/20/solid'
 
+import { BreadCrumbs } from '../../../components/shared/BreadCrumbs'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type Module } from '../../../interfaces/module'
 import { RequestService } from '../../../services/RequestService'
@@ -39,8 +40,14 @@ export const Modules = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, modules])
 
+  const pages = [
+    { name: 'Categories', href: '/learn', current: false },
+    { name: 'Modules', href: '#', current: true },
+  ]
+
   return (
     <div>
+      <BreadCrumbs pages={pages} />
       <div className="w-full sm:overflow-x-hidden">
         <HeadingComponent search title="Modules" />
 
