@@ -1,4 +1,4 @@
-import { format, formatDuration, isToday, isValid, differenceInDays } from 'date-fns'
+import { format, formatDuration, isToday, isValid, differenceInDays, parseISO } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 
 /**
@@ -157,4 +157,10 @@ export const isTodaySameAsTimeStamp = (timeStamp?: string): boolean => {
  */
 export const isNew = (createdAt: Date): boolean => {
   return differenceInDays(new Date(), new Date(createdAt)) <= 3
+}
+
+export const formatToTimeUTC = (dateString: string): string => {
+  const date = parseISO(dateString)
+  const dateUTC = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }))
+  return format(dateUTC, 'hh:mm a')
 }

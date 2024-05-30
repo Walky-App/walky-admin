@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import { parseISO } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 
@@ -17,7 +18,6 @@ import {
   defaultJobFormValues,
   renderJobTitleController,
   renderJobDatesController,
-  convertMilitaryTimeToStandardDate,
   renderEndTimeController,
   renderJobTipsController,
   renderLunchBreakController,
@@ -58,19 +58,17 @@ export const ClientEditJob = () => {
         const { title, vacancy, hourly_rate, lunch_break, job_dates, job_tips, start_time, end_time } = job
 
         const jobDates = job_dates.map((dateString: string) => new Date(dateString))
-        const startTime = convertMilitaryTimeToStandardDate(start_time, jobDates[0])
-        const endTime = convertMilitaryTimeToStandardDate(end_time, jobDates[0])
 
-        setStartTime(startTime)
-        setEndTime(endTime)
+        setStartTime(parseISO(start_time))
+        setEndTime(parseISO(end_time))
 
         if (title) setValue('title', title)
         if (vacancy) setValue('vacancy', vacancy)
         if (hourly_rate) setValue('hourly_rate', hourly_rate)
         if (lunch_break) setValue('lunch_break', lunch_break)
         if (jobDates.length > 0) setValue('job_dates', jobDates)
-        if (startTime !== null) setValue('start_time', startTime)
-        if (startTime !== null) setValue('end_time', endTime)
+        if (startTime !== null) setValue('start_time', parseISO(start_time))
+        if (startTime !== null) setValue('end_time', parseISO(end_time))
         if (startTime !== null) setValue('job_tips', job_tips)
       }
     }
