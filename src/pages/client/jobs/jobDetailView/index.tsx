@@ -15,6 +15,7 @@ import { type IJob } from '../../../../interfaces/job'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
+import { formatToTimeUTC } from '../../../../utils/timeUtils'
 import { PanelAcceptedContent } from './PanelAcceptedContent'
 import { PanelPendingContent } from './PanelPendingContent'
 import { PanelRejectedContent } from './PanelRejectedContent'
@@ -35,18 +36,6 @@ export const ClientJobDetailView = () => {
   if (job?.job_dates) {
     earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date).getTime())))
     latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date).getTime())))
-  }
-
-  const convertToStandardTime = (militaryTime: number) => {
-    if (militaryTime == null) {
-      return 'Time not set'
-    }
-    const militaryTimeString = militaryTime.toString().padStart(4, '0')
-    const hours = Number(militaryTimeString.slice(0, -2))
-    const minutes = Number(militaryTimeString.slice(-2))
-    const standardHours = ((hours + 11) % 12) + 1
-    const amPm = hours >= 12 ? 'pm' : 'am'
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
   }
 
   useEffect(() => {
@@ -273,7 +262,7 @@ export const ClientJobDetailView = () => {
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                       <div className="text-sm font-normal text-stone-500">Job Time</div>
                       <div className="text-sm font-normal text-black">
-                        {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                        {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
@@ -333,8 +322,9 @@ export const ClientJobDetailView = () => {
                               {dayOfWeek}, {formattedDate}
                             </time>
                             <p className="flex-none sm:ml-6">
-                              <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                              <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
+                              <time dateTime={date}>{formatToTimeUTC(job.start_time)}</time>
+                              {' - '}
+                              <time dateTime={date}>{formatToTimeUTC(job.end_time)}</time>
                             </p>
                             <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                               Lunch: {job.lunch_break} minutes

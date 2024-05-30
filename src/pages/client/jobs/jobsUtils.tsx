@@ -1,5 +1,7 @@
 import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
+import { format, parseISO } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
@@ -28,9 +30,9 @@ export interface JobFormDefaultValues {
   total_hours: number
 }
 
-export const setTime = (hours: number, minutes = 0, seconds = 0, milliseconds = 0) => {
+export const setTimeToUTC = (hours: number, minutes = 0, seconds = 0, milliseconds = 0): Date => {
   const date = new Date()
-  date.setHours(hours, minutes, seconds, milliseconds)
+  date.setUTCHours(hours, minutes, seconds, milliseconds)
   return date
 }
 
@@ -49,8 +51,8 @@ export const defaultJobFormValues: JobFormDefaultValues = {
   vacancy: 1,
   hourly_rate: 18.0,
   job_dates: [],
-  start_time: setTime(8, 30),
-  end_time: setTime(17),
+  start_time: setTimeToUTC(8, 30),
+  end_time: setTimeToUTC(17),
   lunch_break: 30,
   job_tips: [],
   total_hours: 0,
@@ -156,6 +158,12 @@ export const renderJobDatesController = (
   />
 )
 
+const formatTimeUTC = (dateString: string) => {
+  const date = parseISO(dateString)
+  const utcDate = toZonedTime(date, 'UTC')
+  return format(utcDate, 'hh:mm a')
+}
+
 export const renderStartTimeController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
@@ -177,6 +185,7 @@ export const renderStartTimeController = (
           }}
           timeOnly
           hourFormat="12"
+          formatDateTime={date => formatTimeUTC(date.toISOString())}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
@@ -208,6 +217,7 @@ export const renderEndTimeController = (
           }}
           timeOnly
           hourFormat="12"
+          formatDateTime={date => formatTimeUTC(date.toISOString())}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
