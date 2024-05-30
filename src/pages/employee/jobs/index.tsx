@@ -213,21 +213,21 @@ export const EmployeeJobs = () => {
   }
 
   const renderFiltersContent = () => {
-    const resetFilters = () => {
+    const resetAllFilters = () => {
       setSelectedJobTitles([])
-      setDates(null)
-      setIsDistanceRelatedButtonClicked(false)
-      setSelectedRange(null)
       setIsNewChecked(false)
       setIsAppliedChecked(false)
       setIsApprovedChecked(false)
     }
+
+    const resetDistanceRelatedFilters = () => {
+      setIsDistanceRelatedButtonClicked(false)
+      setSelectedRange(null)
+    }
+
     return (
       <>
         <div className="mb-4 flex flex-col items-center pr-4">
-          <div className="flex w-full justify-start">
-            <Button label="Clear All Filters" text outlined link onClick={resetFilters} />
-          </div>
           <Button
             label="Use Current Location"
             text
@@ -252,7 +252,7 @@ export const EmployeeJobs = () => {
           </div>
         </div>
         {isDistanceRelatedButtonClicked ? (
-          <div className="mb-4 mt-6">
+          <div className="mb-4">
             <div className="mb-2">
               <HtInfoTooltip message="Select a range using slider below to filter jobs by distance from the selected location.">
                 <HtInputLabel
@@ -278,17 +278,26 @@ export const EmployeeJobs = () => {
             />
           </div>
         ) : null}
+        <div className="flex w-full justify-center">
+          {isDistanceRelatedButtonClicked ? (
+            <Button
+              label="Clear Distance"
+              className="align flex flex-row"
+              text
+              link
+              onClick={resetDistanceRelatedFilters}
+            />
+          ) : null}
+        </div>
         <HtInfoTooltip message="Select a start and end date to filter jobs by date range.">
           <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-md" />
         </HtInfoTooltip>
         <div className="mb-4 pr-4">
-          <Calendar value={dates} selectionMode="range" readOnlyInput disabled className="w-full" />
           <Calendar
             value={dates}
             onChange={e => setDates(e.value as [Date, Date] | null)}
             selectionMode="range"
             showButtonBar
-            inline={true}
             numberOfMonths={1}
             placeholder="by Date"
             readOnlyInput
@@ -358,6 +367,9 @@ export const EmployeeJobs = () => {
               Approved
             </label>
           </div>
+        </div>
+        <div className="flex w-full justify-end">
+          <Button label="Clear Checkboxes" text link onClick={resetAllFilters} />
         </div>
       </>
     )

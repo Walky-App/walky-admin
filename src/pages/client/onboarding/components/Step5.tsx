@@ -60,7 +60,7 @@ export const Step5 = ({ step, setStep }: StepProps) => {
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
-        <Button label="Finish" onClick={handleSaveButton} loading={isLoading} disabled={documentLoading} />
+        <Button label="Finish" onClick={handleSaveButton} loading={isLoading} /*  disabled={documentLoading} */ />
       </div>
     </>
   )
