@@ -201,7 +201,7 @@ export const ClientJobDetailView = () => {
                       <div className="flex items-center">
                         <i className="pi pi-users" />
                         <div className="ml-1 text-base font-normal text-stone-500">
-                          {job?.applicants.length} / {job?.vacancy} Applicants
+                          {job?.applicants.length} Applicants / {job?.vacancy} Slots
                         </div>
                       </div>
                       {job.title}
