@@ -4,6 +4,7 @@ import { Badge } from 'primereact/badge'
 import { Card } from 'primereact/card'
 
 import { ShieldCheckIcon } from '@heroicons/react/20/solid'
+import { ArrowTrendingUpIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline'
 
 import { useAdmin } from '../../../contexts/AdminContext'
 import { type Category } from '../../../interfaces/category'
@@ -115,35 +116,60 @@ export const CategoryCards = ({
                       </Badge>
                     </div>
                   ) : (
-                    <button
-                      className="m-3 flex flex-col items-center gap-y-5 p-3"
-                      onClick={() => handlerCertification(category)}
-                      type="button">
-                      <div className="flex items-center justify-start gap-2">
-                        <div className="text-right  text-black">
-                          {categoryProgress(category._id) !== 0 && category.modules_number !== 0
-                            ? (categoryProgress(category._id) / category.modules_number) * 100
-                            : 0}
-                          %{' '}
+                    <div>
+                      <div className="flex flex-row justify-around md:gap-2 md:pr-3 md:pt-2">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <ArrowTrendingUpIcon className="h-10 w-10 md:h-6 md:w-6" />
+                            <span className="text-base md:text-sm">{category.modules_number}</span>
+                          </div>
+                          <p className="text-center text-lg font-medium md:text-sm">Modules</p>
                         </div>
-                        <div className="relative h-1 w-10">
-                          <div className="absolute left-0 top-0 h-1 w-10 rounded-2xl bg-neutral-100" />
-                          <div
-                            className={`w-${
-                              categoryProgress(category._id) !== 0 && category.modules_number !== 0
-                                ? Math.floor((categoryProgress(category._id) / category.modules_number) * 100) / 10
-                                : 0
-                            } absolute left-0 top-0 h-1 rounded-2xl bg-black`}
-                          />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <BookOpenIcon className="h-10 w-10 md:h-6 md:w-6" />
+                            <span className="text-base md:text-sm">{category.total_units}</span>
+                          </div>
+                          <p className="text-center text-lg font-medium md:text-sm">Units</p>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <ClockIcon className="h-10 w-10 md:h-6 md:w-6" />
+                            <span className="text-base md:text-sm">{category.total_time / 60}</span>
+                          </div>
+                          <p className="text-center text-lg font-medium md:text-sm">Minutes</p>
                         </div>
                       </div>
-                      {categoryCompleted(category._id) ? (
-                        <div className="flex items-center text-center ">
-                          <ShieldCheckIcon className="h-4 w-4 text-green-600" />
-                          <div>Completed</div>
+                      <button
+                        className="m-3 flex flex-col items-center gap-y-5 p-3"
+                        onClick={() => handlerCertification(category)}
+                        type="button">
+                        <div className="flex items-center justify-start gap-2">
+                          <div className="text-right  text-black">
+                            {categoryProgress(category._id) !== 0 && category.modules_number !== 0
+                              ? (categoryProgress(category._id) / category.modules_number) * 100
+                              : 0}
+                            %{' '}
+                          </div>
+                          <div className="relative h-1 w-10">
+                            <div className="absolute left-0 top-0 h-1 w-10 rounded-2xl bg-neutral-100" />
+                            <div
+                              className={`w-${
+                                categoryProgress(category._id) !== 0 && category.modules_number !== 0
+                                  ? Math.floor((categoryProgress(category._id) / category.modules_number) * 100) / 10
+                                  : 0
+                              } absolute left-0 top-0 h-1 rounded-2xl bg-black`}
+                            />
+                          </div>
                         </div>
-                      ) : null}
-                    </button>
+                        {categoryCompleted(category._id) ? (
+                          <div className="flex items-center text-center ">
+                            <ShieldCheckIcon className="h-4 w-4 text-green-600" />
+                            <div>Completed</div>
+                          </div>
+                        ) : null}
+                      </button>
+                    </div>
                   )}
                 </div>
               </Card>
