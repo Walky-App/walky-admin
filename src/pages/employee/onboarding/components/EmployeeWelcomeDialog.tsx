@@ -27,35 +27,35 @@ export const EmployeeWelcomeDialog = ({ visible, setVisible }: WelcomeDialogProp
         blockScroll
         onHide={() => setVisible(false)}
         keepInViewport
-        className="w-full xl:w-8/12"
+        className="md:w-4/5 lg:w-10/12"
         content={
           <div className="flex w-full flex-col items-center rounded-lg bg-white px-4 py-5 xl:px-8">
-            <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="xl:w-6/12" />
-            <div className="mt-4 flex w-9/12 flex-col justify-center gap-x-12 xl:flex-row">
+            <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="w-6/12 xl:w-4/12" />
+            <div className="mt-4 flex flex-col justify-center gap-x-8 lg:w-11/12 lg:flex-row lg:gap-x-12 2xl:w-10/12 2xl:gap-x-20">
               <iframe
-                className="aspect-[4/3] w-full"
+                className="aspect-video w-full"
                 src="https://www.youtube.com/embed/5NaQa0Y_s28?autoplay=1&mute=1&rel=0&controls=1&showinfo=0&modestbranding=1&loop=1&"
                 title="YouTube video player"
                 allow="autoplay"
               />
-              <div className="mt-6 flex flex-col justify-center gap-y-6 xl:mt-0 xl:gap-y-12">
-                <div className="text-2xl font-bold text-black">Hey, Ready for your next big opportunity?</div>
+              <div className="mt-6 flex flex-col justify-center gap-y-6 lg:w-1/2 lg:gap-y-8 xl:mt-0 2xl:gap-y-10">
+                <h2 className="text-2xl font-bold text-black sm:text-3xl">Hey, Ready for your next big opportunity?</h2>
                 {welcomeBullets.map((bullet, index) => (
-                  <div key={index} className="flex items-center gap-x-2">
-                    <i className="pi pi-check text-2xl" />
-                    <p className="text-sm font-normal leading-tight text-black">{bullet.text}</p>
+                  <div key={index} className="flex items-center gap-x-4 pl-2">
+                    <i className="pi pi-check text-2xl sm:text-3xl" />
+                    <p className="text-sm font-normal leading-tight text-black sm:text-base">{bullet.text}</p>
                   </div>
                 ))}
                 <div className="mb-2">
-                  <p className="text-wrap text-sm text-gray-500">
+                  <p className="text-wrap text-sm text-gray-500 sm:text-base">
                     It only takes 5-10 minutes and you can edit it later. We’ll save as you go.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 xl:ml-auto">
-              <Button label="Continue" onClick={() => setVisible(false)} />
+            <div className="mt-4 lg:ml-auto">
+              <Button size="large" label="Continue" onClick={() => setVisible(false)} />
             </div>
           </div>
         }
