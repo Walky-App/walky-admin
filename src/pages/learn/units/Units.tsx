@@ -7,6 +7,7 @@ import { Badge } from 'primereact/badge'
 import { ArrowRightIcon, CheckIcon } from '@heroicons/react/20/solid'
 import { BriefcaseIcon, ClockIcon, LockClosedIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 
+import { BreadCrumbs } from '../../../components/shared/BreadCrumbs'
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { Module } from '../../../interfaces/module'
 import type { Unit } from '../../../interfaces/unit'
@@ -65,9 +66,15 @@ export const Units = () => {
       return 0
     }
   }
+  const pages = [
+    { name: 'Categories', href: '/learn', current: false },
+    { name: 'Modules', href: `/learn/category/${module?.category._id}`, current: false },
+    { name: 'Units', href: '#', current: true },
+  ]
 
   return (
     <div>
+      <BreadCrumbs pages={pages} />
       <div className="mb-4 flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white" key={module?._id}>
         <div className="flex max-h-36 flex-row">
           <div className="hidden md:m-3 md:block">

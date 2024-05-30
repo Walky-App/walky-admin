@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useSearchParams } from 'react-router-dom'
 
+import { BreadCrumbs } from '../../components/shared/BreadCrumbs'
 import { HeadingComponent } from '../../components/shared/general/HeadingComponent'
 import type { Category } from '../../interfaces/category'
 import type { FilterInterface } from '../../interfaces/global'
@@ -55,8 +56,11 @@ export const Learn = () => {
     return record.categories.map(category => category.url_certificate).filter(url => url !== '').length
   }, [record])
 
+  const pages = [{ name: 'Categories', href: '/learn', current: true }]
+
   return (
     <div>
+      <BreadCrumbs pages={pages} />
       <div className="w-full sm:overflow-x-hidden">
         <div className="border-1 mb-4 rounded-xl bg-gray-100 pb-2 shadow-md">
           <div>
