@@ -31,8 +31,6 @@ const jobTitleOptions = [
   { name: 'Packager', code: 'Packager' },
   { name: 'Trimmer', code: 'Trimmer' },
   { name: 'Harvester', code: 'Harvester' },
-  { name: 'Gardener', code: 'Gardener' },
-  { name: 'Cultivator', code: 'Cultivator' },
   { name: 'Extractor', code: 'Extractor' },
   { name: 'Budtender', code: 'Budtender' },
   { name: 'Front desk', code: 'Front desk' },
