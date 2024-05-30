@@ -8,7 +8,7 @@ import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@her
 
 import { type IJob } from '../../../interfaces/job'
 import { cn } from '../../../utils/cn'
-import { convertMilitaryTimeToStandardTime } from '../../../utils/timeUtils'
+import { formatToTimeUTC } from '../../../utils/timeUtils'
 
 interface IEvent {
   id: string
@@ -57,7 +57,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
         if (day) {
           let jobStartTime
           try {
-            jobStartTime = convertMilitaryTimeToStandardTime(job.start_time)
+            jobStartTime = formatToTimeUTC(job.start_time)
           } catch (error) {
             console.error(error)
             jobStartTime = ''

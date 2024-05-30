@@ -26,10 +26,10 @@ import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import {
   isTodaySameAsTimeStamp,
-  convertMilitaryTimeToStandardTime,
   formatToDate,
   formatToTime,
   isValidDate,
+  formatToTimeUTC,
 } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -360,8 +360,8 @@ export const JobDetailView = () => {
                   {dayOfWeek}, {formattedDate}
                 </time>
                 <p className="flex-none sm:ml-6">
-                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.start_time)}</time> -
-                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.end_time)}</time>
+                  <time dateTime={date}>{formatToTimeUTC(job.start_time)}</time> -
+                  <time dateTime={date}>{formatToTimeUTC(job.end_time)}</time>
                 </p>
                 <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                   Lunch: {job.lunch_break} minutes
@@ -534,8 +534,7 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Time</div>
                     <div className="text-black">
-                      {convertMilitaryTimeToStandardTime(job.start_time)} -{' '}
-                      {convertMilitaryTimeToStandardTime(job.end_time)}
+                      {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
@@ -577,26 +576,26 @@ export const JobDetailView = () => {
                       {shiftId?.isTodayShift ? (
                         <>
                           <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
-                        <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
-                        <p className="font-medium">
-                          {currentDate.toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </li>
-                      {isClockedIn ? (
-                        <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          <Button
-                            label="Clock Out"
-                            severity="warning"
-                            onClick={() => clockOut()}
-                            loading={isClockInOutLoading}
-                            className="w-full"
-                          />
-                        </li>
+                            <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
+                            <p className="font-medium">
+                              {currentDate.toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          </li>
+                          {isClockedIn ? (
+                            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                              <Button
+                                label="Clock Out"
+                                severity="warning"
+                                onClick={() => clockOut()}
+                                loading={isClockInOutLoading}
+                                className="w-full"
+                              />
+                            </li>
                           ) : (
                             <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                               <Button
