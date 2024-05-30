@@ -85,9 +85,7 @@ export const ClientAddJob = () => {
 
   const onSubmit = async (data: JobFormDefaultValues) => {
     try {
-      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
-      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      const requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
+      const requestData = { ...data }
 
       if (startTime && endTime && data.lunch_break !== null) {
         const startHours = startTime.getHours() + startTime.getMinutes() / 60

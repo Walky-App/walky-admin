@@ -97,8 +97,6 @@ export const jobTitlesOptions = [
   { title: 'Budtender', value: 'Budtender' },
   { title: 'Trimmer', value: 'Trimmer' },
   { title: 'Packager', value: 'Packager' },
-  { title: 'Gardener', value: 'Gardener' },
-  { title: 'Cultivator', value: 'Cultivator' },
   { title: 'Extractor', value: 'Extractor' },
   { title: 'Front desk', value: 'Front desk' },
   { title: 'Greeter', value: 'Greeter' },
