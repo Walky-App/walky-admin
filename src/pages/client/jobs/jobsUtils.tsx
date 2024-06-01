@@ -28,19 +28,10 @@ export interface JobFormDefaultValues {
   total_hours: number
 }
 
-export const setTime = (hours: number, minutes = 0, seconds = 0, milliseconds = 0): Date => {
+const setTime = (hours: number, minutes = 0, seconds = 0, milliseconds = 0): Date => {
   const date = new Date()
   date.setHours(hours, minutes, seconds, milliseconds)
   return date
-}
-
-export const convertMilitaryTimeToStandardDate = (time: number, date: Date) => {
-  const hours = Math.floor(time / 100)
-  const minutes = time % 100
-  const dateObj = new Date(date)
-  dateObj.setHours(hours)
-  dateObj.setMinutes(minutes)
-  return dateObj
 }
 
 export const defaultJobFormValues: JobFormDefaultValues = {
