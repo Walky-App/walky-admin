@@ -29,7 +29,7 @@ import {
   formatToDate,
   formatToTime,
   isValidDate,
-  formatToTimeUTC,
+  formatToLocalTime,
 } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -360,8 +360,8 @@ export const JobDetailView = () => {
                   {dayOfWeek}, {formattedDate}
                 </time>
                 <p className="flex-none sm:ml-6">
-                  <time dateTime={date}>{formatToTimeUTC(job.start_time)}</time> -
-                  <time dateTime={date}>{formatToTimeUTC(job.end_time)}</time>
+                  <time dateTime={date}>{formatToLocalTime(job.start_time)}</time> -
+                  <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
                 </p>
                 <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                   Lunch: {job.lunch_break} minutes
@@ -534,7 +534,7 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Time</div>
                     <div className="text-black">
-                      {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)}
+                      {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
