@@ -2,6 +2,17 @@ import { format, formatDuration, isToday, isValid, differenceInDays, parseISO } 
 import { toZonedTime } from 'date-fns-tz'
 
 /**
+ * Determines if a job is considered new based on its creation date.
+ * A job is considered new if it was created within the last 3 days.
+ *
+ * @param {Date} jobCreationDate - The creation date of the job.
+ * @returns {boolean} Returns true if the job was created within the last 3 days, false otherwise.
+ */
+export const isJobNewWithinThreeDays = (jobCreationDate: Date): boolean => {
+  return differenceInDays(new Date(), new Date(jobCreationDate)) <= 3
+}
+
+/**
  * Checks if the provided string is a valid date.
  * @param {string} dateString - The string to check.
  * @returns {boolean} Returns true if the string is a valid date, false otherwise.
@@ -148,15 +159,6 @@ export const isTodaySameAsTimeStamp = (timeStamp?: string): boolean => {
   }
   const date = new Date(timeStamp)
   return isToday(date)
-}
-
-/**
- * Checks if a job is new based on the createdAt date.
- * @param {Date} createdAt - The createdAt date of the job.
- * @returns {boolean} Returns true if the job is new, false otherwise.
- */
-export const isNew = (createdAt: Date): boolean => {
-  return differenceInDays(new Date(), new Date(createdAt)) <= 3
 }
 
 /**

@@ -9,7 +9,7 @@ import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outlin
 
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { formatToLocalTime, isNew } from '../../../utils/timeUtils'
+import { formatToLocalTime, isJobNewWithinThreeDays } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
@@ -73,7 +73,7 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
               </p>
             </div>
             <div className="flex flex-row space-x-2 ">
-              {isNew(job.createdAt) ? <Badge value="New" size="normal" /> : null}
+              {isJobNewWithinThreeDays(job.createdAt) ? <Badge value="New" size="normal" /> : null}
               {job.applicants?.map(applicant => {
                 if (
                   applicant.user.toString() === _id &&
