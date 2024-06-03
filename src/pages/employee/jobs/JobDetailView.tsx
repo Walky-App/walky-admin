@@ -662,15 +662,6 @@ export const JobDetailView = () => {
                           />
                         )}
                       </li>
-
-                      <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                        <Button
-                          label="Share Opportunity"
-                          severity="secondary"
-                          style={{ width: '100%', height: '100%' }}
-                        />
-                      </li>
                     </ul>
                   </div>
                 </div>
