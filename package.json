@@ -41,6 +41,9 @@
     "zustand": "^4.5.2"
   },
   "scripts": {
+    "update-version-patch": "npm version patch --no-git-tag-version",
+    "update-version-minor": "npm version minor --no-git-tag-version",
+    "update-version-major": "npm version major --no-git-tag-version",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
