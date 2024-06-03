@@ -15,8 +15,8 @@ export interface UserShifts extends Documents {
 
 export interface Shifts extends Documents {
   shift_day: Date
-  shift_start_time: number
-  shift_end_time: number
+  shift_start_time: string
+  shift_end_time: string
   job_id: string
   vacancy_limit: number
   change_history?: HistoryShifts[]

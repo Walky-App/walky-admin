@@ -39,8 +39,8 @@ export interface IJob {
   created_by: string
   facility: IFacility
   title: string
-  start_time: number
-  end_time: number
+  start_time: string
+  end_time: string
   total_hours: number
   lunch_break: number
   job_days: JobShiftDay[]

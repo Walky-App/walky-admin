@@ -9,6 +9,9 @@ import {
 } from 'primereact/fileupload'
 import { Panel } from 'primereact/panel'
 
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
@@ -124,7 +127,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Documents and Certificates</h2>
-            <p className="mt-1 text-balance text-sm leading-6 text-gray-600">
+            <p className="mt-4 text-balance text-sm leading-6 text-gray-600">
               Please upload your State issued badge or background check if you have one.
             </p>
           </div>
@@ -146,35 +149,34 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
             ) : null}
 
             <div className="sm:col-span-6">
-              <label htmlFor="stateLicenseDocument" className="block text-sm font-medium leading-6 text-gray-900">
-                Upload Documents:
-              </label>
+              <HtInfoTooltip message="State issued badge or certifications can help in the hiring process.">
+                <HtInputLabel htmlFor="userDocument" labelText="Upload Documents:" />
+              </HtInfoTooltip>
               <div className="mt-2">
                 <FileUpload
                   id="userDocument"
                   name="files"
                   ref={fileUploadRef}
-                  maxFileSize={1000000}
+                  maxFileSize={5242880}
                   accept="application/pdf, image/*"
                   multiple={true}
                   mode="advanced"
+                  auto={true}
                   url={`${process.env.REACT_APP_PUBLIC_API}/users/${userId}/documents`}
                   onBeforeSend={handleBeforeSend}
                   onUpload={handleUploadSuccess}
                   onError={handleUploadError}
                   emptyTemplate={
-                    <div className="space-y-4 text-balance text-sm">
-                      <p>
-                        Drag and drop <u>Documents and/or prior certifications</u> PDF or image files to upload. Max
-                        size: 1MB
-                      </p>
-                      <p>
-                        Please make sure your upload is clear without any warped or blur portions and shows all relevant
-                        information.
-                      </p>
-                    </div>
+                    <p>
+                      Drag and drop <u>Documents and/or prior certifications</u> PDF files or images to upload. Maximum
+                      file size: 5MB
+                    </p>
                   }
                   previewWidth={200}
+                />
+                <HtInputHelpText
+                  fieldName="userDocument"
+                  helpText="Please make sure your upload is clear without any warped or blur portions and shows all relevant information."
                 />
               </div>
             </div>
