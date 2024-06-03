@@ -13,6 +13,7 @@ import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type IFacility } from '../../../interfaces/Facility'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
+import { setTimeInUTC, toLocalDateTime } from '../../../utils/timeUtils'
 
 export interface JobFormDefaultValues {
   title: string
@@ -28,20 +29,14 @@ export interface JobFormDefaultValues {
   total_hours: number
 }
 
-const setTime = (hours: number, minutes = 0, seconds = 0, milliseconds = 0): Date => {
-  const date = new Date()
-  date.setHours(hours, minutes, seconds, milliseconds)
-  return date
-}
-
 export const defaultJobFormValues: JobFormDefaultValues = {
   title: '',
   facility_id: '',
   vacancy: 1,
   hourly_rate: 18.0,
   job_dates: [],
-  start_time: setTime(8, 30),
-  end_time: setTime(17),
+  start_time: setTimeInUTC(8, 30),
+  end_time: setTimeInUTC(17),
   lunch_break: 30,
   job_tips: [],
   total_hours: 0,
@@ -161,13 +156,17 @@ export const renderStartTimeController = (
       <>
         <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
         <Calendar
-          value={field.value === null ? startTime : field.value}
+          value={field.value == null ? toLocalDateTime(startTime) : toLocalDateTime(field.value)}
           onChange={e => {
-            field.onChange(e.value ?? null)
-            setStartTime(e.value ?? null)
+            if (e.value != null) {
+              const utcTime = setTimeInUTC(e.value.getHours(), e.value.getMinutes(), e.value.getSeconds())
+              field.onChange(utcTime)
+              setStartTime(utcTime)
+            }
           }}
           timeOnly
           hourFormat="12"
+          parseDateTime={string => new Date(string)}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
@@ -192,10 +191,13 @@ export const renderEndTimeController = (
       <>
         <HtInputLabel htmlFor={field.name} labelText="End Time" asterisk />
         <Calendar
-          value={field.value === null ? endTime : field.value}
+          value={field.value == null ? toLocalDateTime(endTime) : toLocalDateTime(field.value)}
           onChange={e => {
-            field.onChange(e.value ?? null)
-            setEndTime(e.value ?? null)
+            if (e.value != null) {
+              const utcTime = setTimeInUTC(e.value.getHours(), e.value.getMinutes(), e.value.getSeconds())
+              field.onChange(utcTime)
+              setEndTime(utcTime)
+            }
           }}
           timeOnly
           hourFormat="12"
