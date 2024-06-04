@@ -36,6 +36,8 @@ export const ClientAddJob = () => {
   const [facilities, setFacilities] = useState<IFacility[]>()
   const [startTime, setStartTime] = useState<Date | null>(defaultValues.start_time)
   const [endTime, setEndTime] = useState<Date | null>(defaultValues.end_time)
+  const [isStartTimeValid, setIsStartTimeValid] = useState(true)
+  const [isEndTimeValid, setIsEndTimeValid] = useState(true)
   const [totalHours, setTotalHours] = useState(0)
   const user = GetTokenInfo()
   const id = user?._id
@@ -205,11 +207,22 @@ export const ClientAddJob = () => {
 
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
           {startTime ? (
-            <div className="sm:col-span-3">{renderStartTimeController(control, errors, startTime, setStartTime)}</div>
+            <div className="sm:col-span-3">
+              {renderStartTimeController(
+                control,
+                errors,
+                startTime,
+                setStartTime,
+                isStartTimeValid,
+                setIsStartTimeValid,
+              )}
+            </div>
           ) : null}
 
           {endTime ? (
-            <div className="sm:col-span-3">{renderEndTimeController(control, errors, endTime, setEndTime)}</div>
+            <div className="sm:col-span-3">
+              {renderEndTimeController(control, errors, endTime, setEndTime, isEndTimeValid, setIsEndTimeValid)}
+            </div>
           ) : null}
 
           <div className="sm:col-span-3">{renderVacancyController(control, errors)}</div>
