@@ -8,11 +8,14 @@ import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 
 import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
+import { type IFacility } from '../../../../interfaces/Facility'
 import { type IJob } from '../../../../interfaces/job'
 import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import {
   type JobFormDefaultValues,
   defaultJobFormValues,
@@ -24,12 +27,15 @@ import {
   renderPayRateController,
   renderStartTimeController,
   renderVacancyController,
+  renderFacilityController,
 } from '../jobsUtils'
 
 const defaultValues = defaultJobFormValues
 
 export const ClientEditJob = () => {
+  const [facilities, setFacilities] = useState<IFacility[]>()
   const [jobFound, setJobFound] = useState<IJob | null>(null)
+  const [formData, setFormData] = useState(defaultJobFormValues)
   const [startTime, setStartTime] = useState<Date | null>(defaultValues.start_time)
   const [endTime, setEndTime] = useState<Date | null>(defaultValues.end_time)
   const [totalHours, setTotalHours] = useState(0)
@@ -40,40 +46,65 @@ export const ClientEditJob = () => {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const role = roleChecker()
+  const user_id = GetTokenInfo()._id
+
+  useEffect(() => {
+    const getFacilities = async () => {
+      try {
+        const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/byclient/${user_id}`
+        const allFacilities = await RequestService(endpoint)
+        setFacilities(allFacilities)
+      } catch (error) {
+        console.error('Error fetching facilities:', error)
+      }
+    }
+    getFacilities()
+  }, [location.pathname, user_id])
+
+  useEffect(() => {
+    const getJob = async () => {
+      try {
+        const response = await requestService({ path: `jobs/${params.id}` })
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch job')
+        }
+        const job: IJob = await response.json()
+        setJobFound(job)
+
+        if (facilities && facilities.length > 0) {
+          setFormData({
+            ...defaultValues,
+            title: job.title,
+            facility_id: facilities.find(facility => facility._id === job.facility._id)?._id ?? '',
+            job_dates: job.job_dates.map((dateString: string) => parseISO(dateString)),
+            start_time: new Date(job.start_time),
+            end_time: new Date(job.end_time),
+            total_hours: job.total_hours,
+            lunch_break: job.lunch_break,
+            vacancy: job.vacancy,
+            hourly_rate: job.hourly_rate,
+            job_tips: job.job_tips,
+          })
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    if (facilities && facilities.length > 0) {
+      getJob()
+    }
+  }, [params.id, facilities])
+
+  const values = formData != null ? formData : defaultValues
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-    setValue,
     watch,
-  } = useForm({ defaultValues })
-
-  useEffect(() => {
-    const getJob = async () => {
-      const job: IJob = await RequestService(`jobs/${params.id}`)
-
-      if (job._id) {
-        setJobFound(job)
-        const { title, vacancy, hourly_rate, lunch_break, job_dates, job_tips, start_time, end_time } = job
-
-        const jobDates = job_dates.map((dateString: string) => new Date(dateString))
-
-        setStartTime(parseISO(start_time))
-        setEndTime(parseISO(end_time))
-
-        if (title) setValue('title', title)
-        if (vacancy) setValue('vacancy', vacancy)
-        if (hourly_rate) setValue('hourly_rate', hourly_rate)
-        if (lunch_break) setValue('lunch_break', lunch_break)
-        if (jobDates.length > 0) setValue('job_dates', jobDates)
-        if (startTime !== null) setValue('start_time', parseISO(start_time))
-        if (startTime !== null) setValue('end_time', parseISO(end_time))
-        if (startTime !== null) setValue('job_tips', job_tips)
-      }
-    }
-    getJob()
-  }, [params.id, setValue])
+  } = useForm({ values })
 
   const lunchBreak = watch('lunch_break')
 
@@ -93,7 +124,7 @@ export const ClientEditJob = () => {
   }, [startTime, endTime, lunchBreak])
 
   const onSubmit = async (data: JobFormDefaultValues) => {
-    if (jobFound?._id) {
+    if (jobFound != null) {
       const { job_dates } = jobFound
 
       const jobDates = job_dates.map((dateString: string) => new Date(dateString))
@@ -102,7 +133,7 @@ export const ClientEditJob = () => {
 
       const now = new Date()
       const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-      const isWithin24Hours = earliestJobDate && earliestJobDate.getTime() <= twentyFourHoursFromNow.getTime()
+      const isWithin24Hours = earliestJobDate != null && earliestJobDate.getTime() <= twentyFourHoursFromNow.getTime()
       if (role === 'client' && isWithin24Hours) {
         toast.current?.show({
           severity: 'error',
@@ -114,9 +145,7 @@ export const ClientEditJob = () => {
     }
 
     try {
-      const startTimeMilitary = startTime ? startTime.getHours() * 100 + startTime.getMinutes() : null
-      const endTimeMilitary = endTime ? endTime.getHours() * 100 + endTime.getMinutes() : null
-      let requestData = { ...data, start_time: startTimeMilitary, end_time: endTimeMilitary }
+      let requestData = { ...data }
 
       // Calculating total hours and sending with payload
       if (startTime && endTime && data.lunch_break !== null) {
@@ -177,6 +206,9 @@ export const ClientEditJob = () => {
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
+              {facilities ? (
+                <div className="sm:col-span-3">{renderFacilityController(control, errors, facilities, true)}</div>
+              ) : null}
             </div>
           </div>
           {/* Job Dates */}

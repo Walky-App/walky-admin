@@ -73,6 +73,7 @@ export const renderFacilityController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
   facilities: IFacility[],
+  disabled?: boolean,
 ) => (
   <Controller
     name="facility_id"
@@ -80,12 +81,18 @@ export const renderFacilityController = (
     rules={{ required: 'Facility is required.' }}
     render={({ field, fieldState }) => (
       <>
-        <HtInputLabel htmlFor={field.name} labelText="Select Facility" asterisk />
+        <HtInputLabel
+          htmlFor={field.name}
+          labelText={disabled ?? false ? 'Facility' : 'Select Facility'}
+          asterisk={disabled === true ? false : true}
+        />
         <Dropdown
           id={field.name}
           value={field.value}
           optionLabel="name"
+          optionValue="_id"
           options={facilities}
+          disabled={disabled}
           filter
           focusInputRef={field.ref}
           onChange={e => field.onChange(e.value)}
