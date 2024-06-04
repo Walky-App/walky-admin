@@ -6,8 +6,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 
+import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
 import { type IFacility } from '../../../../interfaces/Facility'
 import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
 import { useSettings } from '../../../../store/useSettings'
 import { useUtils } from '../../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
@@ -29,6 +31,9 @@ import {
 let defaultValues = defaultJobFormValues
 
 export const ClientAddJob = () => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [facilities, setFacilities] = useState<IFacility[]>()
   const [startTime, setStartTime] = useState<Date | null>(defaultValues.start_time)
   const [endTime, setEndTime] = useState<Date | null>(defaultValues.end_time)
   const [totalHours, setTotalHours] = useState(0)
@@ -36,7 +41,6 @@ export const ClientAddJob = () => {
   const id = user?._id
   const toast = useRef<Toast>(null)
   const { showToast } = useUtils()
-  const [facilities, setFacilities] = useState<IFacility[]>()
   const navigate = useNavigate()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
@@ -53,14 +57,30 @@ export const ClientAddJob = () => {
     watch,
   } = useForm({ defaultValues })
 
+  const calculateHours = (start: Date, end: Date, lunch: number) => {
+    const startHours = start.getHours() + start.getMinutes() / 60
+    let endHours = end.getHours() + end.getMinutes() / 60
+
+    if (endHours <= startHours) {
+      endHours += 24
+    }
+
+    const lunchBreakHours = lunch ? lunch / 60 : 0
+    const totalHours = endHours - startHours - lunchBreakHours
+    return Math.round(totalHours * 100) / 100
+  }
+
   useEffect(() => {
     const getFacilities = async () => {
+      setIsLoading(true)
       try {
         const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/byclient/${id}`
         const allFacilities = await RequestService(endpoint)
         setFacilities(allFacilities)
       } catch (error) {
         console.error('Error fetching facilities:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
     getFacilities()
@@ -70,34 +90,21 @@ export const ClientAddJob = () => {
 
   useEffect(() => {
     if (startTime && endTime) {
-      const startHours = startTime.getHours() + startTime.getMinutes() / 60
-      let endHours = endTime.getHours() + endTime.getMinutes() / 60
-
-      if (endHours <= startHours) {
-        endHours += 24
-      }
-
-      const lunchBreakHours = lunchBreak ? lunchBreak / 60 : 0
-      const totalHoursCalc = endHours - startHours - lunchBreakHours
-      setTotalHours(Math.round(totalHoursCalc * 100) / 100)
+      const totalHoursCalc = calculateHours(startTime, endTime, lunchBreak)
+      setTotalHours(totalHoursCalc)
     }
   }, [startTime, endTime, lunchBreak])
 
   const onSubmit = async (data: JobFormDefaultValues) => {
+    setIsSubmitting(true)
     try {
       const requestData = { ...data }
 
-      if (startTime && endTime && data.lunch_break !== null) {
-        const startHours = startTime.getHours() + startTime.getMinutes() / 60
-        let endHours = endTime.getHours() + endTime.getMinutes() / 60
+      if (startTime && endTime && data.lunch_break != null) {
+        const totalHours = calculateHours(startTime, endTime, data.lunch_break)
+        requestData.total_hours = totalHours
+        setTotalHours(totalHours)
 
-        if (endHours <= startHours) {
-          endHours += 24
-        }
-        const lunchBreakHours = data.lunch_break / 60
-        const totalHours = endHours - startHours - lunchBreakHours
-        requestData.total_hours = Math.round(totalHours * 100) / 100
-        setTotalHours(requestData.total_hours)
         if (requestData.total_hours < 7) {
           showToast({
             severity: 'error',
@@ -106,18 +113,38 @@ export const ClientAddJob = () => {
           })
           return
         }
+      } else {
+        showToast({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Start time, end time, and lunch break must be provided.',
+        })
+        return
       }
 
-      const response = await RequestService('jobs', 'POST', requestData)
-      if (response) {
-        showToast({ severity: 'success', summary: 'Success', detail: 'Job information submitted successfully' })
-        setTimeout(() => {
-          navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
-        }, 3000)
+      const response = await requestService({ path: 'jobs', method: 'POST', body: JSON.stringify(requestData) })
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message)
       }
+
+      showToast({
+        severity: 'success',
+        summary: 'Success',
+        detail: `${requestData.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
+      })
+      navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
     } catch (error) {
-      console.error(error)
+      const errorMessage = error instanceof Error ? error.message : error
+      console.error('Error submitting job information:', errorMessage)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Failed to submit job information' })
+    } finally {
+      setIsSubmitting(false)
     }
+  }
+
+  if (isLoading) {
+    return <HTLoadingLogo />
   }
 
   return (
@@ -197,7 +224,7 @@ export const ClientAddJob = () => {
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <div>
-          <Button type="submit" label="Submit" />
+          <Button type="submit" label="Submit" loading={isSubmitting} />
         </div>
       </div>
     </form>
