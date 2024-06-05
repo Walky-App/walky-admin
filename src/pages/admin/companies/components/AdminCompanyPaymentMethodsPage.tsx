@@ -46,10 +46,11 @@ export const AdminCompanyPaymentMethodsPage = () => {
             subTitle={subTitle}
             footer={footer}
             header={header}
-            className="md:w-25rem mx-2" />
+            className="md:w-25rem mx-2"
+          />
         )
       })}
-      <Card title="Add new Payment Method +" className="md:w-25rem mx-2 flex items-center" />
+      <Card subTitle=" + Add new Payment Method " className="md:w-25rem mx-2 flex items-center" />
     </div>
   )
 }
