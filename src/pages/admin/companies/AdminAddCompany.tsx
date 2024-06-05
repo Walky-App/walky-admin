@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { InputMask } from 'primereact/inputmask'
@@ -22,17 +22,17 @@ import { getFormErrorMessage } from '../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 
 export interface ICompanyFormInputs {
-  corp_name: string
-  company_dbas: string[]
-  tax_id: string
-  address: string
-  phone_number: string
-  city: string
-  state: string
-  zip: string
-  country: string
-  facilities: IFacility[]
-  clients: IUser[]
+  company_name: string
+  company_dbas?: string[]
+  company_tax_id: string
+  company_address: string
+  company_phone_number: string
+  company_city: string
+  company_state: string
+  company_zip: string
+  company_country: string
+  facilities: string[]
+  users: string[]
 }
 
 export const AdminAddCompany = () => {
@@ -77,17 +77,17 @@ export const AdminAddCompany = () => {
   const { showToast } = useUtils()
 
   const defaultValues: ICompanyFormInputs = {
-    corp_name: '',
+    company_name: '',
     company_dbas: [],
-    tax_id: '',
-    address: '',
-    phone_number: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: '',
+    company_tax_id: '',
+    company_address: '',
+    company_phone_number: '',
+    company_city: '',
+    company_state: '',
+    company_zip: '',
+    company_country: '',
     facilities: [],
-    clients: [],
+    users: [],
   }
 
   const {
@@ -100,19 +100,19 @@ export const AdminAddCompany = () => {
   useEffect(() => {
     if (moreAddressDetails) {
       if (moreAddressDetails.zip != null) {
-        setValue('zip', moreAddressDetails.zip)
+        setValue('company_zip', moreAddressDetails.zip)
       }
       if (moreAddressDetails.state != null) {
-        setValue('state', moreAddressDetails.state)
+        setValue('company_state', moreAddressDetails.state)
       }
       if (moreAddressDetails.city != null) {
-        setValue('city', moreAddressDetails.city)
+        setValue('company_city', moreAddressDetails.city)
       }
       if (moreAddressDetails.address != null) {
-        setValue('address', moreAddressDetails.address)
+        setValue('company_address', moreAddressDetails.address)
       }
       if (moreAddressDetails.country != null) {
-        setValue('country', moreAddressDetails.country)
+        setValue('company_country', moreAddressDetails.country)
       }
 
       setMoreAddressDetails(undefined)
@@ -128,7 +128,7 @@ export const AdminAddCompany = () => {
       showToast({ severity: 'success', summary: 'Company added successfully' })
       setTimeout(() => {
         navigate('/admin/companies')
-      }, 2000);
+      }, 2000)
     } catch (error) {
       console.error('Error adding company: ', error)
       showToast({ severity: 'error', summary: 'Failed to add company' })
@@ -150,12 +150,12 @@ export const AdminAddCompany = () => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="corp_name"
+                name="company_name"
                 rules={{ required: 'Corporate Name is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="A corporate name is the legal name of a corporation.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Corporate Name" />
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Company Name" />
                     </HtInfoTooltip>
                     <InputText
                       id={field.name}
@@ -165,7 +165,7 @@ export const AdminAddCompany = () => {
                   </>
                 )}
               />
-              {getFormErrorMessage('corp_name', errors)}
+              {getFormErrorMessage('company_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -179,7 +179,7 @@ export const AdminAddCompany = () => {
                     </HtInfoTooltip>
                     <InputText
                       id={field.name}
-                      value={field.value.join(', ')}
+                      value={field.value?.join(', ')}
                       onChange={e => field.onChange(e.target.value.split(', '))}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
@@ -197,7 +197,7 @@ export const AdminAddCompany = () => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="tax_id"
+                name="company_tax_id"
                 rules={{
                   required: 'Tax ID is required',
                   pattern: {
@@ -221,13 +221,13 @@ export const AdminAddCompany = () => {
                   </>
                 )}
               />
-              {getFormErrorMessage('tax_id', errors)}
+              {getFormErrorMessage('company_tax_id', errors)}
             </div>
 
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="address"
+                name="company_address"
                 rules={{ required: 'Address is required' }}
                 render={({ field, fieldState }) => (
                   <>
@@ -253,7 +253,7 @@ export const AdminAddCompany = () => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="phone_number"
+                name="company_phone_number"
                 rules={{
                   required: 'Phone Number is required, should be 10 digits.',
                   pattern: /^\d{10}$/,
@@ -275,18 +275,18 @@ export const AdminAddCompany = () => {
                   </>
                 )}
               />
-              {getFormErrorMessage('phone_number', errors)}
+              {getFormErrorMessage('company_phone_number', errors)}
             </div>
 
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="clients"
+                name="users"
                 rules={{ required: 'At least one client is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="All clients related to this company">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Clients" />
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
                     </HtInfoTooltip>
                     <MultiSelect
                       id={field.name}
@@ -305,7 +305,7 @@ export const AdminAddCompany = () => {
                     />
                     <HtInputHelpText
                       fieldName={field.name}
-                      helpText="Please select all clients related to this company."
+                      helpText="Please select all users related to this company."
                     />
                     {getFormErrorMessage('services', errors)}
                   </>
