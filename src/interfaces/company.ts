@@ -28,7 +28,7 @@ export interface ICompany {
   state: string
   zip: string
   facilities: string[]
-  clients: string[]
+  users: string[]
   createdAt: string
   updatedAt: string
 }

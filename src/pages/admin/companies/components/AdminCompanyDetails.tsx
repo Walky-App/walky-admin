@@ -33,7 +33,7 @@ interface ICompanyFormInputs {
   zip: string
   country: string
   facilities: string[]
-  clients: string[]
+  users: string[]
 }
 
 export const AdminCompanyDetails = () => {
@@ -91,7 +91,7 @@ export const AdminCompanyDetails = () => {
     zip: '',
     country: '',
     facilities: [],
-    clients: [],
+    users: [],
   }
 
   const {
@@ -137,7 +137,7 @@ export const AdminCompanyDetails = () => {
       setValue('zip', selectedCompanyData.zip)
       setValue('country', selectedCompanyData.country)
       setValue('facilities', selectedCompanyData.facilities)
-      setValue('clients', selectedCompanyData.clients)
+      setValue('users', selectedCompanyData.users)
     }
   }, [selectedCompanyData, setValue])
 
@@ -305,11 +305,10 @@ export const AdminCompanyDetails = () => {
               {getFormErrorMessage('phone_number', errors)}
             </div>
 
-            
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="clients"
+                name="users"
                 rules={{ required: 'At least one client is required' }}
                 render={({ field, fieldState }) => {
                   const selectedClients = field.value
@@ -385,7 +384,6 @@ export const AdminCompanyDetails = () => {
                 }}
               />
             </div>
-
           </div>
         </div>
       </div>
