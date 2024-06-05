@@ -165,7 +165,9 @@ export const renderStartTimeController = (
     render={({ field, fieldState }) => {
       return (
         <>
-          <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
+          <HtInfoTooltip message="Select the start time for the job.">
+            <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
+          </HtInfoTooltip>
           <Calendar
             inputId={field.name}
             value={field.value == null ? toLocalDateTime(startTime) : toLocalDateTime(field.value)}
@@ -177,6 +179,7 @@ export const renderStartTimeController = (
                 const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
                 setIsStartTimeValid(true)
                 field.onChange(utcTime)
+                setStartTime(utcTime)
               } else {
                 setIsStartTimeValid(false)
               }
@@ -202,6 +205,7 @@ export const renderStartTimeController = (
                 setStartTime(utcTime)
               }
             }}
+            onHide={() => setIsStartTimeValid(true)}
             timeOnly
             hourFormat="12"
             parseDateTime={string => new Date(string)}
@@ -230,7 +234,9 @@ export const renderEndTimeController = (
     rules={{ required: 'End Time is required.' }}
     render={({ field, fieldState }) => (
       <>
-        <HtInputLabel htmlFor={field.name} labelText="End Time" asterisk />
+        <HtInfoTooltip message="Select the end time for the job.">
+          <HtInputLabel htmlFor={field.name} labelText="End Time" asterisk />
+        </HtInfoTooltip>
         <Calendar
           inputId={field.name}
           value={field.value == null ? toLocalDateTime(endTime) : toLocalDateTime(field.value)}
@@ -242,6 +248,7 @@ export const renderEndTimeController = (
               const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
               setIsEndTimeValid(true)
               field.onChange(utcTime)
+              setEndTime(utcTime)
             } else {
               setIsEndTimeValid(false)
             }
@@ -267,6 +274,7 @@ export const renderEndTimeController = (
               setEndTime(utcTime)
             }
           }}
+          onHide={() => setIsEndTimeValid(true)}
           timeOnly
           hourFormat="12"
           parseDateTime={string => new Date(string)}
