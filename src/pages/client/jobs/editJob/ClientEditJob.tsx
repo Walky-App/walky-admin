@@ -8,14 +8,6 @@ import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 
 import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
-import { type IFacility } from '../../../../interfaces/Facility'
-import { type IJob } from '../../../../interfaces/job'
-import { RequestService } from '../../../../services/RequestService'
-import { requestService } from '../../../../services/requestServiceNew'
-import { useUtils } from '../../../../store/useUtils'
-import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { roleChecker } from '../../../../utils/roleChecker'
-import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import {
   type JobFormDefaultValues,
   defaultJobFormValues,
@@ -28,7 +20,15 @@ import {
   renderStartTimeController,
   renderVacancyController,
   renderFacilityController,
-} from '../jobsUtils'
+} from '../../../../components/shared/jobs/jobsUtils'
+import { type IFacility } from '../../../../interfaces/Facility'
+import { type IJob } from '../../../../interfaces/job'
+import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 const defaultValues = defaultJobFormValues
 
@@ -199,7 +199,7 @@ export const ClientEditJob = () => {
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Title and Facility</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
+              <p className="mt-4 text-sm leading-6 text-gray-600">
                 Please take a moment to provide the essential information for the job posting. We require you to specify
                 the job title and provide a facility this job pertains to.
               </p>
@@ -217,7 +217,7 @@ export const ClientEditJob = () => {
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
+              <p className="mt-4 text-sm leading-6 text-gray-600">
                 Please select the dates you need temps at your facility. You can select one or multiple dates.
               </p>
               {requiredFieldsNoticeText}
@@ -233,7 +233,7 @@ export const ClientEditJob = () => {
         <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
+            <p className="mt-4 text-sm leading-6 text-gray-600">
               Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
               select the pay rate you are choosing to list your job.
             </p>
