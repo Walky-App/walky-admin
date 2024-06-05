@@ -23,15 +23,15 @@ import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { useAdminCompanyPageContext } from '../AdminCompanyPage'
 
 interface ICompanyFormInputs {
-  corp_name: string
-  company_dbas: string[]
-  tax_id: string
-  address: string
-  phone_number: string
-  city: string
-  state: string
-  zip: string
-  country: string
+  company_name: string
+  company_dbas?: string[]
+  company_tax_id: string
+  company_address: string
+  company_phone_number: string
+  company_city: string
+  company_state: string
+  company_zip: string
+  company_country: string
   facilities: string[]
   users: string[]
 }
@@ -81,15 +81,15 @@ export const AdminCompanyDetails = () => {
   }, [])
 
   const defaultCompanyFormValues: ICompanyFormInputs = {
-    corp_name: '',
+    company_name: '',
     company_dbas: [],
-    tax_id: '',
-    address: '',
-    phone_number: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: '',
+    company_tax_id: '',
+    company_address: '',
+    company_phone_number: '',
+    company_city: '',
+    company_state: '',
+    company_zip: '',
+    company_country: '',
     facilities: [],
     users: [],
   }
@@ -106,19 +106,19 @@ export const AdminCompanyDetails = () => {
   useEffect(() => {
     if (moreAddressDetails) {
       if (moreAddressDetails.zip != null) {
-        setValue('zip', moreAddressDetails.zip)
+        setValue('company_zip', moreAddressDetails.zip)
       }
       if (moreAddressDetails.state != null) {
-        setValue('state', moreAddressDetails.state)
+        setValue('company_state', moreAddressDetails.state)
       }
       if (moreAddressDetails.city != null) {
-        setValue('city', moreAddressDetails.city)
+        setValue('company_city', moreAddressDetails.city)
       }
       if (moreAddressDetails.address != null) {
-        setValue('address', moreAddressDetails.address)
+        setValue('company_address', moreAddressDetails.address)
       }
       if (moreAddressDetails.country != null) {
-        setValue('country', moreAddressDetails.country)
+        setValue('company_country', moreAddressDetails.country)
       }
 
       setMoreAddressDetails(undefined)
@@ -127,15 +127,15 @@ export const AdminCompanyDetails = () => {
 
   useEffect(() => {
     if (selectedCompanyData) {
-      setValue('corp_name', selectedCompanyData.corp_name)
+      setValue('company_name', selectedCompanyData.company_name)
       setValue('company_dbas', selectedCompanyData.company_dbas)
-      setValue('tax_id', selectedCompanyData.tax_id)
-      setValue('address', selectedCompanyData.address)
-      setValue('phone_number', selectedCompanyData.phone_number)
-      setValue('city', selectedCompanyData.city)
-      setValue('state', selectedCompanyData.state)
-      setValue('zip', selectedCompanyData.zip)
-      setValue('country', selectedCompanyData.country)
+      setValue('company_tax_id', selectedCompanyData.company_tax_id)
+      setValue('company_address', selectedCompanyData.company_address)
+      setValue('company_phone_number', selectedCompanyData.company_phone_number)
+      setValue('company_city', selectedCompanyData.company_city)
+      setValue('company_state', selectedCompanyData.company_state)
+      setValue('company_zip', selectedCompanyData.company_zip)
+      setValue('company_country', selectedCompanyData.company_country)
       setValue('facilities', selectedCompanyData.facilities)
       setValue('users', selectedCompanyData.users)
     }
@@ -177,12 +177,12 @@ export const AdminCompanyDetails = () => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="corp_name"
-                rules={{ required: 'Corporate Name is required' }}
+                name="company_name"
+                rules={{ required: 'Company Name is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="A corporate name is the legal name of a corporation.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Corporate Name" />
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Company Name" />
                     </HtInfoTooltip>
                     <InputText
                       id={field.name}
@@ -192,7 +192,7 @@ export const AdminCompanyDetails = () => {
                   </>
                 )}
               />
-              {getFormErrorMessage('corp_name', errors)}
+              {getFormErrorMessage('company_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -206,7 +206,7 @@ export const AdminCompanyDetails = () => {
                     </HtInfoTooltip>
                     <InputText
                       id={field.name}
-                      value={field.value.join(', ')}
+                      value={field.value?.join(', ')}
                       onChange={e => field.onChange(e.target.value.split(', '))}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
@@ -224,7 +224,7 @@ export const AdminCompanyDetails = () => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="tax_id"
+                name="company_tax_id"
                 rules={{
                   required: 'Tax ID is required',
                   pattern: {
@@ -248,13 +248,13 @@ export const AdminCompanyDetails = () => {
                   </>
                 )}
               />
-              {getFormErrorMessage('tax_id', errors)}
+              {getFormErrorMessage('company_tax_id', errors)}
             </div>
 
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="address"
+                name="company_address"
                 rules={{ required: 'Address is required' }}
                 render={({ field, fieldState }) => (
                   <>
@@ -280,7 +280,7 @@ export const AdminCompanyDetails = () => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="phone_number"
+                name="company_phone_number"
                 rules={{
                   required: 'Phone Number is required, should be 10 digits.',
                   pattern: /^\d{10}$/,
@@ -302,7 +302,7 @@ export const AdminCompanyDetails = () => {
                   </>
                 )}
               />
-              {getFormErrorMessage('phone_number', errors)}
+              {getFormErrorMessage('company_phone_number', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -317,7 +317,7 @@ export const AdminCompanyDetails = () => {
                   return (
                     <>
                       <HtInfoTooltip message="All clients related to this company">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Clients" />
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
                       </HtInfoTooltip>
                       <MultiSelect
                         id={field.name}
@@ -336,7 +336,7 @@ export const AdminCompanyDetails = () => {
                       />
                       <HtInputHelpText
                         fieldName={field.name}
-                        helpText="Please select all clients related to this company."
+                        helpText="Please select all users related to this company."
                       />
                       {getFormErrorMessage('services', errors)}
                     </>
