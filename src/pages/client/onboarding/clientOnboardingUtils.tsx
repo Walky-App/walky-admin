@@ -27,11 +27,10 @@ export interface IImage {
   timestamp: string
 }
 
-export interface IClientOnboardingFormInputs {
-  user_id: string
+export interface ICompanyFormInputs {
   company_name: string
   company_dbas: string[]
-  tax_id: string
+  company_tax_id: string
   company_phone_number: string
   company_address: string
   company_city: string
@@ -41,7 +40,12 @@ export interface IClientOnboardingFormInputs {
   company_facilities: string[]
   company_users: string[]
   company_id?: string
+}
+
+export interface IFacilityFormInputs {
+  user_id: string
   name: string
+  tax_id: string
   phone_number: string
   sqft: number | undefined
   address: string
@@ -59,11 +63,12 @@ export interface IClientOnboardingFormInputs {
   _id?: string
 }
 
-export const defaultClientOnboardingFormValues: IClientOnboardingFormInputs = {
-  user_id: '',
+export interface IClientOnboardingFormInputs extends ICompanyFormInputs, IFacilityFormInputs {}
+
+export const defaultCompanyFormValues: ICompanyFormInputs = {
   company_name: '',
   company_dbas: [],
-  tax_id: '',
+  company_tax_id: '',
   company_phone_number: '',
   company_address: '',
   company_city: '',
@@ -72,7 +77,12 @@ export const defaultClientOnboardingFormValues: IClientOnboardingFormInputs = {
   company_country: '',
   company_facilities: [],
   company_users: [],
+}
+
+export const defaultFacilityFormValues: IFacilityFormInputs = {
+  user_id: '',
   name: '',
+  tax_id: '',
   phone_number: '',
   sqft: undefined,
   country: '',
@@ -95,6 +105,11 @@ export const defaultClientOnboardingFormValues: IClientOnboardingFormInputs = {
     },
   ],
   licenses: [],
+}
+
+export const defaultClientOnboardingFormValues: IClientOnboardingFormInputs = {
+  ...defaultCompanyFormValues,
+  ...defaultFacilityFormValues,
 }
 
 export interface IGetAcceptRecipient {
