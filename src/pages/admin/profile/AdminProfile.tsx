@@ -17,7 +17,7 @@ import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { tooltipOptions } from '../../client/onboarding/ClientOnboardingPage'
+import { tooltipOptions } from '../../client/onboarding/clientOnboardingUtils'
 
 interface IUserFormValues {
   first_name?: string
