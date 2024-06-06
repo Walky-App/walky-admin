@@ -49,13 +49,13 @@ export const CategoryCards = ({
     return categoriesTemp.filter(category => category.title.toLowerCase().includes(filter.search.toLocaleLowerCase()))
   }
 
-  const handlerSetCategory = (category: Category, isDisabled: boolean) => {
+  const handlerSetCategory = (category: Category, disabled: boolean) => {
     if (isAdmin) {
       setCategory(category)
       navigate(`/admin/learn/categories/${category._id}`)
       return
     }
-    if (isDisabled) return
+    if (disabled) return
     navigate(`/learn/category/${category._id}`)
   }
 
@@ -114,7 +114,7 @@ export const CategoryCards = ({
                     body: { className: 'p-0 mb-4 ' },
                     content: { className: 'p-0' },
                   }}>
-                  <div className="h-auto sm:h-32 md:flex  ">
+                  <div className="h-auto sm:h-32 md:flex">
                     <div className="md:m-3" onClick={() => handlerSetCategory(category, isDisabled)} aria-hidden="true">
                       {category.image ? (
                         <img
@@ -174,7 +174,7 @@ export const CategoryCards = ({
                             onClick={() => handlerCertification(category)}
                             type="button">
                             <div className="flex items-center justify-start gap-2">
-                              <div className="pr-2  text-right text-black">
+                              <div className="pr-2 text-right text-black">
                                 {categoryProgress(category._id) !== 0 && category.modules_number !== 0
                                   ? (categoryProgress(category._id) / category.modules_number) * 100
                                   : 0}
