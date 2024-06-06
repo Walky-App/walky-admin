@@ -1,5 +1,16 @@
-import { format, formatDuration, isToday, isValid, differenceInDays } from 'date-fns'
+import { format, formatDuration, isToday, isValid, differenceInDays, parseISO } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
+
+/**
+ * Determines if a job is considered new based on its creation date.
+ * A job is considered new if it was created within the last 3 days.
+ *
+ * @param {Date} jobCreationDate - The creation date of the job.
+ * @returns {boolean} Returns true if the job was created within the last 3 days, false otherwise.
+ */
+export const isJobNewWithinThreeDays = (jobCreationDate: Date): boolean => {
+  return differenceInDays(new Date(), new Date(jobCreationDate)) <= 3
+}
 
 /**
  * Checks if the provided string is a valid date.
@@ -151,10 +162,46 @@ export const isTodaySameAsTimeStamp = (timeStamp?: string): boolean => {
 }
 
 /**
- * Checks if a job is new based on the createdAt date.
- * @param {Date} createdAt - The createdAt date of the job.
- * @returns {boolean} Returns true if the job is new, false otherwise.
+ * Sets the time in UTC format.
+ *
+ * @param {number} hours - The hours to set.
+ * @param {number} [minutes=0] - The minutes to set.
+ * @param {number} [seconds=0] - The seconds to set.
+ * @param {number} [milliseconds=0] - The milliseconds to set.
+ * @returns {Date} The date object in UTC.
  */
-export const isNew = (createdAt: Date): boolean => {
-  return differenceInDays(new Date(), new Date(createdAt)) <= 3
+export const setTimeInUTC = (hours: number, minutes = 0, seconds = 0, milliseconds = 0): Date => {
+  const date = new Date()
+  date.setHours(hours, minutes, seconds, milliseconds)
+
+  const offset = date.getTimezoneOffset() * 60000
+  const utcDate = new Date(date.getTime() + offset)
+
+  return utcDate
+}
+
+/**
+ * Converts a date to the local date time.
+ *
+ * @param {Date} date - The date to convert.
+ * @returns {Date} The date object in local date time.
+ */
+export const toLocalDateTime = (date: Date): Date => {
+  const offset = date.getTimezoneOffset() * 60000
+  const localDateTime = new Date(date.getTime() - offset)
+
+  return localDateTime
+}
+
+/**
+ * Formats a date string to local time.
+ *
+ * @param {string} dateString - The date string to format.
+ * @returns {string} The formatted date string in 'hh:mm a' format.
+ */
+export const formatToLocalTime = (dateString: string): string => {
+  const date = parseISO(dateString)
+  const localDateTime = toLocalDateTime(date)
+
+  return format(localDateTime, 'hh:mm a')
 }

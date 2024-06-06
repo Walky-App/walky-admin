@@ -12,8 +12,9 @@ export interface SubHeaderData {
   name?: string
   city?: string
   address?: string
-  corp_name?: string
+  company_name?: string
   company_dbas?: string[] | string
+  company_address?: string
 }
 
 export interface SubHeaderLink {
@@ -45,11 +46,11 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
     </Link>
   ) : null
 
-  const renderCorpName = isValid(data.corp_name) ? (
+  const renderCorpName = isValid(data.company_name) ? (
     <Link
       className="text-2xl font-bold leading-7 text-gray-900 hover:text-primary sm:truncate sm:text-3xl sm:tracking-tight"
       to={`${basePath}/${_id}`}>
-      {data.corp_name}
+      {data.company_name}
     </Link>
   ) : null
 
@@ -71,6 +72,13 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
     <div className="flex items-center text-balance text-sm text-gray-500">
       <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
       {address}
+    </div>
+  ) : null
+
+  const renderCompanyAddress = isValid(data.company_address) ? (
+    <div className="flex items-center text-sm text-gray-500">
+      <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+      {data.company_address}
     </div>
   ) : null
 
@@ -139,6 +147,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
         <div className="flex flex-wrap gap-x-2 gap-y-1">
           {renderCity}
           {renderAddress}
+          {renderCompanyAddress}
         </div>
       </div>
       <div className="flex flex-wrap gap-3 2xl:mt-0">
