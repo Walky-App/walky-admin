@@ -21,7 +21,7 @@ import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } fro
 export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const { setFormData, defaultValues, formData, moreAddressDetailsCompany, setMoreAddressDetailsCompany } =
+  const { formData, setFormData, defaultValues, moreAddressDetailsCompany, setMoreAddressDetailsCompany } =
     useContext(FormDataContext)
 
   const { showToast } = useUtils()
@@ -59,10 +59,22 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
   }, [moreAddressDetailsCompany, setMoreAddressDetailsCompany, setValue])
 
   const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
-    setFormData(data)
     setIsLoading(true)
+    setFormData(data)
 
     let companyId = formData?.company_id
+
+    const requestData = {
+      company_name: data.company_name,
+      company_dbas: data.company_dbas,
+      company_tax_id: data.company_tax_id,
+      company_phone_number: data.company_phone_number,
+      company_country: data.company_country,
+      company_address: data.company_address,
+      company_city: data.company_city,
+      company_state: data.company_state,
+      company_zip: data.company_zip,
+    }
 
     if (companyId != null) {
       try {
@@ -73,7 +85,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
         if (companyFound != null) {
           const updatedCompany = {
             ...companyFound,
-            ...data,
+            ...requestData,
           }
 
           const response = await requestService({
@@ -117,7 +129,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       }
     } else {
       try {
-        const response = await requestService({ method: 'POST', path: 'companies', body: JSON.stringify(data) })
+        const response = await requestService({ method: 'POST', path: 'companies', body: JSON.stringify(requestData) })
 
         if (!response.ok) throw new Error('Failed to add company')
         const companyData: ICompany = await response.json()
@@ -217,7 +229,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="tax_id"
+                name="company_tax_id"
                 rules={{
                   required: 'Tax ID is required',
                   pattern: {
