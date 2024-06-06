@@ -11,7 +11,8 @@ import { type ITokenInfo } from '../../../../interfaces/services'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo, SetToken } from '../../../../utils/tokenUtil'
-import { FormDataContext, clientOnboardingSteps } from '../ClientOnboardingPage'
+import { clientOnboardingSteps } from '../ClientOnboardingPage'
+import { FormDataContext } from '../clientOnboardingUtils'
 
 interface FinishedOnboardingDialogProps {
   visible: boolean

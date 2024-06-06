@@ -3,11 +3,11 @@ import { useContext, useState } from 'react'
 import { Button } from 'primereact/button'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 
-import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
-import { AddFacilityDialog } from './AddFacilityDialog'
-import { AddPaymentMethodsCard } from './PaymentMethodCard'
+import { type StepProps, FormDataContext } from '../clientOnboardingUtils'
+import { AddFacilityDialog } from '../components/AddFacilityDialog'
+import { AddPaymentMethodsCard } from '../components/PaymentMethodCard'
 
-export const Step4 = ({ step, setStep }: StepProps) => {
+export const PaymentInformationForm = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
 

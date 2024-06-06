@@ -23,12 +23,12 @@ import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, services } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
-import { FormDataContext, type IFacilityFormInputs } from '../ClientOnboardingPage'
+import { type IClientOnboardingFormInputs, FormDataContext } from '../clientOnboardingUtils'
 
 interface AddFacilityDialogProps {
   visible: boolean
   setVisible: (visible: boolean) => void
-  values: IFacilityFormInputs
+  values: IClientOnboardingFormInputs
 }
 
 export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDialogProps) => {
@@ -37,19 +37,18 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
     setFacilitiesArray,
     selectedFacility,
     setSelectedFacility,
-    moreAddressDetails,
-    setMoreAddressDetails,
+    moreAddressDetailsFacility,
+    setMoreAddressDetailsFacility,
   } = useContext(FormDataContext)
 
   const { showToast } = useUtils()
 
-  let corp_name: IFacilityFormInputs['corp_name'], tax_id: IFacilityFormInputs['tax_id']
+  let tax_id: IClientOnboardingFormInputs['tax_id']
 
   if (facilitiesArray && facilitiesArray.length > 0) {
     // eslint-disable-next-line no-extra-semi
-    ;({ corp_name, tax_id } = facilitiesArray[0] as IFacilityFormInputs)
+    ;({ tax_id } = facilitiesArray[0] as IClientOnboardingFormInputs)
   } else {
-    corp_name = 'Default Corp Name'
     tax_id = 'Default Tax ID'
   }
 
@@ -59,42 +58,41 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
     handleSubmit,
     getValues,
     setValue,
-  } = useForm<IFacilityFormInputs>({ values })
+  } = useForm<IClientOnboardingFormInputs>({ values })
 
   useEffect(() => {
-    if (moreAddressDetails) {
-      if (moreAddressDetails.zip) {
-        setValue('zip', moreAddressDetails.zip)
+    if (moreAddressDetailsFacility) {
+      if (moreAddressDetailsFacility.zip != null) {
+        setValue('zip', moreAddressDetailsFacility.zip)
       }
-      if (moreAddressDetails.state) {
-        setValue('state', moreAddressDetails.state)
+      if (moreAddressDetailsFacility.state != null) {
+        setValue('state', moreAddressDetailsFacility.state)
       }
-      if (moreAddressDetails.city) {
-        setValue('city', moreAddressDetails.city)
+      if (moreAddressDetailsFacility.city != null) {
+        setValue('city', moreAddressDetailsFacility.city)
       }
-      if (moreAddressDetails.location_pin) {
-        setValue('location_pin', moreAddressDetails.location_pin)
+      if (moreAddressDetailsFacility.location_pin != null) {
+        setValue('location_pin', moreAddressDetailsFacility.location_pin)
       }
-      if (moreAddressDetails.address) {
-        setValue('address', moreAddressDetails.address)
+      if (moreAddressDetailsFacility.address != null) {
+        setValue('address', moreAddressDetailsFacility.address)
       }
-      if (moreAddressDetails.country) {
-        setValue('country', moreAddressDetails.country)
+      if (moreAddressDetailsFacility.country != null) {
+        setValue('country', moreAddressDetailsFacility.country)
       }
 
-      setMoreAddressDetails(undefined)
+      setMoreAddressDetailsFacility(undefined)
     }
-  }, [moreAddressDetails, setMoreAddressDetails, setValue])
+  }, [moreAddressDetailsFacility, setMoreAddressDetailsFacility, setValue])
 
   const { fields } = useFieldArray({
     control,
     name: 'contacts',
   })
 
-  const onSubmit: SubmitHandler<IFacilityFormInputs> = async data => {
+  const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
     const newFacilityData = {
       ...data,
-      corp_name,
       tax_id,
     }
     if (selectedFacility?._id) {
@@ -343,7 +341,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                   </HtInfoTooltip>
                   <AddressAutoComplete
                     controlled
-                    setMoreAddressDetails={setMoreAddressDetails}
+                    setMoreAddressDetails={setMoreAddressDetailsFacility}
                     currentAddress={field.value}
                     onChange={field.onChange}
                     value={field.value}
