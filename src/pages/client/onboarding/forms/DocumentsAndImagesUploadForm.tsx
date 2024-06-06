@@ -15,9 +15,9 @@ import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
-import { FormDataContext, type IFacilityFormInputs, type StepProps } from '../ClientOnboardingPage'
+import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } from '../clientOnboardingUtils'
 
-export const Step2 = ({ step, setStep }: StepProps) => {
+export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { facilitiesArray, setFacilitiesArray } = useContext(FormDataContext)
 
@@ -41,7 +41,7 @@ export const Step2 = ({ step, setStep }: StepProps) => {
 
   const handleUploadSuccess = (event: FileUploadUploadEvent) => {
     if (event.xhr.status === 200) {
-      const data: IFacilityFormInputs = JSON.parse(event.xhr.response)
+      const data: IClientOnboardingFormInputs = JSON.parse(event.xhr.response)
 
       showToast({
         severity: 'success',

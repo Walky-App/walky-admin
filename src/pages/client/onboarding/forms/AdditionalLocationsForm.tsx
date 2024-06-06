@@ -6,14 +6,14 @@ import { Menu, Transition } from '@headlessui/react'
 import { EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/20/solid'
 
 import { cn } from '../../../../utils/cn'
-import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
-import { AddFacilityDialog } from './AddFacilityDialog'
+import { type StepProps, FormDataContext } from '../clientOnboardingUtils'
+import { AddFacilityDialog } from '../components/AddFacilityDialog'
 
 function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
   return strings.filter(Boolean).join(separator)
 }
 
-export const Step3 = ({ step, setStep }: StepProps) => {
+export const AdditionalLocationsForm = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
 

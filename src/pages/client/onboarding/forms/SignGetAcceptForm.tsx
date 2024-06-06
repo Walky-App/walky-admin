@@ -4,14 +4,14 @@ import { Button } from 'primereact/button'
 import { Skeleton } from 'primereact/skeleton'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
-import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
-import { FinishOnboardingDialog } from './FinishOnboardingDialog'
+import { FormDataContext, type StepProps } from '../clientOnboardingUtils'
+import { FinishOnboardingDialog } from '../components/FinishOnboardingDialog'
 
 export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
   return strings.filter(Boolean).join(separator)
 }
 
-export const Step5 = ({ step, setStep }: StepProps) => {
+export const SignGetAcceptForm = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
 
