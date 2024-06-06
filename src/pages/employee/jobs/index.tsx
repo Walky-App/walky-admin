@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
+import classNames from 'classnames'
+// import { set } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
@@ -10,7 +12,7 @@ import { Divider } from 'primereact/divider'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { Sidebar } from 'primereact/sidebar'
-import { Skeleton } from 'primereact/skeleton'
+// import { Skeleton } from 'primereact/skeleton'
 import { Slider } from 'primereact/slider'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
@@ -20,10 +22,11 @@ import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { HtScrollTop } from '../../../components/shared/general/HtScrollTop'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { useCoordinates } from '../../../store/useCoordinates'
+import { requestService } from '../../../services/requestServiceNew'
 import { useJobs } from '../../../store/useJobs'
-import { isNew } from '../../../utils/timeUtils'
-import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { useUtils } from '../../../store/useUtils'
+// import { isNew } from '../../../utils/timeUtils'
+// import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobListItem } from './JobListItem'
 
 const jobTitleOptions = [
@@ -61,32 +64,31 @@ interface ViewOption {
   value: string
 }
 
+interface ILocation {
+  latitude: number
+  longitude: number
+}
+
 const viewOptions: ViewOption[] = [
   { icon: 'pi pi-bars', value: 'list' },
   { icon: 'pi pi-table', value: 'grid' },
 ]
 
 export const EmployeeJobs = () => {
+  const [location, setLocation] = useState<ILocation>()
   const { jobs, setJobs } = useJobs()
-  const {
-    latitude,
-    longitude,
-    loading: coordinatesLoading,
-    getLatitudeFromLocalStorage,
-    getLongitudeFromLocalStorage,
-  } = useCoordinates()
-  const { _id } = GetTokenInfo()
+  // const { _id } = GetTokenInfo()
   const [view, setView] = useState<string>('list')
+
+  const { showToast } = useUtils()
 
   const viewOptionsTemplate = (option: ViewOption) => {
     return <i className={option.icon} />
   }
 
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
-  const [displayedJobs, setDisplayedJobs] = useState<IJob[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [isDistanceRelatedButtonClicked, setIsDistanceRelatedButtonClicked] = useState(false)
-  const [selectedRange, setSelectedRange] = useState<number | null>(null)
+  const [selectedRange, setSelectedRange] = useState<number | null>(5)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
@@ -100,86 +102,100 @@ export const EmployeeJobs = () => {
   const handleUseSelectedAddress = async () => {
     if (moreAddressDetails && moreAddressDetails.location_pin) {
       const fromCoordinates = [...moreAddressDetails.location_pin].reverse()
-      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
-      if (allJobs) {
-        setJobs(allJobs)
-      }
-      setIsLoading(false)
-      setIsDistanceRelatedButtonClicked(true)
-    }
-  }
 
-  const handleUseCurrentLocation = async () => {
-    if (latitude !== null && longitude !== null) {
-      const fromCoordinates = [longitude, latitude]
-      const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
-      if (allJobs) {
-        setJobs(allJobs)
-      }
-      setIsLoading(false)
-      setIsDistanceRelatedButtonClicked(true)
-    }
-  }
+      setLocation({ latitude: moreAddressDetails.location_pin[0], longitude: moreAddressDetails.location_pin[1] })
 
-  useEffect(() => {
-    if (jobs.length) {
-      setIsLoading(false)
-    }
-    if (getLongitudeFromLocalStorage() && getLatitudeFromLocalStorage() && !jobs.length) {
-      const getJobs = async () => {
-        if (latitude === null || longitude === null) {
-          return
-        }
-        const fromCoordinates = [longitude, latitude]
+      try {
         const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
         if (allJobs) {
           setJobs(allJobs)
         }
         setIsLoading(false)
+        isLoading
+      } catch (error) {
+        console.error('Error fetching jobs:', error)
       }
-      getJobs()
     }
-  }, [
-    jobs,
-    setJobs,
-    coordinatesLoading,
-    latitude,
-    longitude,
-    getLatitudeFromLocalStorage,
-    getLongitudeFromLocalStorage,
-  ])
+  }
+
+  const handleUseCurrentLocation = () => {
+    const getLocation = async (lon: number, lat: number) => {
+      try {
+        const fromCoordinates = [lon, lat].reverse()
+        const response = await requestService({
+          path: 'jobs/distance',
+          method: 'POST',
+          body: JSON.stringify({ fromCoordinates }),
+        })
+        if (response.ok) {
+          const allJobs = await response.json()
+          setJobs(allJobs)
+          setIsLoading(false)
+        }
+      } catch (error) {
+        console.error('Error fetching jobs:', error)
+      }
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        setLocation({ latitude: position.coords.latitude, longitude: position.coords.longitude })
+        getLocation(position.coords.latitude, position.coords.longitude)
+      },
+      error => {
+        showToast({ severity: 'error', summary: 'Error', detail: 'Error getting location' })
+        console.error('Error getting location:', error)
+      },
+      { enableHighAccuracy: true },
+    )
+  }
 
   useEffect(() => {
-    let filteredJobs = [...(jobs || [])]
-    if (selectedJobTitles.length > 0) {
-      filteredJobs = filteredJobs.filter(job => selectedJobTitles.includes(job.title))
+    const getJobs = async () => {
+      try {
+        const response = await requestService({ path: 'jobs/active' })
+        if (response.ok) {
+          const allJobs = await response.json()
+          setJobs(allJobs)
+        }
+      } catch (error) {
+        console.error('Error fetching jobs:', error)
+      }
     }
-    if (dates) {
-      filteredJobs = filteredJobs.filter(job => {
-        return job.job_dates.some(jobDate => {
-          const date = new Date(jobDate)
-          return date >= dates[0] && date <= dates[1]
-        })
-      })
-    }
-    if (selectedRange) {
-      filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange)
-    }
-    if (isNewChecked) {
-      filteredJobs = filteredJobs.filter(job => isNew(job.createdAt))
-    }
-    if (isAppliedChecked) {
-      filteredJobs = filteredJobs.filter(job =>
-        job.applicants.some(applicant => applicant.user.toString() === _id && !applicant.is_approved),
-      )
-    }
-    if (isApprovedChecked) {
-      filteredJobs = filteredJobs.filter(job =>
-        job.applicants.some(applicant => applicant.user.toString() === _id && applicant.is_approved),
-      )
-    }
-    setDisplayedJobs(filteredJobs)
-  }, [selectedJobTitles, dates, jobs, selectedRange, isNewChecked, isAppliedChecked, isApprovedChecked, _id])
+    getJobs()
+  }, [setJobs])
+
+  // useEffect(() => {
+  //   let filteredJobs = [...(jobs || [])]
+  //   if (selectedJobTitles.length > 0) {
+  //     filteredJobs = filteredJobs.filter(job => selectedJobTitles.includes(job.title))
+  //   }
+  //   if (dates) {
+  //     filteredJobs = filteredJobs.filter(job => {
+  //       return job.job_dates.some(jobDate => {
+  //         const date = new Date(jobDate)
+  //         return date >= dates[0] && date <= dates[1]
+  //       })
+  //     })
+  //   }
+  //   if (selectedRange) {
+  //     filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange)
+  //   }
+  //   if (isNewChecked) {
+  //     filteredJobs = filteredJobs.filter(job => isNew(job.createdAt))
+  //   }
+  //   if (isAppliedChecked) {
+  //     filteredJobs = filteredJobs.filter(job =>
+  //       job.applicants.some(applicant => applicant.user.toString() === _id && !applicant.is_approved),
+  //     )
+  //   }
+  //   if (isApprovedChecked) {
+  //     filteredJobs = filteredJobs.filter(job =>
+  //       job.applicants.some(applicant => applicant.user.toString() === _id && applicant.is_approved),
+  //     )
+  //   }
+  //   setJobs(filteredJobs)
+  // }, [selectedJobTitles, dates, jobs, selectedRange, isNewChecked, isAppliedChecked, isApprovedChecked, _id, setJobs])
 
   const onJobTitleChange = (e: CheckboxChangeEvent) => {
     let _selectedJobTitles = [...selectedJobTitles]
@@ -194,8 +210,8 @@ export const EmployeeJobs = () => {
     return (
       <div className="mx-auto mb-10 mt-4 px-4 sm:px-6 lg:px-8">
         <ul className="grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
-          {isLoading ? (
-            jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
+          {/* {isLoading ? (
+            jobs.map((_, index) => <Skeleton key={index} width="45rem" height="18rem" />)
           ) : displayedJobs.length > 0 ? (
             [...displayedJobs]
               .sort((a, b) => (isNew(b.createdAt) ? 1 : -1))
@@ -204,7 +220,11 @@ export const EmployeeJobs = () => {
               ))
           ) : (
             <div>No jobs found for the selected filters.</div>
-          )}
+          )} */}
+
+          {jobs.map(job => (
+            <JobListItem key={job._id} job={job} />
+          ))}
         </ul>
       </div>
     )
@@ -219,43 +239,43 @@ export const EmployeeJobs = () => {
     }
 
     const resetDistanceRelatedFilters = () => {
-      setIsDistanceRelatedButtonClicked(false)
-      setSelectedRange(null)
+      setSelectedRange(5)
     }
 
     return (
       <>
-        <div className="mb-4 flex flex-col items-center pr-4">
-          <Button
-            label="Use Current Location"
-            text
-            outlined
-            link
-            aria-label="Set jobs by Current Location"
-            tooltip="Set Jobs with distance from your current location"
-            onClick={handleUseCurrentLocation}
-          />
-          <Divider layout="horizontal" align="center" className="my-2">
-            or
-          </Divider>
-          <div className="flex w-full gap-x-2">
+        <div className="">
+          <h2 className="text-xl">Filters</h2>
+          <Divider />
+          <div className="flex w-full">
             <AddressAutoComplete
               setMoreAddressDetails={setMoreAddressDetails}
-              currentAddress="Select Address"
-              className="flex-1"
+              currentAddress="Address, City, State, Zip Code"
+              classNames={classNames('rounded-br-none rounded-tr-none')}
             />
-            <Button aria-label="Set jobs by Selected Address" onClick={handleUseSelectedAddress}>
-              Set Distance
-            </Button>
+            <Button
+              icon="pi pi-search"
+              className="rounded-bl-none rounded-tl-none"
+              aria-label="Set jobs by Selected Address"
+              onClick={handleUseSelectedAddress}
+            />
+            <Button
+              icon="pi pi-map-marker"
+              className="ml-3"
+              outlined
+              aria-label="Get Jobs with distance from your current location"
+              tooltip="Get Jobs with distance from your current location"
+              onClick={handleUseCurrentLocation}
+            />
           </div>
         </div>
-        {isDistanceRelatedButtonClicked ? (
-          <div className="mb-4">
+        {location?.latitude != null && location?.longitude ? (
+          <div className="my-5 px-6">
             <div className="mb-2">
               <HtInfoTooltip message="Select a range using slider below to filter jobs by distance from the selected location.">
                 <HtInputLabel
                   htmlFor="range"
-                  labelText={selectedRange != null ? `Distance Range:  <${selectedRange} miles` : 'No range selected'}
+                  labelText={selectedRange != null ? `${selectedRange} miles away approx` : '0 Miles away approx'}
                   className="text-md"
                 />
               </HtInfoTooltip>
@@ -263,21 +283,22 @@ export const EmployeeJobs = () => {
             <Slider
               value={selectedRange ?? undefined}
               onChange={e => {
-                if (Array.isArray(e.value)) {
-                  setSelectedRange(e.value[0])
-                } else {
-                  setSelectedRange(e.value)
-                }
+                const value = Array.isArray(e.value) ? e.value[0] : e.value
+                const filteredJobs = jobs.filter(job => job.distance <= value)
+                selectedRange && setSelectedRange(value)
+
+                setJobs(filteredJobs)
               }}
               className="w-full"
-              step={1}
+              step={5}
+              // min={5}
               min={rangeOptions[0].code}
               max={rangeOptions[rangeOptions.length - 1].code}
             />
           </div>
         ) : null}
         <div className="flex w-full justify-center">
-          {isDistanceRelatedButtonClicked ? (
+          {location?.latitude != null && location?.longitude ? (
             <Button
               label="Clear Distance"
               className="align flex flex-row"
@@ -287,13 +308,23 @@ export const EmployeeJobs = () => {
             />
           ) : null}
         </div>
-        <HtInfoTooltip message="Select a start and end date to filter jobs by date range.">
+        <Divider />
+        <HtInfoTooltip message="Select a start and end date to filter jobs by date range." className="mb-4">
           <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-md" />
         </HtInfoTooltip>
         <div className="mb-4 pr-4">
           <Calendar
             value={dates}
             onChange={e => setDates(e.value as [Date, Date] | null)}
+            // onChange={e => {
+            // console.log(e.value)
+            // jobs.filter(job => {
+            //   return job.job_dates.some(jobDate => {
+            //     const date = new Date(jobDate)
+            //     return date >= dates[0] && date <= dates[1]
+            //   })
+            // })
+            // }}
             selectionMode="range"
             showButtonBar
             numberOfMonths={1}
@@ -302,7 +333,7 @@ export const EmployeeJobs = () => {
             className="w-full"
           />
         </div>
-        <div className="mb-2 grid grid-cols-3 items-center pr-4">
+        <div className="mb-2 grid grid-cols-2 items-center pr-4">
           {jobTitleOptions.slice(0, seeMore ? jobTitleOptions.length : 9).map(jobTitle => {
             return (
               <div key={jobTitle.code} className="flex items-center">
@@ -447,10 +478,10 @@ export const EmployeeJobs = () => {
         <GlobalTable data={jobs} columns={memoEmployeeJobsColumns} allowClick />
       ) : (
         <div className="flex flex-col md:flex-row">
-          <ScrollPanel style={{ width: '35%', height: '100vh' }} className="w-full">
+          <ScrollPanel style={{ width: '20%', height: '100vh' }} className="w-full">
             {renderFiltersContent()}
           </ScrollPanel>
-          <ScrollPanel style={{ width: '65%', height: '100vh' }} className="w-full">
+          <ScrollPanel style={{ width: '75%', height: '100vh' }} className="w-full pl-16">
             {renderJobCards()}
             <HtScrollTop className="" />
           </ScrollPanel>

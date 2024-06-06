@@ -347,7 +347,7 @@ export const AddFacilityDialog = ({ visible, setVisible, values }: AddFacilityDi
                     currentAddress={field.value}
                     onChange={field.onChange}
                     value={field.value}
-                    className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
+                    classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2 w-full')}
                   />
                   <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
                 </>

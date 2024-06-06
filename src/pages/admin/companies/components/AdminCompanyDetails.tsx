@@ -267,7 +267,7 @@ export const AdminCompanyDetails = () => {
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
@@ -305,7 +305,6 @@ export const AdminCompanyDetails = () => {
               {getFormErrorMessage('phone_number', errors)}
             </div>
 
-            
             <div className="sm:col-span-3">
               <Controller
                 control={control}
@@ -385,7 +384,6 @@ export const AdminCompanyDetails = () => {
                 }}
               />
             </div>
-
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { InputMask } from 'primereact/inputmask'
@@ -128,7 +128,7 @@ export const AdminAddCompany = () => {
       showToast({ severity: 'success', summary: 'Company added successfully' })
       setTimeout(() => {
         navigate('/admin/companies')
-      }, 2000);
+      }, 2000)
     } catch (error) {
       console.error('Error adding company: ', error)
       showToast({ severity: 'error', summary: 'Failed to add company' })
@@ -240,7 +240,7 @@ export const AdminAddCompany = () => {
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 
 import { Button } from 'primereact/button'
 
+import packageJson from '../../../package.json'
 import { LogosPack } from '../../components/layout/LogosPack'
 import { ForgotPassword } from './ForgotPasswordForm'
 import { LoginForm } from './LoginForm'
@@ -72,7 +73,10 @@ export const Auth = () => {
           </div>
         </div>
         <div className="flex justify-center">
-          <small className="text-xs text-gray-400  ">v.1.0.0{process.env.NODE_ENV === 'development' ? 'd' : 'p'}</small>
+          <small className="text-xs text-gray-400  ">
+            v{packageJson.version}
+            {process.env.NODE_ENV === 'development' ? 'd' : 'p'}
+          </small>
         </div>
       </div>
       <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
