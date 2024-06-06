@@ -27,8 +27,6 @@ import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
-import { ClientEditJob } from './pages/client/jobs/editJob/ClientEditJob'
 import { ClientJobDetailView } from './pages/client/jobs/jobDetailView'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
@@ -85,6 +83,8 @@ import { AdminCompanyPaymentMethodsPage } from './pages/admin/companies/componen
 import { AdminCompanyDetails } from './pages/admin/companies/components/AdminCompanyDetails'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
+
+import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
 
 /******************************************* Employee Pages ************************************/
 
@@ -147,8 +147,8 @@ export const App = () => {
                   <Route element={<AdminFacilityLicenses />} path="/client/facilities/:facilityId/licenses" />
                   <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<Jobs />} path="/client/jobs" />
-                  <Route element={<ClientAddJob />} path="/client/jobs/new" />
-                  <Route element={<ClientEditJob />} path="/client/jobs/:id/edit" />
+                  <Route element={<AddEditJobPage />} path="/client/jobs/new" />
+                  <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
                   <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
@@ -196,9 +196,9 @@ export const App = () => {
                   <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
-                  <Route element={<ClientAddJob />} path="/admin/jobs/new" />
+                  <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
                   <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
-                  <Route element={<ClientEditJob />} path="/admin/jobs/:id/edit" />
+                  <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
                   <Route element={<AdminDetailsCategory />} path="/admin/learn/categories/:categoryId" />

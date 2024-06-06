@@ -9,7 +9,7 @@ import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outlin
 
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { isNew } from '../../../utils/timeUtils'
+import { formatToLocalTime, isJobNewWithinThreeDays } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
@@ -57,18 +57,6 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
     ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
   }
 
-  function convertToStandardTime(militaryTime: number) {
-    if (militaryTime == null) {
-      return 'Time not set'
-    }
-    const militaryTimeString = militaryTime.toString().padStart(4, '0')
-    const hours = Number(militaryTimeString.slice(0, -2))
-    const minutes = Number(militaryTimeString.slice(-2))
-    const standardHours = ((hours + 11) % 12) + 1
-    const amPm = hours >= 12 ? 'pm' : 'am'
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
-  }
-
   return (
     <li
       key={job._id}
@@ -81,11 +69,11 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
             <div className="flex flex-row">
               <span className="pi pi-users" />
               <p className="ml-1 text-stone-500">
-                {job.applicants.length} / {job.vacancy} Applicants
+                {job.applicants.length} Applicants / {job.vacancy} Slots
               </p>
             </div>
             <div className="flex flex-row space-x-2 ">
-              {isNew(job.createdAt) ? <Badge value="New" size="normal" /> : null}
+              {isJobNewWithinThreeDays(job.createdAt) ? <Badge value="New" size="normal" /> : null}
               {job.applicants?.map(applicant => {
                 if (
                   applicant.user.toString() === _id &&
@@ -143,7 +131,7 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-stone-500">Job Time</div>
                 <div className="text-black">
-                  {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                  {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
                 </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">

@@ -22,7 +22,7 @@ import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { useCoordinates } from '../../../store/useCoordinates'
 import { useJobs } from '../../../store/useJobs'
-import { isNew } from '../../../utils/timeUtils'
+import { isJobNewWithinThreeDays } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobListItem } from './JobListItem'
 
@@ -31,8 +31,6 @@ const jobTitleOptions = [
   { name: 'Packager', code: 'Packager' },
   { name: 'Trimmer', code: 'Trimmer' },
   { name: 'Harvester', code: 'Harvester' },
-  { name: 'Gardener', code: 'Gardener' },
-  { name: 'Cultivator', code: 'Cultivator' },
   { name: 'Extractor', code: 'Extractor' },
   { name: 'Budtender', code: 'Budtender' },
   { name: 'Front desk', code: 'Front desk' },
@@ -168,7 +166,7 @@ export const EmployeeJobs = () => {
       filteredJobs = filteredJobs.filter(job => job.distance <= selectedRange)
     }
     if (isNewChecked) {
-      filteredJobs = filteredJobs.filter(job => isNew(job.createdAt))
+      filteredJobs = filteredJobs.filter(job => isJobNewWithinThreeDays(job.createdAt))
     }
     if (isAppliedChecked) {
       filteredJobs = filteredJobs.filter(job =>
@@ -200,7 +198,7 @@ export const EmployeeJobs = () => {
             jobs.map((_, index) => <Skeleton key={index} width="28rem" height="18rem" />)
           ) : displayedJobs.length > 0 ? (
             [...displayedJobs]
-              .sort((a, b) => (isNew(b.createdAt) ? 1 : -1))
+              .sort((a, b) => (isJobNewWithinThreeDays(b.createdAt) ? 1 : -1))
               .map(job => (
                 <JobListItem key={job._id} job={job} isDistanceRelatedButtonClicked={isDistanceRelatedButtonClicked} />
               ))

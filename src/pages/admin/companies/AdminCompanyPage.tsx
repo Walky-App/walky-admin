@@ -48,9 +48,9 @@ export const AdminCompanyPage = () => {
 
   const subheaderUserDetails: SubHeaderData = {
     _id: selectedCompanyData?._id,
-    corp_name: selectedCompanyData?.corp_name,
+    company_name: selectedCompanyData?.company_name,
     company_dbas: selectedCompanyData?.company_dbas?.join(', ') ?? '',
-    address: selectedCompanyData?.address,
+    company_address: selectedCompanyData?.company_address,
   }
 
   return (
