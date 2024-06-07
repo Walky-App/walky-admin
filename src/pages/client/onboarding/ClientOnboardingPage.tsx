@@ -7,7 +7,6 @@ import { Steps } from 'primereact/steps'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
-import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import {
@@ -127,12 +126,11 @@ export const ClientOnboarding = () => {
             mobile: docRecipient.mobile,
           }
           try {
-            const response = await RequestService('getaccept', 'POST', body)
-            if (response.errors != null) {
-              throw response.errors
-            } else {
-              setDocumentData(response)
-            }
+            const response = await requestService({ path: 'getaccept', method: 'POST', body: JSON.stringify(body) })
+            if (!response.ok) throw new Error('Error sending document')
+            const documentData: IGetAcceptDocumentDetails = await response.json()
+
+            setDocumentData(documentData)
           } catch (error) {
             console.error('Error sending document:', error)
           }
@@ -156,29 +154,23 @@ export const ClientOnboarding = () => {
             setDocumentLoading(false)
             throw new Error('Document ID is missing')
           }
+          const response = await requestService({ path: `getaccept/${documentId}/recipients` })
+          if (!response.ok) throw new Error('Error fetching document recipients')
 
-          let response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
-          if (response.errors != null) {
-            throw response.errors
-          }
+          let recipientsData = await response.json()
 
-          while (!response.document_url) {
+          while (recipientsData.document_url == null) {
             await new Promise(resolve => setTimeout(resolve, 3000))
-
-            response = await RequestService(`getaccept/${documentId}/recipients`, 'GET')
-            if (response.errors != null) {
-              throw response.errors
-            }
+            recipientsData = await response.json()
           }
 
-          setDocumentUrl(response.document_url)
+          setDocumentUrl(recipientsData.document_url)
           setDocumentLoading(false)
         } catch (error) {
           console.error('Error fetching document recipients:', error)
           setDocumentLoading(false)
         }
       }
-
       getDocumentRecipients()
     }
   }, [activeIndex, documentData, setDocumentUrl])
