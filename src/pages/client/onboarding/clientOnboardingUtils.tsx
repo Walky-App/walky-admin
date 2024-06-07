@@ -3,7 +3,6 @@ import { type Dispatch, type SetStateAction, createContext } from 'react'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import { type IUser } from '../../../interfaces/User'
 
 export interface ILicenseDocument {
   id: number
@@ -163,8 +162,6 @@ export interface FormDataContextProps {
   defaultValues: IClientOnboardingFormInputs
   formData: IClientOnboardingFormInputs
   setFormData: Dispatch<SetStateAction<IClientOnboardingFormInputs>>
-  currentUser: IUser | undefined
-  setCurrentUser: Dispatch<SetStateAction<IUser | undefined>>
   facilitiesArray: IClientOnboardingFormInputs[]
   setFacilitiesArray: Dispatch<SetStateAction<IClientOnboardingFormInputs[]>>
   selectedFacility: IClientOnboardingFormInputs | undefined
@@ -188,10 +185,6 @@ export const FormDataContext = createContext<FormDataContextProps>({
   formData: defaultClientOnboardingFormValues,
   setFormData: () => {
     throw new Error('setFormData function must be overridden in FormDataContext')
-  },
-  currentUser: undefined,
-  setCurrentUser: () => {
-    throw new Error('setCurrentUser function must be overridden in FormDataContext')
   },
   facilitiesArray: [],
   setFacilitiesArray: () => {

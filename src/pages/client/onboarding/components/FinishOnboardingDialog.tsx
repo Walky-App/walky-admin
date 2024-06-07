@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -12,7 +12,6 @@ import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo, SetToken } from '../../../../utils/tokenUtil'
 import { clientOnboardingSteps } from '../ClientOnboardingPage'
-import { FormDataContext } from '../clientOnboardingUtils'
 
 interface FinishedOnboardingDialogProps {
   visible: boolean
@@ -22,16 +21,13 @@ interface FinishedOnboardingDialogProps {
 export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardingDialogProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const { currentUser, setCurrentUser } = useContext(FormDataContext)
-
   const { showToast } = useUtils()
 
   const navigate = useNavigate()
-
-  const currentToken = GetTokenInfo()
+  const userToken = GetTokenInfo()
 
   const updateUserFinishOnboarding = async () => {
-    const userId = currentUser?._id
+    const userId = userToken?._id
     if (userId != null) {
       try {
         const response = await requestService({ path: `users/${userId}` })
@@ -65,10 +61,8 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
 
         const updatedUser: IUser = await updateResponse.json()
 
-        setCurrentUser(updatedUser)
-
         const updatedUserData: ITokenInfo = {
-          ...currentToken,
+          ...userToken,
           onboarding: {
             ...updatedUser.onboarding,
           },
