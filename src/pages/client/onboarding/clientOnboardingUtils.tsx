@@ -27,7 +27,7 @@ export interface IImage {
   timestamp: string
 }
 
-export interface ICompanyFormInputs {
+export interface ICompanyOnboardingFormInputs {
   company_name: string
   company_dbas: string[]
   company_tax_id: string
@@ -37,12 +37,12 @@ export interface ICompanyFormInputs {
   company_state: string
   company_zip: string
   company_country: string
-  company_facilities: string[]
-  company_users: string[]
+  facilities: string[]
+  users: string[]
   company_id?: string
 }
 
-export interface IFacilityFormInputs {
+export interface IFacilityOnboardingFormInputs {
   user_id: string
   name: string
   tax_id: string
@@ -63,9 +63,9 @@ export interface IFacilityFormInputs {
   _id?: string
 }
 
-export interface IClientOnboardingFormInputs extends ICompanyFormInputs, IFacilityFormInputs {}
+export interface IClientOnboardingFormInputs extends ICompanyOnboardingFormInputs, IFacilityOnboardingFormInputs {}
 
-export const defaultCompanyFormValues: ICompanyFormInputs = {
+export const defaultCompanyFormValues: ICompanyOnboardingFormInputs = {
   company_name: '',
   company_dbas: [],
   company_tax_id: '',
@@ -75,11 +75,11 @@ export const defaultCompanyFormValues: ICompanyFormInputs = {
   company_state: '',
   company_zip: '',
   company_country: '',
-  company_facilities: [],
-  company_users: [],
+  facilities: [],
+  users: [],
 }
 
-export const defaultFacilityFormValues: IFacilityFormInputs = {
+export const defaultFacilityFormValues: IFacilityOnboardingFormInputs = {
   user_id: '',
   name: '',
   tax_id: '',

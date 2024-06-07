@@ -16,7 +16,12 @@ import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } from '../clientOnboardingUtils'
+import {
+  type StepProps,
+  FormDataContext,
+  type IClientOnboardingFormInputs,
+  type ICompanyOnboardingFormInputs,
+} from '../clientOnboardingUtils'
 
 export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -25,6 +30,8 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
     useContext(FormDataContext)
 
   const { showToast } = useUtils()
+
+  const userId = formData?.user_id
 
   const values = formData !== null ? formData : defaultValues
 
@@ -64,7 +71,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
 
     let companyId = formData?.company_id
 
-    const requestData = {
+    const requestData: ICompanyOnboardingFormInputs = {
       company_name: data.company_name,
       company_dbas: data.company_dbas,
       company_tax_id: data.company_tax_id,
@@ -74,6 +81,8 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       company_city: data.company_city,
       company_state: data.company_state,
       company_zip: data.company_zip,
+      facilities: [],
+      users: [userId],
     }
 
     if (companyId != null) {
@@ -194,10 +203,10 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('corp_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -220,10 +229,10 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                       fieldName={field.name}
                       helpText="Enter DBAs separated by a comma: dba1, dba2, dba3"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('company_dbas', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -239,7 +248,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes.">
+                    <HtInfoTooltip message="A Tax Identification Number (TIN) is a unique identifier assigned to individuals and businesses for tax purposes.">
                       <HtInputLabel htmlFor={field.name} asterisk labelText="Tax ID" />
                     </HtInfoTooltip>
                     <InputMask
@@ -250,10 +259,10 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('tax_id', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -266,7 +275,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    <HtInfoTooltip message="The phone number of the company. This is the number that administrators would call if they have questions or need to contact you.">
+                    <HtInfoTooltip message="This is the number that administrators would call if they have questions or need to contact you.">
                       <HtInputLabel htmlFor={field.name} asterisk labelText="Company Phone Number" />
                     </HtInfoTooltip>
                     <InputMask
@@ -278,10 +287,10 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('phone_number', errors)}
             </div>
 
             <div className="sm:col-span-6">
@@ -304,10 +313,10 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                       aria-describedby={`${field.name}-help`}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('address', errors)}
             </div>
           </div>
         </div>
