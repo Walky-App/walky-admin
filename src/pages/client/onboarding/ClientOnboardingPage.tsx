@@ -7,8 +7,8 @@ import { Steps } from 'primereact/steps'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
-import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import {
   type IClientOnboardingFormInputs,
@@ -45,7 +45,6 @@ export const clientOnboardingSteps: MenuItem[] = [
 ]
 
 export const ClientOnboarding = () => {
-  const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined)
   const [formData, setFormData] = useState<IClientOnboardingFormInputs>(defaultClientOnboardingFormValues)
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
@@ -63,32 +62,34 @@ export const ClientOnboarding = () => {
   )
 
   const navigate = useNavigate()
+  const userToken = GetTokenInfo()
 
   useEffect(() => {
-    if (currentUser?.onboarding?.completed ?? false) {
+    if (userToken?.onboarding?.completed ?? false) {
       navigate('/client/dashboard')
     }
-  }, [currentUser?.onboarding?.completed, navigate])
+  }, [userToken?.onboarding?.completed, navigate])
 
   useEffect(() => {
     const userId = GetTokenInfo()._id
 
     const getUserDetails = async () => {
       try {
-        const response = await RequestService(`users/${userId}`)
+        const response = await requestService({ path: `users/${userId}` })
+        if (!response.ok) throw new Error('Error fetching user details')
+        const userData = await response.json()
 
-        setCurrentUser(response)
         setFormData({
           ...defaultClientOnboardingFormValues,
-          user_id: response._id ?? '',
-          address: response.address ?? '',
+          user_id: userData._id ?? '',
+          address: userData.address ?? '',
           contacts: [
             {
-              first_name: response.first_name ?? '',
-              last_name: response.last_name ?? '',
+              first_name: userData.first_name ?? '',
+              last_name: userData.last_name ?? '',
               role: '',
-              phone_number: response.phone_number ?? '',
-              email: response.email ?? '',
+              phone_number: userData.phone_number ?? '',
+              email: userData.email ?? '',
             },
           ],
         })
@@ -197,8 +198,6 @@ export const ClientOnboarding = () => {
   return (
     <FormDataContext.Provider
       value={{
-        currentUser,
-        setCurrentUser,
         formData,
         setFormData,
         defaultValues: defaultClientOnboardingFormValues,
