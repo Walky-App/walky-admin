@@ -111,7 +111,7 @@ export const EmployeeJobs = () => {
           setJobs(allJobs)
         }
         setIsLoading(false)
-        isLoading
+        // isLoading
       } catch (error) {
         console.error('Error fetching jobs:', error)
       }
