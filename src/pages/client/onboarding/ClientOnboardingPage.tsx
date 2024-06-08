@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useCallback } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -7,6 +7,8 @@ import { Steps } from 'primereact/steps'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
+import { type IUser } from '../../../interfaces/User'
+import { type ICompany } from '../../../interfaces/company'
 import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import {
@@ -16,6 +18,7 @@ import {
   type IGetAcceptRecipient,
   defaultMoreAddressDetails,
   FormDataContext,
+  type ICompanyOnboardingFormInputs,
 } from './clientOnboardingUtils'
 import { WelcomeDialog } from './components'
 import { AdditionalLocationsForm } from './forms/AdditionalLocationsForm'
@@ -62,6 +65,7 @@ export const ClientOnboarding = () => {
 
   const navigate = useNavigate()
   const userToken = GetTokenInfo()
+  const userId = userToken._id
 
   useEffect(() => {
     if (userToken?.onboarding?.completed ?? false) {
@@ -69,35 +73,66 @@ export const ClientOnboarding = () => {
     }
   }, [userToken?.onboarding?.completed, navigate])
 
-  useEffect(() => {
-    const userId = GetTokenInfo()._id
+  const getUserCompanies = useCallback(async () => {
+    try {
+      const response = await requestService({ path: `companies/user/${userId}` })
+      if (!response.ok && response.status !== 204) throw new Error('Error fetching user companies')
+      const companiesData: ICompany[] = response.status === 204 ? [] : await response.json()
 
+      return companiesData
+    } catch (error) {
+      console.error(error)
+    }
+  }, [userId])
+
+  useEffect(() => {
     const getUserDetails = async () => {
       try {
         const response = await requestService({ path: `users/${userId}` })
         if (!response.ok) throw new Error('Error fetching user details')
-        const userData = await response.json()
+        const userData: IUser = await response.json()
 
-        setFormData({
-          ...defaultClientOnboardingFormValues,
-          user_id: userData._id ?? '',
-          address: userData.address ?? '',
-          contacts: [
-            {
-              first_name: userData.first_name ?? '',
-              last_name: userData.last_name ?? '',
-              role: '',
-              phone_number: userData.phone_number ?? '',
-              email: userData.email ?? '',
-            },
-          ],
-        })
+        const companiesData = await getUserCompanies()
+
+        let companyFormData: ICompanyOnboardingFormInputs
+        if (companiesData != null && companiesData.length > 0) {
+          companyFormData = {
+            company_id: companiesData[0]._id,
+            company_name: companiesData[0].company_name,
+            company_tax_id: companiesData[0].company_tax_id,
+            company_dbas: companiesData[0].company_dbas ?? [],
+            company_phone_number: companiesData[0].company_phone_number,
+            company_country: companiesData[0].company_country,
+            company_address: companiesData[0].company_address,
+            company_city: companiesData[0].company_city,
+            company_state: companiesData[0].company_state,
+            company_zip: companiesData[0].company_zip,
+            facilities: companiesData[0].facilities,
+            users: companiesData[0].users,
+          }
+
+          setFormData({
+            ...defaultClientOnboardingFormValues,
+            user_id: userData._id ?? '',
+            address: userData.address ?? '',
+            contacts: [
+              {
+                first_name: userData.first_name ?? '',
+                last_name: userData.last_name ?? '',
+                role: '',
+                phone_number: userData.phone_number ?? '',
+                email: userData.email ?? '',
+              },
+            ],
+            ...companyFormData,
+          })
+        }
       } catch (error) {
         console.error(error)
       }
     }
     getUserDetails()
-  }, [])
+  }, [getUserCompanies, userId])
 
   useEffect(() => {
     if (activeIndex === 1 && facilitiesArray.length !== 0) {
