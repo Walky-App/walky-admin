@@ -15,26 +15,24 @@ import { AddressAutoComplete } from '../../../../components/shared/forms/Address
 import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
-import { RequestService } from '../../../../services/RequestService'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } from '../clientOnboardingUtils'
+import {
+  type StepProps,
+  FormDataContext,
+  type IClientOnboardingFormInputs,
+  defaultFacilityFormValues,
+  type IFacilityOnboardingFormInputs,
+} from '../clientOnboardingUtils'
 
 export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const {
-    setFormData,
-    defaultValues,
-    formData,
-    facilitiesArray,
-    setFacilitiesArray,
-    moreAddressDetailsFacility,
-    setMoreAddressDetailsFacility,
-  } = useContext(FormDataContext)
+  const { setFormData, defaultValues, formData, moreAddressDetailsFacility, setMoreAddressDetailsFacility } =
+    useContext(FormDataContext)
 
   const { showToast } = useUtils()
 
@@ -79,39 +77,52 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   })
 
   const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
-    setFormData(data)
     setIsLoading(true)
 
-    let facilityId = facilitiesArray[0]?._id
+    const requestData: IFacilityOnboardingFormInputs = {
+      ...defaultFacilityFormValues,
+      name: data.name,
+      phone_number: data.phone_number,
+      sqft: data.sqft,
+      services: data.services,
+      notes: data.notes,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      zip: data.zip,
+      country: data.country,
+      contacts: data.contacts,
+    }
+
+    let facilityId = formData.facilities[0]
 
     if (facilityId != null) {
       try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
+        const res = await requestService({ path: `facilities/${facilityId}` })
+        if (!res.ok) throw new Error('Error fetching facility details')
+        const facilityFoundData: IFacilityOnboardingFormInputs = await res.json()
 
-        if (facilityFound !== null) {
-          const updatedFacility = {
-            ...facilityFound,
-            ...data,
-            licenses: facilitiesArray[0].licenses,
-            images: facilitiesArray[0].images,
-          }
+        const updatedFacility = {
+          ...facilityFoundData,
+          ...requestData,
+          licenses: formData.licenses,
+          images: formData.images,
+        }
 
-          const response = await RequestService(`facilities/${facilityId}`, 'PATCH', updatedFacility)
+        const response = await requestService({
+          path: `facilities/${facilityId}`,
+          method: 'PATCH',
+          body: JSON.stringify(updatedFacility),
+        })
+        if (!response.ok) throw new Error('Failed to update facility')
+        const updatedFacilityData = await response.json()
 
-          if (response?._id !== null) {
-            facilityId = response._id
+        if (updatedFacilityData?._id != null) {
+          facilityId = updatedFacilityData._id
 
-            setFacilitiesArray(prevArray =>
-              prevArray.map(facility => (facility._id === response._id ? response : facility)),
-            )
-            setTimeout(() => {
-              setStep(step + 1)
-            }, 1000)
-          } else {
-            throw new Error('Failed to update facility')
-          }
-        } else {
-          throw new Error('Facility not found')
+          setTimeout(() => {
+            setStep(step + 1)
+          }, 1000)
         }
       } catch (error) {
         console.error('Error updating facility:', error)
@@ -121,31 +132,22 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           summary: 'Error saving changes',
           detail: `${getValues('name')} could not be updated.`,
         })
+      } finally {
         setIsLoading(false)
       }
     } else {
       try {
-        const response = await requestService({ method: 'POST', path: 'facilities', body: JSON.stringify(data) })
+        const response = await requestService({ method: 'POST', path: 'facilities', body: JSON.stringify(requestData) })
+        if (!response.ok) throw new Error('Error adding facility')
+        const data = await response.json()
 
-        if (response.ok) {
-          const data = await response.json()
-          if (data?._id !== null) {
-            facilityId = data._id
+        if (data?._id != null) {
+          facilityId = data._id
+          setFormData(prev => ({ ...prev, facilities: [facilityId] }))
 
-            setFacilitiesArray([data])
-            setTimeout(() => {
-              setStep(step + 1)
-            }, 1000)
-          } else {
-            throw new Error('Failed to add facility')
-          }
-        } else {
-          showToast({
-            severity: 'error',
-            summary: 'Error adding facility',
-            detail: `Name or Address already exists.`,
-          })
-          throw new Error('Failed to add facility')
+          setTimeout(() => {
+            setStep(step + 1)
+          }, 1000)
         }
       } catch (error) {
         console.error('Error adding facility:', error)
@@ -153,8 +155,9 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
         showToast({
           severity: 'error',
           summary: 'Error adding facility',
-          detail: `${getValues('name')} already exists.`,
+          detail: `Failed to add facility ${getValues('name')}`,
         })
+      } finally {
         setIsLoading(false)
       }
     }
@@ -194,6 +197,36 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                 )}
               />
               {getFormErrorMessage('name', errors)}
+            </div>
+
+            <div className="sm:col-span-3">
+              <Controller
+                control={control}
+                name="tax_id"
+                rules={{
+                  required: 'Tax ID is required',
+                  pattern: {
+                    value: /^\d{2}-\d{7}$/,
+                    message: 'Invalid Tax ID. E.g. 12-3456789',
+                  },
+                }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <HtInfoTooltip message="A Tax Identification Number (TIN) is a unique identifier assigned to individuals and businesses for tax purposes.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Tax ID" />
+                    </HtInfoTooltip>
+                    <InputMask
+                      id={field.name}
+                      {...field}
+                      mask="99-9999999"
+                      slotChar="x"
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      autoComplete="off"
+                    />
+                    {getFormErrorMessage(field.name, errors)}
+                  </>
+                )}
+              />
             </div>
 
             <div className="sm:col-span-3">
