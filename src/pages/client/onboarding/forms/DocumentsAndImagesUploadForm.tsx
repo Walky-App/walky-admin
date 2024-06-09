@@ -228,7 +228,11 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
           }}
         />
         <Button
-          label={facilitiesArray[0]?.licenses.length || facilitiesArray[0]?.images.length ? 'Save' : 'Skip for now'}
+          label={
+            facilitiesArray[0]?.licenses.length || facilitiesArray[0]?.images.length
+              ? 'Save & Continue'
+              : 'Skip for now'
+          }
           onClick={handleSaveButton}
           loading={isLoading}
         />
