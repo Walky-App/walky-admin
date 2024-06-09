@@ -36,7 +36,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
 
   const { showToast } = useUtils()
 
-  const values = formData !== null ? formData : defaultValues
+  const formValues = formData != null ? formData : defaultValues
 
   const {
     control,
@@ -44,7 +44,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
     handleSubmit,
     getValues,
     setValue,
-  } = useForm<IClientOnboardingFormInputs>({ values })
+  } = useForm<IClientOnboardingFormInputs>({ values: formValues })
 
   useEffect(() => {
     if (moreAddressDetailsFacility) {
@@ -79,9 +79,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
     setIsLoading(true)
 
-    const requestData: IFacilityOnboardingFormInputs = {
+    const facilityData: IFacilityOnboardingFormInputs = {
       ...defaultFacilityFormValues,
       name: data.name,
+      tax_id: data.tax_id,
       phone_number: data.phone_number,
       sqft: data.sqft,
       services: data.services,
@@ -92,6 +93,11 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       zip: data.zip,
       country: data.country,
       contacts: data.contacts,
+    }
+
+    const requestData = {
+      ...facilityData,
+      company_id: formValues.company_id,
     }
 
     let facilityId = formData.facilities[0]
@@ -120,6 +126,8 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
         if (updatedFacilityData?._id != null) {
           facilityId = updatedFacilityData._id
 
+          setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
+
           setTimeout(() => {
             setStep(step + 1)
           }, 1000)
@@ -132,7 +140,6 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           summary: 'Error saving changes',
           detail: `${getValues('name')} could not be updated.`,
         })
-      } finally {
         setIsLoading(false)
       }
     } else {
@@ -143,7 +150,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
 
         if (data?._id != null) {
           facilityId = data._id
-          setFormData(prev => ({ ...prev, facilities: [facilityId] }))
+          setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
 
           setTimeout(() => {
             setStep(step + 1)
@@ -157,7 +164,6 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           summary: 'Error adding facility',
           detail: `Failed to add facility ${getValues('name')}`,
         })
-      } finally {
         setIsLoading(false)
       }
     }
@@ -193,10 +199,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('name', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -251,10 +257,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('phone_number', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -285,10 +291,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       }}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Max 1,000,000" />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('sqft', errors)}
             </div>
 
             <div className="sm:col-span-6">
@@ -318,10 +324,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       fieldName={field.name}
                       helpText="Please select all services that your facility offers."
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('services', errors)}
             </div>
 
             <div className="sm:col-span-6">
@@ -347,10 +353,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('notes', errors)}
             </div>
           </div>
         </div>
@@ -387,10 +393,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       aria-describedby={`${field.name}-help`}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('address', errors)}
             </div>
           </div>
         </div>
@@ -421,10 +427,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage(`contacts.${index}.first_name`, errors)}
               </div>
 
               <div className="sm:col-span-3">
@@ -443,10 +449,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage(`contacts.${index}.last_name`, errors)}
               </div>
 
               <div className="sm:col-span-3">
@@ -468,17 +474,17 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage(`contacts.${index}.role`, errors)}
               </div>
               <div className="sm:col-span-3">
                 <Controller
                   control={control}
                   name={`contacts.${index}.phone_number`}
                   rules={{
-                    required: 'Phone Number is required, should be 10 digits.',
+                    required: 'Phone Number is required.',
                   }}
                   render={({ field, fieldState }) => (
                     <>
@@ -494,10 +500,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage(`contacts.${index}.phone_number`, errors)}
               </div>
               <div className="sm:col-span-3">
                 <Controller
@@ -521,10 +527,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage(`contacts.${index}.email`, errors)}
               </div>
             </div>
           ))}
@@ -532,9 +538,15 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
-        <div>
-          <Button type="submit" label="Submit" loading={isLoading} />
-        </div>
+        <Button
+          severity="secondary"
+          label="Back"
+          outlined
+          onClick={() => {
+            setStep(step - 1)
+          }}
+        />
+        <Button type="submit" label="Save & Continue" loading={isLoading} />
       </div>
     </form>
   )
