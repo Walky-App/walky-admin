@@ -19,6 +19,9 @@ import {
   defaultMoreAddressDetails,
   FormDataContext,
   type ICompanyOnboardingFormInputs,
+  type IFacilityOnboardingFormInputs,
+  createCompanyFormData,
+  createFacilityFormData,
 } from './clientOnboardingUtils'
 import { WelcomeDialog } from './components'
 import { AdditionalLocationsForm } from './forms/AdditionalLocationsForm'
@@ -63,15 +66,28 @@ export const ClientOnboarding = () => {
     defaultMoreAddressDetails,
   )
 
-  const navigate = useNavigate()
   const userToken = GetTokenInfo()
   const userId = userToken._id
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (userToken?.onboarding?.completed ?? false) {
       navigate('/client/dashboard')
     }
-  }, [userToken?.onboarding?.completed, navigate])
+  }, [navigate, userToken?.onboarding?.completed])
+
+  const getUserData = useCallback(async () => {
+    try {
+      const response = await requestService({ path: `users/${userId}` })
+      if (!response.ok) throw new Error('Error fetching user details')
+      const userData: IUser = await response.json()
+
+      return userData
+    } catch (error) {
+      console.error(error)
+    }
+  }, [userId])
 
   const getUserCompanies = useCallback(async () => {
     try {
@@ -85,54 +101,61 @@ export const ClientOnboarding = () => {
     }
   }, [userId])
 
+  const getCompanyFacilities = useCallback(async () => {
+    if (formData.company_id == null) return
+    try {
+      const response = await requestService({ path: `facilities/company/${formData.company_id}` })
+      if (!response.ok && response.status !== 204) throw new Error('Error fetching user facilities')
+      const facilitiesData: IClientOnboardingFormInputs[] = response.status === 204 ? [] : await response.json()
+
+      return facilitiesData
+    } catch (error) {
+      console.error(error)
+    }
+  }, [formData.company_id])
+
   useEffect(() => {
-    const getUserDetails = async () => {
+    const getOnboardingData = async () => {
       try {
-        const response = await requestService({ path: `users/${userId}` })
-        if (!response.ok) throw new Error('Error fetching user details')
-        const userData: IUser = await response.json()
-
+        const userData = await getUserData()
         const companiesData = await getUserCompanies()
+        const facilitiesData = await getCompanyFacilities()
 
-        let companyFormData: ICompanyOnboardingFormInputs
-        if (companiesData != null && companiesData.length > 0) {
-          companyFormData = {
-            company_id: companiesData[0]._id,
-            company_name: companiesData[0].company_name,
-            company_tax_id: companiesData[0].company_tax_id,
-            company_dbas: companiesData[0].company_dbas ?? [],
-            company_phone_number: companiesData[0].company_phone_number,
-            company_country: companiesData[0].company_country,
-            company_address: companiesData[0].company_address,
-            company_city: companiesData[0].company_city,
-            company_state: companiesData[0].company_state,
-            company_zip: companiesData[0].company_zip,
-            facilities: companiesData[0].facilities,
-            users: companiesData[0].users,
-          }
-
-          setFormData({
-            ...defaultClientOnboardingFormValues,
-            user_id: userData._id ?? '',
-            address: userData.address ?? '',
-            contacts: [
-              {
-                first_name: userData.first_name ?? '',
-                last_name: userData.last_name ?? '',
-                role: '',
-                phone_number: userData.phone_number ?? '',
-                email: userData.email ?? '',
-              },
-            ],
-            ...companyFormData,
-          })
+        let companyFormData: ICompanyOnboardingFormInputs = {} as ICompanyOnboardingFormInputs
+        if (companiesData != null && companiesData?.length > 0) {
+          companyFormData = createCompanyFormData(companiesData[0])
         }
+
+        let facilityFormData: IFacilityOnboardingFormInputs = {} as IFacilityOnboardingFormInputs
+        if (facilitiesData != null && facilitiesData.length > 0) {
+          facilityFormData = createFacilityFormData(facilitiesData[0])
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          ...companyFormData,
+          ...facilityFormData,
+          user_id: userData?._id ?? userId,
+          contacts:
+            facilityFormData.contacts != null && facilityFormData.contacts.length > 0
+              ? facilityFormData.contacts
+              : [
+                  {
+                    first_name: userData?.first_name ?? '',
+                    last_name: userData?.last_name ?? '',
+                    role: '',
+                    phone_number: userData?.phone_number ?? '',
+                    email: userData?.email ?? '',
+                  },
+                ],
+        }))
       } catch (error) {
         console.error(error)
       }
     }
-    getUserDetails()
-  }, [getUserCompanies, userId])
+
+    getOnboardingData()
+  }, [getCompanyFacilities, getUserCompanies, getUserData, userId])
 
   useEffect(() => {
     if (activeIndex === 1 && facilitiesArray.length !== 0) {
@@ -225,6 +248,7 @@ export const ClientOnboarding = () => {
   return (
     <FormDataContext.Provider
       value={{
+        userId,
         formData,
         setFormData,
         defaultValues: defaultClientOnboardingFormValues,
