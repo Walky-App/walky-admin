@@ -33,7 +33,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
 
   const userId = formData?.user_id
 
-  const values = formData !== null ? formData : defaultValues
+  const formValues = formData != null ? formData : defaultValues
 
   const {
     control,
@@ -41,7 +41,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
     handleSubmit,
     getValues,
     setValue,
-  } = useForm<IClientOnboardingFormInputs>({ values })
+  } = useForm<IClientOnboardingFormInputs>({ values: formValues })
 
   useEffect(() => {
     if (moreAddressDetailsCompany) {
@@ -219,7 +219,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                     </HtInfoTooltip>
                     <InputText
                       id={field.name}
-                      value={field.value.join(', ')}
+                      value={field.value?.join(', ')}
                       onChange={e => field.onChange(e.target.value.split(', '))}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
@@ -323,7 +323,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <div>
-          <Button type="submit" label="Submit" loading={isLoading} />
+          <Button type="submit" label="Save & Continue" loading={isLoading} />
         </div>
       </div>
     </form>
