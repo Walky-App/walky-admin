@@ -60,6 +60,7 @@ export interface IFacility {
   tax_id: string
   zip: string
   dnr: IFacilityDNR[]
+  company_id?: string
 }
 
 export interface IAddressDetails {
