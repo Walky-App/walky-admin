@@ -3,6 +3,7 @@ import { type Dispatch, type SetStateAction, createContext } from 'react'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { type ICompany } from '../../../interfaces/company'
 
 export interface ILicenseDocument {
   id: number
@@ -28,7 +29,7 @@ export interface IImage {
 
 export interface ICompanyOnboardingFormInputs {
   company_name: string
-  company_dbas: string[]
+  company_dbas: string[] | undefined
   company_tax_id: string
   company_phone_number: string
   company_address: string
@@ -42,7 +43,6 @@ export interface ICompanyOnboardingFormInputs {
 }
 
 export interface IFacilityOnboardingFormInputs {
-  user_id: string
   name: string
   tax_id: string
   phone_number: string
@@ -62,7 +62,9 @@ export interface IFacilityOnboardingFormInputs {
   _id?: string
 }
 
-export interface IClientOnboardingFormInputs extends ICompanyOnboardingFormInputs, IFacilityOnboardingFormInputs {}
+export interface IClientOnboardingFormInputs extends ICompanyOnboardingFormInputs, IFacilityOnboardingFormInputs {
+  user_id: string
+}
 
 export const defaultCompanyFormValues: ICompanyOnboardingFormInputs = {
   company_name: '',
@@ -79,7 +81,6 @@ export const defaultCompanyFormValues: ICompanyOnboardingFormInputs = {
 }
 
 export const defaultFacilityFormValues: IFacilityOnboardingFormInputs = {
-  user_id: '',
   name: '',
   tax_id: '',
   phone_number: '',
@@ -109,6 +110,81 @@ export const defaultFacilityFormValues: IFacilityOnboardingFormInputs = {
 export const defaultClientOnboardingFormValues: IClientOnboardingFormInputs = {
   ...defaultCompanyFormValues,
   ...defaultFacilityFormValues,
+  user_id: '',
+}
+
+export const createCompanyFormData = (companyData: ICompany): ICompanyOnboardingFormInputs => {
+  const {
+    company_name,
+    company_tax_id,
+    company_dbas,
+    company_phone_number,
+    company_address,
+    company_city,
+    company_state,
+    company_zip,
+    company_country,
+    facilities,
+    users,
+    _id,
+  } = companyData
+
+  return {
+    company_name,
+    company_tax_id,
+    company_dbas,
+    company_phone_number,
+    company_address,
+    company_city,
+    company_state,
+    company_zip,
+    company_country,
+    facilities,
+    users,
+    company_id: _id,
+  }
+}
+
+export const createFacilityFormData = (facilityData: IFacilityOnboardingFormInputs) => {
+  const {
+    name,
+    tax_id,
+    phone_number,
+    sqft,
+    address,
+    city,
+    state,
+    zip,
+    country,
+    notes,
+    services,
+    active,
+    images,
+    location_pin,
+    contacts,
+    licenses,
+    _id,
+  } = facilityData
+
+  return {
+    name,
+    tax_id,
+    phone_number,
+    sqft,
+    address,
+    city,
+    state,
+    zip,
+    country,
+    notes,
+    services,
+    active,
+    images,
+    location_pin,
+    contacts,
+    licenses,
+    _id,
+  }
 }
 
 export interface IGetAcceptRecipient {
@@ -159,6 +235,7 @@ export interface IGetAcceptDocumentDetails {
 }
 
 export interface FormDataContextProps {
+  userId: string
   defaultValues: IClientOnboardingFormInputs
   formData: IClientOnboardingFormInputs
   setFormData: Dispatch<SetStateAction<IClientOnboardingFormInputs>>
@@ -181,6 +258,7 @@ export interface FormDataContextProps {
 }
 
 export const FormDataContext = createContext<FormDataContextProps>({
+  userId: '',
   defaultValues: defaultClientOnboardingFormValues,
   formData: defaultClientOnboardingFormValues,
   setFormData: () => {
