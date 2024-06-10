@@ -165,7 +165,7 @@ export const AdminAddFacility = () => {
     if (selected !== null && selected !== undefined) {
       setFormData(prevState => ({
         ...prevState,
-        company_id: selected._id,
+        company_id: selected._id ?? '',
         name: selected.company_name,
         tax_id: selected.company_tax_id,
         phone_number: selected.company_phone_number,
@@ -222,7 +222,7 @@ export const AdminAddFacility = () => {
                     setSelectedCompany(e.value)
                     setFormData({
                       ...formData,
-                      company_id: (selected as ICompany)._id,
+                      company_id: e.value,
                       name: (selected as ICompany).company_name,
                       tax_id: (selected as ICompany).company_tax_id,
                       phone_number: (selected as ICompany).company_phone_number,
