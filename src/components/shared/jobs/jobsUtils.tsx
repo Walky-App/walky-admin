@@ -8,7 +8,7 @@ import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputn
 import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facility'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
 import { setTimeInUTC, toLocalDateTime } from '../../../utils/timeUtils'

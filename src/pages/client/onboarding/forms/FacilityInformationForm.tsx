@@ -15,17 +15,13 @@ import { AddressAutoComplete } from '../../../../components/shared/forms/Address
 import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import {
-  type StepProps,
-  FormDataContext,
-  type IClientOnboardingFormInputs,
-  type IFacilityOnboardingFormInputs,
-} from '../clientOnboardingUtils'
+import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } from '../clientOnboardingUtils'
 
 export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -78,7 +74,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
     setIsLoading(true)
 
-    const facilityData: IFacilityOnboardingFormInputs = {
+    const facilityData: IFacility = {
       ...formData,
       name: data.name,
       tax_id: data.tax_id,
@@ -105,7 +101,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       try {
         const res = await requestService({ path: `facilities/${facilityId}` })
         if (!res.ok) throw new Error('Error fetching facility details')
-        const facilityFoundData: IFacilityOnboardingFormInputs = await res.json()
+        const facilityFoundData: IFacility = await res.json()
 
         const updatedFacility = {
           ...facilityFoundData,

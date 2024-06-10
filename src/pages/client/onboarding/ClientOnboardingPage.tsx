@@ -7,9 +7,9 @@ import { Steps } from 'primereact/steps'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
-import { type IFacility } from '../../../interfaces/Facility'
 import { type IUser } from '../../../interfaces/User'
 import { type ICompany } from '../../../interfaces/company'
+import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import {
@@ -19,8 +19,6 @@ import {
   type IGetAcceptRecipient,
   defaultMoreAddressDetails,
   FormDataContext,
-  type ICompanyOnboardingFormInputs,
-  type IFacilityOnboardingFormInputs,
   createCompanyFormData,
   createFacilityFormData,
 } from './clientOnboardingUtils'
@@ -115,12 +113,12 @@ export const ClientOnboarding = () => {
         const companiesData = await getUserCompanies()
         const facilitiesData = await getCompanyFacilities()
 
-        let companyFormData: ICompanyOnboardingFormInputs = {} as ICompanyOnboardingFormInputs
+        let companyFormData: ICompany = {} as ICompany
         if (companiesData != null && companiesData?.length > 0) {
           companyFormData = createCompanyFormData(companiesData[0])
         }
 
-        let facilityFormData: IFacilityOnboardingFormInputs = {} as IFacilityOnboardingFormInputs
+        let facilityFormData: IFacility = {} as IFacility
         if (facilitiesData != null && facilitiesData.length > 0) {
           facilityFormData = createFacilityFormData(facilitiesData[0])
         }

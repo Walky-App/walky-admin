@@ -21,7 +21,6 @@ import {
   FormDataContext,
   type IClientOnboardingFormInputs,
   createCompanyFormData,
-  type ICompanyOnboardingFormInputs,
 } from '../clientOnboardingUtils'
 
 export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
@@ -71,7 +70,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
 
     const companyId = formData?.company_id
 
-    const requestData: ICompanyOnboardingFormInputs = {
+    const requestData: ICompany = {
       company_name: data.company_name,
       company_dbas: data.company_dbas,
       company_tax_id: data.company_tax_id,
@@ -83,6 +82,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       company_zip: data.company_zip,
       facilities: formData.facilities,
       users: [userId],
+      company_location_pin: [0, 0],
     }
 
     if (companyId != null) {

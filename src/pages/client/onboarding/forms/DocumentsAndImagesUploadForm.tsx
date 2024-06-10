@@ -85,11 +85,11 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
             </p>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            {formData?.licenses.length > 0 ? (
+            {formData?.licenses?.length ?? 0 > 0 ? (
               <div className="sm:col-span-6">
                 <Panel header="Uploaded Documents">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
-                    {formData?.licenses.map((license, index) => (
+                    {formData?.licenses?.map((license, index) => (
                       <p
                         key={index}
                         className="cursor-default px-5 py-1.5 text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">
@@ -158,16 +158,14 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
             </ul>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            {formData?.images.length > 0 ? (
+            {formData?.images?.length ?? 0 > 0 ? (
               <div className="sm:col-span-6">
                 <Panel header="Uploaded Images">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
-                    {formData?.images.map(image => {
+                    {formData?.images?.map(image => {
                       const fileName = image.key.split('/').pop()
                       return (
-                        <div
-                          key={image.timestamp}
-                          className="flex w-full flex-col items-center justify-center sm:w-auto">
+                        <div key={image._id} className="flex w-full flex-col items-center justify-center sm:w-auto">
                           <Image src={image.url} alt={fileName} preview pt={{ image: { className: 'h-16 w-auto' } }} />
                           <p className="cursor-default px-5 py-1.5 text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">
                             {fileName}
@@ -230,7 +228,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
           }}
         />
         <Button
-          label={formData?.licenses.length || formData?.images.length ? 'Save & Continue' : 'Skip for now'}
+          label={formData?.licenses?.length || formData?.images?.length ? 'Save & Continue' : 'Skip for now'}
           onClick={handleSaveButton}
           loading={isLoading}
         />
