@@ -9,7 +9,7 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacilityFile, type IFacility } from '../../../interfaces/facilitys'
+import { type IFacilityFile, type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'

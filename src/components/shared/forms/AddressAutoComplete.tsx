@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { AutoComplete } from 'primereact/autocomplete'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { type IAddress } from '../../../interfaces/facilitys'
+import { type IAddress } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 
 export interface IAddressAutoComplete {

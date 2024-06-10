@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
-import { type IFacility } from '../../../interfaces/facilitys'
+import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 
 interface IRow {
