@@ -24,7 +24,6 @@ import {
   type StepProps,
   FormDataContext,
   type IClientOnboardingFormInputs,
-  defaultFacilityFormValues,
   type IFacilityOnboardingFormInputs,
 } from '../clientOnboardingUtils'
 
@@ -80,7 +79,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
     setIsLoading(true)
 
     const facilityData: IFacilityOnboardingFormInputs = {
-      ...defaultFacilityFormValues,
+      ...formData,
       name: data.name,
       tax_id: data.tax_id,
       phone_number: data.phone_number,
