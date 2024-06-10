@@ -218,8 +218,11 @@ export const ClientOnboarding = () => {
 
           let recipientsData = await response.json()
 
-          while (recipientsData.document_url == null) {
+          while (!recipientsData.document_url) {
             await new Promise(resolve => setTimeout(resolve, 3000))
+
+            const response = await requestService({ path: `getaccept/${documentId}/recipients` })
+            if (!response.ok) throw new Error('Error fetching document recipients')
             recipientsData = await response.json()
           }
 
