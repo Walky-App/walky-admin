@@ -7,6 +7,7 @@ import { Steps } from 'primereact/steps'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
+import { type IFacility } from '../../../interfaces/Facility'
 import { type IUser } from '../../../interfaces/User'
 import { type ICompany } from '../../../interfaces/company'
 import { requestService } from '../../../services/requestServiceNew'
@@ -106,7 +107,7 @@ export const ClientOnboarding = () => {
     try {
       const response = await requestService({ path: `facilities/company/${formData.company_id}` })
       if (!response.ok && response.status !== 204) throw new Error('Error fetching user facilities')
-      const facilitiesData: IClientOnboardingFormInputs[] = response.status === 204 ? [] : await response.json()
+      const facilitiesData: IFacility[] = response.status === 204 ? [] : await response.json()
 
       return facilitiesData
     } catch (error) {
