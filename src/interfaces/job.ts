@@ -1,5 +1,5 @@
 import { type IUser } from './User'
-import { type IFacility } from './facilitys'
+import { type IFacility } from './facility'
 import { type Shifts } from './shifts'
 
 export interface IApplicant {

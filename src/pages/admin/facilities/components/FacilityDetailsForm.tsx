@@ -6,7 +6,7 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { type IFacility } from '../../../../interfaces/facilitys'
+import { type IFacility } from '../../../../interfaces/facility'
 import { RequestService } from '../../../../services/RequestService'
 import { getCurrentUserRole } from '../../../../utils/UserRole'
 import { PolygonMap } from './PolygonMap'
