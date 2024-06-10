@@ -21,7 +21,7 @@ export interface ICompany {
   company_dbas?: string[]
   company_tax_id: string
   company_phone_number: string
-  payment_information: IPaymentMethod[]
+  payment_information?: IPaymentMethod[]
   company_country: string
   company_address: string
   company_city: string
@@ -30,5 +30,6 @@ export interface ICompany {
   facilities: string[]
   users: string[]
   createdAt: string
-  updatedAt: string
+  updatedAt?: string
+  company_location_pin: number[]
 }
