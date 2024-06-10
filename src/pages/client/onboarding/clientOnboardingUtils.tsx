@@ -223,10 +223,6 @@ export interface FormDataContextProps {
   defaultValues: IClientOnboardingFormInputs
   formData: IClientOnboardingFormInputs
   setFormData: Dispatch<SetStateAction<IClientOnboardingFormInputs>>
-  facilitiesArray: IClientOnboardingFormInputs[]
-  setFacilitiesArray: Dispatch<SetStateAction<IClientOnboardingFormInputs[]>>
-  selectedFacility: IClientOnboardingFormInputs | undefined
-  setSelectedFacility: Dispatch<SetStateAction<IClientOnboardingFormInputs | undefined>>
   documentData: IGetAcceptDocumentDetails | null
   setDocumentData: Dispatch<SetStateAction<IGetAcceptDocumentDetails | null>>
   documentUrl: string
@@ -247,14 +243,6 @@ export const FormDataContext = createContext<FormDataContextProps>({
   formData: defaultClientOnboardingFormValues,
   setFormData: () => {
     throw new Error('setFormData function must be overridden in FormDataContext')
-  },
-  facilitiesArray: [],
-  setFacilitiesArray: () => {
-    throw new Error('setFacilitiesArray function must be overridden in FormDataContext')
-  },
-  selectedFacility: defaultClientOnboardingFormValues,
-  setSelectedFacility: () => {
-    throw new Error('setSelectedFacility function must be overridden in FormDataContext')
   },
   documentUrl: '',
   setDocumentUrl: () => {
