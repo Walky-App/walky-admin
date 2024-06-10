@@ -16,7 +16,7 @@ export interface IPaymentMethod {
 }
 
 export interface ICompany {
-  _id: string
+  _id?: string
   company_name: string
   company_dbas?: string[]
   company_tax_id: string

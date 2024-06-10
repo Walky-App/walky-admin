@@ -64,7 +64,6 @@ export const AdminAddCompany = () => {
   const { showToast } = useUtils()
 
   const defaultValues: ICompany = {
-    _id: '',
     company_name: '',
     company_dbas: [],
     company_tax_id: '',
