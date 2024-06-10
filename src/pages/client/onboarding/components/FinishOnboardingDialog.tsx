@@ -42,8 +42,8 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
           ...userFound,
           onboarding: {
             ...userFound.onboarding,
-            step_number: 5,
-            description: clientOnboardingSteps[4].label ?? '',
+            step_number: 4,
+            description: clientOnboardingSteps[3].label ?? '',
             type: 'client',
             completed: true,
           },
