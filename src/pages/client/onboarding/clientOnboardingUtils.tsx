@@ -3,29 +3,13 @@ import { type Dispatch, type SetStateAction, createContext } from 'react'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import {
+  type IFacility,
+  type IFacilityContact,
+  type IFacilityImage,
+  type IFacilityFile,
+} from '../../../interfaces/Facility'
 import { type ICompany } from '../../../interfaces/company'
-
-export interface ILicenseDocument {
-  id: number
-  url: string
-  key: string
-  timestamp: string
-}
-
-export interface IContact {
-  first_name: string
-  last_name: string
-  role: string
-  phone_number: string
-  email: string
-}
-
-export interface IImage {
-  id: number
-  url: string
-  key: string
-  timestamp: string
-}
 
 export interface ICompanyOnboardingFormInputs {
   company_name: string
@@ -55,10 +39,10 @@ export interface IFacilityOnboardingFormInputs {
   notes: string
   services: string[]
   active: boolean
-  images: IImage[]
+  images: IFacilityImage[]
   location_pin: number[]
-  contacts: IContact[]
-  licenses: ILicenseDocument[]
+  contacts: IFacilityContact[]
+  licenses: IFacilityFile[]
   _id?: string
 }
 
@@ -145,7 +129,7 @@ export const createCompanyFormData = (companyData: ICompany): ICompanyOnboarding
   }
 }
 
-export const createFacilityFormData = (facilityData: IFacilityOnboardingFormInputs) => {
+export const createFacilityFormData = (facilityData: IFacility): IFacilityOnboardingFormInputs => {
   const {
     name,
     tax_id,
