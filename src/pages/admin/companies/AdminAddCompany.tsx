@@ -14,26 +14,13 @@ import { type IAddressAutoComplete } from '../../../components/shared/forms/Addr
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IFacility } from '../../../interfaces/Facility'
 import { type IUser } from '../../../interfaces/User'
+import { type ICompany } from '../../../interfaces/company'
+import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { getFormErrorMessage } from '../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
-
-export interface ICompanyFormInputs {
-  company_name: string
-  company_dbas?: string[]
-  company_tax_id: string
-  company_address: string
-  company_phone_number: string
-  company_city: string
-  company_state: string
-  company_zip: string
-  company_country: string
-  facilities: string[]
-  users: string[]
-}
 
 export const AdminAddCompany = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
@@ -76,7 +63,7 @@ export const AdminAddCompany = () => {
 
   const { showToast } = useUtils()
 
-  const defaultValues: ICompanyFormInputs = {
+  const defaultValues: ICompany = {
     company_name: '',
     company_dbas: [],
     company_tax_id: '',
@@ -88,6 +75,8 @@ export const AdminAddCompany = () => {
     company_country: '',
     facilities: [],
     users: [],
+    createdAt: '',
+    company_location_pin: [],
   }
 
   const {
@@ -95,7 +84,7 @@ export const AdminAddCompany = () => {
     formState: { errors },
     handleSubmit,
     setValue,
-  } = useForm<ICompanyFormInputs>({ defaultValues })
+  } = useForm<ICompany>({ defaultValues })
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -114,12 +103,15 @@ export const AdminAddCompany = () => {
       if (moreAddressDetails.country != null) {
         setValue('company_country', moreAddressDetails.country)
       }
+      if (moreAddressDetails.location_pin != null) {
+        setValue('company_location_pin', moreAddressDetails.location_pin)
+      }
 
       setMoreAddressDetails(undefined)
     }
   }, [moreAddressDetails, setValue])
 
-  const onSubmit: SubmitHandler<ICompanyFormInputs> = async (data: ICompanyFormInputs) => {
+  const onSubmit: SubmitHandler<ICompany> = async (data: ICompany) => {
     try {
       const response = await requestService({ path: 'companies', method: 'POST', body: JSON.stringify(data) })
       if (!response.ok) {

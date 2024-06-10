@@ -3,54 +3,14 @@ import { type Dispatch, type SetStateAction, createContext } from 'react'
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import {
-  type IFacility,
-  type IFacilityContact,
-  type IFacilityImage,
-  type IFacilityFile,
-} from '../../../interfaces/Facility'
 import { type ICompany } from '../../../interfaces/company'
+import { type IFacility } from '../../../interfaces/facility'
 
-export interface ICompanyOnboardingFormInputs {
-  company_name: string
-  company_dbas: string[] | undefined
-  company_tax_id: string
-  company_phone_number: string
-  company_address: string
-  company_city: string
-  company_state: string
-  company_zip: string
-  company_country: string
-  facilities: string[]
-  users: string[]
-  company_id?: string
-}
-
-export interface IFacilityOnboardingFormInputs {
-  name: string
-  tax_id: string
-  phone_number: string
-  sqft: number | undefined
-  address: string
-  city: string
-  state: string
-  zip: string
-  country: string
-  notes: string
-  services: string[]
-  active: boolean
-  images: IFacilityImage[]
-  location_pin: number[]
-  contacts: IFacilityContact[]
-  licenses: IFacilityFile[]
-  _id?: string
-}
-
-export interface IClientOnboardingFormInputs extends ICompanyOnboardingFormInputs, IFacilityOnboardingFormInputs {
+export interface IClientOnboardingFormInputs extends ICompany, IFacility {
   user_id: string
 }
 
-export const defaultCompanyFormValues: ICompanyOnboardingFormInputs = {
+export const defaultCompanyFormValues: ICompany = {
   company_name: '',
   company_dbas: [],
   company_tax_id: '',
@@ -62,13 +22,14 @@ export const defaultCompanyFormValues: ICompanyOnboardingFormInputs = {
   company_country: '',
   facilities: [],
   users: [],
+  company_location_pin: [],
 }
 
-export const defaultFacilityFormValues: IFacilityOnboardingFormInputs = {
+export const defaultFacilityFormValues: IFacility = {
   name: '',
   tax_id: '',
   phone_number: '',
-  sqft: undefined,
+  sqft: 0,
   country: '',
   address: '',
   city: '',
@@ -79,6 +40,9 @@ export const defaultFacilityFormValues: IFacilityOnboardingFormInputs = {
   active: false,
   images: [],
   location_pin: [],
+  company_id: '',
+  isApproved: false,
+  timezone: '',
   contacts: [
     {
       first_name: '',
@@ -97,7 +61,7 @@ export const defaultClientOnboardingFormValues: IClientOnboardingFormInputs = {
   user_id: '',
 }
 
-export const createCompanyFormData = (companyData: ICompany): ICompanyOnboardingFormInputs => {
+export const createCompanyFormData = (companyData: ICompany): ICompany => {
   const {
     company_name,
     company_tax_id,
@@ -111,6 +75,7 @@ export const createCompanyFormData = (companyData: ICompany): ICompanyOnboarding
     facilities,
     users,
     _id,
+    company_location_pin,
   } = companyData
 
   return {
@@ -125,12 +90,14 @@ export const createCompanyFormData = (companyData: ICompany): ICompanyOnboarding
     company_country,
     facilities,
     users,
-    company_id: _id,
+    _id,
+    company_location_pin,
   }
 }
 
-export const createFacilityFormData = (facilityData: IFacility): IFacilityOnboardingFormInputs => {
+export const createFacilityFormData = (facilityData: IFacility): IFacility => {
   const {
+    company_id,
     name,
     tax_id,
     phone_number,
@@ -148,9 +115,12 @@ export const createFacilityFormData = (facilityData: IFacility): IFacilityOnboar
     contacts,
     licenses,
     _id,
+    timezone,
+    isApproved,
   } = facilityData
 
   return {
+    company_id,
     name,
     tax_id,
     phone_number,
@@ -168,6 +138,8 @@ export const createFacilityFormData = (facilityData: IFacility): IFacilityOnboar
     contacts,
     licenses,
     _id,
+    timezone,
+    isApproved,
   }
 }
 

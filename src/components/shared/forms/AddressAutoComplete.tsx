@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { AutoComplete } from 'primereact/autocomplete'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { type IAddress } from '../../../interfaces/Facility'
+import { type IAddress } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 
 export interface IAddressAutoComplete {
@@ -23,6 +23,7 @@ export interface AddressAutoCompleteProps {
   controlled?: boolean
   inputId?: string
   className?: string
+  disabled?: boolean
 }
 
 export const AddressAutoComplete = ({
@@ -33,6 +34,7 @@ export const AddressAutoComplete = ({
   controlled,
   inputId,
   className,
+  disabled,
 }: AddressAutoCompleteProps) => {
   const [predictions, setPredictions] = useState<IAddress[]>([])
   const [selectedAddresses, setSelectedAddresses] = useState(null)
@@ -96,6 +98,7 @@ export const AddressAutoComplete = ({
         inputStyle={{ width: '100%' }}
         className={className}
         autoComplete="off"
+        disabled={disabled}
       />
     )
   }
