@@ -41,19 +41,19 @@ interface IFacilityFormInputs {
   company_dbas: string[]
   services: string[]
   images: IImage[]
-  contacts: IContact[]
-  licenses: ILicenseDocument[]
+  contacts: IFacilityContact[]
+  licenses: IFacilityFile[]
   _id?: string
 }
 
-interface ILicenseDocument {
+interface IFacilityFile {
   id: number
   url: string
   key: string
   timestamp: string
 }
 
-interface IContact {
+interface IFacilityContact {
   first_name: string
   last_name: string
   role: string

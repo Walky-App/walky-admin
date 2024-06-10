@@ -6,19 +6,27 @@ export interface IFacilityImage {
   _id: string
 }
 
-export interface IFacilityDNR {
-  _id: string
-  user_id: string
-  reason: string
-}
-
 export interface IFacilityFile {
   _id?: string
   url: string
   key: string
   timestamp: Date
-  uploaded_by: string
+  uploaded_by?: string
   FileList?: string[]
+}
+
+export interface IFacilityContact {
+  first_name: string
+  last_name: string
+  role: string
+  phone_number: string
+  email: string
+}
+
+export interface IFacilityDNR {
+  _id: string
+  user_id: string
+  reason: string
 }
 export interface IFacility {
   _id: string
@@ -28,7 +36,7 @@ export interface IFacility {
   city: string
   city_license: string
   company_dbas: string[]
-  contacts: string[]
+  contacts: IFacilityContact[]
   contract_url: string[]
   contracts: string[]
   corp_name: string
