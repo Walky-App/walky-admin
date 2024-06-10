@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility } from '../../../interfaces/facility'
+import { type IFacility } from '../../../interfaces/Facility'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
@@ -117,7 +117,7 @@ export const AdminFacilityJobs = () => {
           type="button"
           onClick={() => navigate(roleBasedPath)}
           className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-          ss
+          Add Job
         </button>
         {isLoading ? (
           <div className="flex items-center justify-center">
