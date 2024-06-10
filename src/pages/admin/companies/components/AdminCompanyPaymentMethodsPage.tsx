@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { useNavigate } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 
@@ -28,16 +30,21 @@ const footer = (
 
 export const AdminCompanyPaymentMethodsPage = () => {
   const { selectedCompanyData } = useAdminCompanyPageContext()
+  const companyId = selectedCompanyData._id
+  const navigate = useNavigate()
 
   return (
     <div className="flex flex-row">
       {selectedCompanyData.payment_information.map((payment, index) => {
-        const header = payment.method === 'CC' ? headerCC : headerACH
+        const header = payment.payment_info.method === 'CC' ? headerCC : headerACH
         const title =
-          payment.method === 'CC'
-            ? `MasterCard **** ${payment.card_number?.slice(-4)}`
-            : `Checking **** ${payment.account_number?.slice(-4)}`
-        const subTitle = payment.method === 'CC' ? `Expires ${payment.expiration_date}` : `${payment.bank_name}`
+          payment.payment_info.method === 'CC'
+            ? `MasterCard **** ${payment.payment_info.card_number?.slice(-4)}`
+            : `Account **** ${payment.payment_info.account_number?.slice(-4)}`
+        const subTitle =
+          payment.payment_info.method === 'CC'
+            ? `Expires ${payment.payment_info.expiration_date}`
+            : `${payment.payment_info.bank_name}`
 
         return (
           <Card
@@ -50,7 +57,11 @@ export const AdminCompanyPaymentMethodsPage = () => {
           />
         )
       })}
-      <Card subTitle=" + Add new Payment Method " className="md:w-25rem mx-2 flex items-center" />
+      <Card
+        subTitle=" + Add new Payment Method "
+        className="md:w-25rem mx-2 flex cursor-pointer items-center"
+        onClick={() => navigate(`/admin/companies/${companyId}/add-payment`)}
+      />
     </div>
   )
 }
