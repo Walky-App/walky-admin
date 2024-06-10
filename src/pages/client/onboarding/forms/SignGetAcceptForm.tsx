@@ -24,7 +24,7 @@ export const SignGetAcceptForm = ({ step, setStep }: StepProps) => {
   }
 
   const renderDocument = () => {
-    if (documentLoading) {
+    if (documentLoading ?? false) {
       return (
         <div className="flex h-dvh items-center justify-center">
           <Skeleton shape="rectangle" size="100%" />

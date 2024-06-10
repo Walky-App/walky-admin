@@ -25,11 +25,9 @@ import {
   createFacilityFormData,
 } from './clientOnboardingUtils'
 import { WelcomeDialog } from './components'
-import { AdditionalLocationsForm } from './forms/AdditionalLocationsForm'
 import { CompanyInformationForm } from './forms/CompanyInformationForm'
 import { DocumentsAndImagesUploadForm } from './forms/DocumentsAndImagesUploadForm'
 import { FacilityInformationForm } from './forms/FacilityInformationForm'
-import { PaymentInformationForm } from './forms/PaymentInformationForm'
 import { SignGetAcceptForm } from './forms/SignGetAcceptForm'
 
 export const clientOnboardingSteps: MenuItem[] = [
@@ -43,9 +41,6 @@ export const clientOnboardingSteps: MenuItem[] = [
     label: 'Documents and Images',
   },
   {
-    label: 'Locations',
-  },
-  {
     label: 'Terms and Conditions',
   },
 ]
@@ -54,8 +49,6 @@ export const ClientOnboarding = () => {
   const [formData, setFormData] = useState<IClientOnboardingFormInputs>(defaultClientOnboardingFormValues)
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
-  const [selectedFacility, setSelectedFacility] = useState<IClientOnboardingFormInputs | undefined>()
-  const [facilitiesArray, setFacilitiesArray] = useState<IClientOnboardingFormInputs[]>([])
   const [documentData, setDocumentData] = useState<IGetAcceptDocumentDetails | null>(null)
   const [documentUrl, setDocumentUrl] = useState('')
   const [documentLoading, setDocumentLoading] = useState(true)
@@ -159,14 +152,14 @@ export const ClientOnboarding = () => {
   }, [getCompanyFacilities, getUserCompanies, getUserData, userId])
 
   useEffect(() => {
-    if (activeIndex === 1 && facilitiesArray.length !== 0) {
+    if (activeIndex === 2 && formData.facilities.length !== 0) {
       const docRecipient: IGetAcceptRecipient = {
-        email: facilitiesArray[0]?.contacts[0].email,
-        first_name: facilitiesArray[0]?.contacts[0].first_name,
-        last_name: facilitiesArray[0]?.contacts[0].last_name,
-        company_name: facilitiesArray[0]?.company_name,
-        company_number: facilitiesArray[0]?.phone_number,
-        mobile: facilitiesArray[0]?.contacts[0].phone_number,
+        email: formData?.contacts[0].email,
+        first_name: formData?.contacts[0].first_name,
+        last_name: formData?.contacts[0].last_name,
+        company_name: formData?.company_name,
+        company_number: formData?.phone_number,
+        mobile: formData?.contacts[0].phone_number,
       }
 
       if (JSON.stringify(docRecipient) !== JSON.stringify(prevDocRecipient)) {
@@ -200,11 +193,18 @@ export const ClientOnboarding = () => {
         setPrevDocRecipient(docRecipient)
       }
     }
-  }, [activeIndex, facilitiesArray, prevDocRecipient, setDocumentData, setPrevDocRecipient])
+  }, [
+    activeIndex,
+    formData?.company_name,
+    formData?.contacts,
+    formData.facilities.length,
+    formData?.phone_number,
+    prevDocRecipient,
+  ])
 
   useEffect(() => {
     setDocumentLoading(true)
-    if (activeIndex === 4 && documentData?.id != null) {
+    if (activeIndex === 3 && documentData?.id != null) {
       const documentId = documentData?.id
 
       const getDocumentRecipients = async () => {
@@ -241,9 +241,7 @@ export const ClientOnboarding = () => {
     </Fragment>,
     <FacilityInformationForm key="step2" step={activeIndex} setStep={setActiveIndex} />,
     <DocumentsAndImagesUploadForm key="step3" step={activeIndex} setStep={setActiveIndex} />,
-    <AdditionalLocationsForm key="step4" step={activeIndex} setStep={setActiveIndex} />,
-    <PaymentInformationForm key="step5" step={activeIndex} setStep={setActiveIndex} />,
-    <SignGetAcceptForm key="step6" step={activeIndex} setStep={setActiveIndex} />,
+    <SignGetAcceptForm key="step4" step={activeIndex} setStep={setActiveIndex} />,
   ]
 
   return (
@@ -253,10 +251,6 @@ export const ClientOnboarding = () => {
         formData,
         setFormData,
         defaultValues: defaultClientOnboardingFormValues,
-        facilitiesArray,
-        setFacilitiesArray,
-        selectedFacility,
-        setSelectedFacility,
         documentData,
         setDocumentData,
         documentUrl,
