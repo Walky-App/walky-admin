@@ -17,7 +17,7 @@ import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpTex
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type ICompany } from '../../../interfaces/company'
-import { type IFacility } from '../../../interfaces/facility'
+import { type IFacility } from '../../../interfaces/facilitys'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { jobTitlesOptions, facilityContactRoles } from '../../../utils/formOptions'

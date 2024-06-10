@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facilitys'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
