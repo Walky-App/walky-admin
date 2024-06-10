@@ -31,7 +31,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
 
   return (
     <div className="flex flex-row">
-      {selectedCompanyData.payment_information.map((payment, index) => {
+      {selectedCompanyData?.payment_information?.map((payment, index) => {
         const header = payment.method === 'CC' ? headerCC : headerACH
         const title =
           payment.method === 'CC'

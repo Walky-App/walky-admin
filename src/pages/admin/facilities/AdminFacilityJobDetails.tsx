@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
@@ -139,7 +139,8 @@ export const AdminFacilityJobDetails = () => {
         </div>
 
         <div className="mt-6 flex items-center justify-center gap-x-6">
-          {updateSuccess ? <div className="rounded-md bg-green-50 p-4">
+          {updateSuccess ? (
+            <div className="rounded-md bg-green-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
@@ -151,7 +152,8 @@ export const AdminFacilityJobDetails = () => {
                   <div className="-mx-1.5 -my-1.5" />
                 </div>
               </div>
-            </div> : null}
+            </div>
+          ) : null}
           {/* <button
             type="submit"
             className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
