@@ -2,7 +2,7 @@ import { Avatar } from 'primereact/avatar'
 
 import { BuildingLibraryIcon } from '@heroicons/react/20/solid'
 
-import { type IFacility } from '../../../interfaces/facility'
+import { type IFacility } from '../../../interfaces/facilitys'
 
 export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
   return (

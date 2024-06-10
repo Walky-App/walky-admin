@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility } from '../../../interfaces/facility'
+import { type IFacility } from '../../../interfaces/facilitys'
 import { RequestService } from '../../../services/RequestService'
 import { roleChecker } from '../../../utils/roleChecker'
 import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
