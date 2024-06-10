@@ -6,7 +6,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { parseISO } from 'date-fns'
 import { Button } from 'primereact/button'
 
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
 import { requestService } from '../../../services/requestServiceNew'
 import { useSettings } from '../../../store/useSettings'

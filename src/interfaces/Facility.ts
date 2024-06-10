@@ -1,4 +1,3 @@
-/* eslint-disable filename-rules/match */
 export interface IFacilityImage {
   url: string
   key: string
@@ -20,46 +19,61 @@ export interface IFacilityFile {
   uploaded_by: string
   FileList?: string[]
 }
-export interface IFacility {
-  _id: string
-  account_info: string[]
-  active: boolean
-  address: string
-  city: string
-  city_license: string
-  company_dbas: string[]
-  contacts: string[]
-  contract_url: string[]
-  contracts: string[]
-  corp_name: string
-  country: string
-  createdAt: string
-  entrance_image: string
-  licenses: IFacilityFile[]
-  entrance_pin: number[]
-  history: string[]
-  images: IFacilityImage[]
-  internal_notes: string[]
-  invoices: string[]
-  isApproved: boolean
-  jobs: string[]
-  location_pin: number[]
-  location_polygon: [number, number][]
-  logo_url: string
-  main_image: string
-  messages: string[]
-  name: string
-  notes: string
-  onsite_map: string
-  parking_details: string
+
+interface IContact {
+  email: string
+  first_name: string
+  last_name: string
+  role: string
   phone_number: string
-  services: string[]
-  sqft: number
-  state: string
-  state_license: string
+}
+
+interface IDnr {
+  _id: string
+  user_id: string
+  reason: string
+}
+export interface IFacility {
+  _id?: string
+  createdAt: string
+  company_id: string
+  name: string
   tax_id: string
+  phone_number: string
+  timezone: string
+  contacts: IContact[]
+  country: string
+  address: string
   zip: string
-  dnr: IFacilityDNR[]
+  city: string
+  state: string
+  active: boolean
+  isApproved: boolean
+  sqft: number
+  services: string[]
+  location_pin: number[]
+  facility_dbas?: string[]
+  jobs?: string[]
+  location_polygon?: [number, number][]
+  contract_url?: string[]
+  images?: IFacilityFile[]
+  licenses?: IFacilityFile[]
+  main_image?: string
+  logo_url?: string
+  contracts?: string[]
+  onsite_map?: string
+  entrance_pin?: number[]
+  notes?: string
+  internal_notes?: string[]
+  feedback?: [
+    {
+      user_id: string
+      rating: number
+      comment: string
+    },
+  ]
+  score_rating?: number
+  dnr?: IDnr[]
 }
 
 export interface IAddressDetails {

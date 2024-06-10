@@ -18,7 +18,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
@@ -107,8 +107,8 @@ export const AdminFacilityImages = () => {
 
       const updatedFacility: IFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
 
-      if (selectedImage.current.url === facility?.main_image) {
-        const newMainImage = updatedFacility.images[0] || ''
+      if (updatedFacility?.images && updatedFacility.images.length > 0) {
+        const newMainImage = updatedFacility.images[0]
         await RequestService(`facilities/${facilityId}`, 'PATCH', {
           ...facility,
           main_image: newMainImage.url,
