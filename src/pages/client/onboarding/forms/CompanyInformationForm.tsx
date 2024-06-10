@@ -20,6 +20,7 @@ import {
   type StepProps,
   FormDataContext,
   type IClientOnboardingFormInputs,
+  createCompanyFormData,
   type ICompanyOnboardingFormInputs,
 } from '../clientOnboardingUtils'
 
@@ -68,7 +69,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
   const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
     setIsLoading(true)
 
-    let companyId = formData?.company_id
+    const companyId = formData?.company_id
 
     const requestData: ICompanyOnboardingFormInputs = {
       company_name: data.company_name,
@@ -80,7 +81,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       company_city: data.company_city,
       company_state: data.company_state,
       company_zip: data.company_zip,
-      facilities: [],
+      facilities: formData.facilities,
       users: [userId],
     }
 
@@ -92,7 +93,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
 
         if (companyFound != null) {
           const updatedCompany = {
-            ...companyFound,
+            ...createCompanyFormData(companyFound),
             ...requestData,
           }
 
@@ -102,23 +103,12 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
             body: JSON.stringify(updatedCompany),
           })
           if (!response.ok) throw new Error('Failed to update company')
-          const companyData: ICompany = await response.json()
+          const patchedCompanyData: ICompany = await response.json()
 
-          if (companyData?._id != null) {
-            companyId = companyData._id
-
+          if (patchedCompanyData?._id != null) {
             setFormData(prev => ({
               ...prev,
-              company_id: companyData._id,
-              company_name: companyData.company_name,
-              company_dbas: companyData?.company_dbas || [],
-              company_tax_id: companyData.company_tax_id,
-              company_phone_number: companyData.company_phone_number,
-              company_country: companyData.company_country,
-              company_address: companyData.company_address,
-              company_city: companyData.company_city,
-              company_state: companyData.company_state,
-              company_zip: companyData.company_zip,
+              ...createCompanyFormData(patchedCompanyData),
             }))
             setTimeout(() => {
               setStep(step + 1)
@@ -141,21 +131,12 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
 
         if (!response.ok) throw new Error('Failed to add company')
         const companyData: ICompany = await response.json()
-        if (companyData?._id != null) {
-          companyId = companyData._id
 
+        if (companyData?._id != null) {
+          const companyFormData = createCompanyFormData(companyData)
           setFormData(prev => ({
             ...prev,
-            company_id: companyData._id,
-            company_name: companyData.company_name,
-            company_dbas: companyData?.company_dbas || [],
-            company_tax_id: companyData.company_tax_id,
-            company_phone_number: companyData.company_phone_number,
-            company_country: companyData.company_country,
-            company_address: companyData.company_address,
-            company_city: companyData.company_city,
-            company_state: companyData.company_state,
-            company_zip: companyData.company_zip,
+            ...companyFormData,
           }))
           setTimeout(() => {
             setStep(step + 1)
