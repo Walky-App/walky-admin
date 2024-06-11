@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, type FormEvent, SyntheticEvent } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
@@ -99,6 +99,22 @@ export const EmployeeJobs = () => {
 
   const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
 
+  useEffect(() => {
+    const getJobs = async () => {
+      try {
+        const response = await requestService({ path: 'jobs/active' })
+        if (response.ok) {
+          const allJobs = await response.json()
+          setJobs(allJobs)
+        }
+      } catch (error) {
+        console.error('Error fetching jobs:', error)
+        showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching jobs' })
+      }
+    }
+    getJobs()
+  }, [setJobs])
+
   const handleUseSelectedAddress = async () => {
     if (moreAddressDetails && moreAddressDetails.location_pin) {
       const fromCoordinates = [...moreAddressDetails.location_pin].reverse()
@@ -111,9 +127,9 @@ export const EmployeeJobs = () => {
           setJobs(allJobs)
         }
         setIsLoading(false)
-        // isLoading
       } catch (error) {
         console.error('Error fetching jobs:', error)
+        showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching jobs' })
       }
     }
   }
@@ -134,6 +150,7 @@ export const EmployeeJobs = () => {
         }
       } catch (error) {
         console.error('Error fetching jobs:', error)
+        showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching jobs' })
       }
     }
 
@@ -150,20 +167,19 @@ export const EmployeeJobs = () => {
     )
   }
 
-  useEffect(() => {
-    const getJobs = async () => {
-      try {
-        const response = await requestService({ path: 'jobs/active' })
-        if (response.ok) {
-          const allJobs = await response.json()
-          setJobs(allJobs)
-        }
-      } catch (error) {
-        console.error('Error fetching jobs:', error)
-      }
+  const handleDateChange = (dates: [Date, Date]) => {
+    setDates(e.value as [Date, Date])
+
+    if (e.value && dates) {
+      const filteredJobs = jobs.filter(job => {
+        return job.job_dates.some(jobDate => {
+          const date = new Date(jobDate)
+          return date >= dates[0] && date <= dates[1]
+        })
+      })
+      setJobs(filteredJobs)
     }
-    getJobs()
-  }, [setJobs])
+  }
 
   // useEffect(() => {
   //   let filteredJobs = [...(jobs || [])]
@@ -242,6 +258,8 @@ export const EmployeeJobs = () => {
       setSelectedRange(5)
     }
 
+    console.log('dates', dates)
+
     return (
       <>
         <div className="">
@@ -315,17 +333,8 @@ export const EmployeeJobs = () => {
         <div className="mb-4 pr-4">
           <Calendar
             value={dates}
-            onChange={e => setDates(e.value as [Date, Date] | null)}
-            // onChange={e => {
-            // console.log(e.value)
-            // jobs.filter(job => {
-            //   return job.job_dates.some(jobDate => {
-            //     const date = new Date(jobDate)
-            //     return date >= dates[0] && date <= dates[1]
-            //   })
-            // })
-            // }}
-            selectionMode="range"
+            onChange={e => handleDateChange(e.value)}
+            selectionMode="multiple"
             showButtonBar
             numberOfMonths={1}
             placeholder="by Date"
