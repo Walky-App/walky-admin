@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, type FormEvent, SyntheticEvent } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
@@ -28,6 +28,8 @@ import { useUtils } from '../../../store/useUtils'
 // import { isNew } from '../../../utils/timeUtils'
 // import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobListItem } from './JobListItem'
+
+// import { set } from 'date-fns'
 
 const jobTitleOptions = [
   { name: 'All Jobs', code: 'all' },
@@ -100,12 +102,14 @@ export const EmployeeJobs = () => {
   const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
 
   useEffect(() => {
+    setIsLoading(true)
     const getJobs = async () => {
       try {
         const response = await requestService({ path: 'jobs/active' })
         if (response.ok) {
           const allJobs = await response.json()
           setJobs(allJobs)
+          setIsLoading(false)
         }
       } catch (error) {
         console.error('Error fetching jobs:', error)
@@ -113,7 +117,7 @@ export const EmployeeJobs = () => {
       }
     }
     getJobs()
-  }, [setJobs])
+  }, [setJobs, showToast])
 
   const handleUseSelectedAddress = async () => {
     if (moreAddressDetails && moreAddressDetails.location_pin) {
@@ -167,19 +171,20 @@ export const EmployeeJobs = () => {
     )
   }
 
-  const handleDateChange = (dates: [Date, Date]) => {
-    setDates(e.value as [Date, Date])
+  // const handleDateChange = (dates: [Date, Date]) => {
+  setDates(null)
+  isLoading
 
-    if (e.value && dates) {
-      const filteredJobs = jobs.filter(job => {
-        return job.job_dates.some(jobDate => {
-          const date = new Date(jobDate)
-          return date >= dates[0] && date <= dates[1]
-        })
-      })
-      setJobs(filteredJobs)
-    }
-  }
+  //   if (e.value && dates) {
+  //     const filteredJobs = jobs.filter(job => {
+  //       return job.job_dates.some(jobDate => {
+  //         const date = new Date(jobDate)
+  //         return date >= dates[0] && date <= dates[1]
+  //       })
+  //     })
+  //     setJobs(filteredJobs)
+  //   }
+  // }
 
   // useEffect(() => {
   //   let filteredJobs = [...(jobs || [])]
@@ -230,7 +235,7 @@ export const EmployeeJobs = () => {
             jobs.map((_, index) => <Skeleton key={index} width="45rem" height="18rem" />)
           ) : displayedJobs.length > 0 ? (
             [...displayedJobs]
-              .sort((a, b) => (isNew(b.createdAt) ? 1 : -1))
+              .sort((a, b) => (isJobNewWithinThreeDays(b.createdAt) ? 1 : -1))
               .map(job => (
                 <JobListItem key={job._id} job={job} isDistanceRelatedButtonClicked={isDistanceRelatedButtonClicked} />
               ))
@@ -257,8 +262,6 @@ export const EmployeeJobs = () => {
     const resetDistanceRelatedFilters = () => {
       setSelectedRange(5)
     }
-
-    console.log('dates', dates)
 
     return (
       <>
@@ -333,7 +336,7 @@ export const EmployeeJobs = () => {
         <div className="mb-4 pr-4">
           <Calendar
             value={dates}
-            onChange={e => handleDateChange(e.value)}
+            // onChange={e => handleDateChange(e.value)}
             selectionMode="multiple"
             showButtonBar
             numberOfMonths={1}

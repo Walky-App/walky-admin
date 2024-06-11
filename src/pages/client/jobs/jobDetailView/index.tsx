@@ -15,7 +15,7 @@ import { type IJob } from '../../../../interfaces/job'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
-import { formatToTimeUTC } from '../../../../utils/timeUtils'
+import { formatToLocalTime } from '../../../../utils/timeUtils'
 import { PanelAcceptedContent } from './PanelAcceptedContent'
 import { PanelPendingContent } from './PanelPendingContent'
 import { PanelRejectedContent } from './PanelRejectedContent'
@@ -260,7 +260,7 @@ export const ClientJobDetailView = () => {
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                       <div className="font-normal text-stone-500">Job Time</div>
                       <div className="font-normal text-black">
-                        {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)}
+                        {/* {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)} */}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
@@ -320,9 +320,9 @@ export const ClientJobDetailView = () => {
                               {dayOfWeek}, {formattedDate}
                             </time>
                             <p className="flex-none sm:ml-6">
-                              <time dateTime={date}>{formatToTimeUTC(job.start_time)}</time>
+                              <time dateTime={date}>{formatToLocalTime(job.start_time)}</time>
                               {' - '}
-                              <time dateTime={date}>{formatToTimeUTC(job.end_time)}</time>
+                              <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
                             </p>
                             <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                               Lunch: {job.lunch_break} minutes
