@@ -44,7 +44,7 @@ export const AdminCompanyListPage = () => {
         accessor: (company: ICompany) =>
           company.company_phone_number?.length ? formatPhoneNumber(company.company_phone_number) : '',
       },
-      { Header: 'Payment Information', accessor: (company: ICompany) => company.payment_information.length },
+      { Header: 'Payment Information', accessor: (company: ICompany) => company?.payment_information?.length },
       { Header: 'Address', accessor: 'company_address' },
       { Header: 'City', accessor: 'company_city' },
       { Header: 'State', accessor: 'company_state' },

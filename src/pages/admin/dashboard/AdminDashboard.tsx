@@ -8,8 +8,8 @@ import { BriefcaseIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IStatCard, DashboardHeader, StatCards } from '../../../components/shared/dashboard'
-import { type IFacility } from '../../../interfaces/Facility'
 import { type IUser } from '../../../interfaces/User'
+import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
 import { type ILog } from '../../../interfaces/logs'
 import { requestService } from '../../../services/requestServiceNew'
