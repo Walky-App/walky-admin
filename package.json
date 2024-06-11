@@ -1,6 +1,6 @@
 {
   "name": "hemptemps-app",
-  "version": "0.1.2",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -45,7 +45,7 @@
     "update-version-minor": "npm version minor --no-git-tag-version",
     "update-version-major": "npm version major --no-git-tag-version",
     "start": "react-scripts start",
-    "build": "npm run update-version-minor && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "format": "npx prettier . --write",
     "format:check": "npx prettier . --check",
