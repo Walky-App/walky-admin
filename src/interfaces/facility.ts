@@ -5,22 +5,16 @@ export interface IFacilityImage {
   _id: string
 }
 
-export interface IFacilityDNR {
-  _id: string
-  user_id: string
-  reason: string
-}
-
 export interface IFacilityFile {
   _id?: string
   url: string
   key: string
   timestamp: Date
-  uploaded_by: string
+  uploaded_by?: string
   FileList?: string[]
 }
 
-interface IContact {
+export interface IFacilityContact {
   email: string
   first_name: string
   last_name: string
@@ -35,13 +29,13 @@ interface IDnr {
 }
 export interface IFacility {
   _id?: string
-  createdAt: string
+  createdAt?: string
   company_id: string
   name: string
   tax_id: string
   phone_number: string
   timezone: string
-  contacts: IContact[]
+  contacts: IFacilityContact[]
   country: string
   address: string
   zip: string

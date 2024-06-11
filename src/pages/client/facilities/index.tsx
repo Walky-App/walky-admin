@@ -51,7 +51,7 @@ export const ClientFacilities = () => {
   useMemo(() => {
     const { _id } = GetTokenInfo()
     const getFacilities = async () => {
-      const allFacilities = await RequestService(`facilities/byclient/${_id}`)
+      const allFacilities = await RequestService(`facilities/user/${_id}`)
 
       setFacilities(allFacilities)
     }

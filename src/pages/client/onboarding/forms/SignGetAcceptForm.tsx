@@ -1,17 +1,17 @@
 import { useContext, useState } from 'react'
 
 import { Button } from 'primereact/button'
-import { Skeleton } from 'primereact/skeleton'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
-import { FormDataContext, type StepProps } from '../ClientOnboardingPage'
-import { FinishOnboardingDialog } from './FinishOnboardingDialog'
+import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
+import { FormDataContext, type StepProps } from '../clientOnboardingUtils'
+import { FinishOnboardingDialog } from '../components/FinishOnboardingDialog'
 
 export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
   return strings.filter(Boolean).join(separator)
 }
 
-export const Step5 = ({ step, setStep }: StepProps) => {
+export const SignGetAcceptForm = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -24,10 +24,12 @@ export const Step5 = ({ step, setStep }: StepProps) => {
   }
 
   const renderDocument = () => {
-    if (documentLoading) {
+    if (documentLoading === true) {
       return (
-        <div className="flex h-dvh items-center justify-center">
-          <Skeleton shape="rectangle" size="100%" />
+        <div className="flex h-dvh flex-col items-center justify-center">
+          <p className="text-gray-500">Loading Document...</p>
+          <HTLoadingLogo />
+          <p className="text-gray-500">Thank you for your patience.</p>
         </div>
       )
     }

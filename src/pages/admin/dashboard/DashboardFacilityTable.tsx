@@ -67,7 +67,7 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{new Date(facility.createdAt).toLocaleString()}</div>
+                      <div className="text-gray-900">{new Date(facility?.createdAt ?? '').toLocaleString()}</div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                       <div className="text-gray-900">{facility.jobs ? facility.jobs.length : 0}</div>
