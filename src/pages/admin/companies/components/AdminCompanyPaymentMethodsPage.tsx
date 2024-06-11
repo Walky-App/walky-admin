@@ -48,7 +48,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
 
   return (
     <div className="flex flex-col space-x-2 space-y-2 sm:flex-row sm:space-x-2 sm:space-y-2">
-      {selectedCompanyData.payment_information.map((payment, index) => {
+      {selectedCompanyData.payment_information?.map((payment, index) => {
         let title = ''
         let subTitle = ''
         let cardHeader = null

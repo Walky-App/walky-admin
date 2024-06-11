@@ -14,8 +14,8 @@ import { type IAddressAutoComplete } from '../../../../components/shared/forms/A
 import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
-import { type IFacility } from '../../../../interfaces/Facility'
 import { type IUser } from '../../../../interfaces/User'
+import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
@@ -267,7 +267,7 @@ export const AdminCompanyDetails = () => {
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />

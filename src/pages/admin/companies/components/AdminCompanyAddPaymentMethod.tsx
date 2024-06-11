@@ -346,7 +346,7 @@ export const AdminCompanyAddPaymentMethod = () => {
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
                   </>
