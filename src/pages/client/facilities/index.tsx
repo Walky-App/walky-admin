@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -51,7 +51,7 @@ export const ClientFacilities = () => {
   useMemo(() => {
     const { _id } = GetTokenInfo()
     const getFacilities = async () => {
-      const allFacilities = await RequestService(`facilities/byclient/${_id}`)
+      const allFacilities = await RequestService(`facilities/user/${_id}`)
 
       setFacilities(allFacilities)
     }

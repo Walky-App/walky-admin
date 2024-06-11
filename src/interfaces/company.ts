@@ -16,19 +16,20 @@ export interface IPaymentMethod {
 }
 
 export interface ICompany {
-  _id: string
-  corp_name: string
-  company_dbas: string[]
-  tax_id: string
-  phone_number: string
-  payment_information: IPaymentMethod[]
-  country: string
-  address: string
-  city: string
-  state: string
-  zip: string
+  _id?: string
+  company_name: string
+  company_dbas: string[] | undefined
+  company_tax_id: string
+  company_phone_number: string
+  payment_information?: IPaymentMethod[]
+  company_country: string
+  company_address: string
+  company_city: string
+  company_state: string
+  company_zip: string
   facilities: string[]
-  clients: string[]
-  createdAt: string
-  updatedAt: string
+  users: string[]
+  createdAt?: string
+  updatedAt?: string
+  company_location_pin: number[]
 }

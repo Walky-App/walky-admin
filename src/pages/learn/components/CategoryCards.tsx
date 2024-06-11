@@ -4,18 +4,26 @@ import { Badge } from 'primereact/badge'
 import { Card } from 'primereact/card'
 
 import { ShieldCheckIcon } from '@heroicons/react/20/solid'
-import { ArrowTrendingUpIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline'
+import { ArrowTrendingUpIcon, BookOpenIcon, ClockIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 
 import { useAdmin } from '../../../contexts/AdminContext'
 import { type Category } from '../../../interfaces/category'
 import { type FilterInterface } from '../../../interfaces/global'
 import { useLearn } from '../../../store/useLearn'
+import { cn } from '../../../utils/cn'
 
 interface CategoryCardsProps {
   category: Category[]
   filter?: FilterInterface
   isLoading: boolean
   isAdmin?: boolean
+}
+
+type CompletedInfo = Record<string, boolean>
+
+interface CategoryRecords {
+  category: Category['_id']
+  is_completed: boolean
 }
 
 export const CategoryCards = ({
@@ -41,12 +49,13 @@ export const CategoryCards = ({
     return categoriesTemp.filter(category => category.title.toLowerCase().includes(filter.search.toLocaleLowerCase()))
   }
 
-  const handlerSetCategory = (category: Category) => {
+  const handlerSetCategory = (category: Category, disabled: boolean) => {
     if (isAdmin) {
       setCategory(category)
       navigate(`/admin/learn/categories/${category._id}`)
       return
     }
+    if (disabled) return
     navigate(`/learn/category/${category._id}`)
   }
 
@@ -77,103 +86,126 @@ export const CategoryCards = ({
     }
   }
 
+  const completionMap: CompletedInfo = record.categories.reduce((acc: CompletedInfo, category: CategoryRecords) => {
+    acc[category.category] = category.is_completed
+    return acc
+  }, {})
+
+  const isCategoryDisabled = (index: number) => {
+    if (index === 0) return false
+    return !completionMap[categoriesFilter()[index - 1]._id]
+  }
+
   return (
     <div>
       {!isLoading ? (
         <div>
           {categoriesFilter().length > 0 ? (
-            categoriesFilter().map(category => (
-              <Card
-                className="cursor-pointer transition-shadow duration-300 ease-in-out hover:shadow-lg"
-                key={category._id}
-                pt={{
-                  body: { className: 'p-0 mb-4 ' },
-                  content: { className: 'p-0' },
-                }}>
-                <div className="h-auto sm:h-32 md:flex  ">
-                  <div className="md:m-3" onClick={() => handlerSetCategory(category)} aria-hidden="true">
-                    {category.image ? (
-                      <img
-                        alt={`Hemp Temp ${category.title} category`}
-                        className="h-96 w-full object-cover object-center  md:h-24 md:w-24 md:rounded-xl"
-                        src={category.image}
-                      />
+            categoriesFilter().map((category, index) => {
+              const isDisabled = isCategoryDisabled(index)
+              return (
+                <Card
+                  className={cn({
+                    'bg-gray-300 opacity-50': isDisabled,
+                    'cursor-pointer transition-shadow duration-300 ease-in-out hover:shadow-lg': !isDisabled,
+                  })}
+                  key={category._id}
+                  pt={{
+                    body: { className: 'p-0 mb-4 ' },
+                    content: { className: 'p-0' },
+                  }}>
+                  <div className="h-auto sm:h-32 md:flex">
+                    <div className="md:m-3" onClick={() => handlerSetCategory(category, isDisabled)} aria-hidden="true">
+                      {category.image ? (
+                        <img
+                          alt={`Hemp Temp ${category.title} category`}
+                          className="h-96 w-full object-cover object-center  md:h-24 md:w-24 md:rounded-xl"
+                          src={category.image}
+                        />
+                      ) : (
+                        <div className="h-24 w-24 rounded-xl bg-neutral-200" />
+                      )}
+                    </div>
+                    <div
+                      className="m-3 flex flex-1 flex-col justify-center gap-3"
+                      onClick={() => handlerSetCategory(category, isDisabled)}
+                      aria-hidden="true">
+                      <div className="text-xl font-semibold text-black">{category.title}</div>
+                      <div className=" h-12 overflow-hidden text-ellipsis  text-stone-500">{category.description}</div>
+                    </div>
+                    {isAdmin ? (
+                      <div className="m-3 flex flex-col items-center gap-y-5 p-3">
+                        <Badge color={category.is_disabled ? 'red' : 'green'}>
+                          <p className="font-normal text-stone-500">{category.is_disabled ? 'Disabled' : 'Active'}</p>
+                        </Badge>
+                      </div>
                     ) : (
-                      <div className="h-24 w-24 rounded-xl bg-neutral-200" />
+                      <div>
+                        <div className="flex flex-row justify-around md:gap-2 md:pr-3 md:pt-2">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <ArrowTrendingUpIcon className="h-10 w-10 md:h-6 md:w-6" />
+                              <span className="text-base md:text-sm">{category.modules_number}</span>
+                            </div>
+                            <p className="text-center text-lg font-medium md:text-sm">Modules</p>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <BookOpenIcon className="h-10 w-10 md:h-6 md:w-6" />
+                              <span className="text-base md:text-sm">{category.total_units}</span>
+                            </div>
+                            <p className="text-center text-lg font-medium md:text-sm">Units</p>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <ClockIcon className="h-10 w-10 md:h-6 md:w-6" />
+                              <span className="text-base md:text-sm">{category.total_time / 60}</span>
+                            </div>
+                            <p className="text-center text-lg font-medium md:text-sm">Minutes</p>
+                          </div>
+                        </div>
+                        {isDisabled ? (
+                          <div className="mt-5 flex items-center justify-center">
+                            <LockClosedIcon className="h-8 w-8" />
+                          </div>
+                        ) : (
+                          <button
+                            className="m-3 flex flex-col items-center gap-y-5 p-3"
+                            onClick={() => handlerCertification(category)}
+                            type="button">
+                            <div className="flex items-center justify-start gap-2">
+                              <div className="pr-2 text-right text-black">
+                                {categoryProgress(category._id) !== 0 && category.modules_number !== 0
+                                  ? (categoryProgress(category._id) / category.modules_number) * 100
+                                  : 0}
+                                %
+                              </div>
+                              <div className="relative h-1 w-10">
+                                <div className="absolute left-0 top-0 h-1 w-10 rounded-2xl bg-neutral-100" />
+                                <div
+                                  className={`w-${
+                                    categoryProgress(category._id) !== 0 && category.modules_number !== 0
+                                      ? Math.floor((categoryProgress(category._id) / category.modules_number) * 100) /
+                                        10
+                                      : 0
+                                  } absolute left-0 top-0 h-1 rounded-2xl bg-black`}
+                                />
+                              </div>
+                            </div>
+                            {categoryCompleted(category._id) ? (
+                              <div className="flex items-center text-center ">
+                                <ShieldCheckIcon className="h-4 w-4 text-green-600" />
+                                <div>Completed</div>
+                              </div>
+                            ) : null}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
-                  <div
-                    className="m-3 flex flex-1 flex-col justify-center gap-3"
-                    onClick={() => handlerSetCategory(category)}
-                    aria-hidden="true">
-                    <div className="text-xl font-semibold text-black">{category.title}</div>
-                    <div className=" h-12 overflow-hidden text-ellipsis  text-stone-500">{category.description}</div>
-                  </div>
-                  {isAdmin ? (
-                    <div className="m-3 flex flex-col items-center gap-y-5 p-3">
-                      <Badge color={category.is_disabled ? 'red' : 'green'}>
-                        <p className="font-normal text-stone-500">{category.is_disabled ? 'Disabled' : 'Active'}</p>
-                      </Badge>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="flex flex-row justify-around md:gap-2 md:pr-3 md:pt-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <ArrowTrendingUpIcon className="h-10 w-10 md:h-6 md:w-6" />
-                            <span className="text-base md:text-sm">{category.modules_number}</span>
-                          </div>
-                          <p className="text-center text-lg font-medium md:text-sm">Modules</p>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <BookOpenIcon className="h-10 w-10 md:h-6 md:w-6" />
-                            <span className="text-base md:text-sm">{category.total_units}</span>
-                          </div>
-                          <p className="text-center text-lg font-medium md:text-sm">Units</p>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <ClockIcon className="h-10 w-10 md:h-6 md:w-6" />
-                            <span className="text-base md:text-sm">{category.total_time / 60}</span>
-                          </div>
-                          <p className="text-center text-lg font-medium md:text-sm">Minutes</p>
-                        </div>
-                      </div>
-                      <button
-                        className="m-3 flex flex-col items-center gap-y-5 p-3"
-                        onClick={() => handlerCertification(category)}
-                        type="button">
-                        <div className="flex items-center justify-start gap-2">
-                          <div className="pr-2  text-right text-black">
-                            {categoryProgress(category._id) !== 0 && category.modules_number !== 0
-                              ? (categoryProgress(category._id) / category.modules_number) * 100
-                              : 0}
-                            %
-                          </div>
-                          <div className="relative h-1 w-10">
-                            <div className="absolute left-0 top-0 h-1 w-10 rounded-2xl bg-neutral-100" />
-                            <div
-                              className={`w-${
-                                categoryProgress(category._id) !== 0 && category.modules_number !== 0
-                                  ? Math.floor((categoryProgress(category._id) / category.modules_number) * 100) / 10
-                                  : 0
-                              } absolute left-0 top-0 h-1 rounded-2xl bg-black`}
-                            />
-                          </div>
-                        </div>
-                        {categoryCompleted(category._id) ? (
-                          <div className="flex items-center text-center ">
-                            <ShieldCheckIcon className="h-4 w-4 text-green-600" />
-                            <div>Completed</div>
-                          </div>
-                        ) : null}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            ))
+                </Card>
+              )
+            })
           ) : (
             <div className="flex h-96 flex-col items-center justify-center">
               <div className="text-2xl font-semibold text-black">Your search - did not match any categories</div>
