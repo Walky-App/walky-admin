@@ -89,7 +89,7 @@ export const EmployeeJobs = () => {
   }
 
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
-  const [dates, setDates] = useState<[Date, Date] | null>(null)
+  const [dates] = useState<[Date, Date] | null>(null)
   const [selectedRange, setSelectedRange] = useState<number | null>(5)
   const [isLoading, setIsLoading] = useState(true)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
@@ -172,7 +172,7 @@ export const EmployeeJobs = () => {
   }
 
   // const handleDateChange = (dates: [Date, Date]) => {
-  setDates(null)
+  // setDates(null)
 
   //   if (e.value && dates) {
   //     const filteredJobs = jobs.filter(job => {
