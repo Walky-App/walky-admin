@@ -98,7 +98,6 @@ export const AddressAutoComplete = ({
         inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
         className={classNames}
         autoComplete="off"
-        disabled={disabled}
       />
     )
   }
@@ -117,6 +116,7 @@ export const AddressAutoComplete = ({
       inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
       className={classNames}
       autoComplete="off"
+      disabled={disabled}
     />
   )
 }
