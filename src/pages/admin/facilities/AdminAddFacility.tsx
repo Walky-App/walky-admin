@@ -66,7 +66,7 @@ const defaultMoreAddressDetails: IAddressAutoComplete = {
 export const AdminAddFacility = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [companies, setCompanies] = useState<ICompany[]>([])
-  const [selectedCompany, setSelectedCompany] = useState()
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
   const [checked, setChecked] = useState(true)
   const [formData, setFormData] = useState<IFacility>(defaultFacilityFormValues)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
@@ -79,15 +79,25 @@ export const AdminAddFacility = () => {
 
   useEffect(() => {
     const getCompanies = async () => {
-      const response = await requestService({ path: 'companies' })
+      try {
+        const response = await requestService({ path: 'companies' })
 
-      if (response.ok) {
-        const allCompanies = await response.json()
-        setCompanies(allCompanies)
+        if (response.ok) {
+          const allCompanies = await response.json()
+          setCompanies(allCompanies)
+        }
+      } catch (error) {
+        console.error('error', error)
+        showToast({
+          severity: 'error',
+          summary: 'Failed to fetch companies',
+          detail: 'Unable to fetch companies. Please try again.',
+          life: 2000,
+        })
       }
     }
     getCompanies()
-  }, [])
+  }, [showToast])
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -161,24 +171,27 @@ export const AdminAddFacility = () => {
     }
   }
 
-  const handleCompanySameAsFacility = (selected: ICompany | null = null) => {
-    if (selected !== null && selected !== undefined) {
+  const handleCompanySameAsFacility = (companySelectedId: string | null = null) => {
+    const companySelected = companies?.find((company: ICompany) => company._id === companySelectedId)
+
+    if (companySelected !== null && companySelected !== undefined) {
       setFormData(prevState => ({
         ...prevState,
-        company_id: selected._id ?? '',
-        name: selected.company_name,
-        tax_id: selected.company_tax_id,
-        phone_number: selected.company_phone_number,
-        address: selected.company_address,
-        city: selected.company_city,
-        state: selected.company_state,
-        zip: selected.company_zip,
-        country: selected.company_country,
-        location_pin: selected.company_location_pin,
+        company_id: companySelectedId ?? '',
+        name: companySelected.company_name,
+        tax_id: companySelected.company_tax_id,
+        phone_number: companySelected.company_phone_number,
+        address: companySelected.company_address,
+        city: companySelected.company_city,
+        state: companySelected.company_state,
+        zip: companySelected.company_zip,
+        country: companySelected.company_country,
+        location_pin: companySelected.company_location_pin,
       }))
     } else {
       setFormData(prevState => ({
         ...prevState,
+        company_id: '',
         name: '',
         tax_id: '',
         phone_number: '',
@@ -202,7 +215,6 @@ export const AdminAddFacility = () => {
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please provide information about your business so that we can verify you on the platform.
             </p>
-            {requiredFieldsNoticeText}
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-5">
@@ -211,28 +223,16 @@ export const AdminAddFacility = () => {
                 inputId="company_name"
                 optionLabel="company_name"
                 optionValue="_id"
-                value={selectedCompany}
+                value={selectedCompanyId}
                 name="company_name"
                 options={companies}
                 filter
                 onChange={e => {
-                  const selected = companies?.find((company: ICompany) => company._id === e.value)
+                  const selectedCompany = companies?.find((company: ICompany) => company._id === e.value)
 
-                  if (selected !== null && selected !== undefined) {
-                    setSelectedCompany(e.value)
-                    setFormData({
-                      ...formData,
-                      company_id: e.value,
-                      name: (selected as ICompany).company_name,
-                      tax_id: (selected as ICompany).company_tax_id,
-                      phone_number: (selected as ICompany).company_phone_number,
-                      address: (selected as ICompany).company_address,
-                      city: (selected as ICompany).company_city,
-                      state: (selected as ICompany).company_state,
-                      zip: (selected as ICompany).company_zip,
-                      country: (selected as ICompany).company_country,
-                      location_pin: (selected as ICompany).company_location_pin,
-                    })
+                  if (selectedCompany !== null && selectedCompany !== undefined) {
+                    setSelectedCompanyId(e.value)
+                    handleCompanySameAsFacility(e.value)
                   }
                 }}
               />
@@ -242,7 +242,7 @@ export const AdminAddFacility = () => {
 
         {/* Don't show the rest of the form until a company is selected */}
         <div>
-          {selectedCompany ? (
+          {selectedCompanyId !== null && selectedCompanyId !== undefined ? (
             <>
               <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-12 sm:gap-y-10 md:grid-cols-3">
                 <div>
@@ -250,7 +250,6 @@ export const AdminAddFacility = () => {
                   <p className="mt-1 text-sm leading-6 text-gray-600">
                     Please provide information about your business so that we can verify you on the platform.
                   </p>
-                  {requiredFieldsNoticeText}
                 </div>
 
                 <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -261,7 +260,7 @@ export const AdminAddFacility = () => {
                       onChange={e => {
                         setChecked(e.value)
                         if (e.value) {
-                          handleCompanySameAsFacility(selectedCompany)
+                          handleCompanySameAsFacility(selectedCompanyId)
                         } else {
                           handleCompanySameAsFacility()
                         }
@@ -273,8 +272,37 @@ export const AdminAddFacility = () => {
               </div>
 
               <div>
+                {/* Facility Location */}
+                <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-t border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
+                  <div>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Location</h2>
+                    <p className="mt-1 text-sm leading-6 text-gray-600">
+                      Please type in the address and choose from the dropdown to select the correct address.
+                    </p>
+                    {requiredFieldsNoticeText}
+                  </div>
+
+                  <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                    <div className="sm:col-span-6">
+                      <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
+                        <HtInputLabel htmlFor="address" asterisk labelText="Facility Address" />
+                      </HtInfoTooltip>
+                      <AddressAutoComplete
+                        controlled
+                        value={formData.address}
+                        disabled={checked}
+                        setMoreAddressDetails={setMoreAddressDetails}
+                        currentAddress={formData.address}
+                        classNames={classNames({ 'p-invalid': false }, 'mt-2')}
+                        aria-describedby="address-help"
+                      />
+                      <HtInputHelpText fieldName="address" helpText="Commercial Address ONLY" />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Facility Information */}
-                <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
                   <div>
                     <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Information</h2>
                     <p className="mt-1 text-sm leading-6 text-gray-600">
@@ -408,35 +436,6 @@ export const AdminAddFacility = () => {
                         fieldName="notes"
                         helpText="Max 500 characters. Please do not enter contact information into this field."
                       />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Facility Location */}
-                <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
-                  <div>
-                    <h2 className="text-base font-semibold leading-7 text-gray-900"> Facility Location</h2>
-                    <p className="mt-1 text-sm leading-6 text-gray-600">
-                      Please provide your facility address information.
-                    </p>
-                    {requiredFieldsNoticeText}
-                  </div>
-
-                  <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                    <div className="sm:col-span-6">
-                      <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
-                        <HtInputLabel htmlFor="address" asterisk labelText="Facility Address" />
-                      </HtInfoTooltip>
-                      <AddressAutoComplete
-                        controlled
-                        value={formData.address}
-                        disabled={selectedCompany !== undefined}
-                        setMoreAddressDetails={setMoreAddressDetails}
-                        currentAddress={formData.address}
-                        classNames={classNames({ 'p-invalid': false }, 'mt-2')}
-                        aria-describedby="address-help"
-                      />
-                      <HtInputHelpText fieldName="address" helpText="Only Commercial Address" />
                     </div>
                   </div>
                 </div>
