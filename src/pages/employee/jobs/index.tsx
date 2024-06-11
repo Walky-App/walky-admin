@@ -173,7 +173,6 @@ export const EmployeeJobs = () => {
 
   // const handleDateChange = (dates: [Date, Date]) => {
   setDates(null)
-  isLoading
 
   //   if (e.value && dates) {
   //     const filteredJobs = jobs.filter(job => {
@@ -230,6 +229,7 @@ export const EmployeeJobs = () => {
   const renderJobCards = () => {
     return (
       <div className="mx-auto mb-10 mt-4 px-4 sm:px-6 lg:px-8">
+        {isLoading}
         <ul className="grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
           {/* {isLoading ? (
             jobs.map((_, index) => <Skeleton key={index} width="45rem" height="18rem" />)
