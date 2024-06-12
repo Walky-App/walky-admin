@@ -45,17 +45,9 @@ const createHeader = (cardIcon: IconDefinition | null) => (
 )
 
 export const AdminCompanyPaymentMethodsPage = () => {
-  // const { selectedCompanyData } = useAdminCompanyPageContext()
-  // const companyId = selectedCompanyData._id
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
-
-  // useEffect(() => {
-  //   if (selectedCompanyData) {
-  //     setIsLoading(false)
-  //   }
-  // }, [selectedCompanyData])
 
   const selectedCompanyId = useParams().id
 
