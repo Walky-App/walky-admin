@@ -234,10 +234,9 @@ export const JobDetailView = () => {
     }
   }, [job?._id, shiftId?.message, user._id])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const isUserApprovedApplicant = () => {
+  const isUserApprovedApplicant = useCallback(() => {
     return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
-  }
+  }, [job?.applicants, user._id])
 
   useEffect(() => {
     if (job) {
@@ -245,7 +244,7 @@ export const JobDetailView = () => {
         getCurrentJobTimeSheets()
       }
     }
-  }, [getCurrentJobTimeSheets, isUserApprovedApplicant, job, job?.applicants, user._id])
+  }, [getCurrentJobTimeSheets, isUserApprovedApplicant, job])
 
   const clockInOut = async (endpoint: string) => {
     setIsClockInOutLoading(true)
