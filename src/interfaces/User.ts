@@ -45,4 +45,5 @@ export interface IUser {
   documents?: IUserDocument[]
   student_record?: ProgressHTU
   score_rating?: number
+  companies?: string[]
 }

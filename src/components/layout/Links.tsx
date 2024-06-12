@@ -30,12 +30,12 @@ interface INavLink {
 
 export const userLinks = (userIsOnboarded: boolean, role: string) => {
   const adminLinks: INavLink[] = [
-    {
-      id: 1,
-      name: 'Messages',
-      href: '/admin/messages',
-      icon: <IoMdMail />,
-    },
+    // {
+    //   id: 1,
+    //   name: 'Messages',
+    //   href: '/admin/messages',
+    //   icon: <IoMdMail />,
+    // },
     {
       id: 2,
       name: 'Users',
@@ -102,7 +102,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
   ]
 
   const clientLinks: INavLink[] = [
-    { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
+    // { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
     {
       id: 1,
       name: 'My Jobs',
@@ -138,7 +138,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
   ]
 
   const employeeLinks: INavLink[] = [
-    { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+    // { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
     { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime />, disabled: !userIsOnboarded },
     { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
     { id: 3, name: 'Training', href: '/learn', icon: <MdSchool /> },

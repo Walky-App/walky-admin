@@ -1,13 +1,18 @@
 import React, { useState } from 'react'
 
+import { Navigate } from 'react-router-dom'
+
+import { Button } from 'primereact/button'
 import { Image } from 'primereact/image'
+import { Message } from 'primereact/message'
 
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { type IFacility } from '../../../../interfaces/Facility'
-import { RequestService } from '../../../../services/RequestService'
+import { type IFacility } from '../../../../interfaces/facility'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
 import { getCurrentUserRole } from '../../../../utils/UserRole'
 import { PolygonMap } from './PolygonMap'
 
@@ -23,6 +28,8 @@ export const FacilityDetailsForm = ({
   const [locationPolygon, setLocationPolygon] = useState<[number, number][]>(
     facility.location_polygon ? facility.location_polygon : [],
   )
+
+  const { showToast } = useUtils()
 
   const role = getCurrentUserRole()
 
@@ -83,18 +90,40 @@ export const FacilityDetailsForm = ({
     }
 
     try {
-      const response = await RequestService(`/facilities/${facility._id}`, 'PATCH', formValues)
-      if (response) {
-        setFacility(response)
+      const response = await requestService({
+        path: `facilities/${facility._id}`,
+        method: 'PATCH',
+        body: JSON.stringify(formValues),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setFacility(data)
         setUpdateSuccess(true)
         setTimeout(() => setUpdateSuccess(false), 5000)
+        showToast({ severity: 'success', summary: 'Success', detail: 'Facility updated successfully' })
       } else {
         setUpdateSuccess(false)
         console.error('Failed to update the facility.')
+        showToast({ severity: 'error', summary: 'Error', detail: 'Error updating facility' })
       }
     } catch (error) {
       setUpdateSuccess(false)
       console.error('Error occurred while updating facility:', error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error updating facility' })
+    }
+  }
+
+  const handleDeleteFacility = async () => {
+    try {
+      const response = await requestService({ path: `facilities/${facility._id}`, method: 'DELETE' })
+      if (response.ok) {
+        response.json()
+        showToast({ severity: 'success', summary: 'Success', detail: 'Facility deleted successfully' })
+        return <Navigate to="/admin/facilities" />
+      }
+    } catch (error) {
+      console.error(error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting facility' })
     }
   }
 
@@ -107,6 +136,18 @@ export const FacilityDetailsForm = ({
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please see the information about this particular facility.
             </p>
+            {role === 'admin' ? (
+              <div className="items-center">
+                <Button severity="danger" className="mt-6" onClick={handleDeleteFacility}>
+                  Delete Facility
+                </Button>
+                <br />
+                <Message
+                  severity="error"
+                  text="This will delete all associated Jobs, licenses, images and will remove facility from company association"
+                />
+              </div>
+            ) : null}
             <div className="relative mt-6">
               <div className="flex md:justify-center">
                 <Image
@@ -162,7 +203,7 @@ export const FacilityDetailsForm = ({
                   type="text"
                   name="corp_name"
                   id="corp-name"
-                  defaultValue={facility.corp_name || ''}
+                  defaultValue={facility.company_id || ''}
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
@@ -177,7 +218,7 @@ export const FacilityDetailsForm = ({
                   name="company_dbas"
                   id="company-dbas"
                   placeholder="Enter company DBAs separated by comma"
-                  defaultValue={facility.company_dbas ? facility.company_dbas.join(', ') : ''}
+                  defaultValue={facility.facility_dbas ? facility.facility_dbas.join(', ') : ''}
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
