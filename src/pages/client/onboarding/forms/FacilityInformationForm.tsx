@@ -95,9 +95,9 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       company_id: formValues.company_id,
     }
 
-    let facilityId = formData.facilities[0]
+    let facilityId = formData?.facilities[0]
 
-    if (facilityId != null) {
+    if (facilityId) {
       try {
         const res = await requestService({ path: `facilities/${facilityId}` })
         if (!res.ok) throw new Error('Error fetching facility details')
@@ -139,7 +139,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       }
     } else {
       try {
-        const response = await requestService({ method: 'POST', path: 'facilities', body: JSON.stringify(requestData) })
+        const response = await requestService({ path: 'facilities', method: 'POST', body: JSON.stringify(requestData) })
         if (!response.ok) throw new Error('Error adding facility')
         const data = await response.json()
 
