@@ -82,6 +82,7 @@ import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
 import { AdminCompanyPaymentMethodsPage } from './pages/admin/companies/components'
 import { AdminCompanyAddPaymentMethod } from './pages/admin/companies/components'
 import { AdminCompanyDetails } from './pages/admin/companies/components/AdminCompanyDetails'
+import { PaymentMethodDetails } from './pages/admin/companies/components/PaymentMethodDetails'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
@@ -184,6 +185,7 @@ export const App = () => {
                     <Route element={<AdminCompanyDetails />} path="/admin/companies/:id" />
                     <Route element={<AdminCompanyPaymentMethodsPage />} path="/admin/companies/:id/payment" />
                     <Route element={<AdminCompanyAddPaymentMethod />} path="/admin/companies/:id/add-payment" />
+                    <Route element={<PaymentMethodDetails />} path="/admin/companies/:id/payment/:paymentId" />
                   </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />

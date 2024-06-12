@@ -21,8 +21,9 @@ import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
+import { useAdminCompanyPageContext } from '../AdminCompanyPage'
 
-export interface IPaymentMethod {
+export interface IPaymentInfo {
   _id?: string
   type?: string
   address: string
@@ -42,9 +43,15 @@ export interface IPaymentMethod {
   facilities?: string[]
 }
 
+export interface IPaymentMethod {
+  payment_info: IPaymentInfo
+  facilities?: string[]
+}
+
 export const AdminCompanyAddPaymentMethod = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
+  const { updateSelectedCompanyData } = useAdminCompanyPageContext()
   const navigate = useNavigate()
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
@@ -56,23 +63,6 @@ export const AdminCompanyAddPaymentMethod = () => {
   ]
 
   const [paymentOption, setPaymentOption] = useState(paymentMethodOptions[1])
-  //   useEffect(() => {
-  //     const getAllFacilities = async () => {
-  //       try {
-  //         const response = await requestService({ path: 'facilities' })
-  //         if (response.ok) {
-  //           const fetchedFacilities: IFacility[] = await response.json()
-  //           setFacilities(fetchedFacilities)
-  //         } else {
-  //           setFacilities([])
-  //         }
-  //       } catch (error) {
-  //         console.error('Error fetching facilities data:', error)
-  //       }
-  //     }
-
-  //     getAllFacilities()
-  //   }, [])
 
   useEffect(() => {
     const getAllFacilities = async () => {
@@ -94,7 +84,7 @@ export const AdminCompanyAddPaymentMethod = () => {
 
   const { showToast } = useUtils()
 
-  const defaultValues: IPaymentMethod = {
+  const defaultValues: IPaymentInfo = {
     type: '',
     address: '',
     city: '',
@@ -109,7 +99,7 @@ export const AdminCompanyAddPaymentMethod = () => {
     formState: { errors },
     handleSubmit,
     setValue,
-  } = useForm<IPaymentMethod>({ defaultValues })
+  } = useForm<IPaymentInfo>({ defaultValues })
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -133,7 +123,7 @@ export const AdminCompanyAddPaymentMethod = () => {
     }
   }, [moreAddressDetails, setValue])
 
-  const onSubmit: SubmitHandler<IPaymentMethod> = async (data: IPaymentMethod) => {
+  const onSubmit: SubmitHandler<IPaymentInfo> = async (data: IPaymentInfo) => {
     try {
       data = {
         ...data,
@@ -149,9 +139,11 @@ export const AdminCompanyAddPaymentMethod = () => {
       if (!response.ok) {
         throw new Error('Failed to add company')
       }
+      const updatedCompanyData = await response.json()
+      updateSelectedCompanyData(updatedCompanyData)
       showToast({ severity: 'success', summary: 'Payment method added successfully' })
       setTimeout(() => {
-        navigate('/admin/companies/:id/payment')
+        navigate('/admin/companies/')
       }, 2000)
     } catch (error) {
       console.error('Error adding company: ', error)

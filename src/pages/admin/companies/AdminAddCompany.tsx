@@ -327,7 +327,7 @@ export const AdminAddCompany = () => {
                       onChange={(e: MultiSelectChangeEvent) => {
                         field.onChange(e.value)
                       }}
-                      placeholder="Select Services"
+                      placeholder="Select facilities"
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
                     <HtInputHelpText
