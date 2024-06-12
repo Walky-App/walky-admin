@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable filename-rules/match */
 export function secondsToTimeDescription(seconds: number) {
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
@@ -20,4 +22,12 @@ export function getModifiedProperties(oldObj: any, newObj: any): Partial<any> {
     }
   }
   return modifiedProperties
+}
+
+export const createRandomId = () => {
+  const date = new Date()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear().toString().substr(2, 2)
+  const uid = year + month + date.getMilliseconds()
+  return Number(uid)
 }
