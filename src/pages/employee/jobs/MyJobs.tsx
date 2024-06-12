@@ -7,7 +7,7 @@ import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobCalendar } from './JobCalendar'
-import { JobListItem } from './JobListItem'
+import { JobCard } from './JobCard'
 
 const adminRole = process.env.REACT_APP_ADMIN_ROLE
 
@@ -91,9 +91,7 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Active & Upcoming">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {activeJobs?.length > 0 ? (
-                  activeJobs.map(job => (
-                    <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />
-                  ))
+                  activeJobs.map(job => <JobCard key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />)
                 ) : (
                   <div>There are no active or upcoming jobs yet.</div>
                 )}
@@ -104,9 +102,7 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Pending">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {pendingJobs?.length > 0 ? (
-                  pendingJobs.map(job => (
-                    <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />
-                  ))
+                  pendingJobs.map(job => <JobCard key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />)
                 ) : (
                   <div>There are no jobs pending yet.</div>
                 )}
@@ -116,7 +112,7 @@ export const EmployeeMyJobs = () => {
               <TabPanel header="Rejected">
                 <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                   {rejectedJobs?.length > 0 ? (
-                    rejectedJobs.map(job => <JobListItem key={job._id} job={job} />)
+                    rejectedJobs.map(job => <JobCard key={job._id} job={job} />)
                   ) : (
                     <div>There are no jobs with rejections yet.</div>
                   )}
@@ -126,9 +122,7 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Saved Jobs">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {savedJobs?.length > 0 ? (
-                  savedJobs.map(job => (
-                    <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />
-                  ))
+                  savedJobs.map(job => <JobCard key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />)
                 ) : (
                   <div>There are no jobs saved yet.</div>
                 )}
@@ -137,7 +131,7 @@ export const EmployeeMyJobs = () => {
             <TabPanel header="Past Jobs">
               <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
                 {pastJobs?.length > 0 ? (
-                  pastJobs.map(job => <JobListItem key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />)
+                  pastJobs.map(job => <JobCard key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />)
                 ) : (
                   <div>There are no jobs completed in the past yet.</div>
                 )}
