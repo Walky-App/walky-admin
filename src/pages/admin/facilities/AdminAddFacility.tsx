@@ -191,7 +191,6 @@ export const AdminAddFacility = () => {
     } else {
       setFormData(prevState => ({
         ...prevState,
-        company_id: '',
         name: '',
         tax_id: '',
         phone_number: '',
@@ -330,20 +329,20 @@ export const AdminAddFacility = () => {
                       />
                     </div>
 
-                    <div className="sm:col-span-3">
+                    {/* <div className="sm:col-span-3">
                       <HtInfoTooltip message="A corporate name is the legal name of a corporation. It is the name that appears on the corporation's formation documents and is the name that appears on the corporation's state-issued certificate of incorporation.">
                         <HtInputLabel htmlFor="company-name" asterisk labelText="Company Name" />
                       </HtInfoTooltip>
                       <InputText
                         required
                         id="company-name"
-                        value={formData?.name}
+                        value={formData?.company_id}
                         name="company_name"
                         disabled
                         onChange={handleFormUpdate}
                         autoComplete="off"
                       />
-                    </div>
+                    </div> */}
 
                     <div className="sm:col-span-3">
                       <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
