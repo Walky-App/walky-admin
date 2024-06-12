@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa'
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
-import { IoMdMail, IoMdCog } from 'react-icons/io'
+import { IoMdCog } from 'react-icons/io'
 import { MdOutlineAccessTimeFilled, MdSchool } from 'react-icons/md'
 
 interface INavLinkChildren {
@@ -158,7 +158,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
     { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool /> },
     { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-    { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
+    // { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
   ]
 
   if (role === 'admin') return adminLinks

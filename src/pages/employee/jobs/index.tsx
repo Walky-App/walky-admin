@@ -447,7 +447,7 @@ export const EmployeeJobs = () => {
     </div>
   ) : (
     <>
-      <div className="flex w-full justify-end">
+      <div className="mb-3 flex w-full justify-end">
         <SelectButton
           value={view}
           onChange={(e: SelectButtonChangeEvent) => setView(e.value)}
@@ -463,12 +463,12 @@ export const EmployeeJobs = () => {
         <div className="flex flex-col md:flex-row">
           {/* {jobs.length > 0 ? ( */}
           <ScrollPanel style={{ width: '20%', height: '100vh' }} className="w-full">
-              {renderFiltersContent()}
-            </ScrollPanel>
-            <ScrollPanel style={{ width: '75%', height: '100vh' }} className="w-full pl-16">
-              {renderJobCards()}
-              <HtScrollTop className="" />
-            </ScrollPanel>
+            {renderFiltersContent()}
+          </ScrollPanel>
+          <ScrollPanel style={{ width: '75%', height: '100vh' }} className="w-full pl-16">
+            {renderJobCards()}
+            <HtScrollTop className="" />
+          </ScrollPanel>
           {/* ) : (
             <h2>No jobs for today or coming up soon! </h2>
           )} */}
