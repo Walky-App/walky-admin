@@ -51,7 +51,7 @@ export interface IPaymentMethod {
 export const AdminCompanyAddPaymentMethod = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
-  const { updateSelectedCompanyData } = useAdminCompanyPageContext()
+  const { setSelectedCompanyData } = useAdminCompanyPageContext()
   const navigate = useNavigate()
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
@@ -140,7 +140,7 @@ export const AdminCompanyAddPaymentMethod = () => {
         throw new Error('Failed to add company')
       }
       const updatedCompanyData = await response.json()
-      updateSelectedCompanyData(updatedCompanyData)
+      setSelectedCompanyData(updatedCompanyData)
       showToast({ severity: 'success', summary: 'Payment method added successfully' })
       setTimeout(() => {
         navigate('/admin/companies/')

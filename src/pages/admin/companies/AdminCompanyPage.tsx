@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useState, useEffect, createContext, useContext } from 'react'
 
 import { Outlet, useParams } from 'react-router-dom'
@@ -13,16 +12,13 @@ import { adminCompanyLinks } from './adminCompanySubHeaderLinks'
 interface IAdminCompanyPageContext {
   selectedCompanyData: ICompany
   selectedCompanyId?: string
-  // TODO: Implement updateSelectedCompanyData method
-  updateSelectedCompanyData: (data: ICompany) => void
+  setSelectedCompanyData: (data: ICompany) => void
 }
 
 const AdminCompanyPageContext = createContext<IAdminCompanyPageContext>({
   selectedCompanyData: {} as ICompany,
   selectedCompanyId: undefined,
-  updateSelectedCompanyData: () => {
-    // TODO: Implement updateSelectedCompanyData method
-  },
+  setSelectedCompanyData: () => void 0,
 })
 export const useAdminCompanyPageContext = () => {
   return useContext(AdminCompanyPageContext)
@@ -43,7 +39,6 @@ export const AdminCompanyPage = () => {
         }
         const companyFound: ICompany = await response.json()
         setSelectedCompanyData(companyFound)
-        console.log('Company data fetched: ', companyFound)
       } catch (error) {
         console.error('Error fetching company data: ', error)
       } finally {
@@ -60,12 +55,8 @@ export const AdminCompanyPage = () => {
     company_address: selectedCompanyData?.company_address,
   }
 
-  const updateSelectedCompanyData = (data: ICompany) => {
-    setSelectedCompanyData(data)
-  }
-
   return (
-    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData, updateSelectedCompanyData }}>
+    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData, setSelectedCompanyData }}>
       {isLoading ? (
         <Skeleton width="100%" height="100%" />
       ) : (
