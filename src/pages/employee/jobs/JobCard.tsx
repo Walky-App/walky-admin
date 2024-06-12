@@ -9,16 +9,15 @@ import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outlin
 
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { formatToTimeUTC, isNew } from '../../../utils/timeUtils'
+import { formatToLocalTime, isJobNewWithinThreeDays } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
   job: IJob
-  isDistanceRelatedButtonClicked?: boolean
   handleSaveUnsaveJob?: (jobId: string, isSaved: boolean) => void
 }
 
-export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUnsaveJob }: JobListItemProps) => {
+export const JobCard = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
   const [savedJob, setSavedJob] = useState(false)
   const { _id } = GetTokenInfo()
 
@@ -69,11 +68,11 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
             <div className="flex flex-row">
               <span className="pi pi-users" />
               <p className="ml-1 text-stone-500">
-                {job.applicants.length} / {job.vacancy} Applicants
+                {job.applicants.length} Applicants / {job.vacancy} Slots
               </p>
             </div>
             <div className="flex flex-row space-x-2 ">
-              {isNew(job.createdAt) ? <Badge value="New" size="normal" /> : null}
+              {isJobNewWithinThreeDays(job.createdAt) ? <Badge value="New" size="normal" /> : null}
               {job.applicants?.map(applicant => {
                 if (
                   applicant.user.toString() === _id &&
@@ -110,9 +109,7 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
                 <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                 <div className="mt-0.5 flex flex-col gap-1">
                   <span className="font-medium text-black">{job?.facility?.city}</span>
-                  {isDistanceRelatedButtonClicked && job.distance ? (
-                    <span className="text-stone-500">{job.distance} miles</span>
-                  ) : null}
+                  {job.distance ? <span className="text-stone-500">{job.distance} miles</span> : null}
                 </div>
               </div>
             </div>
@@ -131,7 +128,7 @@ export const JobListItem = ({ job, isDistanceRelatedButtonClicked, handleSaveUns
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-stone-500">Job Time</div>
                 <div className="text-black">
-                  {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)}
+                  {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
                 </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">

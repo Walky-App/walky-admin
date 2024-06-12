@@ -1,9 +1,13 @@
 {
   "name": "hemptemps-app",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-brands-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@headlessui/react": "^0.0.0-insiders.e8c7661",
     "@hello-pangea/dnd": "^16.5.0",
     "@heroicons/react": "^2.1.1",
@@ -41,6 +45,9 @@
     "zustand": "^4.5.2"
   },
   "scripts": {
+    "update-version-patch": "npm version patch --no-git-tag-version",
+    "update-version-minor": "npm version minor --no-git-tag-version",
+    "update-version-major": "npm version major --no-git-tag-version",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

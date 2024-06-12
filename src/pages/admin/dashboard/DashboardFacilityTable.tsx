@@ -2,7 +2,7 @@ import { Avatar } from 'primereact/avatar'
 
 import { BuildingLibraryIcon } from '@heroicons/react/20/solid'
 
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facility'
 
 export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
   return (
@@ -67,13 +67,13 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{new Date(facility.createdAt).toLocaleString()}</div>
+                      <div className="text-gray-900">{new Date(facility?.createdAt ?? '').toLocaleString()}</div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{facility.jobs.length}</div>
+                      <div className="text-gray-900">{facility.jobs ? facility.jobs.length : 0}</div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{facility.licenses.length}</div>
+                      <div className="text-gray-900">{facility.licenses ? facility.licenses.length : 0}</div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                       <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-green-600/20">

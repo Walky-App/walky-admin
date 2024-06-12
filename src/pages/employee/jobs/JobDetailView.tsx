@@ -29,7 +29,7 @@ import {
   formatToDate,
   formatToTime,
   isValidDate,
-  formatToTimeUTC,
+  formatToLocalTime,
 } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -185,12 +185,6 @@ export const JobDetailView = () => {
     return { isTodayShift: false, message: 'No shifts available.' }
   }
 
-  const getIdTimeSheetForToday = () => {
-    const shift: Shifts = shiftId?.message as Shifts
-    const userShift = shift.user_shifts?.find(us => us.user_id === user._id)
-    return userShift ? (userShift.timesheet_id as string) : null
-  }
-
   const getCurrentJobTimeSheets = useCallback(async () => {
     const { access_token } = GetTokenInfo()
     const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
@@ -201,6 +195,12 @@ export const JobDetailView = () => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${access_token}`,
       },
+    }
+
+    const getIdTimeSheetForToday = () => {
+      const shift: Shifts = shiftId?.message as Shifts
+      const userShift = shift.user_shifts?.find(us => us.user_id === user._id)
+      return userShift ? (userShift.timesheet_id as string) : null
     }
 
     try {
@@ -232,7 +232,12 @@ export const JobDetailView = () => {
       console.error('Failed to fetch timesheet:', error)
       setTimesheets(null)
     }
-  }, [job?._id, user._id])
+  }, [job?._id, shiftId?.message, user._id])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const isUserApprovedApplicant = () => {
+    return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
+  }
 
   useEffect(() => {
     if (job) {
@@ -240,7 +245,7 @@ export const JobDetailView = () => {
         getCurrentJobTimeSheets()
       }
     }
-  }, [getCurrentJobTimeSheets, job?.applicants, user._id])
+  }, [getCurrentJobTimeSheets, isUserApprovedApplicant, job, job?.applicants, user._id])
 
   const clockInOut = async (endpoint: string) => {
     setIsClockInOutLoading(true)
@@ -340,10 +345,6 @@ export const JobDetailView = () => {
     setOpenFeedback(true)
   }
 
-  const isUserApprovedApplicant = () => {
-    return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
-  }
-
   const scheduleListTemplate = (job: IJob) => {
     return (
       <>
@@ -360,8 +361,8 @@ export const JobDetailView = () => {
                   {dayOfWeek}, {formattedDate}
                 </time>
                 <p className="flex-none sm:ml-6">
-                  <time dateTime={date}>{formatToTimeUTC(job.start_time)}</time> -
-                  <time dateTime={date}>{formatToTimeUTC(job.end_time)}</time>
+                  <time dateTime={date}>{formatToLocalTime(job.start_time)}</time> -
+                  <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
                 </p>
                 <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                   Lunch: {job.lunch_break} minutes
@@ -436,7 +437,7 @@ export const JobDetailView = () => {
                     <div className="flex items-center">
                       <i className="pi pi-users" />
                       <div className="mb-2 ml-1 mt-2 text-sm text-stone-500">
-                        {job.applicants.length} / {job.vacancy} Applicants
+                        {job.applicants.length} Applicants / {job.vacancy} Slots
                       </div>
                     </div>
                     {!isUserApprovedApplicant() ? job.title : null}
@@ -534,7 +535,7 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Time</div>
                     <div className="text-black">
-                      {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)}
+                      {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
@@ -661,15 +662,6 @@ export const JobDetailView = () => {
                             loading={isApplyForJobLoading}
                           />
                         )}
-                      </li>
-
-                      <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                        <Button
-                          label="Share Opportunity"
-                          severity="secondary"
-                          style={{ width: '100%', height: '100%' }}
-                        />
                       </li>
                     </ul>
                   </div>

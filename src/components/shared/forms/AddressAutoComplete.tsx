@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { AutoComplete } from 'primereact/autocomplete'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { type IAddress } from '../../../interfaces/Facility'
+import { type IAddress } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 
 export interface IAddressAutoComplete {
@@ -22,7 +22,8 @@ export interface AddressAutoCompleteProps {
   value?: string
   controlled?: boolean
   inputId?: string
-  className?: string
+  classNames?: string
+  disabled?: boolean
 }
 
 export const AddressAutoComplete = ({
@@ -32,7 +33,8 @@ export const AddressAutoComplete = ({
   value,
   controlled,
   inputId,
-  className,
+  classNames,
+  disabled,
 }: AddressAutoCompleteProps) => {
   const [predictions, setPredictions] = useState<IAddress[]>([])
   const [selectedAddresses, setSelectedAddresses] = useState(null)
@@ -93,8 +95,8 @@ export const AddressAutoComplete = ({
         }}
         onSelect={e => handleGetAddressDetails(e.value, predictions)}
         forceSelection
-        inputStyle={{ width: '100%' }}
-        className={className}
+        inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
+        className={classNames}
         autoComplete="off"
       />
     )
@@ -111,9 +113,10 @@ export const AddressAutoComplete = ({
       onChange={e => setSelectedAddresses(e.value)}
       onSelect={e => handleGetAddressDetails(e.value, predictions)}
       forceSelection
-      inputStyle={{ width: '100%', height: '100%' }}
-      className={className}
+      inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
+      className={classNames}
       autoComplete="off"
+      disabled={disabled}
     />
   )
 }

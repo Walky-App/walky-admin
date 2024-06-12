@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 
-import { Controller, type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputMask } from 'primereact/inputmask'
-import { InputNumber } from 'primereact/inputnumber'
+import { type InputMaskChangeEvent } from 'primereact/inputmask'
+import { InputSwitch } from 'primereact/inputswitch'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
@@ -16,60 +16,15 @@ import { AddressAutoComplete, type IAddressAutoComplete } from '../../../compone
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { RequestService } from '../../../services/RequestService'
+import { type ICompany } from '../../../interfaces/company'
+import { type IFacility } from '../../../interfaces/facility'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { jobTitlesOptions, facilityContactRoles } from '../../../utils/formOptions'
-import { getFormErrorMessage } from '../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 
-interface IFacilityFormInputs {
-  user_id: string
-  name: string
-  country: string
-  address: string
-  city: string
-  state: string
-  zip: string
-  tax_id: string
-  location_pin: number[]
-  phone_number: string
-  notes: string
-  active: boolean
-  sqft: number | undefined
-  corp_name: string
-  company_dbas: string[]
-  services: string[]
-  images: IImage[]
-  contacts: IContact[]
-  licenses: ILicenseDocument[]
-  _id?: string
-}
-
-interface ILicenseDocument {
-  id: number
-  url: string
-  key: string
-  timestamp: string
-}
-
-interface IContact {
-  first_name: string
-  last_name: string
-  role: string
-  phone_number: string
-  email: string
-}
-
-interface IImage {
-  id: number
-  url: string
-  key: string
-  timestamp: string
-}
-
-const defaultFacilityFormValues: IFacilityFormInputs = {
-  user_id: '',
+const defaultFacilityFormValues: IFacility = {
   name: '',
   country: '',
   address: '',
@@ -81,11 +36,9 @@ const defaultFacilityFormValues: IFacilityFormInputs = {
   phone_number: '',
   notes: '',
   active: false,
-  sqft: undefined,
-  corp_name: '',
-  company_dbas: [],
+  sqft: 0,
   services: [],
-  images: [],
+  company_id: '',
   contacts: [
     {
       first_name: '',
@@ -95,7 +48,10 @@ const defaultFacilityFormValues: IFacilityFormInputs = {
       email: '',
     },
   ],
-  licenses: [],
+  createdAt: '',
+  isApproved: false,
+  main_image: '',
+  timezone: '',
 }
 
 const defaultMoreAddressDetails: IAddressAutoComplete = {
@@ -109,8 +65,10 @@ const defaultMoreAddressDetails: IAddressAutoComplete = {
 
 export const AdminAddFacility = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState<IFacilityFormInputs>(defaultFacilityFormValues)
-  const [facilitiesArray, setFacilitiesArray] = useState<IFacilityFormInputs[]>([])
+  const [companies, setCompanies] = useState<ICompany[]>([])
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
+  const [checked, setChecked] = useState(true)
+  const [formData, setFormData] = useState<IFacility>(defaultFacilityFormValues)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
   )
@@ -119,537 +77,457 @@ export const AdminAddFacility = () => {
   const navigate = useNavigate()
   const role = roleChecker()
 
-  const values = formData !== null ? formData : defaultFacilityFormValues
+  useEffect(() => {
+    const getCompanies = async () => {
+      try {
+        const response = await requestService({ path: 'companies' })
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    getValues,
-    setValue,
-  } = useForm<IFacilityFormInputs>({ values })
+        if (response.ok) {
+          const allCompanies = await response.json()
+          setCompanies(allCompanies)
+        }
+      } catch (error) {
+        console.error('error', error)
+        showToast({
+          severity: 'error',
+          summary: 'Failed to fetch companies',
+          detail: 'Unable to fetch companies. Please try again.',
+          life: 2000,
+        })
+      }
+    }
+    getCompanies()
+  }, [showToast])
 
   useEffect(() => {
     if (moreAddressDetails) {
-      if (moreAddressDetails.zip) {
-        setValue('zip', moreAddressDetails.zip)
-      }
-      if (moreAddressDetails.state) {
-        setValue('state', moreAddressDetails.state)
-      }
-      if (moreAddressDetails.city) {
-        setValue('city', moreAddressDetails.city)
-      }
-      if (moreAddressDetails.location_pin) {
-        setValue('location_pin', moreAddressDetails.location_pin)
-      }
-      if (moreAddressDetails.address) {
-        setValue('address', moreAddressDetails.address)
-      }
-      if (moreAddressDetails.country) {
-        setValue('country', moreAddressDetails.country)
-      }
-
-      setMoreAddressDetails(undefined)
+      setFormData(prevState => ({
+        ...prevState,
+        country: moreAddressDetails.country ?? '',
+        state: moreAddressDetails.state ?? '',
+        zip: moreAddressDetails.zip ?? '',
+        city: moreAddressDetails.city ?? '',
+        location_pin: moreAddressDetails.location_pin ?? [],
+        address: moreAddressDetails.address ?? '',
+      }))
     }
-  }, [moreAddressDetails, setMoreAddressDetails, setValue])
+  }, [moreAddressDetails, setMoreAddressDetails])
 
-  const { fields } = useFieldArray({
-    control,
-    name: 'contacts',
-  })
+  const handleFormUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target as HTMLInputElement
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }
 
-  const onSubmit: SubmitHandler<IFacilityFormInputs> = async data => {
-    setFormData(data)
+  const handleFormUpdateContact = (e: React.ChangeEvent<HTMLInputElement> | InputMaskChangeEvent) => {
+    const { name, value } = e.target
+    setFormData(prevState => ({
+      ...prevState,
+      contacts: [
+        {
+          ...prevState.contacts[0],
+          [name]: value,
+        },
+      ],
+    }))
+  }
+
+  const handleFormUpdateNumber = (e: InputMaskChangeEvent) => {
+    const { name, value } = e.target
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }
+
+  const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
     setIsLoading(true)
 
-    let facilityId = facilitiesArray[0]?._id
-
-    if (facilityId != null) {
-      try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
-
-        if (facilityFound !== null) {
-          const updatedFacility = {
-            ...facilityFound,
-            ...data,
-            licenses: facilitiesArray[0].licenses,
-            images: facilitiesArray[0].images,
-          }
-
-          const response = await RequestService(`facilities/${facilityId}`, 'PATCH', updatedFacility)
-
-          if (response?._id !== null) {
-            facilityId = response._id
-
-            setFacilitiesArray(prevArray =>
-              prevArray.map(facility => (facility._id === response._id ? response : facility)),
-            )
-          } else {
-            throw new Error('Failed to update facility')
-          }
-        } else {
-          throw new Error('Facility not found')
-        }
-      } catch (error) {
-        console.error('Error updating facility:', error)
-
+    try {
+      const response = await requestService({ path: 'facilities', method: 'POST', body: JSON.stringify(formData) })
+      if (response.ok) {
+        await response.json()
         showToast({
-          severity: 'error',
-          summary: 'Error saving changes',
-          detail: `${getValues('name')} could not be updated.`,
+          severity: 'success',
+          summary: 'Facility Added',
+          detail: `${formData.name} Facility has been added successfully.`,
+          life: 2000,
         })
-        setIsLoading(false)
+        setTimeout(() => {
+          navigate(`/${role}/facilities/`)
+        }, 2000)
       }
+    } catch (error) {
+      console.error('error', error)
+      showToast({
+        severity: 'error',
+        summary: 'Failed to add facility',
+        detail: 'Unable to add facility. Please try again.',
+        life: 2000,
+      })
+    }
+  }
+
+  const handleCompanySameAsFacility = (companySelectedId: string | null = null) => {
+    const companySelected = companies?.find((company: ICompany) => company._id === companySelectedId)
+
+    if (companySelected !== null && companySelected !== undefined) {
+      setFormData(prevState => ({
+        ...prevState,
+        company_id: companySelectedId ?? '',
+        name: companySelected.company_name,
+        tax_id: companySelected.company_tax_id,
+        phone_number: companySelected.company_phone_number,
+        address: companySelected.company_address,
+        city: companySelected.company_city,
+        state: companySelected.company_state,
+        zip: companySelected.company_zip,
+        country: companySelected.company_country,
+        location_pin: companySelected.company_location_pin,
+      }))
     } else {
-      try {
-        const response = await RequestService(`facilities`, 'POST', data)
-
-        if (response?._id !== null) {
-          facilityId = response._id
-
-          setFacilitiesArray([response])
-
-          showToast({
-            severity: 'success',
-            summary: 'Facility Added',
-            detail: `${getValues('name')} has been added successfully.`,
-            life: 2000,
-          })
-
-          setTimeout(() => {
-            navigate(`/${role}/facilities/${facilityId}`)
-          }, 2000)
-        } else {
-          throw new Error('Failed to add facility')
-        }
-      } catch (error) {
-        console.error('Error adding facility:', error)
-
-        showToast({
-          severity: 'error',
-          summary: 'Error adding facility',
-          detail: `${getValues('name')} already exists.`,
-        })
-        setIsLoading(false)
-      }
+      setFormData(prevState => ({
+        ...prevState,
+        name: '',
+        tax_id: '',
+        phone_number: '',
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: '',
+        location_pin: [],
+      }))
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-      <div className="space-y-4 sm:space-y-12">
+    <form onSubmit={handleOnSubmit}>
+      <div className="p-fluid space-y-4 sm:space-y-12">
         {/* Business Information */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Business Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please provide information about your business so that we can verify you on the platform.
             </p>
-            {requiredFieldsNoticeText}
           </div>
-
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="tax_id"
-                rules={{
-                  required: 'Tax ID is required',
-                  pattern: {
-                    value: /^\d{2}-\d{7}$/,
-                    message: 'Invalid Tax ID. E.g. 12-3456789',
-                  },
+            <div className="sm:col-span-5">
+              <HtInputLabel htmlFor="company_name" labelText="Select Company" />
+              <Dropdown
+                inputId="company_name"
+                optionLabel="company_name"
+                optionValue="_id"
+                value={selectedCompanyId}
+                name="company_name"
+                options={companies}
+                filter
+                onChange={e => {
+                  const selectedCompany = companies?.find((company: ICompany) => company._id === e.value)
+
+                  if (selectedCompany !== null && selectedCompany !== undefined) {
+                    setSelectedCompanyId(e.value)
+                    handleCompanySameAsFacility(e.value)
+                  }
                 }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Tax ID" />
-                    </HtInfoTooltip>
-                    <InputMask
-                      id={field.name}
-                      {...field}
-                      mask="99-9999999"
-                      slotChar="x"
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      autoComplete="off"
-                    />
-                    {getFormErrorMessage('tax_id', errors)}
-                  </>
-                )}
               />
             </div>
+          </div>
+        </div>
 
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="corp_name"
-                rules={{ required: 'Corporate Name is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="A corporate name is the legal name of a corporation. It is the name that appears on the corporation's formation documents and is the name that appears on the corporation's state-issued certificate of incorporation.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Corporate Name" />
-                    </HtInfoTooltip>
-                    <InputText
-                      id={field.name}
-                      {...field}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                    />
-                    {getFormErrorMessage('corp_name', errors)}
-                  </>
-                )}
-              />
-            </div>
+        {/* Don't show the rest of the form until a company is selected */}
+        <div>
+          {selectedCompanyId !== null && selectedCompanyId !== undefined ? (
+            <>
+              <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-12 sm:gap-y-10 md:grid-cols-3">
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-gray-900">Business same as the Facility?</h2>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">
+                    Please provide information about your business so that we can verify you on the platform.
+                  </p>
+                </div>
 
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="company_dbas"
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="Doing Business As (DBA) is a company name that is different from the legal name of the business. DBA is also known as a trade name, fictitious business name, or assumed business name.">
-                      <HtInputLabel htmlFor={field.name} labelText="Company DBAs" />
-                    </HtInfoTooltip>
-                    <InputText
-                      id={field.name}
-                      value={field.value.join(', ')}
-                      onChange={e => field.onChange(e.target.value.split(', '))}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      aria-describedby={`${field.name}-help`}
-                    />
-                    <HtInputHelpText
-                      fieldName={field.name}
-                      helpText="Enter DBAs separated by a comma: dba1, dba2, dba3"
-                    />
-                    {getFormErrorMessage('company_dbas', errors)}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="name"
-                rules={{ required: 'Facility Name is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Name" />
-                    </HtInfoTooltip>
-                    <InputText
-                      id={field.name}
-                      {...field}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      autoComplete="off"
-                    />
-                    {getFormErrorMessage('name', errors)}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="phone_number"
-                rules={{
-                  required: 'Phone Number is required, should be 10 digits.',
-                  pattern: /^\d{10}$/,
-                }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="The phone number of your facility. This is the number that workers will call if they have questions or need to contact you.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Phone Number" />
-                    </HtInfoTooltip>
-                    <InputMask
-                      id={field.name}
-                      {...field}
-                      mask="(999) 999-9999"
-                      slotChar="x"
-                      unmask={true}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      autoComplete="off"
-                    />
-                    {getFormErrorMessage('phone_number', errors)}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="sqft"
-                rules={{
-                  required: 'Facility Square Footage is required',
-                  pattern: {
-                    value: /^\d+$/,
-                    message: 'Invalid Facility Square Footage. It should be a number.',
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="The square footage of your facility. This is the total area of your facility in square feet.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Square Footage" />
-                    </HtInfoTooltip>
-                    <InputNumber
-                      id={field.name}
-                      {...field}
-                      onChange={e => field.onChange(Number(e.value))}
-                      min={0}
-                      max={1000000}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      pt={{
-                        input: { root: { autoComplete: 'off' } },
+                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                  <div className="flex w-72 items-center">
+                    <h2 className="mr-3 text-xl font-semibold">No</h2>
+                    <InputSwitch
+                      checked={checked}
+                      onChange={e => {
+                        setChecked(e.value)
+                        if (e.value) {
+                          handleCompanySameAsFacility(selectedCompanyId)
+                        } else {
+                          handleCompanySameAsFacility()
+                        }
                       }}
                     />
-                    <HtInputHelpText fieldName={field.name} helpText="Max 1,000,000" />
-                    {getFormErrorMessage('sqft', errors)}
-                  </>
-                )}
-              />
-            </div>
+                    <h2 className="ml-3 text-xl font-semibold">Yes</h2>
+                  </div>
+                </div>
+              </div>
 
-            <div className="sm:col-span-6">
-              <Controller
-                control={control}
-                name="services"
-                rules={{ required: 'At least one Service is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="The services that your facility offers.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Services" />
-                    </HtInfoTooltip>
-                    <MultiSelect
-                      id={field.name}
-                      {...field}
-                      value={field.value}
-                      optionLabel="title"
-                      options={jobTitlesOptions}
-                      display="chip"
-                      selectAll
-                      selectAllLabel="Select All"
-                      onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
-                      placeholder="Select Services"
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                    />
-                    <HtInputHelpText
-                      fieldName={field.name}
-                      helpText="Please select all services that your facility offers."
-                    />
-                    {getFormErrorMessage('services', errors)}
-                  </>
-                )}
-              />
-            </div>
+              <div>
+                {/* Facility Location */}
+                <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-t border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
+                  <div>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Location</h2>
+                    <p className="mt-1 text-sm leading-6 text-gray-600">
+                      Please type in the address and choose from the dropdown to select the correct address.
+                    </p>
+                    {requiredFieldsNoticeText}
+                  </div>
 
-            <div className="sm:col-span-6">
-              <Controller
-                control={control}
-                name="notes"
-                rules={{ required: false }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="Any additional notes that you would like to provide about your facility. This information will be verified before application approval.">
-                      <HtInputLabel htmlFor={field.name} labelText="Arrival notes" />
-                    </HtInfoTooltip>
-                    <InputTextarea
-                      id={field.name}
-                      {...field}
-                      rows={4}
-                      cols={30}
-                      maxLength={500}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      autoComplete="off"
-                    />
-                    <HtInputHelpText
-                      fieldName={field.name}
-                      helpText="Max 500 characters. Please do not enter contact information into this field."
-                    />
-                    {getFormErrorMessage('notes', errors)}
-                  </>
-                )}
-              />
-            </div>
-          </div>
-        </div>
+                  <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                    <div className="sm:col-span-6">
+                      <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
+                        <HtInputLabel htmlFor="address" asterisk labelText="Facility Address" />
+                      </HtInfoTooltip>
+                      <AddressAutoComplete
+                        controlled
+                        value={formData.address}
+                        disabled={checked}
+                        setMoreAddressDetails={setMoreAddressDetails}
+                        currentAddress={formData.address}
+                        classNames={classNames({ 'p-invalid': false }, 'mt-2')}
+                        aria-describedby="address-help"
+                      />
+                      <HtInputHelpText fieldName="address" helpText="Commercial Address ONLY" />
+                    </div>
+                  </div>
+                </div>
 
-        {/* Business Location */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
-          <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Business Location</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please provide your facility business address information.
-            </p>
-            {requiredFieldsNoticeText}
-          </div>
+                {/* Facility Information */}
+                <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
+                  <div>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Information</h2>
+                    <p className="mt-1 text-sm leading-6 text-gray-600">
+                      Please provide information about your business so that we can verify you on the platform.
+                    </p>
+                    {requiredFieldsNoticeText}
+                  </div>
 
-          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            <div className="sm:col-span-6">
-              <Controller
-                control={control}
-                name="address"
-                rules={{ required: 'Address is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facility Address" />
-                    </HtInfoTooltip>
-                    <AddressAutoComplete
-                      controlled
-                      setMoreAddressDetails={setMoreAddressDetails}
-                      currentAddress={field.value}
-                      onChange={field.onChange}
-                      value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      aria-describedby={`${field.name}-help`}
-                    />
-                    <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
-                    {getFormErrorMessage('address', errors)}
-                  </>
-                )}
-              />
-            </div>
-          </div>
-        </div>
+                  <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                    <div className="sm:col-span-3">
+                      <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions.">
+                        <HtInputLabel htmlFor="tax-id" asterisk labelText="Tax ID" />
+                      </HtInfoTooltip>
+                      <InputMask
+                        required
+                        value={formData.tax_id}
+                        name="tax_id"
+                        onChange={handleFormUpdateNumber}
+                        placeholder="xx-xxxxxxx"
+                        id="tax-id"
+                        mask="99-9999999"
+                        slotChar="x"
+                        autoComplete="off"
+                        disabled={checked}
+                      />
+                    </div>
 
-        {/* Contact Information */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
-          <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Business Contact Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information below.</p>
-            {requiredFieldsNoticeText}
-          </div>
-
-          {fields.map((field, index) => (
-            <div key={field.id} className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-3">
-                <Controller
-                  control={control}
-                  name={`contacts.${index}.first_name`}
-                  rules={{ required: 'First Name is required' }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <HtInfoTooltip message="The first name of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="First Name" />
+                    {/* <div className="sm:col-span-3">
+                      <HtInfoTooltip message="A corporate name is the legal name of a corporation. It is the name that appears on the corporation's formation documents and is the name that appears on the corporation's state-issued certificate of incorporation.">
+                        <HtInputLabel htmlFor="company-name" asterisk labelText="Company Name" />
                       </HtInfoTooltip>
                       <InputText
-                        id={field.name}
-                        {...field}
-                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        required
+                        id="company-name"
+                        value={formData?.company_id}
+                        name="company_name"
+                        disabled
+                        onChange={handleFormUpdate}
                         autoComplete="off"
                       />
-                      {getFormErrorMessage(`contacts.${index}.first_name`, errors)}
-                    </>
-                  )}
-                />
-              </div>
+                    </div> */}
 
-              <div className="sm:col-span-3">
-                <Controller
-                  control={control}
-                  name={`contacts.${index}.last_name`}
-                  rules={{ required: 'Last Name is required' }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <HtInfoTooltip message="The last name of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Last Name" />
+                    <div className="sm:col-span-3">
+                      <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
+                        <HtInputLabel htmlFor="name" asterisk labelText="Facility Name" />
                       </HtInfoTooltip>
                       <InputText
-                        id={field.name}
-                        {...field}
-                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        name="name"
+                        id="name"
+                        required
+                        autoComplete="off"
+                        onChange={handleFormUpdate}
+                        value={formData.name}
+                        placeholder="e.g. Main Facility"
+                        disabled={checked}
                       />
-                      {getFormErrorMessage(`contacts.${index}.last_name`, errors)}
-                    </>
-                  )}
-                />
-              </div>
+                    </div>
 
-              <div className="sm:col-span-3">
-                <Controller
-                  control={control}
-                  name={`contacts.${index}.role`}
-                  rules={{ required: 'Role is required' }}
-                  render={({ field, fieldState }) => (
-                    <>
+                    <div className="sm:col-span-3">
+                      <HtInfoTooltip message="The phone number of your facility. This is the number that workers will call if they have questions or need to contact you.">
+                        <HtInputLabel htmlFor="phone-number" asterisk labelText="Facility Phone Number" />
+                      </HtInfoTooltip>
+                      <InputMask
+                        name="phone_number"
+                        id="phone-number"
+                        mask="(999) 999-9999"
+                        slotChar="#"
+                        unmask={true}
+                        autoComplete="off"
+                        placeholder="(123) 456-7890"
+                        value={formData.phone_number}
+                        required
+                        onChange={handleFormUpdateNumber}
+                        disabled={checked}
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3">
+                      <HtInfoTooltip message="The square footage of your facility. This is the total area of your facility in square feet.">
+                        <HtInputLabel htmlFor="sqft" asterisk labelText="Facility Square Footage" />
+                      </HtInfoTooltip>
+                      <InputText
+                        name="sqft"
+                        id="sqft"
+                        onChange={handleFormUpdate}
+                        keyfilter={/[0-9]/}
+                        min={0}
+                        max={1000000}
+                        required
+                      />
+                      <HtInputHelpText fieldName="sqft" helpText="Max 1,000,000" />
+                    </div>
+
+                    <div className="sm:col-span-6">
+                      <HtInfoTooltip message="The services that your facility offers.">
+                        <HtInputLabel htmlFor="services" asterisk labelText="Services" />
+                      </HtInfoTooltip>
+                      <MultiSelect
+                        required
+                        id="services"
+                        value={formData.services}
+                        optionLabel="title"
+                        options={jobTitlesOptions}
+                        display="chip"
+                        selectAll
+                        selectAllLabel="Select All"
+                        onChange={e => setFormData(prevState => ({ ...prevState, services: e.value }))}
+                        placeholder="Select Services"
+                        className={classNames({ 'p-invalid': false }, 'mt-2')}
+                      />
+                      <HtInputHelpText
+                        fieldName="services"
+                        helpText="Please select all services that your facility offers."
+                      />
+                    </div>
+
+                    <div className="sm:col-span-6">
+                      <HtInfoTooltip message="Any additional notes that you would like to provide about your facility. This information will be verified before application approval.">
+                        <HtInputLabel htmlFor="notes" labelText="Arrival notes" />
+                      </HtInfoTooltip>
+                      <InputTextarea
+                        id="notes"
+                        rows={4}
+                        cols={30}
+                        maxLength={500}
+                        onChange={e => setFormData(prevState => ({ ...prevState, notes: e.target.value }))}
+                        className={classNames({ 'p-invalid': false }, 'mt-2')}
+                        autoComplete="off"
+                      />
+                      <HtInputHelpText
+                        fieldName="notes"
+                        helpText="Max 500 characters. Please do not enter contact information into this field."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
+                  <div>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">Business Contact Information</h2>
+                    <p className="mt-1 text-sm leading-6 text-gray-600">
+                      Please provide your contact information below.
+                    </p>
+                    {requiredFieldsNoticeText}
+                  </div>
+                  <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                    <div className="sm:col-span-3">
+                      <HtInfoTooltip message="The first name of the contact person.">
+                        <HtInputLabel htmlFor="first_name" asterisk labelText="First Name" />
+                      </HtInfoTooltip>
+                      <InputText
+                        required
+                        name="first_name"
+                        id="first_name"
+                        autoComplete="off"
+                        onChange={handleFormUpdateContact}
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3">
+                      <HtInfoTooltip message="The last name of the contact person.">
+                        <HtInputLabel htmlFor="last_name" asterisk labelText="Last Name" />
+                      </HtInfoTooltip>
+                      <InputText
+                        required
+                        name="last_name"
+                        id="last_name"
+                        autoComplete="off"
+                        onChange={handleFormUpdateContact}
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3">
                       <HtInfoTooltip message="The role of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Role" />
+                        <HtInputLabel htmlFor="role" asterisk labelText="Role" />
                       </HtInfoTooltip>
                       <Dropdown
-                        id={field.name}
-                        {...field}
+                        required
+                        value={formData.contacts[0].role}
+                        name="role"
+                        id="role"
                         filter
                         options={facilityContactRoles}
                         optionLabel="label"
-                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        onChange={(e: MultiSelectChangeEvent) => handleFormUpdateContact(e)}
                       />
-                      {getFormErrorMessage(`contacts.${index}.role`, errors)}
-                    </>
-                  )}
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <Controller
-                  control={control}
-                  name={`contacts.${index}.phone_number`}
-                  rules={{
-                    required: 'Phone Number is required, should be 10 digits.',
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
+                    </div>
+                    <div className="sm:col-span-3">
                       <HtInfoTooltip message="The phone number of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Phone Number" />
+                        <HtInputLabel htmlFor="phone_number" asterisk labelText="Phone Number" />
                       </HtInfoTooltip>
                       <InputMask
-                        id={field.name}
-                        {...field}
+                        required
+                        name="phone_number"
+                        id="phone_number"
                         mask="(999) 999-9999"
                         slotChar="x"
                         unmask={true}
-                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
+                        onChange={handleFormUpdateContact}
                       />
-                      {getFormErrorMessage(`contacts.${index}.phone_number`, errors)}
-                    </>
-                  )}
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <Controller
-                  control={control}
-                  name={`contacts.${index}.email`}
-                  rules={{
-                    required: 'Email is required',
-                    pattern: {
-                      value: /\S+@\S+\.\S+/,
-                      message: 'Invalid email',
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
+                    </div>
+                    <div className="sm:col-span-3">
                       <HtInfoTooltip message="The email address of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Email" />
+                        <HtInputLabel htmlFor="email" asterisk labelText="Email" />
                       </HtInfoTooltip>
                       <InputText
-                        id={field.name}
-                        {...field}
-                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        required
+                        autoComplete="off"
+                        name="email"
+                        id="email"
+                        type="email"
+                        onChange={handleFormUpdateContact}
                       />
-                      {getFormErrorMessage(`contacts.${index}.email`, errors)}
-                    </>
-                  )}
-                />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-6 flex items-center justify-end gap-x-6">
+                  <div>
+                    <Button type="submit" label="Submit" loading={isLoading} />
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <div>
-            <Button type="submit" label="Submit" loading={isLoading} />
-          </div>
+            </>
+          ) : null}
         </div>
       </div>
     </form>

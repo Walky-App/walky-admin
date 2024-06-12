@@ -9,19 +9,21 @@ import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 
 import { Dropdown } from 'primereact/dropdown'
 import { Toolbar } from 'primereact/toolbar'
 
-import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { getCurrentUserRole } from '../../../utils/UserRole'
 import { cn } from '../../../utils/cn'
+import { roleChecker } from '../../../utils/roleChecker'
 import { formatToDateTime, formatToTime } from '../../../utils/timeUtils'
 import { HtInputLabel } from '../forms/HtInputLabel'
+import { HtInfoTooltip } from '../general/HtInfoTooltip'
 import {
   type IPunchPair,
   processPunchPairsWithData,
   type IAdminUserTimesheetsColumnMeta,
   type IPunchDetails,
   type IPunchPairsWithData,
+  type ITimesheetWithJobDetails,
+  formatDifference,
 } from './timesheetsUtils'
 
 interface IUserTimesheetsProps {
@@ -38,9 +40,12 @@ const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'day', header: 'Day', sortable: true },
   { field: 'in_time', header: 'First In', sortable: false },
   { field: 'out_time', header: 'Last Out', sortable: false },
-  { field: 'total_time', header: 'Total Hours', sortable: false },
-  { field: 'details', header: 'Job Details', sortable: false },
-  { field: 'worked_time', header: 'Worked Hours', sortable: false },
+  {
+    field: 'details',
+    header: <HtInfoTooltip message="Lunch break, Job title, Facility name">Job Details</HtInfoTooltip>,
+    sortable: false,
+  },
+  { field: 'worked_time', header: 'Total Hours', sortable: false },
   { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
   { field: 'difference', header: 'Difference', sortable: false },
 ]
@@ -55,7 +60,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const { showToast } = useUtils()
 
-  const currentUserRole = getCurrentUserRole()
+  const currentUserRole = roleChecker()
 
   const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
 
@@ -121,7 +126,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         if (response.status === 204) {
           console.error('No timesheets found')
         } else {
-          const timesheets: ITimeSheet[] = await response.json()
+          const timesheets: ITimesheetWithJobDetails[] = await response.json()
 
           const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
             return processPunchPairsWithData(timesheet)
@@ -301,7 +306,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }
 
   const rowExpansionTemplate = (data: IPunchPairsWithData) => {
-    const commonColumnStyle = 'w-3/12'
+    const commonColumnStyle = 'w-1/12'
     const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
     const editableCellColumnProps = getEditableProps(currentUserRole)
     const punchColumns = [
@@ -329,7 +334,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       <div className="p-4">
         <h5 className="text-sm font-semibold">Punch Details</h5>
         <DataTable value={data.punchesWithDetails} sortField="in_time" sortOrder={-1} editMode="cell">
-          <Column className={cn([commonColumnStyle])} field="day" header="Day" />
           {punchColumns.map(({ field, header, body }) => (
             <Column
               key={field}
@@ -351,9 +355,14 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return sum + hours
   }, 0)
 
-  const totalTimeSumString = totalTimeSum.toFixed(2)
+  const scheduledTimeSum = sortedTimeSheets.reduce((sum, record) => {
+    const hours = parseFloat(record.scheduled_time)
+    return sum + hours
+  }, 0)
 
-  const startContent = (
+  const workedScheduledDifference = totalTimeSum - scheduledTimeSum
+
+  const payPeriodSelectorContent = (
     <div className="flex flex-col items-baseline gap-y-2">
       <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" className="text-base" />
       <Dropdown
@@ -369,10 +378,10 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   return (
     <>
-      {isMobile ? <Toolbar start={startContent} /> : <Toolbar end={startContent} />}
+      {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
 
       <DataTable
-        header={`Regular ${totalTimeSumString} | Scheduled 0.00 | Difference 0.00`}
+        header={`Regular ${totalTimeSum.toFixed(2)} | Scheduled ${scheduledTimeSum.toFixed(2)} | Difference ${formatDifference(workedScheduledDifference)}`}
         dataKey="time_stamp"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}

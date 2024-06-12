@@ -160,15 +160,28 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
             <div className="ml-3 flex-1 md:flex md:justify-between">
               <h3 className="text-sm font-medium text-yellow-800">Attention needed</h3>
               <div className="text-sm text-yellow-700">
-                <p>
-                  You will <strong>NOT</strong> be able to apply for jobs until Onboarding is complete &nbsp;
-                  <span aria-hidden="true"> &rarr;</span>
-                  <a
-                    {...(role === 'client' ? { href: `/client/onboarding` } : { href: `/employee/onboarding` })}
-                    className="ml-3 font-medium text-yellow-700 underline hover:text-yellow-600">
-                    Complete Onboarding
-                  </a>
-                </p>
+                {role === 'employee' ? (
+                  <p>
+                    You will <strong>NOT</strong> be able to apply for jobs until Onboarding is complete &nbsp;
+                    <span aria-hidden="true"> &rarr;</span>
+                    <a
+                      href="/employee/onboarding"
+                      className="ml-3 font-medium text-yellow-700 underline hover:text-yellow-600">
+                      Complete Onboarding
+                    </a>
+                  </p>
+                ) : null}
+                {role === 'client' ? (
+                  <p>
+                    You will <strong>NOT</strong> be able to create jobs until Onboarding is complete &nbsp;
+                    <span aria-hidden="true"> &rarr;</span>
+                    <a
+                      href="/client/onboarding"
+                      className="ml-3 font-medium text-yellow-700 underline hover:text-yellow-600">
+                      Complete Onboarding
+                    </a>
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>

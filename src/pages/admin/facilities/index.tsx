@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
-import { type IFacility } from '../../../interfaces/Facility'
-import { RequestService } from '../../../services/RequestService'
+import { type IFacility } from '../../../interfaces/facility'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 
 interface IRow {
   row: { original: IFacility }
@@ -16,15 +17,25 @@ const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
 
 export const AdminFacilities = () => {
   const [facilities, setFacilities] = useState<IFacility[]>([])
+  const { showToast } = useUtils()
 
-  useMemo(() => {
+  useEffect(() => {
     const getFacilities = async () => {
-      const allFacilities = await RequestService('facilities/active')
-      setFacilities(allFacilities)
+      try {
+        const response = await requestService({ path: 'facilities' })
+
+        if (response.ok) {
+          const data = await response.json()
+          setFacilities(data)
+        }
+      } catch (error) {
+        console.error(error)
+        showToast({ severity: 'error', summary: 'Error', detail: 'Error loading facilities' })
+      }
     }
 
     getFacilities()
-  }, [])
+  }, [showToast])
 
   const adminColumns = [
     {
@@ -50,7 +61,7 @@ export const AdminFacilities = () => {
     { Header: 'State', accessor: 'state', width: '10px' },
     {
       Header: 'Polygon',
-      accessor: (a: IFacility) => (a.location_polygon.length > 0 ? 'Yes' : 'No'),
+      accessor: (a: IFacility) => (a.location_polygon?.length ?? 0 > 0 ? 'Yes' : 'No'),
       width: '10px',
     },
     {
@@ -63,8 +74,8 @@ export const AdminFacilities = () => {
       accessor: (d: IFacility) => (d.isApproved ? 'Approved' : 'Pending'),
       width: '40px',
     },
-    { Header: 'Images', width: '10px', accessor: (a: IFacility) => a.images.length },
-    { Header: 'Licenses', width: '10px', accessor: (a: IFacility) => a.licenses.length },
+    { Header: 'Images', width: '10px', accessor: (a: IFacility) => (a.images ?? []).length },
+    { Header: 'Licenses', width: '10px', accessor: (a: IFacility) => (a.licenses ?? []).length },
   ]
 
   return facilities.length === 0 ? <HTLoadingLogo /> : <FacilitiesTable columns={adminColumns} data={facilities} />

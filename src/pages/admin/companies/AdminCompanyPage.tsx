@@ -13,10 +13,17 @@ import { adminCompanyLinks } from './adminCompanySubHeaderLinks'
 interface IAdminCompanyPageContext {
   selectedCompanyData: ICompany
   selectedCompanyId?: string
+  // TODO: Implement updateSelectedCompanyData method
+  updateSelectedCompanyData: (data: ICompany) => void
 }
 
-const AdminCompanyPageContext = createContext<IAdminCompanyPageContext>({} as IAdminCompanyPageContext)
-
+const AdminCompanyPageContext = createContext<IAdminCompanyPageContext>({
+  selectedCompanyData: {} as ICompany,
+  selectedCompanyId: undefined,
+  updateSelectedCompanyData: () => {
+    // TODO: Implement updateSelectedCompanyData method
+  },
+})
 export const useAdminCompanyPageContext = () => {
   return useContext(AdminCompanyPageContext)
 }
@@ -48,13 +55,17 @@ export const AdminCompanyPage = () => {
 
   const subheaderUserDetails: SubHeaderData = {
     _id: selectedCompanyData?._id,
-    corp_name: selectedCompanyData?.corp_name,
+    company_name: selectedCompanyData?.company_name,
     company_dbas: selectedCompanyData?.company_dbas?.join(', ') ?? '',
-    address: selectedCompanyData?.address,
+    company_address: selectedCompanyData?.company_address,
+  }
+
+  const updateSelectedCompanyData = (data: ICompany) => {
+    setSelectedCompanyData(data)
   }
 
   return (
-    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData }}>
+    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData, updateSelectedCompanyData }}>
       {isLoading ? (
         <Skeleton width="100%" height="100%" />
       ) : (
