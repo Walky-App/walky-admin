@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import { useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
@@ -11,8 +12,9 @@ import { faBank, faUniversity } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
+import { type ICompany } from '../../../../interfaces/company'
+import { requestService } from '../../../../services/requestServiceNew'
 import { getCardType } from '../../../../utils/CreditCardTypeUtil'
-import { useAdminCompanyPageContext } from '../AdminCompanyPage'
 
 const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | null => {
   if (paymentType === 'CC') {
@@ -38,37 +40,47 @@ const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | n
 
 const createHeader = (cardIcon: IconDefinition | null) => (
   <div className="mt-2 flex justify-center">
-    {cardIcon ? <FontAwesomeIcon icon={cardIcon} size="8x" className="ml-2" /> : null}
+    {cardIcon ? <FontAwesomeIcon icon={cardIcon} size="6x" className="ml-2" /> : null}
   </div>
 )
 
 export const AdminCompanyPaymentMethodsPage = () => {
-  const { selectedCompanyData } = useAdminCompanyPageContext()
-  const companyId = selectedCompanyData._id
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
+
+  const selectedCompanyId = useParams().id
 
   useEffect(() => {
-    if (selectedCompanyData) {
-      setIsLoading(false)
+    const getCompany = async () => {
+      try {
+        const response = await requestService({ path: `companies/${selectedCompanyId}` })
+        if (!response.ok) {
+          throw new Error('Failed to fetch company data')
+        }
+        const companyFound: ICompany = await response.json()
+        setSelectedCompanyData(companyFound)
+      } catch (error) {
+        console.error('Error fetching company data: ', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
-  }, [selectedCompanyData])
+    getCompany()
+  }, [selectedCompanyId])
 
   const navigateToDetails = (paymentId: string) => {
-    navigate(`/admin/companies/${companyId}/payment/${paymentId}`)
+    navigate(`/admin/companies/${selectedCompanyId}/payment/${paymentId}`)
   }
 
   const footer = (paymentId: string) => (
-    <>
-      <Button label="Remove" severity="danger" icon="pi pi-times" style={{ marginLeft: '0.5em' }} text />
-      <Button
-        label="See details"
-        icon="pi pi-info"
-        style={{ marginLeft: '0.5em' }}
-        text
-        onClick={() => navigateToDetails(paymentId)}
-      />
-    </>
+    <Button
+      label="More details"
+      icon="pi pi-info-circle"
+      style={{ marginLeft: '0.5em' }}
+      text
+      onClick={() => navigateToDetails(paymentId)}
+    />
   )
 
   if (isLoading) {
@@ -76,17 +88,17 @@ export const AdminCompanyPaymentMethodsPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-8">
       {selectedCompanyData.payment_information?.map((payment, index) => {
         let title = ''
         let subTitle = ''
         let cardHeader = null
 
-        if (payment.payment_info.type === 'CC') {
+        if (payment?.payment_info?.type === 'CC') {
           const cardType = getCardType(payment.payment_info.card_number ?? '')
           const cardIcon = getCardIcon(payment.payment_info.type, cardType)
 
-          title = `${cardType} ending in ${payment.payment_info.card_number?.slice(-4) ?? ''}`
+          title = `${cardType} **** ${payment.payment_info.card_number?.slice(-4) ?? ''}`
           subTitle = `Expires ${payment.payment_info.expiration_date}`
           cardHeader = createHeader(cardIcon)
         } else {
@@ -105,7 +117,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
           />
         )
       })}
-      <Card className="cursor-pointer" onClick={() => navigate(`/admin/companies/${companyId}/add-payment`)}>
+      <Card className="cursor-pointer" onClick={() => navigate(`/admin/companies/${selectedCompanyId}/add-payment`)}>
         <div className="flex h-full items-center justify-center">
           <p>+ Add Payment Method</p>
         </div>
