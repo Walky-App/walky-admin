@@ -17,7 +17,7 @@ interface JobListItemProps {
   handleSaveUnsaveJob?: (jobId: string, isSaved: boolean) => void
 }
 
-export const JobListItem = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
+export const JobCard = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
   const [savedJob, setSavedJob] = useState(false)
   const { _id } = GetTokenInfo()
 
