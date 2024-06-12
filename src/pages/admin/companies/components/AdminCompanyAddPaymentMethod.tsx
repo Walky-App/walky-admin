@@ -7,12 +7,15 @@ import { useParams } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
+import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
@@ -36,10 +39,12 @@ export interface IPaymentMethod {
   account_number?: string
   routing_number?: string
   created_by?: string
+  facilities?: string[]
 }
 
 export const AdminCompanyAddPaymentMethod = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
+  const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
   const navigate = useNavigate()
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
@@ -68,6 +73,24 @@ export const AdminCompanyAddPaymentMethod = () => {
 
   //     getAllFacilities()
   //   }, [])
+
+  useEffect(() => {
+    const getAllFacilities = async () => {
+      try {
+        const response = await requestService({ path: `facilities/company/${id}` })
+        if (response.ok) {
+          const fetchedFacilities: IFacility[] = await response.json()
+          setFacilitiesByCompany(fetchedFacilities)
+        } else {
+          setFacilitiesByCompany([])
+        }
+      } catch (error) {
+        console.error('Error fetching facilities data:', error)
+      }
+    }
+
+    getAllFacilities()
+  }, [id])
 
   const { showToast } = useUtils()
 
@@ -353,6 +376,41 @@ export const AdminCompanyAddPaymentMethod = () => {
                 )}
               />
               {getFormErrorMessage('address', errors)}
+            </div>
+
+            <div className="sm:col-span-3">
+              <Controller
+                control={control}
+                name="facilities"
+                rules={{ required: 'At least one facility is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <HtInfoTooltip message="All facilities related to this company which will be using this payment method to list jobs">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facilities" />
+                    </HtInfoTooltip>
+                    <MultiSelect
+                      id={field.name}
+                      {...field}
+                      value={field.value}
+                      optionLabel="name"
+                      options={facilitiesByCompany}
+                      display="chip"
+                      selectAll
+                      selectAllLabel="Select All"
+                      onChange={(e: MultiSelectChangeEvent) => {
+                        field.onChange(e.value)
+                      }}
+                      placeholder="Select facilities"
+                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                    />
+                    <HtInputHelpText
+                      fieldName={field.name}
+                      helpText="Please select all facilities which will be using this payment method as primary."
+                    />
+                    {getFormErrorMessage('services', errors)}
+                  </>
+                )}
+              />
             </div>
           </div>
         </div>

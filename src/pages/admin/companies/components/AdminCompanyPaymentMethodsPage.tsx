@@ -47,7 +47,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col space-x-2 space-y-2 sm:flex-row sm:space-x-2 sm:space-y-2">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {selectedCompanyData.payment_information?.map((payment, index) => {
         let title = ''
         let subTitle = ''
@@ -65,7 +65,6 @@ export const AdminCompanyPaymentMethodsPage = () => {
           subTitle = `${payment.payment_info.bank_name}`
           cardHeader = createHeader(getCardIcon(payment.payment_info.type))
         }
-
         return (
           <Card
             key={index}
