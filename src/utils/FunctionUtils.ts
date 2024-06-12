@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable filename-rules/match */
 export function secondsToTimeDescription(seconds: number) {
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
