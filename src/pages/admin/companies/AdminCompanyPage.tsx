@@ -12,7 +12,6 @@ import { adminCompanyLinks } from './adminCompanySubHeaderLinks'
 interface IAdminCompanyPageContext {
   selectedCompanyData: ICompany
   selectedCompanyId?: string
-  // TODO: Implement updateSelectedCompanyData method
   setSelectedCompanyData: (data: ICompany) => void
 }
 
