@@ -309,7 +309,6 @@ export const AdminAddCompany = () => {
               <Controller
                 control={control}
                 name="facilities"
-                rules={{ required: 'At least one facility is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="All facilities related to this company">
@@ -324,9 +323,7 @@ export const AdminAddCompany = () => {
                       display="chip"
                       selectAll
                       selectAllLabel="Select All"
-                      onChange={(e: MultiSelectChangeEvent) => {
-                        field.onChange(e.value)
-                      }}
+                      onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
                       placeholder="Select facilities"
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
