@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
@@ -8,6 +10,7 @@ import { faCcVisa, faCcMastercard, faCcAmex, faCcDiscover } from '@fortawesome/f
 import { faBank, faUniversity } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
 import { getCardType } from '../../../../utils/CreditCardTypeUtil'
 import { useAdminCompanyPageContext } from '../AdminCompanyPage'
 
@@ -39,12 +42,38 @@ const createHeader = (cardIcon: IconDefinition | null) => (
   </div>
 )
 
-const footer = <Button label="Remove" severity="danger" icon="pi pi-times" style={{ marginLeft: '0.5em' }} text />
-
 export const AdminCompanyPaymentMethodsPage = () => {
   const { selectedCompanyData } = useAdminCompanyPageContext()
   const companyId = selectedCompanyData._id
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (selectedCompanyData) {
+      setIsLoading(false)
+    }
+  }, [selectedCompanyData])
+
+  const navigateToDetails = (paymentId: string) => {
+    navigate(`/admin/companies/${companyId}/payment/${paymentId}`)
+  }
+
+  const footer = (paymentId: string) => (
+    <>
+      <Button label="Remove" severity="danger" icon="pi pi-times" style={{ marginLeft: '0.5em' }} text />
+      <Button
+        label="See details"
+        icon="pi pi-info"
+        style={{ marginLeft: '0.5em' }}
+        text
+        onClick={() => navigateToDetails(paymentId)}
+      />
+    </>
+  )
+
+  if (isLoading) {
+    return <HTLoadingLogo />
+  }
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -70,7 +99,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
             key={index}
             title={<div className="align-center text-center">{title}</div>}
             subTitle={<div className="align-center text-center">{subTitle}</div>}
-            footer={<div className="align-center text-center">{footer}</div>}
+            footer={<div className="align-center text-center">{footer(payment.payment_info._id)}</div>}
             header={cardHeader}
             className="md:w-25rem mx-2 flex cursor-pointer"
           />
