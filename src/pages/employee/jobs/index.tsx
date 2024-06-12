@@ -12,10 +12,10 @@ import { Divider } from 'primereact/divider'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { Sidebar } from 'primereact/sidebar'
-// import { Skeleton } from 'primereact/skeleton'
 import { Slider } from 'primereact/slider'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
@@ -27,7 +27,7 @@ import { useJobs } from '../../../store/useJobs'
 import { useUtils } from '../../../store/useUtils'
 // import { isNew } from '../../../utils/timeUtils'
 // import { GetTokenInfo } from '../../../utils/tokenUtil'
-import { JobListItem } from './JobListItem'
+import { JobCard } from './JobCard'
 
 // import { set } from 'date-fns'
 
@@ -90,8 +90,8 @@ export const EmployeeJobs = () => {
 
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [dates] = useState<[Date, Date] | null>(null)
-  const [selectedRange, setSelectedRange] = useState<number | null>(5)
-  const [isLoading, setIsLoading] = useState(true)
+  const [selectedRange, setSelectedRange] = useState<number | null>(50)
+  const [isLoading, setIsLoading] = useState(false)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
   const [isNewChecked, setIsNewChecked] = useState(false)
@@ -120,6 +120,7 @@ export const EmployeeJobs = () => {
   }, [setJobs, showToast])
 
   const handleUseSelectedAddress = async () => {
+    setIsLoading(true)
     if (moreAddressDetails && moreAddressDetails.location_pin) {
       const fromCoordinates = [...moreAddressDetails.location_pin].reverse()
 
@@ -127,8 +128,9 @@ export const EmployeeJobs = () => {
 
       try {
         const allJobs = await RequestService('jobs/distance', 'POST', { fromCoordinates })
-        if (allJobs) {
-          setJobs(allJobs)
+        if (allJobs !== undefined) {
+          setJobs(allJobs as IJob[])
+          setIsLoading(false)
         }
         setIsLoading(false)
       } catch (error) {
@@ -138,37 +140,20 @@ export const EmployeeJobs = () => {
     }
   }
 
-  const handleUseCurrentLocation = () => {
-    const getLocation = async (lon: number, lat: number) => {
-      try {
-        const fromCoordinates = [lon, lat].reverse()
-        const response = await requestService({
-          path: 'jobs/distance',
-          method: 'POST',
-          body: JSON.stringify({ fromCoordinates }),
-        })
-        if (response.ok) {
-          const allJobs = await response.json()
-          setJobs(allJobs)
-          setIsLoading(false)
-        }
-      } catch (error) {
-        console.error('Error fetching jobs:', error)
-        showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching jobs' })
-      }
-    }
+  const handleUseCurrentLocation = async () => {
+    setIsLoading(true)
+    try {
+      const newResponse = await requestService({ path: 'jobs/bydistance' })
 
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        setLocation({ latitude: position.coords.latitude, longitude: position.coords.longitude })
-        getLocation(position.coords.latitude, position.coords.longitude)
-      },
-      error => {
-        showToast({ severity: 'error', summary: 'Error', detail: 'Error getting location' })
-        console.error('Error getting location:', error)
-      },
-      { enableHighAccuracy: true },
-    )
+      if (newResponse.ok) {
+        const allJobs = await newResponse.json()
+        setJobs(allJobs)
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching jobs' })
+    }
   }
 
   // const handleDateChange = (dates: [Date, Date]) => {
@@ -229,23 +214,8 @@ export const EmployeeJobs = () => {
   const renderJobCards = () => {
     return (
       <div className="mx-auto mb-10 mt-4 px-4 sm:px-6 lg:px-8">
-        {isLoading}
         <ul className="grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
-          {/* {isLoading ? (
-            jobs.map((_, index) => <Skeleton key={index} width="45rem" height="18rem" />)
-          ) : displayedJobs.length > 0 ? (
-            [...displayedJobs]
-              .sort((a, b) => (isJobNewWithinThreeDays(b.createdAt) ? 1 : -1))
-              .map(job => (
-                <JobListItem key={job._id} job={job} isDistanceRelatedButtonClicked={isDistanceRelatedButtonClicked} />
-              ))
-          ) : (
-            <div>No jobs found for the selected filters.</div>
-          )} */}
-
-          {jobs.map(job => (
-            <JobListItem key={job._id} job={job} />
-          ))}
+          {isLoading ? <HTLoadingLogo /> : jobs.map(job => <JobCard key={job._id} job={job} />)}
         </ul>
       </div>
     )
@@ -305,14 +275,13 @@ export const EmployeeJobs = () => {
               value={selectedRange ?? undefined}
               onChange={e => {
                 const value = Array.isArray(e.value) ? e.value[0] : e.value
-                const filteredJobs = jobs.filter(job => job.distance <= value)
-                selectedRange && setSelectedRange(value)
+                const filteredJobs = jobs.filter(job => job.distance <= (selectedRange ?? value))
+                selectedRange !== null && setSelectedRange(value)
 
                 setJobs(filteredJobs)
               }}
               className="w-full"
               step={5}
-              // min={5}
               min={rangeOptions[0].code}
               max={rangeOptions[rangeOptions.length - 1].code}
             />
@@ -490,13 +459,19 @@ export const EmployeeJobs = () => {
         <GlobalTable data={jobs} columns={memoEmployeeJobsColumns} allowClick />
       ) : (
         <div className="flex flex-col md:flex-row">
-          <ScrollPanel style={{ width: '20%', height: '100vh' }} className="w-full">
-            {renderFiltersContent()}
-          </ScrollPanel>
-          <ScrollPanel style={{ width: '75%', height: '100vh' }} className="w-full pl-16">
-            {renderJobCards()}
-            <HtScrollTop className="" />
-          </ScrollPanel>
+          {jobs.length > 0 ? (
+            <>
+              <ScrollPanel style={{ width: '20%', height: '100vh' }} className="w-full">
+                {renderFiltersContent()}
+              </ScrollPanel>
+              <ScrollPanel style={{ width: '75%', height: '100vh' }} className="w-full pl-16">
+                {renderJobCards()}
+                <HtScrollTop className="" />
+              </ScrollPanel>
+            </>
+          ) : (
+            <h2>No jobs for today or coming up soon! </h2>
+          )}
         </div>
       )}
     </>
