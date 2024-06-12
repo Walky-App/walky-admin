@@ -94,7 +94,7 @@ export const ClientOnboarding = () => {
   }, [userId])
 
   const getCompanyFacilities = useCallback(async () => {
-    if (formData.company_id == null) return
+    if (!formData.company_id) return
     try {
       const response = await requestService({ path: `facilities/company/${formData.company_id}` })
       if (!response.ok && response.status !== 204) throw new Error('Error fetching user facilities')
@@ -128,6 +128,7 @@ export const ClientOnboarding = () => {
           ...companyFormData,
           ...facilityFormData,
           user_id: userData?._id ?? userId,
+          company_id: companyFormData?._id ?? '',
           contacts:
             facilityFormData.contacts != null && facilityFormData.contacts.length > 0
               ? facilityFormData.contacts
@@ -232,6 +233,8 @@ export const ClientOnboarding = () => {
         }
       }
       getDocumentRecipients()
+    } else {
+      setDocumentLoading(false)
     }
   }, [activeIndex, documentData, setDocumentUrl])
 
