@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { Badge } from 'primereact/badge'
 import { Card } from 'primereact/card'
 
-import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 import { ArrowTrendingUpIcon, BookOpenIcon, ClockIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 
 import { useAdmin } from '../../../contexts/AdminContext'
@@ -11,6 +10,7 @@ import { type Category } from '../../../interfaces/category'
 import { type FilterInterface } from '../../../interfaces/global'
 import { useLearn } from '../../../store/useLearn'
 import { cn } from '../../../utils/cn'
+import { Certification } from '../../admin/HTU/components/Certification'
 
 interface CategoryCardsProps {
   category: Category[]
@@ -77,15 +77,6 @@ export const CategoryCards = ({
     }
   }
 
-  const handlerCertification = async (category: Category) => {
-    setCategory(category)
-    if (categoryCompleted(category._id)) {
-      navigate(`/admin/learn/category/${category._id}/certification`)
-    } else {
-      navigate(`/learn/category/${category._id}`)
-    }
-  }
-
   const completionMap: CompletedInfo = record.categories.reduce((acc: CompletedInfo, category: CategoryRecords) => {
     acc[category.category] = category.is_completed
     return acc
@@ -94,6 +85,10 @@ export const CategoryCards = ({
   const isCategoryDisabled = (index: number) => {
     if (index === 0) return false
     return !completionMap[categoriesFilter()[index - 1]._id]
+  }
+
+  const filterCurrentCategory = (categoryId: string): string | undefined => {
+    return record.categories.find(data => data.category === categoryId)?.url_certificate
   }
 
   return (
@@ -169,10 +164,7 @@ export const CategoryCards = ({
                             <LockClosedIcon className="h-8 w-8" />
                           </div>
                         ) : (
-                          <button
-                            className="m-3 flex flex-col items-center gap-y-5 p-3"
-                            onClick={() => handlerCertification(category)}
-                            type="button">
+                          <button className="m-3 flex flex-col items-center gap-y-5 p-3" type="button">
                             <div className="flex items-center justify-start gap-2">
                               <div className="pr-2 text-right text-black">
                                 {categoryProgress(category._id) !== 0 && category.modules_number !== 0
@@ -193,10 +185,10 @@ export const CategoryCards = ({
                               </div>
                             </div>
                             {categoryCompleted(category._id) ? (
-                              <div className="flex items-center text-center ">
-                                <ShieldCheckIcon className="h-4 w-4 text-green-600" />
-                                <div>Completed</div>
-                              </div>
+                              <Certification
+                                urlCertificate={filterCurrentCategory(category._id)}
+                                categoryId={category._id}
+                              />
                             ) : null}
                           </button>
                         )}

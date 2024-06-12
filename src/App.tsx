@@ -72,7 +72,6 @@ import { AdminDetailsModule } from './pages/admin/HTU/AdminDetailsModule'
 import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
 import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
-import { Certification } from './pages/admin/HTU/components/Certification'
 
 import { AdminJobs } from './pages/admin/jobs'
 
@@ -112,7 +111,6 @@ export const App = () => {
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/invite/:email/:role" />
-            <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
