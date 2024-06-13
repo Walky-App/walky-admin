@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Outlet } from 'react-router-dom'
 
@@ -10,7 +10,11 @@ import { AppShell } from './AppShell'
 
 export const Layout = () => {
   const toastRef = useRef<Toast>(null)
-  const { toastPosition, onRemoveToast } = useUtils()
+  const { toastPosition, setToast, onRemoveToast } = useUtils()
+
+  useEffect(() => {
+    setToast(toastRef)
+  }, [setToast])
 
   return (
     <>
