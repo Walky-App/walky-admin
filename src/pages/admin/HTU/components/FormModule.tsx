@@ -12,7 +12,7 @@ import { type Category } from '../../../../interfaces/category'
 import { type SelectedOptionInterface, type TagsInterface } from '../../../../interfaces/global'
 import { type Module } from '../../../../interfaces/module'
 import { RequestService } from '../../../../services/RequestService'
-import { getModifiedProperties } from '../../../../utils/FunctionUtils'
+import { getModifiedProperties } from '../../../../utils/functionUtils'
 import { TagsArray } from './TagsArray'
 
 interface Props {

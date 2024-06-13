@@ -9,7 +9,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid'
 import { type Category } from '../../../../interfaces/category'
 import { type TagsInterface } from '../../../../interfaces/global'
 import { RequestService } from '../../../../services/RequestService'
-import { getModifiedProperties } from '../../../../utils/FunctionUtils'
+import { getModifiedProperties } from '../../../../utils/functionUtils'
 import { TagsArray } from './TagsArray'
 
 interface Props {

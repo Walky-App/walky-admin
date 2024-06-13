@@ -9,7 +9,7 @@ import { type Category } from '../../../interfaces/category'
 import { type SelectedOptionInterface } from '../../../interfaces/global'
 import { type Module } from '../../../interfaces/module'
 import { RequestService } from '../../../services/RequestService'
-import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
+import { secondsToTimeDescription } from '../../../utils/functionUtils'
 
 export const AdminModulesLearn = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
