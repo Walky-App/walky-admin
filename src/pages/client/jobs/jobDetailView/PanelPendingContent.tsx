@@ -59,7 +59,7 @@ export const PanelPendingContent = ({ role, applicants, id, onSubmit, handleAcce
   return (
     <>
       {role === 'admin' ? (
-        <div className="mt-4 flex justify-center space-x-4 md:justify-end">
+        <div className="flex justify-center space-x-4 md:justify-end">
           <Controller
             name="user_id"
             control={control}
