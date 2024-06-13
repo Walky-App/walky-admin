@@ -15,4 +15,5 @@ export interface ISignupData {
   email: string
   phone_number: string
   otp?: string
+  terms_accepted: boolean
 }
