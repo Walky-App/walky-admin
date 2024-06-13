@@ -3,6 +3,8 @@ import { useState, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
+import { type CheckboxChangeEvent } from 'primereact/checkbox'
+import { Checkbox } from 'primereact/checkbox'
 import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
@@ -28,6 +30,7 @@ export const Signup = () => {
     phone_number: '',
     password: '',
     password_confirmed: '',
+    terms_accepted: false,
     role: employee_role,
   })
   const [loading, setLoading] = useState(false)
@@ -54,6 +57,10 @@ export const Signup = () => {
       ...prevState,
       [name]: value,
     }))
+  }
+
+  const onJobTitleChange = (e: CheckboxChangeEvent) => {
+    setFormData({ ...formData, terms_accepted: e.checked ?? false })
   }
 
   const handleOnSubmit = async (e: { preventDefault: () => void }) => {
@@ -175,18 +182,34 @@ export const Signup = () => {
               },
               iconField: { root: { className: 'w-full' } },
             }}
-            className="my-5 w-full"
+            className="mt-5 w-full"
           />
+          <div className="my-3 items-center text-right text-sm text-zinc-500">
+            <Checkbox
+              required
+              inputId="terms_accepted"
+              name="terms_accepted"
+              value={formData.terms_accepted}
+              onChange={onJobTitleChange}
+              checked={formData.terms_accepted}
+            />
+            <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="ml-2 underline">
+              Accept Terms & Conditions
+            </a>
+          </div>
+
           <Toast ref={toast} position="bottom-right" />
         </div>
         <div className="flex items-center justify-center">
           <Button
+            disabled={!formData.terms_accepted}
             label={loading ? 'Signing up' : 'Employee Signup'}
             type="submit"
             onClick={() => setFormData({ ...formData, role: employee_role })}
             className={`mr-3 w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
           />
           <Button
+            disabled={!formData.terms_accepted}
             label={loading ? 'Signing up' : 'Client Signup'}
             type="submit"
             onClick={() => setFormData({ ...formData, role: client_role })}
