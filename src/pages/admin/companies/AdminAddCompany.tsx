@@ -232,7 +232,7 @@ export const AdminAddCompany = () => {
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
@@ -309,7 +309,6 @@ export const AdminAddCompany = () => {
               <Controller
                 control={control}
                 name="facilities"
-                rules={{ required: 'At least one facility is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="All facilities related to this company">
@@ -324,10 +323,8 @@ export const AdminAddCompany = () => {
                       display="chip"
                       selectAll
                       selectAllLabel="Select All"
-                      onChange={(e: MultiSelectChangeEvent) => {
-                        field.onChange(e.value)
-                      }}
-                      placeholder="Select Services"
+                      onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
+                      placeholder="Select facilities"
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
                     <HtInputHelpText

@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa'
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
-import { IoMdMail, IoMdCog } from 'react-icons/io'
+import { IoMdCog } from 'react-icons/io'
 import { MdOutlineAccessTimeFilled, MdSchool } from 'react-icons/md'
 
 interface INavLinkChildren {
@@ -30,12 +30,12 @@ interface INavLink {
 
 export const userLinks = (userIsOnboarded: boolean, role: string) => {
   const adminLinks: INavLink[] = [
-    {
-      id: 1,
-      name: 'Messages',
-      href: '/admin/messages',
-      icon: <IoMdMail />,
-    },
+    // {
+    //   id: 1,
+    //   name: 'Messages',
+    //   href: '/admin/messages',
+    //   icon: <IoMdMail />,
+    // },
     {
       id: 2,
       name: 'Users',
@@ -102,7 +102,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
   ]
 
   const clientLinks: INavLink[] = [
-    { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
+    // { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
     {
       id: 1,
       name: 'My Jobs',
@@ -138,7 +138,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
   ]
 
   const employeeLinks: INavLink[] = [
-    { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+    // { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
     { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime />, disabled: !userIsOnboarded },
     { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
     { id: 3, name: 'Training', href: '/learn', icon: <MdSchool /> },
@@ -158,7 +158,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
     { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool /> },
     { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-    { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
+    // { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
   ]
 
   if (role === 'admin') return adminLinks

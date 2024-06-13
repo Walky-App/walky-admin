@@ -72,7 +72,6 @@ import { AdminDetailsModule } from './pages/admin/HTU/AdminDetailsModule'
 import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
 import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
-import { Certification } from './pages/admin/HTU/components/Certification'
 
 import { AdminJobs } from './pages/admin/jobs'
 
@@ -80,7 +79,9 @@ import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
 import { AdminCompanyListPage } from './pages/admin/companies/AdminCompanyListPage'
 import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
 import { AdminCompanyPaymentMethodsPage } from './pages/admin/companies/components'
+import { AdminCompanyAddPaymentMethod } from './pages/admin/companies/components'
 import { AdminCompanyDetails } from './pages/admin/companies/components/AdminCompanyDetails'
+import { PaymentMethodDetails } from './pages/admin/companies/components/PaymentMethodDetails'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
@@ -112,7 +113,6 @@ export const App = () => {
             <Route element={<Auth />} path="/login" />
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/invite/:email/:role" />
-            <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
@@ -182,6 +182,8 @@ export const App = () => {
                   <Route element={<AdminCompanyPage />}>
                     <Route element={<AdminCompanyDetails />} path="/admin/companies/:id" />
                     <Route element={<AdminCompanyPaymentMethodsPage />} path="/admin/companies/:id/payment" />
+                    <Route element={<AdminCompanyAddPaymentMethod />} path="/admin/companies/:id/add-payment" />
+                    <Route element={<PaymentMethodDetails />} path="/admin/companies/:id/payment/:paymentId" />
                   </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />

@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
 import { type IFacility } from '../../../interfaces/facility'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 
 interface IRow {
   row: { original: IFacility }
@@ -16,15 +17,25 @@ const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
 
 export const AdminFacilities = () => {
   const [facilities, setFacilities] = useState<IFacility[]>([])
+  const { showToast } = useUtils()
 
-  useMemo(() => {
+  useEffect(() => {
     const getFacilities = async () => {
-      const allFacilities = await RequestService('facilities/active')
-      setFacilities(allFacilities)
+      try {
+        const response = await requestService({ path: 'facilities' })
+
+        if (response.ok) {
+          const data = await response.json()
+          setFacilities(data)
+        }
+      } catch (error) {
+        console.error(error)
+        showToast({ severity: 'error', summary: 'Error', detail: 'Error loading facilities' })
+      }
     }
 
     getFacilities()
-  }, [])
+  }, [showToast])
 
   const adminColumns = [
     {

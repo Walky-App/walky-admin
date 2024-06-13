@@ -15,8 +15,8 @@ import type { CategoryTitle } from '../../../interfaces/category'
 import type { Module } from '../../../interfaces/module'
 import type { Unit } from '../../../interfaces/unit'
 import { RequestService } from '../../../services/RequestService'
-import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 import { cn } from '../../../utils/cn'
+import { secondsToTimeDescription } from '../../../utils/functionUtils'
 import { UnitDetailsCard } from '../../learn/components/UnitDetailsCard'
 
 export const AdminUnitsLearn = () => {
