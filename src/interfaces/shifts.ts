@@ -28,5 +28,5 @@ export interface Shifts extends Documents {
   job_id: string
   vacancy_limit: number
   change_history?: HistoryShifts[]
-  user_shifts?: UserShifts[]
+  user_shifts?: UserShiftsPopulate[]
 }
