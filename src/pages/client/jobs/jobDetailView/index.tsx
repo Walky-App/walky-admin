@@ -9,9 +9,11 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
 
+import { UserIcon, XMarkIcon } from '@heroicons/react/20/solid'
+
 import { Feedback } from '../../../../components/shared/dialog/Feedback'
 import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
-import { type IJob } from '../../../../interfaces/job'
+import { type IApplicant, type IJob } from '../../../../interfaces/job'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
@@ -19,6 +21,8 @@ import { formatToLocalTime } from '../../../../utils/timeUtils'
 import { PanelAcceptedContent } from './PanelAcceptedContent'
 import { PanelPendingContent } from './PanelPendingContent'
 import { PanelRejectedContent } from './PanelRejectedContent'
+import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
+import { EmployeeOptions } from './EmployeeOptions'
 
 export const ClientJobDetailView = () => {
   const [checked, setChecked] = useState<boolean>(false)
@@ -118,25 +122,24 @@ export const ClientJobDetailView = () => {
     }
   }
 
-  /* const handleAcceptAll = async () => {
-    try {
-      const response = await requestService({ path: `jobs/${id}/acceptAll`, method: 'PATCH' })
-      if (response !== null && response !== undefined) {
-        const updatedJob = await response.json()
-        if (job && job._id) {
-          setJob({ ...job, applicants: updatedJob.applicants })
-        }
+  const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
 
-        showToast({
-          severity: 'success',
-          summary: 'All Applicants Accepted',
-          detail: 'All applicants have been accepted',
-        })
+  useEffect(() => {
+    const getPotentialApplicants = async () => {
+      try {
+        const response = await requestService({ path: `jobs/${id}/get-potential-applicants` })
+        if (response.status === 200) {
+          const jsonResponse = await response.json()
+          setPotentialApplicants(jsonResponse)
+        }
+      } catch (error) {
+        console.error('Error fetching potential applicants', error)
       }
-    } catch (error) {
-      console.error(error)
     }
-  } */
+    if (role === 'admin') {
+      getPotentialApplicants()
+    }
+  }, [role, id])
 
   const onSubmit = async (userId: string) => {
     try {
@@ -184,6 +187,88 @@ export const ClientJobDetailView = () => {
     setIdFeedback(userId)
     setOpenFeedback(true)
   }
+
+  function getUserShiftsLengthByDate(dateString: string): number {
+    const [day, month, year] = dateString.split('/')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const formattedDate = date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    const result = job?.job_days.find(jobDay => {
+      const jobDate = new Date(jobDay.day)
+      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      return formattedJobDate === formattedDate
+    })
+    if (!result) return 0
+
+    return result.shifts_id?.user_shifts?.length ?? 0
+  }
+
+  function getEmployeeListByShift(dateString: string): UserShiftsPopulate[] {
+    const [day, month, year] = dateString.split('/')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const formattedDate = date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    const result = job?.job_days.find(jobDay => {
+      const jobDate = new Date(jobDay.day)
+      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      return formattedJobDate === formattedDate
+    })
+    if (result?.shifts_id.user_shifts) return result.shifts_id.user_shifts as unknown as UserShiftsPopulate[]
+    return []
+  }
+
+  function getShiftByDate(dateString: string): string {
+    const [day, month, year] = dateString.split('/')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const formattedDate = date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    const result = job?.job_days.find(jobDay => {
+      const jobDate = new Date(jobDay.day)
+      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      return formattedJobDate === formattedDate
+    })
+    return result?.shifts_id._id as string
+  }
+
+  const removeEmployeeShift = async (userShiftId: string, shiftId: string) => {
+    try {
+      const response = await requestService({ path: `shifts/remove-one/${shiftId}`, method: 'PATCH', body: JSON.stringify({ userShiftId }) })
+      const data = await response.json()
+      if (response.ok) {
+        //const updatedJob = await requestService({ path: `jobs/${id}`, method: 'GET' })
+        setJob(data)
+        showToast({ severity: 'success', summary: 'Employee removed', detail: 'Employee has been removed from the shift' })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+
+
+
+
 
   return (
     <>
@@ -321,15 +406,37 @@ export const ClientJobDetailView = () => {
                             <time dateTime={date} className="w-28 flex-none">
                               {dayOfWeek}, {formattedDate}
                             </time>
-                            <p className="flex-none sm:ml-6">
-                              <time dateTime={date}>{formatToLocalTime(job.start_time)}</time>
-                              {' - '}
-                              <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
-                            </p>
-                            <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                              Lunch: {job.lunch_break} minutes
-                            </p>
-                            <p className="text-green-500">Confirmed</p>
+                            <div className="flex flex-1 flex-col">
+                              <div className="flex">
+                                <p>
+                                  <time dateTime={date}>{formatToLocalTime(job.start_time)}</time>
+                                  {' - '}
+                                  <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
+                                </p>
+                                <p className="ml-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                                  Lunch: {job.lunch_break} minutes
+                                </p>
+                              </div>
+                              <div className="flex flex-wrap items-center justify-start gap-1">
+                                {
+                                  getEmployeeListByShift(formattedDate).map((userShift: UserShiftsPopulate) => {
+                                    return (
+                                      <div key={userShift._id} className="flex flex-1 w-1/2 items-center gap-1">
+                                        <UserIcon className="h-5 w-5 text-black" />
+                                        <span>{userShift.user_id.first_name}</span>
+                                        <Button link className='p-0' onClick={() => { removeEmployeeShift(userShift._id, getShiftByDate(formattedDate)) }}><XMarkIcon className='h-5 w-5 text-red-400' /></Button>
+                                      </div>
+                                    )
+                                  })
+                                }
+
+                              </div>
+                            </div>
+                            {getUserShiftsLengthByDate(formattedDate) === job.vacancy ? (
+                              <p className="text-end text-green-500 md:text-start">Vacancy completed</p>
+                            ) : (
+                              <EmployeeOptions potentialApplicants={potentialApplicants} shiftId={getShiftByDate(formattedDate)} setJob={setJob} jobId={job._id} />
+                            )}
                           </li>
                         )
                       })}

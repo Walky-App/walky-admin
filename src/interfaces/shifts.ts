@@ -1,3 +1,4 @@
+import { type IUser } from './User'
 import { type Documents } from './global'
 
 interface HistoryShifts extends Documents {
@@ -8,6 +9,13 @@ interface HistoryShifts extends Documents {
 
 export interface UserShifts extends Documents {
   user_id: string
+  timesheet_id: string
+  notes: string
+  bonus: number
+}
+
+export interface UserShiftsPopulate extends Documents {
+  user_id: IUser
   timesheet_id: string
   notes: string
   bonus: number
