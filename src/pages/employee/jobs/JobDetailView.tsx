@@ -190,7 +190,7 @@ export const JobDetailView = () => {
     const userShift = shift.user_shifts?.find(us => us.user_id as string === user._id)
     return userShift ? (userShift.timesheet_id as string) : null
   }
-
+  
   const getCurrentJobTimeSheets = useCallback(async () => {
     const { access_token } = GetTokenInfo()
     const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
@@ -201,6 +201,12 @@ export const JobDetailView = () => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${access_token}`,
       },
+    }
+
+    const getIdTimeSheetForToday = () => {
+      const shift: Shifts = shiftId?.message as Shifts
+      const userShift = shift.user_shifts?.find(us => us.user_id === user._id)
+      return userShift ? (userShift.timesheet_id as string) : null
     }
 
     try {
@@ -232,7 +238,11 @@ export const JobDetailView = () => {
       console.error('Failed to fetch timesheet:', error)
       setTimesheets(null)
     }
-  }, [job?._id, user._id])
+  }, [job?._id, shiftId?.message, user._id])
+
+  const isUserApprovedApplicant = useCallback(() => {
+    return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
+  }, [job?.applicants, user._id])
 
   useEffect(() => {
     if (job) {
@@ -240,7 +250,7 @@ export const JobDetailView = () => {
         getCurrentJobTimeSheets()
       }
     }
-  }, [getCurrentJobTimeSheets, job?.applicants, user._id])
+  }, [getCurrentJobTimeSheets, isUserApprovedApplicant, job])
 
   const clockInOut = async (endpoint: string) => {
     setIsClockInOutLoading(true)
@@ -338,10 +348,6 @@ export const JobDetailView = () => {
   const handleFeedback = () => {
     setIdFeedback(id as string)
     setOpenFeedback(true)
-  }
-
-  const isUserApprovedApplicant = () => {
-    return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
   }
 
   const scheduleListTemplate = (job: IJob) => {
@@ -661,15 +667,6 @@ export const JobDetailView = () => {
                             loading={isApplyForJobLoading}
                           />
                         )}
-                      </li>
-
-                      <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                        <Button
-                          label="Share Opportunity"
-                          severity="secondary"
-                          style={{ width: '100%', height: '100%' }}
-                        />
                       </li>
                     </ul>
                   </div>

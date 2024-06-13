@@ -1,18 +1,29 @@
-export interface IPaymentMethod {
+export interface IPaymentInfo {
+  _id: string
+  type: 'CC' | 'ACH'
+  address: string
+  city: string
+  state: string
+  country: string
+  zip_code: string
+  payment_status: 'Active' | 'Inactive' | 'Expired'
   method: 'CC' | 'ACH'
-  card_number?: string
-  expiration_date?: string
-  ccv?: string
   bank_name?: string
   holder_name?: string
   account_number?: string
   routing_number?: string
-  address?: string
-  city?: string
-  state?: string
-  country?: string
-  zip_code?: string
-  payment_status?: 'Active' | 'Inactive' | 'Expired'
+  card_number?: string
+  expiration_date?: string
+  ccv?: string
+  createdAt: string
+  updatedAt: string
+  __v: number
+}
+
+export interface IPaymentMethod {
+  payment_info: IPaymentInfo
+  facilities: string[]
+  payment_method: 'CC' | 'ACH'
 }
 
 export interface ICompany {

@@ -86,7 +86,7 @@ export const AddEditJobPage = () => {
     const getFacilities = async () => {
       setIsLoading(true)
       try {
-        const endpoint = location.pathname.includes('admin') ? 'facilities' : `facilities/user/${user_id}`
+        const endpoint = location.pathname.includes('admin') ? 'facilities/active' : `facilities/user/${user_id}`
         const response = await requestService({ path: endpoint })
         if (!response.ok) {
           throw new Error('Failed to fetch facilities')

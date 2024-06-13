@@ -85,7 +85,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       company_location_pin: [0, 0],
     }
 
-    if (companyId != null) {
+    if (companyId) {
       try {
         const response = await requestService({ path: `companies/${companyId}` })
         if (!response.ok) throw new Error('Failed to fetch company data')
@@ -137,6 +137,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
           setFormData(prev => ({
             ...prev,
             ...companyFormData,
+            company_id: companyFormData._id ?? '',
           }))
           setTimeout(() => {
             setStep(step + 1)
@@ -289,7 +290,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />

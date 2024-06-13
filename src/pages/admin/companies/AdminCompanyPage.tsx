@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useState, useEffect, createContext, useContext } from 'react'
 
 import { Outlet, useParams } from 'react-router-dom'
@@ -13,10 +12,14 @@ import { adminCompanyLinks } from './adminCompanySubHeaderLinks'
 interface IAdminCompanyPageContext {
   selectedCompanyData: ICompany
   selectedCompanyId?: string
+  setSelectedCompanyData: (data: ICompany) => void
 }
 
-const AdminCompanyPageContext = createContext<IAdminCompanyPageContext>({} as IAdminCompanyPageContext)
-
+const AdminCompanyPageContext = createContext<IAdminCompanyPageContext>({
+  selectedCompanyData: {} as ICompany,
+  selectedCompanyId: undefined,
+  setSelectedCompanyData: () => void 0,
+})
 export const useAdminCompanyPageContext = () => {
   return useContext(AdminCompanyPageContext)
 }
@@ -36,7 +39,6 @@ export const AdminCompanyPage = () => {
         }
         const companyFound: ICompany = await response.json()
         setSelectedCompanyData(companyFound)
-        console.log('Company data fetched: ', companyFound)
       } catch (error) {
         console.error('Error fetching company data: ', error)
       } finally {
@@ -54,7 +56,7 @@ export const AdminCompanyPage = () => {
   }
 
   return (
-    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData }}>
+    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData, setSelectedCompanyData }}>
       {isLoading ? (
         <Skeleton width="100%" height="100%" />
       ) : (

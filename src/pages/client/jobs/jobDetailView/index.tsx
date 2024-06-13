@@ -313,9 +313,7 @@ export const ClientJobDetailView = () => {
                     <div className="flex items-start gap-2">
                       {job.is_active === true ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-sm font-medium text-black">
-                          {job.is_active === true ? 'Active' : 'Disabled'}
-                        </span>
+                        <span className="font-medium text-black">{job.is_active === true ? 'Active' : 'Disabled'}</span>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -325,54 +323,54 @@ export const ClientJobDetailView = () => {
                         <i className="pi pi-calendar-times" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-sm font-medium text-black">
+                        <span className="font-medium text-black">
                           {job.is_completed === false ? 'Live' : 'Archived'}
                         </span>
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
                       {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
-                      <div className="text-sm font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
+                      <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
                   {/* Divider */}
                   <hr className="mt-3 h-px w-full bg-zinc-100" />
                   <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Job Dates</div>
-                      <div className="text-sm font-normal text-black">
+                      <div className="font-normal text-stone-500">Job Dates</div>
+                      <div className="font-normal text-black">
                         {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Job Time</div>
-                      <div className="text-sm font-normal text-black">
-                        {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
+                      <div className="font-normal text-stone-500">Job Time</div>
+                      <div className="font-normal text-black">
+                        {/* {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)} */}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Lunch Break</div>
-                      <div className="text-sm font-normal text-black">
+                      <div className="font-normal text-stone-500">Lunch Break</div>
+                      <div className="font-normal text-black">
                         {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Total Hours</div>
-                      <div className="text-sm font-normal text-black">{job.total_hours} Hours</div>
+                      <div className="font-normal text-stone-500">Total Hours</div>
+                      <div className="font-normal text-black">{job.total_hours} Hours</div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Hourly Rate</div>
-                      <div className="text-sm font-normal text-black">{job.hourly_rate} USD</div>
+                      <div className="font-normal text-stone-500">Hourly Rate</div>
+                      <div className="font-normal text-black">{job.hourly_rate} USD</div>
                     </div>
                   </div>
                   {/* Job Card Footer */}
                   <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
                     <div className="flex flex-wrap items-center justify-start gap-1">
-                      <div className="text-balance text-sm font-normal text-stone-500">
+                      <div className="text-balance font-normal text-stone-500">
                         Last update on {new Date(job.createdAt).toLocaleDateString()}
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
-                      <div className="text-sm font-normal text-stone-500">#{job.uid}</div>
+                      <div className="font-normal text-stone-500">#{job.uid}</div>
                     </div>
                   </div>
                 </Card>

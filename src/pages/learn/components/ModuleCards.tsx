@@ -7,7 +7,7 @@ import { BriefcaseIcon, ClockIcon, NewspaperIcon } from '@heroicons/react/24/out
 import { useAdmin } from '../../../contexts/AdminContext'
 import { type Module } from '../../../interfaces/module'
 import { useLearn } from '../../../store/useLearn'
-import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
+import { secondsToTimeDescription } from '../../../utils/functionUtils'
 import { CircularProgressBar } from './CircularProgressBar'
 
 interface ModuleCardsProps {

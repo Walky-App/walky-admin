@@ -22,7 +22,7 @@ export interface AddressAutoCompleteProps {
   value?: string
   controlled?: boolean
   inputId?: string
-  className?: string
+  classNames?: string
   disabled?: boolean
 }
 
@@ -33,7 +33,7 @@ export const AddressAutoComplete = ({
   value,
   controlled,
   inputId,
-  className,
+  classNames,
   disabled,
 }: AddressAutoCompleteProps) => {
   const [predictions, setPredictions] = useState<IAddress[]>([])
@@ -95,10 +95,9 @@ export const AddressAutoComplete = ({
         }}
         onSelect={e => handleGetAddressDetails(e.value, predictions)}
         forceSelection
-        inputStyle={{ width: '100%' }}
-        className={className}
+        inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
+        className={classNames}
         autoComplete="off"
-        disabled={disabled}
       />
     )
   }
@@ -114,9 +113,10 @@ export const AddressAutoComplete = ({
       onChange={e => setSelectedAddresses(e.value)}
       onSelect={e => handleGetAddressDetails(e.value, predictions)}
       forceSelection
-      inputStyle={{ width: '100%', height: '100%' }}
-      className={className}
+      inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
+      className={classNames}
       autoComplete="off"
+      disabled={disabled}
     />
   )
 }

@@ -40,7 +40,7 @@ export const SignGetAcceptForm = ({ step, setStep }: StepProps) => {
 
     return (
       <div className="flex h-dvh items-center justify-center">
-        <p className="text-gray-500">No document found</p>
+        <p className="text-gray-500">No document found. Please contact representative.</p>
       </div>
     )
   }
