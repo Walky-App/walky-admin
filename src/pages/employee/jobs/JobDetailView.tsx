@@ -93,7 +93,7 @@ export const JobDetailView = () => {
 
   if (job) {
     const dateTimes = job.job_dates.map(dateString => new Date(dateString).getTime())
-    ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
+      ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
   }
 
   const startTimer = () => {
@@ -187,7 +187,7 @@ export const JobDetailView = () => {
 
   const getIdTimeSheetForToday = () => {
     const shift: Shifts = shiftId?.message as Shifts
-    const userShift = shift.user_shifts?.find(us => us.user_id === user._id)
+    const userShift = shift.user_shifts?.find(us => us.user_id as string === user._id)
     return userShift ? (userShift.timesheet_id as string) : null
   }
 
@@ -644,8 +644,8 @@ export const JobDetailView = () => {
                         {isUserApprovedApplicant() ? (
                           <p>You have been accepted!</p>
                         ) : job?.applicants.some(
-                            applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
-                          ) ? (
+                          applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
+                        ) ? (
                           <p>We are sorry. It was not a match. Please apply later.</p>
                         ) : job?.applicants.some(applicant => applicant.user._id === user._id) ? (
                           <p>Your application is pending. Please wait for response.</p>
