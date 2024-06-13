@@ -13,8 +13,8 @@ import type { Module } from '../../../interfaces/module'
 import type { Unit } from '../../../interfaces/unit'
 import { requestService } from '../../../services/requestServiceNew'
 import { useLearn } from '../../../store/useLearn'
-import { secondsToTimeDescription } from '../../../utils/FunctionUtils'
 import { cn } from '../../../utils/cn'
+import { secondsToTimeDescription } from '../../../utils/functionUtils'
 import { CircularProgressBar } from '../components/CircularProgressBar'
 
 export const Units = () => {
