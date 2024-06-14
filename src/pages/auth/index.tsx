@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
 
+import { useNavigate } from 'react-router-dom'
+
 import { Button } from 'primereact/button'
 
-import packageJson from '../../../package.json'
 import { LogosPack } from '../../components/layout/LogosPack'
 import { ForgotPassword } from './ForgotPasswordForm'
 import { LoginForm } from './LoginForm'
@@ -11,6 +12,7 @@ import { Signup } from './SignupForm'
 export const Auth = () => {
   const [userForm, setUserForm] = useState('Login')
   const [heroImage, setHeroImage] = useState<string>('')
+  const navigate = useNavigate()
 
   useMemo(() => {
     const getImages = async () => {
@@ -46,18 +48,25 @@ export const Auth = () => {
         <div className="w-full px-4 sm:px-0">
           <div className="flex justify-center">{LogosPack('login')}</div>
 
-          {userForm === 'Login' ? <LoginForm /> : null}
+          {userForm === 'Login' ? <LoginForm setUserForm={setUserForm} /> : null}
           {userForm === 'Sign up' ? <Signup /> : null}
           {userForm === 'Forgot Password' ? <ForgotPassword /> : null}
 
           <div className="mr-center flex flex-col items-center justify-center gap-2">
             {userForm === 'Login' ? (
-              <Button
-                text
-                className="font-medium underline hover:text-green-700"
-                onClick={() => setUserForm('Forgot Password')}>
-                Forgot your password?
-              </Button>
+              <div>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-white px-2 text-sm text-gray-500">OR</span>
+                  </div>
+                </div>
+                <Button text className="font-medium underline hover:text-green-700" onClick={() => navigate('/signup')}>
+                  Sign up
+                </Button>
+              </div>
             ) : null}
 
             <div className=" text-zinc-500">
@@ -71,12 +80,6 @@ export const Auth = () => {
               ) : null}
             </div>
           </div>
-        </div>
-        <div className="flex justify-center">
-          <small className="text-xs text-gray-400  ">
-            v{packageJson.version}
-            {process.env.NODE_ENV === 'development' ? 'd' : 'p'}
-          </small>
         </div>
       </div>
       <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
