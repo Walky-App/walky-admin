@@ -105,6 +105,8 @@ export const AddEditJobPage = () => {
 
   useEffect(() => {
     const getJob = async () => {
+      if (!params.id) return
+
       try {
         const response = await requestService({ path: `jobs/${params.id}` })
 
