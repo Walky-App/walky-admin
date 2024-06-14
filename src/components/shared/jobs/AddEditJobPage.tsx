@@ -80,6 +80,7 @@ export const AddEditJobPage = () => {
     formState: { errors },
     handleSubmit,
     watch,
+    setValue,
   } = useForm({ values })
 
   useEffect(() => {
@@ -260,7 +261,9 @@ export const AddEditJobPage = () => {
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
               {facilities ? (
-                <div className="sm:col-span-3">{renderFacilityController(control, errors, facilities, !!jobFound)}</div>
+                <div className="sm:col-span-3">
+                  {renderFacilityController(control, errors, facilities, setValue, !!jobFound)}
+                </div>
               ) : null}
             </div>
           </div>
