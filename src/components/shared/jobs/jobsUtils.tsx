@@ -1,4 +1,4 @@
-import { type Control, Controller, type FieldErrors } from 'react-hook-form'
+import { type Control, Controller, type FieldErrors, type UseFormSetValue } from 'react-hook-form'
 
 import { isValid, parse } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
@@ -9,6 +9,7 @@ import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
 import { type IFacility } from '../../../interfaces/facility'
+import { requestService } from '../../../services/requestServiceNew'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
 import { setTimeInUTC, toLocalDateTime } from '../../../utils/timeUtils'
@@ -74,36 +75,51 @@ export const renderFacilityController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
   facilities: IFacility[],
+  setValue: UseFormSetValue<JobFormDefaultValues>,
   disabled?: boolean,
-) => (
-  <Controller
-    name="facility_id"
-    control={control}
-    rules={{ required: 'Facility is required.' }}
-    render={({ field, fieldState }) => (
-      <>
-        <HtInputLabel
-          htmlFor={field.name}
-          labelText={disabled ?? false ? 'Facility' : 'Select Facility'}
-          asterisk={disabled === true ? false : true}
-        />
-        <Dropdown
-          inputId={field.name}
-          value={field.value}
-          optionLabel="name"
-          optionValue="_id"
-          options={facilities}
-          disabled={disabled}
-          filter
-          focusInputRef={field.ref}
-          onChange={e => field.onChange(e.value)}
-          className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
-        />
-        {getFormErrorMessage(field.name, errors)}
-      </>
-    )}
-  />
-)
+) => {
+  const selectFacility = async (facilityId: string) => {
+    const facility = facilities.find(facility => facility._id === facilityId)
+    const response = await requestService({ path: `settings/${facility?.state}` })
+    const data = await response.json()
+    if (response.ok) {
+      setValue('hourly_rate', data.minimun_wage)
+    }
+  }
+
+  return (
+    <Controller
+      name="facility_id"
+      control={control}
+      rules={{ required: 'Facility is required.' }}
+      render={({ field, fieldState }) => (
+        <>
+          <HtInputLabel
+            htmlFor={field.name}
+            labelText={disabled ?? false ? 'Facility' : 'Select Facility'}
+            asterisk={disabled === true ? false : true}
+          />
+          <Dropdown
+            inputId={field.name}
+            value={field.value}
+            optionLabel="name"
+            optionValue="_id"
+            options={facilities}
+            disabled={disabled}
+            filter
+            focusInputRef={field.ref}
+            onChange={e => {
+              selectFacility(e.value)
+              field.onChange(e.value)
+            }}
+            className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
+          />
+          {getFormErrorMessage(field.name, errors)}
+        </>
+      )}
+    />
+  )
+}
 
 export const renderJobDatesController = (
   control: Control<JobFormDefaultValues>,
