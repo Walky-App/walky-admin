@@ -37,6 +37,7 @@ export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isApplyForJobLoading, setIsApplyForJobLoading] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
+  const [hasDateIntersection, setHasDateIntersection] = useState(false)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
   const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: Shifts | string } | null>(null)
@@ -199,7 +200,7 @@ export const JobDetailView = () => {
 
     const getIdTimeSheetForToday = () => {
       const shift: Shifts = shiftId?.message as Shifts
-      const userShift = shift.user_shifts?.find(us => us.user_id === user._id)
+      const userShift = shift.user_shifts?.find(us => us.user_id._id === user._id)
       return userShift ? (userShift.timesheet_id as string) : null
     }
 
@@ -318,6 +319,7 @@ export const JobDetailView = () => {
       if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
         const err = error as { status: number; message: string }
         if (err.status === 400) {
+          setHasDateIntersection(true)
           showToast({
             severity: 'error',
             summary: 'Failed',
@@ -651,7 +653,15 @@ export const JobDetailView = () => {
                           <p>Your application is pending. Please wait for response.</p>
                         ) : (
                           <Button
-                            label={!userIsOnboarded ? 'Apply now' : hasApplied ? 'Application sent' : 'Apply now'}
+                            label={
+                              !userIsOnboarded
+                                ? 'Apply now'
+                                : hasApplied && !hasDateIntersection
+                                  ? 'Application sent'
+                                  : !hasDateIntersection
+                                    ? 'Apply now'
+                                    : 'You have date intersection with another job'
+                            }
                             disabled={!userIsOnboarded || hasApplied}
                             onClick={() => {
                               applyForJob(user._id)
