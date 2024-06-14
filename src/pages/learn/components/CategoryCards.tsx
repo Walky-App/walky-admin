@@ -185,10 +185,7 @@ export const CategoryCards = ({
                               </div>
                             </div>
                             {categoryCompleted(category._id) ? (
-                              <Certification
-                                urlCertificate={filterCurrentCategory(category._id)}
-                                categoryId={category._id}
-                              />
+                              <Certification urlCertificate={filterCurrentCategory(category._id)} category={category} />
                             ) : null}
                           </button>
                         )}
