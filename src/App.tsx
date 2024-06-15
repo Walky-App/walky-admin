@@ -86,7 +86,6 @@ import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 import { LayoutPublic } from './components/layoutPublic'
 import { Pricing } from './pages/Pricing'
-import { TermsAndConditions } from './pages/TermAndConditions'
 
 /******************************************* Employee Pages ************************************/
 
@@ -114,7 +113,6 @@ export const App = () => {
             <Route element={<Auth />} path="/login" />
             <Route element={<LayoutPublic />}>
               <Route element={<Pricing />} path="/pricing" />
-              <Route element={<TermsAndConditions />} path="/terms-and-conditions" />
               <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
               <Route element={<Signup />} path="/invite/:email/:role" />
               <Route element={<Signup />} path="/signup" />
