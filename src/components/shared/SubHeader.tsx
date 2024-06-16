@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { Menu, Transition } from '@headlessui/react'
-import { MapPinIcon, MapIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
+import { MapPinIcon, MapIcon, ChevronDownIcon, BriefcaseIcon } from '@heroicons/react/20/solid'
 
 import { cn } from '../../utils/cn'
 
@@ -12,8 +12,9 @@ export interface SubHeaderData {
   name?: string
   city?: string
   address?: string
-  corp_name?: string
-  dba?: string
+  company_name?: string
+  company_dbas?: string[] | string
+  company_address?: string
 }
 
 export interface SubHeaderLink {
@@ -35,7 +36,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
 
   const { _id, name, city, address } = data
 
-  const isValid = (value: string | null | undefined) => value !== null && value !== undefined && value !== ''
+  const isValid = (value: string | string[] | null | undefined) => value !== null && value !== undefined && value !== ''
 
   const renderName = isValid(name) ? (
     <Link
@@ -43,6 +44,21 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
       to={`${basePath}/${_id}`}>
       {name}
     </Link>
+  ) : null
+
+  const renderCorpName = isValid(data.company_name) ? (
+    <Link
+      className="text-2xl font-bold leading-7 text-gray-900 hover:text-primary sm:truncate sm:text-3xl sm:tracking-tight"
+      to={`${basePath}/${_id}`}>
+      {data.company_name}
+    </Link>
+  ) : null
+
+  const renderCompanyDbas = isValid(data.company_dbas) ? (
+    <div className="flex items-center text-sm text-gray-500">
+      <BriefcaseIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+      {Array.isArray(data.company_dbas) ? data.company_dbas.join(', ') : data.company_dbas}
+    </div>
   ) : null
 
   const renderCity = isValid(city) ? (
@@ -56,6 +72,13 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
     <div className="flex items-center text-balance text-sm text-gray-500">
       <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
       {address}
+    </div>
+  ) : null
+
+  const renderCompanyAddress = isValid(data.company_address) ? (
+    <div className="flex items-center text-sm text-gray-500">
+      <MapIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+      {data.company_address}
     </div>
   ) : null
 
@@ -119,10 +142,12 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
   return (
     <div className="mb-10 flex w-full flex-col flex-wrap gap-y-4 border-b border-gray-300 py-4 xl:flex-row xl:items-end xl:justify-between">
       <div className="flex flex-col gap-y-2">
-        {renderName}
+        {renderName ? renderName : renderCorpName ? renderCorpName : null}
+        {renderCompanyDbas}
         <div className="flex flex-wrap gap-x-2 gap-y-1">
           {renderCity}
           {renderAddress}
+          {renderCompanyAddress}
         </div>
       </div>
       <div className="flex flex-wrap gap-3 2xl:mt-0">

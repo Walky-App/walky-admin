@@ -1,5 +1,8 @@
-import { Popover, PopoverButton, PopoverGroup, PopoverPanel, Transition } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { useNavigate } from 'react-router-dom'
+
+import { Button } from 'primereact/button'
+
+import { Popover, PopoverButton, PopoverPanel, Transition } from '@headlessui/react'
 import {
   ArrowPathIcon,
   Bars3Icon,
@@ -7,15 +10,14 @@ import {
   CalendarIcon,
   ChartBarIcon,
   CursorArrowRaysIcon,
-  LifebuoyIcon,
-  PhoneIcon,
-  PlayIcon,
+  LifebuoyIcon, // PhoneIcon,
+  // PlayIcon,
   ShieldCheckIcon,
   Squares2X2Icon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
 
-import { cn } from '../../utils/cn'
+// import { cn } from '../../utils/cn'
 
 const solutions = [
   {
@@ -44,10 +46,10 @@ const solutions = [
     icon: ArrowPathIcon,
   },
 ]
-const callsToAction = [
-  { name: 'Watch Demo', href: '#', icon: PlayIcon },
-  { name: 'Contact Sales', href: '#', icon: PhoneIcon },
-]
+// const callsToAction = [
+//   { name: 'Watch Demo', href: '#', icon: PlayIcon },
+//   { name: 'Contact Sales', href: '#', icon: PhoneIcon },
+// ]
 
 const resources = [
   {
@@ -72,6 +74,7 @@ const resources = [
 ]
 
 export const Header = () => {
+  const navigate = useNavigate()
   return (
     <Popover className="relative">
       <div className="mx-auto px-6">
@@ -89,7 +92,7 @@ export const Header = () => {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </PopoverButton>
           </div>
-          <PopoverGroup as="nav" className="hidden space-x-10 md:flex">
+          {/* <PopoverGroup as="nav" className="hidden space-x-10 md:flex">
             <Popover className="relative">
               {({ open }) => (
                 <>
@@ -192,7 +195,7 @@ export const Header = () => {
                             </a>
                           ))}
                         </div>
-                        {/* <div className="bg-gray-50 px-5 py-5 sm:px-8 sm:py-8">
+                        <div className="bg-gray-50 px-5 py-5 sm:px-8 sm:py-8">
                           <div>
                             <h3 className="text-base font-medium text-gray-500">Recent Posts</h3>
                             <ul className="mt-4 space-y-4">
@@ -211,23 +214,23 @@ export const Header = () => {
                               <span aria-hidden="true"> &rarr;</span>
                             </a>
                           </div>
-                        </div> */}
+                        </div>
                       </div>
                     </PopoverPanel>
                   </Transition>
                 </>
               )}
             </Popover>
-          </PopoverGroup>
+          </PopoverGroup> */}
           <div className="hidden items-center justify-end space-x-8 md:flex md:flex-1 lg:w-0">
-            <a href="/" className="whitespace-nowrap text-base font-medium text-green-500 hover:text-slate-600">
-              Sign in
-            </a>
-            <a
-              href="/signup"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-green-500 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-400">
+            <Button text onClick={() => navigate('/login')} className="whitespace-nowrap text-base font-medium">
+              Log in
+            </Button>
+            <Button
+              onClick={() => navigate('/signup')}
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent px-4 py-2 text-base font-medium">
               Sign up
-            </a>
+            </Button>
           </div>
         </div>
       </div>
@@ -299,7 +302,7 @@ export const Header = () => {
               <div>
                 <a
                   href="/"
-                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700">
+                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium ">
                   Sign up
                 </a>
                 <p className="mt-6 text-center text-base font-medium text-gray-500">

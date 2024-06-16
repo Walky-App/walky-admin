@@ -1,18 +1,21 @@
-import { type Control, Controller, type FieldErrors } from 'react-hook-form'
+import { type Control, Controller, type FieldErrors, type UseFormSetValue } from 'react-hook-form'
 
+import { isValid, parse } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
+import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
 import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber'
-import { MultiSelect } from 'primereact/multiselect'
 import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
-import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
-import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
-import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IFacility } from '../../../interfaces/Facility'
+import { type IFacility } from '../../../interfaces/facility'
+import { requestService } from '../../../services/requestServiceNew'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
+import { setTimeInUTC, toLocalDateTime } from '../../../utils/timeUtils'
+import { HtInputHelpText } from '../forms/HtInputHelpText'
+import { HtInputLabel } from '../forms/HtInputLabel'
+import { HtInfoTooltip } from '../general/HtInfoTooltip'
 
 export interface JobFormDefaultValues {
   title: string
@@ -28,29 +31,14 @@ export interface JobFormDefaultValues {
   total_hours: number
 }
 
-export const setTime = (hours: number, minutes = 0, seconds = 0, milliseconds = 0) => {
-  const date = new Date()
-  date.setHours(hours, minutes, seconds, milliseconds)
-  return date
-}
-
-export const convertMilitaryTimeToStandardDate = (time: number, date: Date) => {
-  const hours = Math.floor(time / 100)
-  const minutes = time % 100
-  const dateObj = new Date(date)
-  dateObj.setHours(hours)
-  dateObj.setMinutes(minutes)
-  return dateObj
-}
-
 export const defaultJobFormValues: JobFormDefaultValues = {
   title: '',
   facility_id: '',
   vacancy: 1,
   hourly_rate: 18.0,
   job_dates: [],
-  start_time: setTime(8, 30),
-  end_time: setTime(17),
+  start_time: setTimeInUTC(8, 30),
+  end_time: setTimeInUTC(17),
   lunch_break: 30,
   job_tips: [],
   total_hours: 0,
@@ -68,7 +56,7 @@ export const renderJobTitleController = (
       <>
         <HtInputLabel htmlFor={field.name} labelText="Job Title" asterisk />
         <Dropdown
-          id={field.name}
+          inputId={field.name}
           value={field.value}
           optionLabel="title"
           options={jobTitlesOptions}
@@ -87,29 +75,51 @@ export const renderFacilityController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
   facilities: IFacility[],
-) => (
-  <Controller
-    name="facility_id"
-    control={control}
-    rules={{ required: 'Facility is required.' }}
-    render={({ field, fieldState }) => (
-      <>
-        <HtInputLabel htmlFor={field.name} labelText="Select Facility" asterisk />
-        <Dropdown
-          id={field.name}
-          value={field.value}
-          optionLabel="name"
-          options={facilities}
-          filter
-          focusInputRef={field.ref}
-          onChange={e => field.onChange(e.value)}
-          className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
-        />
-        {getFormErrorMessage(field.name, errors)}
-      </>
-    )}
-  />
-)
+  setValue: UseFormSetValue<JobFormDefaultValues>,
+  disabled?: boolean,
+) => {
+  const selectFacility = async (facilityId: string) => {
+    const facility = facilities.find(facility => facility._id === facilityId)
+    const response = await requestService({ path: `settings/${facility?.state}` })
+    const data = await response.json()
+    if (response.ok) {
+      setValue('hourly_rate', data.minimun_wage)
+    }
+  }
+
+  return (
+    <Controller
+      name="facility_id"
+      control={control}
+      rules={{ required: 'Facility is required.' }}
+      render={({ field, fieldState }) => (
+        <>
+          <HtInputLabel
+            htmlFor={field.name}
+            labelText={disabled ?? false ? 'Facility' : 'Select Facility'}
+            asterisk={disabled === true ? false : true}
+          />
+          <Dropdown
+            inputId={field.name}
+            value={field.value}
+            optionLabel="name"
+            optionValue="_id"
+            options={facilities}
+            disabled={disabled}
+            filter
+            focusInputRef={field.ref}
+            onChange={e => {
+              selectFacility(e.value)
+              field.onChange(e.value)
+            }}
+            className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
+          />
+          {getFormErrorMessage(field.name, errors)}
+        </>
+      )}
+    />
+  )
+}
 
 export const renderJobDatesController = (
   control: Control<JobFormDefaultValues>,
@@ -134,7 +144,7 @@ export const renderJobDatesController = (
           dateFormat="mm/dd/yy"
           selectionMode="multiple"
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
-          minDate={new Date()} // Disabling past dates
+          minDate={new Date()}
           inline
           showButtonBar
         />
@@ -161,29 +171,68 @@ export const renderStartTimeController = (
   errors: FieldErrors<JobFormDefaultValues>,
   startTime: Date,
   setStartTime: (time: Date | null) => void,
+  isStartTimeValid: boolean,
+  setIsStartTimeValid: (valid: boolean) => void,
 ) => (
   <Controller
     name="start_time"
     control={control}
     rules={{ required: 'Start Time is required.' }}
-    render={({ field, fieldState }) => (
-      <>
-        <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
-        <Calendar
-          value={field.value === null ? startTime : field.value}
-          onChange={e => {
-            field.onChange(e.value ?? null)
-            setStartTime(e.value ?? null)
-          }}
-          timeOnly
-          hourFormat="12"
-          showIcon
-          icon={() => <i className="pi pi-clock" />}
-          className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
-        />
-        {getFormErrorMessage(field.name, errors)}
-      </>
-    )}
+    render={({ field, fieldState }) => {
+      return (
+        <>
+          <HtInfoTooltip message="Select the start time for the job.">
+            <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
+          </HtInfoTooltip>
+          <Calendar
+            inputId={field.name}
+            value={field.value == null ? toLocalDateTime(startTime) : toLocalDateTime(field.value)}
+            invalid={!isStartTimeValid}
+            onChange={e => {
+              const newValue = e.value as Date
+              const isValidDate = newValue != null && isValid(newValue)
+              if (isValidDate) {
+                const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
+                setIsStartTimeValid(true)
+                field.onChange(utcTime)
+                setStartTime(utcTime)
+              } else {
+                setIsStartTimeValid(false)
+              }
+            }}
+            onInput={e => {
+              const newValue = (e.target as HTMLInputElement).value
+              const newDate = parse(newValue, 'hh:mm a', new Date())
+              const isValidDate = newValue != null && isValid(newDate)
+              if (isValidDate) {
+                const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
+                setIsStartTimeValid(true)
+                field.onChange(utcTime)
+              } else {
+                setIsStartTimeValid(false)
+              }
+            }}
+            onBlur={e => {
+              const newValue = (e.target as HTMLInputElement).value
+              const newDate = parse(newValue, 'hh:mm a', new Date())
+              const isValidDate = newValue != null && isValid(newDate)
+              if (isValidDate) {
+                const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
+                setStartTime(utcTime)
+              }
+            }}
+            onHide={() => setIsStartTimeValid(true)}
+            timeOnly
+            hourFormat="12"
+            parseDateTime={string => new Date(string)}
+            showIcon
+            icon={() => <i className="pi pi-clock" />}
+            className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
+          />
+          {getFormErrorMessage(field.name, errors)}
+        </>
+      )
+    }}
   />
 )
 
@@ -192,6 +241,8 @@ export const renderEndTimeController = (
   errors: FieldErrors<JobFormDefaultValues>,
   endTime: Date,
   setEndTime: (time: Date | null) => void,
+  isEndTimeValid: boolean,
+  setIsEndTimeValid: (valid: boolean) => void,
 ) => (
   <Controller
     name="end_time"
@@ -199,15 +250,50 @@ export const renderEndTimeController = (
     rules={{ required: 'End Time is required.' }}
     render={({ field, fieldState }) => (
       <>
-        <HtInputLabel htmlFor={field.name} labelText="End Time" asterisk />
+        <HtInfoTooltip message="Select the end time for the job.">
+          <HtInputLabel htmlFor={field.name} labelText="End Time" asterisk />
+        </HtInfoTooltip>
         <Calendar
-          value={field.value === null ? endTime : field.value}
+          inputId={field.name}
+          value={field.value == null ? toLocalDateTime(endTime) : toLocalDateTime(field.value)}
+          invalid={!isEndTimeValid}
           onChange={e => {
-            field.onChange(e.value ?? null)
-            setEndTime(e.value ?? null)
+            const newValue = e.value as Date
+            const isValidDate = newValue != null && isValid(newValue)
+            if (isValidDate) {
+              const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
+              setIsEndTimeValid(true)
+              field.onChange(utcTime)
+              setEndTime(utcTime)
+            } else {
+              setIsEndTimeValid(false)
+            }
           }}
+          onInput={e => {
+            const newValue = (e.target as HTMLInputElement).value
+            const newDate = parse(newValue, 'hh:mm a', new Date())
+            const isValidDate = newValue != null && isValid(newDate)
+            if (isValidDate) {
+              const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
+              setIsEndTimeValid(true)
+              field.onChange(utcTime)
+            } else {
+              setIsEndTimeValid(false)
+            }
+          }}
+          onBlur={e => {
+            const newValue = (e.target as HTMLInputElement).value
+            const newDate = parse(newValue, 'hh:mm a', new Date())
+            const isValidDate = newValue != null && isValid(newDate)
+            if (isValidDate) {
+              const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
+              setEndTime(utcTime)
+            }
+          }}
+          onHide={() => setIsEndTimeValid(true)}
           timeOnly
           hourFormat="12"
+          parseDateTime={string => new Date(string)}
           showIcon
           icon={() => <i className="pi pi-clock" />}
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
@@ -231,10 +317,10 @@ export const renderVacancyController = (
     render={({ field, fieldState }) => (
       <>
         <HtInfoTooltip message="If you have more than 10 vacancies for this job, please message Support.">
-          <HtInputLabel htmlFor={field.name} labelText="Number of Vacancies" />
+          <HtInputLabel htmlFor={field.name} asterisk labelText="Number of Vacancies" />
         </HtInfoTooltip>
         <InputNumber
-          id={field.name}
+          inputId={field.name}
           inputRef={field.ref}
           value={field.value}
           onBlur={field.onBlur}
@@ -271,10 +357,10 @@ export const renderPayRateController = (
     render={({ field, fieldState }) => (
       <>
         <HtInfoTooltip message="An hourly pay rate should be not be lower than the minimum rate required by law">
-          <HtInputLabel htmlFor={field.name} labelText="Pay Rate" />
+          <HtInputLabel htmlFor={field.name} asterisk labelText="Pay Rate" />
         </HtInfoTooltip>
         <InputNumber
-          id={field.name}
+          inputId={field.name}
           inputRef={field.ref}
           value={field.value}
           onBlur={field.onBlur}
@@ -309,23 +395,31 @@ export const renderJobTipsController = (
     rules={{ required: 'Job tips required.' }}
     render={({ field }) => (
       <>
-        <HtInfoTooltip message="Provide common job notes to accepted employees">
+        <HtInfoTooltip message="Provide common job notes to accepted employees. Select at least one job tip.">
           <HtInputLabel htmlFor={field.name} labelText="Job tips" asterisk />
         </HtInfoTooltip>
-        <MultiSelect
-          id={field.name}
-          name="value"
-          value={field.value}
-          options={jobTipsOptions}
-          filter
-          onChange={e => field.onChange(e.value)}
-          optionLabel="label"
-          placeholder="Select Job Tips"
-          maxSelectedLabels={8}
-          className="md:w-20rem mt-2 w-full"
-        />
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {jobTipsOptions.map(option => (
+            <div className="flex items-center" key={option.value}>
+              <Checkbox
+                inputId={option.value}
+                checked={field.value?.includes(option.value) || false}
+                onChange={e => {
+                  const value = field.value || []
+                  if (e.checked) {
+                    field.onChange([...value, option.value])
+                  } else {
+                    field.onChange(value.filter((item: string) => item !== option.value))
+                  }
+                }}
+              />
+              <label className="ml-2.5 text-balance" htmlFor={option.value}>
+                {option.label}
+              </label>
+            </div>
+          ))}
+        </div>
         {getFormErrorMessage(field.name, errors)}
-        <HtInputHelpText fieldName={field.name} helpText="Select at least one job tip" />
       </>
     )}
   />

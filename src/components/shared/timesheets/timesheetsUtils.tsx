@@ -1,11 +1,20 @@
+import React from 'react'
+
+import { Link } from 'react-router-dom'
+
+import { format } from 'date-fns'
+import { Button } from 'primereact/button'
+import { Chip } from 'primereact/chip'
 import { type ColumnEditorOptions } from 'primereact/column'
 
+import { type IJob } from '../../../interfaces/job'
 import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
-import { convertMillisecondsToReadableTime, formatToDate } from '../../../utils/timeUtils'
+import { roleChecker } from '../../../utils/roleChecker'
+import { convertMillisecondsToReadableTime } from '../../../utils/timeUtils'
 
 export interface IAdminUserTimesheetsColumnMeta<T> {
   field: keyof T
-  header: string
+  header: React.ReactNode
   sortable?: boolean
   editor?: (options: ColumnEditorOptions) => React.ReactNode
 }
@@ -33,10 +42,10 @@ export interface IPunchPairsWithData {
   in_time: Date | null
   out_time: Date | null
   total_time: string
-  details: string
+  details: React.ReactNode
   worked_time: string
   scheduled_time: string
-  difference: string
+  difference: React.ReactNode
   punchesWithDetails: IPunchDetails[]
 }
 
@@ -44,6 +53,10 @@ export interface IPunchPairWithTotalTime {
   punchIn: IPunch
   punchOut: IPunch | null
   totalTime: string | undefined
+}
+
+export interface ITimesheetWithJobDetails extends ITimeSheet {
+  job_details: IJob
 }
 
 /**
@@ -99,8 +112,8 @@ export function createPunchPairsWithTotalTime(punches: IPunch[]): IPunchPairWith
  * @param {string} jobId - The job ID associated with the timesheet.
  * @returns {IPunchPairsWithData} A processed timesheet.
  */
-export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWithData {
-  const { punches, job_id, _id } = timesheet
+export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): IPunchPairsWithData {
+  const { punches, _id, job_details } = timesheet
 
   const sortedPunches = sortPunches(punches)
 
@@ -124,7 +137,7 @@ export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWit
       totalWorkedTime += totalTime
       outTime = new Date(punchOut.time_stamp)
       punchPairs.push({
-        day: formatToDate(punchOut.time_stamp),
+        day: format(punchOut.time_stamp, 'EEE, MMM d'),
         in_id: punchIn._id,
         out_id: punchOut._id,
         in_time: new Date(punchIn.time_stamp),
@@ -142,7 +155,7 @@ export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWit
     punchPairs.push({
       in_id: punchIn._id,
       out_id: '',
-      day: formatToDate(punchIn.time_stamp),
+      day: format(punchIn.time_stamp, 'EEE, MMM d'),
       in_time: new Date(punchIn.time_stamp),
       out_time: null,
       in_time_stamp: punchIn.time_stamp,
@@ -153,19 +166,48 @@ export function processPunchPairsWithData(timesheet: ITimeSheet): IPunchPairsWit
   }
 
   const totalWorkedHours = totalWorkedTime / 1000 / 60 / 60
-
-  const day = formatToDate(sortedPunches[0].time_stamp)
+  const scheduledHours = job_details.total_hours
+  const workedScheduledDifference = totalWorkedHours - scheduledHours
 
   return {
     time_stamp: sortedPunches[0].time_stamp,
-    day,
+    day: format(sortedPunches[0].time_stamp, 'EEE, MMM d'),
     in_time: inTime,
     out_time: outTime,
     total_time: totalWorkedHours.toFixed(2),
-    details: job_id,
+    details: <TimesheetJobDetails job={job_details} />,
     worked_time: totalWorkedHours.toFixed(2),
-    scheduled_time: '',
-    difference: '',
+    scheduled_time: scheduledHours.toFixed(2),
+    difference: formatDifference(workedScheduledDifference),
     punchesWithDetails: punchPairs,
   }
+}
+
+export const formatDifference = (difference: number) => {
+  return difference > 0 ? <span style={{ color: 'red' }}>+{difference.toFixed(2)}</span> : difference.toFixed(2)
+}
+
+const TimesheetJobDetails = ({ job }: { job: IJob }) => {
+  const { title, facility, lunch_break } = job
+
+  const role = roleChecker()
+
+  return (
+    <div className="space-x-2">
+      {lunch_break ? <Chip label={`${lunch_break.toLocaleString()} min`} icon="pi pi-clock" /> : null}
+      {title ? (
+        <Link to={`/${role}/jobs/${job._id}`}>
+          <Button label={title} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
+        </Link>
+      ) : null}
+      {facility?.name && facility?._id && role === 'employee' ? (
+        <Button label={facility.name} size="small" severity="secondary" disabled rounded icon="pi pi-map-marker" />
+      ) : null}
+      {facility?.name && facility?._id && role === 'admin' ? (
+        <Link to={`/admin/facilities/${facility._id}`}>
+          <Button label={facility.name} size="small" severity="secondary" rounded outlined icon="pi pi-map-marker" />
+        </Link>
+      ) : null}
+    </div>
+  )
 }

@@ -8,9 +8,12 @@ import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
 
 import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import {
   FormDataContext,
   getFormErrorMessage,
@@ -46,19 +49,19 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
 
   useEffect(() => {
     if (moreAddressDetails) {
-      if (moreAddressDetails.zip !== undefined) {
+      if (moreAddressDetails.zip != null) {
         setValue('zip', moreAddressDetails.zip)
       }
-      if (moreAddressDetails.state !== undefined) {
+      if (moreAddressDetails.state != null) {
         setValue('state', moreAddressDetails.state)
       }
-      if (moreAddressDetails.city !== undefined) {
+      if (moreAddressDetails.city != null) {
         setValue('city', moreAddressDetails.city)
       }
-      if (moreAddressDetails.address !== undefined) {
+      if (moreAddressDetails.address != null) {
         setValue('address', moreAddressDetails.address)
       }
-      if (moreAddressDetails.country !== undefined) {
+      if (moreAddressDetails.country != null) {
         setValue('country', moreAddressDetails.country)
       }
       setMoreAddressDetails(undefined)
@@ -128,7 +131,8 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Contact Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your contact information.</p>
+            <p className="mt-4 text-sm leading-6 text-gray-600">Please provide your contact information.</p>
+            {requiredFieldsNoticeText}
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
@@ -138,9 +142,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'First Name is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *First Name:
-                    </label>
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="First Name:" />
                     <InputText
                       id={field.name}
                       {...field}
@@ -159,9 +161,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'Last Name is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Last Name:
-                    </label>
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Last Name:" />
                     <InputText
                       id={field.name}
                       {...field}
@@ -180,9 +180,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: false }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      Middle Name:
-                    </label>
+                    <HtInputLabel htmlFor={field.name} labelText="Middle Name:" />
                     <InputText
                       id={field.name}
                       {...field}
@@ -201,9 +199,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: false }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      Preferred Name:
-                    </label>
+                    <HtInputLabel htmlFor={field.name} labelText="Preferred Name:" />
                     <InputText
                       id={field.name}
                       {...field}
@@ -225,9 +221,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Phone Number:
-                    </label>
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Phone Number:" />
                     <InputMask
                       id={field.name}
                       {...field}
@@ -256,9 +250,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Email:
-                    </label>
+                    <HtInputLabel htmlFor={field.name} asterisk labelText="Email:" />
                     <InputText
                       id={field.name}
                       {...field}
@@ -275,7 +267,8 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Home Address</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Please provide your home address.</p>
+            <p className="mt-4 text-sm leading-6 text-gray-600">Please provide your home address.</p>
+            {requiredFieldsNoticeText}
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-6">
@@ -285,16 +278,17 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 rules={{ required: 'Address is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <label htmlFor={field.name} className="block text-sm font-medium leading-6 text-gray-900">
-                      *Address:
-                    </label>
+                    <HtInfoTooltip message="This is an address where you reside and receive your mail.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Address:" />
+                    </HtInfoTooltip>
                     <AddressAutoComplete
+                      inputId={field.name}
                       controlled
                       setMoreAddressDetails={setMoreAddressDetails}
                       currentAddress={field.value}
                       onChange={field.onChange}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
                   </>
                 )}

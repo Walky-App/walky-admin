@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { BreadCrumbs } from '../../../components/shared/BreadCrumbs'
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { Unit } from '../../../interfaces/unit'
 import { requestService } from '../../../services/requestServiceNew'
@@ -13,7 +14,7 @@ import { UnitDetailsCard } from '../components/UnitDetailsCard'
 import { VideoPlayer } from '../components/VideoPlayer'
 
 export const UnitDetail = () => {
-  const { unit, setUnit } = useAdmin()
+  const { unit, setUnit, module } = useAdmin()
   const { setRecord, record, currentUnit, setCurrentAssessment } = useLearn()
   const [visible, setVisible] = useState(false)
   const params = useParams()
@@ -56,8 +57,16 @@ export const UnitDetail = () => {
     setVisible(true)
   }
 
+  const pages = [
+    { name: 'Categories', href: '/learn', current: false },
+    { name: 'Modules', href: `/learn/category/${module?.category._id}`, current: false },
+    { name: 'Units', href: `/learn/module/${module?._id}`, current: false },
+    { name: `${unit?.title}`, href: `#`, current: true },
+  ]
+
   return (
     <div>
+      <BreadCrumbs pages={pages} />
       <ShowResultsDialog setVisible={setVisible} visible={visible} />
       <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
         {/*left content*/}

@@ -1,27 +1,59 @@
-import { Document, Page, Image, View, Text, Font, PDFViewer } from '@react-pdf/renderer'
+import { v4 as uuidv4 } from 'uuid'
 
-import { useAdmin } from '../../../../contexts/AdminContext'
+import { ShieldCheckIcon } from '@heroicons/react/24/solid'
+import { Document, Page, Image, View, Text, Font, pdf } from '@react-pdf/renderer'
+
 import { useAuth } from '../../../../contexts/AuthContext'
 import type { IUser } from '../../../../interfaces/User'
 import type { Category } from '../../../../interfaces/category'
+import { requestService } from '../../../../services/requestServiceNew'
 
-export const Certification = () => {
-  const { category } = useAdmin()
+interface CertificationProps {
+  urlCertificate: string | undefined
+  category: Category
+}
+
+export const Certification = ({ urlCertificate, category }: CertificationProps) => {
   const { user } = useAuth()
 
+  const generateOrGetCertification = async () => {
+    if (urlCertificate != '') {
+      window.open(urlCertificate)
+    } else {
+      const certificationId = uuidv4()
+      const blob = await pdf(<Pdf data={category} user={user} id={certificationId} />).toBlob()
+      const formData = new FormData()
+      formData.append('categoryId', category._id)
+      formData.append('userId', user?._id as string)
+      formData.append('file', blob, 'certificate.pdf')
+      const response = await requestService({
+        path: `lms/certificate/${certificationId}`,
+        method: 'POST',
+        dataType: 'formData',
+        body: formData,
+      })
+      const data = await response.json()
+      window.open(data.url)
+    }
+  }
+
   return (
-    <PDFViewer style={{ width: '100%', height: '100vh' }}>
-      <Pdf data={category} user={user} />
-    </PDFViewer>
+    <div>
+      <button type="button" onClick={generateOrGetCertification} className="flex items-center text-center ">
+        <ShieldCheckIcon className="h-4 w-4 text-green-600" />
+        <div>Completed</div>
+      </button>
+    </div>
   )
 }
 
-interface pdfProps {
+interface PdfProps {
   data: Category | undefined
   user: IUser | undefined
+  id: string
 }
 
-export const Pdf = ({ data, user }: pdfProps) => {
+export const Pdf = ({ data, user, id }: PdfProps) => {
   const formaterDate = () => {
     const currentDate = new Date()
     const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long', year: 'numeric' }
@@ -45,7 +77,7 @@ export const Pdf = ({ data, user }: pdfProps) => {
     <Document>
       <Page size="A4" orientation="landscape" wrap={false}>
         <View>
-          <Image source="/assets/template/Hemp_Temps_University_Certificates.png" />
+          <Image source="https://hemptemps-prod.s3.amazonaws.com/learn/templates/Hemp_Temps_University_Certificates.png" />
           <Text
             style={{
               position: 'absolute',
@@ -66,7 +98,7 @@ export const Pdf = ({ data, user }: pdfProps) => {
               fontFamily: 'Montserrat',
               fontWeight: 500,
             }}>
-            65b132-d6fd6f-ef0d7d-26d48e
+            {id}
           </Text>
           <Text style={{ position: 'absolute', left: '44%', top: '280px', fontFamily: 'Montserrat' }}>
             {data?.title}

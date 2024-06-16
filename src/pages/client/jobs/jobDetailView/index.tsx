@@ -9,12 +9,17 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { ToggleButton } from 'primereact/togglebutton'
 import { Tooltip } from 'primereact/tooltip'
 
+import { UserIcon, XMarkIcon } from '@heroicons/react/20/solid'
+
 import { Feedback } from '../../../../components/shared/dialog/Feedback'
 import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
-import { type IJob } from '../../../../interfaces/job'
+import { type IApplicant, type IJob } from '../../../../interfaces/job'
+import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
+import { formatToLocalTime } from '../../../../utils/timeUtils'
+import { EmployeeOptions } from './EmployeeOptions'
 import { PanelAcceptedContent } from './PanelAcceptedContent'
 import { PanelPendingContent } from './PanelPendingContent'
 import { PanelRejectedContent } from './PanelRejectedContent'
@@ -35,18 +40,6 @@ export const ClientJobDetailView = () => {
   if (job?.job_dates) {
     earliestDate = new Date(Math.min(...job.job_dates.map((date: string) => new Date(date).getTime())))
     latestDate = new Date(Math.max(...job.job_dates.map((date: string) => new Date(date).getTime())))
-  }
-
-  const convertToStandardTime = (militaryTime: number) => {
-    if (militaryTime == null) {
-      return 'Time not set'
-    }
-    const militaryTimeString = militaryTime.toString().padStart(4, '0')
-    const hours = Number(militaryTimeString.slice(0, -2))
-    const minutes = Number(militaryTimeString.slice(-2))
-    const standardHours = ((hours + 11) % 12) + 1
-    const amPm = hours >= 12 ? 'pm' : 'am'
-    return `${standardHours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`
   }
 
   useEffect(() => {
@@ -92,12 +85,15 @@ export const ClientJobDetailView = () => {
         method: 'PATCH',
         body: JSON.stringify(requestData),
       })
-      if (response !== null && response !== undefined) {
+      if (response.ok) {
         const updatedJob = await response.json()
         if (job && job._id) {
           setJob({ ...job, applicants: updatedJob.applicants })
         }
         showToast({ severity: 'success', summary: 'Applicant Accepted', detail: 'Applicant has been accepted' })
+      } else {
+        const responseError = await response.json()
+        showToast({ severity: 'error', summary: 'Completed job vacancies', detail: responseError.message })
       }
     } catch (error) {
       console.error(error)
@@ -126,25 +122,24 @@ export const ClientJobDetailView = () => {
     }
   }
 
-  const handleAcceptAll = async () => {
-    try {
-      const response = await requestService({ path: `jobs/${id}/acceptAll`, method: 'PATCH' })
-      if (response !== null && response !== undefined) {
-        const updatedJob = await response.json()
-        if (job && job._id) {
-          setJob({ ...job, applicants: updatedJob.applicants })
-        }
+  const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
 
-        showToast({
-          severity: 'success',
-          summary: 'All Applicants Accepted',
-          detail: 'All applicants have been accepted',
-        })
+  useEffect(() => {
+    const getPotentialApplicants = async () => {
+      try {
+        const response = await requestService({ path: `jobs/${id}/get-potential-applicants` })
+        if (response.status === 200) {
+          const jsonResponse = await response.json()
+          setPotentialApplicants(jsonResponse)
+        }
+      } catch (error) {
+        console.error('Error fetching potential applicants', error)
       }
-    } catch (error) {
-      console.error(error)
     }
-  }
+    if (role === 'admin') {
+      getPotentialApplicants()
+    }
+  }, [role, id])
 
   const onSubmit = async (userId: string) => {
     try {
@@ -193,6 +188,91 @@ export const ClientJobDetailView = () => {
     setOpenFeedback(true)
   }
 
+  function getUserShiftsLengthByDate(dateString: string): number {
+    const [day, month, year] = dateString.split('/')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const formattedDate = date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    const result = job?.job_days.find(jobDay => {
+      const jobDate = new Date(jobDay.day)
+      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      return formattedJobDate === formattedDate
+    })
+    if (!result) return 0
+
+    return result.shifts_id?.user_shifts?.length ?? 0
+  }
+
+  function getEmployeeListByShift(dateString: string): UserShiftsPopulate[] {
+    const [day, month, year] = dateString.split('/')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const formattedDate = date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    const result = job?.job_days.find(jobDay => {
+      const jobDate = new Date(jobDay.day)
+      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      return formattedJobDate === formattedDate
+    })
+    if (result?.shifts_id.user_shifts) return result.shifts_id.user_shifts as unknown as UserShiftsPopulate[]
+    return []
+  }
+
+  function getShiftByDate(dateString: string): string {
+    const [day, month, year] = dateString.split('/')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const formattedDate = date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    const result = job?.job_days.find(jobDay => {
+      const jobDate = new Date(jobDay.day)
+      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      return formattedJobDate === formattedDate
+    })
+    return result?.shifts_id._id as string
+  }
+
+  const removeEmployeeShift = async (userShiftId: string, shiftId: string) => {
+    try {
+      const response = await requestService({
+        path: `shifts/remove-one/${shiftId}`,
+        method: 'PATCH',
+        body: JSON.stringify({ userShiftId }),
+      })
+      const data = await response.json()
+      if (response.ok) {
+        //const updatedJob = await requestService({ path: `jobs/${id}`, method: 'GET' })
+        setJob(data)
+        showToast({
+          severity: 'success',
+          summary: 'Employee removed',
+          detail: 'Employee has been removed from the shift',
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <>
       <HeadingComponent title="Job Details" />
@@ -209,7 +289,7 @@ export const ClientJobDetailView = () => {
                       <div className="flex items-center">
                         <i className="pi pi-users" />
                         <div className="ml-1 text-base font-normal text-stone-500">
-                          {job?.applicants.length} / {job?.vacancy} Applicants
+                          {job?.applicants.length} Applicants / {job?.vacancy} Slots
                         </div>
                       </div>
                       {job.title}
@@ -236,9 +316,7 @@ export const ClientJobDetailView = () => {
                     <div className="flex items-start gap-2">
                       {job.is_active === true ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-sm font-medium text-black">
-                          {job.is_active === true ? 'Active' : 'Disabled'}
-                        </span>
+                        <span className="font-medium text-black">{job.is_active === true ? 'Active' : 'Disabled'}</span>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -248,54 +326,54 @@ export const ClientJobDetailView = () => {
                         <i className="pi pi-calendar-times" />
                       )}
                       <div className="mt-0.5 flex flex-col gap-1">
-                        <span className="text-sm font-medium text-black">
+                        <span className="font-medium text-black">
                           {job.is_completed === false ? 'Live' : 'Archived'}
                         </span>
                       </div>
                     </div>
                     <div className="mt-0.5 flex items-start gap-2">
                       {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
-                      <div className="text-sm font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
+                      <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
                   {/* Divider */}
                   <hr className="mt-3 h-px w-full bg-zinc-100" />
                   <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Job Dates</div>
-                      <div className="text-sm font-normal text-black">
+                      <div className="font-normal text-stone-500">Job Dates</div>
+                      <div className="font-normal text-black">
                         {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Job Time</div>
-                      <div className="text-sm font-normal text-black">
-                        {convertToStandardTime(job.start_time)} - {convertToStandardTime(job.end_time)}
+                      <div className="font-normal text-stone-500">Job Time</div>
+                      <div className="font-normal text-black">
+                        {/* {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)} */}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Lunch Break</div>
-                      <div className="text-sm font-normal text-black">
+                      <div className="font-normal text-stone-500">Lunch Break</div>
+                      <div className="font-normal text-black">
                         {job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Total Hours</div>
-                      <div className="text-sm font-normal text-black">{job.total_hours} Hours</div>
+                      <div className="font-normal text-stone-500">Total Hours</div>
+                      <div className="font-normal text-black">{job.total_hours} Hours</div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                      <div className="text-sm font-normal text-stone-500">Hourly Rate</div>
-                      <div className="text-sm font-normal text-black">{job.hourly_rate} USD</div>
+                      <div className="font-normal text-stone-500">Hourly Rate</div>
+                      <div className="font-normal text-black">{job.hourly_rate} USD</div>
                     </div>
                   </div>
                   {/* Job Card Footer */}
                   <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
                     <div className="flex flex-wrap items-center justify-start gap-1">
-                      <div className="text-balance text-sm font-normal text-stone-500">
+                      <div className="text-balance font-normal text-stone-500">
                         Last update on {new Date(job.createdAt).toLocaleDateString()}
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
-                      <div className="text-sm font-normal text-stone-500">#{job.uid}</div>
+                      <div className="font-normal text-stone-500">#{job.uid}</div>
                     </div>
                   </div>
                 </Card>
@@ -329,14 +407,46 @@ export const ClientJobDetailView = () => {
                             <time dateTime={date} className="w-28 flex-none">
                               {dayOfWeek}, {formattedDate}
                             </time>
-                            <p className="flex-none sm:ml-6">
-                              <time dateTime={date}>{convertToStandardTime(job.start_time)}</time> -
-                              <time dateTime={date}>{convertToStandardTime(job.end_time)}</time>
-                            </p>
-                            <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                              Lunch: {job.lunch_break} minutes
-                            </p>
-                            <p className="text-green-500">Confirmed</p>
+                            <div className="flex flex-1 flex-col">
+                              <div className="flex">
+                                <p>
+                                  <time dateTime={date}>{formatToLocalTime(job.start_time)}</time>
+                                  {' - '}
+                                  <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
+                                </p>
+                                <p className="ml-2 flex-auto font-semibold text-gray-900 sm:mt-0">
+                                  Lunch: {job.lunch_break} minutes
+                                </p>
+                              </div>
+                              <div className="flex flex-wrap items-center justify-start gap-1">
+                                {getEmployeeListByShift(formattedDate).map((userShift: UserShiftsPopulate) => {
+                                  return (
+                                    <div key={userShift._id} className="flex w-1/2 flex-1 items-center gap-1">
+                                      <UserIcon className="h-5 w-5 text-black" />
+                                      <span>{userShift.user_id.first_name}</span>
+                                      <Button
+                                        link
+                                        className="p-0"
+                                        onClick={() => {
+                                          removeEmployeeShift(userShift._id, getShiftByDate(formattedDate))
+                                        }}>
+                                        <XMarkIcon className="h-5 w-5 text-red-400" />
+                                      </Button>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                            {getUserShiftsLengthByDate(formattedDate) === job.vacancy ? (
+                              <p className="text-end text-green-500 md:text-start">Vacancy completed</p>
+                            ) : (
+                              <EmployeeOptions
+                                potentialApplicants={potentialApplicants}
+                                shiftId={getShiftByDate(formattedDate)}
+                                setJob={setJob}
+                                jobId={job._id}
+                              />
+                            )}
                           </li>
                         )
                       })}
@@ -395,7 +505,6 @@ export const ClientJobDetailView = () => {
                 id={id}
                 onSubmit={onSubmit}
                 handleAccept={handleAccept}
-                handleAcceptAll={handleAcceptAll}
                 handleReject={handleReject}
               />
             </TabPanel>

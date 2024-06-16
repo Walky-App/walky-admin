@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -7,9 +7,11 @@ import { Dialog } from 'primereact/dialog'
 import { Image } from 'primereact/image'
 
 import { type IUser } from '../../../../interfaces/User'
+import { type ITokenInfo } from '../../../../interfaces/services'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
-import { FormDataContext, clientOnboardingSteps } from '../ClientOnboardingPage'
+import { GetTokenInfo, SetToken } from '../../../../utils/tokenUtil'
+import { clientOnboardingSteps } from '../ClientOnboardingPage'
 
 interface FinishedOnboardingDialogProps {
   visible: boolean
@@ -19,14 +21,13 @@ interface FinishedOnboardingDialogProps {
 export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardingDialogProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const { currentUser, setCurrentUser } = useContext(FormDataContext)
-
   const { showToast } = useUtils()
 
   const navigate = useNavigate()
+  const userToken = GetTokenInfo()
 
   const updateUserFinishOnboarding = async () => {
-    const userId = currentUser?._id
+    const userId = userToken?._id
     if (userId != null) {
       try {
         const response = await requestService({ path: `users/${userId}` })
@@ -41,8 +42,8 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
           ...userFound,
           onboarding: {
             ...userFound.onboarding,
-            step_number: 5,
-            description: clientOnboardingSteps[4].label ?? '',
+            step_number: 4,
+            description: clientOnboardingSteps[3].label ?? '',
             type: 'client',
             completed: true,
           },
@@ -60,7 +61,13 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
 
         const updatedUser: IUser = await updateResponse.json()
 
-        setCurrentUser(updatedUser)
+        const updatedUserData: ITokenInfo = {
+          ...userToken,
+          onboarding: {
+            ...updatedUser.onboarding,
+          },
+        }
+        SetToken(updatedUserData)
         navigate('/client/dashboard')
       } catch (error) {
         console.error('Error updating user:', error)

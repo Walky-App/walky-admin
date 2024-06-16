@@ -33,8 +33,8 @@ export const TableComponent = ({
   }
 
   return (
-    <div className="">
-      <table {...getTableProps()}>
+    <div>
+      <table {...getTableProps()} className="w-full">
         <thead>
           {headerGroups.map((headerGroup: any) => (
             <tr key={headerGroup.headers} {...headerGroup.getHeaderGroupProps()}>
