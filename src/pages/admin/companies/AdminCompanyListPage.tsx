@@ -10,7 +10,6 @@ import { formatToDateTime } from '../../../utils/timeUtils'
 export const AdminCompanyListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [companies, setCompanies] = useState<ICompany[]>([])
-
   useEffect(() => {
     setIsLoading(true)
     const getCompanies = async () => {
@@ -33,23 +32,23 @@ export const AdminCompanyListPage = () => {
 
   const memoCompaniesColumns = useMemo(
     () => [
-      { Header: 'Name', accessor: 'corp_name' },
+      { Header: 'Name', accessor: 'company_name' },
       {
         Header: 'DBA',
         width: '200px',
         accessor: (company: ICompany) => company.company_dbas?.join(', ') ?? '',
       },
-      { Header: 'Tax ID', accessor: 'tax_id' },
+      { Header: 'Tax ID', accessor: 'company_tax_id' },
       {
         Header: 'Phone',
-        accessor: (company: ICompany) => (company.phone_number?.length ? formatPhoneNumber(company.phone_number) : ''),
+        accessor: (company: ICompany) =>
+          company.company_phone_number?.length ? formatPhoneNumber(company.company_phone_number) : '',
       },
-      { Header: 'Payment', width: '10px', accessor: (company: ICompany) => company.payment_information.length },
-      { Header: 'Country', accessor: 'country' },
-      { Header: 'Address', accessor: 'address', width: '300px' },
-      { Header: 'City', accessor: 'city' },
-      { Header: 'State', accessor: 'state' },
-      { Header: 'Zip', accessor: 'zip' },
+      { Header: 'Payment Information', accessor: (company: ICompany) => company?.payment_information?.length },
+      { Header: 'Address', accessor: 'company_address' },
+      { Header: 'City', accessor: 'company_city' },
+      { Header: 'State', accessor: 'company_state' },
+      { Header: 'Zip', accessor: 'company_zip' },
       { Header: 'Facilities', width: '10px', accessor: (company: ICompany) => company.facilities.length },
       {
         Header: 'Created At',
@@ -59,5 +58,9 @@ export const AdminCompanyListPage = () => {
     [],
   )
 
-  return isLoading ? <HTLoadingLogo /> : <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} />
+  return isLoading ? (
+    <HTLoadingLogo />
+  ) : (
+    <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} allowClick />
+  )
 }

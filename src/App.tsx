@@ -12,6 +12,7 @@ import { Error404 } from './pages/Error404'
 /******************************************* Auth Pages ************************************/
 import { Auth } from './pages/auth'
 import { NewPasswordForm } from './pages/auth/NewPasswordForm'
+import { Otp } from './pages/auth/Otp'
 import { Signup } from './pages/auth/SignupForm'
 
 /******************************************* HTU Pages ************************************/
@@ -27,8 +28,6 @@ import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import Jobs from './pages/client/jobs'
-import { ClientAddJob } from './pages/client/jobs/addJob/ClientAddJob'
-import { ClientEditJob } from './pages/client/jobs/editJob/ClientEditJob'
 import { ClientJobDetailView } from './pages/client/jobs/jobDetailView'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
@@ -74,17 +73,22 @@ import { AdminDetailsModule } from './pages/admin/HTU/AdminDetailsModule'
 import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
 import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
-import { Certification } from './pages/admin/HTU/components/Certification'
 
+// import { Certification } from './pages/admin/HTU/components/Certification'
 import { AdminJobs } from './pages/admin/jobs'
 
 import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
 import { AdminCompanyListPage } from './pages/admin/companies/AdminCompanyListPage'
 import { AdminCompanyPage } from './pages/admin/companies/AdminCompanyPage'
+import { AdminCompanyPaymentMethodsPage } from './pages/admin/companies/components'
+import { AdminCompanyAddPaymentMethod } from './pages/admin/companies/components'
+import { AdminCompanyDetails } from './pages/admin/companies/components/AdminCompanyDetails'
+import { PaymentMethodDetails } from './pages/admin/companies/components/PaymentMethodDetails'
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 import { LayoutPublic } from './components/layoutPublic'
+import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
 import { Pricing } from './pages/Pricing'
 
 /******************************************* Employee Pages ************************************/
@@ -112,12 +116,15 @@ export const App = () => {
             <Route element={<Auth />} path="/" />
             <Route element={<Auth />} path="/login" />
             <Route element={<LayoutPublic />}>
-              <Route element={<Pricing />} path="/pricing" />
               <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
               <Route element={<Signup />} path="/invite/:email/:role" />
               <Route element={<Signup />} path="/signup" />
-              <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" />
+              <Route element={<Otp />} path="/otp/:id" />
+              {/* <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" /> */}
             </Route>
+            <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
+            <Route element={<Signup />} path="/signup" />
+            <Route element={<Signup />} path="/invite/:email/:role" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>
                 <Route element={<EmployeeOnboarding />} path="/employee/onboarding" />
@@ -135,6 +142,7 @@ export const App = () => {
                 <Route element={<UnitDetail />} path="/learn/module/:moduleId/unit/:unitId" />
                 <Route element={<Assessment />} path="/learn/module/:moduleId/unit/:unitId/assesment" />
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
+                  <Route element={<Pricing />} path="/pricing" />
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientMessages />} path="/client/messages" />
@@ -152,8 +160,8 @@ export const App = () => {
                   <Route element={<AdminFacilityLicenses />} path="/client/facilities/:facilityId/licenses" />
                   <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<Jobs />} path="/client/jobs" />
-                  <Route element={<ClientAddJob />} path="/client/jobs/new" />
-                  <Route element={<ClientEditJob />} path="/client/jobs/:id/edit" />
+                  <Route element={<AddEditJobPage />} path="/client/jobs/new" />
+                  <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
                   <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
@@ -184,7 +192,12 @@ export const App = () => {
                   </Route>
                   <Route element={<AdminCompanyListPage />} path="/admin/companies" />
                   <Route element={<AdminAddCompany />} path="/admin/companies/new" />
-                  <Route element={<AdminCompanyPage />} />
+                  <Route element={<AdminCompanyPage />}>
+                    <Route element={<AdminCompanyDetails />} path="/admin/companies/:id" />
+                    <Route element={<AdminCompanyPaymentMethodsPage />} path="/admin/companies/:id/payment" />
+                    <Route element={<AdminCompanyAddPaymentMethod />} path="/admin/companies/:id/add-payment" />
+                    <Route element={<PaymentMethodDetails />} path="/admin/companies/:id/payment/:paymentId" />
+                  </Route>
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />
@@ -198,9 +211,9 @@ export const App = () => {
                   <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
-                  <Route element={<ClientAddJob />} path="/admin/jobs/new" />
+                  <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
                   <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
-                  <Route element={<ClientEditJob />} path="/admin/jobs/:id/edit" />
+                  <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
                   <Route element={<AdminDetailsCategory />} path="/admin/learn/categories/:categoryId" />

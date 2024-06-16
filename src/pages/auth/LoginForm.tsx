@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
+import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 
@@ -14,7 +15,7 @@ import { useUtils } from '../../store/useUtils'
 import { roleChecker } from '../../utils/roleChecker'
 import { GetTokenInfo, SetToken } from '../../utils/tokenUtil'
 
-export const LoginForm = () => {
+export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => void }) => {
   const [error, setError] = useState<Error>()
   const [loading, setLoading] = useState(false)
   const [value, setValue] = useState<string>('')
@@ -115,7 +116,7 @@ export const LoginForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 ml-auto mr-auto max-w-md space-y-4 px-4 sm:px-0">
+    <form onSubmit={handleSubmit} className="mb-6 ml-auto mr-auto max-w-md space-y-4 px-4  sm:px-0">
       <div className="mx-auto max-w-lg text-center" />
       <div>
         <label htmlFor="email" className="sr-only">
@@ -169,13 +170,21 @@ export const LoginForm = () => {
           <p className="text-sm text-red-500">{String(error)}</p>
         </div>
       ) : null}
-      <button
+      <div className="w-full text-right" style={{ marginTop: 0 }}>
+        <button
+          type="button"
+          tabIndex={-1}
+          className="text-xs text-zinc-500 underline hover:text-green-700"
+          onClick={() => setUserForm('Forgot Password')}>
+          Forgot your password?
+        </button>
+      </div>
+      <Button
+        // disabled={!loading}
+        label={loading ? 'Logging in' : 'Login'}
         type="submit"
-        className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'cursor-wait hover:bg-zinc-950'
-        }`}>
-        {loading ? 'Logging in...' : 'Login'}
-      </button>
+        className={`w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
+      />
     </form>
   )
 }

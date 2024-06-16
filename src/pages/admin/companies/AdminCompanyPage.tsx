@@ -12,10 +12,14 @@ import { adminCompanyLinks } from './adminCompanySubHeaderLinks'
 interface IAdminCompanyPageContext {
   selectedCompanyData: ICompany
   selectedCompanyId?: string
+  setSelectedCompanyData: (data: ICompany) => void
 }
 
-const AdminCompanyPageContext = createContext<IAdminCompanyPageContext>({} as IAdminCompanyPageContext)
-
+const AdminCompanyPageContext = createContext<IAdminCompanyPageContext>({
+  selectedCompanyData: {} as ICompany,
+  selectedCompanyId: undefined,
+  setSelectedCompanyData: () => void 0,
+})
 export const useAdminCompanyPageContext = () => {
   return useContext(AdminCompanyPageContext)
 }
@@ -46,13 +50,13 @@ export const AdminCompanyPage = () => {
 
   const subheaderUserDetails: SubHeaderData = {
     _id: selectedCompanyData?._id,
-    corp_name: selectedCompanyData?.corp_name,
-    dba: selectedCompanyData?.company_dbas?.join(', ') ?? '',
-    address: selectedCompanyData?.address,
+    company_name: selectedCompanyData?.company_name,
+    company_dbas: selectedCompanyData?.company_dbas?.join(', ') ?? '',
+    company_address: selectedCompanyData?.company_address,
   }
 
   return (
-    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData }}>
+    <AdminCompanyPageContext.Provider value={{ selectedCompanyId, selectedCompanyData, setSelectedCompanyData }}>
       {isLoading ? (
         <Skeleton width="100%" height="100%" />
       ) : (

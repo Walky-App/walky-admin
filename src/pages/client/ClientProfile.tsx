@@ -15,7 +15,7 @@ import { UploadAvatar } from '../../components/shared/forms/UploadAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { type IUser } from '../../interfaces/User'
 import { RequestService } from '../../services/RequestService'
-import { tooltipOptions } from './onboarding/ClientOnboardingPage'
+import { tooltipOptions } from './onboarding/clientOnboardingUtils'
 
 interface IUserFormValues {
   first_name?: string

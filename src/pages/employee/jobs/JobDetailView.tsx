@@ -19,16 +19,17 @@ import {
   sortPunches,
   createPunchPairsWithTotalTime,
 } from '../../../components/shared/timesheets/timesheetsUtils'
-import { type IJob } from '../../../interfaces/job'
+import { type JobShiftDay, type IJob } from '../../../interfaces/job'
+import { type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
 import {
   isTodaySameAsTimeStamp,
-  convertMilitaryTimeToStandardTime,
   formatToDate,
   formatToTime,
   isValidDate,
+  formatToLocalTime,
 } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -36,8 +37,10 @@ export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isApplyForJobLoading, setIsApplyForJobLoading] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
+  const [hasDateIntersection, setHasDateIntersection] = useState(false)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
+  const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: Shifts | string } | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isClockedIn, setIsClockedIn] = useState(false)
   const [prevIsClockedIn, setPrevIsClockedIn] = useState<boolean | null>(null)
@@ -119,6 +122,7 @@ export const JobDetailView = () => {
         const job: IJob = await RequestService(`jobs/${id}`)
         if (job._id) {
           setJob(job)
+          getShiftIdForToday(job.job_days)
         } else {
           console.error('Job not found')
         }
@@ -144,6 +148,44 @@ export const JobDetailView = () => {
     return sortedTimesheets[0]
   }
 
+  const getShiftIdForToday = (jobDays: JobShiftDay[]): { isTodayShift: boolean; message: string | Shifts } => {
+    const today = new Date().toISOString().split('T')[0]
+
+    let upcomingDay: string | null = null
+    let pastDay: string | null = null
+
+    jobDays.sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
+
+    for (let i = 0; i < jobDays.length; i++) {
+      const jobDayDate = new Date(jobDays[i].day).toISOString().split('T')[0]
+      if (jobDayDate === today) {
+        setShiftId({ isTodayShift: true, message: jobDays[i].shifts_id })
+        return { isTodayShift: true, message: jobDays[i].shifts_id }
+      } else if (jobDayDate > today) {
+        if (!upcomingDay || jobDayDate < upcomingDay) {
+          upcomingDay = jobDayDate
+        }
+        if (i > 0) {
+          const previousDayDate = new Date(jobDays[i - 1].day).toISOString().split('T')[0]
+          if (previousDayDate < today && jobDayDate > today) {
+            return { isTodayShift: false, message: `There is no work today. The next shift is on ${jobDayDate}.` }
+          }
+        }
+      } else if (jobDayDate < today) {
+        if (!pastDay || jobDayDate > pastDay) {
+          pastDay = jobDayDate
+        }
+      }
+    }
+    if (upcomingDay) {
+      return { isTodayShift: false, message: `There are still days left until your job starts on ${upcomingDay}.` }
+    }
+    if (pastDay) {
+      return { isTodayShift: false, message: `The job has already ended.` }
+    }
+    return { isTodayShift: false, message: 'No shifts available.' }
+  }
+
   const getCurrentJobTimeSheets = useCallback(async () => {
     const { access_token } = GetTokenInfo()
     const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
@@ -156,6 +198,12 @@ export const JobDetailView = () => {
       },
     }
 
+    const getIdTimeSheetForToday = () => {
+      const shift: Shifts = shiftId?.message as Shifts
+      const userShift = shift.user_shifts?.find(us => us.user_id._id === user._id)
+      return userShift ? (userShift.timesheet_id as string) : null
+    }
+
     try {
       const response = await fetch(url, options)
 
@@ -164,25 +212,40 @@ export const JobDetailView = () => {
       }
 
       if (response.status !== 204) {
-        const data = await response.json()
+        const data: ITimeSheet[] = await response.json()
+
+        const lastTimesheetId = getIdTimeSheetForToday()
+
         setTimesheets(data)
-        const lastTimesheet = getLatestTimeSheet(data)
 
-        const timeStampOfLastPunchIn = lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp
-
-        setIsClockedIn(lastTimesheet?.is_clocked_in === true ? isTodaySameAsTimeStamp(timeStampOfLastPunchIn) : false)
+        if (lastTimesheetId) {
+          const lastTimesheet = data.find(timesheet => timesheet._id === lastTimesheetId)
+          if (lastTimesheet) {
+            setIsClockedIn(
+              lastTimesheet.is_clocked_in === true
+                ? isTodaySameAsTimeStamp(lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp)
+                : false,
+            )
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
       setTimesheets(null)
     }
-  }, [job?._id, user._id])
+  }, [job?._id, shiftId?.message, user._id])
+
+  const isUserApprovedApplicant = useCallback(() => {
+    return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
+  }, [job?.applicants, user._id])
 
   useEffect(() => {
-    if (job?.applicants[0]?.is_approved === true && user._id) {
-      getCurrentJobTimeSheets()
+    if (job) {
+      if (isUserApprovedApplicant()) {
+        getCurrentJobTimeSheets()
+      }
     }
-  }, [getCurrentJobTimeSheets, job?.applicants, user._id])
+  }, [getCurrentJobTimeSheets, isUserApprovedApplicant, job])
 
   const clockInOut = async (endpoint: string) => {
     setIsClockInOutLoading(true)
@@ -256,6 +319,7 @@ export const JobDetailView = () => {
       if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
         const err = error as { status: number; message: string }
         if (err.status === 400) {
+          setHasDateIntersection(true)
           showToast({
             severity: 'error',
             summary: 'Failed',
@@ -282,9 +346,6 @@ export const JobDetailView = () => {
     setOpenFeedback(true)
   }
 
-  const isUserApprovedApplicant = (job: IJob) =>
-    job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
-
   const scheduleListTemplate = (job: IJob) => {
     return (
       <>
@@ -301,8 +362,8 @@ export const JobDetailView = () => {
                   {dayOfWeek}, {formattedDate}
                 </time>
                 <p className="flex-none sm:ml-6">
-                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.start_time)}</time> -
-                  <time dateTime={date}>{convertMilitaryTimeToStandardTime(job.end_time)}</time>
+                  <time dateTime={date}>{formatToLocalTime(job.start_time)}</time> -
+                  <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
                 </p>
                 <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                   Lunch: {job.lunch_break} minutes
@@ -377,16 +438,16 @@ export const JobDetailView = () => {
                     <div className="flex items-center">
                       <i className="pi pi-users" />
                       <div className="mb-2 ml-1 mt-2 text-sm text-stone-500">
-                        {job.applicants.length} / {job.vacancy} Applicants
+                        {job.applicants.length} Applicants / {job.vacancy} Slots
                       </div>
                     </div>
-                    {!isUserApprovedApplicant(job) ? job.title : null}
+                    {!isUserApprovedApplicant() ? job.title : null}
                   </>
                 }>
                 {/* Job Facility */}
                 <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex">
-                    {isUserApprovedApplicant(job) && job.facility?.main_image ? (
+                    {isUserApprovedApplicant() && job.facility?.main_image ? (
                       <div className="max-w-screen-xl">
                         <img
                           className="mb-2 mr-8 h-32 w-32 flex-none rounded-lg bg-gray-50 object-cover"
@@ -397,7 +458,7 @@ export const JobDetailView = () => {
                     ) : null}
 
                     <div className="align-center flex flex-col items-start justify-start gap-1">
-                      {isUserApprovedApplicant(job) ? (
+                      {isUserApprovedApplicant() ? (
                         <>
                           <div className="flex items-center text-2xl font-bold">{job.title}</div>
                           <div className="flex items-center">
@@ -450,7 +511,7 @@ export const JobDetailView = () => {
                   </div>
                 </div>
                 {/* Arrival Notes */}
-                {isUserApprovedApplicant(job) && job.facility?.notes ? (
+                {isUserApprovedApplicant() && job.facility?.notes ? (
                   <>
                     <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                     <div className="flex flex-wrap gap-4">
@@ -475,8 +536,7 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Time</div>
                     <div className="text-black">
-                      {convertMilitaryTimeToStandardTime(job.start_time)} -{' '}
-                      {convertMilitaryTimeToStandardTime(job.end_time)}
+                      {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
@@ -510,42 +570,51 @@ export const JobDetailView = () => {
             {/* Clock in and Map */}
             {isLoading ? (
               <Skeleton shape="rectangle" height="150px" />
-            ) : job?.applicants[0]?.is_approved === true ? (
+            ) : isUserApprovedApplicant() ? (
               <div className="col-span-1 md:col-span-1">
                 <div className="flex flex-col">
                   <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
                     <ul className="w-full divide-y divide-gray-200">
-                      <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
-                        <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
-                        <p className="font-medium">
-                          {currentDate.toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </li>
-                      {isClockedIn ? (
-                        <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          <Button
-                            label="Clock Out"
-                            severity="warning"
-                            onClick={() => clockOut()}
-                            loading={isClockInOutLoading}
-                            className="w-full"
-                          />
-                        </li>
+                      {shiftId?.isTodayShift ? (
+                        <>
+                          <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
+                            <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
+                            <p className="font-medium">
+                              {currentDate.toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          </li>
+                          {isClockedIn ? (
+                            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                              <Button
+                                label="Clock Out"
+                                severity="warning"
+                                onClick={() => clockOut()}
+                                loading={isClockInOutLoading}
+                                className="w-full"
+                              />
+                            </li>
+                          ) : (
+                            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                              <Button
+                                label="Clock In"
+                                onClick={() => clockIn()}
+                                loading={isClockInOutLoading}
+                                className="w-full"
+                              />
+                            </li>
+                          )}
+                        </>
                       ) : (
                         <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          <Button
-                            label="Clock In"
-                            onClick={() => clockIn()}
-                            loading={isClockInOutLoading}
-                            className="w-full"
-                          />
+                          {getShiftIdForToday(job.job_days).message as string}
                         </li>
                       )}
+
                       <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                         <Button
                           label="Feedback"
@@ -574,7 +643,7 @@ export const JobDetailView = () => {
                   <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
                     <ul className="w-full divide-y divide-gray-200">
                       <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        {isUserApprovedApplicant(job) ? (
+                        {isUserApprovedApplicant() ? (
                           <p>You have been accepted!</p>
                         ) : job?.applicants.some(
                             applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
@@ -584,7 +653,15 @@ export const JobDetailView = () => {
                           <p>Your application is pending. Please wait for response.</p>
                         ) : (
                           <Button
-                            label={!userIsOnboarded ? 'Apply now' : hasApplied ? 'Application sent' : 'Apply now'}
+                            label={
+                              !userIsOnboarded
+                                ? 'Apply now'
+                                : hasApplied && !hasDateIntersection
+                                  ? 'Application sent'
+                                  : !hasDateIntersection
+                                    ? 'Apply now'
+                                    : 'You have date intersection with another job'
+                            }
                             disabled={!userIsOnboarded || hasApplied}
                             onClick={() => {
                               applyForJob(user._id)
@@ -594,15 +671,6 @@ export const JobDetailView = () => {
                             loading={isApplyForJobLoading}
                           />
                         )}
-                      </li>
-
-                      <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        <p className="py-4 sm:flex">Do you have someone who might be interested in this job?</p>
-                        <Button
-                          label="Share Opportunity"
-                          severity="secondary"
-                          style={{ width: '100%', height: '100%' }}
-                        />
                       </li>
                     </ul>
                   </div>
@@ -625,12 +693,12 @@ export const JobDetailView = () => {
                   />
                   {checked ? <section className="mt-12">{scheduleListTemplate(job)}</section> : null}
                 </TabPanel>
-                {isUserApprovedApplicant(job) ? (
+                {isUserApprovedApplicant() ? (
                   <TabPanel header="Timesheet">
                     <section className="mt-4">{timesheetTableTemplate(punchPairsAndTotalTime)}</section>
                   </TabPanel>
                 ) : null}
-                {isUserApprovedApplicant(job) ? (
+                {isUserApprovedApplicant() ? (
                   <TabPanel header="Facility Images">
                     <section className="mt-4">{facilityImagesTemplate(job)}</section>
                   </TabPanel>

@@ -1,5 +1,6 @@
-import { type IFacility } from './Facility'
 import { type IUser } from './User'
+import { type IFacility } from './facility'
+import { type Shifts } from './shifts'
 
 export interface IApplicant {
   user: IUser
@@ -27,16 +28,22 @@ export interface IDnr {
   reason: string
 }
 
+export interface JobShiftDay {
+  day: Date
+  shifts_id: Shifts
+}
+
 export interface IJob {
   _id: string
   uid: string
   created_by: string
   facility: IFacility
   title: string
-  start_time: number
-  end_time: number
+  start_time: string
+  end_time: string
   total_hours: number
   lunch_break: number
+  job_days: JobShiftDay[]
   job_dates: string[]
   job_tips: string[]
   vacancy: number

@@ -6,8 +6,8 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { useAuth } from '../../../contexts/AuthContext'
-import { type IFacility } from '../../../interfaces/Facility'
 import { type IUser } from '../../../interfaces/User'
+import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
