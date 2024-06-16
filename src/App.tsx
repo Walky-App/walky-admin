@@ -124,6 +124,7 @@ export const App = () => {
             </Route>
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/signup" />
+            <Route element={<Otp />} path="/otp/:id" />
             <Route element={<Signup />} path="/invite/:email/:role" />
             <Route element={<Layout />}>
               <Route element={<ProtectedRouteAuth redirectTo="/login" />}>

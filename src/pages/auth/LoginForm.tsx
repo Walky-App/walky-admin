@@ -180,7 +180,6 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
         </button>
       </div>
       <Button
-        // disabled={!loading}
         label={loading ? 'Logging in' : 'Login'}
         type="submit"
         className={`w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
