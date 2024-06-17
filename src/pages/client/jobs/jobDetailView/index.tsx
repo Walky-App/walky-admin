@@ -14,15 +14,15 @@ import { UserIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { Feedback } from '../../../../components/shared/dialog/Feedback'
 import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
 import { type IApplicant, type IJob } from '../../../../interfaces/job'
+import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
 import { formatToLocalTime } from '../../../../utils/timeUtils'
+import { EmployeeOptions } from './EmployeeOptions'
 import { PanelAcceptedContent } from './PanelAcceptedContent'
 import { PanelPendingContent } from './PanelPendingContent'
 import { PanelRejectedContent } from './PanelRejectedContent'
-import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
-import { EmployeeOptions } from './EmployeeOptions'
 
 export const ClientJobDetailView = () => {
   const [checked, setChecked] = useState<boolean>(false)
@@ -253,22 +253,25 @@ export const ClientJobDetailView = () => {
 
   const removeEmployeeShift = async (userShiftId: string, shiftId: string) => {
     try {
-      const response = await requestService({ path: `shifts/remove-one/${shiftId}`, method: 'PATCH', body: JSON.stringify({ userShiftId }) })
+      const response = await requestService({
+        path: `shifts/remove-one/${shiftId}`,
+        method: 'PATCH',
+        body: JSON.stringify({ userShiftId }),
+      })
       const data = await response.json()
       if (response.ok) {
         //const updatedJob = await requestService({ path: `jobs/${id}`, method: 'GET' })
         setJob(data)
-        showToast({ severity: 'success', summary: 'Employee removed', detail: 'Employee has been removed from the shift' })
+        showToast({
+          severity: 'success',
+          summary: 'Employee removed',
+          detail: 'Employee has been removed from the shift',
+        })
       }
     } catch (error) {
       console.error(error)
     }
   }
-
-
-
-
-
 
   return (
     <>
@@ -416,24 +419,33 @@ export const ClientJobDetailView = () => {
                                 </p>
                               </div>
                               <div className="flex flex-wrap items-center justify-start gap-1">
-                                {
-                                  getEmployeeListByShift(formattedDate).map((userShift: UserShiftsPopulate) => {
-                                    return (
-                                      <div key={userShift._id} className="flex flex-1 w-1/2 items-center gap-1">
-                                        <UserIcon className="h-5 w-5 text-black" />
-                                        <span>{userShift.user_id.first_name}</span>
-                                        <Button link className='p-0' onClick={() => { removeEmployeeShift(userShift._id, getShiftByDate(formattedDate)) }}><XMarkIcon className='h-5 w-5 text-red-400' /></Button>
-                                      </div>
-                                    )
-                                  })
-                                }
-
+                                {getEmployeeListByShift(formattedDate).map((userShift: UserShiftsPopulate) => {
+                                  return (
+                                    <div key={userShift._id} className="flex w-1/2 flex-1 items-center gap-1">
+                                      <UserIcon className="h-5 w-5 text-black" />
+                                      <span>{userShift.user_id.first_name}</span>
+                                      <Button
+                                        link
+                                        className="p-0"
+                                        onClick={() => {
+                                          removeEmployeeShift(userShift._id, getShiftByDate(formattedDate))
+                                        }}>
+                                        <XMarkIcon className="h-5 w-5 text-red-400" />
+                                      </Button>
+                                    </div>
+                                  )
+                                })}
                               </div>
                             </div>
                             {getUserShiftsLengthByDate(formattedDate) === job.vacancy ? (
                               <p className="text-end text-green-500 md:text-start">Vacancy completed</p>
                             ) : (
-                              <EmployeeOptions potentialApplicants={potentialApplicants} shiftId={getShiftByDate(formattedDate)} setJob={setJob} jobId={job._id} />
+                              <EmployeeOptions
+                                potentialApplicants={potentialApplicants}
+                                shiftId={getShiftByDate(formattedDate)}
+                                setJob={setJob}
+                                jobId={job._id}
+                              />
                             )}
                           </li>
                         )

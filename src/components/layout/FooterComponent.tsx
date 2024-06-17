@@ -1,4 +1,5 @@
 import packageJson from '../../../package.json'
+import { roleChecker } from '../../utils/roleChecker'
 
 export const FooterComponent = () => {
   return (
@@ -13,7 +14,19 @@ export const FooterComponent = () => {
           ))}
         </div>
         <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
-          &nbsp; &copy; {new Date().getFullYear()} Hemp Temps. All rights reserved. | v{packageJson.version}
+          copyright {new Date().getFullYear()} Hemp Temps. All rights reserved. | v{packageJson.version}
+          &nbsp; &nbsp; | &nbsp; &nbsp;
+          <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="underline">
+            Terms and Conditions
+          </a>
+          {roleChecker() === 'client' ? (
+            <>
+              &nbsp; &nbsp; | &nbsp; &nbsp;
+              <a href="/pricing" className="underline">
+                Pricing
+              </a>
+            </>
+          ) : null}
         </p>
       </div>
     </footer>
