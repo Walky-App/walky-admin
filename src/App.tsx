@@ -74,7 +74,6 @@ import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
 import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
-// import { Certification } from './pages/admin/HTU/components/Certification'
 import { AdminJobs } from './pages/admin/jobs'
 
 import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
@@ -120,7 +119,6 @@ export const App = () => {
               <Route element={<Signup />} path="/invite/:email/:role" />
               <Route element={<Signup />} path="/signup" />
               <Route element={<Otp />} path="/otp/:id" />
-              {/* <Route element={<Certification />} path="/admin/learn/category/:categoryId/certification" /> */}
             </Route>
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/signup" />
