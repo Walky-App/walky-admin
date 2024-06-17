@@ -31,7 +31,7 @@ export default function Facilities() {
   }, [])
 
   const jobsColumns = [
-    { Header: 'Start date', accessor: (job: any) => new Date(job.job_dates[0]).toLocaleString() },
+    { Header: 'Start date', accessor: (job: any) => new Date(job.job_dates[0]).toLocaleString(), width: '200px' },
     { Header: 'Job', accessor: 'title' },
     { Header: 'Facility', width: '300px', accessor: 'facility.name' },
     {
@@ -69,7 +69,7 @@ export default function Facilities() {
   ]
 
   return (
-    <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
+    <div className="mx-auto ">
       <Button
         label="Add Job"
         onClick={() => {

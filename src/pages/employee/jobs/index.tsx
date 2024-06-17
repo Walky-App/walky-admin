@@ -12,7 +12,6 @@ import { Divider } from 'primereact/divider'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { Sidebar } from 'primereact/sidebar'
-import { Slider } from 'primereact/slider'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
@@ -27,6 +26,7 @@ import { useUtils } from '../../../store/useUtils'
 // import { isNew } from '../../../utils/timeUtils'
 // import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobCard } from './JobCard'
+import { RangeSelector } from './searchComponents/RangeSelector'
 
 const jobTitleOptions = [
   { name: 'Packager', code: 'Packager' },
@@ -48,23 +48,9 @@ const jobTitleOptions = [
   { name: 'Sign spinner', code: 'Sign spinner' },
 ]
 
-const rangeOptions = [
-  { name: '< 5 miles', code: 5 },
-  { name: '< 10 miles', code: 10 },
-  { name: '< 15 miles', code: 15 },
-  { name: '< 20 miles', code: 20 },
-  { name: '< 30 miles', code: 30 },
-  { name: '< 50 miles', code: 50 },
-]
-
 interface ViewOption {
   icon: string
   value: string
-}
-
-interface ILocation {
-  latitude: number
-  longitude: number
 }
 
 const viewOptions: ViewOption[] = [
@@ -73,8 +59,15 @@ const viewOptions: ViewOption[] = [
 ]
 
 export const EmployeeJobs = () => {
-  const [location, setLocation] = useState<ILocation>()
-  const { jobs, setJobs } = useJobs()
+  const {
+    jobs,
+    setJobs,
+    filteredJobs,
+    setFilteredJobs,
+    showRangeSelector,
+    handleUseCurrentLocation,
+    handleUseSelectedAddress,
+  } = useJobs()
   // const { _id } = GetTokenInfo()
   const [view, setView] = useState<string>('list')
 
@@ -86,7 +79,6 @@ export const EmployeeJobs = () => {
 
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [dates, setDates] = useState<[Date, Date] | null>(null)
-  const [selectedRange, setSelectedRange] = useState<number | null>(50)
   const [isLoading, setIsLoading] = useState(false)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
   const [seeMore, setSeeMore] = useState(false)
@@ -105,6 +97,7 @@ export const EmployeeJobs = () => {
         if (response.ok) {
           const allJobs = await response.json()
           setJobs(allJobs)
+          setFilteredJobs(allJobs)
           setIsLoading(false)
         }
       } catch (error) {
@@ -113,63 +106,18 @@ export const EmployeeJobs = () => {
       }
     }
     getJobs()
-  }, [setJobs, showToast])
-
-  const handleUseSelectedAddress = async () => {
-    setIsLoading(true)
-    if (moreAddressDetails && moreAddressDetails.location_pin) {
-      const fromCoordinates = [...moreAddressDetails.location_pin].reverse()
-
-      setLocation({ latitude: moreAddressDetails.location_pin[0], longitude: moreAddressDetails.location_pin[1] })
-
-      try {
-        const response = await requestService({
-          path: 'jobs/bydistance',
-          method: 'POST',
-          body: JSON.stringify({ fromCoordinates }),
-        })
-
-        if (response.ok) {
-          const allJobs = await response.json()
-          setJobs(allJobs)
-          setIsLoading(false)
-        }
-        setIsLoading(false)
-      } catch (error) {
-        console.error('Error fetching jobs:', error)
-        showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching jobs' })
-      }
-    }
-  }
-
-  const handleUseCurrentLocation = async () => {
-    setIsLoading(true)
-    try {
-      const newResponse = await requestService({ path: 'jobs/bydistance', method: 'POST', body: JSON.stringify({}) })
-
-      if (newResponse.ok) {
-        const allJobs = await newResponse.json()
-        setJobs(allJobs)
-        setIsLoading(false)
-      }
-    } catch (error) {
-      console.error('Error fetching jobs:', error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching jobs' })
-    }
-  }
+  }, [setFilteredJobs, setJobs, showToast])
 
   const handleDateChange = (selectedDates: [Date, Date]) => {
     setDates(selectedDates)
 
-    if (selectedDates) {
-      const filteredJobs = jobs.filter(job => {
-        return job.job_dates.some(jobDate => {
-          const date = new Date(jobDate)
-          return date >= selectedDates[0] || date <= selectedDates[1]
-        })
+    const filteredJobs = jobs.filter(job => {
+      return job.job_dates.some(jobDate => {
+        const date = new Date(jobDate)
+        return date >= selectedDates[0] || date <= selectedDates[1]
       })
-      setJobs(filteredJobs)
-    }
+    })
+    setJobs(filteredJobs)
   }
 
   // useEffect(() => {
@@ -217,7 +165,7 @@ export const EmployeeJobs = () => {
     return (
       <div className="mx-auto mb-10 mt-4 px-4 sm:px-6 lg:px-8">
         <ul className="grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
-          {isLoading ? <HTLoadingLogo /> : jobs.map(job => <JobCard key={job._id} job={job} />)}
+          {isLoading ? <HTLoadingLogo /> : filteredJobs.map(job => <JobCard key={job._id} job={job} />)}
         </ul>
       </div>
     )
@@ -231,14 +179,10 @@ export const EmployeeJobs = () => {
       setIsApprovedChecked(false)
     }
 
-    const resetDistanceRelatedFilters = () => {
-      setSelectedRange(50)
-    }
-
     return (
       <>
         <div className="">
-          <h2 className="text-xl">Filters</h2>
+          <h2 className="text-xl">Filters for {filteredJobs.length} jobs</h2>
           <Divider />
           <div className="flex w-full">
             <AddressAutoComplete
@@ -250,7 +194,12 @@ export const EmployeeJobs = () => {
               icon="pi pi-search"
               className="rounded-bl-none rounded-tl-none"
               aria-label="Set jobs by Selected Address"
-              onClick={handleUseSelectedAddress}
+              onClick={() =>
+                handleUseSelectedAddress({
+                  latitude: moreAddressDetails?.location_pin?.[0] ?? 0,
+                  longitude: moreAddressDetails?.location_pin?.[1] ?? 0,
+                })
+              }
             />
             <Button
               icon="pi pi-map-marker"
@@ -262,44 +211,9 @@ export const EmployeeJobs = () => {
             />
           </div>
         </div>
-        {location?.latitude != null && location?.longitude ? (
-          <div className="my-5 px-6">
-            <div className="mb-2">
-              <HtInfoTooltip message="Select a range using slider below to filter jobs by distance from the selected location.">
-                <HtInputLabel
-                  htmlFor="range"
-                  labelText={selectedRange != null ? `${selectedRange} miles away approx` : '0 Miles away approx'}
-                  className="text-md"
-                />
-              </HtInfoTooltip>
-            </div>
-            <Slider
-              value={selectedRange ?? undefined}
-              onChange={e => {
-                const value = Array.isArray(e.value) ? e.value[0] : e.value
-                const filteredJobs = jobs.filter(job => job.distance <= (selectedRange ?? value))
-                selectedRange !== null && setSelectedRange(value)
 
-                setJobs(filteredJobs)
-              }}
-              className="w-full"
-              step={5}
-              min={rangeOptions[0].code}
-              max={rangeOptions[rangeOptions.length - 1].code}
-            />
-          </div>
-        ) : null}
-        <div className="flex w-full justify-center">
-          {location?.latitude != null && location?.longitude ? (
-            <Button
-              label="Clear Distance"
-              className="align flex flex-row"
-              text
-              link
-              onClick={resetDistanceRelatedFilters}
-            />
-          ) : null}
-        </div>
+        {showRangeSelector ? <RangeSelector /> : null}
+
         <Divider />
         <HtInfoTooltip message="Select a start and end date to filter jobs by date range." className="mb-4">
           <HtInputLabel htmlFor="date_range" labelText="Date Range" className="text-md" />

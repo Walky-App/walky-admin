@@ -105,7 +105,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     // { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
     {
       id: 1,
-      name: 'My Jobs',
+      name: 'Jobs',
       href: '/client/jobs',
       icon: <FaBriefcase />,
       disabled: !userIsOnboarded,
