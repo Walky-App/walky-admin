@@ -115,7 +115,10 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className={cn(active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900')}>
+                      className={cn(
+                        active ? 'bg-gray-50' : '',
+                        'block w-full px-3 py-1 text-left text-sm leading-6 text-gray-900',
+                      )}>
                       Sign out
                     </button>
                   )}

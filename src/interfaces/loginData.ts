@@ -6,6 +6,12 @@ export interface ILoginData {
   message?: Error
 }
 
+export interface ITerms {
+  is_accepted?: boolean
+  accepted_at?: Date
+  ip_address?: string
+}
+
 export interface ISignupData {
   first_name: string
   last_name: string
@@ -15,5 +21,5 @@ export interface ISignupData {
   email: string
   phone_number: string
   otp?: string
-  terms_accepted: boolean
+  terms: ITerms
 }

@@ -115,16 +115,46 @@ export const Otp = () => {
     }
   }
 
+  const handleOtpResend = async () => {
+    try {
+      const response = await requestService({
+        path: 'auth/otp-resend',
+        method: 'POST',
+        body: JSON.stringify({ id: id }),
+      })
+      if (response.ok) {
+        const jsonResponse = await response.json()
+        show({ message: jsonResponse.message, severity: 'success', summary: 'Success' })
+      } else {
+        const jsonResponse = await response.json()
+        show({ message: jsonResponse.message, severity: 'error', summary: 'Error' })
+      }
+    } catch (error) {
+      show({ message: 'An error occurred. Please try again.' + error, severity: 'error', summary: 'Error' })
+    }
+  }
+
   const handleFormUpdateNumber = (e: InputMaskChangeEvent) => {
     const { value } = e.target ?? ''
     if (value !== undefined && value !== null) setOtp(parseInt(value.replace(/-/g, ''), 10))
   }
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="mt-24 flex items-center justify-center">
       <form onSubmit={handleOtpVerification} className="mx-auto max-w-md">
-        <div className="flex justify-center">
-          <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
+        <div className="bg-white px-6 sm:py-12 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-base font-semibold leading-7 text-green-600">
+              Sign Up Now and Get the Support You Deserve!
+            </p>
+            <h2 className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Verify Code</h2>
+            <p className="my-6 text-lg leading-8 text-gray-600">
+              Please enter the code sent to your email and/or phone via text to verify your account.
+            </p>
+            <Button text onClick={handleOtpResend}>
+              Resend Code
+            </Button>
+          </div>
         </div>
         <Toast ref={toast} position="bottom-right" />
 

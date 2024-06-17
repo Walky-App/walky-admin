@@ -86,7 +86,9 @@ import { PaymentMethodDetails } from './pages/admin/companies/components/Payment
 import { AdminMessages } from './pages/admin/messages'
 import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
+import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
+import { Pricing } from './pages/Pricing'
 
 /******************************************* Employee Pages ************************************/
 
@@ -112,6 +114,12 @@ export const App = () => {
           <Routes>
             <Route element={<Auth />} path="/" />
             <Route element={<Auth />} path="/login" />
+            <Route element={<LayoutPublic />}>
+              <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
+              <Route element={<Signup />} path="/invite/:email/:role" />
+              <Route element={<Signup />} path="/signup" />
+              <Route element={<Otp />} path="/otp/:id" />
+            </Route>
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/signup" />
             <Route element={<Otp />} path="/otp/:id" />
@@ -133,6 +141,7 @@ export const App = () => {
                 <Route element={<UnitDetail />} path="/learn/module/:moduleId/unit/:unitId" />
                 <Route element={<Assessment />} path="/learn/module/:moduleId/unit/:unitId/assesment" />
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
+                  <Route element={<Pricing />} path="/pricing" />
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientMessages />} path="/client/messages" />
