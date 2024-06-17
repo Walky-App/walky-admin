@@ -30,7 +30,7 @@ export const Signup = () => {
     phone_number: '',
     password: '',
     password_confirmed: '',
-    terms_accepted: false,
+    terms: { is_accepted: false, accepted_at: new Date(), ip_address: '' },
     role: employee_role,
   })
   const [loading, setLoading] = useState(false)
@@ -59,8 +59,13 @@ export const Signup = () => {
     }))
   }
 
-  const onJobTitleChange = (e: CheckboxChangeEvent) => {
-    setFormData({ ...formData, terms_accepted: e.checked ?? false })
+  const handleApprovedTerms = (e: CheckboxChangeEvent) => {
+    setFormData({
+      ...formData,
+      terms: {
+        is_accepted: e.checked !== null ? e.checked : false,
+      },
+    })
   }
 
   const handleOnSubmit = async (e: { preventDefault: () => void }) => {
@@ -88,10 +93,18 @@ export const Signup = () => {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="flex items-center justify-center ">
       <form onSubmit={handleOnSubmit} className="mx-auto max-w-md">
-        <div className="flex justify-center">
-          <img src="/assets/logos/logo-horizontal-cropped.png" alt="hemp temps logo" width={400} />
+        <div className="bg-white px-6 sm:py-12 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-base font-semibold leading-7 text-green-600">
+              Sign Up Now and Get the Support You Deserve!
+            </p>
+            <h2 className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Signup Today!</h2>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              Connect and Thrive: Your Premier Hub for Cannabis Industry Temp Jobs
+            </p>
+          </div>
         </div>
         <div className="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
           <InputText
@@ -187,11 +200,11 @@ export const Signup = () => {
           <div className="my-3 items-center text-right text-sm text-zinc-500">
             <Checkbox
               required
-              inputId="terms_accepted"
-              name="terms_accepted"
-              value={formData.terms_accepted}
-              onChange={onJobTitleChange}
-              checked={formData.terms_accepted}
+              inputId="terms"
+              name="terms.is_accepted"
+              value={formData.terms}
+              onChange={handleApprovedTerms}
+              checked={formData.terms.is_accepted || false}
             />
             <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="ml-2 underline">
               Accept Terms & Conditions
@@ -202,14 +215,14 @@ export const Signup = () => {
         </div>
         <div className="flex items-center justify-center">
           <Button
-            disabled={!formData.terms_accepted}
+            disabled={!formData.terms.is_accepted}
             label={loading ? 'Signing up' : 'Employee Signup'}
             type="submit"
             onClick={() => setFormData({ ...formData, role: employee_role })}
             className={`mr-3 w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
           />
           <Button
-            disabled={!formData.terms_accepted}
+            disabled={!formData.terms.is_accepted}
             label={loading ? 'Signing up' : 'Client Signup'}
             type="submit"
             onClick={() => setFormData({ ...formData, role: client_role })}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
+import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 
@@ -178,13 +179,11 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
           Forgot your password?
         </button>
       </div>
-      <button
+      <Button
+        label={loading ? 'Logging in' : 'Login'}
         type="submit"
-        className={`w-full rounded-lg bg-zinc-950 py-3 text-sm font-medium text-zinc-50 hover:bg-green-700 ${
-          loading && 'cursor-wait hover:bg-zinc-950'
-        }`}>
-        {loading ? 'Logging in...' : 'Login'}
-      </button>
+        className={`w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
+      />
     </form>
   )
 }

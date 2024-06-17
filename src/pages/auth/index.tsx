@@ -81,6 +81,18 @@ export const Auth = () => {
             </div>
           </div>
         </div>
+        <footer className="bg-white py-6" aria-labelledby="footer-heading">
+          <div className=" pt-8 text-center md:items-center md:justify-center">
+            <p className="mt-24 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
+              Copyright © {new Date().getFullYear()} Hemp Temps
+            </p>
+            <p className="mt-24 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
+              <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="underline">
+                Terms and Conditions
+              </a>
+            </p>
+          </div>
+        </footer>
       </div>
       <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
         <img src={heroImage} alt="" className="absolute inset-0 hidden h-full object-cover sm:block" />
