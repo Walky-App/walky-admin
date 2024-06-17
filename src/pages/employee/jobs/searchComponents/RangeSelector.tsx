@@ -18,7 +18,7 @@ const rangeOptions = [
   { name: '< 50 miles', code: 50 },
 ]
 
-const RangeSelector = () => {
+export const RangeSelector = () => {
   const [selectedRange, setSelectedRange] = useState<number | [number, number]>(50)
   const { filteredJobs, setFilteredJobs } = useJobs()
 
@@ -61,5 +61,3 @@ const RangeSelector = () => {
     </div>
   )
 }
-
-export default RangeSelector
