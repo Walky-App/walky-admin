@@ -660,7 +660,7 @@ export const JobDetailView = () => {
                                   ? 'Application sent'
                                   : !hasDateIntersection
                                     ? 'Apply now'
-                                    : 'You have date intersection with another job'
+                                    : 'You are already booked for another job that overlaps with this one.'
                             }
                             disabled={!userIsOnboarded || hasApplied}
                             onClick={() => {
