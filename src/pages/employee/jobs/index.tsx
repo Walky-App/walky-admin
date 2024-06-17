@@ -26,7 +26,7 @@ import { useUtils } from '../../../store/useUtils'
 // import { isNew } from '../../../utils/timeUtils'
 // import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobCard } from './JobCard'
-import RangeSelector from './searchComponents/RangeSelector'
+import { RangeSelector } from './searchComponents/RangeSelector'
 
 const jobTitleOptions = [
   { name: 'Packager', code: 'Packager' },
