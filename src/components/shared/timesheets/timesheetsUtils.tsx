@@ -23,6 +23,8 @@ export interface IPunchDetails {
   in_time: Date | null
   out_time: Date | null
   total_time: string
+  in_notes: string
+  out_notes: string
 }
 
 export interface IPunchPair {
@@ -35,6 +37,8 @@ export interface IPunchPair {
   out_time_stamp: string
   total_time: string
   timesheet_id: string
+  in_notes: string
+  out_notes: string
 }
 export interface IPunchPairsWithData {
   time_stamp: string
@@ -145,6 +149,8 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
         in_time_stamp: punchIn.time_stamp,
         out_time_stamp: punchOut.time_stamp,
         total_time: (totalTime / 1000 / 60 / 60).toFixed(2),
+        in_notes: punchIn.note,
+        out_notes: punchOut.note,
         timesheet_id: _id,
       })
       punchIn = null
@@ -153,14 +159,16 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
 
   if (!outTime && punchIn) {
     punchPairs.push({
+      day: format(punchIn.time_stamp, 'EEE, MMM d'),
       in_id: punchIn._id,
       out_id: '',
-      day: format(punchIn.time_stamp, 'EEE, MMM d'),
       in_time: new Date(punchIn.time_stamp),
       out_time: null,
       in_time_stamp: punchIn.time_stamp,
       out_time_stamp: '',
       total_time: '',
+      in_notes: punchIn.note,
+      out_notes: '',
       timesheet_id: _id,
     })
   }

@@ -309,6 +309,8 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     const commonColumnStyle = 'w-1/12'
     const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
     const editableCellColumnProps = getEditableProps(currentUserRole)
+    const hasInNotes = data.punchesWithDetails.some(punch => punch.in_notes)
+    const hasOutNotes = data.punchesWithDetails.some(punch => punch.out_notes)
     const punchColumns = [
       {
         field: 'in_time',
@@ -318,6 +320,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             ? rowData.in_time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
             : 'Not recorded',
       },
+      hasInNotes && { field: 'in_notes', header: 'In Notes', body: (rowData: IPunchDetails) => rowData.in_notes },
       {
         field: 'out_time',
         header: 'Punch Out',
@@ -328,22 +331,27 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
               ? 'Clocked In'
               : 'Clock Out not recorded',
       },
+      hasOutNotes && { field: 'out_notes', header: 'Out Notes', body: (rowData: IPunchDetails) => rowData.out_notes },
     ]
 
     return (
       <div className="p-4">
         <h5 className="text-sm font-semibold">Punch Details</h5>
         <DataTable value={data.punchesWithDetails} sortField="in_time" sortOrder={-1} editMode="cell">
-          {punchColumns.map(({ field, header, body }) => (
-            <Column
-              key={field}
-              className={cn([commonColumnStyle, editableCellColumnStyle])}
-              field={field}
-              header={`${header} ${currentUserRole === 'admin' ? '(✎)' : ''}`}
-              body={body}
-              {...editableCellColumnProps}
-            />
-          ))}
+          {punchColumns.map(column => {
+            if (typeof column === 'object' && column.body != null) {
+              return (
+                <Column
+                  key={column.field}
+                  className={cn([commonColumnStyle, editableCellColumnStyle])}
+                  field={column.field}
+                  header={column.header}
+                  body={column.body}
+                  {...editableCellColumnProps}
+                />
+              )
+            }
+          })}
           <Column className={cn([commonColumnStyle, 'w-3/12'])} field="total_time" header="Total Hours" />
         </DataTable>
       </div>
