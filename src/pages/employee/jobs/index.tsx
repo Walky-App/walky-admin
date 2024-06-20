@@ -5,7 +5,6 @@ import { useMediaQuery } from 'react-responsive'
 import classNames from 'classnames'
 import { Button } from 'primereact/button'
 import { Divider } from 'primereact/divider'
-import { ScrollPanel } from 'primereact/scrollpanel'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { Sidebar } from 'primereact/sidebar'
 
@@ -17,8 +16,6 @@ import { HtScrollTop } from '../../../components/shared/general/HtScrollTop'
 import { requestService } from '../../../services/requestServiceNew'
 import { useJobs } from '../../../store/useJobs'
 import { useUtils } from '../../../store/useUtils'
-// import { isNew } from '../../../utils/timeUtils'
-// import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobCard } from './JobCard'
 import { DateSearch } from './searchComponents/DateSearch'
 import { JobTypeSearch } from './searchComponents/JobTypeSearch'
@@ -45,7 +42,6 @@ export const EmployeeJobs = () => {
     handleUseCurrentLocation,
     handleUseSelectedAddress,
   } = useJobs()
-  // const { _id } = GetTokenInfo()
   const [view, setView] = useState<string>('list')
 
   const { showToast } = useUtils()
@@ -92,7 +88,7 @@ export const EmployeeJobs = () => {
   const renderFiltersContent = () => {
     return (
       <>
-        <div className="">
+        <div>
           <h2 className="text-xl">Filters for {filteredJobs.length} jobs</h2>
           <Divider />
           <HtInfoTooltip message="Enter address or your current location where you want to search by" className="mb-4">
@@ -103,6 +99,7 @@ export const EmployeeJobs = () => {
               setMoreAddressDetails={setMoreAddressDetails}
               currentAddress="Address, City, State, Zip Code"
               classNames={classNames('rounded-br-none rounded-tr-none')}
+              inputClasses={{ borderRadius: '5px 0 0 5px ' }}
             />
             <Button
               icon="pi pi-search"
@@ -139,7 +136,6 @@ export const EmployeeJobs = () => {
       <Sidebar
         visible={visibleFilterSidebarForMobile}
         onHide={() => setVisibleFilterSidebarForMobile(false)}
-        blockScroll={true}
         fullScreen={true}>
         {renderFiltersContent()}
       </Sidebar>
@@ -161,17 +157,15 @@ export const EmployeeJobs = () => {
         <TableView />
       ) : (
         <div className="flex flex-col md:flex-row">
-          {/* {jobs.length > 0 ? ( */}
-          <ScrollPanel style={{ width: '20%', height: '100vh' }} className="w-full">
-            {renderFiltersContent()}
-          </ScrollPanel>
-          <ScrollPanel style={{ width: '75%', height: '100vh' }} className="w-full pl-16">
-            {renderJobCards()}
-            <HtScrollTop className="" />
-          </ScrollPanel>
-          {/* ) : (
-            <h2>No jobs for today or coming up soon! </h2>
-          )} */}
+          <div className="relative sticky top-0">{renderFiltersContent()}</div>
+          {filteredJobs.length !== 0 ? (
+            <div className="w-full pl-16">
+              {renderJobCards()}
+              <HtScrollTop className="" />
+            </div>
+          ) : (
+            <div className="w-full pl-16">No jobs found</div>
+          )}
         </div>
       )}
     </>
