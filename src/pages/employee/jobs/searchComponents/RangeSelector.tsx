@@ -20,11 +20,12 @@ const rangeOptions = [
 
 export const RangeSelector = () => {
   const [selectedRange, setSelectedRange] = useState<number | [number, number]>(50)
-  const { filteredJobs, setFilteredJobs } = useJobs()
+  const { setShowRangeSelector, jobs, filteredJobs, setFilteredJobs } = useJobs()
 
   const handleRangeClear = () => {
     setSelectedRange(50)
-    setFilteredJobs([])
+    setShowRangeSelector(false)
+    setFilteredJobs(jobs)
   }
 
   const showRangeClear = () => {

@@ -11,15 +11,15 @@ import { useJobs } from '../../../../store/useJobs'
 export const DateSearch = () => {
   const [dates, setDates] = useState<[Date, Date] | null>(null)
 
-  const { jobs, filteredJobs, setFilteredJobs } = useJobs()
+  const { jobs, setFilteredJobs } = useJobs()
 
   const handleDateChange = (selectedDates: [Date, Date]) => {
     setDates(selectedDates)
 
-    const filterResults = filteredJobs.filter(job => {
+    const filterResults = jobs.filter(job => {
       return job.job_dates.some(jobDate => {
         const date = new Date(jobDate)
-        return date >= selectedDates[0] || date <= selectedDates[1]
+        return date >= selectedDates[0] && date <= selectedDates[1]
       })
     })
     setFilteredJobs(filterResults)

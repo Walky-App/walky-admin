@@ -6,25 +6,47 @@ import { Divider } from 'primereact/divider'
 
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { useJobs } from '../../../../store/useJobs'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
-// import { useJobs } from '../../../../store/useJobs'
+const isNew = (date: string) => {
+  const today = new Date()
+  const jobDate = new Date(date)
+  const diff = today.getTime() - jobDate.getTime()
+  const diffDays = diff / (1000 * 3600 * 24)
+  return diffDays <= 3
+}
+const { _id } = GetTokenInfo()
 
 export const StatusSearch = () => {
   const [status, setStatus] = useState<string[]>([])
-  // const { filteredJobs, setFilteredJobs } = useJobs()
+  const { jobs, setFilteredJobs } = useJobs()
 
-  const handleStatusChange = (e: CheckboxChangeEvent) => {
-    const { value } = e.target
-    let updatedStatus = [...status]
-    if (e.checked) {
-      updatedStatus.push(value)
-    } else {
-      updatedStatus = updatedStatus.filter(s => s !== value)
+  const handleNewStatus = (e: CheckboxChangeEvent) => {
+    const filterResults = jobs.filter(job => isNew(job.createdAt.toString()))
+    setFilteredJobs(filterResults)
+    setStatus(['new'])
+
+    if (!e.checked) {
+      setFilteredJobs(jobs)
+      setStatus([])
     }
+  }
 
-    setStatus(updatedStatus)
+  const handleAppliedStatus = (e: CheckboxChangeEvent) => {
+    const filteredResults = jobs.filter(job => job.applicants.find(applicant => applicant.user._id === _id))
+    setFilteredJobs(filteredResults)
+    setStatus(['applied'])
 
-    // const filterResults = filteredJobs.filter(job => job.status === value)
+    if (!e.checked) {
+      setFilteredJobs(jobs)
+      setStatus([])
+    }
+  }
+
+  const handleClear = () => {
+    setFilteredJobs(jobs)
+    setStatus([])
   }
 
   return (
@@ -36,7 +58,12 @@ export const StatusSearch = () => {
 
       <div className="flex justify-between">
         <div className="flex items-center">
-          <Checkbox inputId="new" name="new" onChange={handleStatusChange} checked={status.includes('new')} />
+          <Checkbox
+            inputId="new"
+            name="new"
+            onChange={handleNewStatus}
+            checked={status.includes('new') ? true : false}
+          />
           <label htmlFor="new" className="ml-2">
             New
           </label>
@@ -46,29 +73,17 @@ export const StatusSearch = () => {
           <Checkbox
             inputId="applied"
             name="applied"
-            onChange={e => setStatus(e.checked ? [...status, e.target.name] : status.filter(s => s !== e.target.name))}
-            checked={status.includes('applied')}
+            onChange={handleAppliedStatus}
+            checked={status.includes('applied') ? true : false}
           />
           <label htmlFor="applied" className="ml-2">
             Applied
           </label>
         </div>
-
-        <div className="flex items-center">
-          <Checkbox
-            inputId="approved"
-            name="approved"
-            onChange={e => setStatus(e.checked ? [...status, e.target.name] : status.filter(s => s !== e.target.name))}
-            checked={status.includes('approved')}
-          />
-          <label htmlFor="approved" className="ml-2">
-            Approved
-          </label>
-        </div>
       </div>
       {status.length > 0 ? (
         <div className="flex w-full justify-end">
-          <Button label="Clear" className="text-sm underline" text link />
+          <Button label="Clear" className="text-sm underline" text link onClick={handleClear} />
         </div>
       ) : null}
     </>

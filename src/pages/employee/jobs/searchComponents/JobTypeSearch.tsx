@@ -21,7 +21,7 @@ const jobTitleOptions = [
   { name: 'Inventory', code: 'Inventory' },
   { name: 'Data entry', code: 'Data entry' },
   { name: 'Event staff', code: 'Event staff' },
-  { name: 'Promo representative', code: 'Promo representative' },
+  { name: 'Promo rep', code: 'Promo rep' },
   { name: 'Cleaning', code: 'Cleaning' },
   { name: 'Joint roller', code: 'Joint roller' },
   { name: 'Grow tech', code: 'Grow tech' },
@@ -29,21 +29,12 @@ const jobTitleOptions = [
   { name: 'Sign spinner', code: 'Sign spinner' },
 ]
 
-// const isNew = (date: string) => {
-//   const today = new Date()
-//   const jobDate = new Date(date)
-//   const diff = today.getTime() - jobDate.getTime()
-//   const diffDays = diff / (1000 * 3600 * 24)
-//   return diffDays <= 3
-// }
-
 export const JobTypeSearch = () => {
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([])
   const [seeMore, setSeeMore] = useState(false)
-  const { jobs, filteredJobs, setFilteredJobs } = useJobs()
+  const { jobs, setFilteredJobs } = useJobs()
 
   const onJobTitleChange = (e: CheckboxChangeEvent) => {
-    // let jobsFiltered = filteredJobs
     const { value } = e.target
     let updatedSelectedJobTitles = [...selectedJobTitles]
     if (e.checked) {
@@ -54,27 +45,14 @@ export const JobTypeSearch = () => {
 
     setSelectedJobTitles(updatedSelectedJobTitles)
 
-    const filterResults = filteredJobs.filter(job => {
-      return updatedSelectedJobTitles.some(jobTitle => job.title.includes(jobTitle))
-    })
-    setFilteredJobs(filterResults)
-
-    // if (selectedJobTitles.includes('New')) {
-
-    //   const updatedFilter = filteredJobs.filter(job => isNew(job.createdAt))
-    //   jobsFiltered = updatedFilter
-    // }
-
-    // if (selectedJobTitles.includes('Applied')) {
-    //   jobsFiltered = filteredJobs.filter(job =>
-    //     job.applicants.some(applicant => applicant.user.toString() === _id && !applicant.is_approved),
-    //   )
-    // }
-    //   if (isApprovedChecked) {
-    //     filteredJobs = filteredJobs.filter(job =>
-    //       job.applicants.some(applicant => applicant.user.toString() === _id && applicant.is_approved),
-    //     )
-    //   }
+    if (updatedSelectedJobTitles.length === 0) {
+      setFilteredJobs(jobs)
+    } else {
+      const filterResults = jobs.filter(job => {
+        return updatedSelectedJobTitles.some(jobTitle => job.title.includes(jobTitle))
+      })
+      setFilteredJobs(filterResults)
+    }
   }
 
   const handleClearFilters = () => {
@@ -115,9 +93,11 @@ export const JobTypeSearch = () => {
           onClick={() => setSeeMore(!seeMore)}
         />
       ) : null}
-      <div className="flex w-full justify-end">
-        <Button label="Clear" className="text-sm underline" text link onClick={handleClearFilters} />
-      </div>
+      {selectedJobTitles.length > 0 ? (
+        <div className="flex w-full justify-end">
+          <Button label="Clear" className="text-sm underline" text link onClick={handleClearFilters} />
+        </div>
+      ) : null}
     </div>
   )
 }
