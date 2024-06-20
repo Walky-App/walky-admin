@@ -16,6 +16,7 @@ import { AddressAutoComplete, type IAddressAutoComplete } from '../../../compone
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
+import { type IUser } from '../../../interfaces/User'
 import { type ICompany } from '../../../interfaces/company'
 import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
@@ -68,6 +69,7 @@ export const AdminAddFacility = () => {
   const [companies, setCompanies] = useState<ICompany[]>([])
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
   const [checked, setChecked] = useState(true)
+  const [client, setClient] = useState<IUser | undefined>()
   const [formData, setFormData] = useState<IFacility>(defaultFacilityFormValues)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
@@ -80,11 +82,32 @@ export const AdminAddFacility = () => {
   useEffect(() => {
     const getCompanies = async () => {
       try {
-        const response = await requestService({ path: 'companies' })
+        if (role === 'client') {
+          const response = await requestService({
+            path: `companies/byclient`,
+          })
 
-        if (response.ok) {
-          const allCompanies = await response.json()
-          setCompanies(allCompanies)
+          if (role === 'client') {
+            setChecked(false)
+          }
+
+          if (response.ok) {
+            const data = await response.json()
+            const { companies, user } = data
+
+            setClient(user)
+            setCompanies(companies)
+          }
+        } else {
+          const response = await requestService({
+            path: 'companies',
+          })
+
+          if (response.ok) {
+            const allCompanies = await response.json()
+
+            setCompanies(allCompanies)
+          }
         }
       } catch (error) {
         console.error('error', error)
@@ -97,7 +120,7 @@ export const AdminAddFacility = () => {
       }
     }
     getCompanies()
-  }, [showToast])
+  }, [role, showToast])
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -243,32 +266,34 @@ export const AdminAddFacility = () => {
         <div>
           {selectedCompanyId !== null && selectedCompanyId !== undefined ? (
             <>
-              <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-12 sm:gap-y-10 md:grid-cols-3">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Business same as the Facility?</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Please provide information about your business so that we can verify you on the platform.
-                  </p>
-                </div>
+              {role === 'admin' ? (
+                <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-12 sm:gap-y-10 md:grid-cols-3">
+                  <div>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">Business same as the Facility?</h2>
+                    <p className="mt-1 text-sm leading-6 text-gray-600">
+                      Please provide information about your business so that we can verify you on the platform.
+                    </p>
+                  </div>
 
-                <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                  <div className="flex w-72 items-center">
-                    <h2 className="mr-3 text-xl font-semibold">No</h2>
-                    <InputSwitch
-                      checked={checked}
-                      onChange={e => {
-                        setChecked(e.value)
-                        if (e.value) {
-                          handleCompanySameAsFacility(selectedCompanyId)
-                        } else {
-                          handleCompanySameAsFacility()
-                        }
-                      }}
-                    />
-                    <h2 className="ml-3 text-xl font-semibold">Yes</h2>
+                  <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                    <div className="flex w-72 items-center">
+                      <h2 className="mr-3 text-xl font-semibold">No</h2>
+                      <InputSwitch
+                        checked={checked}
+                        onChange={e => {
+                          setChecked(e.value)
+                          if (e.value) {
+                            handleCompanySameAsFacility(selectedCompanyId)
+                          } else {
+                            handleCompanySameAsFacility()
+                          }
+                        }}
+                      />
+                      <h2 className="ml-3 text-xl font-semibold">Yes</h2>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : null}
 
               <div>
                 {/* Facility Location */}
@@ -313,10 +338,9 @@ export const AdminAddFacility = () => {
                   <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
                     <div className="sm:col-span-3">
                       <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions.">
-                        <HtInputLabel htmlFor="tax-id" asterisk labelText="Tax ID" />
+                        <HtInputLabel htmlFor="tax-id" labelText="Tax ID" />
                       </HtInfoTooltip>
                       <InputMask
-                        required
                         value={formData.tax_id}
                         name="tax_id"
                         onChange={handleFormUpdateNumber}
@@ -381,7 +405,7 @@ export const AdminAddFacility = () => {
 
                     <div className="sm:col-span-3">
                       <HtInfoTooltip message="The square footage of your facility. This is the total area of your facility in square feet.">
-                        <HtInputLabel htmlFor="sqft" asterisk labelText="Facility Square Footage" />
+                        <HtInputLabel htmlFor="sqft" labelText="Facility Square Footage" />
                       </HtInfoTooltip>
                       <InputText
                         name="sqft"
@@ -390,7 +414,6 @@ export const AdminAddFacility = () => {
                         keyfilter={/[0-9]/}
                         min={0}
                         max={1000000}
-                        required
                       />
                       <HtInputHelpText fieldName="sqft" helpText="Max 1,000,000" />
                     </div>
@@ -455,6 +478,7 @@ export const AdminAddFacility = () => {
                       </HtInfoTooltip>
                       <InputText
                         required
+                        value={client?.first_name}
                         name="first_name"
                         id="first_name"
                         autoComplete="off"
@@ -468,6 +492,7 @@ export const AdminAddFacility = () => {
                       </HtInfoTooltip>
                       <InputText
                         required
+                        value={client?.last_name}
                         name="last_name"
                         id="last_name"
                         autoComplete="off"
@@ -496,6 +521,7 @@ export const AdminAddFacility = () => {
                       </HtInfoTooltip>
                       <InputMask
                         required
+                        value={client?.phone_number}
                         name="phone_number"
                         id="phone_number"
                         mask="(999) 999-9999"
@@ -511,6 +537,7 @@ export const AdminAddFacility = () => {
                       </HtInfoTooltip>
                       <InputText
                         required
+                        value={client?.email}
                         autoComplete="off"
                         name="email"
                         id="email"
