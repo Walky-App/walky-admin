@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 
-import { Navigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
+import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Image } from 'primereact/image'
-import { Message } from 'primereact/message'
 
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
@@ -29,6 +29,7 @@ export const FacilityDetailsForm = ({
     facility.location_polygon ? facility.location_polygon : [],
   )
 
+  const navigate = useNavigate()
   const { showToast } = useUtils()
 
   const role = getCurrentUserRole()
@@ -39,6 +40,38 @@ export const FacilityDetailsForm = ({
     city: undefined,
     location_pin: undefined,
     address: undefined,
+  }
+
+  const accept = async () => {
+    try {
+      const response = await requestService({ path: `facilities/${facility._id}`, method: 'DELETE' })
+      if (response.ok) {
+        const data = await response.json()
+        showToast({ severity: 'success', summary: 'Success', detail: data.message })
+        navigate('/admin/facilities')
+      }
+    } catch (error) {
+      console.error(error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting facility' })
+    }
+  }
+
+  const reject = () => {
+    showToast({ severity: 'warn', summary: 'Rejected', detail: 'You have canceled the facility delete' })
+  }
+
+  const handleDeleteConfirm = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    confirmPopup({
+      target: event.currentTarget as HTMLElement,
+      message:
+        'If you delete this facility, all associated jobs, licenses, images and company association will be removed. Are you sure you want to proceed?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept,
+      reject,
+    })
   }
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,20 +146,6 @@ export const FacilityDetailsForm = ({
     }
   }
 
-  const handleDeleteFacility = async () => {
-    try {
-      const response = await requestService({ path: `facilities/${facility._id}`, method: 'DELETE' })
-      if (response.ok) {
-        response.json()
-        showToast({ severity: 'success', summary: 'Success', detail: 'Facility deleted successfully' })
-        return <Navigate to="/admin/facilities" />
-      }
-    } catch (error) {
-      console.error(error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting facility' })
-    }
-  }
-
   return (
     <form onSubmit={handleForm}>
       <div className="space-y-4 md:space-y-12">
@@ -136,18 +155,6 @@ export const FacilityDetailsForm = ({
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please see the information about this particular facility.
             </p>
-            {role === 'admin' ? (
-              <div className="items-center">
-                <Button severity="danger" className="mt-6" onClick={handleDeleteFacility}>
-                  Delete Facility
-                </Button>
-                <br />
-                <Message
-                  severity="error"
-                  text="This will delete all associated Jobs, licenses, images and will remove facility from company association"
-                />
-              </div>
-            ) : null}
             <div className="relative mt-6">
               <div className="flex md:justify-center">
                 <Image
@@ -182,29 +189,30 @@ export const FacilityDetailsForm = ({
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
               <label htmlFor="tax-id" className="block text-sm font-medium leading-6 text-gray-900">
-                Tax ID
+                {facility.tax_id ? 'Facility Tax ID' : 'Company Tax ID'}
               </label>
               <div className="mt-2">
                 <input
                   type="text"
                   name="tax_id"
                   id="tax-id"
-                  defaultValue={facility.tax_id || ''}
+                  defaultValue={facility.tax_id ? facility.tax_id : facility.company?.company_tax_id}
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
             <div className="sm:col-span-3">
               <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                Corporate Name
+                Company Name
               </label>
               <div className="mt-2">
                 <input
+                  disabled
                   type="text"
                   name="corp_name"
                   id="corp-name"
-                  defaultValue={facility.company_id || ''}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                  defaultValue={facility?.company?.company_name}
+                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 "
                 />
               </div>
             </div>
@@ -218,7 +226,7 @@ export const FacilityDetailsForm = ({
                   name="company_dbas"
                   id="company-dbas"
                   placeholder="Enter company DBAs separated by comma"
-                  defaultValue={facility.facility_dbas ? facility.facility_dbas.join(', ') : ''}
+                  defaultValue={facility.company?.company_dbas?.join(', ')}
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
@@ -286,125 +294,104 @@ export const FacilityDetailsForm = ({
             </div>
             <fieldset>
               <legend className="text-sm font-semibold leading-6 text-gray-900">Services</legend>
-              <div className="mt-6 space-y-6">
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      value="Trimming"
-                      defaultChecked={facility.services?.includes('Trimming')}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="trimming" className="font-medium text-gray-900">
-                      Trimming
-                    </label>
-                  </div>
+              <div className=" flex items-center">
+                <div className="mr-3 flex items-center">
+                  <input
+                    id="services"
+                    name="services"
+                    type="checkbox"
+                    value="Trimming"
+                    defaultChecked={facility.services?.includes('Trimming')}
+                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                  />
+                  <label htmlFor="trimming" className="text-sm">
+                    Trimming
+                  </label>
                 </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      value="Harvesting"
-                      defaultChecked={facility.services?.includes('Harvesting')}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="harvesting" className="font-medium text-gray-900">
-                      Harvesting
-                    </label>
-                  </div>
+                <div className="mr-3 flex items-center">
+                  <input
+                    id="services"
+                    name="services"
+                    type="checkbox"
+                    value="Harvesting"
+                    defaultChecked={facility.services?.includes('Harvesting')}
+                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                  />
+                  <label htmlFor="harvesting" className="text-sm">
+                    Harvesting
+                  </label>
                 </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      value="Packaging"
-                      defaultChecked={facility.services?.includes('Packaging')}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="packaging" className="font-medium text-gray-900">
-                      Packaging
-                    </label>
-                  </div>
+
+                <div className="mr-3 flex items-center">
+                  <input
+                    id="services"
+                    name="services"
+                    type="checkbox"
+                    value="Packaging"
+                    defaultChecked={facility.services?.includes('Packaging')}
+                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                  />
+                  <label htmlFor="packaging" className="text-sm">
+                    Packaging
+                  </label>
                 </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      value="Budtending"
-                      defaultChecked={facility.services?.includes('Budtending')}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="budtending" className="font-medium text-gray-900">
-                      Budtending
-                    </label>
-                  </div>
+
+                <div className="mr-3 flex items-center">
+                  <input
+                    id="services"
+                    name="services"
+                    type="checkbox"
+                    value="Budtending"
+                    defaultChecked={facility.services?.includes('Budtending')}
+                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                  />
+                  <label htmlFor="budtending" className="text-sm">
+                    Budtending
+                  </label>
                 </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      value="Gardening"
-                      defaultChecked={facility.services?.includes('Gardening')}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="gardening" className="font-medium text-gray-900">
-                      Gardening
-                    </label>
-                  </div>
+
+                <div className="mr-3 flex items-center">
+                  <input
+                    id="services"
+                    name="services"
+                    type="checkbox"
+                    value="Gardening"
+                    defaultChecked={facility.services?.includes('Gardening')}
+                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                  />
+                  <label htmlFor="gardening" className="text-sm">
+                    Gardening
+                  </label>
                 </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      value="General Labor"
-                      defaultChecked={facility.services?.includes('General Labor')}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="packaging" className="font-medium text-gray-900">
-                      General Labor
-                    </label>
-                  </div>
+
+                <div className="mr-3 flex items-center">
+                  <input
+                    id="services"
+                    name="services"
+                    type="checkbox"
+                    value="General Labor"
+                    defaultChecked={facility.services?.includes('General Labor')}
+                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                  />
+
+                  <label htmlFor="packaging" className="whitespace-nowrap text-sm">
+                    General Labor
+                  </label>
                 </div>
-                <div className="relative flex gap-x-3">
-                  <div className="flex h-6 items-center">
-                    <input
-                      id="services"
-                      name="services"
-                      type="checkbox"
-                      value="Other"
-                      defaultChecked={facility.services?.includes('Other')}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                    />
-                  </div>
-                  <div className="text-sm leading-6">
-                    <label htmlFor="other" className="font-medium text-gray-900">
-                      Other
-                    </label>
-                  </div>
+
+                <div className="mr-3 flex items-center">
+                  <input
+                    id="services"
+                    name="services"
+                    type="checkbox"
+                    value="Other"
+                    defaultChecked={facility.services?.includes('Other')}
+                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
+                  />
+
+                  <label htmlFor="other" className="text-sm">
+                    Other
+                  </label>
                 </div>
               </div>
             </fieldset>
@@ -484,7 +471,7 @@ export const FacilityDetailsForm = ({
           <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
             Status
           </label>
-          <div className="mt-2 ">
+          <div className="mt-2">
             {facility ? (
               <select
                 disabled={locationPolygon.length === 0}
@@ -522,7 +509,18 @@ export const FacilityDetailsForm = ({
           </div>
         ) : null}
       </div>
-      <div className="mt-6 flex items-center justify-end gap-x-6">
+      <div className="mt-6 flex items-center justify-between gap-x-6">
+        {role === 'admin' ? (
+          <div className="items-center">
+            <ConfirmPopup />
+            <Button
+              onClick={handleDeleteConfirm}
+              icon="pi pi-times"
+              label="Delete Facility"
+              className="p-button-danger"
+            />
+          </div>
+        ) : null}
         {updateSuccess ? (
           <div className="rounded-md bg-green-50 p-4">
             <div className="flex">
@@ -535,11 +533,7 @@ export const FacilityDetailsForm = ({
             </div>
           </div>
         ) : null}
-        <button
-          type="submit"
-          className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-          Update
-        </button>
+        <Button type="submit" label="Update" icon="pi pi-check" />
       </div>
     </form>
   )

@@ -1,3 +1,5 @@
+import { type ICompany } from './company'
+
 export interface IFacilityImage {
   url: string
   key: string
@@ -31,6 +33,7 @@ export interface IFacility {
   _id?: string
   createdAt?: string
   company_id: string
+  company: ICompany | null
   name: string
   tax_id: string
   phone_number: string
