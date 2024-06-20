@@ -46,9 +46,7 @@ export const useJobs = create<IJobsStore>(set => ({
 
       if (response.ok) {
         const allJobs = await response.json()
-        set({ filteredJobs: allJobs })
-        set({ isLoading: false })
-        set({ showRangeSelector: true })
+        set({ filteredJobs: allJobs, isLoading: false, showRangeSelector: true })
       }
     } catch (error) {
       console.error('Error fetching jobs:', error)
@@ -56,19 +54,15 @@ export const useJobs = create<IJobsStore>(set => ({
   },
   handleUseSelectedAddress: async (locationDetails: { latitude: number; longitude: number }) => {
     set({ isLoading: true })
-    const fromCoordinates = [locationDetails].reverse()
-
     try {
       const response = await requestService({
         path: 'jobs/bydistance',
         method: 'POST',
-        body: JSON.stringify({ fromCoordinates }),
+        body: JSON.stringify({ locationDetails }),
       })
       if (response.ok) {
         const allJobs = await response.json()
-        set({ filteredJobs: allJobs })
-        set({ isLoading: false })
-        set({ showRangeSelector: true })
+        set({ filteredJobs: allJobs, isLoading: false, showRangeSelector: true })
       }
       set({ isLoading: false })
     } catch (error) {

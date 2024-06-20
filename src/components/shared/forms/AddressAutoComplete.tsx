@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type CSSProperties, useState } from 'react'
 
 import { AutoComplete } from 'primereact/autocomplete'
 import { useDebouncedCallback } from 'use-debounce'
@@ -22,6 +22,7 @@ export interface AddressAutoCompleteProps {
   value?: string
   controlled?: boolean
   inputId?: string
+  inputClasses?: CSSProperties | null
   classNames?: string
   disabled?: boolean
 }
@@ -33,6 +34,7 @@ export const AddressAutoComplete = ({
   value,
   controlled,
   inputId,
+  inputClasses = null,
   classNames,
   disabled,
 }: AddressAutoCompleteProps) => {
@@ -95,7 +97,7 @@ export const AddressAutoComplete = ({
         }}
         onSelect={e => handleGetAddressDetails(e.value, predictions)}
         forceSelection
-        inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
+        inputStyle={inputClasses as CSSProperties}
         className={classNames}
         autoComplete="off"
       />
@@ -113,7 +115,7 @@ export const AddressAutoComplete = ({
       onChange={e => setSelectedAddresses(e.value)}
       onSelect={e => handleGetAddressDetails(e.value, predictions)}
       forceSelection
-      inputStyle={{ width: '100%', height: '100%', borderTopRightRadius: 'none', borderRadius: '5px 0 0 5px' }}
+      inputStyle={inputClasses as CSSProperties}
       className={classNames}
       autoComplete="off"
       disabled={disabled}
