@@ -226,7 +226,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     try {
       const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: Date | string | null; field: string }
 
-      if (!newValue) return
+      if (newValue == null) return
 
       switch (field) {
         case 'in_time':
@@ -272,14 +272,14 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
               return
             }
 
-            showToast({
-              severity: 'success',
-              summary: `Updated ${field === 'in_time' ? 'In' : 'Out'} time`,
-              detail: formatToTime(newTimeStamp),
-            })
-
             if (selectedPayPeriod) {
-              fetchTimesheets(selectedPayPeriod)
+              await fetchTimesheets(selectedPayPeriod)
+
+              showToast({
+                severity: 'success',
+                summary: `Updated ${field === 'in_time' ? 'In' : 'Out'} time`,
+                detail: formatToTime(newTimeStamp),
+              })
             } else {
               showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
             }
@@ -314,14 +314,14 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             return
           }
 
-          showToast({
-            severity: 'success',
-            summary: `${field === 'in_notes' ? 'In' : 'Out'} note updated:`,
-            detail: `"${newNote}"`,
-          })
-
           if (selectedPayPeriod) {
-            fetchTimesheets(selectedPayPeriod)
+            await fetchTimesheets(selectedPayPeriod)
+
+            showToast({
+              severity: 'success',
+              summary: `${field === 'in_notes' ? 'In' : 'Out'} note updated:`,
+              detail: `"${newNote}"`,
+            })
           } else {
             showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
           }
