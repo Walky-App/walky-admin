@@ -10,6 +10,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { Toolbar } from 'primereact/toolbar'
 
+import { type IToastParameters } from '../../../interfaces/global'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
@@ -184,7 +185,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         break
     }
 
-    const cellTimeValue = options.value || new Date(timeStamp)
+    const cellTimeValue = options.value ?? new Date(timeStamp)
 
     return (
       <Calendar
@@ -215,7 +216,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return (
       <InputText
         type="text"
-        value={options.value || ''}
+        value={options.value ?? ''}
         onChange={e => options.editorCallback!(e.target.value)}
         className="w-full"
       />
@@ -227,6 +228,24 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: Date | string | null; field: string }
 
       if (newValue == null) return
+
+      const handleToastAndFetchTimesheets = async ({ severity, summary, detail }: IToastParameters) => {
+        if (selectedPayPeriod) {
+          await fetchTimesheets(selectedPayPeriod)
+          showToast({ severity, summary, detail })
+        } else {
+          showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
+        }
+      }
+
+      const handleErrorResponse = async (response: Response) => {
+        if (!response.ok) {
+          const message = await response.text()
+          showToast({ severity: 'error', summary: 'Error', detail: message })
+          return false
+        }
+        return true
+      }
 
       switch (field) {
         case 'in_time':
@@ -266,22 +285,12 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
               body: JSON.stringify(body),
             })
 
-            if (!response.ok) {
-              const message = await response.text()
-              showToast({ severity: 'error', summary: 'Error', detail: message })
-              return
-            }
-
-            if (selectedPayPeriod) {
-              await fetchTimesheets(selectedPayPeriod)
-
-              showToast({
+            if (await handleErrorResponse(response)) {
+              await handleToastAndFetchTimesheets({
                 severity: 'success',
                 summary: `Updated ${field === 'in_time' ? 'In' : 'Out'} time`,
                 detail: formatToTime(newTimeStamp),
               })
-            } else {
-              showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
             }
           }
           break
@@ -308,22 +317,12 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             body: JSON.stringify(body),
           })
 
-          if (!response.ok) {
-            const message = await response.text()
-            showToast({ severity: 'error', summary: 'Error', detail: message })
-            return
-          }
-
-          if (selectedPayPeriod) {
-            await fetchTimesheets(selectedPayPeriod)
-
-            showToast({
+          if (await handleErrorResponse(response)) {
+            await handleToastAndFetchTimesheets({
               severity: 'success',
               summary: `${field === 'in_notes' ? 'In' : 'Out'} note updated:`,
               detail: `"${newNote}"`,
             })
-          } else {
-            showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
           }
 
           break
