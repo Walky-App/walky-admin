@@ -40,6 +40,7 @@ const defaultFacilityFormValues: IFacility = {
   sqft: 0,
   services: [],
   company_id: '',
+  company: null,
   contacts: [
     {
       first_name: '',
