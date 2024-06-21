@@ -71,15 +71,11 @@ export const ClientJobs = () => {
     },
   ]
 
-  return (
-    <div className="mx-auto ">
-      {isLoading ? (
-        <HTLoadingLogo />
-      ) : jobsData.length > 0 ? (
-        <GlobalTable data={jobsData} columns={jobsColumns} allowClick />
-      ) : (
-        <div className="mt-4">No jobs have been posted yet.</div>
-      )}
-    </div>
+  return isLoading ? (
+    <HTLoadingLogo />
+  ) : jobsData.length > 0 ? (
+    <GlobalTable data={jobsData} columns={jobsColumns} allowClick />
+  ) : (
+    <div className="mt-4">No jobs have been posted yet.</div>
   )
 }
