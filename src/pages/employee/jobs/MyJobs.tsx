@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
+// import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { type IJob } from '../../../interfaces/job'
@@ -11,23 +11,23 @@ import { JobCard } from './JobCard'
 
 const adminRole = process.env.REACT_APP_ADMIN_ROLE
 
-interface ViewOption {
-  icon: string
-  value: string
-}
+// interface ViewOption {
+//   icon: string
+//   value: string
+// }
 
-const viewOptions: ViewOption[] = [
-  { icon: 'pi pi-bars', value: 'list' },
-  { icon: 'pi pi-calendar', value: 'calendar' },
-]
+// const viewOptions: ViewOption[] = [
+//   { icon: 'pi pi-bars', value: 'list' },
+//   { icon: 'pi pi-calendar', value: 'calendar' },
+// ]
 
 export const EmployeeMyJobs = () => {
   const [jobs, setJobs] = useState<IJob[]>([])
-  const [view, setView] = useState<string>('list')
+  const [view] = useState<string>('list')
 
-  const viewOptionsTemplate = (option: ViewOption) => {
-    return <i className={option.icon} />
-  }
+  // const viewOptionsTemplate = (option: ViewOption) => {
+  //   return <i className={option.icon} />
+  // }
 
   const { _id, role } = GetTokenInfo()
 
@@ -73,7 +73,8 @@ export const EmployeeMyJobs = () => {
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex w-full justify-end">
+      {/* todo:  Calendar view not ready yet, dates of the month are hardcoded  */}
+      {/* <div className="flex w-full justify-end">
         <SelectButton
           value={view}
           onChange={(e: SelectButtonChangeEvent) => setView(e.value)}
@@ -82,7 +83,7 @@ export const EmployeeMyJobs = () => {
           itemTemplate={viewOptionsTemplate}
           pt={{ button: { className: 'justify-center' } }}
         />
-      </div>
+      </div> */}
       {view === 'calendar' ? (
         <JobCalendar jobs={activeJobs} />
       ) : (

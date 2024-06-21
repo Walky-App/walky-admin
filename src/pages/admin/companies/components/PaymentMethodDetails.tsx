@@ -16,6 +16,7 @@ import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoToolt
 import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
 import { type IPaymentMethod } from './AdminCompanyAddPaymentMethod'
 
 export const PaymentMethodDetails = () => {
@@ -25,6 +26,7 @@ export const PaymentMethodDetails = () => {
   const [showDialog, setShowDialog] = useState(false)
   const { showToast } = useUtils()
   const navigate = useNavigate()
+  const role = roleChecker()
 
   useEffect(() => {
     const fetchPaymentMethod = async () => {
@@ -73,7 +75,11 @@ export const PaymentMethodDetails = () => {
       if (response.ok) {
         await response.json()
 
-        navigate(`/admin/companies/${id}/payment`)
+        if (role === 'client') {
+          navigate(`/client/companies/${id}/payment`)
+        } else {
+          navigate(`/admin/companies/${id}/payment`)
+        }
       }
     } catch (error) {
       console.error(error)
