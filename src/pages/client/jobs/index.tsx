@@ -1,9 +1,5 @@
 import * as React from 'react'
 
-import { useNavigate } from 'react-router-dom'
-
-import { Button } from 'primereact/button'
-
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IJob } from '../../../interfaces/job'
@@ -11,7 +7,6 @@ import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const ClientJobs = () => {
-  const navigate = useNavigate()
   const user = GetTokenInfo()
   const id = user?._id
   const [jobsData, setJobsData] = React.useState<IJob[]>([])
@@ -78,13 +73,6 @@ export const ClientJobs = () => {
 
   return (
     <div className="mx-auto ">
-      <Button
-        label="Add Job"
-        onClick={() => {
-          navigate('/client/jobs/new')
-        }}
-        size="small"
-      />
       {isLoading ? (
         <HTLoadingLogo />
       ) : jobsData.length > 0 ? (
