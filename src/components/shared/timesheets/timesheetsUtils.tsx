@@ -7,7 +7,6 @@ import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
 import { type ColumnEditorOptions } from 'primereact/column'
 
-import { type IJob } from '../../../interfaces/job'
 import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
 import { roleChecker } from '../../../utils/roleChecker'
 import { convertMillisecondsToReadableTime } from '../../../utils/timeUtils'
@@ -17,14 +16,6 @@ export interface IAdminUserTimesheetsColumnMeta<T> {
   header: React.ReactNode
   sortable?: boolean
   editor?: (options: ColumnEditorOptions) => React.ReactNode
-}
-
-export interface IPunchDetails {
-  in_time: Date | null
-  out_time: Date | null
-  total_time: string
-  in_notes: string
-  out_notes: string
 }
 
 export interface IPunchPair {
@@ -37,8 +28,16 @@ export interface IPunchPair {
   out_time_stamp: string
   total_time: string
   timesheet_id: string
-  in_notes: string
-  out_notes: string
+  in_notes?: string
+  out_notes?: string
+}
+
+export interface IPunchDetails {
+  in_time: Date | null
+  out_time: Date | null
+  total_time: string
+  in_notes?: string
+  out_notes?: string
 }
 export interface IPunchPairsWithData {
   time_stamp: string
@@ -59,8 +58,21 @@ export interface IPunchPairWithTotalTime {
   totalTime: string | undefined
 }
 
+interface IJobDetails {
+  _id: string
+  title: string
+  start_time: Date
+  end_time: Date
+  lunch_break: number
+  total_hours: number
+  facility: {
+    _id: string
+    name: string
+  }
+}
+
 export interface ITimesheetWithJobDetails extends ITimeSheet {
-  job_details: IJob
+  job_details: IJobDetails
 }
 
 /**
@@ -195,7 +207,7 @@ export const formatDifference = (difference: number) => {
   return difference > 0 ? <span style={{ color: 'red' }}>+{difference.toFixed(2)}</span> : difference.toFixed(2)
 }
 
-const TimesheetJobDetails = ({ job }: { job: IJob }) => {
+const TimesheetJobDetails = ({ job }: { job: IJobDetails }) => {
   const { title, facility, lunch_break } = job
 
   const role = roleChecker()
