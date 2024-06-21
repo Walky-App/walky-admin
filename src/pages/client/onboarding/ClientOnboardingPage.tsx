@@ -9,7 +9,7 @@ import { type IAddressAutoComplete } from '../../../components/shared/forms/Addr
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IUser } from '../../../interfaces/User'
 import { type ICompany } from '../../../interfaces/company'
-import { type IFacility } from '../../../interfaces/facility2'
+import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import {

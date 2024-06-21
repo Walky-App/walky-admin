@@ -4,7 +4,7 @@ import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { type ICompany } from '../../../interfaces/company'
-import { type IFacility } from '../../../interfaces/facility2'
+import { type IFacility } from '../../../interfaces/facility'
 
 export interface IClientOnboardingFormInputs extends ICompany, IFacility {
   user_id: string

@@ -8,7 +8,7 @@ import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputn
 import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
-import { type IFacility } from '../../../interfaces/facility2'
+import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'

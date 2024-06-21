@@ -12,7 +12,7 @@ import { classNames } from 'primereact/utils'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IUser } from '../../../interfaces/User'
-import { type IFacility } from '../../../interfaces/facility2'
+import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
