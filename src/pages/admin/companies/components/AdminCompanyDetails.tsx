@@ -313,47 +313,45 @@ export const AdminCompanyDetails = () => {
               {getFormErrorMessage('company_phone_number', errors)}
             </div>
 
-            {role === 'admin' ? (
-              <div className="sm:col-span-3">
-                <Controller
-                  control={control}
-                  name="users"
-                  rules={{ required: 'At least one client is required' }}
-                  render={({ field, fieldState }) => {
-                    const selectedClients = field.value
-                      .map(id => allClients.find(client => client._id === id))
-                      .filter(Boolean)
-                    return (
-                      <>
-                        <HtInfoTooltip message="All clients related to this company">
-                          <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
-                        </HtInfoTooltip>
-                        <MultiSelect
-                          id={field.name}
-                          {...field}
-                          value={selectedClients}
-                          optionLabel="email"
-                          options={allClients}
-                          display="chip"
-                          selectAll
-                          selectAllLabel="Select All"
-                          onChange={(e: MultiSelectChangeEvent) => {
-                            field.onChange(e.value.map((client: IUser) => client._id))
-                          }}
-                          placeholder="Select Services"
-                          className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                        />
-                        <HtInputHelpText
-                          fieldName={field.name}
-                          helpText="Please select all users related to this company."
-                        />
-                        {getFormErrorMessage('services', errors)}
-                      </>
-                    )
-                  }}
-                />
-              </div>
-            ) : null}
+            <div className="sm:col-span-3">
+              <Controller
+                control={control}
+                name="users"
+                rules={{ required: 'At least one client is required' }}
+                render={({ field, fieldState }) => {
+                  const selectedClients = field.value
+                    .map(id => allClients.find(client => client._id === id))
+                    .filter(Boolean)
+                  return (
+                    <>
+                      <HtInfoTooltip message="All clients related to this company">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
+                      </HtInfoTooltip>
+                      <MultiSelect
+                        id={field.name}
+                        {...field}
+                        value={selectedClients}
+                        optionLabel="email"
+                        options={allClients}
+                        display="chip"
+                        selectAll
+                        selectAllLabel="Select All"
+                        onChange={(e: MultiSelectChangeEvent) => {
+                          field.onChange(e.value.map((client: IUser) => client._id))
+                        }}
+                        placeholder="Select Services"
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      />
+                      <HtInputHelpText
+                        fieldName={field.name}
+                        helpText="Please select all users related to this company."
+                      />
+                      {getFormErrorMessage('services', errors)}
+                    </>
+                  )
+                }}
+              />
+            </div>
 
             <div className="sm:col-span-6">
               <Controller
