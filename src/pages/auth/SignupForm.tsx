@@ -217,20 +217,8 @@ export const Signup = () => {
             }}
             className="mt-5 w-full"
           />
-          <div className="my-3 items-center text-center text-sm text-zinc-500">
-            <Checkbox
-              required
-              inputId="terms"
-              name="terms.is_accepted"
-              value={formData.terms}
-              onChange={handleApprovedTerms}
-              checked={formData.terms.is_accepted || false}
-            />
-            <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="ml-2 underline">
-              Accept Terms & Conditions
-            </a>
-          </div>
-          <div className="my-4 flex justify-between text-sm text-zinc-500">
+          <div className="my-4 flex flex-col space-y-1 text-sm text-zinc-500">
+            <span>Please choose notifications you would like to receive:</span>
             <div>
               <Checkbox
                 required
@@ -240,7 +228,7 @@ export const Signup = () => {
                 checked={formData.notifications.includes('Email')}
               />
               <label htmlFor="email_notifications" className="ml-2">
-                Accept Email Notifications
+                Email
               </label>
             </div>
             <div>
@@ -252,9 +240,22 @@ export const Signup = () => {
                 checked={formData.notifications.includes('SMS')}
               />
               <label htmlFor="sms_notifications" className="ml-2">
-                Accept SMS Notifications
+                SMS
               </label>
             </div>
+          </div>
+          <div className="my-3 text-sm text-zinc-500">
+            <Checkbox
+              required
+              inputId="terms"
+              name="terms.is_accepted"
+              value={formData.terms}
+              onChange={handleApprovedTerms}
+              checked={formData.terms.is_accepted || false}
+            />
+            <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="ml-2 underline">
+              Accept Terms & Conditions
+            </a>
           </div>
 
           <Toast ref={toast} position="bottom-right" />
