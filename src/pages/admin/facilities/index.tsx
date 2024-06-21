@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
-import { type IFacility } from '../../../interfaces/facility'
+import { type IFacility } from '../../../interfaces/facility2'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 
