@@ -239,7 +239,9 @@ export const Signup = () => {
                 onChange={e => handleNotificationPreferenceChange(e, 'Email')}
                 checked={formData.notifications.includes('Email')}
               />
-              <span className="ml-2">Accept Email Notifications</span>
+              <label htmlFor="email_notifications" className="ml-2">
+                Accept Email Notifications
+              </label>
             </div>
             <div>
               <Checkbox
@@ -249,7 +251,9 @@ export const Signup = () => {
                 onChange={e => handleNotificationPreferenceChange(e, 'SMS')}
                 checked={formData.notifications.includes('SMS')}
               />
-              <span className="ml-2">Accept SMS Notifications</span>
+              <label htmlFor="sms_notifications" className="ml-2">
+                Accept SMS Notifications
+              </label>
             </div>
           </div>
 
