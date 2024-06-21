@@ -200,7 +200,7 @@ export const AdminAddCompany = () => {
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Tax ID" />
+                      <HtInputLabel htmlFor={field.name} labelText="Tax ID" />
                     </HtInfoTooltip>
                     <InputMask
                       id={field.name}
@@ -312,7 +312,7 @@ export const AdminAddCompany = () => {
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="All facilities related to this company">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Facilities" />
+                      <HtInputLabel htmlFor={field.name} labelText="Facilities" />
                     </HtInfoTooltip>
                     <MultiSelect
                       id={field.name}

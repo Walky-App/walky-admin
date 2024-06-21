@@ -68,7 +68,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
   const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
     setIsLoading(true)
 
-    const companyId = formData?.company?._id
+    const companyId = formData?.company_id
 
     const requestData: ICompany = {
       company_name: data.company_name,

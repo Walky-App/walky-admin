@@ -1,30 +1,41 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
+import classNames from 'classnames'
 import { Button } from 'primereact/button'
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Image } from 'primereact/image'
-
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
+import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
+import { InputText } from 'primereact/inputtext'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { MultiSelect } from 'primereact/multiselect'
 
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type ICompanySlim } from '../../../../interfaces/company'
 import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getCurrentUserRole } from '../../../../utils/UserRole'
+import { jobTitlesOptions } from '../../../../utils/formOptions'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { PolygonMap } from './PolygonMap'
 
 export const FacilityDetailsForm = ({
   facility,
   setFacility,
+  company,
 }: {
   facility: IFacility
   setFacility: React.Dispatch<React.SetStateAction<IFacility | undefined>>
+  company: ICompanySlim | undefined
 }) => {
-  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(facility)
+  const [formData, setFormData] = useState<IFacility>(facility)
   const [locationPolygon, setLocationPolygon] = useState<[number, number][]>(
     facility.location_polygon ? facility.location_polygon : [],
   )
@@ -34,13 +45,19 @@ export const FacilityDetailsForm = ({
 
   const role = getCurrentUserRole()
 
-  const { zip, state, city, location_pin, address } = moreAddressDetails || {
-    zip: undefined,
-    state: undefined,
-    city: undefined,
-    location_pin: undefined,
-    address: undefined,
-  }
+  useEffect(() => {
+    if (moreAddressDetails) {
+      setFormData(prevState => ({
+        ...prevState,
+        country: moreAddressDetails.country ?? '',
+        state: moreAddressDetails.state ?? '',
+        zip: moreAddressDetails.zip ?? '',
+        city: moreAddressDetails.city ?? '',
+        location_pin: moreAddressDetails.location_pin ?? [],
+        address: moreAddressDetails.address ?? '',
+      }))
+    }
+  }, [moreAddressDetails, setMoreAddressDetails])
 
   const accept = async () => {
     try {
@@ -77,84 +94,48 @@ export const FacilityDetailsForm = ({
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const target = e.target as typeof e.target & {
-      tax_id: { value: string }
-      corp_name: { value: string }
-      name: { value: string }
-      active: { value: boolean }
-      isApproved: { value: boolean }
-      phone_number: { value: string }
-      sqft: { value: number }
-      notes: { value: string }
-      country: { value: string }
-      address: { value: string }
-      city: { value: string }
-      state: { value: string }
-      zip: { value: number }
-      company_dbas: { value: string }
-    }
-
-    const services = Array.from(e.currentTarget.services)
-      .filter((input: unknown): input is HTMLInputElement => (input as HTMLInputElement).checked)
-      .map((input: HTMLInputElement) => input.value)
-
-    const companyDbas = target.company_dbas.value
-      .split(',')
-      .map(dba => dba.trim())
-      .filter(dba => dba)
-
-    const formValues = {
-      tax_id: target.tax_id.value,
-      corp_name: target.corp_name.value,
-      name: target.name.value,
-      active: target.active.value,
-      isApproved: target.isApproved.value,
-      phone_number: target.phone_number.value,
-      sqft: target.sqft.value,
-      notes: target.notes.value,
-      address: address,
-      city: city,
-      state: state,
-      zip: zip,
-      company_dbas: companyDbas,
-      location_pin: location_pin,
-      location_polygon: locationPolygon,
-      services: services,
-    }
-
     try {
       const response = await requestService({
         path: `facilities/${facility._id}`,
         method: 'PATCH',
-        body: JSON.stringify(formValues),
+        body: JSON.stringify(formData),
       })
       if (response.ok) {
         const data = await response.json()
         setFacility(data)
-        setUpdateSuccess(true)
-        setTimeout(() => setUpdateSuccess(false), 5000)
+
         showToast({ severity: 'success', summary: 'Success', detail: 'Facility updated successfully' })
       } else {
-        setUpdateSuccess(false)
         console.error('Failed to update the facility.')
         showToast({ severity: 'error', summary: 'Error', detail: 'Error updating facility' })
       }
     } catch (error) {
-      setUpdateSuccess(false)
       console.error('Error occurred while updating facility:', error)
       showToast({ severity: 'error', summary: 'Error', detail: 'Error updating facility' })
     }
   }
 
+  const handleFormUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target as HTMLInputElement
+    setFormData(prevState => ({ ...prevState, [name]: value }))
+  }
+
+  const handleFormUpdateNumber = (e: InputMaskChangeEvent) => {
+    const { name, value } = e.target
+    setFormData(prevState => ({ ...prevState, [name]: value }))
+  }
+
   return (
     <form onSubmit={handleForm}>
-      <div className="space-y-4 md:space-y-12">
+      <div className="p-fluid space-y-4 md:space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Facility Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              Please see the information about this particular facility.
+              Please provide information about your business so that we can verify you on the platform.
             </p>
+            {requiredFieldsNoticeText}
+
             <div className="relative mt-6">
               <div className="flex md:justify-center">
                 <Image
@@ -188,213 +169,147 @@ export const FacilityDetailsForm = ({
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
-              <label htmlFor="tax-id" className="block text-sm font-medium leading-6 text-gray-900">
-                {facility.tax_id ? 'Facility Tax ID' : 'Company Tax ID'}
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="tax_id"
-                  id="tax-id"
-                  defaultValue={facility.tax_id ? facility.tax_id : facility.company?.company_tax_id}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-            <div className="sm:col-span-3">
-              <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                Company Name
-              </label>
-              <div className="mt-2">
-                <input
-                  disabled
-                  type="text"
-                  name="corp_name"
-                  id="corp-name"
-                  defaultValue={facility?.company?.company_name}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 "
-                />
-              </div>
-            </div>
-            <div className="sm:col-span-3">
-              <label htmlFor="company-dbas" className="block text-sm font-medium leading-6 text-gray-900">
-                Company DBAs
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="company_dbas"
-                  id="company-dbas"
-                  placeholder="Enter company DBAs separated by comma"
-                  defaultValue={facility.company?.company_dbas?.join(', ')}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-            <div className="sm:col-span-3">
-              <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                Facility Name
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  defaultValue={facility.name || ''}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                />
-              </div>
+              <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions.">
+                <HtInputLabel htmlFor="tax-id" labelText="Tax ID" />
+              </HtInfoTooltip>
+              <InputMask
+                value={formData.tax_id}
+                name="tax_id"
+                onChange={handleFormUpdateNumber}
+                placeholder="xx-xxxxxxx"
+                id="tax-id"
+                mask="99-9999999"
+                slotChar="x"
+                autoComplete="off"
+                className="w-full"
+              />
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="phone-number" className="block text-sm font-medium leading-6 text-gray-900">
-                Facility Phone Number
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="phone_number"
-                  id="phone-number"
-                  defaultValue={facility.phone_number || ''}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                />
-              </div>
+              <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
+                <HtInputLabel htmlFor="name" labelText="Company Name" />
+              </HtInfoTooltip>
+              <InputText
+                name="company_name"
+                id="name"
+                disabled
+                autoComplete="off"
+                onChange={handleFormUpdate}
+                value={company?.company_name}
+                placeholder="e.g. Main Facility"
+                className="w-full"
+              />
+            </div>
+            <div className="sm:col-span-3">
+              <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
+                <HtInputLabel htmlFor="name" asterisk labelText="Facility Name" />
+              </HtInfoTooltip>
+              <InputText
+                name="name"
+                id="name"
+                required
+                autoComplete="off"
+                onChange={handleFormUpdate}
+                value={formData.name}
+                placeholder="e.g. Main Facility"
+                className="w-full"
+              />
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                Facility Square Footage
-              </label>
-              <div className="mt-2">
-                <input
-                  type="number"
-                  name="sqft"
-                  id="sqft"
-                  min="0"
-                  defaultValue={facility.sqft || ''}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+              <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
+                <HtInputLabel htmlFor="name" asterisk labelText="Dbas" />
+              </HtInfoTooltip>
+              <InputText
+                name="dbas"
+                id="dbas"
+                required
+                autoComplete="off"
+                onChange={handleFormUpdate}
+                value={formData.name}
+                placeholder="e.g. Another name for the facility"
+                className="w-full"
+              />
+            </div>
+
+            <div className="sm:col-span-3">
+              <HtInfoTooltip message="The phone number of your facility. This is the number that workers will call if they have questions or need to contact you.">
+                <HtInputLabel htmlFor="phone-number" asterisk labelText="Facility Phone Number" />
+              </HtInfoTooltip>
+              <InputMask
+                name="phone_number"
+                id="phone-number"
+                mask="(999) 999-9999"
+                slotChar="#"
+                unmask={true}
+                autoComplete="off"
+                placeholder="(123) 456-7890"
+                value={formData.phone_number}
+                required
+                onChange={handleFormUpdateNumber}
+                className="w-full"
+              />
+            </div>
+
+            <div className="sm:col-span-3">
+              <HtInfoTooltip message="The square footage of your facility. This is the total area of your facility in square feet.">
+                <HtInputLabel htmlFor="sqft" labelText="Facility Square Footage" />
+              </HtInfoTooltip>
+              <InputText
+                name="sqft"
+                id="sqft"
+                onChange={handleFormUpdate}
+                keyfilter={/[0-9]/}
+                min={0}
+                max={1000000}
+                className="w-full"
+              />
+              <HtInputHelpText fieldName="sqft" helpText="Max 1,000,000" />
+            </div>
+
+            <div className="sm:col-span-6">
+              <HtInfoTooltip message="Any additional notes that you would like to provide about your facility. This information will be verified before application approval.">
+                <HtInputLabel htmlFor="notes" labelText="Arrival notes" />
+              </HtInfoTooltip>
+              <InputTextarea
+                id="notes"
+                rows={4}
+                cols={30}
+                maxLength={500}
+                onChange={e => setFormData(prevState => ({ ...prevState, notes: e.target.value }))}
+                className={classNames({ 'p-invalid': false }, 'w- mt-2')}
+                autoComplete="off"
+              />
+              <HtInputHelpText
+                fieldName="notes"
+                helpText="Max 500 characters. Please do not enter contact information into this field."
+              />
+            </div>
+
+            <div className="sm:col-span-6">
+              <HtInfoTooltip message="The services that your facility offers.">
+                <HtInputLabel htmlFor="services" asterisk labelText="Services" />
+              </HtInfoTooltip>
+              <div className="">
+                <MultiSelect
+                  required
+                  id="services"
+                  value={formData.services}
+                  optionLabel="title"
+                  options={jobTitlesOptions}
+                  display="chip"
+                  selectAll
+                  selectAllLabel="Select All"
+                  onChange={e => setFormData(prevState => ({ ...prevState, services: e.value }))}
+                  placeholder="Select Services"
+                  className={classNames({ 'p-invalid': false }, 'mt-2 w-full')}
+                />
+                <HtInputHelpText
+                  fieldName="services"
+                  helpText="Please select all services that your facility offers."
                 />
               </div>
             </div>
-
-            <div className="col-span-full">
-              <label htmlFor="ext-notes" className="block text-sm font-medium leading-6 text-gray-900">
-                Arrival Notes
-              </label>
-              <div className="mt-2">
-                <textarea
-                  id="ext-notes"
-                  name="notes"
-                  rows={5}
-                  defaultValue={facility.notes || ''}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-              <p className="mt-3 text-sm leading-6 text-gray-600">Write notes about the facility.</p>
-            </div>
-            <fieldset>
-              <legend className="text-sm font-semibold leading-6 text-gray-900">Services</legend>
-              <div className=" flex items-center">
-                <div className="mr-3 flex items-center">
-                  <input
-                    id="services"
-                    name="services"
-                    type="checkbox"
-                    value="Trimming"
-                    defaultChecked={facility.services?.includes('Trimming')}
-                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                  />
-                  <label htmlFor="trimming" className="text-sm">
-                    Trimming
-                  </label>
-                </div>
-                <div className="mr-3 flex items-center">
-                  <input
-                    id="services"
-                    name="services"
-                    type="checkbox"
-                    value="Harvesting"
-                    defaultChecked={facility.services?.includes('Harvesting')}
-                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                  />
-                  <label htmlFor="harvesting" className="text-sm">
-                    Harvesting
-                  </label>
-                </div>
-
-                <div className="mr-3 flex items-center">
-                  <input
-                    id="services"
-                    name="services"
-                    type="checkbox"
-                    value="Packaging"
-                    defaultChecked={facility.services?.includes('Packaging')}
-                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                  />
-                  <label htmlFor="packaging" className="text-sm">
-                    Packaging
-                  </label>
-                </div>
-
-                <div className="mr-3 flex items-center">
-                  <input
-                    id="services"
-                    name="services"
-                    type="checkbox"
-                    value="Budtending"
-                    defaultChecked={facility.services?.includes('Budtending')}
-                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                  />
-                  <label htmlFor="budtending" className="text-sm">
-                    Budtending
-                  </label>
-                </div>
-
-                <div className="mr-3 flex items-center">
-                  <input
-                    id="services"
-                    name="services"
-                    type="checkbox"
-                    value="Gardening"
-                    defaultChecked={facility.services?.includes('Gardening')}
-                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                  />
-                  <label htmlFor="gardening" className="text-sm">
-                    Gardening
-                  </label>
-                </div>
-
-                <div className="mr-3 flex items-center">
-                  <input
-                    id="services"
-                    name="services"
-                    type="checkbox"
-                    value="General Labor"
-                    defaultChecked={facility.services?.includes('General Labor')}
-                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                  />
-
-                  <label htmlFor="packaging" className="whitespace-nowrap text-sm">
-                    General Labor
-                  </label>
-                </div>
-
-                <div className="mr-3 flex items-center">
-                  <input
-                    id="services"
-                    name="services"
-                    type="checkbox"
-                    value="Other"
-                    defaultChecked={facility.services?.includes('Other')}
-                    className="mr-1 rounded border-gray-300 text-green-600 focus:outline-none focus:ring-green-600"
-                  />
-
-                  <label htmlFor="other" className="text-sm">
-                    Other
-                  </label>
-                </div>
-              </div>
-            </fieldset>
           </div>
         </div>
 
@@ -521,19 +436,7 @@ export const FacilityDetailsForm = ({
             />
           </div>
         ) : null}
-        {updateSuccess ? (
-          <div className="rounded-md bg-green-50 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">Facility successfully updated</p>
-              </div>
-            </div>
-          </div>
-        ) : null}
-        <Button type="submit" label="Update" icon="pi pi-check" />
+        <Button className="text-right" type="submit" label="Update" icon="pi pi-check" />
       </div>
     </form>
   )

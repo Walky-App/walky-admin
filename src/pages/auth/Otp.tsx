@@ -162,9 +162,9 @@ export const Otp = () => {
           <InputMask
             required
             name="otp"
-            mask="999-9-999"
+            mask="9999999"
             onChange={e => handleFormUpdateNumber(e)}
-            placeholder="999-9-999"
+            placeholder="9999999"
             className="w-full"
           />
         </div>

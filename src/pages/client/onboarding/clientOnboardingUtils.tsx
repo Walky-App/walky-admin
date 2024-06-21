@@ -97,7 +97,6 @@ export const createCompanyFormData = (companyData: ICompany): ICompany => {
 
 export const createFacilityFormData = (facilityData: IFacility): IFacility => {
   const {
-    company,
     company_id,
     name,
     tax_id,
@@ -121,7 +120,6 @@ export const createFacilityFormData = (facilityData: IFacility): IFacility => {
   } = facilityData
 
   return {
-    company,
     company_id,
     name,
     tax_id,
