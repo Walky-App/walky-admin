@@ -1,3 +1,4 @@
+import { type INotificationPreference } from '../utils/formOptions'
 import { type IUser } from './User'
 
 export interface ILoginData {
@@ -18,6 +19,7 @@ export interface ISignupData {
   role: string
   password: string
   password_confirmed: string
+  notifications: INotificationPreference[]
   email: string
   phone_number: string
   otp?: string
