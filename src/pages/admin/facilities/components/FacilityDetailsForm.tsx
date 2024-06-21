@@ -187,7 +187,7 @@ export const FacilityDetailsForm = ({
 
             <div className="sm:col-span-3">
               <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
-                <HtInputLabel htmlFor="name" asterisk labelText="Company Name" />
+                <HtInputLabel htmlFor="name" labelText="Company Name" />
               </HtInfoTooltip>
               <InputText
                 name="company_name"
@@ -341,7 +341,6 @@ export const FacilityDetailsForm = ({
                   <AddressAutoComplete
                     setMoreAddressDetails={setMoreAddressDetails}
                     currentAddress={facility.address || ''}
-                    onChange={e => setFormData(prevState => ({ ...prevState, address: e }))}
                   />
                 </span>
               </div>
