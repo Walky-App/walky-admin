@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -33,6 +33,7 @@ export const Signup = () => {
     terms: { is_accepted: false, accepted_at: new Date(), ip_address: '' },
     role: employee_role,
   })
+
   const [loading, setLoading] = useState(false)
   const toast = useRef<Toast>(null)
 
@@ -42,9 +43,12 @@ export const Signup = () => {
 
   const { email, role } = useParams()
 
-  if (role !== undefined && email !== undefined) {
-    setFormData({ ...formData, role: role })
-  }
+  useEffect(() => {
+    if (email != null && role != null) {
+      setFormData(prevState => ({ ...prevState, email: email, role: role }))
+    }
+  }, [email, role])
+
   const navigate = useNavigate()
 
   const handleFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
