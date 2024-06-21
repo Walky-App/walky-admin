@@ -7,7 +7,6 @@ import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
 import { type ColumnEditorOptions } from 'primereact/column'
 
-import { type IJob } from '../../../interfaces/job'
 import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
 import { roleChecker } from '../../../utils/roleChecker'
 import { convertMillisecondsToReadableTime } from '../../../utils/timeUtils'
@@ -17,12 +16,6 @@ export interface IAdminUserTimesheetsColumnMeta<T> {
   header: React.ReactNode
   sortable?: boolean
   editor?: (options: ColumnEditorOptions) => React.ReactNode
-}
-
-export interface IPunchDetails {
-  in_time: Date | null
-  out_time: Date | null
-  total_time: string
 }
 
 export interface IPunchPair {
@@ -35,6 +28,16 @@ export interface IPunchPair {
   out_time_stamp: string
   total_time: string
   timesheet_id: string
+  in_notes?: string
+  out_notes?: string
+}
+
+export interface IPunchDetails {
+  in_time: Date | null
+  out_time: Date | null
+  total_time: string
+  in_notes?: string
+  out_notes?: string
 }
 export interface IPunchPairsWithData {
   time_stamp: string
@@ -55,8 +58,21 @@ export interface IPunchPairWithTotalTime {
   totalTime: string | undefined
 }
 
+interface IJobDetails {
+  _id: string
+  title: string
+  start_time: Date
+  end_time: Date
+  lunch_break: number
+  total_hours: number
+  facility: {
+    _id: string
+    name: string
+  }
+}
+
 export interface ITimesheetWithJobDetails extends ITimeSheet {
-  job_details: IJob
+  job_details: IJobDetails
 }
 
 /**
@@ -145,6 +161,8 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
         in_time_stamp: punchIn.time_stamp,
         out_time_stamp: punchOut.time_stamp,
         total_time: (totalTime / 1000 / 60 / 60).toFixed(2),
+        in_notes: punchIn.note,
+        out_notes: punchOut.note,
         timesheet_id: _id,
       })
       punchIn = null
@@ -153,14 +171,16 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
 
   if (!outTime && punchIn) {
     punchPairs.push({
+      day: format(punchIn.time_stamp, 'EEE, MMM d'),
       in_id: punchIn._id,
       out_id: '',
-      day: format(punchIn.time_stamp, 'EEE, MMM d'),
       in_time: new Date(punchIn.time_stamp),
       out_time: null,
       in_time_stamp: punchIn.time_stamp,
       out_time_stamp: '',
       total_time: '',
+      in_notes: punchIn.note,
+      out_notes: '',
       timesheet_id: _id,
     })
   }
@@ -187,7 +207,7 @@ export const formatDifference = (difference: number) => {
   return difference > 0 ? <span style={{ color: 'red' }}>+{difference.toFixed(2)}</span> : difference.toFixed(2)
 }
 
-const TimesheetJobDetails = ({ job }: { job: IJob }) => {
+const TimesheetJobDetails = ({ job }: { job: IJobDetails }) => {
   const { title, facility, lunch_break } = job
 
   const role = roleChecker()
