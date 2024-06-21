@@ -20,6 +20,7 @@ import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { useAdminCompanyPageContext } from '../AdminCompanyPage'
 
@@ -55,6 +56,7 @@ export const AdminCompanyAddPaymentMethod = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
+  const role = roleChecker()
 
   const paymentMethodOptions = [
     { label: 'Automated Clearing House', value: 'ACH' },
@@ -143,7 +145,11 @@ export const AdminCompanyAddPaymentMethod = () => {
       setSelectedCompanyData(updatedCompanyData)
       showToast({ severity: 'success', summary: 'Payment method added successfully' })
       setTimeout(() => {
-        navigate('/admin/companies/')
+        if (role === 'client') {
+          navigate(`/client/companies/${id}/payment`)
+        } else {
+          navigate(`/admin/companies/${id}/payment`)
+        }
       }, 2000)
     } catch (error) {
       console.error('Error adding company: ', error)
