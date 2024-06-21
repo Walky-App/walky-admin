@@ -33,7 +33,7 @@ export interface IFacility {
   _id?: string
   createdAt?: string
   company_id: string
-  company: ICompany | null
+  company?: ICompany
   name: string
   tax_id: string
   phone_number: string

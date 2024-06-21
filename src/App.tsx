@@ -147,7 +147,7 @@ export const App = () => {
                   <Route element={<ClientMessages />} path="/client/messages" />
                   <Route element={<ClientProfile />} path="/client/profile" />
                   <Route element={<ClientFacilities />} path="/client/facilities" />
-                  <Route element={<ClientAddFacility />} path="/client/facilities/new" />
+                  <Route element={<AdminAddFacility />} path="/client/facilities/new" />
                   <Route element={<FacilityDetailsPage />} path="/client/facilities/:facilityId" />
                   <Route element={<AdminFacilityContacts />} path="/client/facilities/:facilityId/contacts" />
                   <Route element={<AdminFacilityImages />} path="/client/facilities/:facilityId/images" />
