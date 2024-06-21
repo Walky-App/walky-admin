@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -48,7 +48,7 @@ const clientColumns = [
 export const ClientFacilities = () => {
   const [facilities, setFacilities] = useState<IFacility[]>([])
 
-  useMemo(() => {
+  useEffect(() => {
     const { _id } = GetTokenInfo()
     const getFacilities = async () => {
       const allFacilities = await RequestService(`facilities/user/${_id}`)
