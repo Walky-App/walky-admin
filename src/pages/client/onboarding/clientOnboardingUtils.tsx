@@ -97,6 +97,7 @@ export const createCompanyFormData = (companyData: ICompany): ICompany => {
 
 export const createFacilityFormData = (facilityData: IFacility): IFacility => {
   const {
+    company,
     company_id,
     name,
     tax_id,
@@ -120,6 +121,7 @@ export const createFacilityFormData = (facilityData: IFacility): IFacility => {
   } = facilityData
 
   return {
+    company,
     company_id,
     name,
     tax_id,
@@ -164,7 +166,7 @@ export interface IGetAcceptDocumentDetails {
   type: string
   tags: string
   company_name: string
-  company_id: string
+  company: string
   company_logo_url: string
   is_selfsign: boolean
   is_signing_biometric: boolean

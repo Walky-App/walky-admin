@@ -15,6 +15,7 @@ import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
 import { type ICompany } from '../../../../interfaces/company'
 import { requestService } from '../../../../services/requestServiceNew'
 import { getCardType } from '../../../../utils/CreditCardTypeUtil'
+import { roleChecker } from '../../../../utils/roleChecker'
 
 const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | null => {
   if (paymentType === 'CC') {
@@ -48,6 +49,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
+  const role = roleChecker()
 
   const selectedCompanyId = useParams().id
 
@@ -70,7 +72,11 @@ export const AdminCompanyPaymentMethodsPage = () => {
   }, [selectedCompanyId])
 
   const navigateToDetails = (paymentId: string) => {
-    navigate(`/admin/companies/${selectedCompanyId}/payment/${paymentId}`)
+    if (role === 'client') {
+      navigate(`/client/companies/${selectedCompanyId}/payment/${paymentId}`)
+    } else {
+      navigate(`/admin/companies/${selectedCompanyId}/payment/${paymentId}`)
+    }
   }
 
   const footer = (paymentId: string) => (
@@ -88,7 +94,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-8">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {selectedCompanyData.payment_information?.map((payment, index) => {
         let title = ''
         let subTitle = ''
@@ -98,26 +104,34 @@ export const AdminCompanyPaymentMethodsPage = () => {
           const cardType = getCardType(payment.payment_info.card_number ?? '')
           const cardIcon = getCardIcon(payment.payment_info.type, cardType)
 
-          title = `${cardType} **** ${payment.payment_info.card_number?.slice(-4) ?? ''}`
+          title = `${cardType} **** ${payment.payment_info?.card_number?.slice(-4) ?? ''}`
           subTitle = `Expires ${payment.payment_info.expiration_date}`
           cardHeader = createHeader(cardIcon)
         } else {
-          title = `Account **** ${payment.payment_info.account_number?.slice(-4) ?? ''}`
-          subTitle = `${payment.payment_info.bank_name}`
-          cardHeader = createHeader(getCardIcon(payment.payment_info.type))
+          title = `Account **** ${payment.payment_info?.account_number?.slice(-4) ?? ''}`
+          subTitle = `${payment.payment_info?.bank_name}`
+          cardHeader = createHeader(getCardIcon(payment.payment_info?.type))
         }
         return (
           <Card
             key={index}
             title={<div className="align-center text-center">{title}</div>}
             subTitle={<div className="align-center text-center">{subTitle}</div>}
-            footer={<div className="align-center text-center">{footer(payment.payment_info._id)}</div>}
+            footer={<div className="align-center text-center">{footer(payment.payment_info?._id)}</div>}
             header={cardHeader}
             className="md:w-25rem mx-2 flex cursor-pointer"
           />
         )
       })}
-      <Card className="cursor-pointer" onClick={() => navigate(`/admin/companies/${selectedCompanyId}/add-payment`)}>
+      <Card
+        className="cursor-pointer"
+        onClick={() => {
+          if (role === 'client') {
+            navigate(`/client/companies/${selectedCompanyId}/add-payment`)
+          } else {
+            navigate(`/admin/companies/${selectedCompanyId}/add-payment`)
+          }
+        }}>
         <div className="flex h-full items-center justify-center">
           <p>+ Add Payment Method</p>
         </div>

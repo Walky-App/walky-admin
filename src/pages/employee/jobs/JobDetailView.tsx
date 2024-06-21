@@ -20,9 +20,10 @@ import {
   createPunchPairsWithTotalTime,
 } from '../../../components/shared/timesheets/timesheetsUtils'
 import { type JobShiftDay, type IJob } from '../../../interfaces/job'
-import { type Shifts } from '../../../interfaces/shifts'
+import { type UserShiftsPopulate, type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import {
   isTodaySameAsTimeStamp,
@@ -186,6 +187,28 @@ export const JobDetailView = () => {
     return { isTodayShift: false, message: 'No shifts available.' }
   }
 
+  function getUserShiftsLengthByDate(dateString: string): UserShiftsPopulate[] {
+    const [day, month, year] = dateString.split('/')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const formattedDate = date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    const result = job?.job_days.find(jobDay => {
+      const jobDate = new Date(jobDay.day)
+      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      return formattedJobDate === formattedDate
+    })
+    if (!result) return []
+
+    return result.shifts_id?.user_shifts as UserShiftsPopulate[]
+  }
+
   const getCurrentJobTimeSheets = useCallback(async () => {
     const { access_token } = GetTokenInfo()
     const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
@@ -330,6 +353,64 @@ export const JobDetailView = () => {
     }
   }
 
+  const applyForDay = async (dateString: string) => {
+    try {
+      const [day, month, year] = dateString.split('/')
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      const formattedDate = date.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      const shift = job?.job_days.find(jobDay => {
+        const jobDate = new Date(jobDay.day)
+        const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        return formattedJobDate === formattedDate
+      })
+      if (shift?.shifts_id.user_shifts?.length === job?.vacancy) {
+        showToast({
+          severity: 'error',
+          summary: 'Failed',
+          detail: 'This day is already full',
+        })
+        return
+      }
+
+      const response = await requestService({
+        path: `shifts/apply-one/${shift?.shifts_id._id}`,
+        method: 'PATCH',
+        body: JSON.stringify({ userId: user._id, jobId: id }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setJob(data)
+        showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for day' })
+        setIsApplyForJobLoading(true)
+        setTimeout(() => {
+          setIsApplyForJobLoading(false)
+        }, 1500)
+      }
+    } catch (error: unknown) {
+      setIsApplyForJobLoading(false)
+      if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
+        const err = error as { status: number; message: string }
+        if (err.status === 400) {
+          setHasDateIntersection(true)
+          showToast({
+            severity: 'error',
+            summary: 'Failed',
+            detail: err.message,
+          })
+        }
+      }
+    }
+  }
+
   const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
     if (!timesheets) {
       return []
@@ -368,7 +449,20 @@ export const JobDetailView = () => {
                 <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
                   Lunch: {job.lunch_break} minutes
                 </p>
-                <p className="text-green-500">Confirmed</p>
+
+                <div className="flex justify-center font-medium">
+                  {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+                    <div>
+                      {getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
+                        <p className="text-end text-primary md:text-start">Accepted application</p>
+                      ) : (
+                        <p className="text-end text-primary md:text-start">Vacancy completed</p>
+                      )}
+                    </div>
+                  ) : (
+                    <Button label="Apply to this day" link onClick={() => applyForDay(formattedDate)} />
+                  )}
+                </div>
               </li>
             )
           })}
