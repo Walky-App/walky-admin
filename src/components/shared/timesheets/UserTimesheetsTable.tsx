@@ -305,6 +305,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             })
             return
           }
+
           const newNote = newValue
           const punchId = field === 'in_notes' ? rowData.in_id : rowData.out_id
           const timeSheetId = rowData.timesheet_id
@@ -320,8 +321,8 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
           if (await handleErrorResponse(response)) {
             await handleToastAndFetchTimesheets({
               severity: 'success',
-              summary: `${field === 'in_notes' ? 'In' : 'Out'} note updated:`,
-              detail: `"${newNote}"`,
+              summary: newNote ? `${field === 'in_notes' ? 'In' : 'Out'} Note updated:` : 'Note erased successfully',
+              detail: newNote ? `${newNote}` : '',
             })
           }
 
