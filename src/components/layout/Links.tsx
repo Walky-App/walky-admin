@@ -135,6 +135,17 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
         { name: 'Add Facility', href: '/client/facilities/new' },
       ],
     },
+    {
+      id: 8,
+      name: 'Companies',
+      href: '/client/companies',
+      icon: <FaBusinessTime />,
+      disabled: !userIsOnboarded,
+      subLinks: [
+        { name: 'All Companies', href: '/client/companies' },
+        { name: 'Add Company', href: '/client/companies/new' },
+      ],
+    },
   ]
 
   const employeeLinks: INavLink[] = [
