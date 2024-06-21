@@ -5,6 +5,7 @@ export interface IPunch {
   in_range: boolean
   is_success: boolean
   time_stamp: string
+  note: string
 }
 
 export interface ITimeSheet {
