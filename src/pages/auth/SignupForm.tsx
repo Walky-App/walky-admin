@@ -12,6 +12,7 @@ import { Toast } from 'primereact/toast'
 
 import { type ISignupData } from '../../interfaces/loginData'
 import { requestService } from '../../services/requestServiceNew'
+import { type INotificationPreference } from '../../utils/formOptions'
 
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
@@ -30,6 +31,7 @@ export const Signup = () => {
     phone_number: '',
     password: '',
     password_confirmed: '',
+    notifications: [],
     terms: { is_accepted: false, accepted_at: new Date(), ip_address: '' },
     role: employee_role,
   })
@@ -70,6 +72,20 @@ export const Signup = () => {
         is_accepted: e.checked !== null ? e.checked : false,
       },
     })
+  }
+
+  const handleNotificationPreferenceChange = (e: CheckboxChangeEvent, type: INotificationPreference) => {
+    if (e.checked ?? false) {
+      setFormData(prevState => ({
+        ...prevState,
+        notifications: [...prevState.notifications, type],
+      }))
+    } else {
+      setFormData(prevState => ({
+        ...prevState,
+        notifications: prevState.notifications.filter(pref => pref !== type),
+      }))
+    }
   }
 
   const handleOnSubmit = async (e: { preventDefault: () => void }) => {
@@ -201,7 +217,7 @@ export const Signup = () => {
             }}
             className="mt-5 w-full"
           />
-          <div className="my-3 items-center text-right text-sm text-zinc-500">
+          <div className="my-3 items-center text-center text-sm text-zinc-500">
             <Checkbox
               required
               inputId="terms"
@@ -213,6 +229,28 @@ export const Signup = () => {
             <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="ml-2 underline">
               Accept Terms & Conditions
             </a>
+          </div>
+          <div className="my-4 flex justify-between text-sm text-zinc-500">
+            <div>
+              <Checkbox
+                required
+                inputId="email_notifications"
+                name="notifications.email"
+                onChange={e => handleNotificationPreferenceChange(e, 'Email')}
+                checked={formData.notifications.includes('Email')}
+              />
+              <span className="ml-2">Accept Email Notifications</span>
+            </div>
+            <div>
+              <Checkbox
+                required
+                inputId="sms_notifications"
+                name="notifications.sms"
+                onChange={e => handleNotificationPreferenceChange(e, 'SMS')}
+                checked={formData.notifications.includes('SMS')}
+              />
+              <span className="ml-2">Accept SMS Notifications</span>
+            </div>
           </div>
 
           <Toast ref={toast} position="bottom-right" />
