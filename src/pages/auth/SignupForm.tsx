@@ -221,7 +221,6 @@ export const Signup = () => {
             <span>Please choose notifications you would like to receive:</span>
             <div>
               <Checkbox
-                required
                 inputId="email_notifications"
                 name="notifications.email"
                 onChange={e => handleNotificationPreferenceChange(e, 'Email')}
@@ -233,7 +232,6 @@ export const Signup = () => {
             </div>
             <div>
               <Checkbox
-                required
                 inputId="sms_notifications"
                 name="notifications.sms"
                 onChange={e => handleNotificationPreferenceChange(e, 'SMS')}
@@ -262,15 +260,15 @@ export const Signup = () => {
         </div>
         <div className="flex items-center justify-center">
           <Button
-            disabled={!formData.terms.is_accepted}
-            label={loading ? 'Signing up' : 'Employee Signup'}
+            label="Sign up as EMPLOYEE"
+            loading={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: employee_role })}
             className={`mr-3 w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
           />
           <Button
-            disabled={!formData.terms.is_accepted}
-            label={loading ? 'Signing up' : 'Client Signup'}
+            label="Sign up as CLIENT"
+            loading={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: client_role })}
             className={`w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
