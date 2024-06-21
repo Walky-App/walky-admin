@@ -26,6 +26,12 @@ export interface IPaymentMethod {
   payment_method: 'CC' | 'ACH'
 }
 
+export interface ICompanySlim {
+  company_name: string
+  company_tax_id: string
+  company_dbas: string[]
+}
+
 export interface ICompany {
   _id?: string
   company_name: string

@@ -92,7 +92,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
 
     const requestData = {
       ...facilityData,
-      company_id: formValues.company,
+      company_id: formValues.company_id,
     }
 
     let facilityId = formData?.facilities[0]

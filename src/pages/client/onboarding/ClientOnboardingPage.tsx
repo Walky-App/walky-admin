@@ -94,9 +94,9 @@ export const ClientOnboarding = () => {
   }, [userId])
 
   const getCompanyFacilities = useCallback(async () => {
-    if (!formData.company?._id) return
+    if (!formData.company_id) return
     try {
-      const response = await requestService({ path: `facilities/company/${formData.company._id}` })
+      const response = await requestService({ path: `facilities/company/${formData.company_id}` })
       if (!response.ok && response.status !== 204) throw new Error('Error fetching user facilities')
       const facilitiesData: IFacility[] = response.status === 204 ? [] : await response.json()
 
@@ -104,7 +104,7 @@ export const ClientOnboarding = () => {
     } catch (error) {
       console.error(error)
     }
-  }, [formData.company?._id])
+  }, [formData.company_id])
 
   useEffect(() => {
     const getOnboardingData = async () => {
