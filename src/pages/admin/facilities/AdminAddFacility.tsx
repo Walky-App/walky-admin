@@ -40,7 +40,6 @@ const defaultFacilityFormValues: IFacility = {
   sqft: 0,
   services: [],
   company_id: '',
-  company: null,
   contacts: [
     {
       first_name: '',
@@ -84,29 +83,18 @@ export const AdminAddFacility = () => {
     const getCompanies = async () => {
       try {
         if (role === 'client') {
-          const response = await requestService({
-            path: `companies/byclient`,
-          })
-
-          if (role === 'client') {
-            setChecked(false)
-          }
-
+          setChecked(false)
+          const response = await requestService({ path: `companies/byclient` })
           if (response.ok) {
             const data = await response.json()
             const { companies, user } = data
-
             setClient(user)
             setCompanies(companies)
           }
         } else {
-          const response = await requestService({
-            path: 'companies',
-          })
-
+          const response = await requestService({ path: 'companies' })
           if (response.ok) {
             const allCompanies = await response.json()
-
             setCompanies(allCompanies)
           }
         }
@@ -139,31 +127,20 @@ export const AdminAddFacility = () => {
 
   const handleFormUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target as HTMLInputElement
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }))
+    setFormData(prevState => ({ ...prevState, [name]: value }))
   }
 
   const handleFormUpdateContact = (e: React.ChangeEvent<HTMLInputElement> | InputMaskChangeEvent) => {
     const { name, value } = e.target
     setFormData(prevState => ({
       ...prevState,
-      contacts: [
-        {
-          ...prevState.contacts[0],
-          [name]: value,
-        },
-      ],
+      contacts: [{ ...prevState.contacts[0], [name]: value }],
     }))
   }
 
   const handleFormUpdateNumber = (e: InputMaskChangeEvent) => {
     const { name, value } = e.target
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }))
+    setFormData(prevState => ({ ...prevState, [name]: value }))
   }
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -252,10 +229,11 @@ export const AdminAddFacility = () => {
                 filter
                 onChange={e => {
                   const selectedCompany = companies?.find((company: ICompany) => company._id === e.value)
-
                   if (selectedCompany !== null && selectedCompany !== undefined) {
                     setSelectedCompanyId(e.value)
-                    handleCompanySameAsFacility(e.value)
+                    setFormData({ ...formData, company_id: e.value })
+
+                    role === 'admin' && handleCompanySameAsFacility(e.value)
                   }
                 }}
               />
@@ -353,21 +331,6 @@ export const AdminAddFacility = () => {
                         disabled={checked}
                       />
                     </div>
-
-                    {/* <div className="sm:col-span-3">
-                      <HtInfoTooltip message="A corporate name is the legal name of a corporation. It is the name that appears on the corporation's formation documents and is the name that appears on the corporation's state-issued certificate of incorporation.">
-                        <HtInputLabel htmlFor="company-name" asterisk labelText="Company Name" />
-                      </HtInfoTooltip>
-                      <InputText
-                        required
-                        id="company-name"
-                        value={formData?.company_id}
-                        name="company_name"
-                        disabled
-                        onChange={handleFormUpdate}
-                        autoComplete="off"
-                      />
-                    </div> */}
 
                     <div className="sm:col-span-3">
                       <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
