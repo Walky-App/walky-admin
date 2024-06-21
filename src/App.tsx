@@ -162,6 +162,14 @@ export const App = () => {
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
                   <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
+                  <Route element={<AdminCompanyListPage />} path="/client/companies" />
+                  <Route element={<AdminAddCompany />} path="/client/companies/new" />
+                  <Route element={<AdminCompanyPage />}>
+                    <Route element={<AdminCompanyDetails />} path="/client/companies/:id" />
+                    <Route element={<AdminCompanyPaymentMethodsPage />} path="/client/companies/:id/payment" />
+                    <Route element={<AdminCompanyAddPaymentMethod />} path="/client/companies/:id/add-payment" />
+                    <Route element={<PaymentMethodDetails />} path="/client/companies/:id/payment/:paymentId" />
+                  </Route>
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route element={<SalesDashboard />} path="/sales/dashboard" />
