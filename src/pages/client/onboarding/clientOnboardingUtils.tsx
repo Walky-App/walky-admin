@@ -40,7 +40,6 @@ export const defaultFacilityFormValues: IFacility = {
   active: false,
   images: [],
   location_pin: [],
-  company: null,
   company_id: '',
   isApproved: false,
   timezone: '',
