@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -12,6 +12,7 @@ import { Toast } from 'primereact/toast'
 
 import { type ISignupData } from '../../interfaces/loginData'
 import { requestService } from '../../services/requestServiceNew'
+import { type INotificationPreference } from '../../utils/formOptions'
 
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
@@ -30,9 +31,11 @@ export const Signup = () => {
     phone_number: '',
     password: '',
     password_confirmed: '',
+    notifications: [],
     terms: { is_accepted: false, accepted_at: new Date(), ip_address: '' },
     role: employee_role,
   })
+
   const [loading, setLoading] = useState(false)
   const toast = useRef<Toast>(null)
 
@@ -42,9 +45,12 @@ export const Signup = () => {
 
   const { email, role } = useParams()
 
-  if (role !== undefined && email !== undefined) {
-    setFormData({ ...formData, role: role })
-  }
+  useEffect(() => {
+    if (email != null && role != null) {
+      setFormData(prevState => ({ ...prevState, email: email, role: role }))
+    }
+  }, [email, role])
+
   const navigate = useNavigate()
 
   const handleFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,6 +72,20 @@ export const Signup = () => {
         is_accepted: e.checked !== null ? e.checked : false,
       },
     })
+  }
+
+  const handleNotificationPreferenceChange = (e: CheckboxChangeEvent, type: INotificationPreference) => {
+    if (e.checked ?? false) {
+      setFormData(prevState => ({
+        ...prevState,
+        notifications: [...prevState.notifications, type],
+      }))
+    } else {
+      setFormData(prevState => ({
+        ...prevState,
+        notifications: prevState.notifications.filter(pref => pref !== type),
+      }))
+    }
   }
 
   const handleOnSubmit = async (e: { preventDefault: () => void }) => {
@@ -197,7 +217,32 @@ export const Signup = () => {
             }}
             className="mt-5 w-full"
           />
-          <div className="my-3 items-center text-right text-sm text-zinc-500">
+          <div className="my-4 flex flex-col space-y-1 text-sm text-zinc-500">
+            <span>Please choose notifications you would like to receive:</span>
+            <div>
+              <Checkbox
+                inputId="email_notifications"
+                name="notifications.email"
+                onChange={e => handleNotificationPreferenceChange(e, 'Email')}
+                checked={formData.notifications.includes('Email')}
+              />
+              <label htmlFor="email_notifications" className="ml-2">
+                Email
+              </label>
+            </div>
+            <div>
+              <Checkbox
+                inputId="sms_notifications"
+                name="notifications.sms"
+                onChange={e => handleNotificationPreferenceChange(e, 'SMS')}
+                checked={formData.notifications.includes('SMS')}
+              />
+              <label htmlFor="sms_notifications" className="ml-2">
+                SMS
+              </label>
+            </div>
+          </div>
+          <div className="my-3 text-sm text-zinc-500">
             <Checkbox
               required
               inputId="terms"
@@ -215,15 +260,15 @@ export const Signup = () => {
         </div>
         <div className="flex items-center justify-center">
           <Button
-            disabled={!formData.terms.is_accepted}
-            label={loading ? 'Signing up' : 'Employee Signup'}
+            label="Sign up as EMPLOYEE"
+            loading={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: employee_role })}
             className={`mr-3 w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
           />
           <Button
-            disabled={!formData.terms.is_accepted}
-            label={loading ? 'Signing up' : 'Client Signup'}
+            label="Sign up as CLIENT"
+            loading={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: client_role })}
             className={`w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
