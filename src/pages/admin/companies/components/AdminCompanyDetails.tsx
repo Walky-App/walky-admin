@@ -15,7 +15,7 @@ import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelp
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
-import { type IFacility } from '../../../../interfaces/facility'
+import { type IFacility } from '../../../../interfaces/facility2'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'

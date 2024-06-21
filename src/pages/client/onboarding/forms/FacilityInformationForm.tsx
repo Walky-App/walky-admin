@@ -15,7 +15,7 @@ import { AddressAutoComplete } from '../../../../components/shared/forms/Address
 import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
-import { type IFacility } from '../../../../interfaces/facility'
+import { type IFacility } from '../../../../interfaces/facility2'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
