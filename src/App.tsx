@@ -27,7 +27,7 @@ import ClientProfile from './pages/client/ClientProfile'
 import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
-import Jobs from './pages/client/jobs'
+import { ClientJobs } from './pages/client/jobs'
 import { ClientJobDetailView } from './pages/client/jobs/jobDetailView'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
@@ -158,7 +158,7 @@ export const App = () => {
                   />
                   <Route element={<AdminFacilityLicenses />} path="/client/facilities/:facilityId/licenses" />
                   <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
-                  <Route element={<Jobs />} path="/client/jobs" />
+                  <Route element={<ClientJobs />} path="/client/jobs" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
                   <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
