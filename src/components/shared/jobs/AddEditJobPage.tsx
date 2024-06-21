@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { parseISO } from 'date-fns'
@@ -241,6 +241,48 @@ export const AddEditJobPage = () => {
     }
   }
 
+  const vacancy = useWatch({ name: 'vacancy', control })
+  const jobDatesLength = useWatch({ name: 'job_dates', control }).length
+  const hourlyRate = useWatch({ name: 'hourly_rate', control })
+  const [preliminaryPricing, setPreliminaryPricing] = useState(0)
+
+  useEffect(() => {
+    const newPreliminaryPricing = hourlyRate * vacancy * totalHours * jobDatesLength
+    setPreliminaryPricing(newPreliminaryPricing)
+  }, [hourlyRate, vacancy, jobDatesLength, totalHours])
+
+  const renderPricingTable = () => {
+    return (
+      <div className="sm:col-span-3">
+        <div className="flex flex-col space-y-2 rounded-md border border-gray-300 p-4">
+          <h3 className="text-base font-semibold leading-6 text-gray-900">Preliminary Pricing</h3>
+          <ul className="list-none space-y-1">
+            <li>
+              <span className="text-sm font-medium leading-5 text-gray-600">Pay Rate: </span>
+              <span className="text-sm leading-5 text-gray-900">${hourlyRate.toFixed(2)}</span>
+            </li>
+            <li>
+              <span className="text-sm font-medium leading-5 text-gray-600">Number of Vacancies: </span>
+              <span className="text-sm leading-5 text-gray-900">{vacancy}</span>
+            </li>
+            <li>
+              <span className="text-sm font-medium leading-5 text-gray-600">Total Hours: </span>
+              <span className="text-sm leading-5 text-gray-900">{totalHours.toFixed(2)}</span>
+            </li>
+            <li>
+              <span className="text-sm font-medium leading-5 text-gray-600">Number of Job Days: </span>
+              <span className="text-sm leading-5 text-gray-900">{jobDatesLength}</span>
+            </li>
+            <li className="font-medium leading-tight text-gray-900">
+              <span className="text-sm">Estimated Cost before fees: </span>
+              <span className="text-sm font-semibold">${preliminaryPricing.toFixed(2)}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return <HTLoadingLogo />
   }
@@ -330,6 +372,8 @@ export const AddEditJobPage = () => {
             <div className="sm:col-span-3">{renderPayRateController(control, errors)}</div>
 
             <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
+
+            <div className="sm:col-span-3">{renderPricingTable()}</div>
 
             <div className="sm:col-span-6 sm:col-start-1">{renderJobTipsController(control, errors)}</div>
           </div>
