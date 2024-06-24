@@ -32,7 +32,7 @@ export interface IFacility {
   createdAt?: string
   company_id: string
   name: string
-  tax_id: string
+  tax_id?: string
   phone_number: string
   timezone: string
   contacts: IFacilityContact[]
@@ -43,7 +43,7 @@ export interface IFacility {
   state: string
   active: boolean
   isApproved: boolean
-  sqft: number
+  sqft?: number
   services: string[]
   location_pin: number[]
   facility_dbas?: string[]
