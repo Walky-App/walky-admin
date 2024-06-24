@@ -13,7 +13,7 @@ export interface IClientOnboardingFormInputs extends ICompany, IFacility {
 export const defaultCompanyFormValues: ICompany = {
   company_name: '',
   company_dbas: [],
-  company_tax_id: '',
+  company_tax_id: undefined,
   company_phone_number: '',
   company_address: '',
   company_city: '',
@@ -29,7 +29,7 @@ export const defaultFacilityFormValues: IFacility = {
   name: '',
   tax_id: '',
   phone_number: '',
-  sqft: 0,
+  sqft: undefined,
   country: '',
   address: '',
   city: '',
