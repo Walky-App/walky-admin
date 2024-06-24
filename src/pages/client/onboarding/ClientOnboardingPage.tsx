@@ -83,15 +83,18 @@ export const ClientOnboarding = () => {
 
   const getUserCompanies = useCallback(async () => {
     try {
-      const response = await requestService({ path: `companies/user/${userId}` })
+      const response = await requestService({ path: 'companies/byclient' })
       if (!response.ok && response.status !== 204) throw new Error('Error fetching user companies')
-      const companiesData: ICompany[] = response.status === 204 ? [] : await response.json()
 
-      return companiesData
+      if (response.status === 204) return []
+
+      const data: { companies: ICompany[] } = await response.json()
+
+      return data.companies
     } catch (error) {
       console.error(error)
     }
-  }, [userId])
+  }, [])
 
   const getCompanyFacilities = useCallback(async () => {
     if (!formData.company_id) return

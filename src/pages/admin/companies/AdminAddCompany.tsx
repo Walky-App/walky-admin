@@ -190,13 +190,6 @@ export const AdminAddCompany = () => {
               <Controller
                 control={control}
                 name="company_tax_id"
-                rules={{
-                  required: 'Tax ID is required',
-                  pattern: {
-                    value: /^\d{2}-\d{7}$/,
-                    message: 'Invalid Tax ID. E.g. 12-3456789',
-                  },
-                }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes.">
@@ -248,7 +241,6 @@ export const AdminAddCompany = () => {
                 name="company_phone_number"
                 rules={{
                   required: 'Phone Number is required, should be 10 digits.',
-                  pattern: /^\d{10}$/,
                 }}
                 render={({ field, fieldState }) => (
                   <>
