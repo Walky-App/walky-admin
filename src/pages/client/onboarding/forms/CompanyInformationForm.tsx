@@ -220,17 +220,10 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
               <Controller
                 control={control}
                 name="company_tax_id"
-                rules={{
-                  required: 'Tax ID is required',
-                  pattern: {
-                    value: /^\d{2}-\d{7}$/,
-                    message: 'Invalid Tax ID. E.g. 12-3456789',
-                  },
-                }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="A Tax Identification Number (TIN) is a unique identifier assigned to individuals and businesses for tax purposes.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Tax ID" />
+                      <HtInputLabel htmlFor={field.name} labelText="Tax ID" />
                     </HtInfoTooltip>
                     <InputMask
                       id={field.name}
