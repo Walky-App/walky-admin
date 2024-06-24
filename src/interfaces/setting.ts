@@ -32,6 +32,7 @@ export interface StatesSettingsDocument {
   processing_fee: number
   overtime_rate: OvertimeDocument
   minimun_wage: number
+  supervisor_fee: number
   holiday: HolidayDocument[]
   htu: HtuSettingsDocument[]
   licenses_required: boolean

@@ -48,6 +48,7 @@ export const FormSettings = () => {
       minimun_hours: 0,
     },
     minimun_wage: 0,
+    supervisor_fee: 0,
     holiday: [],
     htu: [],
     licenses_required: false,
@@ -56,6 +57,7 @@ export const FormSettings = () => {
   const [maxHoursPerDay, setMaxHoursPerDay] = useState<number>(settings.max_hours_per_day || 40)
   const [lisenceRequiredChecked, setLisenceRequiredChecked] = useState<boolean>(settings.licenses_required || true)
   const [minimunWage, setMinimunWage] = useState<number>(settings.minimun_wage || 10)
+  const [supervisorFee, setSupervisorFee] = useState<number>(settings.supervisor_fee || 0)
   const [ourFees, setOurFees] = useState<number>(settings.our_fee || 0)
   const [processingFees, setProcessingFees] = useState<number>(settings.processing_fee || 0)
   const [holidaysRate, setHolidaysRate] = useState<number>(settings.overtime_rate.holiday_rate || 0)
@@ -130,6 +132,7 @@ export const FormSettings = () => {
     setMaxHoursPerDay(data.max_hours_per_day)
     setLisenceRequiredChecked(data.licenses_required)
     setMinimunWage(data.minimun_wage)
+    setSupervisorFee(data.supervisor_fee)
     setOurFees(data.our_fee)
     setProcessingFees(data.processing_fee)
     setHolidaysRate(data.overtime_rate.holiday_rate)
@@ -195,6 +198,7 @@ export const FormSettings = () => {
         minimun_hours: minimumHoursForOvertime,
       },
       minimun_wage: minimunWage,
+      supervisor_fee: supervisorFee,
       holiday: holidays,
       licenses_required: lisenceRequiredChecked,
       max_hours_per_day: maxHoursPerDay,
@@ -252,6 +256,23 @@ export const FormSettings = () => {
                   step={0.1}
                   onChange={e => setMinimunWage(Number(e.value))}
                   value={minimunWage}
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <label htmlFor="supervisor_fee" className="block text-sm font-medium leading-6 text-gray-900">
+                  Supervisor Fee
+                </label>
+                <InputNumber
+                  tooltip="Enter the supervisor fee for this job."
+                  tooltipOptions={{ position: 'mouse' }}
+                  mode="currency"
+                  currency="USD"
+                  showButtons
+                  name="supervisor_fee"
+                  min={1}
+                  step={0.1}
+                  onChange={e => setSupervisorFee(Number(e.value))}
+                  value={supervisorFee}
                 />
               </div>
               <div className="sm:col-span-3">
