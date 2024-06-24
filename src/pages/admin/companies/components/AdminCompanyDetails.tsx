@@ -137,7 +137,6 @@ export const AdminCompanyDetails = () => {
     if (selectedCompanyData) {
       setValue('company_name', selectedCompanyData.company_name)
       setValue('company_dbas', selectedCompanyData.company_dbas)
-      setValue('company_tax_id', selectedCompanyData.company_tax_id)
       setValue('company_address', selectedCompanyData.company_address)
       setValue('company_phone_number', selectedCompanyData.company_phone_number)
       setValue('company_city', selectedCompanyData.company_city)
@@ -146,6 +145,10 @@ export const AdminCompanyDetails = () => {
       setValue('company_country', selectedCompanyData.company_country)
       setValue('facilities', selectedCompanyData.facilities)
       setValue('users', selectedCompanyData.users)
+    }
+
+    if (selectedCompanyData.company_tax_id != null) {
+      setValue('company_tax_id', selectedCompanyData.company_tax_id)
     }
   }, [selectedCompanyData, setValue])
 
