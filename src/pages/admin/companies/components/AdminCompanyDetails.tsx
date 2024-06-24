@@ -164,7 +164,7 @@ export const AdminCompanyDetails = () => {
       }
       showToast({ severity: 'success', summary: 'Company updated successfully' })
       setTimeout(() => {
-        navigate(`/admin/companies`)
+        navigate(`/${role}/companies`)
       }, 2000)
     } catch (error) {
       console.error('Error updating company: ', error)
