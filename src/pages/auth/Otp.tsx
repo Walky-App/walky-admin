@@ -144,9 +144,6 @@ export const Otp = () => {
       <form onSubmit={handleOtpVerification} className="mx-auto max-w-md">
         <div className="bg-white px-6 sm:py-12 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-base font-semibold leading-7 text-green-600">
-              Sign Up Now and Get the Support You Deserve!
-            </p>
             <h2 className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Verify Code</h2>
             <p className="my-6 text-lg leading-8 text-gray-600">
               Please enter the code sent to your email and/or phone via text to verify your account.
