@@ -13,8 +13,8 @@ export interface IPaymentInfo {
   account_number?: string
   routing_number?: string
   card_number?: string
+  card_name?: string
   expiration_date?: string
-  ccv?: string
   createdAt: string
   updatedAt: string
   __v: number
