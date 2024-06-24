@@ -217,7 +217,6 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                 name="phone_number"
                 rules={{
                   required: 'Mobile Number is required, should be 10 digits.',
-                  pattern: /^\d{10}$/,
                 }}
                 render={({ field, fieldState }) => (
                   <>
