@@ -14,7 +14,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
 import { type ICompany } from '../../../../interfaces/company'
 import { requestService } from '../../../../services/requestServiceNew'
-import { getCardType } from '../../../../utils/CreditCardTypeUtil'
 import { roleChecker } from '../../../../utils/roleChecker'
 
 const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | null => {
@@ -100,12 +99,11 @@ export const AdminCompanyPaymentMethodsPage = () => {
         let subTitle = ''
         let cardHeader = null
 
-        if (payment?.payment_info?.type === 'CC') {
-          const cardType = getCardType(payment.payment_info.card_number ?? '')
-          const cardIcon = getCardIcon(payment.payment_info.type, cardType)
+        if (payment?.payment_method === 'CC') {
+          const cardIcon = getCardIcon(payment?.payment_method, payment.payment_info.type)
 
-          title = `${cardType} **** ${payment.payment_info?.card_number?.slice(-4) ?? ''}`
-          subTitle = `Expires ${payment.payment_info.expiration_date}`
+          title = `${payment.payment_info?.card_name} `
+          subTitle = `${payment.payment_info?.card_number ?? ''}`
           cardHeader = createHeader(cardIcon)
         } else {
           title = `Account **** ${payment.payment_info?.account_number?.slice(-4) ?? ''}`
@@ -115,8 +113,8 @@ export const AdminCompanyPaymentMethodsPage = () => {
         return (
           <Card
             key={index}
-            title={<div className="align-center text-center">{title}</div>}
-            subTitle={<div className="align-center text-center">{subTitle}</div>}
+            title={<div className="align-center">{title}</div>}
+            subTitle={<div className="align-center">{subTitle}</div>}
             footer={<div className="align-center text-center">{footer(payment.payment_info?._id)}</div>}
             header={cardHeader}
             className="md:w-25rem mx-2 flex cursor-pointer"

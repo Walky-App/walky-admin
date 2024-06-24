@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { InputMask } from 'primereact/inputmask'
@@ -35,9 +34,9 @@ export interface IPaymentInfo {
   payment_status: 'Active' | 'Inactive' | 'Expired'
   card_number?: string
   expiration_date?: string
-  ccv?: string
+  method?: string
   bank_name?: string
-  holder_name: string
+  card_name: string
   account_number?: string
   routing_number?: string
   created_by?: string
@@ -47,6 +46,7 @@ export interface IPaymentInfo {
 export interface IPaymentMethod {
   payment_info: IPaymentInfo
   facilities?: string[]
+  payment_method: string
 }
 
 export const AdminCompanyAddPaymentMethod = () => {
@@ -94,7 +94,7 @@ export const AdminCompanyAddPaymentMethod = () => {
     country: '',
     zip_code: '',
     payment_status: 'Active',
-    holder_name: '',
+    card_name: '',
   }
   const {
     control,
@@ -236,36 +236,6 @@ export const AdminCompanyAddPaymentMethod = () => {
                   />
                   {getFormErrorMessage('expiration_date', errors)}
                 </div>
-
-                <div className="sm:col-span-3">
-                  <Controller
-                    control={control}
-                    name="ccv"
-                    rules={{
-                      required: 'CCV is required',
-                      pattern: {
-                        value: /^[0-9]{3,4}$/,
-                        message: 'Invalid CCV. It should be 3 or 4 digits long.',
-                      },
-                    }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <HtInfoTooltip message="The CCV (Card Verification Value) is a 3 or 4 digit number on the back of your credit card.">
-                          <HtInputLabel htmlFor={field.name} asterisk labelText="CCV" />
-                        </HtInfoTooltip>
-                        <InputMask
-                          id={field.name}
-                          {...field}
-                          mask="999"
-                          slotChar="x"
-                          className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                          autoComplete="off"
-                        />
-                      </>
-                    )}
-                  />
-                  {getFormErrorMessage('ccv', errors)}
-                </div>
               </>
             ) : null}
 
@@ -333,12 +303,12 @@ export const AdminCompanyAddPaymentMethod = () => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="holder_name"
-                rules={{ required: 'Holder Name is required' }}
+                name="card_name"
+                rules={{ required: 'Card name is required' }}
                 render={({ field, fieldState }) => (
                   <>
-                    <HtInfoTooltip message="Name of the account holder.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Holder Name" />
+                    <HtInfoTooltip message="Reference name for the card in the application.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Card Name" />
                     </HtInfoTooltip>
                     <InputText
                       id={field.name}
@@ -348,7 +318,7 @@ export const AdminCompanyAddPaymentMethod = () => {
                   </>
                 )}
               />
-              {getFormErrorMessage('holder_name', errors)}
+              {getFormErrorMessage('card_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
