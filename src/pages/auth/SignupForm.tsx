@@ -93,7 +93,7 @@ export const Signup = () => {
 
     try {
       const response = await requestService({ path: 'auth', method: 'POST', body: JSON.stringify(formData) })
-      const data = await response.json() // Parse the response body once here
+      const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.message ?? 'An error occurred. Please try again.')
