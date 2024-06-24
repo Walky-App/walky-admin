@@ -205,7 +205,6 @@ export const JobDetailView = () => {
       return formattedJobDate === formattedDate
     })
     if (!result) return []
-
     return result.shifts_id?.user_shifts as UserShiftsPopulate[]
   }
 
@@ -460,7 +459,13 @@ export const JobDetailView = () => {
                       )}
                     </div>
                   ) : (
-                    <Button label="Apply to this day" link onClick={() => applyForDay(formattedDate)} />
+                    <div>
+                      {getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
+                        <p className="text-end text-primary md:text-start">Accepted application</p>
+                      ) : (
+                        <Button label="Apply to this day" link onClick={() => applyForDay(formattedDate)} />
+                      )}
+                    </div>
                   )}
                 </div>
               </li>
