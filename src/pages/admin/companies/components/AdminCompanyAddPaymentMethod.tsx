@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { InputMask } from 'primereact/inputmask'
@@ -19,7 +19,9 @@ import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
+import { useAdminCompanyPageContext } from '../AdminCompanyPage'
 
 export interface IPaymentInfo {
   _id?: string
@@ -50,8 +52,11 @@ export interface IPaymentMethod {
 export const AdminCompanyAddPaymentMethod = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
+  const { setSelectedCompanyData } = useAdminCompanyPageContext()
+  const navigate = useNavigate()
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
+  const role = roleChecker()
 
   const paymentMethodOptions = [
     { label: 'Automated Clearing House', value: 'ACH' },
@@ -136,7 +141,7 @@ export const AdminCompanyAddPaymentMethod = () => {
       if (!response.ok) {
         throw new Error('Failed to add company')
       }
-      /* const updatedCompanyData = await response.json()
+      const updatedCompanyData = await response.json()
       setSelectedCompanyData(updatedCompanyData)
       showToast({ severity: 'success', summary: 'Payment method added successfully' })
       setTimeout(() => {
@@ -145,7 +150,7 @@ export const AdminCompanyAddPaymentMethod = () => {
         } else {
           navigate(`/admin/companies/${id}/payment`)
         }
-      }, 2000) */
+      }, 2000)
     } catch (error) {
       console.error('Error adding company: ', error)
       showToast({ severity: 'error', summary: 'Failed to add company' })
