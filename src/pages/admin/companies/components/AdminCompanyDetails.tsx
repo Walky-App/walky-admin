@@ -287,7 +287,6 @@ export const AdminCompanyDetails = () => {
                 name="company_phone_number"
                 rules={{
                   required: 'Phone Number is required, should be 10 digits.',
-                  pattern: /^\d{10}$/,
                 }}
                 render={({ field, fieldState }) => (
                   <>
