@@ -87,27 +87,28 @@ export const Signup = () => {
       }))
     }
   }
-
   const handleOnSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     setLoading(true)
 
     try {
       const response = await requestService({ path: 'auth', method: 'POST', body: JSON.stringify(formData) })
-      if (response.ok) {
-        const data = await response.json()
+      const data = await response.json() // Parse the response body once here
 
-        if (response.status === 201) {
-          navigate('/otp/' + data.user._id)
-          show({ message: 'Account created successfully', severity: 'success', summary: 'Success' })
-          setLoading(false)
-        } else {
-          show({ message: data.message, severity: 'error', summary: 'Error' })
-          setLoading(false)
-        }
+      if (!response.ok) {
+        throw new Error(data.message ?? 'An error occurred. Please try again.')
+      }
+
+      if (response.status === 201) {
+        navigate('/otp/' + data.user._id)
+        show({ message: 'Account created successfully', severity: 'success', summary: 'Success' })
+      } else {
+        show({ message: data.message, severity: 'error', summary: 'Error' })
       }
     } catch (error) {
-      show({ message: 'An error occurred. Please try again.' + error, severity: 'error', summary: 'Error' })
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.'
+      show({ message: errorMessage, severity: 'error', summary: 'Error' })
+    } finally {
       setLoading(false)
     }
   }
@@ -261,14 +262,14 @@ export const Signup = () => {
         <div className="flex items-center justify-center">
           <Button
             label="Sign up as EMPLOYEE"
-            loading={loading}
+            disabled={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: employee_role })}
             className={`mr-3 w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
           />
           <Button
             label="Sign up as CLIENT"
-            loading={loading}
+            disabled={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: client_role })}
             className={`w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
