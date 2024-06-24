@@ -21,12 +21,16 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { getFormErrorMessage } from '../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
+import { roleChecker } from '../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const AdminAddCompany = () => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [allFacilities, setFacilities] = useState<IFacility[]>([])
   const [allClients, setClients] = useState<IUser[]>([])
   const navigate = useNavigate()
+  const client_id = GetTokenInfo()?._id
+  const role = roleChecker()
 
   useEffect(() => {
     const getAllFacilities = async () => {
@@ -113,6 +117,10 @@ export const AdminAddCompany = () => {
 
   const onSubmit: SubmitHandler<ICompany> = async (data: ICompany) => {
     try {
+      if (role === 'client') {
+        data.users = [client_id]
+      }
+
       const response = await requestService({ path: 'companies', method: 'POST', body: JSON.stringify(data) })
       if (!response.ok) {
         throw new Error('Failed to add company')
@@ -126,6 +134,7 @@ export const AdminAddCompany = () => {
       showToast({ severity: 'error', summary: 'Failed to add company' })
     }
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <div className="space-y-4 sm:space-y-12">
@@ -262,72 +271,75 @@ export const AdminAddCompany = () => {
               {getFormErrorMessage('company_phone_number', errors)}
             </div>
 
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="users"
-                rules={{ required: 'At least one client is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="All clients related to this company">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
-                    </HtInfoTooltip>
-                    <MultiSelect
-                      id={field.name}
-                      {...field}
-                      value={field.value}
-                      optionLabel="email"
-                      options={allClients}
-                      display="chip"
-                      selectAll
-                      selectAllLabel="Select All"
-                      onChange={(e: MultiSelectChangeEvent) => {
-                        field.onChange(e.value)
-                      }}
-                      placeholder="Select Services"
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                    />
-                    <HtInputHelpText
-                      fieldName={field.name}
-                      helpText="Please select all users related to this company."
-                    />
-                    {getFormErrorMessage('services', errors)}
-                  </>
-                )}
-              />
-            </div>
+            {role === 'admin' ? (
+              <div className="sm:col-span-3">
+                <Controller
+                  control={control}
+                  name="users"
+                  render={({ field, fieldState }) => (
+                    <>
+                      <HtInfoTooltip message="All clients related to this company">
+                        <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
+                      </HtInfoTooltip>
+                      <MultiSelect
+                        id={field.name}
+                        {...field}
+                        value={field.value}
+                        optionLabel="email"
+                        options={allClients}
+                        display="chip"
+                        selectAll
+                        selectAllLabel="Select All"
+                        onChange={(e: MultiSelectChangeEvent) => {
+                          field.onChange(e.value)
+                        }}
+                        placeholder="Select Services"
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      />
+                      <HtInputHelpText
+                        fieldName={field.name}
+                        helpText="Please select all users related to this company."
+                      />
+                      {getFormErrorMessage('services', errors)}
+                    </>
+                  )}
+                />
+              </div>
+            ) : null}
 
-            <div className="sm:col-span-6">
-              <Controller
-                control={control}
-                name="facilities"
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="All facilities related to this company">
-                      <HtInputLabel htmlFor={field.name} labelText="Facilities" />
-                    </HtInfoTooltip>
-                    <MultiSelect
-                      id={field.name}
-                      {...field}
-                      value={field.value}
-                      optionLabel="name"
-                      options={allFacilities}
-                      display="chip"
-                      selectAll
-                      selectAllLabel="Select All"
-                      onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
-                      placeholder="Select facilities"
-                      className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                    />
-                    <HtInputHelpText
-                      fieldName={field.name}
-                      helpText="Please select all facilities that this company owns."
-                    />
-                    {getFormErrorMessage('services', errors)}
-                  </>
-                )}
-              />
-            </div>
+            {role === 'admin' ? (
+              <div className="sm:col-span-6">
+                <Controller
+                  control={control}
+                  name="facilities"
+                  render={({ field, fieldState }) => (
+                    <>
+                      <HtInfoTooltip message="All facilities related to this company">
+                        <HtInputLabel htmlFor={field.name} labelText="Facilities" />
+                      </HtInfoTooltip>
+                      <MultiSelect
+                        id={field.name}
+                        {...field}
+                        value={field.value}
+                        optionLabel="name"
+                        options={allFacilities}
+                        display="chip"
+                        selectAll
+                        selectAllLabel="Select All"
+                        onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
+                        placeholder="Select facilities"
+                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      />
+                      <HtInputHelpText
+                        fieldName={field.name}
+                        helpText="Please select all facilities that this company owns."
+                      />
+                      {getFormErrorMessage('services', errors)}
+                    </>
+                  )}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
