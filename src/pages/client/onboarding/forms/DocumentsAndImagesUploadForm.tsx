@@ -41,35 +41,57 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
 
   const handleUploadSuccess = (event: FileUploadUploadEvent) => {
     if (event.xhr.status === 200) {
-      const data: IClientOnboardingFormInputs = JSON.parse(event.xhr.response)
+      try {
+        const data: IClientOnboardingFormInputs = JSON.parse(event.xhr.response)
 
-      showToast({
-        severity: 'success',
-        summary: 'File Uploaded',
-        detail: `${event.files[0].name} has been uploaded successfully.`,
-        life: 2000,
-      })
+        showToast({
+          severity: 'success',
+          summary: 'File Uploaded',
+          detail: `${event.files[0].name} has been uploaded successfully.`,
+          life: 2000,
+        })
 
-      setFormData(prev => ({
-        ...prev,
-        licenses: data.licenses,
-        images: data.images,
-      }))
+        setFormData(prev => ({
+          ...prev,
+          licenses: data.licenses,
+          images: data.images,
+          main_image: data.images?.[0].url,
+        }))
+      } catch (error) {
+        console.error('Error parsing server response:', error)
+        showToast({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Unexpected server response. Please try again.',
+          life: 3000,
+        })
+      }
     } else {
       console.error('Error status:', event.xhr.status)
       console.error('Error status text:', event.xhr.statusText)
       console.error('Error response text:', event.xhr.responseText)
+      showToast({
+        severity: 'error',
+        summary: 'Upload Failed',
+        detail: 'Failed to upload file due to server error. Please try again.',
+        life: 3000,
+      })
     }
   }
 
   const handleUploadError = (event: FileUploadErrorEvent) => {
     console.error('Error uploading file:', event.files[0].name)
+    if (event.xhr) {
+      console.error('HTTP Status:', event.xhr.status)
+      console.error('Status Text:', event.xhr.statusText)
+      console.error('Response Text:', event.xhr.responseText)
+    }
 
     showToast({
       severity: 'error',
       summary: 'Error',
-      detail: `Error uploading ${event.files[0].name}`,
-      life: 2000,
+      detail: `Error uploading ${event.files[0].name}. Check your connection and try again.`,
+      life: 3000,
     })
   }
 
