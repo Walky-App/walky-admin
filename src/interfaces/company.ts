@@ -35,8 +35,8 @@ export interface ICompanySlim {
 export interface ICompany {
   _id?: string
   company_name: string
-  company_dbas: string[] | undefined
-  company_tax_id: string
+  company_dbas?: string[]
+  company_tax_id?: string
   company_phone_number: string
   payment_information?: IPaymentMethod[]
   company_country: string
