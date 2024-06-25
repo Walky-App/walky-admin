@@ -6,6 +6,7 @@ import { Tag } from 'primereact/tag'
 
 import { LockClosedIcon } from '@heroicons/react/24/outline'
 
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { useAdmin } from '../../../contexts/AdminContext'
 import { type Category } from '../../../interfaces/category'
 import { type FilterInterface } from '../../../interfaces/global'
@@ -188,9 +189,10 @@ export const CategoryCards = ({
           )}
         </div>
       ) : (
-        <div className="flex h-96 flex-col items-center justify-center">
-          <div className="text-2xl font-semibold text-black">Loading ...</div>
-        </div>
+        <HTLoadingLogo />
+        // <div className="flex h-96 flex-col items-center justify-center">
+        //   <div className="text-2xl font-semibold text-black">Loading ...</div>
+        // </div>
       )}
     </div>
   )
