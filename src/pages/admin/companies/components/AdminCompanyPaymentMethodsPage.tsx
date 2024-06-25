@@ -55,7 +55,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
   useEffect(() => {
     const getCompany = async () => {
       try {
-        const response = await requestService({ path: `companies/${selectedCompanyId}` })
+        const response = await requestService({ path: `companies/${selectedCompanyId}/payments` })
         if (!response.ok) {
           throw new Error('Failed to fetch company data')
         }
