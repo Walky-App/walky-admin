@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useLayoutEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
@@ -6,6 +6,7 @@ import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputMask } from 'primereact/inputmask'
 import { InputNumber } from 'primereact/inputnumber'
+import { InputSwitch } from 'primereact/inputswitch'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
@@ -25,6 +26,7 @@ import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } fro
 
 export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [checked, setChecked] = useState(false)
 
   const { setFormData, defaultValues, formData, moreAddressDetailsFacility, setMoreAddressDetailsFacility } =
     useContext(FormDataContext)
@@ -52,14 +54,14 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       if (moreAddressDetailsFacility.city != null) {
         setValue('city', moreAddressDetailsFacility.city)
       }
-      if (moreAddressDetailsFacility.location_pin != null) {
-        setValue('location_pin', moreAddressDetailsFacility.location_pin)
-      }
       if (moreAddressDetailsFacility.address != null) {
         setValue('address', moreAddressDetailsFacility.address)
       }
       if (moreAddressDetailsFacility.country != null) {
         setValue('country', moreAddressDetailsFacility.country)
+      }
+      if (moreAddressDetailsFacility.location_pin != null) {
+        setValue('location_pin', moreAddressDetailsFacility.location_pin)
       }
 
       setMoreAddressDetailsFacility(undefined)
@@ -70,6 +72,45 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
     control,
     name: 'contacts',
   })
+
+  useEffect(() => {
+    const isSameAsCompany =
+      formData.name === formData.company_name &&
+      formData.tax_id === formData.company_tax_id &&
+      formData.phone_number === formData.company_phone_number &&
+      formData.address === formData.company_address &&
+      formData.city === formData.company_city &&
+      formData.state === formData.company_state &&
+      formData.zip === formData.company_zip &&
+      formData.country === formData.company_country &&
+      formData.location_pin === formData.company_location_pin
+
+    setChecked(isSameAsCompany)
+  }, [formData])
+
+  useLayoutEffect(() => {
+    if (checked) {
+      setValue('name', formData?.company_name)
+      setValue('tax_id', formData?.company_tax_id)
+      setValue('phone_number', formData?.company_phone_number)
+      setValue('address', formData?.company_address)
+      setValue('city', formData?.company_city)
+      setValue('state', formData?.company_state)
+      setValue('zip', formData?.company_zip)
+      setValue('country', formData?.company_country)
+      setValue('location_pin', formData?.company_location_pin)
+    } else {
+      setValue('name', formData?.name)
+      setValue('tax_id', formData?.tax_id)
+      setValue('phone_number', formData?.phone_number)
+      setValue('address', formData?.address)
+      setValue('city', formData?.city)
+      setValue('state', formData?.state)
+      setValue('zip', formData?.zip)
+      setValue('country', formData?.country)
+      setValue('location_pin', formData?.location_pin)
+    }
+  }, [checked, setValue, formData])
 
   const onSubmit: SubmitHandler<IClientOnboardingFormInputs> = async data => {
     setIsLoading(true)
@@ -167,6 +208,40 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-fluid space-y-4 sm:space-y-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Business same as the Facility?</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please provide information about your business so that we can verify you on the platform.
+            </p>
+          </div>
+
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="flex flex-col justify-center space-y-1 sm:col-span-6">
+              <div className="flex items-center">
+                <label htmlFor="company_same_as_facility" className="mr-3 text-xl font-semibold">
+                  No
+                </label>
+                <InputSwitch
+                  inputId="company_same_as_facility"
+                  name="company_same_as_facility"
+                  checked={checked}
+                  onChange={e => {
+                    setChecked(e.value)
+                  }}
+                />
+                <label htmlFor="company_same_as_facility" className="ml-3 text-xl font-semibold">
+                  Yes
+                </label>
+              </div>
+              <HtInputHelpText
+                fieldName="company_same_as_facility"
+                helpText="Select Yes if the Facility Name, Phone Number, Address, and Tax ID are the same as the Company."
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Facility Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
@@ -193,6 +268,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
+                      disabled={checked}
                     />
                     {getFormErrorMessage(field.name, errors)}
                   </>
@@ -216,6 +292,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       slotChar="x"
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
+                      disabled={checked}
                     />
                     {getFormErrorMessage(field.name, errors)}
                   </>
@@ -243,6 +320,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       unmask={true}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
+                      disabled={checked}
                     />
                     {getFormErrorMessage(field.name, errors)}
                   </>
@@ -371,6 +449,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                       value={field.value}
                       classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
+                      disabled={checked}
                     />
                     <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
                     {getFormErrorMessage(field.name, errors)}

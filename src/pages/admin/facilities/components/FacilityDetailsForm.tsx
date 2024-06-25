@@ -365,7 +365,10 @@ export const FacilityDetailsForm = ({
                       locationPolygon={locationPolygon}
                       locationPin={facility.location_pin}
                       containerStyle={{ width: '100%', height: '450px' }}
-                      setLocationPolygon={setLocationPolygon}
+                      setLocationPolygon={e => {
+                        setFormData({ ...formData, location_polygon: e })
+                        setLocationPolygon(e)
+                      }}
                     />
                   </span>
                 </div>
@@ -394,6 +397,7 @@ export const FacilityDetailsForm = ({
                 id="status"
                 name="active"
                 defaultValue={facility.active ? 'true' : 'false'}
+                onChange={() => setFormData({ ...formData, active: !formData.active })}
                 className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                 <option value="true">Active</option>
                 <option value="false">Disabled</option>
@@ -415,6 +419,7 @@ export const FacilityDetailsForm = ({
                   id="approval_status"
                   name="isApproved"
                   defaultValue={facility.isApproved ? 'true' : 'false'}
+                  onChange={() => setFormData({ ...formData, isApproved: !formData.isApproved })}
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                   <option value="true">Approved</option>
                   <option value="false">Pending</option>

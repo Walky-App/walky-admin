@@ -13,6 +13,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { LogoutService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
 import { roleChecker } from '../../utils/roleChecker'
+import { GetTokenInfo } from '../../utils/tokenUtil'
 import { LogosPack } from './LogosPack'
 
 interface HeaderComponentProps {
@@ -30,6 +31,9 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
   const { avatarImageUrl, setAvatarImageUrl } = useUtils()
 
   const role = roleChecker()
+  const tokenInfo = GetTokenInfo()
+
+  const userIsOnboarded = tokenInfo?.onboarding?.completed
 
   const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
 
@@ -154,7 +158,7 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
           </button>
         </div>
       </header>
-      {(user?.onboarding?.completed ?? false) || !user?.onboarding ? null : (
+      {(userIsOnboarded ?? false) || !user?.onboarding ? null : (
         <div className="rounded-md bg-yellow-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">

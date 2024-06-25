@@ -131,7 +131,8 @@ export const Learn = () => {
                 </p>
                 <a
                   className="underline"
-                  href="https://www.epa.gov/pesticide-worker-safety/agricultural-worker-protection-standard-wps">
+                  href="https://www.epa.gov/pesticide-worker-safety/agricultural-worker-protection-standard-wps"
+                  target="_blank">
                   more info on Agricultural Worker Protection Standard (WPS)
                 </a>
               </Card>
