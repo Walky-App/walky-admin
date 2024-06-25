@@ -55,7 +55,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
           ...prev,
           licenses: data.licenses,
           images: data.images,
-          main_image: data.images?.[0].url,
+          main_image: data.images?.[0]?.url,
         }))
       } catch (error) {
         console.error('Error parsing server response:', error)
