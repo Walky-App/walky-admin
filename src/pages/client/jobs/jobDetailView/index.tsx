@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
@@ -29,7 +29,7 @@ export const ClientJobDetailView = () => {
   const [idFeedback, setIdFeedback] = useState('')
   const [openFeedback, setOpenFeedback] = useState(false)
   const [job, setJob] = useState<IJob>()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const role = roleChecker()
   const { showToast } = useUtils()
 
@@ -468,11 +468,11 @@ export const ClientJobDetailView = () => {
             <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
               <ul className="w-full divide-y divide-gray-200">
                 <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                  <Button
+                  {/* <Button
                     className="w-full"
                     label="Edit Job"
                     onClick={() => navigate(`/${role === 'admin' ? 'admin' : 'client'}/jobs/${id}/edit`)}
-                  />
+                  /> */}
                   {!job?.is_active ? (
                     <Button
                       className="w-full"
