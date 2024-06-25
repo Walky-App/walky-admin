@@ -1,10 +1,12 @@
 const projects = [
   {
     id: 1,
-    name: 'Logo redesign',
+    name: 'Harvester',
     description: 'New logo and digital asset playbook.',
-    hours: '20.0',
-    rate: '$100.00',
+    dates: '2022-08-01 to 2022-08-31',
+    hours: '7.50',
+    shifts: '30',
+    rate: '$23.00',
     price: '$2,000.00',
   },
   // More projects...
@@ -15,18 +17,19 @@ export const ServiceOrderPage = () => {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">Service order</h1>
+          <img className="h-16 w-auto" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
+          <h1 className="text-base font-semibold leading-6 text-gray-900">Service order #12345516</h1>
+
           <p className="mt-2 text-sm text-gray-700">
             For Harvester job from <time dateTime="2022-08-01">August 1, 2022</time> to{' '}
             <time dateTime="2022-08-31">August 31, 2022</time>.
           </p>
           <p className="mt-2 text-sm text-gray-700">
-            For Harvester job from <time dateTime="2022-08-01">August 1, 2022</time> to{' '}
-            <time dateTime="2022-08-31">August 31, 2022</time>.
+            Company Information: Colorado Events. 16350 E Arapahoe Rd, Suite 108 # 161, Foxfield, CO 80016.
+            hemptemps@gmail.com
           </p>
           <p className="mt-2 text-sm text-gray-700">
-            For Harvester job from <time dateTime="2022-08-01">August 1, 2022</time> to{' '}
-            <time dateTime="2022-08-31">August 31, 2022</time>.
+            Facility information: Summit Concentrates 13800 E Moncreiff Pl Aurora, CO 80011
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -48,7 +51,7 @@ export const ServiceOrderPage = () => {
           <thead className="border-b border-gray-300 text-gray-900">
             <tr>
               <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                Project
+                Job Title
               </th>
               <th
                 scope="col"
@@ -58,10 +61,21 @@ export const ServiceOrderPage = () => {
               <th
                 scope="col"
                 className="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
-                Rate
+                Dates
+              </th>
+              <th
+                scope="col"
+                className="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
+                Shifts
+              </th>
+
+              <th
+                scope="col"
+                className="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
+                Base Rate
               </th>
               <th scope="col" className="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">
-                Price
+                Amount
               </th>
             </tr>
           </thead>
@@ -73,6 +87,8 @@ export const ServiceOrderPage = () => {
                   <div className="mt-1 truncate text-gray-500">{project.description}</div>
                 </td>
                 <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.hours}</td>
+                <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.dates}</td>
+                <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.shifts}</td>
                 <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.rate}</td>
                 <td className="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">{project.price}</td>
               </tr>
