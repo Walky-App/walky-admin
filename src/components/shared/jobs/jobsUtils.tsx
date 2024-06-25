@@ -134,7 +134,7 @@ export const renderJobDatesController = (
     }}
     render={({ field, fieldState }) => (
       <>
-        <HtInfoTooltip message="Select the dates you need temps at your facility.">
+        <HtInfoTooltip message="Select the dates you need temps at your facility.  Only up to 30 days from today!">
           <HtInputLabel htmlFor={field.name} labelText="Select Job Dates" asterisk />
         </HtInfoTooltip>
         <Calendar
@@ -142,6 +142,7 @@ export const renderJobDatesController = (
           value={field.value}
           onChange={field.onChange}
           dateFormat="mm/dd/yy"
+          maxDate={new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)} // Set max date to 30 days from today
           selectionMode="multiple"
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
           minDate={new Date()}
