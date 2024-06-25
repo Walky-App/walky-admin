@@ -70,7 +70,7 @@ export const AddEditJobPage = () => {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
-  const { settings } = useSettings()
+  const { settings, fetchSettings } = useSettings()
   const role = roleChecker()
   const user_id = GetTokenInfo()._id
 
@@ -93,6 +93,10 @@ export const AddEditJobPage = () => {
     watch,
     setValue,
   } = useForm({ values })
+
+  useEffect(() => {
+    fetchSettings()
+  }, [fetchSettings])
 
   useEffect(() => {
     const getFacilities = async () => {

@@ -88,6 +88,7 @@ import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
+import { ServiceOrderPage } from './components/shared/jobs/ServiceOrderPage'
 import { Pricing } from './pages/Pricing'
 
 /******************************************* Employee Pages ************************************/
@@ -160,6 +161,7 @@ export const App = () => {
                   <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<ClientJobs />} path="/client/jobs" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/new/service-order" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
                   <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />

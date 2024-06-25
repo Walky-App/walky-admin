@@ -60,6 +60,9 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       if (moreAddressDetailsCompany.country != null) {
         setValue('company_country', moreAddressDetailsCompany.country)
       }
+      if (moreAddressDetailsCompany.location_pin != null) {
+        setValue('company_location_pin', moreAddressDetailsCompany.location_pin)
+      }
 
       setMoreAddressDetailsCompany(undefined)
     }
@@ -80,9 +83,9 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       company_city: data.company_city,
       company_state: data.company_state,
       company_zip: data.company_zip,
+      company_location_pin: data.company_location_pin,
       facilities: formData.facilities,
       users: [userId],
-      company_location_pin: [0, 0],
     }
 
     if (companyId) {
