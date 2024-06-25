@@ -23,13 +23,14 @@ interface SidebarComponentProps {
 
 export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }: SidebarComponentProps) => {
   const [visible, setVisible] = useState(false)
+
   const { user } = useAuth()
   const role = getCurrentUserRole()
-
-  const links = user ? userLinks(user?.onboarding?.completed, role) : userLinks(false, role)
-
   const tokenInfo = GetTokenInfo()
+
   const userIsOnboarded = tokenInfo?.onboarding?.completed
+
+  const links = userIsOnboarded === true ? userLinks(userIsOnboarded, role) : userLinks(false, role)
 
   return (
     <div
