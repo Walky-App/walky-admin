@@ -29,7 +29,6 @@ export const ClientJobDetailView = () => {
   const [idFeedback, setIdFeedback] = useState('')
   const [openFeedback, setOpenFeedback] = useState(false)
   const [job, setJob] = useState<IJob>()
-  // const navigate = useNavigate()
   const role = roleChecker()
   const { showToast } = useUtils()
 
