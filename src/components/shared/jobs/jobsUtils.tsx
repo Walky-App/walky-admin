@@ -134,7 +134,7 @@ export const renderJobDatesController = (
     }}
     render={({ field, fieldState }) => (
       <>
-        <HtInfoTooltip message="Select the dates you need temps at your facility.">
+        <HtInfoTooltip message="Select the dates you need temps at your facility.  Only up to 30 days from today!">
           <HtInputLabel htmlFor={field.name} labelText="Select Job Dates" asterisk />
         </HtInfoTooltip>
         <Calendar
@@ -142,6 +142,7 @@ export const renderJobDatesController = (
           value={field.value}
           onChange={field.onChange}
           dateFormat="mm/dd/yy"
+          maxDate={new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)} // Set max date to 30 days from today
           selectionMode="multiple"
           className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
           minDate={new Date()}
@@ -347,12 +348,15 @@ export const renderVacancyController = (
 export const renderPayRateController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
+  minimun_wage: number,
 ) => (
   <Controller
     name="hourly_rate"
     control={control}
     rules={{
       required: 'Enter an hourly pay rate.',
+      validate: value =>
+        value >= minimun_wage || `Hourly rate should not be less than the minimum wage (${minimun_wage})`,
     }}
     render={({ field, fieldState }) => (
       <>
@@ -365,7 +369,7 @@ export const renderPayRateController = (
           value={field.value}
           onBlur={field.onBlur}
           onValueChange={(e: InputNumberValueChangeEvent) => {
-            if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 40) {
+            if (e.value !== undefined && e.value !== null && e.value >= minimun_wage && e.value <= 40) {
               field.onChange(e.value)
             }
           }}
@@ -373,7 +377,7 @@ export const renderPayRateController = (
           mode="currency"
           currency="USD"
           showButtons
-          min={1}
+          min={minimun_wage}
           max={40}
           inputClassName={classNames({ 'p-invalid': fieldState.error })}
           className="mt-2"
