@@ -190,9 +190,6 @@ export const CategoryCards = ({
         </div>
       ) : (
         <HTLoadingLogo />
-        // <div className="flex h-96 flex-col items-center justify-center">
-        //   <div className="text-2xl font-semibold text-black">Loading ...</div>
-        // </div>
       )}
     </div>
   )
