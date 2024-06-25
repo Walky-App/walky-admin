@@ -38,9 +38,9 @@ export const Certification = ({ urlCertificate, category }: CertificationProps) 
   }
 
   return (
-    <button type="button" onClick={generateOrGetCertification} className="my-4 flex items-center text-center ">
+    <button type="button" onClick={generateOrGetCertification} className="my-4 flex items-center">
       <ShieldCheckIcon className="mr-1 h-4 w-4 text-green-600" />
-      <div className="text-sm underline ">Completed Certificate</div>
+      <div className="text-sm underline">Completed Certificate</div>
     </button>
   )
 }

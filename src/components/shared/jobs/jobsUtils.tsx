@@ -134,7 +134,7 @@ export const renderJobDatesController = (
     }}
     render={({ field, fieldState }) => (
       <>
-        <HtInfoTooltip message="Select the dates you need temps at your facility.  Only upto 30 days from today!">
+        <HtInfoTooltip message="Select the dates you need temps at your facility.  Only up to 30 days from today!">
           <HtInputLabel htmlFor={field.name} labelText="Select Job Dates" asterisk />
         </HtInfoTooltip>
         <Calendar
