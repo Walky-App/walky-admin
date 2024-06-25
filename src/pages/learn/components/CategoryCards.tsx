@@ -2,8 +2,9 @@ import { useNavigate } from 'react-router-dom'
 
 import { Badge } from 'primereact/badge'
 import { Card } from 'primereact/card'
+import { Tag } from 'primereact/tag'
 
-import { ArrowTrendingUpIcon, BookOpenIcon, ClockIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import { LockClosedIcon } from '@heroicons/react/24/outline'
 
 import { useAdmin } from '../../../contexts/AdminContext'
 import { type Category } from '../../../interfaces/category'
@@ -109,12 +110,12 @@ export const CategoryCards = ({
                     body: { className: 'p-0 mb-4 ' },
                     content: { className: 'p-0' },
                   }}>
-                  <div className="h-auto sm:h-32 md:flex">
-                    <div className="md:m-3" onClick={() => handlerSetCategory(category, isDisabled)} aria-hidden="true">
+                  <div className="p-6 md:flex">
+                    <div onClick={() => handlerSetCategory(category, isDisabled)} aria-hidden="true">
                       {category.image ? (
                         <img
                           alt={`Hemp Temp ${category.title} category`}
-                          className="h-96 w-full object-cover object-center  md:h-24 md:w-24 md:rounded-xl"
+                          className="h-48 w-full rounded-xl object-cover object-center md:h-24 md:w-24"
                           src={category.image}
                         />
                       ) : (
@@ -122,11 +123,11 @@ export const CategoryCards = ({
                       )}
                     </div>
                     <div
-                      className="m-3 flex flex-1 flex-col justify-center gap-3"
+                      className="flex-1 md:mx-8"
                       onClick={() => handlerSetCategory(category, isDisabled)}
                       aria-hidden="true">
-                      <div className="text-xl font-semibold text-black">{category.title}</div>
-                      <div className=" h-12 overflow-hidden text-ellipsis  text-stone-500">{category.description}</div>
+                      <h3 className="mt-3 text-xl font-semibold text-black md:mt-0">{category.title}</h3>
+                      <p className="text-ellipsis text-stone-500 ">{category.description}</p>
                     </div>
                     {isAdmin ? (
                       <div className="m-3 flex flex-col items-center gap-y-5 p-3">
@@ -135,55 +136,40 @@ export const CategoryCards = ({
                         </Badge>
                       </div>
                     ) : (
-                      <div>
-                        <div className="flex flex-row justify-around md:gap-2 md:pr-3 md:pt-2">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <ArrowTrendingUpIcon className="h-10 w-10 md:h-6 md:w-6" />
-                              <span className="text-base md:text-sm">{category.modules_number}</span>
-                            </div>
-                            <p className="text-center text-lg font-medium md:text-sm">Modules</p>
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <BookOpenIcon className="h-10 w-10 md:h-6 md:w-6" />
-                              <span className="text-base md:text-sm">{category.total_units}</span>
-                            </div>
-                            <p className="text-center text-lg font-medium md:text-sm">Units</p>
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <ClockIcon className="h-10 w-10 md:h-6 md:w-6" />
-                              <span className="text-base md:text-sm">{category.total_time / 60}</span>
-                            </div>
-                            <p className="text-center text-lg font-medium md:text-sm">Minutes</p>
-                          </div>
-                        </div>
+                      <div className="flex items-center justify-evenly md:h-36 md:flex-col  md:items-end">
+                        <Tag icon="pi pi-folder" value={`${category.modules_number} Courses`} />
+                        <Tag icon="pi pi-play" value={`${category.total_units} Videos`} />
+                        <Tag icon="pi pi-clock" value={`${category.total_time / 60} Minutes`} />
+
                         {isDisabled ? (
                           <div className="mt-5 flex items-center justify-center">
                             <LockClosedIcon className="h-8 w-8" />
                           </div>
                         ) : (
-                          <button className="m-3 flex flex-col items-center gap-y-5 p-3" type="button">
-                            <div className="flex items-center justify-start gap-2">
-                              <div className="pr-2 text-right text-black">
-                                {categoryProgress(category._id) !== 0 && category.modules_number !== 0
-                                  ? (categoryProgress(category._id) / category.modules_number) * 100
-                                  : 0}
-                                %
+                          <button type="button">
+                            {categoryProgress(category._id) !== 0 &&
+                            category.modules_number !== 0 &&
+                            (categoryProgress(category._id) / category.modules_number) * 100 !== 100 ? (
+                              <div className="flex items-center justify-start gap-2">
+                                <div className="pr-2 text-right text-black">
+                                  {categoryProgress(category._id) !== 0 && category.modules_number !== 0
+                                    ? (categoryProgress(category._id) / category.modules_number) * 100
+                                    : 0}
+                                  %
+                                </div>
+                                <div className="relative h-1 w-10">
+                                  <div className="absolute left-0 top-0 h-1 w-10 rounded-2xl bg-neutral-100" />
+                                  <div
+                                    className={`w-${
+                                      categoryProgress(category._id) !== 0 && category.modules_number !== 0
+                                        ? Math.floor((categoryProgress(category._id) / category.modules_number) * 100) /
+                                          10
+                                        : 0
+                                    } absolute left-0 top-0 h-1 rounded-2xl bg-black`}
+                                  />
+                                </div>
                               </div>
-                              <div className="relative h-1 w-10">
-                                <div className="absolute left-0 top-0 h-1 w-10 rounded-2xl bg-neutral-100" />
-                                <div
-                                  className={`w-${
-                                    categoryProgress(category._id) !== 0 && category.modules_number !== 0
-                                      ? Math.floor((categoryProgress(category._id) / category.modules_number) * 100) /
-                                        10
-                                      : 0
-                                  } absolute left-0 top-0 h-1 rounded-2xl bg-black`}
-                                />
-                              </div>
-                            </div>
+                            ) : null}
                             {categoryCompleted(category._id) ? (
                               <Certification urlCertificate={filterCurrentCategory(category._id)} category={category} />
                             ) : null}
