@@ -100,6 +100,7 @@ export const AddressAutoComplete = ({
         inputStyle={inputClasses as CSSProperties}
         className={classNames}
         autoComplete="off"
+        disabled={disabled}
       />
     )
   }
