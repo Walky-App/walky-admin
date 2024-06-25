@@ -137,7 +137,6 @@ export const AdminCompanyDetails = () => {
     if (selectedCompanyData) {
       setValue('company_name', selectedCompanyData.company_name)
       setValue('company_dbas', selectedCompanyData.company_dbas)
-      setValue('company_tax_id', selectedCompanyData.company_tax_id)
       setValue('company_address', selectedCompanyData.company_address)
       setValue('company_phone_number', selectedCompanyData.company_phone_number)
       setValue('company_city', selectedCompanyData.company_city)
@@ -146,6 +145,10 @@ export const AdminCompanyDetails = () => {
       setValue('company_country', selectedCompanyData.company_country)
       setValue('facilities', selectedCompanyData.facilities)
       setValue('users', selectedCompanyData.users)
+    }
+
+    if (selectedCompanyData.company_tax_id != null) {
+      setValue('company_tax_id', selectedCompanyData.company_tax_id)
     }
   }, [selectedCompanyData, setValue])
 
@@ -161,7 +164,7 @@ export const AdminCompanyDetails = () => {
       }
       showToast({ severity: 'success', summary: 'Company updated successfully' })
       setTimeout(() => {
-        navigate(`/admin/companies`)
+        navigate(`/${role}/companies`)
       }, 2000)
     } catch (error) {
       console.error('Error updating company: ', error)
@@ -233,13 +236,6 @@ export const AdminCompanyDetails = () => {
               <Controller
                 control={control}
                 name="company_tax_id"
-                rules={{
-                  required: 'Tax ID is required',
-                  pattern: {
-                    value: /^\d{2}-\d{7}$/,
-                    message: 'Invalid Tax ID. E.g. 12-3456789',
-                  },
-                }}
                 render={({ field, fieldState }) => (
                   <>
                     <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes.">
@@ -291,7 +287,6 @@ export const AdminCompanyDetails = () => {
                 name="company_phone_number"
                 rules={{
                   required: 'Phone Number is required, should be 10 digits.',
-                  pattern: /^\d{10}$/,
                 }}
                 render={({ field, fieldState }) => (
                   <>

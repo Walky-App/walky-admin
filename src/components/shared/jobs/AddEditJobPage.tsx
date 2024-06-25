@@ -16,6 +16,7 @@ import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 import { HeadingComponent } from '../general/HeadingComponent'
+import { HtInfoTooltip } from '../general/HtInfoTooltip'
 import {
   defaultJobFormValues,
   type JobFormDefaultValues,
@@ -57,17 +58,27 @@ export const AddEditJobPage = () => {
   const [isStartTimeValid, setIsStartTimeValid] = useState(true)
   const [isEndTimeValid, setIsEndTimeValid] = useState(true)
   const [totalHours, setTotalHours] = useState(0)
-
-  const { showToast } = useUtils()
-  const { settings } = useSettings()
+  const [preliminaryPricing, setPreliminaryPricing] = useState(0)
+  const [totalSupervisorFee, setTotalSupervisorFee] = useState(0)
+  const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
+  const [adminCostsDollars, setAdminCostsDollars] = useState(0)
+  const [ourFeeDollars, setOurFeeDollars] = useState(0)
+  const [processingFeeDollars, setProcessingFeeDollars] = useState(0)
 
   const navigate = useNavigate()
   const params = useParams()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
-
+  const { showToast } = useUtils()
+  const { settings } = useSettings()
   const role = roleChecker()
   const user_id = GetTokenInfo()._id
+
+  const minimun_wage = settings?.minimun_wage as number
+  const adminCosts = settings?.admin_costs.total as number
+  const ourFee = settings?.our_fee as number
+  const processingFee = settings?.processing_fee as number
+  const hourlySupervisorFee = settings?.supervisor_fee as number
 
   if (isAdmin) {
     defaultValues = { ...defaultValues, hourly_rate: (settings?.minimun_wage as number) || 0 }
@@ -244,12 +255,27 @@ export const AddEditJobPage = () => {
   const vacancy = useWatch({ name: 'vacancy', control })
   const jobDatesLength = useWatch({ name: 'job_dates', control }).length
   const hourlyRate = useWatch({ name: 'hourly_rate', control })
-  const [preliminaryPricing, setPreliminaryPricing] = useState(0)
 
   useEffect(() => {
-    const newPreliminaryPricing = hourlyRate * vacancy * totalHours * jobDatesLength
+    const newTotalSupervisorFee = hourlySupervisorFee * totalHours * jobDatesLength
+    setTotalSupervisorFee(newTotalSupervisorFee)
+    const adminCostsDollars = (hourlyRate * adminCosts) / 100
+    setAdminCostsDollars(adminCostsDollars)
+    const ourFeeDollars = (hourlyRate * ourFee) / 100
+    setOurFeeDollars(ourFeeDollars)
+    const processingFeeDollars = (hourlyRate * processingFee) / 100
+    setProcessingFeeDollars(processingFeeDollars)
+
+    let newPreliminaryPricing =
+      hourlyRate * vacancy * totalHours * jobDatesLength * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
+    if (vacancy >= 5) {
+      newPreliminaryPricing += newTotalSupervisorFee
+    }
     setPreliminaryPricing(newPreliminaryPricing)
-  }, [hourlyRate, vacancy, jobDatesLength, totalHours])
+
+    const hourlyRateWithFees = hourlyRate + adminCostsDollars + ourFeeDollars + processingFeeDollars
+    setHourlyRateWithFees(hourlyRateWithFees)
+  }, [hourlyRate, vacancy, jobDatesLength, totalHours, hourlySupervisorFee, adminCosts, ourFee, processingFee])
 
   const renderPricingTable = () => {
     return (
@@ -258,23 +284,51 @@ export const AddEditJobPage = () => {
           <h3 className="text-base font-semibold leading-6 text-gray-900">Preliminary Pricing</h3>
           <ul className="list-none space-y-1">
             <li>
-              <span className="text-sm font-medium leading-5 text-gray-600">Pay Rate: </span>
+              <span className="text-sm font-medium leading-5 text-gray-600">Employee Pay Rate: </span>
               <span className="text-sm leading-5 text-gray-900">${hourlyRate.toFixed(2)}</span>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Number of Vacancies: </span>
               <span className="text-sm leading-5 text-gray-900">{vacancy}</span>
             </li>
+            {vacancy >= 5 ? (
+              <li>
+                <span className="text-sm font-medium leading-5 text-gray-600">Supervisor Fees: </span>
+                <span className="text-sm leading-5 text-gray-900">${totalSupervisorFee.toFixed(2)}</span>
+              </li>
+            ) : null}
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Total Hours: </span>
               <span className="text-sm leading-5 text-gray-900">{totalHours.toFixed(2)}</span>
             </li>
             <li>
-              <span className="text-sm font-medium leading-5 text-gray-600">Number of Job Days: </span>
+              <span className="text-sm font-medium leading-5 text-gray-600">Number of selected working days: </span>
               <span className="text-sm leading-5 text-gray-900">{jobDatesLength}</span>
             </li>
+            <li>
+              <div className="flex items-center">
+                <span className="mr-1 text-sm font-medium leading-5 text-gray-600">Admin Costs: </span>
+                <span className="mr-2 text-sm leading-5 text-gray-900"> ${adminCostsDollars.toFixed(2)} </span>
+                <HtInfoTooltip message="Employer tax payments, fringe benefits, recruiting and hiring costs, training and orientation, termination costs, administrative costs, healthcare, and all employer responsibilities for insurance. This ensures comprehensive employment management and legal compliance." />
+              </div>
+            </li>
+            <li>
+              <span className="text-sm font-medium leading-5 text-gray-600">Our Fee: </span>
+              <span className="text-sm leading-5 text-gray-900">${ourFeeDollars.toFixed(2)}</span>
+            </li>
+            <li>
+              <span className="text-sm font-medium leading-5 text-gray-600">Processing Fee: </span>
+              <span className="text-sm leading-5 text-gray-900">${processingFeeDollars.toFixed(2)}</span>
+            </li>
+
+            <li>
+              <span className="text-sm font-medium leading-5 text-gray-600">
+                Estimated total per hour (fees included):{' '}
+              </span>
+              <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
+            </li>
             <li className="font-medium leading-tight text-gray-900">
-              <span className="text-sm">Estimated Cost before fees: </span>
+              <span className="text-sm">Total Estimated Cost (fees included): </span>
               <span className="text-sm font-semibold">${preliminaryPricing.toFixed(2)}</span>
             </li>
           </ul>
@@ -369,7 +423,7 @@ export const AddEditJobPage = () => {
 
             <div className="sm:col-span-3">{renderVacancyController(control, errors)}</div>
 
-            <div className="sm:col-span-3">{renderPayRateController(control, errors)}</div>
+            <div className="sm:col-span-3">{renderPayRateController(control, errors, minimun_wage)}</div>
 
             <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
 

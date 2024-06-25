@@ -49,7 +49,7 @@ export const Modules = () => {
     <div>
       <BreadCrumbs pages={pages} />
       <div className="w-full sm:overflow-x-hidden">
-        <HeadingComponent search title="Modules" />
+        <HeadingComponent title="Courses" />
 
         <div className="mt-4 grid grid-cols-4 gap-6 md:grid-cols-3">
           <div className="order-2 col-span-4 md:order-1 md:col-span-2">

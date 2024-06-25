@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
-import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { MultiSelect } from 'primereact/multiselect'
@@ -108,49 +107,18 @@ export const PaymentMethodDetails = () => {
               </p>
             </div>
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1 md:col-span-2">
-              {paymentMethod.payment_info.type === 'CC' ? (
-                <>
-                  <div className="sm:col-span-3">
-                    <HtInfoTooltip message="A credit card number is a unique identifier assigned to the card.">
-                      <HtInputLabel htmlFor="card_number" asterisk labelText="Card Number" />
-                    </HtInfoTooltip>
-                    <InputMask
-                      id="card_number"
-                      value={paymentMethod.payment_info.card_number}
-                      mask="9999 9999 9999 9999"
-                      slotChar="x"
-                      className="mt-2"
-                      readOnly
-                    />
-                  </div>
-                  <div className="sm:col-span-3">
-                    <HtInfoTooltip message="The expiration date of the credit card.">
-                      <HtInputLabel htmlFor="expiration_date" asterisk labelText="Expiration Date" />
-                    </HtInfoTooltip>
-                    <InputMask
-                      id="expiration_date"
-                      value={paymentMethod.payment_info.expiration_date}
-                      mask="99/99"
-                      slotChar="x"
-                      className="mt-2"
-                      readOnly
-                    />
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <HtInfoTooltip message="The CCV (Card Verification Value) is a 3 or 4 digit number on the back of your credit card.">
-                      <HtInputLabel htmlFor="ccv" asterisk labelText="CCV" />
-                    </HtInfoTooltip>
-                    <InputMask
-                      id="ccv"
-                      value={paymentMethod.payment_info.ccv}
-                      mask="999"
-                      slotChar="x"
-                      className="mt-2"
-                      readOnly
-                    />
-                  </div>
-                </>
+              {paymentMethod.payment_info.method === 'CC' ? (
+                <div className="sm:col-span-3">
+                  <HtInfoTooltip message="A credit card number is a unique identifier assigned to the card.">
+                    <HtInputLabel htmlFor="card_number" asterisk labelText="Card Number" />
+                  </HtInfoTooltip>
+                  <InputText
+                    id="card_number"
+                    value={paymentMethod.payment_info.card_number}
+                    className="mt-2"
+                    disabled
+                  />
+                </div>
               ) : null}
 
               {paymentMethod.payment_info.type === 'ACH' || paymentMethod.payment_info.type === 'ECheck' ? (
@@ -189,10 +157,10 @@ export const PaymentMethodDetails = () => {
               ) : null}
 
               <div className="sm:col-span-3">
-                <HtInfoTooltip message="Name of the account holder.">
-                  <HtInputLabel htmlFor="holder_name" asterisk labelText="Holder Name" />
+                <HtInfoTooltip message="Reference name for the card in the application.">
+                  <HtInputLabel htmlFor="card_name" asterisk labelText="Card Name" />
                 </HtInfoTooltip>
-                <InputText id="holder_name" value={paymentMethod.payment_info.holder_name} className="mt-2" readOnly />
+                <InputText id="card_name" value={paymentMethod.payment_info.card_name} className="mt-2" readOnly />
               </div>
 
               <div className="sm:col-span-3">
