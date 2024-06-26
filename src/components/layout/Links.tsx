@@ -18,7 +18,7 @@ interface INavLinkChildren {
   disabled?: boolean
 }
 
-interface INavLink {
+export interface INavLink {
   id: number
   name: string
   href: string
