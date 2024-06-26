@@ -68,7 +68,7 @@ export const GlobalTable = ({ data, columns, allowClick }: ITableProps) => {
           allowClick={allowClick}
         />
       </div>
-      <div className="">
+      <div>
         <PaginationNav
           gotoPage={gotoPage}
           canPreviousPage={canPreviousPage}

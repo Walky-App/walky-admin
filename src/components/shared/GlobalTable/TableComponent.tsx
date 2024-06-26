@@ -45,7 +45,7 @@ export const TableComponent = ({
                   className="cursor-pointe text-start uppercase"
                   style={{ width: column.width }}>
                   <div className="flex items-center gap-1">
-                    <div className="text-gray-600">{column.render('Header')}</div>
+                    <div>{column.render('Header')}</div>
                     <div className="flex flex-col">
                       <FaSortUp
                         className={`translate-y-1/2 ${
@@ -72,10 +72,7 @@ export const TableComponent = ({
                 <tr key={row.id} className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>
                   {row.cells.map((cell: any) => {
                     return (
-                      <td
-                        key={cell.column.id}
-                        {...cell.getCellProps()}
-                        className="border-b-2 border-slate-100 p-3 text-gray-700 first:rounded-l-lg last:rounded-r-lg">
+                      <td key={cell.column.id} {...cell.getCellProps()} className="border-b-2 py-3 ">
                         {cell.render('Cell')}
                       </td>
                     )
@@ -87,7 +84,7 @@ export const TableComponent = ({
                 <tr key={row._id}>
                   {row.cells.map((cell: any) => {
                     return (
-                      <td key={cell.column.id} className="p-3 text-gray-700 first:rounded-l-lg last:rounded-r-lg">
+                      <td key={cell.column.id} className="p-3 ">
                         {cell.render('Cell')}
                       </td>
                     )

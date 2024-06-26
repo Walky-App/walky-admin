@@ -69,8 +69,8 @@ export const Learn = () => {
           <div>
             <img
               alt=""
-              className="border-1 h-28 w-full rounded-t-xl object-cover object-center lg:h-64"
-              src="/assets/htu-bk.jpg"
+              className="border-1 h-28 w-full rounded-t-xl object-cover object-top lg:h-64"
+              src="/assets/photos/htu-bk.png"
             />
           </div>
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
