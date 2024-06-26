@@ -45,9 +45,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
     const success = await updateOnboardingStatus(updateOnboardingInfo)
 
     if (success === true) {
-      setTimeout(() => {
-        setStep(step + 1)
-      }, 1000)
+      setStep(step + 1)
     }
   }
 
