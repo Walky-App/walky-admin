@@ -22,7 +22,14 @@ import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } from '../clientOnboardingUtils'
+import { clientOnboardingSteps } from '../ClientOnboardingPage'
+import {
+  type StepProps,
+  FormDataContext,
+  type IClientOnboardingFormInputs,
+  type IOnboardingUpdateInfo,
+  useUpdateOnboardingStatus,
+} from '../clientOnboardingUtils'
 
 export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -32,6 +39,15 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
     useContext(FormDataContext)
 
   const { showToast } = useUtils()
+
+  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
+
+  const updateOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 2,
+    description: clientOnboardingSteps[1].label ?? 'Facility Information',
+    type: 'client',
+    completed: false,
+  }
 
   const formValues = formData != null ? formData : defaultValues
 
@@ -164,6 +180,8 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
 
           setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
 
+          await updateOnboardingStatus(updateOnboardingInfo)
+
           setTimeout(() => {
             setStep(step + 1)
           }, 1000)
@@ -187,6 +205,8 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
         if (data?._id != null) {
           facilityId = data._id
           setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
+
+          await updateOnboardingStatus(updateOnboardingInfo)
 
           setTimeout(() => {
             setStep(step + 1)

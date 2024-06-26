@@ -1,10 +1,15 @@
-import { type Dispatch, type SetStateAction, createContext } from 'react'
+import { type Dispatch, type SetStateAction, createContext, useState, useCallback } from 'react'
 
 import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { type IUser } from '../../../interfaces/User'
 import { type ICompany } from '../../../interfaces/company'
 import { type IFacility } from '../../../interfaces/facility'
+import { type ITokenInfo } from '../../../interfaces/services'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
+import { GetTokenInfo, SetToken } from '../../../utils/tokenUtil'
 
 export interface IClientOnboardingFormInputs extends ICompany, IFacility {
   user_id: string
@@ -265,4 +270,83 @@ export const defaultMoreAddressDetails: IAddressAutoComplete = {
   location_pin: undefined,
   address: undefined,
   country: undefined,
+}
+
+export interface IOnboardingUpdateInfo {
+  step_number: number
+  description: string
+  type: string
+  completed: boolean
+}
+
+export const useUpdateOnboardingStatus = () => {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const { showToast } = useUtils()
+
+  const updateOnboardingStatus = useCallback(
+    async (onboardingInfo: IOnboardingUpdateInfo) => {
+      setIsLoading(true)
+      const userToken = GetTokenInfo()
+      const userId = userToken?._id
+
+      if (userId != null) {
+        try {
+          const response = await requestService({ path: `users/${userId}` })
+
+          if (!response.ok) {
+            throw new Error('User not found')
+          }
+
+          const userFound: IUser = await response.json()
+
+          const updatedUserObject: IUser = {
+            ...userFound,
+            onboarding: {
+              ...userFound.onboarding,
+              step_number: onboardingInfo.step_number,
+              description: onboardingInfo.description,
+              type: onboardingInfo.type,
+              completed: onboardingInfo.completed,
+            },
+          }
+
+          const updateResponse = await requestService({
+            path: `users/${userId}`,
+            method: 'PATCH',
+            body: JSON.stringify(updatedUserObject),
+          })
+
+          if (!updateResponse.ok) {
+            throw new Error('Failed to update user')
+          }
+
+          const updatedUser: IUser = await updateResponse.json()
+
+          const updatedUserData: ITokenInfo = {
+            ...userToken,
+            onboarding: {
+              ...updatedUser.onboarding,
+            },
+          }
+          SetToken(updatedUserData)
+          return true
+        } catch (error) {
+          console.error('Error updating user:', error)
+          showToast({
+            severity: 'error',
+            summary: 'Error saving changes',
+            detail: `Information could not be updated.`,
+            life: 2000,
+          })
+          return false
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    },
+    [showToast],
+  )
+
+  return { updateOnboardingStatus, isLoading }
 }

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react'
+import { useContext, useRef } from 'react'
 
 import { Button } from 'primereact/button'
 import {
@@ -15,10 +15,16 @@ import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
-import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } from '../clientOnboardingUtils'
+import { clientOnboardingSteps } from '../ClientOnboardingPage'
+import {
+  type StepProps,
+  FormDataContext,
+  type IClientOnboardingFormInputs,
+  useUpdateOnboardingStatus,
+  type IOnboardingUpdateInfo,
+} from '../clientOnboardingUtils'
 
 export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
-  const [isLoading, setIsLoading] = useState(false)
   const { formData, setFormData } = useContext(FormDataContext)
 
   const facilityId = formData.facilities[0]
@@ -26,12 +32,23 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
 
   const { showToast } = useUtils()
 
-  const handleSaveButton = () => {
-    setIsLoading(true)
+  const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
 
-    setTimeout(() => {
-      setStep(step + 1)
-    }, 1000)
+  const updateOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 3,
+    description: clientOnboardingSteps[2].label ?? 'Documents and Images',
+    type: 'client',
+    completed: false,
+  }
+
+  const handleSaveButton = async () => {
+    const success = await updateOnboardingStatus(updateOnboardingInfo)
+
+    if (success === true) {
+      setTimeout(() => {
+        setStep(step + 1)
+      }, 1000)
+    }
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {

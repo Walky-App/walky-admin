@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { type MenuItem } from 'primereact/menuitem'
 import { Steps } from 'primereact/steps'
 
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IUser } from '../../../interfaces/User'
@@ -44,6 +45,7 @@ export const clientOnboardingSteps: MenuItem[] = [
 ]
 
 export const ClientOnboarding = () => {
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<IClientOnboardingFormInputs>(defaultClientOnboardingFormValues)
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
@@ -66,8 +68,10 @@ export const ClientOnboarding = () => {
   useEffect(() => {
     if (userToken?.onboarding?.completed ?? false) {
       navigate('/client/dashboard')
+    } else {
+      setActiveIndex(userToken?.onboarding?.step_number ?? 0)
     }
-  }, [navigate, userToken?.onboarding?.completed])
+  }, [navigate, userToken?.onboarding?.completed, userToken?.onboarding?.step_number])
 
   const getUserData = useCallback(async () => {
     try {
@@ -111,6 +115,8 @@ export const ClientOnboarding = () => {
 
   useEffect(() => {
     const getOnboardingData = async () => {
+      setLoading(true)
+
       try {
         const userData = await getUserData()
         const companiesData = await getUserCompanies()
@@ -146,7 +152,9 @@ export const ClientOnboarding = () => {
                 ],
         }))
       } catch (error) {
-        console.error(error)
+        console.error('Error fetching onboarding data:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -243,7 +251,7 @@ export const ClientOnboarding = () => {
 
   const onboardingSteps = [
     <Fragment key="step1">
-      <WelcomeDialog visible={visible} setVisible={setVisible} />
+      {userToken?.onboarding?.step_number == null ? <WelcomeDialog visible={visible} setVisible={setVisible} /> : null}
       <CompanyInformationForm step={activeIndex} setStep={setActiveIndex} />
     </Fragment>,
     <FacilityInformationForm key="step2" step={activeIndex} setStep={setActiveIndex} />,
@@ -272,17 +280,23 @@ export const ClientOnboarding = () => {
         setMoreAddressDetailsFacility,
       }}>
       <HeadingComponent title="Client Onboarding" />
-      <Steps
-        model={clientOnboardingSteps}
-        activeIndex={activeIndex}
-        onSelect={e => setActiveIndex(e.index)}
-        readOnly={true}
-        pt={{
-          label: { className: 'hidden xl:inline' },
-          menuitem: { className: 'before:top-full before:sm:top-1/2' },
-        }}
-      />
-      <div className="mt-4">{onboardingSteps[activeIndex]}</div>
+      {loading ? (
+        <HTLoadingLogo />
+      ) : (
+        <>
+          <Steps
+            model={clientOnboardingSteps}
+            activeIndex={activeIndex}
+            onSelect={e => setActiveIndex(e.index)}
+            readOnly={true}
+            pt={{
+              label: { className: 'hidden xl:inline' },
+              menuitem: { className: 'before:top-full before:sm:top-1/2' },
+            }}
+          />
+          <div className="mt-4">{onboardingSteps[activeIndex]}</div>
+        </>
+      )}
     </FormDataContext.Provider>
   )
 }
