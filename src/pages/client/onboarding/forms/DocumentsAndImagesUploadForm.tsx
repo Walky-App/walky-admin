@@ -133,7 +133,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
                   name="files"
                   ref={fileUploadRef}
                   maxFileSize={5242880}
-                  accept="application/pdf, image/*"
+                  accept="image/*"
                   multiple={true}
                   mode="advanced"
                   auto={true}
