@@ -1,6 +1,6 @@
-import { type Dispatch, type SetStateAction, useState } from 'react'
+import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 
 import cn from 'classnames'
 import { Button } from 'primereact/button'
@@ -12,7 +12,7 @@ import { ChevronRightIcon } from '@heroicons/react/20/solid'
 import { useAuth } from '../../contexts/AuthContext'
 import { getCurrentUserRole } from '../../utils/UserRole'
 import { GetTokenInfo } from '../../utils/tokenUtil'
-import { userLinks } from './Links'
+import { type INavLink, userLinks } from './Links'
 import { LogosPack } from './LogosPack'
 
 interface SidebarComponentProps {
@@ -23,14 +23,21 @@ interface SidebarComponentProps {
 
 export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }: SidebarComponentProps) => {
   const [visible, setVisible] = useState(false)
+  const [links, setLinks] = useState<INavLink[]>([])
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false)
 
+  const location = useLocation()
   const { user } = useAuth()
   const role = getCurrentUserRole()
-  const tokenInfo = GetTokenInfo()
 
-  const userIsOnboarded = tokenInfo?.onboarding?.completed
+  useEffect(() => {
+    const tokenInfo = GetTokenInfo()
+    const userIsOnboarded = tokenInfo?.onboarding?.completed
+    setOnboardingCompleted(userIsOnboarded ?? false)
 
-  const links = userIsOnboarded === true ? userLinks(userIsOnboarded, role) : userLinks(false, role)
+    const links = userIsOnboarded === true ? userLinks(userIsOnboarded, role) : userLinks(false, role)
+    setLinks(links)
+  }, [location, role])
 
   return (
     <div
@@ -123,7 +130,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
               <li>
                 {role === 'admin' ? (
                   <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
-                ) : userIsOnboarded ? (
+                ) : onboardingCompleted ? (
                   <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
                 ) : (
                   <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
