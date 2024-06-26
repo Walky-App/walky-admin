@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
@@ -31,6 +31,7 @@ export const ClientJobDetailView = () => {
   const [job, setJob] = useState<IJob>()
   const role = roleChecker()
   const { showToast } = useUtils()
+  const navigate = useNavigate()
 
   const { id } = useParams()
 
@@ -275,13 +276,11 @@ export const ClientJobDetailView = () => {
   return (
     <>
       <HeadingComponent title="Job Details" />
-
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="md:col-span-3">
           <div>
             {job && 'start_time' in job && 'end_time' in job && 'job_dates' in job ? (
               <div>
-                {/* Job Card Start*/}
                 <Card
                   title={
                     <>
@@ -294,12 +293,16 @@ export const ClientJobDetailView = () => {
                       {job.title}
                     </>
                   }>
-                  {/* Job Facility */}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col items-start justify-start gap-1">
                       <div className="flex items-center">
                         <i className="pi pi-building" />
-                        <div className="ml-2 text-base font-normal text-black">{job.facility.name}</div>
+                        <Button
+                          link
+                          className="underline"
+                          onClick={() => navigate(`/${role}/facilities/${job.facility._id}`)}>
+                          {job.facility.name}
+                        </Button>
                       </div>
                       <div className="flex items-center">
                         <i className="pi pi-map-marker" />
@@ -309,7 +312,6 @@ export const ClientJobDetailView = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Divider */}
                   <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-start gap-2">
@@ -335,7 +337,6 @@ export const ClientJobDetailView = () => {
                       <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                     </div>
                   </div>
-                  {/* Divider */}
                   <hr className="mt-3 h-px w-full bg-zinc-100" />
                   <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
