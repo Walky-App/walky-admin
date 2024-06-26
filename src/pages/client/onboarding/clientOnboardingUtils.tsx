@@ -58,6 +58,7 @@ export const defaultFacilityFormValues: IFacility = {
     },
   ],
   licenses: [],
+  contract_url: [],
 }
 
 export const defaultClientOnboardingFormValues: IClientOnboardingFormInputs = {
