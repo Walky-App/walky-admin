@@ -84,7 +84,7 @@ export const TableComponent = ({
                 <tr key={row._id}>
                   {row.cells.map((cell: any) => {
                     return (
-                      <td key={cell.column.id} className="p-3 ">
+                      <td key={cell.column.id} className="p-3">
                         {cell.render('Cell')}
                       </td>
                     )
