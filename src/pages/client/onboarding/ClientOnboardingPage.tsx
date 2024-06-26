@@ -267,7 +267,7 @@ export const ClientOnboarding = () => {
     </Fragment>,
     <FacilityInformationForm key="step2" step={activeIndex} setStep={setActiveIndex} />,
     <DocumentsAndImagesUploadForm key="step3" step={activeIndex} setStep={setActiveIndex} />,
-    <SignGetAcceptForm key="step4" step={activeIndex} setStep={setActiveIndex} />,
+    <SignGetAcceptForm key="step4" />,
   ]
 
   return (
