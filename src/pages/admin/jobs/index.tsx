@@ -31,29 +31,30 @@ export const AdminJobs = () => {
     () => [
       { Header: 'Job Title', accessor: 'title' },
       { Header: 'Facility', accessor: 'facility.name' },
-      { Header: 'Created By', accessor: 'created_by' },
+
+      { Header: 'Created By', accessor: 'created_by', width: 250 },
+      { Header: 'Job Starts', width: 120, accessor: (item: IJob) => new Date(item.job_dates[0]).toLocaleDateString() },
+      {
+        Header: 'Job Ends',
+        width: 100,
+        accessor: (item: IJob) => new Date(item.job_dates[item.job_dates.length - 1]).toLocaleDateString(),
+      },
       {
         Header: 'Status',
+        width: 100,
         accessor: (d: IJob) => (d.is_active ? 'Active' : 'Disabled'),
         sortType: (a: any, b: any) => {
           if (a.original.is_active === b.original.active) return 0
           return a.original.is_active ? -1 : 1
         },
-      }, //@ts-ignore
-      {
-        Header: 'Past/Present',
-        accessor: (d: any) => (d.is_completed ? 'Past' : 'Present'),
-        sortType: (a: any, b: any) => {
-          if (a.original.is_completed === b.original.is_completed) return 0
-          return a.original.is_completed ? -1 : 1
-        },
       },
+      { Header: 'Shifts', accessor: 'vacancy', width: 100 },
       {
-        Header: 'Total Hours',
+        Header: 'Shift Hours',
         accessor: 'total_hours',
+        width: 120,
       },
-      //@ts-ignore
-      { Header: 'Vacancy', accessor: 'vacancy' },
+
       {
         Header: 'Availability',
         accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
