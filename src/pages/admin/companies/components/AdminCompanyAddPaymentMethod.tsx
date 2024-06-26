@@ -178,6 +178,7 @@ export const AdminCompanyAddPaymentMethod = () => {
                   }
                 }}
                 options={paymentMethodOptions}
+                className="hidden"
                 optionLabel="label"
                 optionValue="value"
               />

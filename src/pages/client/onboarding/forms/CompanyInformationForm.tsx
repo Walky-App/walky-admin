@@ -16,11 +16,14 @@ import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { clientOnboardingSteps } from '../ClientOnboardingPage'
 import {
   type StepProps,
   FormDataContext,
   type IClientOnboardingFormInputs,
   createCompanyFormData,
+  useUpdateOnboardingStatus,
+  type IOnboardingUpdateInfo,
 } from '../clientOnboardingUtils'
 
 export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
@@ -30,6 +33,15 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
     useContext(FormDataContext)
 
   const { showToast } = useUtils()
+
+  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
+
+  const updateOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 1,
+    description: clientOnboardingSteps[0].label ?? 'Company Information',
+    type: 'client',
+    completed: false,
+  }
 
   const userId = formData?.user_id
 
@@ -113,6 +125,9 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
               ...prev,
               ...createCompanyFormData(patchedCompanyData),
             }))
+
+            await updateOnboardingStatus(updateOnboardingInfo)
+
             setTimeout(() => {
               setStep(step + 1)
             }, 1000)
@@ -142,6 +157,9 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
             ...companyFormData,
             company_id: companyFormData._id ?? '',
           }))
+
+          await updateOnboardingStatus(updateOnboardingInfo)
+
           setTimeout(() => {
             setStep(step + 1)
           }, 1000)

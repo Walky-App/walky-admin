@@ -22,22 +22,40 @@ import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { type StepProps, FormDataContext, type IClientOnboardingFormInputs } from '../clientOnboardingUtils'
+import { clientOnboardingSteps } from '../ClientOnboardingPage'
+import {
+  type StepProps,
+  FormDataContext,
+  type IClientOnboardingFormInputs,
+  type IOnboardingUpdateInfo,
+  useUpdateOnboardingStatus,
+} from '../clientOnboardingUtils'
 
 export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [checked, setChecked] = useState(false)
+  const [userAsDefaultContact] = useState(true)
 
   const { setFormData, defaultValues, formData, moreAddressDetailsFacility, setMoreAddressDetailsFacility } =
     useContext(FormDataContext)
 
   const { showToast } = useUtils()
 
+  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
+
+  const updateOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 2,
+    description: clientOnboardingSteps[1].label ?? 'Facility Information',
+    type: 'client',
+    completed: false,
+  }
+
   const formValues = formData != null ? formData : defaultValues
 
   const {
     control,
     formState: { errors },
+    clearErrors,
     handleSubmit,
     getValues,
     setValue,
@@ -86,7 +104,26 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       formData.location_pin === formData.company_location_pin
 
     setChecked(isSameAsCompany)
-  }, [formData])
+  }, [
+    formData.address,
+    formData.city,
+    formData.company_address,
+    formData.company_city,
+    formData.company_country,
+    formData.company_location_pin,
+    formData.company_name,
+    formData.company_phone_number,
+    formData.company_state,
+    formData.company_tax_id,
+    formData.company_zip,
+    formData.country,
+    formData.location_pin,
+    formData.name,
+    formData.phone_number,
+    formData.state,
+    formData.tax_id,
+    formData.zip,
+  ])
 
   useLayoutEffect(() => {
     if (checked) {
@@ -164,6 +201,8 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
 
           setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
 
+          await updateOnboardingStatus(updateOnboardingInfo)
+
           setTimeout(() => {
             setStep(step + 1)
           }, 1000)
@@ -187,6 +226,8 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
         if (data?._id != null) {
           facilityId = data._id
           setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
+
+          await updateOnboardingStatus(updateOnboardingInfo)
 
           setTimeout(() => {
             setStep(step + 1)
@@ -228,6 +269,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                   checked={checked}
                   onChange={e => {
                     setChecked(e.value)
+                    clearErrors()
                   }}
                 />
                 <label htmlFor="company_same_as_facility" className="ml-3 text-xl font-semibold">
@@ -477,14 +519,13 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                   rules={{ required: 'First Name is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <HtInfoTooltip message="The first name of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="First Name" />
-                      </HtInfoTooltip>
+                      <HtInputLabel htmlFor={field.name} asterisk={!userAsDefaultContact} labelText="First Name" />
                       <InputText
                         id={field.name}
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
+                        disabled={userAsDefaultContact}
                       />
                       {getFormErrorMessage(field.name, errors)}
                     </>
@@ -499,14 +540,13 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                   rules={{ required: 'Last Name is required' }}
                   render={({ field, fieldState }) => (
                     <>
-                      <HtInfoTooltip message="The last name of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Last Name" />
-                      </HtInfoTooltip>
+                      <HtInputLabel htmlFor={field.name} asterisk={!userAsDefaultContact} labelText="Last Name" />
                       <InputText
                         id={field.name}
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
+                        disabled={userAsDefaultContact}
                       />
                       {getFormErrorMessage(field.name, errors)}
                     </>
@@ -547,9 +587,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <HtInfoTooltip message="The phone number of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Phone Number" />
-                      </HtInfoTooltip>
+                      <HtInputLabel htmlFor={field.name} asterisk={!userAsDefaultContact} labelText="Phone Number" />
                       <InputMask
                         id={field.name}
                         {...field}
@@ -558,6 +596,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                         unmask={true}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
+                        disabled={true}
                       />
                       {getFormErrorMessage(field.name, errors)}
                     </>
@@ -577,14 +616,13 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <HtInfoTooltip message="The email address of the contact person.">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Email" />
-                      </HtInfoTooltip>
+                      <HtInputLabel htmlFor={field.name} asterisk={!userAsDefaultContact} labelText="Email" />
                       <InputText
                         id={field.name}
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                         autoComplete="off"
+                        disabled={userAsDefaultContact}
                       />
                       {getFormErrorMessage(field.name, errors)}
                     </>

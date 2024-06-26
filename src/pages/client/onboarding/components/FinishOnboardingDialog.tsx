@@ -1,17 +1,11 @@
-import { useState } from 'react'
-
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Image } from 'primereact/image'
 
-import { type IUser } from '../../../../interfaces/User'
-import { type ITokenInfo } from '../../../../interfaces/services'
-import { requestService } from '../../../../services/requestServiceNew'
-import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo, SetToken } from '../../../../utils/tokenUtil'
 import { clientOnboardingSteps } from '../ClientOnboardingPage'
+import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../clientOnboardingUtils'
 
 interface FinishedOnboardingDialogProps {
   visible: boolean
@@ -19,75 +13,21 @@ interface FinishedOnboardingDialogProps {
 }
 
 export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardingDialogProps) => {
-  const [isLoading, setIsLoading] = useState(false)
-
-  const { showToast } = useUtils()
-
   const navigate = useNavigate()
-  const userToken = GetTokenInfo()
 
-  const updateUserFinishOnboarding = async () => {
-    const userId = userToken?._id
-    if (userId != null) {
-      try {
-        const response = await requestService({ path: `users/${userId}` })
+  const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
 
-        if (!response.ok) {
-          throw new Error('User not found')
-        }
-
-        const userFound: IUser = await response.json()
-
-        const updatedUserObject: IUser = {
-          ...userFound,
-          onboarding: {
-            ...userFound.onboarding,
-            step_number: 4,
-            description: clientOnboardingSteps[3].label ?? '',
-            type: 'client',
-            completed: true,
-          },
-        }
-
-        const updateResponse = await requestService({
-          path: `users/${userId}`,
-          method: 'PATCH',
-          body: JSON.stringify(updatedUserObject),
-        })
-
-        if (!updateResponse.ok) {
-          throw new Error('Failed to update user')
-        }
-
-        const updatedUser: IUser = await updateResponse.json()
-
-        const updatedUserData: ITokenInfo = {
-          ...userToken,
-          onboarding: {
-            ...updatedUser.onboarding,
-          },
-        }
-        SetToken(updatedUserData)
-        navigate('/client/dashboard')
-      } catch (error) {
-        console.error('Error updating user:', error)
-
-        showToast({
-          severity: 'error',
-          summary: 'Error saving changes',
-          detail: `Information could not be updated.`,
-          life: 2000,
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  const updatedOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 4,
+    description: clientOnboardingSteps[3].label ?? 'Terms and Conditions',
+    type: 'client',
+    completed: true,
   }
-
   const onSubmit = async () => {
-    setIsLoading(true)
-
-    await updateUserFinishOnboarding()
+    const success = await updateOnboardingStatus(updatedOnboardingInfo)
+    if (success === true) {
+      navigate('/client/dashboard')
+    }
   }
 
   return (
