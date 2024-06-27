@@ -147,7 +147,15 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       try {
         const response = await requestService({ method: 'POST', path: 'companies', body: JSON.stringify(requestData) })
 
-        if (!response.ok) throw new Error('Failed to add company')
+        if (!response.ok) {
+          const data = await response.json()
+          const errorMessage = data.message ?? 'Failed to add company'
+          showToast({
+            severity: 'error',
+            summary: 'Error adding company',
+            detail: errorMessage,
+          })
+        }
         const companyData: ICompany = await response.json()
 
         if (companyData?._id != null) {
@@ -166,11 +174,6 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
         }
       } catch (error) {
         console.error('Error adding company:', error)
-        showToast({
-          severity: 'error',
-          summary: 'Error adding company',
-          detail: `Company ${getValues('name')} could not be added.`,
-        })
         setIsLoading(false)
       }
     }
