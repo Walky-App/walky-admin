@@ -163,7 +163,7 @@ export const ClientOnboarding = () => {
   }, [getCompanyFacilities, getUserCompanies, getUserData, userId])
 
   useEffect(() => {
-    if (activeIndex === 2 && formData.facilities.length !== 0) {
+    if (activeIndex === 2 && formData.facilities.length !== 0 && documentUrl === '') {
       const docRecipient: IGetAcceptRecipient = {
         email: formData?.contacts[0].email,
         first_name: formData?.contacts[0].first_name,
@@ -206,6 +206,7 @@ export const ClientOnboarding = () => {
     }
   }, [
     activeIndex,
+    documentUrl,
     formData?.company_name,
     formData?.contacts,
     formData.facilities.length,
@@ -247,6 +248,12 @@ export const ClientOnboarding = () => {
             body: JSON.stringify({ contract_url: [newDocumentUrl] }),
           })
           if (!updateFacilityWithDocumentUrl.ok) throw new Error('Error updating facility with document url')
+          const updatedFacility = await updateFacilityWithDocumentUrl.json()
+
+          setFormData(prev => ({
+            ...prev,
+            ...updatedFacility,
+          }))
 
           setDocumentLoading(false)
         } catch (error) {
