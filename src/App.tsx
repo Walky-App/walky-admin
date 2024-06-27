@@ -200,7 +200,7 @@ export const App = () => {
                   <Route element={<AdminUserClientsListPage />} path="/admin/users/clients" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<AdminUserPage />}>
-                    <Route element={<AdminUserDetails />} path="/admin/users/:id" />
+                    <Route element={<AdminUserDetails />} path="/admin/users/:usertype?/:id" />
                     <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
                   </Route>
                   <Route element={<AdminCompanyListPage />} path="/admin/companies" />
