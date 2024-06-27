@@ -260,7 +260,6 @@ export const ClientJobDetailView = () => {
       })
       const data = await response.json()
       if (response.ok) {
-        //const updatedJob = await requestService({ path: `jobs/${id}`, method: 'GET' })
         setJob(data)
         showToast({
           severity: 'success',
@@ -348,7 +347,7 @@ export const ClientJobDetailView = () => {
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                       <div className="font-normal text-stone-500">Job Time</div>
                       <div className="font-normal text-black">
-                        {/* {formatToTimeUTC(job.start_time)} - {formatToTimeUTC(job.end_time)} */}
+                        {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
