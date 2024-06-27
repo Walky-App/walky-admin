@@ -30,18 +30,10 @@ import { FacilityInformationForm } from './forms/FacilityInformationForm'
 import { SignGetAcceptForm } from './forms/SignGetAcceptForm'
 
 export const clientOnboardingSteps: MenuItem[] = [
-  {
-    label: 'Company Information',
-  },
-  {
-    label: 'Facility Information',
-  },
-  {
-    label: 'Documents and Images',
-  },
-  {
-    label: 'Terms and Conditions',
-  },
+  { label: 'Company Information' },
+  { label: 'Facility Information' },
+  { label: 'Licenses and Images' },
+  { label: 'Terms and Conditions' },
 ]
 
 export const ClientOnboarding = () => {
