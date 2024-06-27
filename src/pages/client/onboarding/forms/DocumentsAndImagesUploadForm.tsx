@@ -13,6 +13,8 @@ import { Panel } from 'primereact/panel'
 import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IFacility } from '../../../../interfaces/facility'
+import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { clientOnboardingSteps } from '../ClientOnboardingPage'
@@ -54,10 +56,27 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
     event.xhr.setRequestHeader('Authorization', `Bearer ${access_token}`)
   }
 
-  const handleUploadSuccess = (event: FileUploadUploadEvent) => {
-    if (event.xhr.status === 200) {
+  const handleUploadSuccess = async (event: FileUploadUploadEvent) => {
+    if (event.xhr.status >= 200 && event.xhr.status < 300) {
       try {
         const data: IClientOnboardingFormInputs = JSON.parse(event.xhr.response)
+        const firstImageUrl = data.images?.[0]?.url
+
+        if (facilityId && firstImageUrl != null) {
+          const response = await requestService({
+            path: `facilities/${facilityId}`,
+            method: 'PATCH',
+            body: JSON.stringify({ main_image: firstImageUrl }),
+          })
+
+          if (!response.ok) throw new Error('Failed to update facility.')
+
+          const updatedFacility: IFacility = await response.json()
+          setFormData(prev => ({
+            ...prev,
+            ...updatedFacility,
+          }))
+        }
 
         showToast({
           severity: 'success',
@@ -65,26 +84,17 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
           detail: `${event.files[0].name} has been uploaded successfully.`,
           life: 2000,
         })
-
-        setFormData(prev => ({
-          ...prev,
-          licenses: data.licenses,
-          images: data.images,
-          main_image: data.images?.[0]?.url,
-        }))
       } catch (error) {
-        console.error('Error parsing server response:', error)
+        console.error('Error:', error)
         showToast({
           severity: 'error',
           summary: 'Error',
-          detail: 'Unexpected server response. Please try again.',
+          detail: 'An error occurred. Please try again.',
           life: 3000,
         })
       }
     } else {
-      console.error('Error status:', event.xhr.status)
-      console.error('Error status text:', event.xhr.statusText)
-      console.error('Error response text:', event.xhr.responseText)
+      console.error('Upload failed:', event.xhr.status, event.xhr.statusText, event.xhr.responseText)
       showToast({
         severity: 'error',
         summary: 'Upload Failed',
@@ -162,7 +172,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
                       <strong>
                         <u>State and/or City License</u>
                       </strong>{' '}
-                      PDF files to upload. Maximum file size: 5MB
+                      document image files to upload. Maximum file size: 5MB
                     </p>
                   }
                   previewWidth={200}

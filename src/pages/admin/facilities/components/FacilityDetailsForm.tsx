@@ -349,85 +349,98 @@ export const FacilityDetailsForm = ({
         </div>
         {/* Geo Fencing */}
         {facility.location_pin.length && role === 'admin' ? (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please update the facility boundaries by dragging the polygon on the map.
-              </p>
-            </div>
+          <>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
+              <div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Please update the facility boundaries by dragging the polygon on the map.
+                </p>
+              </div>
 
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">
-                <div className="mt-2">
-                  <span className="p-fluid">
-                    <PolygonMap
-                      locationPolygon={locationPolygon}
-                      locationPin={facility.location_pin}
-                      containerStyle={{ width: '100%', height: '450px' }}
-                      setLocationPolygon={e => {
-                        setFormData({ ...formData, location_polygon: e })
-                        setLocationPolygon(e)
-                      }}
-                    />
-                  </span>
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+                <div className="sm:col-span-5">
+                  <div className="mt-2">
+                    <span className="p-fluid">
+                      <PolygonMap
+                        locationPolygon={locationPolygon}
+                        locationPin={facility.location_pin}
+                        containerStyle={{ width: '100%', height: '450px' }}
+                        setLocationPolygon={e => {
+                          setFormData({ ...formData, location_polygon: e })
+                          setLocationPolygon(e)
+                        }}
+                      />
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
+              <div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Approval Process</h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Create a Polygon on the map to set the boundaries of the facility to be used for geofencing, then this
+                  will enable the approval process.
+                </p>
+              </div>
+              <div className="sm:col-span-1">
+                <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
+                  Status
+                </label>
+                <div className="mt-2">
+                  {facility ? (
+                    <select
+                      disabled={locationPolygon.length === 0}
+                      key={facility.active ? 'Active' : 'Disabled'}
+                      id="status"
+                      name="active"
+                      defaultValue={facility.active ? 'true' : 'false'}
+                      onChange={() => setFormData({ ...formData, active: !formData.active })}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Active</option>
+                      <option value="false">Disabled</option>
+                    </select>
+                  ) : null}
+                </div>
+              </div>
+              <div className="sm:col-span-1">
+                <label htmlFor="approval_status" className="block text-sm font-medium leading-6 text-gray-900">
+                  Approval Status
+                </label>
+                <div className="mt-2">
+                  {facility ? (
+                    <select
+                      disabled={locationPolygon.length === 0}
+                      key={facility.isApproved ? 'Approved' : 'Pending'}
+                      id="approval_status"
+                      name="isApproved"
+                      defaultValue={facility.isApproved ? 'true' : 'false'}
+                      onChange={() => setFormData({ ...formData, isApproved: !formData.isApproved })}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Approved</option>
+                      <option value="false">Pending</option>
+                    </select>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </>
         ) : null}
-      </div>
-      <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
-        <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Approval Process</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Create a Polygon on the map to set the boundaries of the facility to be used for geofencing, then this will
-            enable the approval process.
-          </p>
-        </div>
-        <div className="sm:col-span-1">
-          <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
-            Status
-          </label>
-          <div className="mt-2">
-            {facility ? (
-              <select
-                disabled={locationPolygon.length === 0}
-                key={facility.active ? 'Active' : 'Disabled'}
-                id="status"
-                name="active"
-                defaultValue={facility.active ? 'true' : 'false'}
-                onChange={() => setFormData({ ...formData, active: !formData.active })}
-                className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
-                <option value="true">Active</option>
-                <option value="false">Disabled</option>
-              </select>
+        <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-1 md:gap-y-10 md:pb-12">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Approval Status: {facility.isApproved ? 'Approved' : 'Pending'}
+            </h2>
+            {facility.isApproved ? (
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Administrators are reviewing your facility information. You will be notified when your facility is
+                approved to start booking jobs.
+              </p>
             ) : null}
           </div>
         </div>
-
-        {role === 'admin' ? (
-          <div className="sm:col-span-1">
-            <label htmlFor="approval_status" className="block text-sm font-medium leading-6 text-gray-900">
-              Approval Status
-            </label>
-            <div className="mt-2">
-              {facility ? (
-                <select
-                  disabled={locationPolygon.length === 0}
-                  key={facility.isApproved ? 'Approved' : 'Pending'}
-                  id="approval_status"
-                  name="isApproved"
-                  defaultValue={facility.isApproved ? 'true' : 'false'}
-                  onChange={() => setFormData({ ...formData, isApproved: !formData.isApproved })}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
-                  <option value="true">Approved</option>
-                  <option value="false">Pending</option>
-                </select>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
       </div>
       <div className="mt-6 flex items-center justify-between gap-x-6">
         {role === 'admin' ? (
