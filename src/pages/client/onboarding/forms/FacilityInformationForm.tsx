@@ -166,6 +166,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       zip: data.zip,
       country: data.country,
       contacts: data.contacts,
+      location_pin: data.location_pin,
     }
 
     const requestData = {
@@ -199,7 +200,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
         if (updatedFacilityData?._id != null) {
           facilityId = updatedFacilityData._id
 
-          setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
+          setFormData(prev => ({ ...prev, ...facilityData, facilities: [facilityId] }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 
@@ -225,7 +226,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
 
         if (data?._id != null) {
           facilityId = data._id
-          setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
+          setFormData(prev => ({ ...prev, ...facilityData, facilities: [facilityId] }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 
