@@ -195,7 +195,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           body: JSON.stringify(updatedFacility),
         })
         if (!response.ok) throw new Error('Failed to update facility')
-        const updatedFacilityData = await response.json()
+        const updatedFacilityData: IFacility = await response.json()
 
         if (updatedFacilityData?._id != null) {
           setFormData(prev => ({ ...prev, ...updatedFacilityData }))
@@ -220,7 +220,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       try {
         const response = await requestService({ path: 'facilities', method: 'POST', body: JSON.stringify(requestData) })
         if (!response.ok) throw new Error('Error adding facility')
-        const createdFacilityData = await response.json()
+        const createdFacilityData: IFacility = await response.json()
 
         if (createdFacilityData?._id != null) {
           setFormData(prev => ({ ...prev, ...createdFacilityData }))
