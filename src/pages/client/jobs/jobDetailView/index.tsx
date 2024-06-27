@@ -188,7 +188,7 @@ export const ClientJobDetailView = () => {
   }
 
   function getUserShiftsLengthByDate(dateString: string): number {
-    const [day, month, year] = dateString.split('/')
+    const [month, day, year] = dateString.split('/')
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
     const formattedDate = date.toLocaleDateString('en-US', {
       day: '2-digit',
@@ -210,7 +210,7 @@ export const ClientJobDetailView = () => {
   }
 
   function getEmployeeListByShift(dateString: string): UserShiftsPopulate[] {
-    const [day, month, year] = dateString.split('/')
+    const [month, day, year] = dateString.split('/')
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
     const formattedDate = date.toLocaleDateString('en-US', {
       day: '2-digit',
@@ -231,7 +231,7 @@ export const ClientJobDetailView = () => {
   }
 
   function getShiftByDate(dateString: string): string {
-    const [day, month, year] = dateString.split('/')
+    const [month, day, year] = dateString.split('/')
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
     const formattedDate = date.toLocaleDateString('en-US', {
       day: '2-digit',
