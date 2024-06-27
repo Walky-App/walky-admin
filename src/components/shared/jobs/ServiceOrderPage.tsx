@@ -1,3 +1,8 @@
+import { useState } from 'react'
+
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+
 const projects = [
   {
     id: 1,
@@ -11,8 +16,14 @@ const projects = [
   },
   // More projects...
 ]
-
+const creditCards = [
+  { label: 'Visa **** 1234', value: 'visa' },
+  { label: 'MasterCard **** 5678', value: 'mastercard' },
+  { label: 'Amex **** 9012', value: 'amex' },
+]
 export const ServiceOrderPage = () => {
+  const [selectedCard, setSelectedCard] = useState(null)
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -35,7 +46,7 @@ export const ServiceOrderPage = () => {
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
             type="button"
-            className="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+            className="focus-visible:ou3tline-green-600 block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
             Print
           </button>
         </div>
@@ -94,6 +105,16 @@ export const ServiceOrderPage = () => {
               </tr>
             ))}
           </tbody>
+          <div className="mt-2 flex">
+            <Dropdown
+              value={selectedCard}
+              options={creditCards}
+              onChange={e => setSelectedCard(e.value)}
+              placeholder="Select a Credit Card"
+            />
+
+            <Button label="Authorize Payment" />
+          </div>
           <tfoot>
             <tr>
               <th
