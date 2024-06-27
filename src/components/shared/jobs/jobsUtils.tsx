@@ -9,6 +9,7 @@ import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
 import { type IFacility } from '../../../interfaces/facility'
+import { type StatesSettingsDocument } from '../../../interfaces/setting'
 import { requestService } from '../../../services/requestServiceNew'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
@@ -76,14 +77,18 @@ export const renderFacilityController = (
   errors: FieldErrors<JobFormDefaultValues>,
   facilities: IFacility[],
   setValue: UseFormSetValue<JobFormDefaultValues>,
+  setSettings: (settings: StatesSettingsDocument | null) => void,
   disabled?: boolean,
 ) => {
   const selectFacility = async (facilityId: string) => {
     const facility = facilities.find(facility => facility._id === facilityId)
-    const response = await requestService({ path: `settings/${facility?.state}` })
-    const data = await response.json()
-    if (response.ok) {
-      setValue('hourly_rate', data.minimun_wage)
+    if (facility) {
+      const response = await requestService({ path: `settings/${facility.state}` })
+      const data = await response.json()
+      if (response.ok) {
+        setValue('hourly_rate', data.minimun_wage)
+        setSettings(data)
+      }
     }
   }
 

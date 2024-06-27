@@ -130,6 +130,7 @@ export const ClientOnboarding = () => {
         let facilityFormData: IFacility = {} as IFacility
         if (facilitiesData != null && facilitiesData.length > 0) {
           facilityFormData = createFacilityFormData(facilitiesData[0])
+          setDocumentUrl(prev => facilitiesData[0]?.contract_url?.[0] ?? prev)
         }
 
         setFormData(prev => ({
@@ -236,7 +237,17 @@ export const ClientOnboarding = () => {
             recipientsData = await response.json()
           }
 
-          setDocumentUrl(recipientsData.document_url)
+          const newDocumentUrl = recipientsData.document_url
+
+          setDocumentUrl(newDocumentUrl)
+
+          const updateFacilityWithDocumentUrl = await requestService({
+            path: `facilities/${formData.facilities[0]}`,
+            method: 'PATCH',
+            body: JSON.stringify({ contract_url: [newDocumentUrl] }),
+          })
+          if (!updateFacilityWithDocumentUrl.ok) throw new Error('Error updating facility with document url')
+
           setDocumentLoading(false)
         } catch (error) {
           console.error('Error fetching document recipients:', error)
@@ -247,7 +258,7 @@ export const ClientOnboarding = () => {
     } else {
       setDocumentLoading(false)
     }
-  }, [activeIndex, documentData, setDocumentUrl])
+  }, [activeIndex, documentData?.id, formData.facilities])
 
   const onboardingSteps = [
     <Fragment key="step1">
@@ -256,7 +267,7 @@ export const ClientOnboarding = () => {
     </Fragment>,
     <FacilityInformationForm key="step2" step={activeIndex} setStep={setActiveIndex} />,
     <DocumentsAndImagesUploadForm key="step3" step={activeIndex} setStep={setActiveIndex} />,
-    <SignGetAcceptForm key="step4" step={activeIndex} setStep={setActiveIndex} />,
+    <SignGetAcceptForm key="step4" />,
   ]
 
   return (

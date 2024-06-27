@@ -4,14 +4,14 @@ import { Button } from 'primereact/button'
 
 import { GetAcceptIframe } from '../../../../components/shared/GetAccept/GetAcceptIframe'
 import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
-import { FormDataContext, type StepProps } from '../clientOnboardingUtils'
+import { FormDataContext } from '../clientOnboardingUtils'
 import { FinishOnboardingDialog } from '../components/FinishOnboardingDialog'
 
 export function joinTruthyStrings(strings: (string | undefined)[], separator: string): string {
   return strings.filter(Boolean).join(separator)
 }
 
-export const SignGetAcceptForm = ({ step, setStep }: StepProps) => {
+export const SignGetAcceptForm = () => {
   const [visible, setVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -61,8 +61,7 @@ export const SignGetAcceptForm = ({ step, setStep }: StepProps) => {
         </div>
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
-        <Button severity="secondary" label="Back" outlined onClick={() => setStep(step - 1)} />
-        <Button label="Finish" onClick={handleSaveButton} loading={isLoading} /*  disabled={documentLoading} */ />
+        <Button label="Finish" onClick={handleSaveButton} loading={isLoading} disabled={documentLoading} />
       </div>
     </>
   )
