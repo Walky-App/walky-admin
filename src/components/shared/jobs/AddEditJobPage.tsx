@@ -70,7 +70,7 @@ export const AddEditJobPage = () => {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
-  const { settings, fetchSettings } = useSettings()
+  const { settings, setSettings } = useSettings()
   const role = roleChecker()
   const user_id = GetTokenInfo()._id
 
@@ -93,10 +93,6 @@ export const AddEditJobPage = () => {
     watch,
     setValue,
   } = useForm({ values })
-
-  useEffect(() => {
-    fetchSettings()
-  }, [fetchSettings])
 
   useEffect(() => {
     const getFacilities = async () => {
@@ -285,7 +281,7 @@ export const AddEditJobPage = () => {
     return (
       <div className="sm:col-span-3">
         <div className="flex flex-col space-y-2 rounded-md border border-gray-300 p-4">
-          <h3 className="text-base font-semibold leading-6 text-gray-900">Preliminary Pricing</h3>
+          <h3 className="text-base font-semibold leading-6 text-gray-900">Service Order Preview</h3>
           <ul className="list-none space-y-1">
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Employee Pay Rate: </span>
@@ -364,7 +360,7 @@ export const AddEditJobPage = () => {
               <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
               {facilities ? (
                 <div className="sm:col-span-3">
-                  {renderFacilityController(control, errors, facilities, setValue, !!jobFound)}
+                  {renderFacilityController(control, errors, facilities, setValue, setSettings, !!jobFound)}
                 </div>
               ) : null}
             </div>
