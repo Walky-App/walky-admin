@@ -7,12 +7,15 @@ import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
+import { roleChecker } from '../../../utils/roleChecker'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityActivity = () => {
   const { facilityId } = useParams()
   const [facility, setFacility] = useState<IFacility>()
   const [logs, setLogs] = useState<any>([])
+  const role = roleChecker()
 
   useEffect(() => {
     const getFacility = async () => {
@@ -48,7 +51,9 @@ export const AdminFacilityActivity = () => {
 
   return (
     <div>
-      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+      {facility ? (
+        <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <GlobalTable data={logs} columns={memoFacilitiesColumns} />
     </div>
   )

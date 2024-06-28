@@ -79,7 +79,9 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
                         <NewspaperIcon className="h-5" />
-                        <div className="flex h-5 items-center font-medium text-black">{module.units?.length} Units</div>
+                        <div className="flex h-5 items-center font-medium text-black">
+                          {module.units?.length} Videos
+                        </div>
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
@@ -90,7 +92,7 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                     <div className="line-clamp-2 h-12 text-stone-500">{module.description}</div>
                   </div>
                   <div className="m-8 flex-col items-center md:m-3">
-                    Units Completed
+                    Videos Completed
                     <CircularProgressBar
                       progressData={{
                         total: module.units?.length || 0,
