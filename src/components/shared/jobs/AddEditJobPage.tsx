@@ -269,9 +269,9 @@ export const AddEditJobPage = () => {
 
     const totalOvertime = overtimeHours * overtimeRate * jobDatesLength * vacancy
 
-    const totalSupervisorNormalFee = vacancy >= 5 ? normalHours * hourlySupervisorFee * jobDatesLength : 0
+    const totalSupervisorNormalFee = vacancy >= 6 ? normalHours * hourlySupervisorFee * jobDatesLength : 0
     const totalSupervisorOvertimeFee =
-      vacancy >= 5 && totalHours > 8 ? overtimeHours * overtimeSupervisorRate * jobDatesLength : 0
+      vacancy >= 6 && totalHours > 8 ? overtimeHours * overtimeSupervisorRate * jobDatesLength : 0
 
     const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
     setTotalSupervisorFee(newTotalSupervisorFee)
@@ -324,7 +324,7 @@ export const AddEditJobPage = () => {
               <span className="text-sm font-medium leading-5 text-gray-600">Number Of Selected Working Days: </span>
               <span className="text-sm leading-5 text-gray-900">{jobDatesLength}</span>
             </li>
-            {vacancy >= 5 ? (
+            {vacancy >= 6 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">Supervisor Fees: </span>
                 <span className="text-sm leading-5 text-gray-900">${totalSupervisorFee.toFixed(2)}</span>

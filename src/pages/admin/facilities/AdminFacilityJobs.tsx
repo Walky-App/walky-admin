@@ -7,7 +7,9 @@ import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
+import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
@@ -20,6 +22,7 @@ export const AdminFacilityJobs = () => {
   const [facility, setFacility] = useState<IFacility>()
   const [facilityJobs, setFacilityJobs] = useState<any>([])
   const [isLoading, setIsLoading] = useState(true)
+  const role = roleChecker()
 
   const navigate = useNavigate()
 
@@ -111,7 +114,9 @@ export const AdminFacilityJobs = () => {
 
   return (
     <>
-      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+      {facility ? (
+        <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <div>
         <button
           type="button"

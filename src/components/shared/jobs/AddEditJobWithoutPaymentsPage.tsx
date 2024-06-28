@@ -58,9 +58,11 @@ export const AddEditJobWithoutPaymentsPage = () => {
   const [isStartTimeValid, setIsStartTimeValid] = useState(true)
   const [isEndTimeValid, setIsEndTimeValid] = useState(true)
   const [totalHours, setTotalHours] = useState(0)
-  const [preliminaryPricing, setPreliminaryPricing] = useState(0)
+  const [normalHours, setNormalHours] = useState(0)
+  const [overtimeHours, setOvertimeHours] = useState(0)
   const [totalSupervisorFee, setTotalSupervisorFee] = useState(0)
   const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
+  const [totalOvertime, setTotalOvertime] = useState(0)
 
   const navigate = useNavigate()
   const params = useParams()
@@ -72,6 +74,7 @@ export const AddEditJobWithoutPaymentsPage = () => {
   const user_id = GetTokenInfo()._id
 
   const minimun_wage = settings?.minimun_wage as number
+  const overTimeRateMultiplier = settings?.overtime_rate.overtime_rate as number
   const adminCosts = settings?.admin_costs.total as number
   const ourFee = settings?.our_fee as number
   const processingFee = settings?.processing_fee as number
@@ -260,20 +263,54 @@ export const AddEditJobWithoutPaymentsPage = () => {
   const hourlyRate = useWatch({ name: 'hourly_rate', control })
 
   useEffect(() => {
-    const newTotalSupervisorFee = vacancy >= 5 ? hourlySupervisorFee * totalHours * jobDatesLength : 0
+    const overtimeHours = totalHours > 8 ? totalHours - 8 : 0
+    setOvertimeHours(overtimeHours)
+    const normalHours = totalHours > 8 ? 8 : totalHours
+    setNormalHours(normalHours)
+
+    const overtimeRate = hourlyRate * overTimeRateMultiplier
+    const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier
+
+    const totalOvertime = overtimeHours * overtimeRate * jobDatesLength * vacancy
+
+    const totalSupervisorNormalFee = vacancy >= 6 ? normalHours * hourlySupervisorFee * jobDatesLength : 0
+    const totalSupervisorOvertimeFee =
+      vacancy >= 6 && totalHours > 8 ? overtimeHours * overtimeSupervisorRate * jobDatesLength : 0
+
+    const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
     setTotalSupervisorFee(newTotalSupervisorFee)
 
-    const baseAmount = hourlyRate * vacancy * totalHours * jobDatesLength + newTotalSupervisorFee
+    const baseAmount =
+      hourlyRate * vacancy * (normalHours + overtimeHours) * jobDatesLength + newTotalSupervisorFee + totalOvertime
+    setTotalOvertime(totalOvertime)
 
     const newPreliminaryPricing = baseAmount * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
-    setPreliminaryPricing(newPreliminaryPricing)
 
     const totalOfAllTempsHours = totalHours * jobDatesLength * vacancy
     const hourlyRateWithFees = newPreliminaryPricing / totalOfAllTempsHours
     setHourlyRateWithFees(hourlyRateWithFees)
-  }, [hourlyRate, vacancy, jobDatesLength, totalHours, hourlySupervisorFee, adminCosts, ourFee, processingFee])
+  }, [
+    hourlyRate,
+    vacancy,
+    jobDatesLength,
+    totalHours,
+    hourlySupervisorFee,
+    adminCosts,
+    ourFee,
+    processingFee,
+    overTimeRateMultiplier,
+  ])
 
   const renderPricingTable = () => {
+    const baseAmount =
+      hourlyRate * vacancy * (normalHours + overtimeHours) * jobDatesLength + totalSupervisorFee + totalOvertime
+
+    const adminCostAmount = (baseAmount * adminCosts) / 100
+    const ourFeeAmount = (baseAmount * ourFee) / 100
+    const processingFeeAmount = (baseAmount * processingFee) / 100
+
+    const totalEstimatedCost = baseAmount + adminCostAmount + ourFeeAmount + processingFeeAmount
+
     return (
       <div className="sm:col-span-3">
         <div className="flex flex-col space-y-2 rounded-md border border-gray-300 p-4">
@@ -281,26 +318,31 @@ export const AddEditJobWithoutPaymentsPage = () => {
           <ul className="list-none space-y-1">
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Temp Pay Rate: </span>
-              <span className="text-sm leading-5 text-gray-900">${hourlyRate.toFixed(2)}</span> //already saving
+              <span className="text-sm leading-5 text-gray-900">${hourlyRate.toFixed(2)}</span>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Number Of Vacancies: </span>
-              <span className="text-sm leading-5 text-gray-900">{vacancy}</span> //already saving
+              <span className="text-sm leading-5 text-gray-900">{vacancy}</span>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Number Of Selected Working Days: </span>
-              <span className="text-sm leading-5 text-gray-900">{jobDatesLength}</span> //adready saving
+              <span className="text-sm leading-5 text-gray-900">{jobDatesLength}</span>
             </li>
-            {vacancy >= 5 ? (
+            {vacancy >= 6 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">Supervisor Fees: </span>
-                <span className="text-sm leading-5 text-gray-900">${totalSupervisorFee.toFixed(2)}</span> // save if
-                exists
+                <span className="text-sm leading-5 text-gray-900">${totalSupervisorFee.toFixed(2)}</span>
+              </li>
+            ) : null}
+            {totalHours > 8 ? (
+              <li>
+                <span className="text-sm font-medium leading-5 text-gray-600">Total Overtime Fees: </span>
+                <span className="text-sm leading-5 text-gray-900">${totalOvertime.toFixed(2)}</span>
               </li>
             ) : null}
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Total Hours Per Day: </span>
-              <span className="text-sm leading-5 text-gray-900">{totalHours.toFixed(2)}</span> //already saving
+              <span className="text-sm leading-5 text-gray-900">{totalHours.toFixed(2)}</span>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Total of All Temps Hours: </span>
@@ -309,55 +351,36 @@ export const AddEditJobWithoutPaymentsPage = () => {
               </span>
             </li>
             <li>
-              <span className="text-sm font-medium leading-5 text-gray-600">Total Of All Temps Hours * Pay Rate: </span>
-              <span className="text-sm leading-5 text-gray-900">
-                ${(totalHours * vacancy * jobDatesLength * hourlyRate + totalSupervisorFee).toFixed(2)}
-              </span>
+              <span className="text-sm font-medium leading-5 text-gray-600">Total Base Amount: </span>
+              <span className="text-sm leading-5 text-gray-900">${baseAmount.toFixed(2)}</span>
             </li>
-
             <li>
               <div className="flex items-center">
                 <span className="mr-1 text-sm font-medium leading-5 text-gray-600">Admin Costs: </span>
-                <span className="mr-2 text-sm leading-5 text-gray-900">
-                  {' '}
-                  $
-                  {(
-                    ((totalHours * vacancy * jobDatesLength * hourlyRate + totalSupervisorFee) * adminCosts) /
-                    100
-                  ).toFixed(2)}{' '}
-                </span>
+                <span className="mr-2 text-sm leading-5 text-gray-900">${adminCostAmount.toFixed(2)}</span>
                 <HtInfoTooltip message="Employer tax payments, fringe benefits, recruiting and hiring costs, training and orientation, termination costs, administrative costs, healthcare, and all employer responsibilities for insurance. This ensures comprehensive employment management and legal compliance." />
               </div>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Our Fee: </span>
-              <span className="text-sm leading-5 text-gray-900">
-                $
-                {(((totalHours * vacancy * jobDatesLength * hourlyRate + totalSupervisorFee) * ourFee) / 100).toFixed(
-                  2,
-                )}
-              </span>
+              <span className="text-sm leading-5 text-gray-900">${ourFeeAmount.toFixed(2)}</span>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Processing Fee: </span>
-              <span className="text-sm leading-5 text-gray-900">
-                $
-                {(
-                  ((totalHours * vacancy * jobDatesLength * hourlyRate + totalSupervisorFee) * processingFee) /
-                  100
-                ).toFixed(2)}
-              </span>
+              <span className="text-sm leading-5 text-gray-900">${processingFeeAmount.toFixed(2)}</span>
             </li>
 
-            <li>
-              <span className="text-sm font-medium leading-5 text-gray-600">
-                Estimated total Per Hour (fees Included):
-              </span>
-              <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
-            </li>
+            {totalEstimatedCost !== 0 ? (
+              <li>
+                <span className="text-sm font-medium leading-5 text-gray-600">
+                  Estimated total Per Hour (fees Included):
+                </span>
+                <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
+              </li>
+            ) : null}
             <li className="font-medium leading-tight text-gray-900">
               <span className="text-sm">Total Estimated Cost (fees Included): </span>
-              <span className="text-sm font-semibold">${preliminaryPricing.toFixed(2)}</span>
+              <span className="text-sm font-semibold">${totalEstimatedCost.toFixed(2)}</span>
             </li>
           </ul>
         </div>

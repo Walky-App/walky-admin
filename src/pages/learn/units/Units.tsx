@@ -68,8 +68,8 @@ export const Units = () => {
   }
   const pages = [
     { name: 'Categories', href: '/learn', current: false },
-    { name: 'Modules', href: `/learn/category/${module?.category._id}`, current: false },
-    { name: 'Units', href: '#', current: true },
+    { name: 'Courses', href: `/learn/category/${module?.category._id}`, current: false },
+    { name: 'Videos', href: '#', current: true },
   ]
 
   return (
