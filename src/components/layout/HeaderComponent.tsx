@@ -29,13 +29,12 @@ export interface UserNavigationItem {
 export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
   const { avatarImageUrl, setAvatarImageUrl } = useUtils()
-
   const role = roleChecker()
   const tokenInfo = GetTokenInfo()
 
   const userIsOnboarded = tokenInfo?.onboarding?.completed
 
-  const userNavigation: UserNavigationItem[] = [{ name: 'Your profile', href: profilePath }]
+  const userNavigation: UserNavigationItem[] = [{ name: 'My Profile', href: profilePath }]
 
   const navigate = useNavigate()
 

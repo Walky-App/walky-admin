@@ -328,6 +328,11 @@ export const useUpdateOnboardingStatus = () => {
             ...userToken,
             onboarding: {
               ...updatedUser.onboarding,
+              step_number: onboardingInfo.step_number,
+              description: onboardingInfo.description,
+              type: onboardingInfo.type,
+              completed: onboardingInfo.completed,
+              
             },
           }
           SetToken(updatedUserData)
