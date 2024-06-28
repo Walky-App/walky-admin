@@ -9,6 +9,8 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { RequestService } from '../../../services/RequestService'
+import { roleChecker } from '../../../utils/roleChecker'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityContacts = () => {
@@ -19,6 +21,7 @@ export const AdminFacilityContacts = () => {
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false)
   const [openModal, setOpenModal] = useState<boolean>(false)
   const [facilityFound, setFacilityFound] = useState<any>({})
+  const role = roleChecker()
 
   useEffect(() => {
     const getFacilityContacts = async () => {
@@ -74,7 +77,9 @@ export const AdminFacilityContacts = () => {
 
   return (
     <>
-      {facilityFound ? <SubHeader data={facilityFound} links={adminFacilitiesLinks} /> : null}
+      {facilityFound ? (
+        <SubHeader data={facilityFound} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold leading-6 text-gray-900">Facility contacts</h1>
