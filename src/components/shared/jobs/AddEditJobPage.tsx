@@ -363,12 +363,15 @@ export const AddEditJobPage = () => {
               <span className="text-sm font-medium leading-5 text-gray-600">Processing Fee: </span>
               <span className="text-sm leading-5 text-gray-900">${processingFeeAmount.toFixed(2)}</span>
             </li>
-            <li>
-              <span className="text-sm font-medium leading-5 text-gray-600">
-                Estimated total Per Hour (fees Included):
-              </span>
-              <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
-            </li>
+
+            {totalEstimatedCost !== 0 ? (
+              <li>
+                <span className="text-sm font-medium leading-5 text-gray-600">
+                  Estimated total Per Hour (fees Included):
+                </span>
+                <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
+              </li>
+            ) : null}
             <li className="font-medium leading-tight text-gray-900">
               <span className="text-sm">Total Estimated Cost (fees Included): </span>
               <span className="text-sm font-semibold">${totalEstimatedCost.toFixed(2)}</span>
