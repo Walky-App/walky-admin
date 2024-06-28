@@ -43,6 +43,8 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       icon: <FaUserGroup />,
       subLinks: [
         { name: 'All Users', href: '/admin/users' },
+        { name: 'Employees', href: '/admin/users/employees' },
+        { name: 'Clients', href: '/admin/users/clients' },
         { name: 'Invite User', href: '/admin/users/invite' },
       ],
     },
@@ -74,6 +76,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       subLinks: [
         { name: 'All Jobs', href: '/admin/jobs' },
         { name: 'Add Job', href: '/admin/jobs/new' },
+        { name: 'Add Job (without-payments)', href: '/admin/jobs/new-without-payments' },
       ],
     },
     {
