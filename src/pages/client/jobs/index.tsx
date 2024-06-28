@@ -33,6 +33,7 @@ export const ClientJobs = () => {
     },
     { Header: 'Job', accessor: 'title' },
     { Header: 'Facility', width: '300px', accessor: 'facility.name' },
+    { Header: 'UID', width: '300px', accessor: (d: IJob) => d.uid || 0 },
     {
       Header: 'Status',
       width: '100px',
