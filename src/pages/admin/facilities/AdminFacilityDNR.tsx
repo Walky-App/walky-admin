@@ -15,6 +15,8 @@ import { type IUser } from '../../../interfaces/User'
 import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { roleChecker } from '../../../utils/roleChecker'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 interface IDNRFormValues {
@@ -27,6 +29,7 @@ export const AdminFacilityDNR = () => {
   const { facilityId } = useParams()
   const [facility, setFacility] = useState<IFacility>()
   const [employees, setEmployees] = useState<IUser[]>([])
+  const role = roleChecker()
 
   useEffect(() => {
     const getFacilityWithDNRusers = async () => {
@@ -147,7 +150,9 @@ export const AdminFacilityDNR = () => {
 
   return (
     <>
-      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+      {facility ? (
+        <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">

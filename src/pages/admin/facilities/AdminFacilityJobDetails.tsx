@@ -8,6 +8,8 @@ import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
+import { roleChecker } from '../../../utils/roleChecker'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityJobDetails = () => {
@@ -15,6 +17,7 @@ export const AdminFacilityJobDetails = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const [facility, setFacility] = useState<IFacility>()
   const [job, setJob] = useState<IJob>()
+  const role = roleChecker()
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -96,7 +99,9 @@ export const AdminFacilityJobDetails = () => {
 
   return (
     <>
-      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+      {facility ? (
+        <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <form onSubmit={handleForm}>
         <div className="space-y-12">
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
