@@ -232,8 +232,10 @@ export const AddEditJobPage = () => {
       try {
         const response = await requestService({ path: 'jobs', method: 'POST', body: JSON.stringify(requestData) })
         if (!response.ok) {
-          const message = await response.text()
-          throw new Error(message)
+          const data = await response.json()
+          const message = data.message instanceof Error ? data.message.message : data.message
+          showToast({ severity: 'error', summary: 'Error', detail: message })
+          return
         }
 
         showToast({

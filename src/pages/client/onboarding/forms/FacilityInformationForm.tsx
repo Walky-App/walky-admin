@@ -166,6 +166,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       zip: data.zip,
       country: data.country,
       contacts: data.contacts,
+      location_pin: data.location_pin,
     }
 
     const requestData = {
@@ -173,7 +174,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       company_id: formValues.company_id,
     }
 
-    let facilityId = formData?.facilities[0]
+    const facilityId = formData?.facilities[0]
 
     if (facilityId) {
       try {
@@ -194,12 +195,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           body: JSON.stringify(updatedFacility),
         })
         if (!response.ok) throw new Error('Failed to update facility')
-        const updatedFacilityData = await response.json()
+        const updatedFacilityData: IFacility = await response.json()
 
         if (updatedFacilityData?._id != null) {
-          facilityId = updatedFacilityData._id
-
-          setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
+          setFormData(prev => ({ ...prev, ...updatedFacilityData }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 
@@ -221,11 +220,10 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       try {
         const response = await requestService({ path: 'facilities', method: 'POST', body: JSON.stringify(requestData) })
         if (!response.ok) throw new Error('Error adding facility')
-        const data = await response.json()
+        const createdFacilityData: IFacility = await response.json()
 
-        if (data?._id != null) {
-          facilityId = data._id
-          setFormData(prev => ({ ...prev, facilities: [facilityId], ...facilityData }))
+        if (createdFacilityData?._id != null) {
+          setFormData(prev => ({ ...prev, ...createdFacilityData }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 

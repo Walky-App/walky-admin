@@ -131,7 +131,7 @@ export const AdminUserDetails = () => {
                   <select
                     id="status"
                     name="active"
-                    defaultValue={formUser.onboarding.completed?.toString() ?? 'false'}
+                    defaultValue={formUser.onboarding?.completed?.toString() ?? 'false'}
                     onChange={() =>
                       setFormUser({
                         ...formUser,
