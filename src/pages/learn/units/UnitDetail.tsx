@@ -59,8 +59,8 @@ export const UnitDetail = () => {
 
   const pages = [
     { name: 'Categories', href: '/learn', current: false },
-    { name: 'Modules', href: `/learn/category/${module?.category._id}`, current: false },
-    { name: 'Units', href: `/learn/module/${module?._id}`, current: false },
+    { name: 'Courses', href: `/learn/category/${module?.category._id}`, current: false },
+    { name: 'Videos', href: `/learn/module/${module?._id}`, current: false },
     { name: `${unit?.title}`, href: `#`, current: true },
   ]
 
