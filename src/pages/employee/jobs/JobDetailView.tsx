@@ -623,6 +623,25 @@ export const JobDetailView = () => {
                     </div>
                   </>
                 ) : null}
+                {/* Job Tips */}
+                {isUserApprovedApplicant() && job.job_tips ? (
+                  <>
+                    <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex items-start gap-2">
+                        <i className="pi pi-info-circle" />
+                        <span className="text-base font-medium text-black">
+                          Job Tips:
+                          <ul className="font-normal">
+                            {job.job_tips.map((tip, index) => (
+                              <li key={index}>{tip}</li>
+                            ))}
+                          </ul>
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
                 {/* Divider */}
                 <hr className="mt-3 h-px w-full bg-zinc-100" />
                 <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
