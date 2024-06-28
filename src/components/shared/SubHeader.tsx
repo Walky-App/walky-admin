@@ -96,7 +96,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
     link.disabled === true ? null : (
       <span key={link.id} className="hidden xs:block">
         <NavLink
-          to={`${basePath}/${data?._id}${link.href}`}
+          to={`/${basePath}/${data?._id}${link.href}`}
           end
           className={({ isActive }) =>
             cn('p-button p-button-sm', { 'p-button-secondary p-button-outlined': !isActive })
