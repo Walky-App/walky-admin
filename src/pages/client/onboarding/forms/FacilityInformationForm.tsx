@@ -174,9 +174,9 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       company_id: formValues.company_id,
     }
 
-    const facilityId = formData?.facilities[0]
+    const facilityId = formValues?.facilities[0]
 
-    if (facilityId) {
+    if (facilityId != null) {
       try {
         const res = await requestService({ path: `facilities/${facilityId}` })
         if (!res.ok) throw new Error('Error fetching facility details')
@@ -198,7 +198,8 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
         const updatedFacilityData: IFacility = await response.json()
 
         if (updatedFacilityData?._id != null) {
-          setFormData(prev => ({ ...prev, ...updatedFacilityData }))
+          const updatedFacilityId = updatedFacilityData._id
+          setFormData(prev => ({ ...prev, ...updatedFacilityData, facilities: [updatedFacilityId] }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 
@@ -223,7 +224,8 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
         const createdFacilityData: IFacility = await response.json()
 
         if (createdFacilityData?._id != null) {
-          setFormData(prev => ({ ...prev, ...createdFacilityData }))
+          const createdFacilityId = createdFacilityData._id
+          setFormData(prev => ({ ...prev, ...createdFacilityData, facilities: [createdFacilityId] }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 
