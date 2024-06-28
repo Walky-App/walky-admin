@@ -336,8 +336,11 @@ export const AddEditJobWithoutPaymentsPage = () => {
             ) : null}
             {totalHours > 8 ? (
               <li>
-                <span className="text-sm font-medium leading-5 text-gray-600">Total Overtime Fees: </span>
-                <span className="text-sm leading-5 text-gray-900">${totalOvertime.toFixed(2)}</span>
+                <div className="flex items-center">
+                  <span className="mr-1 text-sm font-medium leading-5 text-gray-600">Total Overtime Fees: </span>
+                  <span className="mr-2 text-sm leading-5 text-gray-900">${totalOvertime.toFixed(2)}</span>
+                  <HtInfoTooltip message="Avoid overtime by extending days or reducing hours below 8hrs." />
+                </div>
               </li>
             ) : null}
             <li>
