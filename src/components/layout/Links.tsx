@@ -76,6 +76,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       subLinks: [
         { name: 'All Jobs', href: '/admin/jobs' },
         { name: 'Add Job', href: '/admin/jobs/new' },
+        { name: 'Add Job (without-payments)', href: '/admin/jobs/new-without-payments' },
       ],
     },
     {
