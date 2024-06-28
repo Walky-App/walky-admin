@@ -14,6 +14,8 @@ import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
+import { roleChecker } from '../../../utils/roleChecker'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 const statuses = {
@@ -27,6 +29,7 @@ export const AdminFacilityLicenses = () => {
   const [uploading, setUploading] = useState(false)
   const [files, setFiles] = useState<any>([])
   const { facilityId } = useParams()
+  const role = roleChecker()
 
   const filesInputRef = useRef<any>()
   const { showToast } = useUtils()
@@ -92,7 +95,9 @@ export const AdminFacilityLicenses = () => {
 
   return (
     <>
-      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+      {facility ? (
+        <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <input
         ref={filesInputRef}
         className="hidden"
