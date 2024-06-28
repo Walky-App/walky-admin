@@ -258,6 +258,7 @@ export const FacilityDetailsForm = ({
               <InputText
                 name="sqft"
                 id="sqft"
+                value={formData?.sqft?.toString()}
                 onChange={handleFormUpdate}
                 keyfilter={/[0-9]/}
                 min={0}
@@ -272,10 +273,12 @@ export const FacilityDetailsForm = ({
                 <HtInputLabel htmlFor="notes" labelText="Arrival notes" />
               </HtInfoTooltip>
               <InputTextarea
+                name="notes"
                 id="notes"
                 rows={4}
                 cols={30}
                 maxLength={500}
+                value={formData.notes}
                 onChange={e => setFormData(prevState => ({ ...prevState, notes: e.target.value }))}
                 className={classNames({ 'p-invalid': false }, 'w- mt-2')}
                 autoComplete="off"
