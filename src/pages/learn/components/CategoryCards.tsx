@@ -72,8 +72,14 @@ export const CategoryCards = ({
 
   const categoryCompleted = (_id: string) => {
     try {
-      const category = record.categories.find(data => data.category === _id)
-      return category ? category.is_completed : false
+      const categoryCompletedLength = record.categories.find(data => data.category === _id)?.modules.length
+      const categoryCurrentLength = category.find(data => data._id === _id)?.modules_number
+      const categoryTemp = record.categories.find(data => data.category === _id)
+      if (categoryTemp?.is_completed && categoryCompletedLength === categoryCurrentLength) {
+        return true
+      } else {
+        return false
+      }
     } catch (error) {
       return false
     }
@@ -86,7 +92,14 @@ export const CategoryCards = ({
 
   const isCategoryDisabled = (index: number) => {
     if (index === 0) return false
-    return !completionMap[categoriesFilter()[index - 1]._id]
+    const category_id = categoriesFilter()[index - 1]._id
+    const categoryCompletedLength = record.categories.find(data => data.category === category_id)?.modules.length
+    const categoryCurrentLength = category.find(data => data._id === category_id)?.modules_number
+    if (categoryCompletedLength === categoryCurrentLength && completionMap[category_id]) {
+      return false
+    } else {
+      return true
+    }
   }
 
   const filterCurrentCategory = (categoryId: string): string | undefined => {
