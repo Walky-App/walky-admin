@@ -7,14 +7,12 @@ import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect
 import { classNames } from 'primereact/utils'
 
 import { EmployeeFinishOnboardingDialog } from '.'
-import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
-import { job_preferences, notifications_preferences } from '../../../../utils/formOptions'
-import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { job_preferences } from '../../../../utils/formOptions'
 import {
   FormDataContext,
   getFormErrorMessage,
@@ -118,7 +116,6 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
                 <Controller
                   control={control}
                   name="job_preferences"
-                  rules={{ required: 'At least one choice is required' }}
                   render={({ field, fieldState }) => (
                     <>
                       <HtInfoTooltip message="Please select the type of jobs you are interested in. ">
@@ -136,53 +133,10 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
                         placeholder="Select Services"
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
-                      <HtInputHelpText fieldName={field.name} helpText="Optional" />
                     </>
                   )}
                 />
                 {getFormErrorMessage('services', errors)}
-              </div>
-            </div>
-          </div>
-
-          {/* Notification Preferences */}
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
-              <p className="mt-4 text-sm leading-6 text-gray-600">
-                Please let us know the preferred notifications you would like to receive.
-              </p>
-              {requiredFieldsNoticeText}
-            </div>
-
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-6">
-                <Controller
-                  control={control}
-                  name="notifications"
-                  rules={{ required: false }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <HtInfoTooltip message="Please select the type of notifications you would like to receive.">
-                        <HtInputLabel htmlFor={field.name} labelText="Preferred Notifications:" />
-                      </HtInfoTooltip>
-                      <MultiSelect
-                        inputId={field.name}
-                        {...field}
-                        value={field.value}
-                        options={notifications_preferences}
-                        display="chip"
-                        selectAll
-                        selectAllLabel="Select All"
-                        onChange={(e: MultiSelectChangeEvent) => field.onChange(e.value)}
-                        placeholder="Select Notifications"
-                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      />
-                      <HtInputHelpText fieldName={field.name} helpText="Optional" />
-                    </>
-                  )}
-                />
-                {getFormErrorMessage('address', errors)}
               </div>
             </div>
           </div>
