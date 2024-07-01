@@ -280,15 +280,30 @@ export const JobDetailView = () => {
         timesheet_id: timesheetId,
         location: [latitude, longitude],
       }
-      const timeSheet: ITimeSheet = await RequestService(`timesheets/${endpoint}`, 'POST', body)
+      const response: Response = await requestService({
+        path: `timesheets/${endpoint}`,
+        method: 'POST',
+        body: JSON.stringify(body),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message ?? 'An error occurred. Please try again.')
+      }
+
+      const timeSheet: ITimeSheet = data
       setLastTimeSheet(timeSheet)
 
       await getCurrentJobTimeSheets()
-      setIsClockInOutLoading(false)
+      showToast({ severity: 'success', summary: 'Success', detail: 'Clock in/out successful' })
 
       return timeSheet
     } catch (error) {
-      console.error(error)
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.'
+      showToast({ severity: 'error', summary: 'Error', detail: errorMessage })
+    } finally {
+      setIsClockInOutLoading(false)
     }
   }
 
