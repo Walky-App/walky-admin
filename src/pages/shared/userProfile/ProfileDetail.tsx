@@ -79,12 +79,6 @@ export const ProfileDetail = ({
     }
   }
 
-  // const genderOptions = [
-  //   { title: 'Male', value: 'Male' },
-  //   { title: 'Female', value: 'Female' },
-  //   { title: 'Other', value: 'Other' },
-  // ]
-
   const handleFormUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target as HTMLInputElement
     setFormUser((prevState: IUser) => ({ ...prevState, [name]: value }))
@@ -109,229 +103,184 @@ export const ProfileDetail = ({
     }
   }
 
-  return (
-    <div>
-      {formUser?.role ? (
-        <form onSubmit={handleSubmit}>
-          <div className="p-fluid space-y-4 sm:space-y-12">
-            <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Avatar</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  This information will be displayed publicly so be careful what you share.
-                </p>
-              </div>
-              <div>
-                <UploadAvatar formUser={formUser} setFormUser={setFormUser as Dispatch<SetStateAction<IUser>>} />
+  return formUser?.role ? (
+    <form onSubmit={handleSubmit}>
+      <div className="p-fluid space-y-4 sm:space-y-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Avatar</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              This information will be displayed publicly so be careful what you share.
+            </p>
+          </div>
+          <div>
+            <UploadAvatar formUser={formUser} setFormUser={setFormUser as Dispatch<SetStateAction<IUser>>} />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Password Reset </h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              This information will be displayed publicly so be careful what you share.
+            </p>
+          </div>
+          <div>
+            <Button label="Reset Password" severity="secondary" icon="pi pi-lock" onClick={handlePasswordReset} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">Use a permanent address where you can receive mail.</p>
+          </div>
+
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-3">
+              <HtInputLabel htmlFor="first_name" asterisk labelText="First Name" />
+              <InputText
+                required
+                value={formUser?.first_name}
+                name="first_name"
+                id="first_name"
+                autoComplete="off"
+                onChange={handleFormUpdate}
+              />
+            </div>
+
+            <div className="sm:col-span-3">
+              <HtInputLabel htmlFor="last_name" asterisk labelText="Last Name" />
+              <InputText
+                required
+                value={formUser?.last_name}
+                name="last_name"
+                id="last_name"
+                autoComplete="off"
+                onChange={handleFormUpdate}
+              />
+            </div>
+            <div className="sm:col-span-3">
+              <HtInputLabel htmlFor="middle_name" labelText="Middle Name" />
+              <InputText
+                id="middle_name"
+                value={formUser?.middle_name}
+                name="middle_name"
+                onChange={handleFormUpdate}
+              />
+            </div>
+
+            <div className="sm:col-span-3">
+              <HtInputLabel htmlFor="email" asterisk labelText="Email" />
+              <div className="mt-2">
+                <InputText disabled value={formUser?.email} name="email" onChange={handleFormUpdate} />
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Password Reset </h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  This information will be displayed publicly so be careful what you share.
-                </p>
-              </div>
-              <div>
-                <Button label="Reset Password" severity="secondary" icon="pi pi-lock" onClick={handlePasswordReset} />
+
+            <div className="sm:col-span-3">
+              <HtInputLabel htmlFor="phone_number" asterisk labelText="Phone Number" />
+              <div className="mt-2">
+                <InputMask
+                  required
+                  value={formUser?.phone_number}
+                  name="phone_number"
+                  id="phone_number"
+                  mask="(999) 999-9999"
+                  slotChar="x"
+                  unmask={true}
+                  autoComplete="off"
+                  onChange={handleFormUpdateNumber}
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Use a permanent address where you can receive mail.
-                </p>
+            <div className="sm:col-span-3">
+              <HtInputLabel htmlFor="email" asterisk labelText="Role" />
+              <div className="mt-2">
+                <InputText disabled value={roleTxt(formUser.role)} name="email" />
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                <div className="sm:col-span-3">
-                  <HtInputLabel htmlFor="first_name" asterisk labelText="First Name" />
-                  <InputText
-                    required
-                    value={formUser?.first_name}
-                    name="first_name"
-                    id="first_name"
-                    autoComplete="off"
-                    onChange={handleFormUpdate}
-                  />
-                </div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Address</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Please type in the address and choose from the dropdown to select the correct address.
+            </p>
+            {/* {requiredFieldsNoticeText} */}
+          </div>
 
-                <div className="sm:col-span-3">
-                  <HtInputLabel htmlFor="last_name" asterisk labelText="Last Name" />
-                  <InputText
-                    required
-                    value={formUser?.last_name}
-                    name="last_name"
-                    id="last_name"
-                    autoComplete="off"
-                    onChange={handleFormUpdate}
-                  />
-                </div>
-                <div className="sm:col-span-3">
-                  <HtInputLabel htmlFor="middle_name" labelText="Middle Name" />
-                  <InputText
-                    id="middle_name"
-                    value={formUser?.middle_name}
-                    name="middle_name"
-                    onChange={handleFormUpdate}
-                  />
-                </div>
+          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+            <div className="sm:col-span-6">
+              <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
+                <HtInputLabel htmlFor="address" asterisk labelText="Facility Address" />
+              </HtInfoTooltip>
+              <AddressAutoComplete
+                controlled
+                value={formUser.address}
+                setMoreAddressDetails={setMoreAddressDetails}
+                currentAddress={formUser.address ?? ''}
+                classNames={classNames({ 'p-invalid': false }, 'mt-2')}
+                aria-describedby="address-help"
+              />
+              <HtInputHelpText fieldName="address" helpText="Commercial Address ONLY" />
+            </div>
+          </div>
+        </div>
 
-                {/* Gender */}
-                {/* <div className="sm:col-span-3">
-                  <HtInputLabel htmlFor="gender" labelText="Gender" />
-                  <Dropdown
-                    id="gender"
-                    value={formUser?.gender}
-                    optionLabel="gender"
-                    options={genderOptions}
-                    onChange={handleFormUpdate}
-                    focusInputRef={field.ref}
-                    onChange={e => field.onChange(e.value)}
-                  />
-                </div> */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              We'll always let you know about important changes, but you pick what else you want to hear about.
+            </p>
+          </div>
 
-                {/* Email */}
-                <div className="sm:col-span-3">
-                  <HtInputLabel htmlFor="email" asterisk labelText="Email" />
-                  <div className="mt-2">
-                    <InputText disabled value={formUser?.email} name="email" onChange={handleFormUpdate} />
-                  </div>
-                </div>
-
-                {/* Phone Number */}
-                <div className="sm:col-span-3">
-                  <HtInputLabel htmlFor="phone_number" asterisk labelText="Phone Number" />
-                  <div className="mt-2">
-                    <InputMask
-                      required
-                      value={formUser?.phone_number}
-                      name="phone_number"
-                      id="phone_number"
-                      mask="(999) 999-9999"
-                      slotChar="x"
-                      unmask={true}
-                      autoComplete="off"
-                      onChange={handleFormUpdateNumber}
+          <div className="max-w-2xl space-y-10 md:col-span-2">
+            <fieldset>
+              <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
+              <div className="mt-6 space-y-6">
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <Checkbox
+                      inputId="email_notifications"
+                      name="notifications.email"
+                      onChange={e => handleNotificationPreferenceChange(e, 'notification_email')}
+                      checked={formUser?.notifications?.includes('notification_email') ?? false ? true : false}
                     />
                   </div>
-                </div>
-
-                <div className="sm:col-span-3">
-                  <HtInputLabel htmlFor="email" asterisk labelText="Role" />
-                  <div className="mt-2">
-                    <InputText disabled value={roleTxt(formUser.role)} name="email" />
+                  <div className="text-sm leading-6">
+                    <label htmlFor="notification_email" className="font-medium text-gray-900">
+                      Email Notifications
+                    </label>
+                    <p className="text-gray-500">Get notified when someones posts a comment on a posting.</p>
                   </div>
                 </div>
-
-                {/* Birthday */}
-                {/* <div className="sm:col-span-6 sm:col-start-1">
-                  <label htmlFor="birthday" className="block text-sm font-medium leading-6 text-gray-900">
-                    Birthday
-                  </label>
-                  <div className="mt-2">
-                    <div>
-                      <Calendar
-                        id="birthday"
-                        name="birth_date"
-                        maxDate={new Date(2008, 0, 1)}
-                        minDate={new Date(1940, 0, 1)}
-                        value={dates}
-                        onChange={e => handleDateChange(e.value as unknown as [Date, Date])}
-                        dateFormat="mm/dd/yy"
-                        showIcon
-                        inputClassName="text-sm"
-                        placeholder="mm/dd/yyyy"
-                      />
-                    </div>
+                <div className="relative flex gap-x-3">
+                  <div className="flex h-6 items-center">
+                    <Checkbox
+                      inputId="sms_notifications"
+                      name="notifications.sms"
+                      onChange={e => handleNotificationPreferenceChange(e, 'notification_sms')}
+                      checked={formUser?.notifications?.includes('notification_sms') ?? false ? true : false}
+                    />
                   </div>
-                </div> */}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Address</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Please type in the address and choose from the dropdown to select the correct address.
-                </p>
-                {/* {requiredFieldsNoticeText} */}
-              </div>
-
-              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-                <div className="sm:col-span-6">
-                  <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
-                    <HtInputLabel htmlFor="address" asterisk labelText="Facility Address" />
-                  </HtInfoTooltip>
-                  <AddressAutoComplete
-                    controlled
-                    value={formUser.address}
-                    setMoreAddressDetails={setMoreAddressDetails}
-                    currentAddress={formUser.address ?? ''}
-                    classNames={classNames({ 'p-invalid': false }, 'mt-2')}
-                    aria-describedby="address-help"
-                  />
-                  <HtInputHelpText fieldName="address" helpText="Commercial Address ONLY" />
+                  <div className="text-sm leading-6">
+                    <label htmlFor="notification_sms" className="font-medium text-gray-900">
+                      SMS Push Notifications
+                    </label>
+                    <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  We'll always let you know about important changes, but you pick what else you want to hear about.
-                </p>
-              </div>
-
-              <div className="max-w-2xl space-y-10 md:col-span-2">
-                <fieldset>
-                  <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
-                  <div className="mt-6 space-y-6">
-                    <div className="relative flex gap-x-3">
-                      <div className="flex h-6 items-center">
-                        <Checkbox
-                          inputId="email_notifications"
-                          name="notifications.email"
-                          onChange={e => handleNotificationPreferenceChange(e, 'notification_email')}
-                          checked={formUser?.notifications?.includes('notification_email') ?? false ? true : false}
-                        />
-                      </div>
-                      <div className="text-sm leading-6">
-                        <label htmlFor="notification_email" className="font-medium text-gray-900">
-                          Email Notifications
-                        </label>
-                        <p className="text-gray-500">Get notified when someones posts a comment on a posting.</p>
-                      </div>
-                    </div>
-                    <div className="relative flex gap-x-3">
-                      <div className="flex h-6 items-center">
-                        <Checkbox
-                          inputId="sms_notifications"
-                          name="notifications.sms"
-                          onChange={e => handleNotificationPreferenceChange(e, 'notification_sms')}
-                          checked={formUser?.notifications?.includes('notification_sms') ?? false ? true : false}
-                        />
-                      </div>
-                      <div className="text-sm leading-6">
-                        <label htmlFor="notification_sms" className="font-medium text-gray-900">
-                          SMS Push Notifications
-                        </label>
-                        <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
-                      </div>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
+            </fieldset>
           </div>
-          <div className="mt-6 flex items-center justify-end gap-x-6">
-            <Button type="submit" label="Submit" />
-          </div>
-        </form>
-      ) : null}
-    </div>
-  )
+        </div>
+      </div>
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+        <Button type="submit" label="Submit" />
+      </div>
+    </form>
+  ) : null
 }
