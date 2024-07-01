@@ -30,6 +30,7 @@ export const Assessment = () => {
   const [selectAnswer, setSelectAnswer] = useState<IAssessment>({ _id: '', answer: '', code: 99 })
   const params = useParams()
   const [finishAssessment, setFinishAssessment] = useState(false)
+  const [nextStep, setNextStep] = useState<string>('')
   const [validatorResponse, setValidatorResponse] = useState<IAssessmentResponse>({
     correct_questions: 0,
     minimum_score: 0,
@@ -58,6 +59,7 @@ export const Assessment = () => {
       })
       setRecord(response.AssessmentRecord)
       setValidatorResponse(response.reponseAssessment)
+      setNextStep(response.nextStep)
       setFinishAssessment(true)
       showToast({ severity: 'error', detail: 'Assessment sent due to time expiration', summary: 'Information' })
     }
@@ -97,6 +99,7 @@ export const Assessment = () => {
           })
           setRecord(response.AssessmentRecord)
           setValidatorResponse(response.reponseAssessment)
+          setNextStep(response.nextStep)
           setFinishAssessment(true)
         },
       })
@@ -186,7 +189,7 @@ export const Assessment = () => {
           </div>
         </div>
       ) : (
-        <AssessmentResponse validatorResponse={validatorResponse} />
+        <AssessmentResponse validatorResponse={validatorResponse} nextStep={nextStep} />
       )}
     </div>
   )
