@@ -42,7 +42,7 @@ export const Modules = () => {
 
   const pages = [
     { name: 'Categories', href: '/learn', current: false },
-    { name: 'Modules', href: '#', current: true },
+    { name: 'Courses', href: '#', current: true },
   ]
 
   return (

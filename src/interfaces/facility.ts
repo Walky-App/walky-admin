@@ -61,7 +61,12 @@ export interface IFacility {
   internal_notes?: string[]
   feedback?: [
     {
-      user_id: string
+      user_id: {
+        _id: string
+        first_name: string
+        last_name: string
+        email: string
+      }
       rating: number
       comment: string
     },

@@ -280,15 +280,30 @@ export const JobDetailView = () => {
         timesheet_id: timesheetId,
         location: [latitude, longitude],
       }
-      const timeSheet: ITimeSheet = await RequestService(`timesheets/${endpoint}`, 'POST', body)
+      const response: Response = await requestService({
+        path: `timesheets/${endpoint}`,
+        method: 'POST',
+        body: JSON.stringify(body),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error('Please enable location sharing in your browser in order to clock in.')
+      }
+
+      const timeSheet: ITimeSheet = data
       setLastTimeSheet(timeSheet)
 
       await getCurrentJobTimeSheets()
-      setIsClockInOutLoading(false)
+      showToast({ severity: 'success', summary: 'Success', detail: 'Clock in/out successful' })
 
       return timeSheet
     } catch (error) {
-      console.error(error)
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.'
+      showToast({ severity: 'error', summary: 'Error', detail: errorMessage })
+    } finally {
+      setIsClockInOutLoading(false)
     }
   }
 
@@ -618,6 +633,25 @@ export const JobDetailView = () => {
                         <i className="pi pi-info-circle" />
                         <span className="text-base font-medium text-black">
                           Arrival notes: <span className="font-normal">{job.facility.notes}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
+                {/* Job Tips */}
+                {isUserApprovedApplicant() && job.job_tips ? (
+                  <>
+                    <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex items-start gap-2">
+                        <i className="pi pi-info-circle" />
+                        <span className="text-base font-medium text-black">
+                          Job Tips:
+                          <ul className="font-normal">
+                            {job.job_tips.map((tip, index) => (
+                              <li key={index}>{tip}</li>
+                            ))}
+                          </ul>
                         </span>
                       </div>
                     </div>

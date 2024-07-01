@@ -1,2 +1,2 @@
 export * from './AdminInviteUser'
-export * from './AdminUserTimesheetsPage'
+export * from '../../../shared/userProfile/ProfileTimesheets'

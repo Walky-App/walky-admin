@@ -10,6 +10,7 @@ import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect } from 'primereact/multiselect'
+import { Rating } from 'primereact/rating'
 
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
@@ -258,6 +259,7 @@ export const FacilityDetailsForm = ({
               <InputText
                 name="sqft"
                 id="sqft"
+                value={formData?.sqft?.toString()}
                 onChange={handleFormUpdate}
                 keyfilter={/[0-9]/}
                 min={0}
@@ -272,10 +274,12 @@ export const FacilityDetailsForm = ({
                 <HtInputLabel htmlFor="notes" labelText="Arrival notes" />
               </HtInfoTooltip>
               <InputTextarea
+                name="notes"
                 id="notes"
                 rows={4}
                 cols={30}
                 maxLength={500}
+                value={formData.notes}
                 onChange={e => setFormData(prevState => ({ ...prevState, notes: e.target.value }))}
                 className={classNames({ 'p-invalid': false }, 'w- mt-2')}
                 autoComplete="off"
@@ -349,82 +353,126 @@ export const FacilityDetailsForm = ({
         </div>
         {/* Geo Fencing */}
         {facility.location_pin.length && role === 'admin' ? (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please update the facility boundaries by dragging the polygon on the map.
-              </p>
-            </div>
+          <>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
+              <div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Geo Fencing</h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Please update the facility boundaries by dragging the polygon on the map.
+                </p>
+              </div>
 
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">
-                <div className="mt-2">
-                  <span className="p-fluid">
-                    <PolygonMap
-                      locationPolygon={locationPolygon}
-                      locationPin={facility.location_pin}
-                      containerStyle={{ width: '100%', height: '450px' }}
-                      setLocationPolygon={e => {
-                        setFormData({ ...formData, location_polygon: e })
-                        setLocationPolygon(e)
-                      }}
-                    />
-                  </span>
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+                <div className="sm:col-span-5">
+                  <div className="mt-2">
+                    <span className="p-fluid">
+                      <PolygonMap
+                        locationPolygon={locationPolygon}
+                        locationPin={facility.location_pin}
+                        containerStyle={{ width: '100%', height: '450px' }}
+                        setLocationPolygon={e => {
+                          setFormData({ ...formData, location_polygon: e })
+                          setLocationPolygon(e)
+                        }}
+                      />
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
+              <div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Approval Process</h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Create a Polygon on the map to set the boundaries of the facility to be used for geofencing, then this
+                  will enable the approval process.
+                </p>
+              </div>
+              <div className="sm:col-span-1">
+                <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
+                  Status
+                </label>
+                <div className="mt-2">
+                  {facility ? (
+                    <select
+                      disabled={locationPolygon.length === 0}
+                      key={facility.active ? 'Active' : 'Disabled'}
+                      id="status"
+                      name="active"
+                      defaultValue={facility.active ? 'true' : 'false'}
+                      onChange={() => setFormData({ ...formData, active: !formData.active })}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Active</option>
+                      <option value="false">Disabled</option>
+                    </select>
+                  ) : null}
+                </div>
+              </div>
+              <div className="sm:col-span-1">
+                <label htmlFor="approval_status" className="block text-sm font-medium leading-6 text-gray-900">
+                  Approval Status
+                </label>
+                <div className="mt-2">
+                  {facility ? (
+                    <select
+                      disabled={locationPolygon.length === 0}
+                      key={facility.isApproved ? 'Approved' : 'Pending'}
+                      id="approval_status"
+                      name="isApproved"
+                      defaultValue={facility.isApproved ? 'true' : 'false'}
+                      onChange={() => setFormData({ ...formData, isApproved: !formData.isApproved })}
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+                      <option value="true">Approved</option>
+                      <option value="false">Pending</option>
+                    </select>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </>
         ) : null}
-      </div>
-      <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
-        <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Approval Process</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Create a Polygon on the map to set the boundaries of the facility to be used for geofencing, then this will
-            enable the approval process.
-          </p>
-        </div>
-        <div className="sm:col-span-1">
-          <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
-            Status
-          </label>
-          <div className="mt-2">
-            {facility ? (
-              <select
-                disabled={locationPolygon.length === 0}
-                key={facility.active ? 'Active' : 'Disabled'}
-                id="status"
-                name="active"
-                defaultValue={facility.active ? 'true' : 'false'}
-                onChange={() => setFormData({ ...formData, active: !formData.active })}
-                className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
-                <option value="true">Active</option>
-                <option value="false">Disabled</option>
-              </select>
+        <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-1 md:gap-y-10 md:pb-12">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Approval Status: {facility.isApproved ? 'Approved' : 'Pending'}
+            </h2>
+            {facility.isApproved ? (
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Administrators are reviewing your facility information. You will be notified when your facility is
+                approved to start booking jobs.
+              </p>
             ) : null}
           </div>
         </div>
-
         {role === 'admin' ? (
-          <div className="sm:col-span-1">
-            <label htmlFor="approval_status" className="block text-sm font-medium leading-6 text-gray-900">
-              Approval Status
-            </label>
-            <div className="mt-2">
-              {facility ? (
-                <select
-                  disabled={locationPolygon.length === 0}
-                  key={facility.isApproved ? 'Approved' : 'Pending'}
-                  id="approval_status"
-                  name="isApproved"
-                  defaultValue={facility.isApproved ? 'true' : 'false'}
-                  onChange={() => setFormData({ ...formData, isApproved: !formData.isApproved })}
-                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
-                  <option value="true">Approved</option>
-                  <option value="false">Pending</option>
-                </select>
-              ) : null}
+          <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
+            <div>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">
+                Feedbacks: {facility?.feedback?.length}
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">Here are all the feedbacks left to this facility</p>
+            </div>
+            <div className="sm:col-span-1">
+              <div className="mt-2">
+                {facility.feedback ? (
+                  facility.feedback.map((feedback, index) => (
+                    <div key={index} className="mt-4 rounded-lg bg-white p-4 shadow">
+                      <h3 className="text-lg font-semibold leading-7 text-gray-900">
+                        User: {feedback.user_id.first_name} {feedback.user_id.last_name}
+                      </h3>
+                      <h3 className="text-lg font-semibold leading-7 text-gray-900">Email: {feedback.user_id.email}</h3>
+                      <div className="flex items-center">
+                        <p className="mr-2 mt-1 text-sm leading-6 text-gray-600">Rating:</p>
+                        <Rating value={feedback.rating} readOnly cancel={false} stars={5} />
+                      </div>
+                      <p className="mt-1 text-sm leading-6 text-gray-600">Comment: {feedback.comment}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="mt-4 text-sm leading-6 text-gray-600">No feedback received yet.</p>
+                )}
+              </div>
             </div>
           </div>
         ) : null}

@@ -31,9 +31,19 @@ export interface SubHeaderProps {
   links: SubHeaderLink[]
 }
 
+const getBasePathFromPathname = (pathname: string): string => {
+  const segments = pathname.split('/').filter(Boolean)
+  const isIdLikeSegment = (segment: string) => segment.length > 10
+  let firstIdLikeSegmentIndex = segments.findIndex(isIdLikeSegment)
+  if (firstIdLikeSegmentIndex === -1) {
+    firstIdLikeSegmentIndex = segments.length
+  }
+  return segments.slice(0, firstIdLikeSegmentIndex).join('/')
+}
+
 export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
   const { pathname } = useLocation()
-  const basePath = pathname.split('/').slice(0, 3).join('/')
+  const basePath = getBasePathFromPathname(pathname)
 
   const { _id, name, city, address } = data
 
@@ -87,7 +97,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
     link.disabled === true ? null : (
       <span key={link.id} className="hidden xs:block">
         <NavLink
-          to={`${basePath}/${data?._id}${link.href}`}
+          to={`/${basePath}/${data?._id}${link.href}`}
           end
           className={({ isActive }) =>
             cn('p-button p-button-sm', { 'p-button-secondary p-button-outlined': !isActive })

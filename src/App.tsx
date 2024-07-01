@@ -40,9 +40,10 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 /******************************************* Admin Pages ************************************/
 import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
+import { AdminUserClientsListPage } from './pages/admin/users/AdminUserClientsListPage'
+import { AdminUserEmployeesListPage } from './pages/admin/users/AdminUserEmployeesListPage'
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
-import { AdminUserPage } from './pages/admin/users/AdminUserPage'
-import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/components'
+import { AdminInviteUser } from './pages/admin/users/components'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import { AdminAddFacility } from './pages/admin/facilities/AdminAddFacility'
@@ -84,6 +85,7 @@ import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
+import { AddEditJobWithoutPaymentsPage } from './components/shared/jobs/AddEditJobWithoutPaymentsPage'
 import { ServiceOrderPage } from './components/shared/jobs/ServiceOrderPage'
 import { Pricing } from './pages/Pricing'
 
@@ -190,11 +192,12 @@ export const App = () => {
                   <Route element={<AdminSettings />} path="/admin/settings" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUserListPage />} path="/admin/users" />
+                  <Route element={<AdminUserEmployeesListPage />} path="/admin/users/employees" />
+                  <Route element={<AdminUserClientsListPage />} path="/admin/users/clients" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
-                  <Route element={<AdminUserPage />}>
-                    <Route element={<UserProfile />} path="/admin/users/:id" />
-                    <Route element={<AdminUserTimesheets />} path="/admin/users/:id/timesheets" />
-                  </Route>
+                  <Route element={<UserProfile />} path="/admin/users/:id" />
+                  <Route element={<UserProfile />} path="/admin/users/:id/timesheets" />
+                  <Route element={<UserProfile />} path="/admin/users/:usertype?/:id" />
                   <Route element={<AdminCompanyListPage />} path="/admin/companies" />
                   <Route element={<AdminAddCompany />} path="/admin/companies/new" />
                   <Route element={<AdminCompanyPage />}>
@@ -217,6 +220,7 @@ export const App = () => {
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
+                  <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
                   <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
