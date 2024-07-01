@@ -444,6 +444,30 @@ export const FacilityDetailsForm = ({
             ) : null}
           </div>
         </div>
+        <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-8 md:grid-cols-3 md:gap-y-10 md:pb-12">
+          <div>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Feedbacks: {facility?.feedback?.length}</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">Here are all the feedbacks left to this facility</p>
+          </div>
+          <div className="sm:col-span-1">
+            <div className="mt-2">
+              {facility.feedback ? (
+                facility.feedback.map((feedback, index) => (
+                  <div key={index} className="mt-4 rounded-lg bg-white p-4 shadow">
+                    <h3 className="text-lg font-semibold leading-7 text-gray-900">
+                      User: {feedback.user_id.first_name} {feedback.user_id.last_name}
+                    </h3>
+                    <h3 className="text-lg font-semibold leading-7 text-gray-900">Email: {feedback.user_id.email}</h3>
+                    <p className="mt-1 text-sm leading-6 text-gray-600">Rating: {feedback.rating} / 5</p>
+                    <p className="mt-1 text-sm leading-6 text-gray-600">Comment: {feedback.comment}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="mt-4 text-sm leading-6 text-gray-600">No feedback received yet.</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
       <div className="mt-6 flex items-center justify-between gap-x-6">
         {role === 'admin' ? (
