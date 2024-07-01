@@ -47,7 +47,7 @@ const calculateHours = (start: Date, end: Date, lunch: number) => {
   return parseFloat(totalHours.toFixed(2))
 }
 
-export const AddEditJobPage = () => {
+export const AddEditJobWithoutPaymentsPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobFound, setJobFound] = useState<IJob | null>(null)
@@ -230,7 +230,11 @@ export const AddEditJobPage = () => {
       }
     } else {
       try {
-        const response = await requestService({ path: 'jobs', method: 'POST', body: JSON.stringify(requestData) })
+        const response = await requestService({
+          path: 'jobs/without-payments',
+          method: 'POST',
+          body: JSON.stringify(requestData),
+        })
         if (!response.ok) {
           const data = await response.json()
           const message = data.message instanceof Error ? data.message.message : data.message

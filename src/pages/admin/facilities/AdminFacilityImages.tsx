@@ -21,6 +21,8 @@ import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 import { useUtils } from '../../../store/useUtils'
+import { roleChecker } from '../../../utils/roleChecker'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityImages = () => {
@@ -28,6 +30,7 @@ export const AdminFacilityImages = () => {
   const [uploading, setUploading] = useState(false)
   const [files, setFiles] = useState<any>([])
   const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const role = roleChecker()
 
   const filesInputRef = useRef<any>()
   const cancelButtonRef = useRef(null)
@@ -160,7 +163,9 @@ export const AdminFacilityImages = () => {
 
   return (
     <div>
-      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+      {facility ? (
+        <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <input
         ref={filesInputRef}
         className="hidden"

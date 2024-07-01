@@ -174,9 +174,9 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       company_id: formValues.company_id,
     }
 
-    let facilityId = formData?.facilities[0]
+    const facilityId = formValues?.facilities[0]
 
-    if (facilityId) {
+    if (facilityId != null) {
       try {
         const res = await requestService({ path: `facilities/${facilityId}` })
         if (!res.ok) throw new Error('Error fetching facility details')
@@ -195,12 +195,11 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           body: JSON.stringify(updatedFacility),
         })
         if (!response.ok) throw new Error('Failed to update facility')
-        const updatedFacilityData = await response.json()
+        const updatedFacilityData: IFacility = await response.json()
 
         if (updatedFacilityData?._id != null) {
-          facilityId = updatedFacilityData._id
-
-          setFormData(prev => ({ ...prev, ...facilityData, facilities: [facilityId] }))
+          const updatedFacilityId = updatedFacilityData._id
+          setFormData(prev => ({ ...prev, ...updatedFacilityData, facilities: [updatedFacilityId] }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 
@@ -222,11 +221,11 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       try {
         const response = await requestService({ path: 'facilities', method: 'POST', body: JSON.stringify(requestData) })
         if (!response.ok) throw new Error('Error adding facility')
-        const data = await response.json()
+        const createdFacilityData: IFacility = await response.json()
 
-        if (data?._id != null) {
-          facilityId = data._id
-          setFormData(prev => ({ ...prev, ...facilityData, facilities: [facilityId] }))
+        if (createdFacilityData?._id != null) {
+          const createdFacilityId = createdFacilityData._id
+          setFormData(prev => ({ ...prev, ...createdFacilityData, facilities: [createdFacilityId] }))
 
           await updateOnboardingStatus(updateOnboardingInfo)
 

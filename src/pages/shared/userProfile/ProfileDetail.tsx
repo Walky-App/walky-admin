@@ -15,6 +15,7 @@ import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { type INotificationPreference } from '../../../utils/formOptions'
+import { roleTxt } from '../../../utils/roleChecker'
 
 export const ProfileDetail = ({
   formUser,
@@ -215,6 +216,13 @@ export const ProfileDetail = ({
                       autoComplete="off"
                       onChange={handleFormUpdateNumber}
                     />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-3">
+                  <HtInputLabel htmlFor="email" asterisk labelText="Role" />
+                  <div className="mt-2">
+                    <InputText disabled value={roleTxt(formUser.role)} name="email" />
                   </div>
                 </div>
 

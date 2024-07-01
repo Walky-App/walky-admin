@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 
+import { useParams } from 'react-router-dom'
+
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { useAuth } from '../../../contexts/AuthContext'
@@ -9,6 +11,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
+import { ProfileTimesheets } from './ProfileTimesheets'
 import { ProfileTraining } from './ProfileTraining'
 
 export const UserProfile = () => {
@@ -37,17 +40,18 @@ export const UserProfile = () => {
 
   const { user } = useAuth()
   const { showToast } = useUtils()
+  const { id } = useParams()
 
   useEffect(() => {
     if (!user) return
     const getUser = async () => {
       try {
-        const response = await requestService({ path: `users/${user?._id}` })
+        const response = await requestService({ path: `users/${id ? id : user?._id}` })
         if (response.ok) {
           const data = (await response.json()) as IUser
           setFormUser(data)
 
-          const trainingResponse = await requestService({ path: `lms/${user?._id}` })
+          const trainingResponse = await requestService({ path: `lms/${id ? id : user?._id}` })
           if (trainingResponse.ok) {
             const trainingData = (await trainingResponse.json()) as ITrainingData
             setUserTraining(trainingData)
@@ -59,7 +63,7 @@ export const UserProfile = () => {
       }
     }
     getUser()
-  }, [user, showToast])
+  }, [user, showToast, id])
 
   return (
     <div>
@@ -78,6 +82,9 @@ export const UserProfile = () => {
         </TabPanel>
         <TabPanel header="Training">
           <ProfileTraining userTraining={userTraining} />
+        </TabPanel>
+        <TabPanel header="TimeSheets">
+          <ProfileTimesheets userId={formUser._id} />
         </TabPanel>
       </TabView>
     </div>

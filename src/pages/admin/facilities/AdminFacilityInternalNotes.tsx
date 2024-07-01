@@ -9,6 +9,8 @@ import { useAuth } from '../../../contexts/AuthContext'
 import { type IUser } from '../../../interfaces/User'
 import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
+import { roleChecker } from '../../../utils/roleChecker'
+import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityInternalNotes = () => {
@@ -18,6 +20,7 @@ export const AdminFacilityInternalNotes = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const [userFound, setUserFound] = useState<IUser>()
+  const role = roleChecker()
 
   const { user } = useAuth()
 
@@ -85,7 +88,9 @@ export const AdminFacilityInternalNotes = () => {
 
   return (
     <>
-      {facility ? <SubHeader data={facility} links={adminFacilitiesLinks} /> : null}
+      {facility ? (
+        <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
+      ) : null}
       <div className="flex w-full flex-col items-center p-4">
         <form onSubmit={handleAddInternalNote} className="w-full">
           <div className="mb-4 max-w-md">

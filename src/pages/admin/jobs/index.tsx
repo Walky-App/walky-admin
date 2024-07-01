@@ -33,6 +33,7 @@ export const AdminJobs = () => {
       { Header: 'Facility', accessor: 'facility.name' },
 
       { Header: 'Created By', accessor: 'created_by', width: 250 },
+      { Header: 'UID', width: '300px', accessor: (d: IJob) => d.uid || 0 },
       { Header: 'Job Starts', width: 120, accessor: (item: IJob) => new Date(item.job_dates[0]).toLocaleDateString() },
       {
         Header: 'Job Ends',

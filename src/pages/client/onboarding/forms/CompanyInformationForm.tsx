@@ -107,8 +107,9 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
         const companyFound: ICompany = await response.json()
 
         if (companyFound != null) {
+          const companyFormData = createCompanyFormData(companyFound)
           const updatedCompany = {
-            ...createCompanyFormData(companyFound),
+            ...companyFormData,
             ...requestData,
           }
 
@@ -117,13 +118,16 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
             method: 'PATCH',
             body: JSON.stringify(updatedCompany),
           })
+
           if (!response.ok) throw new Error('Failed to update company')
           const patchedCompanyData: ICompany = await response.json()
 
           if (patchedCompanyData?._id != null) {
+            const companyFormData = createCompanyFormData(patchedCompanyData)
             setFormData(prev => ({
               ...prev,
-              ...createCompanyFormData(patchedCompanyData),
+              ...companyFormData,
+              company_id: companyFormData._id ?? '',
             }))
 
             await updateOnboardingStatus(updateOnboardingInfo)
@@ -147,7 +151,15 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       try {
         const response = await requestService({ method: 'POST', path: 'companies', body: JSON.stringify(requestData) })
 
-        if (!response.ok) throw new Error('Failed to add company')
+        if (!response.ok) {
+          const data = await response.json()
+          const errorMessage = data.message ?? 'Failed to add company'
+          showToast({
+            severity: 'error',
+            summary: 'Error adding company',
+            detail: errorMessage,
+          })
+        }
         const companyData: ICompany = await response.json()
 
         if (companyData?._id != null) {
@@ -166,11 +178,6 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
         }
       } catch (error) {
         console.error('Error adding company:', error)
-        showToast({
-          severity: 'error',
-          summary: 'Error adding company',
-          detail: `Company ${getValues('name')} could not be added.`,
-        })
         setIsLoading(false)
       }
     }
