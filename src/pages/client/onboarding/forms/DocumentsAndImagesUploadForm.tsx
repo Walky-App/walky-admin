@@ -29,7 +29,7 @@ import {
 export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
   const { formData, setFormData } = useContext(FormDataContext)
 
-  const facilityId = formData.facilities[0]
+  const facilityId = formData?.facilities[0]
   const fileUploadRef = useRef<FileUpload>(null)
 
   const { showToast } = useUtils()
@@ -62,7 +62,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
         const data: IClientOnboardingFormInputs = JSON.parse(event.xhr.response)
         const firstImageUrl = data.images?.[0]?.url
 
-        if (facilityId && firstImageUrl != null) {
+        if (facilityId != null && firstImageUrl != null) {
           const response = await requestService({
             path: `facilities/${facilityId}`,
             method: 'PATCH',

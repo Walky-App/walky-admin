@@ -107,8 +107,9 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
         const companyFound: ICompany = await response.json()
 
         if (companyFound != null) {
+          const companyFormData = createCompanyFormData(companyFound)
           const updatedCompany = {
-            ...createCompanyFormData(companyFound),
+            ...companyFormData,
             ...requestData,
           }
 
@@ -117,13 +118,16 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
             method: 'PATCH',
             body: JSON.stringify(updatedCompany),
           })
+
           if (!response.ok) throw new Error('Failed to update company')
           const patchedCompanyData: ICompany = await response.json()
 
           if (patchedCompanyData?._id != null) {
+            const companyFormData = createCompanyFormData(patchedCompanyData)
             setFormData(prev => ({
               ...prev,
-              ...createCompanyFormData(patchedCompanyData),
+              ...companyFormData,
+              company_id: companyFormData._id ?? '',
             }))
 
             await updateOnboardingStatus(updateOnboardingInfo)
