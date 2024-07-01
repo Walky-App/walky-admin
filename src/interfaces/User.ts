@@ -24,12 +24,13 @@ export interface IUser {
   last_name: string
   role: string
   state: string
-  updated_at: string
+  updated_at?: string
   experience_level?: string
   verified: boolean
   isOnboarded?: boolean
-  onboarding: IOnboardingStep
-  job_preferences: string[]
+  is_approved: boolean
+  onboarding?: IOnboardingStep
+  job_preferences?: string[]
   address?: string
   avatar?: string
   birth_date?: Date
