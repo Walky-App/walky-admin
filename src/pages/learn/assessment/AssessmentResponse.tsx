@@ -6,11 +6,17 @@ import type { IAssessmentResponse } from '../../../interfaces/unit'
 
 interface AssessmentResponseProps {
   validatorResponse: IAssessmentResponse
+  nextStep: string
 }
 
-export const AssessmentResponse = ({ validatorResponse }: AssessmentResponseProps) => {
+export const AssessmentResponse = ({ validatorResponse, nextStep }: AssessmentResponseProps) => {
   const params = useParams()
   const navigate = useNavigate()
+
+  const handleNextStep = () => {
+    navigate(`${nextStep}`)
+  }
+
   return (
     <div>
       {validatorResponse?.pass_assessment ? (
@@ -37,9 +43,7 @@ export const AssessmentResponse = ({ validatorResponse }: AssessmentResponseProp
 
             <button
               className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
-              onClick={() => {
-                navigate(`/learn/module/${params.moduleId}`)
-              }}
+              onClick={handleNextStep}
               type="button">
               Next unit
             </button>
