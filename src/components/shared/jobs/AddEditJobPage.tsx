@@ -8,6 +8,7 @@ import { Button } from 'primereact/button'
 
 import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
+import { type HolidayDocument } from '../../../interfaces/setting'
 import { requestService } from '../../../services/requestServiceNew'
 import { useSettings } from '../../../store/useSettings'
 import { useUtils } from '../../../store/useUtils'
@@ -79,6 +80,7 @@ export const AddEditJobPage = () => {
   const ourFee = settings?.our_fee as number
   const processingFee = settings?.processing_fee as number
   const hourlySupervisorFee = settings?.supervisor_fee as number
+  const stateHolidays = settings?.holiday as HolidayDocument[]
 
   if (isAdmin) {
     defaultValues = { ...defaultValues, hourly_rate: (settings?.minimun_wage as number) || 0 }
@@ -426,7 +428,7 @@ export const AddEditJobPage = () => {
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">{renderJobDatesController(control, errors)}</div>
+              <div className="sm:col-span-5">{renderJobDatesController(control, errors, stateHolidays)}</div>
             </div>
           </div>
         </div>
