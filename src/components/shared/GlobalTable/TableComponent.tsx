@@ -72,7 +72,7 @@ export const TableComponent = ({
                 <tr key={row.id} className="cursor-pointer hover:bg-gray-100" onClick={() => handlerClick(row)}>
                   {row.cells.map((cell: any) => {
                     return (
-                      <td key={cell.column.id} {...cell.getCellProps()} className="border-b-2 py-3 ">
+                      <td key={cell.column.id} {...cell.getCellProps()} className="border-b-2 py-3">
                         {cell.render('Cell')}
                       </td>
                     )
