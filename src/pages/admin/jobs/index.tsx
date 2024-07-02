@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
@@ -7,7 +6,7 @@ import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 
 export const AdminJobs = () => {
-  const [jobsData, setJobsData] = React.useState<any>([])
+  const [jobsData, setJobsData] = React.useState<IJob[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
@@ -29,11 +28,10 @@ export const AdminJobs = () => {
 
   const memoJobsColumns = React.useMemo(
     () => [
+      { Header: 'ID', width: '100px', accessor: (d: IJob) => `#${d.uid}` || 0 },
       { Header: 'Job Title', accessor: 'title' },
       { Header: 'Facility', accessor: 'facility.name' },
-
       { Header: 'Created By', accessor: 'created_by', width: 250 },
-      { Header: 'UID', width: '300px', accessor: (d: IJob) => d.uid || 0 },
       { Header: 'Job Starts', width: 120, accessor: (item: IJob) => new Date(item.job_dates[0]).toLocaleDateString() },
       {
         Header: 'Job Ends',
@@ -44,24 +42,24 @@ export const AdminJobs = () => {
         Header: 'Status',
         width: 100,
         accessor: (d: IJob) => (d.is_active ? 'Active' : 'Disabled'),
-        sortType: (a: any, b: any) => {
-          if (a.original.is_active === b.original.active) return 0
-          return a.original.is_active ? -1 : 1
+        sortType: (a: IJob, b: IJob) => {
+          if (a.is_active === b.is_active) return 0
+          return a.is_active ? -1 : 1
         },
       },
       { Header: 'Shifts', accessor: 'vacancy', width: 100 },
+      { Header: 'Temps', width: 100, accessor: (a: IJob) => a.applicants.length || '0 ❌' },
       {
         Header: 'Shift Hours',
         accessor: 'total_hours',
         width: 120,
       },
-
       {
         Header: 'Availability',
-        accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
-        sortType: (a: any, b: any) => {
-          if (a.original.is_full === b.original.is_full) return 0
-          return a.original.is_full ? -1 : 1
+        accessor: (d: IJob) => (d.vacancy === d.applicants.length ? '✅' : 'Open'),
+        sortType: (a: IJob, b: IJob) => {
+          if (a.is_full === b.is_full) return 0
+          return a.is_full ? -1 : 1
         },
       },
     ],
