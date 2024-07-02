@@ -39,14 +39,13 @@ export const AdminUserClientsListPage = () => {
       { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
       {
         Header: 'Status',
-        accessor: (d: IUser) => (d.active ? 'Active' : 'Disabled'),
+        accessor: (d: IUser) => (d.active ? '✅' : '❌'),
       },
-      { Header: 'Email', accessor: 'email' },
+      { Header: 'Email', accessor: 'email', width: 250 },
       { Header: 'Phone', accessor: 'phone_number' },
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
       { Header: 'Zip', accessor: 'zip' },
-      { Header: 'Country', accessor: 'country' },
     ],
     [],
   )
