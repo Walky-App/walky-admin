@@ -15,7 +15,7 @@ import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { type INotificationPreference } from '../../../utils/formOptions'
-import { roleTxt } from '../../../utils/roleChecker'
+import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 
 export const ProfileDetail = ({
   formUser,
@@ -27,6 +27,7 @@ export const ProfileDetail = ({
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
 
   const { showToast } = useUtils()
+  const role = roleChecker()
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -42,7 +43,8 @@ export const ProfileDetail = ({
     }
   }, [moreAddressDetails, setFormUser, setMoreAddressDetails])
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
     try {
       const response = await requestService({
         path: `users/${formUser?._id}`,
@@ -228,6 +230,64 @@ export const ProfileDetail = ({
             </div>
           </div>
         </div>
+
+        {role === 'admin' ? (
+          <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-12 sm:gap-y-10 md:grid-cols-3">
+            <div>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">User Statuses</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Please provide information about your business so that we can verify you on the platform.
+              </p>
+            </div>
+            <div className="flex items-center justify-between text-center">
+              <div>
+                <HtInputLabel htmlFor="active" labelText="Active" />
+                <Checkbox
+                  inputId="active"
+                  name="active"
+                  title="Active"
+                  onChange={e => setFormUser({ ...formUser, active: e.checked ?? false })}
+                  checked={formUser.active || false}
+                />
+              </div>
+
+              <div>
+                <HtInputLabel htmlFor="onboarding_complete" labelText="Onboarding Complete" />
+                <Checkbox
+                  inputId="onboarding_complete"
+                  name="onboarding_complete"
+                  onChange={e =>
+                    setFormUser({
+                      ...formUser,
+                      onboarding: {
+                        ...formUser.onboarding,
+                        completed: e.checked ?? false,
+                        step_number: formUser.onboarding?.step_number ?? 0,
+                        description: formUser.onboarding?.description ?? '',
+                        type: formUser.onboarding?.type ?? '',
+                      },
+                    })
+                  }
+                  checked={formUser.onboarding?.completed ?? false}
+                />
+              </div>
+              <div>
+                <HtInputLabel htmlFor="is_approved" labelText="Approved / Verified" />
+                <Checkbox
+                  inputId="is_approved"
+                  name="is_approved"
+                  onChange={e =>
+                    setFormUser({
+                      ...formUser,
+                      is_approved: e.checked ?? false,
+                    })
+                  }
+                  checked={formUser.is_approved ?? false}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
