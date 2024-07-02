@@ -144,6 +144,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                   <>
                     <HtInputLabel htmlFor={field.name} asterisk labelText="First Name:" />
                     <InputText
+                      disabled
                       id={field.name}
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
@@ -163,6 +164,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                   <>
                     <HtInputLabel htmlFor={field.name} asterisk labelText="Last Name:" />
                     <InputText
+                      disabled
                       id={field.name}
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
@@ -222,6 +224,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                   <>
                     <HtInputLabel htmlFor={field.name} asterisk labelText="Phone Number:" />
                     <InputMask
+                      disabled
                       id={field.name}
                       {...field}
                       mask="(999) 999-9999"
@@ -251,6 +254,7 @@ export const EmployeeStep1 = ({ step, setStep }: StepProps) => {
                   <>
                     <HtInputLabel htmlFor={field.name} asterisk labelText="Email:" />
                     <InputText
+                      disabled
                       id={field.name}
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}

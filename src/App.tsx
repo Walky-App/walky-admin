@@ -23,7 +23,6 @@ import { UnitDetail } from './pages/learn/units/UnitDetail'
 import { Units } from './pages/learn/units/Units'
 
 /******************************************* Client Pages ************************************/
-import ClientProfile from './pages/client/ClientProfile'
 import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
@@ -41,14 +40,10 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 /******************************************* Admin Pages ************************************/
 import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
-import { AdminProfile } from './pages/admin/profile/AdminProfile'
-
 import { AdminUserClientsListPage } from './pages/admin/users/AdminUserClientsListPage'
 import { AdminUserEmployeesListPage } from './pages/admin/users/AdminUserEmployeesListPage'
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
-import { AdminUserPage } from './pages/admin/users/AdminUserPage'
-import { AdminInviteUser, AdminUserTimesheets } from './pages/admin/users/components'
-import { AdminUserDetails } from './pages/admin/users/components/AdminUserDetails'
+import { AdminInviteUser } from './pages/admin/users/components'
 
 import { AdminFacilities } from './pages/admin/facilities'
 import { AdminAddFacility } from './pages/admin/facilities/AdminAddFacility'
@@ -97,7 +92,6 @@ import { Pricing } from './pages/Pricing'
 /******************************************* Employee Pages ************************************/
 
 /** Employee Pages */
-import { EmployeeProfile } from './pages/employee/EmployeeProfile'
 import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
 import { EmployeeJobs } from './pages/employee/jobs'
 import { JobDetailView } from './pages/employee/jobs/JobDetailView'
@@ -105,6 +99,7 @@ import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
 import { EmployeeMessages } from './pages/employee/messages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
+import { UserProfile } from './pages/shared/userProfile'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
@@ -135,7 +130,7 @@ export const App = () => {
                 <Route element={<EmployeeJobs />} path="/employee/jobs" />
                 <Route element={<EmployeeMyJobs />} path="/employee/myjobs" />
                 <Route element={<JobDetailView />} path="/employee/jobs/:id" />
-                <Route element={<EmployeeProfile />} path="/employee/profile" />
+                <Route element={<UserProfile />} path="/employee/profile" />
                 <Route element={<EmployeeMessages />} path="/employee/messages" />
                 <Route element={<EmployeeTimesheets />} path="/employee/timesheets" />
                 {/* LMS Module */}
@@ -149,7 +144,7 @@ export const App = () => {
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientMessages />} path="/client/messages" />
-                  <Route element={<ClientProfile />} path="/client/profile" />
+                  <Route element={<UserProfile />} path="/client/profile" />
                   <Route element={<ClientFacilities />} path="/client/facilities" />
                   <Route element={<AdminAddFacility />} path="/client/facilities/new" />
                   <Route element={<FacilityDetailsPage />} path="/client/facilities/:facilityId" />
@@ -178,7 +173,7 @@ export const App = () => {
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route element={<SalesDashboard />} path="/sales/dashboard" />
-                  <Route element={<ClientProfile />} path="/sales/profile" />
+                  <Route element={<UserProfile />} path="/sales/profile" />
                   <Route element={<AdminFacilities />} path="/sales/facilities" />
                   <Route element={<ClientAddFacility />} path="/sales/facilities/new" />
                   <Route element={<FacilityDetailsPage />} path="/sales/facilities/:facilityId" />
@@ -193,17 +188,16 @@ export const App = () => {
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
                   <Route element={<AdminDashboard />} path="/admin/dashboard" />
-                  <Route element={<AdminProfile />} path="/admin/profile" />
+                  <Route element={<UserProfile />} path="/admin/profile" />
                   <Route element={<AdminSettings />} path="/admin/settings" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminUserEmployeesListPage />} path="/admin/users/employees" />
                   <Route element={<AdminUserClientsListPage />} path="/admin/users/clients" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
-                  <Route element={<AdminUserPage />}>
-                    <Route element={<AdminUserDetails />} path="/admin/users/:usertype?/:id" />
-                    <Route element={<AdminUserTimesheets />} path="/admin/users/:usertype?/:id/timesheets" />
-                  </Route>
+                  <Route element={<UserProfile />} path="/admin/users/:id" />
+                  <Route element={<UserProfile />} path="/admin/users/:id/timesheets" />
+                  <Route element={<UserProfile />} path="/admin/users/:usertype?/:id" />
                   <Route element={<AdminCompanyListPage />} path="/admin/companies" />
                   <Route element={<AdminAddCompany />} path="/admin/companies/new" />
                   <Route element={<AdminCompanyPage />}>

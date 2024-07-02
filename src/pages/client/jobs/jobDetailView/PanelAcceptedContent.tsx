@@ -70,7 +70,7 @@ export const PanelAcceptedContent = ({
                 </div>
                 <div className="mt-4 flex shrink-0 flex-col items-center gap-x-4 sm:mt-0 sm:flex-row">
                   <div className="flex flex-row items-end" />
-                  {applicantsFeedbackIds?.includes(applicant?.user._id as string) ?? false ? (
+                  {applicantsFeedbackIds?.includes(applicant?.user._id as string) ? null : (
                     <Button
                       size="small"
                       label="Feedback"
@@ -78,7 +78,7 @@ export const PanelAcceptedContent = ({
                         handleFeedback(applicant?.user._id ?? '')
                       }}
                     />
-                  ) : null}
+                  )}
                   <Button
                     size="small"
                     label="Move back to Pending"

@@ -1,6 +1,6 @@
-export type INotificationPreference = 'Email' | 'SMS'
+export type INotificationPreference = 'notification_email' | 'notification_sms'
 
-export const notifications_preferences: INotificationPreference[] = ['Email', 'SMS']
+export const notifications_preferences: INotificationPreference[] = ['notification_email', 'notification_sms']
 
 export const job_preferences = [
   'Harvester',

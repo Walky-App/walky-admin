@@ -45,6 +45,7 @@ export const EmployeeFinishOnboardingDialog = ({ visible, setVisible }: Props) =
           ...userFound,
           onboarding: {
             ...userFound.onboarding,
+            type: 'employee',
             step_number: 5,
             description: steps[4].label ?? '',
             completed: true,
@@ -68,7 +69,11 @@ export const EmployeeFinishOnboardingDialog = ({ visible, setVisible }: Props) =
         const updatedUserData: ITokenInfo = {
           ...currentToken,
           onboarding: {
-            ...updatedUser.onboarding,
+            ...updatedUser?.onboarding,
+            step_number: 5,
+            description: steps[4].label ?? '',
+            type: 'employee',
+            completed: true,
           },
         }
         SetToken(updatedUserData)
