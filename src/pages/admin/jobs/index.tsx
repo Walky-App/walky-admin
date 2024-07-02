@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
@@ -7,7 +6,7 @@ import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 
 export const AdminJobs = () => {
-  const [jobsData, setJobsData] = React.useState<any>([])
+  const [jobsData, setJobsData] = React.useState<IJob[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
