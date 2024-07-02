@@ -162,15 +162,16 @@ export const renderJobDatesController = (
               {field.value
                 .sort((a: Date, b: Date) => a.getTime() - b.getTime())
                 .map((date: Date, index: number) => {
-                  const holiday = stateHolidays.find(holiday => 
-                    new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString()
-                  );
+                  const holiday = stateHolidays.find(
+                    holiday => new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
+                  )
+                  const isHoliday = Boolean(holiday)
                   return (
-                    <li key={index}>
+                    <li key={index} style={{ color: isHoliday ? 'red' : 'inherit' }}>
                       {date.toLocaleDateString()}
-                      {holiday ? ` (${holiday.holiday_name})` : ''}
+                      {isHoliday ? ` (${holiday?.holiday_name})` : ''}
                     </li>
-                  );
+                  )
                 })}
             </ul>
           </div>
@@ -179,7 +180,7 @@ export const renderJobDatesController = (
       </>
     )}
   />
-);
+)
 
 export const renderStartTimeController = (
   control: Control<JobFormDefaultValues>,
