@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 
+import { useAdmin } from '../../../contexts/AdminContext'
 import type { IAssessmentResponse } from '../../../interfaces/unit'
 
 interface AssessmentResponseProps {
@@ -12,8 +13,11 @@ interface AssessmentResponseProps {
 export const AssessmentResponse = ({ validatorResponse, nextStep }: AssessmentResponseProps) => {
   const params = useParams()
   const navigate = useNavigate()
+  const { setModule, setUnit } = useAdmin()
 
   const handleNextStep = () => {
+    setModule(undefined)
+    setUnit(undefined)
     navigate(`${nextStep}`)
   }
 
