@@ -60,23 +60,31 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
   const handleUploadSuccess = async (event: FileUploadUploadEvent) => {
     if (event.xhr.status >= 200 && event.xhr.status < 300) {
       try {
-        const data: IClientOnboardingFormInputs = JSON.parse(event.xhr.response)
-        const firstImageUrl = data.images?.[0]?.url
+        const facilityData: IClientOnboardingFormInputs = JSON.parse(event.xhr.response)
+        const firstImageUrl = facilityData.images?.[0]?.url
+        const licensesUploaded = facilityData.licenses
 
-        if (facilityId != null && firstImageUrl != null) {
-          const response = await requestService({
-            path: `facilities/${facilityId}`,
-            method: 'PATCH',
-            body: JSON.stringify({ main_image: firstImageUrl }),
-          })
+        if (facilityId != null) {
+          if (firstImageUrl != null) {
+            const response = await requestService({
+              path: `facilities/${facilityId}`,
+              method: 'PATCH',
+              body: JSON.stringify({ main_image: firstImageUrl }),
+            })
 
-          if (!response.ok) throw new Error('Failed to update facility.')
+            if (!response.ok) throw new Error('Failed to update facility.')
 
-          const updatedFacility: IFacility = await response.json()
-          setFormData(prev => ({
-            ...prev,
-            ...updatedFacility,
-          }))
+            const updatedFacility: IFacility = await response.json()
+            setFormData(prev => ({
+              ...prev,
+              ...updatedFacility,
+            }))
+          } else if (licensesUploaded) {
+            setFormData(prev => ({
+              ...prev,
+              ...facilityData,
+            }))
+          }
         }
 
         showToast({
