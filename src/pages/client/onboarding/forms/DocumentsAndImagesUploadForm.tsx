@@ -30,7 +30,8 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
   const { formData, setFormData } = useContext(FormDataContext)
 
   const facilityId = formData?.facilities[0]
-  const fileUploadRef = useRef<FileUpload>(null)
+  const licenseUploadRef = useRef<FileUpload>(null)
+  const imageUploadRef = useRef<FileUpload>(null)
 
   const { showToast } = useUtils()
 
@@ -104,20 +105,39 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
     }
   }
 
-  const handleUploadError = (event: FileUploadErrorEvent) => {
+  const handleUploadError = async (event: FileUploadErrorEvent, uploadRef: React.RefObject<FileUpload>) => {
     console.error('Error uploading file:', event.files[0].name)
-    if (event.xhr) {
+    if (event.xhr != null && event.xhr.status >= 400) {
       console.error('HTTP Status:', event.xhr.status)
       console.error('Status Text:', event.xhr.statusText)
       console.error('Response Text:', event.xhr.responseText)
-    }
 
-    showToast({
-      severity: 'error',
-      summary: 'Error',
-      detail: `Error uploading ${event.files[0].name}. Check your connection and try again.`,
-      life: 3000,
-    })
+      let errorMessage = 'An error occurred while uploading the files.'
+      try {
+        const responseJson = JSON.parse(event.xhr.responseText)
+        if (responseJson != null && responseJson.message != null) {
+          errorMessage = responseJson.message
+        }
+      } catch (error) {
+        console.error('Error parsing response:', error)
+        errorMessage = 'An unexpected error occurred.'
+      }
+
+      try {
+        await showToast({
+          severity: 'error',
+          summary: 'Error uploading files',
+          detail: errorMessage,
+          life: 3000,
+        })
+      } catch (error) {
+        console.error('Error showing toast:', error)
+      }
+
+      if (uploadRef.current) {
+        uploadRef.current.clear()
+      }
+    }
   }
 
   return (
@@ -156,16 +176,16 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
                 <FileUpload
                   id="stateLicenseDocument"
                   name="files"
-                  ref={fileUploadRef}
+                  ref={licenseUploadRef}
                   maxFileSize={5242880}
-                  accept="image/*"
+                  accept="application/pdf, image/*"
                   multiple={true}
                   mode="advanced"
                   auto={true}
                   url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/licenses`}
                   onBeforeSend={handleBeforeSend}
                   onUpload={handleUploadSuccess}
-                  onError={handleUploadError}
+                  onError={event => handleUploadError(event, licenseUploadRef)}
                   emptyTemplate={
                     <p>
                       Drag-and-drop or choose your{' '}
@@ -233,7 +253,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
                 <FileUpload
                   id="facilityImages"
                   name="files"
-                  ref={fileUploadRef}
+                  ref={imageUploadRef}
                   maxFileSize={5242880}
                   accept="image/*"
                   multiple={true}
@@ -242,7 +262,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
                   url={`${process.env.REACT_APP_PUBLIC_API}/facilities/${facilityId}/images`}
                   onBeforeSend={handleBeforeSend}
                   onUpload={handleUploadSuccess}
-                  onError={handleUploadError}
+                  onError={event => handleUploadError(event, imageUploadRef)}
                   emptyTemplate={
                     <p>
                       Drag-and-drop or choose your{' '}

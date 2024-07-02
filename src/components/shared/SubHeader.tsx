@@ -15,6 +15,7 @@ export interface SubHeaderData {
   company_name?: string
   company_dbas?: string[] | string
   company_address?: string
+  role?: string
 }
 
 export interface SubHeaderLink {
