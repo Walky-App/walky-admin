@@ -38,12 +38,13 @@ export const clientOnboardingSteps: MenuItem[] = [
 
 export const ClientOnboarding = () => {
   const [loading, setLoading] = useState(false)
+  const [onboardingDataLoaded, setOnboardingDataLoaded] = useState(false)
   const [formData, setFormData] = useState<IClientOnboardingFormInputs>(defaultClientOnboardingFormValues)
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [documentData, setDocumentData] = useState<IGetAcceptDocumentDetails | null>(null)
   const [documentUrl, setDocumentUrl] = useState('')
-  const [documentLoading, setDocumentLoading] = useState(true)
+  const [documentLoading, setDocumentLoading] = useState(false)
   const [prevDocRecipient, setPrevDocRecipient] = useState<IGetAcceptRecipient | null>(null)
   const [moreAddressDetailsCompany, setMoreAddressDetailsCompany] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
@@ -92,10 +93,9 @@ export const ClientOnboarding = () => {
     }
   }, [])
 
-  const getCompanyFacilities = useCallback(async () => {
-    if (!formData.company_id) return
+  const getCompanyFacilities = useCallback(async (companyID: string) => {
     try {
-      const response = await requestService({ path: `facilities/company/${formData.company_id}` })
+      const response = await requestService({ path: `facilities/company/${companyID}` })
       if (!response.ok && response.status !== 204) throw new Error('Error fetching user facilities')
       const facilitiesData: IFacility[] = response.status === 204 ? [] : await response.json()
 
@@ -103,34 +103,43 @@ export const ClientOnboarding = () => {
     } catch (error) {
       console.error(error)
     }
-  }, [formData.company_id])
+  }, [])
 
   useEffect(() => {
     const getOnboardingData = async () => {
       setLoading(true)
+      setOnboardingDataLoaded(false)
 
       try {
         const userData = await getUserData()
         const companiesData = await getUserCompanies()
-        const facilitiesData = await getCompanyFacilities()
 
         let companyFormData: ICompany = {} as ICompany
-        if (companiesData != null && companiesData?.length > 0) {
+        if (companiesData != null && companiesData.length > 0) {
           companyFormData = createCompanyFormData(companiesData[0])
+          setFormData(prev => ({
+            ...prev,
+            ...companyFormData,
+            user_id: userData?._id ?? userId,
+            company_id: companyFormData?._id ?? '',
+          }))
+        }
+
+        let facilitiesData: IFacility[] = []
+        if (companyFormData?._id != null) {
+          const companyId = companyFormData._id
+          facilitiesData = (await getCompanyFacilities(companyId)) || []
         }
 
         let facilityFormData: IFacility = {} as IFacility
         if (facilitiesData != null && facilitiesData.length > 0) {
           facilityFormData = createFacilityFormData(facilitiesData[0])
-          setDocumentUrl(prev => facilitiesData[0]?.contract_url?.[0] ?? prev)
         }
+        setDocumentUrl(prev => facilityFormData.contract_url?.[0] ?? prev)
 
         setFormData(prev => ({
           ...prev,
-          ...companyFormData,
           ...facilityFormData,
-          user_id: userData?._id ?? userId,
-          company_id: companyFormData?._id ?? '',
           contacts:
             facilityFormData.contacts != null && facilityFormData.contacts.length > 0
               ? facilityFormData.contacts
@@ -144,6 +153,8 @@ export const ClientOnboarding = () => {
                   },
                 ],
         }))
+
+        setOnboardingDataLoaded(true)
       } catch (error) {
         console.error('Error fetching onboarding data:', error)
       } finally {
@@ -152,10 +163,11 @@ export const ClientOnboarding = () => {
     }
 
     getOnboardingData()
-  }, [getCompanyFacilities, getUserCompanies, getUserData, userId])
+  }, [getUserData, getUserCompanies, getCompanyFacilities, userId])
 
   useEffect(() => {
-    if (activeIndex === 2 && formData.facilities.length !== 0 && documentUrl === '') {
+    if (onboardingDataLoaded && activeIndex === 2 && formData.facilities.length !== 0 && documentUrl === '') {
+      setDocumentLoading(true)
       const docRecipient: IGetAcceptRecipient = {
         email: formData?.contacts[0].email,
         first_name: formData?.contacts[0].first_name,
@@ -186,8 +198,11 @@ export const ClientOnboarding = () => {
             const documentData: IGetAcceptDocumentDetails = await response.json()
 
             setDocumentData(documentData)
+            setDocumentLoading(false)
           } catch (error) {
             console.error('Error sending document:', error)
+          } finally {
+            setDocumentLoading(false)
           }
         }
 
@@ -201,14 +216,18 @@ export const ClientOnboarding = () => {
     documentUrl,
     formData?.company_name,
     formData?.contacts,
+    formData?.contract_url?.length,
     formData.facilities.length,
     formData?.phone_number,
+    loading,
+    onboardingDataLoaded,
     prevDocRecipient,
   ])
 
   useEffect(() => {
-    setDocumentLoading(true)
-    if (activeIndex === 3 && documentData?.id != null) {
+    if (onboardingDataLoaded && activeIndex === 3 && documentData?.id != null && documentUrl === '') {
+      setDocumentLoading(true)
+
       const documentId = documentData?.id
 
       const getDocumentRecipients = async () => {
@@ -254,10 +273,8 @@ export const ClientOnboarding = () => {
         }
       }
       getDocumentRecipients()
-    } else {
-      setDocumentLoading(false)
     }
-  }, [activeIndex, documentData?.id, formData.facilities])
+  }, [activeIndex, documentData?.id, documentUrl, formData.facilities, onboardingDataLoaded])
 
   const onboardingSteps = [
     <Fragment key="step1">
