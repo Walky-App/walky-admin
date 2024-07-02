@@ -123,6 +123,7 @@ export const createFacilityFormData = (facilityData: IFacility): IFacility => {
     _id,
     timezone,
     isApproved,
+    contract_url,
   } = facilityData
 
   return {
@@ -146,6 +147,7 @@ export const createFacilityFormData = (facilityData: IFacility): IFacility => {
     _id,
     timezone,
     isApproved,
+    contract_url,
   }
 }
 
@@ -332,7 +334,6 @@ export const useUpdateOnboardingStatus = () => {
               description: onboardingInfo.description,
               type: onboardingInfo.type,
               completed: onboardingInfo.completed,
-              
             },
           }
           SetToken(updatedUserData)
