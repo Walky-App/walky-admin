@@ -9,7 +9,7 @@ import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
 import { type IFacility } from '../../../interfaces/facility'
-import { type StatesSettingsDocument } from '../../../interfaces/setting'
+import { type HolidayDocument, type StatesSettingsDocument } from '../../../interfaces/setting'
 import { requestService } from '../../../services/requestServiceNew'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
@@ -129,6 +129,7 @@ export const renderFacilityController = (
 export const renderJobDatesController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
+  stateHolidays: HolidayDocument[],
 ) => (
   <Controller
     name="job_dates"
@@ -160,9 +161,17 @@ export const renderJobDatesController = (
             <ul className="mt-2 grid grid-cols-5 gap-2">
               {field.value
                 .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-                .map((date: Date, index: number) => (
-                  <li key={index}>{date.toLocaleDateString()}</li>
-                ))}
+                .map((date: Date, index: number) => {
+                  const holiday = stateHolidays.find(holiday => 
+                    new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString()
+                  );
+                  return (
+                    <li key={index}>
+                      {date.toLocaleDateString()}
+                      {holiday ? ` (${holiday.holiday_name})` : ''}
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         ) : null}
@@ -170,7 +179,7 @@ export const renderJobDatesController = (
       </>
     )}
   />
-)
+);
 
 export const renderStartTimeController = (
   control: Control<JobFormDefaultValues>,
