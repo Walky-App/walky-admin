@@ -10,13 +10,13 @@ import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
-import { type IUserDocument, type IUser, type IOnboardingStep } from '../../../interfaces/User'
+import { type IUser } from '../../../interfaces/User'
 import { RequestService } from '../../../services/RequestService'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
-import { EmployeeStep1, EmployeeStep2, EmployeeWelcomeDialog } from './components'
+import { EmployeeProfileInformationForm, EmployeeStep2, EmployeeWelcomeDialog } from './components'
 import { EmployeeStep3 } from './components/EmployeeStep3'
 
-const defaultUserValues: IUserFormInputs = {
+const defaultUserValues: IUser = {
   _id: '',
   first_name: '',
   last_name: '',
@@ -29,6 +29,7 @@ const defaultUserValues: IUserFormInputs = {
   state: '',
   zip: '',
   country: '',
+  avatar: '',
   documents: [],
   onboarding: {
     step_number: 1,
@@ -38,31 +39,18 @@ const defaultUserValues: IUserFormInputs = {
   },
   job_preferences: [],
   notifications: [],
-}
-
-export interface IUserFormInputs {
-  _id: string
-  first_name: string
-  last_name: string
-  middle_name?: string
-  preferred_name: string
-  phone_number: string
-  email: string
-  address: string
-  city: string
-  state: string
-  zip: string
-  country: string
-  documents: IUserDocument[]
-  onboarding: IOnboardingStep
-  job_preferences: string[]
-  notifications: string[]
+  access_token: '',
+  active: false,
+  createdAt: '',
+  role: '',
+  verified: false,
+  is_approved: false,
 }
 
 export interface FormDataContextProps {
-  defaultValues: IUserFormInputs
-  formData: IUserFormInputs
-  setFormData: Dispatch<SetStateAction<IUserFormInputs>>
+  defaultValues: IUser
+  formData: IUser
+  setFormData: Dispatch<SetStateAction<IUser>>
   currentUser: IUser | undefined
   setCurrentUser: Dispatch<SetStateAction<IUser | undefined>>
   moreAddressDetails: IAddressAutoComplete | undefined
@@ -130,7 +118,7 @@ const defaultMoreAddressDetails: IAddressAutoComplete = {
 
 export const steps: MenuItem[] = [
   {
-    label: 'Contact Information',
+    label: 'Profile Information',
   },
   {
     label: 'Documents and Certificates',
@@ -150,7 +138,7 @@ export const EmployeeOnboarding = () => {
   const [loading, setLoading] = useState(true)
   const [visible, setVisible] = useState<boolean>(true)
   const [activeIndex, setActiveIndex] = useState<number>(0)
-  const [formData, setFormData] = useState<IUserFormInputs>({
+  const [formData, setFormData] = useState<IUser>({
     ...defaultUserValues,
   })
   const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined)
@@ -171,7 +159,7 @@ export const EmployeeOnboarding = () => {
       {currentUser?.onboarding?.step_number == null || currentUser.onboarding.step_number === 1 ? (
         <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
       ) : null}
-      <EmployeeStep1 step={activeIndex} setStep={setActiveIndex} />
+      <EmployeeProfileInformationForm step={activeIndex} setStep={setActiveIndex} />
     </Fragment>,
     <EmployeeStep2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
     <EmployeeStep3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
@@ -188,6 +176,7 @@ export const EmployeeOnboarding = () => {
         setCurrentUser(response)
         setFormData(prevFormData => ({
           ...prevFormData,
+          ...response,
           _id: response._id,
           first_name: response.first_name,
           last_name: response.last_name,
@@ -200,11 +189,12 @@ export const EmployeeOnboarding = () => {
           job_preferences: response.job_preferences || [],
           notifications: response.notifications || [],
           onboarding: {
-            step_number: 1,
-            description: 'Contact Information',
-            type: 'employee',
-            completed: false,
+            step_number: response.onboarding?.step_number ?? 1,
+            description: response.onboarding?.description ?? 'Contact Information',
+            type: response.onboarding?.type ?? 'employee',
+            completed: response.onboarding?.completed ?? false,
           },
+          role: response.role,
         }))
 
         // For now we will show the FinishOnboardingDialog in "Preferences" when user returns to onboarding and has already finished Step3
