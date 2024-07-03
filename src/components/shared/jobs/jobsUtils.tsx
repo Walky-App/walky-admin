@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { type Control, Controller, type FieldErrors, type UseFormSetValue } from 'react-hook-form'
 
 import { isValid, parse } from 'date-fns'
@@ -78,6 +80,7 @@ export const renderFacilityController = (
   facilities: IFacility[],
   setValue: UseFormSetValue<JobFormDefaultValues>,
   setSettings: (settings: StatesSettingsDocument | null) => void,
+  setIsFacilitySelected: (isFacilitySelected: boolean) => void,
   disabled?: boolean,
 ) => {
   const selectFacility = async (facilityId: string) => {
@@ -88,7 +91,10 @@ export const renderFacilityController = (
       if (response.ok) {
         setValue('hourly_rate', data.minimun_wage)
         setSettings(data)
+        setIsFacilitySelected(true)
       }
+    } else {
+      setIsFacilitySelected(false)
     }
   }
 
@@ -130,6 +136,7 @@ export const renderJobDatesController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
   stateHolidays: HolidayDocument[],
+  setHolidayCount: (count: number) => void,
 ) => (
   <Controller
     name="job_dates"
@@ -138,47 +145,59 @@ export const renderJobDatesController = (
       required: 'A Date is required.',
       validate: value => value.length > 0 || 'At least one date must be selected.',
     }}
-    render={({ field, fieldState }) => (
-      <>
-        <HtInfoTooltip message="Select the dates you need temps at your facility.  Only up to 30 days from today!">
-          <HtInputLabel htmlFor={field.name} labelText="Select Job Dates" asterisk />
-        </HtInfoTooltip>
-        <Calendar
-          inputId={field.name}
-          value={field.value}
-          onChange={field.onChange}
-          dateFormat="mm/dd/yy"
-          maxDate={new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)} // Set max date to 30 days from today
-          selectionMode="multiple"
-          className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
-          minDate={new Date()}
-          inline
-          showButtonBar
-        />
-        {field.value.length > 0 ? (
-          <div className="mt-2">
-            <HtInputLabel htmlFor={field.name} labelText="Selected Dates" className="text-base" />
-            <ul className="mt-2 grid grid-cols-5 gap-2">
-              {field.value
-                .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-                .map((date: Date, index: number) => {
-                  const holiday = stateHolidays.find(
-                    holiday => new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
-                  )
-                  const isHoliday = Boolean(holiday)
-                  return (
-                    <li key={index} style={{ color: isHoliday ? 'red' : 'inherit' }}>
-                      {date.toLocaleDateString()}
-                      {isHoliday ? ` (${holiday?.holiday_name})` : ''}
-                    </li>
-                  )
-                })}
-            </ul>
-          </div>
-        ) : null}
-        {getFormErrorMessage(field.name, errors)}
-      </>
-    )}
+    render={({ field, fieldState }) => {
+      useEffect(() => {
+        const holidayCount = field.value.reduce((count, date) => {
+          const isHoliday = stateHolidays.some(
+            holiday => new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
+          )
+          return isHoliday ? count + 1 : count
+        }, 0)
+        setHolidayCount(holidayCount)
+      }, [field.value])
+
+      return (
+        <>
+          <HtInfoTooltip message="Select the dates you need temps at your facility.  Only up to 30 days from today!">
+            <HtInputLabel htmlFor={field.name} labelText="Select Job Dates" asterisk />
+          </HtInfoTooltip>
+          <Calendar
+            inputId={field.name}
+            value={field.value}
+            onChange={field.onChange}
+            dateFormat="mm/dd/yy"
+            maxDate={new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)} // Set max date to 30 days from today
+            selectionMode="multiple"
+            className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
+            minDate={new Date()}
+            inline
+            showButtonBar
+          />
+          {field.value.length > 0 ? (
+            <div className="mt-2">
+              <HtInputLabel htmlFor={field.name} labelText="Selected Dates" className="text-base" />
+              <ul className="mt-2 grid grid-cols-5 gap-2">
+                {field.value
+                  .sort((a: Date, b: Date) => a.getTime() - b.getTime())
+                  .map((date: Date, index: number) => {
+                    const holiday = stateHolidays.find(
+                      holiday => new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
+                    )
+                    const isHoliday = Boolean(holiday)
+                    return (
+                      <li key={index} style={{ color: isHoliday ? 'red' : 'inherit' }}>
+                        {date.toLocaleDateString()}
+                        {isHoliday ? ` (${holiday?.holiday_name})` : ''}
+                      </li>
+                    )
+                  })}
+              </ul>
+            </div>
+          ) : null}
+          {getFormErrorMessage(field.name, errors)}
+        </>
+      )
+    }}
   />
 )
 

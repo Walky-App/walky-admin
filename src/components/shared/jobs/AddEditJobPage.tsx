@@ -49,6 +49,7 @@ const calculateHours = (start: Date, end: Date, lunch: number) => {
 }
 
 export const AddEditJobPage = () => {
+  // const [isFacilitySelected, setIsFacilitySelected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobFound, setJobFound] = useState<IJob | null>(null)
@@ -60,10 +61,12 @@ export const AddEditJobPage = () => {
   const [isEndTimeValid, setIsEndTimeValid] = useState(true)
   const [totalHours, setTotalHours] = useState(0)
   const [normalHours, setNormalHours] = useState(0)
-  const [overtimeHours, setOvertimeHours] = useState(0)
+  // const [totalNormalHours, setTotalNormalHours] = useState(0)
   const [totalSupervisorFee, setTotalSupervisorFee] = useState(0)
   const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
   const [totalOvertime, setTotalOvertime] = useState(0)
+  const [holidayCount, setHolidayCount] = useState(0)
+  // console.log('holiday count', holidayCount)
 
   const navigate = useNavigate()
   const params = useParams()
@@ -76,6 +79,7 @@ export const AddEditJobPage = () => {
 
   const minimun_wage = settings?.minimun_wage as number
   const overTimeRateMultiplier = settings?.overtime_rate.overtime_rate as number
+  const holidayRateMultiplier = settings?.overtime_rate.holiday_rate as number
   const adminCosts = settings?.admin_costs.total as number
   const ourFee = settings?.our_fee as number
   const processingFee = settings?.processing_fee as number
@@ -262,30 +266,49 @@ export const AddEditJobPage = () => {
 
   useEffect(() => {
     const overtimeHours = totalHours > 8 ? totalHours - 8 : 0
-    setOvertimeHours(overtimeHours)
     const normalHours = totalHours > 8 ? 8 : totalHours
     setNormalHours(normalHours)
 
     const overtimeRate = hourlyRate * overTimeRateMultiplier
     const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier
 
-    const totalOvertime = overtimeHours * overtimeRate * jobDatesLength * vacancy
+    const holidayOvertimeRate = overtimeRate * holidayRateMultiplier
+    const holidayNormalRate = hourlyRate * holidayRateMultiplier
 
-    const totalSupervisorNormalFee = vacancy >= 6 ? normalHours * hourlySupervisorFee * jobDatesLength : 0
+    // const totalNormalHours = normalHours * jobDatesLength
+    // setTotalNormalHours(totalNormalHours)
+
+    const totalOvertimeHours =
+      overtimeHours * (jobDatesLength - holidayCount) + overtimeHours * holidayCount * holidayOvertimeRate
+
+    const totalOvertime = totalOvertimeHours * vacancy
+    setTotalOvertime(totalOvertime)
+
+    const totalSupervisorNormalFee =
+      vacancy >= 6
+        ? normalHours * hourlySupervisorFee * (jobDatesLength - holidayCount) +
+          normalHours * holidayNormalRate * holidayCount
+        : 0
+
     const totalSupervisorOvertimeFee =
-      vacancy >= 6 && totalHours > 8 ? overtimeHours * overtimeSupervisorRate * jobDatesLength : 0
+      vacancy >= 6 && totalHours > 8
+        ? overtimeHours * overtimeSupervisorRate * (jobDatesLength - holidayCount) +
+          overtimeHours * holidayOvertimeRate * holidayCount
+        : 0
 
     const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
     setTotalSupervisorFee(newTotalSupervisorFee)
 
     const baseAmount =
-      hourlyRate * vacancy * (normalHours + overtimeHours) * jobDatesLength + newTotalSupervisorFee + totalOvertime
-    setTotalOvertime(totalOvertime)
+      hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount) +
+      hourlyRate * vacancy * normalHours * holidayCount +
+      totalOvertime +
+      newTotalSupervisorFee
 
     const newPreliminaryPricing = baseAmount * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
-
     const totalOfAllTempsHours = totalHours * jobDatesLength * vacancy
     const hourlyRateWithFees = newPreliminaryPricing / totalOfAllTempsHours
+
     setHourlyRateWithFees(hourlyRateWithFees)
   }, [
     hourlyRate,
@@ -297,11 +320,14 @@ export const AddEditJobPage = () => {
     ourFee,
     processingFee,
     overTimeRateMultiplier,
+    holidayCount,
+    holidayRateMultiplier,
   ])
 
   const renderPricingTable = () => {
-    const baseAmount =
-      hourlyRate * vacancy * (normalHours + overtimeHours) * jobDatesLength + totalSupervisorFee + totalOvertime
+    const normalDayAmount = hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount)
+    const holidayAmount = hourlyRate * holidayRateMultiplier * vacancy * normalHours * holidayCount
+    const baseAmount = normalDayAmount + holidayAmount + totalOvertime + totalSupervisorFee
 
     const adminCostAmount = (baseAmount * adminCosts) / 100
     const ourFeeAmount = (baseAmount * ourFee) / 100
@@ -326,12 +352,21 @@ export const AddEditJobPage = () => {
               <span className="text-sm font-medium leading-5 text-gray-600">Number Of Selected Working Days: </span>
               <span className="text-sm leading-5 text-gray-900">{jobDatesLength}</span>
             </li>
+
+            {holidayCount > 0 ? (
+              <li>
+                <span className="text-sm font-medium leading-5 text-gray-600">Number Of Holidays: </span>
+                <span className="text-sm leading-5 text-gray-900">{holidayCount}</span>
+              </li>
+            ) : null}
+
             {vacancy >= 6 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">Supervisor Fees: </span>
                 <span className="text-sm leading-5 text-gray-900">${totalSupervisorFee.toFixed(2)}</span>
               </li>
             ) : null}
+
             {totalHours > 8 ? (
               <li>
                 <div className="flex items-center">
@@ -341,6 +376,7 @@ export const AddEditJobPage = () => {
                 </div>
               </li>
             ) : null}
+
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Total Hours Per Day: </span>
               <span className="text-sm leading-5 text-gray-900">{totalHours.toFixed(2)}</span>
@@ -374,7 +410,7 @@ export const AddEditJobPage = () => {
             {totalEstimatedCost !== 0 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">
-                  Estimated total Per Hour (fees Included):
+                  Estimated total Per Hour (fees Included):{' '}
                 </span>
                 <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
               </li>
@@ -412,12 +448,23 @@ export const AddEditJobPage = () => {
               <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
               {facilities ? (
                 <div className="sm:col-span-3">
-                  {renderFacilityController(control, errors, facilities, setValue, setSettings, !!jobFound)}
+                  {renderFacilityController(
+                    control,
+                    errors,
+                    facilities,
+                    setValue,
+                    setSettings,
+                    // setIsFacilitySelected,
+                    //@ts-ignore
+                    !!jobFound,
+                  )}
                 </div>
               ) : null}
             </div>
           </div>
+
           {/* Job Dates */}
+
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
             <div>
               <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
@@ -428,7 +475,9 @@ export const AddEditJobPage = () => {
             </div>
 
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">{renderJobDatesController(control, errors, stateHolidays)}</div>
+              <div className="sm:col-span-5">
+                {renderJobDatesController(control, errors, stateHolidays, setHolidayCount)}
+              </div>
             </div>
           </div>
         </div>

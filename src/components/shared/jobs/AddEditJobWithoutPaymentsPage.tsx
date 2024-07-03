@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react'
 
 import { useForm, useWatch } from 'react-hook-form'
@@ -8,6 +9,7 @@ import { Button } from 'primereact/button'
 
 import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
+import { type HolidayDocument } from '../../../interfaces/setting'
 import { requestService } from '../../../services/requestServiceNew'
 import { useSettings } from '../../../store/useSettings'
 import { useUtils } from '../../../store/useUtils'
@@ -30,7 +32,6 @@ import {
   renderLunchBreakController,
   renderJobTipsController,
 } from './jobsUtils'
-import { type HolidayDocument } from '../../../interfaces/setting'
 
 let defaultValues = defaultJobFormValues
 
@@ -49,6 +50,7 @@ const calculateHours = (start: Date, end: Date, lunch: number) => {
 }
 
 export const AddEditJobWithoutPaymentsPage = () => {
+  const [isFacilitySelected, setIsFacilitySelected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobFound, setJobFound] = useState<IJob | null>(null)
@@ -64,6 +66,8 @@ export const AddEditJobWithoutPaymentsPage = () => {
   const [totalSupervisorFee, setTotalSupervisorFee] = useState(0)
   const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
   const [totalOvertime, setTotalOvertime] = useState(0)
+  const [holidayCount, setHolidayCount] = useState(0)
+  console.log('holiday count', holidayCount)
 
   const navigate = useNavigate()
   const params = useParams()
@@ -81,7 +85,6 @@ export const AddEditJobWithoutPaymentsPage = () => {
   const processingFee = settings?.processing_fee as number
   const hourlySupervisorFee = settings?.supervisor_fee as number
   const stateHolidays = settings?.holiday as HolidayDocument[]
-
 
   if (isAdmin) {
     defaultValues = { ...defaultValues, hourly_rate: (settings?.minimun_wage as number) || 0 }
@@ -417,25 +420,37 @@ export const AddEditJobWithoutPaymentsPage = () => {
               <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
               {facilities ? (
                 <div className="sm:col-span-3">
-                  {renderFacilityController(control, errors, facilities, setValue, setSettings, !!jobFound)}
+                  {renderFacilityController(
+                    control,
+                    errors,
+                    facilities,
+                    setValue,
+                    setSettings,
+                    setIsFacilitySelected,
+                    !!jobFound,
+                  )}
                 </div>
               ) : null}
             </div>
           </div>
           {/* Job Dates */}
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
-              <p className="mt-4 text-sm leading-6 text-gray-600">
-                Please select the dates you need temps at your facility. You can select one or multiple dates.
-              </p>
-              {requiredFieldsNoticeText}
-            </div>
+          {isFacilitySelected ? (
+            <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+              <div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
+                <p className="mt-4 text-sm leading-6 text-gray-600">
+                  Please select the dates you need temps at your facility. You can select one or multiple dates.
+                </p>
+                {requiredFieldsNoticeText}
+              </div>
 
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-              <div className="sm:col-span-5">{renderJobDatesController(control, errors, stateHolidays)}</div>
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                <div className="sm:col-span-5">
+                  {renderJobDatesController(control, errors, stateHolidays, setHolidayCount)}
+                </div>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
 
         {/* Shift Details */}
