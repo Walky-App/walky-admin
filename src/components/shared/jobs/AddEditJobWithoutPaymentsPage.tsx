@@ -424,9 +424,7 @@ export const AddEditJobWithoutPaymentsPage = () => {
                     control,
                     errors,
                     facilities,
-                    setValue,
-                    setSettings,
-                    setIsFacilitySelected,
+
                     !!jobFound,
                   )}
                 </div>

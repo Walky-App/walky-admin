@@ -8,9 +8,8 @@ import { Button } from 'primereact/button'
 
 import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
-import { type HolidayDocument } from '../../../interfaces/setting'
+import { StatesSettingsDocument, type HolidayDocument } from '../../../interfaces/setting'
 import { requestService } from '../../../services/requestServiceNew'
-import { useSettings } from '../../../store/useSettings'
 import { useUtils } from '../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 import { roleChecker } from '../../../utils/roleChecker'
@@ -49,12 +48,13 @@ const calculateHours = (start: Date, end: Date, lunch: number) => {
 }
 
 export const AddEditJobPage = () => {
-  const [isFacilitySelected, setIsFacilitySelected] = useState(false)
+  // const [isFacilitySelected, setIsFacilitySelected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobFound, setJobFound] = useState<IJob | null>(null)
   const [facilities, setFacilities] = useState<IFacility[]>()
   const [formData, setFormData] = useState(defaultJobFormValues)
+  console.log('formData', formData)
   const [startTime, setStartTime] = useState<Date | null>(defaultValues.start_time)
   const [endTime, setEndTime] = useState<Date | null>(defaultValues.end_time)
   const [isStartTimeValid, setIsStartTimeValid] = useState(true)
@@ -71,21 +71,22 @@ export const AddEditJobPage = () => {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
-  const { settings, setSettings } = useSettings()
+  // const { settings } = useSettings()
+  const [facilityStateSettings, setFacilityStateSettings] = useState<StatesSettingsDocument | null>()
   const role = roleChecker()
   const user_id = GetTokenInfo()._id
 
-  const minimun_wage = settings?.minimun_wage as number
-  const overTimeRateMultiplier = settings?.overtime_rate.overtime_rate as number
-  const holidayRateMultiplier = settings?.overtime_rate.holiday_rate as number
-  const adminCosts = settings?.admin_costs.total as number
-  const ourFee = settings?.our_fee as number
-  const processingFee = settings?.processing_fee as number
-  const hourlySupervisorFee = settings?.supervisor_fee as number
-  const stateHolidays = settings?.holiday as HolidayDocument[]
+  const minimun_wage = facilityStateSettings?.minimun_wage as number
+  const overTimeRateMultiplier = facilityStateSettings?.overtime_rate.overtime_rate as number
+  const holidayRateMultiplier = facilityStateSettings?.overtime_rate.holiday_rate as number
+  const adminCosts = facilityStateSettings?.admin_costs.total as number
+  const ourFee = facilityStateSettings?.our_fee as number
+  const processingFee = facilityStateSettings?.processing_fee as number
+  const hourlySupervisorFee = facilityStateSettings?.supervisor_fee as number
+  const stateHolidays = facilityStateSettings?.holiday as HolidayDocument[]
 
   if (isAdmin) {
-    defaultValues = { ...defaultValues, hourly_rate: (settings?.minimun_wage as number) || 0 }
+    defaultValues = { ...defaultValues, hourly_rate: (facilityStateSettings?.minimun_wage as number) || 0 }
   }
 
   const values = formData != null && params.id != null ? formData : defaultValues
@@ -95,8 +96,13 @@ export const AddEditJobPage = () => {
     formState: { errors },
     handleSubmit,
     watch,
-    setValue,
   } = useForm({ values })
+
+  console.log(watch())
+  const currentFormValues = watch()
+
+  const selectedFacility = watch('facility_id')
+  console.log('selectedFacility', selectedFacility)
 
   useEffect(() => {
     const getFacilities = async () => {
@@ -117,6 +123,21 @@ export const AddEditJobPage = () => {
     }
     getFacilities()
   }, [location.pathname, user_id])
+
+  useEffect(() => {
+    const getFacilityStateSettings = async () => {
+      const facility = facilities?.find(facility => facility._id === selectedFacility)
+      if (facility) {
+        const response = await requestService({ path: `settings/${facility.state}` })
+        const data = (await response.json()) as StatesSettingsDocument
+        if (response.ok) {
+          setFacilityStateSettings(data)
+          // setValue('hourly_rate', data.minimun_wage)
+        }
+      }
+    }
+    getFacilityStateSettings()
+  }, [currentFormValues, facilities, selectedFacility])
 
   useEffect(() => {
     const getJob = async () => {
@@ -444,21 +465,13 @@ export const AddEditJobPage = () => {
               <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
               {facilities ? (
                 <div className="sm:col-span-3">
-                  {renderFacilityController(
-                    control,
-                    errors,
-                    facilities,
-                    setValue,
-                    setSettings,
-                    setIsFacilitySelected,
-                    !!jobFound,
-                  )}
+                  {renderFacilityController(control, errors, facilities, setFormData, currentFormValues, !!jobFound)}
                 </div>
               ) : null}
             </div>
           </div>
 
-          {isFacilitySelected ? (
+          {selectedFacility ? (
             <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
@@ -478,7 +491,7 @@ export const AddEditJobPage = () => {
           {/* Job Dates */}
         </div>
 
-        {isFacilitySelected ? (
+        {selectedFacility ? (
           <>
             {/* Shift Details */}
             <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">

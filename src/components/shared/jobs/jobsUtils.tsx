@@ -78,26 +78,8 @@ export const renderFacilityController = (
   control: Control<JobFormDefaultValues>,
   errors: FieldErrors<JobFormDefaultValues>,
   facilities: IFacility[],
-  setValue: UseFormSetValue<JobFormDefaultValues>,
-  setSettings: (settings: StatesSettingsDocument | null) => void,
-  setIsFacilitySelected: (isFacilitySelected: boolean) => void,
   disabled?: boolean,
 ) => {
-  const selectFacility = async (facilityId: string) => {
-    const facility = facilities.find(facility => facility._id === facilityId)
-    if (facility) {
-      const response = await requestService({ path: `settings/${facility.state}` })
-      const data = await response.json()
-      if (response.ok) {
-        setValue('hourly_rate', data.minimun_wage)
-        setSettings(data)
-        setIsFacilitySelected(true)
-      }
-    } else {
-      setIsFacilitySelected(false)
-    }
-  }
-
   return (
     <Controller
       name="facility_id"
@@ -120,7 +102,6 @@ export const renderFacilityController = (
             filter
             focusInputRef={field.ref}
             onChange={e => {
-              selectFacility(e.value)
               field.onChange(e.value)
             }}
             className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
