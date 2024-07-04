@@ -1,38 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
-import { Column } from 'primereact/column'
-import { DataTable } from 'primereact/datatable'
 import { Skeleton } from 'primereact/skeleton'
-import { TabPanel, TabView } from 'primereact/tabview'
-import { ToggleButton } from 'primereact/togglebutton'
 
 import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
 import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
-import {
-  type IPunchPairWithTotalTime,
-  getAllPunches,
-  sortPunches,
-  createPunchPairsWithTotalTime,
-} from '../../../components/shared/timesheets/timesheetsUtils'
 import { type JobShiftDay, type IJob } from '../../../interfaces/job'
-import { type UserShiftsPopulate, type Shifts } from '../../../interfaces/shifts'
+import { type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import {
-  isTodaySameAsTimeStamp,
-  formatToDate,
-  formatToTime,
-  isValidDate,
-  formatToLocalTime,
-} from '../../../utils/timeUtils'
+import { isTodaySameAsTimeStamp, formatToLocalTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { JobDetailBottomComponents } from './BottomComponents'
+import { ShiftsTable } from './ShiftsTable'
 
 export const JobDetailView = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -46,7 +32,6 @@ export const JobDetailView = () => {
   const [isClockedIn, setIsClockedIn] = useState(false)
   const [prevIsClockedIn, setPrevIsClockedIn] = useState<boolean | null>(null)
   const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
-  const [checked, setChecked] = useState(true)
   const [lastTimeSheet, setLastTimeSheet] = useState<ITimeSheet | null>(null)
   const [openFeedback, setOpenFeedback] = useState(false)
   const [idFeedback, setIdFeedback] = useState('')
@@ -185,27 +170,6 @@ export const JobDetailView = () => {
       return { isTodayShift: false, message: `The job has already ended.` }
     }
     return { isTodayShift: false, message: 'No shifts available.' }
-  }
-
-  function getUserShiftsLengthByDate(dateString: string): UserShiftsPopulate[] {
-    const [month, day, year] = dateString.split('/')
-    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-    const formattedDate = date.toLocaleDateString('en-US', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    const result = job?.job_days.find(jobDay => {
-      const jobDate = new Date(jobDay.day)
-      const formattedJobDate = jobDate.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-      return formattedJobDate === formattedDate
-    })
-    if (!result) return []
-    return result.shifts_id?.user_shifts as UserShiftsPopulate[]
   }
 
   const getCurrentJobTimeSheets = useCallback(async () => {
@@ -367,178 +331,13 @@ export const JobDetailView = () => {
     }
   }
 
-  const applyForDay = async (dateString: string) => {
-    try {
-      const [month, day, year] = dateString.split('/')
-      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-      const formattedDate = date.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-      const shift = job?.job_days.find(jobDay => {
-        const jobDate = new Date(jobDay.day)
-        const formattedJobDate = jobDate.toLocaleDateString('en-US', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-        return formattedJobDate === formattedDate
-      })
-      if (shift?.shifts_id.user_shifts?.length === job?.vacancy) {
-        showToast({
-          severity: 'error',
-          summary: 'Failed',
-          detail: 'This day is already full',
-        })
-        return
-      }
-
-      const response = await requestService({
-        path: `shifts/apply-one/${shift?.shifts_id._id}`,
-        method: 'PATCH',
-        body: JSON.stringify({ userId: user._id, jobId: id }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setJob(data)
-        showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for day' })
-        setIsApplyForJobLoading(true)
-        setTimeout(() => {
-          setIsApplyForJobLoading(false)
-        }, 1500)
-      }
-    } catch (error: unknown) {
-      setIsApplyForJobLoading(false)
-      if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
-        const err = error as { status: number; message: string }
-        if (err.status === 400) {
-          setHasDateIntersection(true)
-          showToast({
-            severity: 'error',
-            summary: 'Failed',
-            detail: err.message,
-          })
-        }
-      }
-    }
-  }
-
-  const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
-    if (!timesheets) {
-      return []
-    }
-
-    const allPunches = getAllPunches(timesheets)
-    const sortedPunches = sortPunches(allPunches)
-
-    return createPunchPairsWithTotalTime(sortedPunches)
-  }, [timesheets])
-
   const handleFeedback = () => {
     setIdFeedback(id as string)
     setOpenFeedback(true)
   }
 
-  const scheduleListTemplate = (job: IJob) => {
-    return (
-      <>
-        <h2 className="text-base font-semibold leading-6 text-gray-900">Schedule ({job.job_dates.length} days)</h2>
-        <ol className="mt-2 divide-y divide-gray-200 leading-6 text-gray-500">
-          {job.job_dates.map((date, index) => {
-            const dateObj = new Date(date)
-            const formattedDate = dateObj.toLocaleDateString()
-            const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
-
-            return (
-              <li key={index} className="py-4 sm:flex">
-                <time dateTime={date} className="w-28 flex-none">
-                  {dayOfWeek}, {formattedDate}
-                </time>
-                <p className="flex-none sm:ml-6">
-                  <time dateTime={date}>{formatToLocalTime(job.start_time)}</time> -
-                  <time dateTime={date}>{formatToLocalTime(job.end_time)}</time>
-                </p>
-                <p className="ml-2 mt-2 flex-auto font-semibold text-gray-900 sm:mt-0">
-                  Lunch: {job.lunch_break} minutes
-                </p>
-
-                <div className="flex justify-center font-medium">
-                  {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
-                    <div>
-                      {getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
-                        <p className="text-end text-primary md:text-start">Accepted application</p>
-                      ) : (
-                        <p className="text-end text-primary md:text-start">Vacancy completed</p>
-                      )}
-                    </div>
-                  ) : (
-                    <div>
-                      {getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
-                        <p className="text-end text-primary md:text-start">Accepted application</p>
-                      ) : (
-                        <Button label="Apply to this day" link onClick={() => applyForDay(formattedDate)} />
-                      )}
-                    </div>
-                  )}
-                </div>
-              </li>
-            )
-          })}
-        </ol>
-      </>
-    )
-  }
-
-  const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[]) => {
-    return (
-      <>
-        <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
-        <DataTable value={punchPairsAndTotalTime} stripedRows paginator rows={7} rowsPerPageOptions={[7, 14, 30]}>
-          <Column
-            field="punchIn.time_stamp"
-            header="Date"
-            body={(rowData: IPunchPairWithTotalTime) =>
-              isValidDate(rowData.punchIn.time_stamp) ? formatToDate(rowData.punchIn.time_stamp) : 'No Timestamp'
-            }
-          />
-          <Column header="Time In" body={rowData => formatToTime(rowData.punchIn.time_stamp)} />
-          <Column
-            header="Time Out"
-            body={(rowData: IPunchPairWithTotalTime) =>
-              rowData.punchOut
-                ? formatToTime(rowData.punchOut.time_stamp)
-                : isTodaySameAsTimeStamp(rowData.punchIn.time_stamp)
-                  ? 'Clocked In'
-                  : 'Clock Out not recorded'
-            }
-          />
-          <Column header="Total Time" body={(rowData: IPunchPairWithTotalTime) => rowData.totalTime ?? ''} />
-        </DataTable>
-      </>
-    )
-  }
-
-  const facilityImagesTemplate = (job: IJob) => {
-    return (
-      <>
-        <h2 className="text-base font-semibold leading-6 text-gray-900">Facility Images</h2>
-        <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-          {job?.facility?.images?.map(image => (
-            <li key={image._id} className="relative">
-              <div className="aspect-h-7 aspect-w-10 group block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                <img src={image.url} alt="" className="pointer-events-none h-80 object-cover group-hover:opacity-75" />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </>
-    )
-  }
-
   return (
-    <div className="mx-auto px-2 sm:px-6 lg:px-2">
+    <div className="">
       {/* <BreadCrumbs/> */}
       <HeadingComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -547,15 +346,16 @@ export const JobDetailView = () => {
             {/* Job Card Start*/}
             <div className="col-span-1 md:col-span-3">
               <Card
+                className="p-6"
                 title={
                   <>
                     <div className="flex items-center">
                       <i className="pi pi-users" />
                       <div className="mb-2 ml-1 mt-2 text-sm text-stone-500">
-                        {job.applicants.length} Applicants / {job.vacancy} Slots
+                        {job.applicants.length} / {job.vacancy} Slots
                       </div>
                     </div>
-                    {!isUserApprovedApplicant() ? job.title : null}
+                    {!isUserApprovedApplicant() ? job.title : null} #{job.uid}
                   </>
                 }>
                 {/* Job Facility */}
@@ -603,13 +403,13 @@ export const JobDetailView = () => {
                 {/* Divider */}
                 <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
                 <div className="flex flex-wrap gap-4">
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-center gap-2">
                     {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                     <div className="mt-0.5 flex flex-col gap-1">
                       <span className="font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-center gap-2">
                     {job.is_completed === false ? (
                       <i className="pi pi-calendar" />
                     ) : (
@@ -619,7 +419,7 @@ export const JobDetailView = () => {
                       <span className="font-medium text-black">{job.is_completed === false ? 'Live' : 'Archived'}</span>
                     </div>
                   </div>
-                  <div className="mt-0.5 flex items-start gap-2">
+                  <div className="mt-0.5 flex items-center gap-2">
                     {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                     <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
                   </div>
@@ -658,43 +458,39 @@ export const JobDetailView = () => {
                   </>
                 ) : null}
                 {/* Divider */}
-                <hr className="mt-3 h-px w-full bg-zinc-100" />
-                <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
+                <hr className="mt-3" />
+                <div className="mt-6 flex justify-between text-lg">
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Dates</div>
-                    <div className="text-black">
-                      {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
+                    <div className="flex items-center">
+                      <i className="pi pi-calendar-times" />
+                      {earliestDate?.toLocaleDateString()} &nbsp; - &nbsp; {latestDate?.toLocaleDateString()}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-stone-500">Job Time</div>
-                    <div className="text-black">
-                      {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
-                    </div>
+                    <div className="text-stone-500">Job Start / End Time</div>
+                    {formatToLocalTime(job.start_time)} &nbsp; - &nbsp; {formatToLocalTime(job.end_time)}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-stone-500">Lunch Break</div>
-                    <div className="text-black">{job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}</div>
+                    <div className="text-stone-500">Lunch Breaks</div>
+                    <div>{job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}</div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-stone-500">Hours Daily</div>
-                    <div className="text-black">{job.total_hours} hours </div>
+                    <div className="text-stone-500">Total Hours</div>
+                    <div>{job.total_hours * job.job_dates.length} approx</div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-stone-500">Hourly Rate</div>
-                    <div className="text-black">{job.hourly_rate || 0} USD </div>
+                    <div className="text-stone-500">Rate</div>
+                    <strong>{job.hourly_rate || 0} USD / hour</strong>
                   </div>
                 </div>
-                {/* Job Card Footer */}
-                <div className="mt-5 flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
-                  <div className="flex flex-wrap items-center justify-start gap-1">
-                    <div className="text-balance text-stone-500">
-                      Last update on {new Date(job.createdAt).toLocaleDateString()}
-                    </div>
-                    <div className="h-1 w-1 rounded-full bg-stone-500" />
-                    <div className="text-stone-500">#{job.uid}</div>
-                  </div>
-                </div>
+                <ShiftsTable
+                  job={job}
+                  setJob={setJob}
+                  user={user}
+                  setIsApplyForJobLoading={setIsApplyForJobLoading}
+                  setHasDateIntersection={setHasDateIntersection}
+                />
               </Card>
             </div>
 
@@ -771,73 +567,48 @@ export const JobDetailView = () => {
                 </div>
               </div>
             ) : (
-              <div className="col-span-1 md:col-span-1">
-                <div className="flew-row flex md:flex-col">
-                  <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
-                    <ul className="w-full divide-y divide-gray-200">
-                      <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                        {isUserApprovedApplicant() ? (
-                          <p>You have been accepted!</p>
-                        ) : job?.applicants.some(
-                            applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
-                          ) ? (
-                          <p>We are sorry. It was not a match. Please apply later.</p>
-                        ) : job?.applicants.some(applicant => applicant.user._id === user._id) ? (
-                          <p>Your application is pending. Please wait for response.</p>
-                        ) : (
-                          <Button
-                            label={
-                              !userIsOnboarded
-                                ? 'Apply now'
-                                : hasApplied && !hasDateIntersection
-                                  ? 'Application sent'
-                                  : !hasDateIntersection
-                                    ? 'Apply now'
-                                    : 'You are already booked for another job that overlaps with this one.'
-                            }
-                            disabled={!userIsOnboarded || hasApplied}
-                            onClick={() => {
-                              applyForJob(user._id)
-                              setHasApplied(true)
-                            }}
-                            style={{ width: '100%', height: '100%' }}
-                            loading={isApplyForJobLoading}
-                          />
-                        )}
-                      </li>
-                    </ul>
+              <>
+                <div className="col-span-1 md:col-span-1">
+                  <div className="flew-row flex md:flex-col">
+                    <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
+                      <ul className="w-full divide-y divide-gray-200">
+                        <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                          {isUserApprovedApplicant() ? (
+                            <p>You have been accepted!</p>
+                          ) : job?.applicants.some(
+                              applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
+                            ) ? (
+                            <p>We are sorry. It was not a match. Please apply later.</p>
+                          ) : job?.applicants.some(applicant => applicant.user._id === user._id) ? (
+                            <p>Your application is pending. Please wait for response.</p>
+                          ) : (
+                            <Button
+                              label={
+                                !userIsOnboarded
+                                  ? 'Apply now'
+                                  : hasApplied && !hasDateIntersection
+                                    ? 'Application sent'
+                                    : !hasDateIntersection
+                                      ? 'Apply now'
+                                      : 'You are already booked for another job that overlaps with this one.'
+                              }
+                              disabled={!userIsOnboarded || hasApplied}
+                              onClick={() => {
+                                applyForJob(user._id)
+                                setHasApplied(true)
+                              }}
+                              style={{ width: '100%', height: '100%' }}
+                              loading={isApplyForJobLoading}
+                            />
+                          )}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
+                <JobDetailBottomComponents timesheets={timesheets} job={job} />
+              </>
             )}
-
-            {/* Tabs Start */}
-            <div className="col-span-1 md:col-span-3">
-              <TabView className="mt-4">
-                <TabPanel header="Schedule">
-                  <ToggleButton
-                    checked={checked}
-                    onChange={e => setChecked(e.value)}
-                    onLabel="Close Schedule"
-                    offLabel="Open Schedule"
-                    onIcon="pi pi-times"
-                    offIcon="pi pi-check"
-                    className="w-8rem mt-2"
-                  />
-                  {checked ? <section className="mt-12">{scheduleListTemplate(job)}</section> : null}
-                </TabPanel>
-                {isUserApprovedApplicant() ? (
-                  <TabPanel header="Timesheet">
-                    <section className="mt-4">{timesheetTableTemplate(punchPairsAndTotalTime)}</section>
-                  </TabPanel>
-                ) : null}
-                {isUserApprovedApplicant() ? (
-                  <TabPanel header="Facility Images">
-                    <section className="mt-4">{facilityImagesTemplate(job)}</section>
-                  </TabPanel>
-                ) : null}
-              </TabView>
-            </div>
           </>
         ) : (
           <Skeleton shape="rectangle" height="150px" />
