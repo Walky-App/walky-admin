@@ -16,22 +16,25 @@ import { type IUser } from '../../../../interfaces/User'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
-import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../../../client/onboarding/clientOnboardingUtils'
+import { type IOnboardingUpdateInfo } from '../../../client/onboarding/clientOnboardingUtils'
 import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
+import { EmployeeFinishOnboardingDialog } from './EmployeeFinishOnboardingDialog'
 
 export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { formData, setFormData } = useContext(FormDataContext)
-  const fileUploadRef = useRef<FileUpload>(null)
-  const { showToast } = useUtils()
+  const [visible, setVisible] = useState(false)
 
-  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
+  const { formData, setFormData } = useContext(FormDataContext)
+
+  const fileUploadRef = useRef<FileUpload>(null)
+
+  const { showToast } = useUtils()
 
   const updatedOnboardingInfo: IOnboardingUpdateInfo = {
     step_number: 3,
     description: steps[2].label ?? 'Upload Credentials',
     type: 'employee',
-    completed: false,
+    completed: true,
   }
 
   const userId = formData?._id
@@ -74,12 +77,7 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
       }
     }
 
-    const success = await updateOnboardingStatus(updatedOnboardingInfo)
-    if (success === true) {
-      setTimeout(() => {
-        setStep(step + 1)
-      }, 1000)
-    }
+    setVisible(true)
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -122,7 +120,11 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
 
   return (
     <>
-      {/* <EmployeeFinishOnboardingDialog visible={visible} setVisible={setVisible} /> */}
+      <EmployeeFinishOnboardingDialog
+        visible={visible}
+        setVisible={setVisible}
+        onboardingInfo={updatedOnboardingInfo}
+      />
       <div className="space-y-12">
         {/* User Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
