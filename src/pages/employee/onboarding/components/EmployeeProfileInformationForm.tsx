@@ -14,9 +14,10 @@ import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { UploadAvatar } from '../../../../components/shared/forms/UploadAvatar'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
-import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../../../client/onboarding/clientOnboardingUtils'
 import { FormDataContext, getFormErrorMessage, tooltipOptions, type StepProps, steps } from '../EmployeeOnboardingPage'
 
 const goodHeadshotExamples = [
@@ -38,17 +39,19 @@ const badHeadshotExamples = [
 export const EmployeeProfileInformationForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const {
-    setFormData,
-    defaultValues,
-    formData,
-    currentUser,
-    setCurrentUser,
-    moreAddressDetails,
-    setMoreAddressDetails,
-  } = useContext(FormDataContext)
+  const { setFormData, defaultValues, formData, moreAddressDetails, setMoreAddressDetails } =
+    useContext(FormDataContext)
 
   const { showToast } = useUtils()
+
+  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
+
+  const updatedOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 1,
+    description: steps[0].label ?? 'Profile Information',
+    type: 'employee',
+    completed: false,
+  }
 
   const formValues = formData !== null ? formData : defaultValues
 
@@ -81,41 +84,40 @@ export const EmployeeProfileInformationForm = ({ step, setStep }: StepProps) => 
     }
   }, [moreAddressDetails, setMoreAddressDetails, setValue])
 
-  const updateUserWithDataAndIncrementStep = async (data: IUser, step: number) => {
-    let userId = currentUser?._id
+  const handleAvatarClick = () => {
+    const currentFormValues = getValues()
+    setFormData(currentFormValues)
+  }
+
+  const onSubmit: SubmitHandler<IUser> = async data => {
+    setFormData(data)
+    setIsLoading(true)
+
+    const userId = formData?._id
 
     if (userId != null) {
       try {
-        const userFound: IUser = await RequestService(`users/${userId}`)
+        const response = await requestService({ path: `users/${userId}` })
+        const responseData = await response.json()
+        if (!response.ok) throw new Error(responseData.message)
+        const userFound = responseData as IUser
 
         if (userFound !== null) {
           const updatedUser: IUser = {
             ...userFound,
             ...data,
-            onboarding: {
-              step_number: 2,
-              description: steps[1].label ?? 'Profile Information',
-              type: data.onboarding?.type ?? 'employee',
-              completed: false,
-            },
           }
 
-          const response = await RequestService(`users/${userId}`, 'PATCH', updatedUser)
-
-          if (response?._id !== null) {
-            userId = response._id
-
-            setCurrentUser(response)
-          } else {
-            throw new Error('Failed to update user')
-          }
-        } else {
-          throw new Error('User not found')
+          const response = await requestService({
+            path: `users/${userId}`,
+            method: 'PATCH',
+            body: JSON.stringify(updatedUser),
+          })
+          const responseData = await response.json()
+          if (!response.ok) throw new Error(responseData.message)
+          const userUpdated = responseData as IUser
+          setFormData(userUpdated)
         }
-
-        setTimeout(() => {
-          setStep(step + 1)
-        }, 1000)
       } catch (error) {
         console.error('Error updating user:', error)
 
@@ -128,19 +130,13 @@ export const EmployeeProfileInformationForm = ({ step, setStep }: StepProps) => 
         setIsLoading(false)
       }
     }
-  }
 
-  const handleAvatarClick = () => {
-    // Update formData with the most current form values
-    const currentFormValues = getValues()
-    setFormData(currentFormValues)
-  }
-
-  const onSubmit: SubmitHandler<IUser> = async data => {
-    setFormData(data)
-    setIsLoading(true)
-
-    await updateUserWithDataAndIncrementStep(data, step)
+    const success = await updateOnboardingStatus(updatedOnboardingInfo)
+    if (success === true) {
+      setTimeout(() => {
+        setStep(step + 1)
+      }, 1000)
+    }
   }
 
   return (
