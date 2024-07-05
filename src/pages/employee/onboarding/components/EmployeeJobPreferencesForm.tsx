@@ -12,8 +12,9 @@ import { type IUser } from '../../../../interfaces/User'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { job_preferences } from '../../../../utils/formOptions'
+import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../../../client/onboarding/clientOnboardingUtils'
-import { FormDataContext, getFormErrorMessage, type StepProps, steps } from '../EmployeeOnboardingPage'
+import { FormDataContext, type StepProps, steps } from '../employeeOnboardingUtils'
 
 export const EmployeeJobPreferencesForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
