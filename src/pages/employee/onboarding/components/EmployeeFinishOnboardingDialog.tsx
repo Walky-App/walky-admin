@@ -5,23 +5,20 @@ import { Dialog } from 'primereact/dialog'
 import { Image } from 'primereact/image'
 
 import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../../../client/onboarding/clientOnboardingUtils'
-import { steps } from '../EmployeeOnboardingPage'
 
 interface Props {
   visible: boolean
   setVisible: (visible: boolean) => void
+  onboardingInfo: IOnboardingUpdateInfo
 }
 
-export const EmployeeFinishOnboardingDialog = ({ visible, setVisible }: Props) => {
+export const EmployeeFinishOnboardingDialog = ({ visible, setVisible, onboardingInfo }: Props) => {
   const navigate = useNavigate()
 
   const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
 
   const updatedOnboardingInfo: IOnboardingUpdateInfo = {
-    step_number: 5,
-    description: steps[4].label ?? '',
-    type: 'employee',
-    completed: true,
+    ...onboardingInfo,
   }
 
   const onSubmit = async () => {
