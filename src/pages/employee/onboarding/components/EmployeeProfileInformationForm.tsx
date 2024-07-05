@@ -16,9 +16,9 @@ import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoToolt
 import { type IUser } from '../../../../interfaces/User'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
-import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
+import { getFormErrorMessage, requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../../../client/onboarding/clientOnboardingUtils'
-import { FormDataContext, getFormErrorMessage, tooltipOptions, type StepProps, steps } from '../EmployeeOnboardingPage'
+import { FormDataContext, type StepProps, steps } from '../employeeOnboardingUtils'
 
 const goodHeadshotExamples = [
   '/assets/headshots/good-examples/30.jpg',
@@ -245,8 +245,6 @@ export const EmployeeProfileInformationForm = ({ step, setStep }: StepProps) => 
                       mask="(999) 999-9999"
                       slotChar="x"
                       unmask={true}
-                      tooltip="E.g. (281) 330-8004"
-                      tooltipOptions={tooltipOptions}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
                     {getFormErrorMessage(field.name, errors)}

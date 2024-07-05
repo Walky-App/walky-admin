@@ -1,12 +1,9 @@
-import { createContext, type Dispatch, Fragment, type SetStateAction, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 
-import { type FieldErrors } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
-import { type MenuItem } from 'primereact/menuitem'
 import { Skeleton } from 'primereact/skeleton'
 import { Steps } from 'primereact/steps'
-import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
@@ -19,112 +16,7 @@ import {
   EmployeeUploadCredentialsForm,
   EmployeeWelcomeDialog,
 } from './components'
-
-const defaultUserValues: IUser = {
-  _id: '',
-  first_name: '',
-  last_name: '',
-  middle_name: '',
-  preferred_name: '',
-  phone_number: '',
-  email: '',
-  address: '',
-  city: '',
-  state: '',
-  zip: '',
-  country: '',
-  avatar: '',
-  documents: [],
-  onboarding: {
-    step_number: 1,
-    description: '',
-    type: '',
-    completed: false,
-  },
-  job_preferences: [],
-  notifications: [],
-  access_token: '',
-  active: false,
-  createdAt: '',
-  role: '',
-  verified: false,
-  is_approved: false,
-}
-
-export interface FormDataContextProps {
-  defaultValues: IUser
-  formData: IUser
-  setFormData: Dispatch<SetStateAction<IUser>>
-  moreAddressDetails: IAddressAutoComplete | undefined
-  setMoreAddressDetails: Dispatch<SetStateAction<IAddressAutoComplete | undefined>>
-}
-
-export const FormDataContext = createContext<FormDataContextProps>({
-  defaultValues: defaultUserValues,
-  formData: defaultUserValues,
-  setFormData: () => {
-    throw new Error('setFormData function must be overridden in FormDataContext')
-  },
-  moreAddressDetails: undefined,
-  setMoreAddressDetails: () => {
-    throw new Error('setMoreAddressDetails function must be overridden in FormDataContext')
-  },
-})
-
-export interface StepProps {
-  step: number
-  setStep: (step: number) => void
-}
-
-export function getFormErrorMessage(path: string, errors: FieldErrors) {
-  const pathParts = path.split('.')
-  let error: FieldErrors = errors
-
-  for (const part of pathParts) {
-    if (typeof error !== 'object' || error === null) {
-      return null
-    }
-    error = error[part as keyof typeof error] as FieldErrors
-  }
-
-  if (error?.message) {
-    return <p className="mt-2 text-sm text-red-600">{String(error.message)}</p>
-  }
-
-  return null
-}
-
-export const tooltipOptions: TooltipOptions = {
-  position: 'top',
-  showDelay: 300,
-  hideDelay: 500,
-  pt: {
-    text: {
-      className: 'bg-green-500 max-w-lg text-sm',
-    },
-  },
-}
-
-const defaultMoreAddressDetails: IAddressAutoComplete = {
-  zip: undefined,
-  state: undefined,
-  city: undefined,
-  location_pin: undefined,
-  address: undefined,
-  country: undefined,
-}
-
-export const steps: MenuItem[] = [
-  {
-    label: 'Profile Information',
-  },
-  {
-    label: 'Job Preferences',
-  },
-  {
-    label: 'Upload Credentials',
-  },
-]
+import { defaultUserValues, defaultMoreAddressDetails, FormDataContext, steps } from './employeeOnboardingUtils'
 
 export const EmployeeOnboarding = () => {
   const [loading, setLoading] = useState(true)
@@ -132,12 +24,6 @@ export const EmployeeOnboarding = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [formData, setFormData] = useState<IUser>({
     ...defaultUserValues,
-    onboarding: {
-      step_number: 1,
-      description: 'Contact Information',
-      type: 'employee',
-      completed: false,
-    },
   })
 
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
@@ -170,8 +56,11 @@ export const EmployeeOnboarding = () => {
       try {
         const response = await requestService({ path: `users/${userId}` })
         const responseData = await response.json()
+
         if (!response.ok) throw new Error(responseData.message)
+
         const userData = responseData as IUser
+
         setFormData(prevFormData => ({
           ...prevFormData,
           ...userData,

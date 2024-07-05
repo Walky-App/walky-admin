@@ -17,7 +17,7 @@ import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { type IOnboardingUpdateInfo } from '../../../client/onboarding/clientOnboardingUtils'
-import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
+import { FormDataContext, steps, type StepProps } from '../employeeOnboardingUtils'
 import { EmployeeFinishOnboardingDialog } from './EmployeeFinishOnboardingDialog'
 
 export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
