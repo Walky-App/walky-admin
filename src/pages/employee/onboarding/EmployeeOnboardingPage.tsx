@@ -11,10 +11,14 @@ import { type TooltipOptions } from 'primereact/tooltip/tooltipoptions'
 import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IUser } from '../../../interfaces/User'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
-import { EmployeeProfileInformationForm, EmployeeStep2, EmployeeWelcomeDialog } from './components'
-import { EmployeeStep3 } from './components/EmployeeStep3'
+import {
+  EmployeeJobPreferencesForm,
+  EmployeeProfileInformationForm,
+  EmployeeUploadCredentialsForm,
+  EmployeeWelcomeDialog,
+} from './components'
 
 const defaultUserValues: IUser = {
   _id: '',
@@ -51,8 +55,6 @@ export interface FormDataContextProps {
   defaultValues: IUser
   formData: IUser
   setFormData: Dispatch<SetStateAction<IUser>>
-  currentUser: IUser | undefined
-  setCurrentUser: Dispatch<SetStateAction<IUser | undefined>>
   moreAddressDetails: IAddressAutoComplete | undefined
   setMoreAddressDetails: Dispatch<SetStateAction<IAddressAutoComplete | undefined>>
 }
@@ -62,10 +64,6 @@ export const FormDataContext = createContext<FormDataContextProps>({
   formData: defaultUserValues,
   setFormData: () => {
     throw new Error('setFormData function must be overridden in FormDataContext')
-  },
-  currentUser: undefined,
-  setCurrentUser: () => {
-    throw new Error('setCurrentUser function must be overridden in FormDataContext')
   },
   moreAddressDetails: undefined,
   setMoreAddressDetails: () => {
@@ -121,16 +119,10 @@ export const steps: MenuItem[] = [
     label: 'Profile Information',
   },
   {
-    label: 'Documents and Certificates',
+    label: 'Job Preferences',
   },
   {
-    label: 'Preferences',
-  },
-  {
-    label: 'Payment Information',
-  },
-  {
-    label: 'Terms and Conditions',
+    label: 'Upload Credentials',
   },
 ]
 
@@ -140,8 +132,14 @@ export const EmployeeOnboarding = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [formData, setFormData] = useState<IUser>({
     ...defaultUserValues,
+    onboarding: {
+      step_number: 1,
+      description: 'Contact Information',
+      type: 'employee',
+      completed: false,
+    },
   })
-  const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined)
+
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(
     defaultMoreAddressDetails,
   )
@@ -149,22 +147,20 @@ export const EmployeeOnboarding = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (currentUser?.onboarding?.completed ?? false) {
+    if (formData?.onboarding?.completed ?? false) {
       navigate('/employee/dashboard')
     }
-  }, [currentUser?.onboarding?.completed, navigate])
+  }, [formData?.onboarding?.completed, navigate])
 
   const onboardingSteps = [
     <Fragment key="step1">
-      {currentUser?.onboarding?.step_number == null || currentUser.onboarding.step_number === 1 ? (
+      {formData?.onboarding?.step_number == null || formData.onboarding.step_number === 1 ? (
         <EmployeeWelcomeDialog visible={visible} setVisible={setVisible} />
       ) : null}
       <EmployeeProfileInformationForm step={activeIndex} setStep={setActiveIndex} />
     </Fragment>,
-    <EmployeeStep2 key="step2" step={activeIndex} setStep={setActiveIndex} />,
-    <EmployeeStep3 key="step3" step={activeIndex} setStep={setActiveIndex} />,
-    // <Step4 key="step4" step={activeIndex} setStep={setActiveIndex} />,
-    // <Step5 key="step5" step={activeIndex} setStep={setActiveIndex} />,
+    <EmployeeJobPreferencesForm key="step2" step={activeIndex} setStep={setActiveIndex} />,
+    <EmployeeUploadCredentialsForm key="step3" step={activeIndex} setStep={setActiveIndex} />,
   ]
 
   useEffect(() => {
@@ -172,33 +168,16 @@ export const EmployeeOnboarding = () => {
 
     const getUser = async () => {
       try {
-        const response: IUser = await RequestService(`users/${userId}`)
-        setCurrentUser(response)
+        const response = await requestService({ path: `users/${userId}` })
+        const responseData = await response.json()
+        if (!response.ok) throw new Error(responseData.message)
+        const userData = responseData as IUser
         setFormData(prevFormData => ({
           ...prevFormData,
-          ...response,
-          _id: response._id,
-          first_name: response.first_name,
-          last_name: response.last_name,
-          email: response.email,
-          middle_name: response.middle_name || '',
-          preferred_name: response.preferred_name || '',
-          phone_number: response.phone_number || '',
-          address: response.address || '',
-          documents: response.documents || [],
-          job_preferences: response.job_preferences || [],
-          notifications: response.notifications || [],
-          onboarding: {
-            step_number: response.onboarding?.step_number ?? 1,
-            description: response.onboarding?.description ?? 'Contact Information',
-            type: response.onboarding?.type ?? 'employee',
-            completed: response.onboarding?.completed ?? false,
-          },
-          role: response.role,
+          ...userData,
         }))
 
-        // For now we will show the FinishOnboardingDialog in "Preferences" when user returns to onboarding and has already finished Step3
-        setActiveIndex(response.onboarding?.step_number === 4 ? 2 : (response.onboarding?.step_number ?? 1) - 1)
+        setActiveIndex(userData.onboarding?.step_number ?? 0)
         setLoading(false)
       } catch (error) {
         console.error('Error fetching user data:', error)
@@ -214,8 +193,6 @@ export const EmployeeOnboarding = () => {
         formData,
         setFormData,
         defaultValues: defaultUserValues,
-        currentUser,
-        setCurrentUser,
         moreAddressDetails,
         setMoreAddressDetails,
       }}>
