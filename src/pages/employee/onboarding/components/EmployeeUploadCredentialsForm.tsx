@@ -13,52 +13,54 @@ import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelp
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
-import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
+import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../../../client/onboarding/clientOnboardingUtils'
 import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
 
-export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
+export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { currentUser, setCurrentUser } = useContext(FormDataContext)
+  const { formData, setFormData } = useContext(FormDataContext)
   const fileUploadRef = useRef<FileUpload>(null)
   const { showToast } = useUtils()
 
-  const userId = currentUser?._id
+  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
 
-  const updateUserAndIncrementStep = async (step: number) => {
-    let userId = currentUser?._id
+  const updatedOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 3,
+    description: steps[2].label ?? 'Upload Credentials',
+    type: 'employee',
+    completed: false,
+  }
+
+  const userId = formData?._id
+
+  const handleSaveButton = async () => {
+    setIsLoading(true)
 
     if (userId != null) {
       try {
-        const userFound: IUser = await RequestService(`users/${userId}`)
+        const response = await requestService({ path: `users/${userId}` })
+        const responseData = await response.json()
+        if (!response.ok) throw new Error(responseData.message)
+        const userFound = responseData as IUser
 
-        if (userFound !== null) {
+        if (userFound != null) {
           const updatedUser: IUser = {
             ...userFound,
-            onboarding: {
-              ...userFound.onboarding,
-              type: 'employee',
-              step_number: 3,
-              description: steps[2].label ?? '',
-              completed: false,
-            },
+            ...formData,
           }
 
-          const response = await RequestService(`users/${userId}`, 'PATCH', updatedUser)
-
-          if (response?._id !== null) {
-            userId = response._id
-
-            setCurrentUser(response)
-          } else {
-            throw new Error('Failed to update user')
-          }
-        } else {
-          throw new Error('User not found')
+          const response = await requestService({
+            path: `users/${userId}`,
+            method: 'PATCH',
+            body: JSON.stringify(updatedUser),
+          })
+          const responseData = await response.json()
+          if (!response.ok) throw new Error(responseData.message)
+          setFormData(updatedUser)
         }
-
-        setStep(step + 1)
       } catch (error) {
         console.error('Error updating user:', error)
 
@@ -68,19 +70,16 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
           detail: `Information could not be updated.`,
           life: 2000,
         })
-      } finally {
         setIsLoading(false)
       }
     }
-  }
 
-  const handleSaveButton = async () => {
-    setIsLoading(true)
-    setTimeout(async () => {
-      await updateUserAndIncrementStep(step)
-
-      setIsLoading(false)
-    }, 1000)
+    const success = await updateOnboardingStatus(updatedOnboardingInfo)
+    if (success === true) {
+      setTimeout(() => {
+        setStep(step + 1)
+      }, 1000)
+    }
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -90,7 +89,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
   const handleUploadSuccess = (event: FileUploadUploadEvent) => {
     if (event.xhr.status === 200) {
-      const response: IUser = JSON.parse(event.xhr.response)
+      const responseData: IUser = JSON.parse(event.xhr.response)
 
       showToast({
         severity: 'success',
@@ -99,7 +98,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
         life: 2000,
       })
 
-      setCurrentUser(response)
+      setFormData(responseData)
     } else {
       console.error('Error status:', event.xhr.status)
       console.error('Error status text:', event.xhr.statusText)
@@ -118,11 +117,12 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
     })
   }
 
-  const documents = currentUser?.documents ?? []
+  const documents = formData?.documents ?? []
   const documentsLength = documents.length
 
   return (
     <>
+      {/* <EmployeeFinishOnboardingDialog visible={visible} setVisible={setVisible} /> */}
       <div className="space-y-12">
         {/* User Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
