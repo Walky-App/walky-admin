@@ -13,13 +13,7 @@ import { type IUser } from '../../../../interfaces/User'
 import { RequestService } from '../../../../services/RequestService'
 import { useUtils } from '../../../../store/useUtils'
 import { job_preferences } from '../../../../utils/formOptions'
-import {
-  FormDataContext,
-  getFormErrorMessage,
-  type IUserFormInputs,
-  type StepProps,
-  steps,
-} from '../EmployeeOnboardingPage'
+import { FormDataContext, getFormErrorMessage, type StepProps, steps } from '../EmployeeOnboardingPage'
 
 export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
   const [visible, setVisible] = useState<boolean>(false)
@@ -35,9 +29,9 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm<IUserFormInputs>({ values })
+  } = useForm<IUser>({ values })
 
-  const updateUserWithDataAndIncrementStep = async (data: IUserFormInputs) => {
+  const updateUserWithDataAndIncrementStep = async (data: IUser) => {
     let userId = currentUser?._id
 
     if (userId != null) {
@@ -90,7 +84,7 @@ export const EmployeeStep3 = ({ step, setStep }: StepProps) => {
     }
   }
 
-  const onSubmit: SubmitHandler<IUserFormInputs> = async data => {
+  const onSubmit: SubmitHandler<IUser> = async data => {
     setFormData(data)
     setIsLoading(true)
 
