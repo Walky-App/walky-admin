@@ -130,23 +130,30 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Badges and Credentials</h2>
-            <p className="mt-4 text-balance text-sm leading-6 text-gray-600">
-              Please upload your State-issued Credentials. If you do not have a badge or a Credential click on your
-              state for more information. &nbsp;
-              <a
-                href="https://sbg.colorado.gov/sites/sbg/files/documents/DR%208517e%20Emp%20App%2010-2022_0.pdf"
-                target="_blank">
-                CO
-              </a>
-              &nbsp; - &nbsp;
-              <a href="https://omma.us.thentiacloud.net/webs/omma/" target="_blank">
-                OK
-              </a>
-              &nbsp; - &nbsp;
-              <a href="https://cbadge.com/" target="_blank">
-                MI
-              </a>
-            </p>
+            <div className="text-balance text-sm leading-6 text-gray-600 [&>p]:mt-4">
+              <p>Please upload your State-issued Credentials.</p>
+              <p>If you do not have a badge or a Credential click on your state for more information:</p>
+              <ul className="ml-1 space-y-2 [&>li]:mt-1 [&>li]:text-balance [&>li]:text-sm [&>li]:leading-6 [&>li]:text-gray-600 [&>li]:underline">
+                <li>
+                  <a
+                    href="https://sbg.colorado.gov/sites/sbg/files/documents/DR%208517e%20Emp%20App%2010-2022_0.pdf"
+                    target="_blank"
+                    className="hover:text-primary">
+                    Colorado
+                  </a>
+                </li>
+                <li>
+                  <a href="https://omma.us.thentiacloud.net/webs/omma/" target="_blank" className="hover:text-primary">
+                    Oklahoma
+                  </a>
+                </li>
+                <li>
+                  <a href="https://cbadge.com/" target="_blank" className="hover:text-primary">
+                    Michigan
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             {documentsLength > 0 ? (
