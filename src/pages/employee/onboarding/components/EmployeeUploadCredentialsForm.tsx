@@ -15,6 +15,7 @@ import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoToolt
 import { type IUser } from '../../../../interfaces/User'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { type IOnboardingUpdateInfo } from '../../../client/onboarding/clientOnboardingUtils'
 import { FormDataContext, steps, type StepProps } from '../employeeOnboardingUtils'
@@ -153,6 +154,7 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
                   </a>
                 </li>
               </ul>
+              {requiredFieldsNoticeText}
             </div>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -174,11 +176,11 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
 
             <div className="sm:col-span-6">
               <HtInfoTooltip message="State issued badge or certifications can help in the hiring process.">
-                <HtInputLabel htmlFor="userDocument" labelText="Upload Documents:" />
+                <HtInputLabel htmlFor="documents" asterisk labelText="Upload Documents:" />
               </HtInfoTooltip>
               <div className="mt-2">
                 <FileUpload
-                  id="userDocument"
+                  id="documents"
                   name="files"
                   ref={fileUploadRef}
                   maxFileSize={5242880}
@@ -199,7 +201,7 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
                   previewWidth={200}
                 />
                 <HtInputHelpText
-                  fieldName="userDocument"
+                  fieldName="documents"
                   helpText="Please make sure your upload is clear without any warped or blur portions and shows all relevant information."
                 />
               </div>
@@ -217,7 +219,12 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
             setStep(step - 1)
           }}
         />
-        <Button label={documentsLength ? 'Save' : 'Skip for now'} onClick={handleSaveButton} loading={isLoading} />
+        <Button
+          label="Save & Continue"
+          onClick={handleSaveButton}
+          disabled={documentsLength === 0}
+          loading={isLoading}
+        />
       </div>
     </>
   )
