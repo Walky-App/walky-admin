@@ -371,9 +371,11 @@ export const AddEditJobPage = () => {
 
             {holidayCount > 0 ? (
               <li>
-                <span className="text-sm font-medium leading-5 text-gray-600">Number Of Holidays: </span>
-                <span className="text-sm leading-5 text-gray-900">{holidayCount}</span>
-                <HtInfoTooltip message="Avoid extra holiday rates by selecting regular days in the calendar instead." />
+                <div className="flex items-center">
+                  <span className="mr-1 text-sm font-medium leading-5 text-gray-600">Number Of Holidays: </span>
+                  <span className="mr-2 text-sm leading-5 text-gray-900">{holidayCount}</span>
+                  <HtInfoTooltip message="Avoid extra holiday rates by selecting regular days in the calendar instead." />
+                </div>
               </li>
             ) : null}
 

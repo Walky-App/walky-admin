@@ -1,103 +1,31 @@
-import { useContext, useState } from 'react'
-
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Image } from 'primereact/image'
 
-import { type IUser } from '../../../../interfaces/User'
-import { type ITokenInfo } from '../../../../interfaces/services'
-import { requestService } from '../../../../services/requestServiceNew'
-import { useUtils } from '../../../../store/useUtils'
-import { GetTokenInfo, SetToken } from '../../../../utils/tokenUtil'
-import { steps, FormDataContext } from '../EmployeeOnboardingPage'
+import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../../../client/onboarding/clientOnboardingUtils'
 
 interface Props {
   visible: boolean
   setVisible: (visible: boolean) => void
+  onboardingInfo: IOnboardingUpdateInfo
 }
 
-export const EmployeeFinishOnboardingDialog = ({ visible, setVisible }: Props) => {
-  const [isLoading, setIsLoading] = useState(false)
-
-  const { currentUser, setCurrentUser } = useContext(FormDataContext)
-
-  const { showToast } = useUtils()
-
+export const EmployeeFinishOnboardingDialog = ({ visible, setVisible, onboardingInfo }: Props) => {
   const navigate = useNavigate()
 
-  const currentToken = GetTokenInfo()
+  const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
 
-  const updateUserFinishOnboarding = async () => {
-    const userId = currentUser?._id
-    if (userId != null) {
-      try {
-        const response = await requestService({ path: `users/${userId}` })
-
-        if (!response.ok) {
-          throw new Error('User not found')
-        }
-
-        const userFound: IUser = await response.json()
-
-        const updatedUserObject: IUser = {
-          ...userFound,
-          onboarding: {
-            ...userFound.onboarding,
-            type: 'employee',
-            step_number: 5,
-            description: steps[4].label ?? '',
-            completed: true,
-          },
-        }
-
-        const updateResponse = await requestService({
-          path: `users/${userId}`,
-          method: 'PATCH',
-          body: JSON.stringify(updatedUserObject),
-        })
-
-        if (!updateResponse.ok) {
-          throw new Error('Failed to update user')
-        }
-
-        const updatedUser: IUser = await updateResponse.json()
-
-        setCurrentUser(updatedUser)
-
-        const updatedUserData: ITokenInfo = {
-          ...currentToken,
-          onboarding: {
-            ...updatedUser?.onboarding,
-            step_number: 5,
-            description: steps[4].label ?? '',
-            type: 'employee',
-            completed: true,
-          },
-        }
-        SetToken(updatedUserData)
-
-        navigate('/employee/dashboard')
-      } catch (error) {
-        console.error('Error updating user:', error)
-
-        showToast({
-          severity: 'error',
-          summary: 'Error saving changes',
-          detail: `Information could not be updated.`,
-          life: 2000,
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  const updatedOnboardingInfo: IOnboardingUpdateInfo = {
+    ...onboardingInfo,
   }
 
   const onSubmit = async () => {
-    setIsLoading(true)
-
-    await updateUserFinishOnboarding()
+    const success = await updateOnboardingStatus(updatedOnboardingInfo)
+    if (success === true) {
+      navigate('/employee/dashboard')
+    }
   }
 
   return (
