@@ -80,6 +80,7 @@ export const AddEditJobWithoutPaymentsPage = () => {
 
   const minimun_wage = settings?.minimun_wage as number
   const overTimeRateMultiplier = settings?.overtime_rate.overtime_rate as number
+  const holidayRateMultiplier = settings?.overtime_rate.holiday_rate as number
   const adminCosts = settings?.admin_costs.total as number
   const ourFee = settings?.our_fee as number
   const processingFee = settings?.processing_fee as number
@@ -270,30 +271,46 @@ export const AddEditJobWithoutPaymentsPage = () => {
 
   useEffect(() => {
     const overtimeHours = totalHours > 8 ? totalHours - 8 : 0
-    setOvertimeHours(overtimeHours)
     const normalHours = totalHours > 8 ? 8 : totalHours
     setNormalHours(normalHours)
 
     const overtimeRate = hourlyRate * overTimeRateMultiplier
     const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier
 
-    const totalOvertime = overtimeHours * overtimeRate * jobDatesLength * vacancy
+    const holidayOvertimeRate = overtimeRate * holidayRateMultiplier
 
-    const totalSupervisorNormalFee = vacancy >= 6 ? normalHours * hourlySupervisorFee * jobDatesLength : 0
+    const totalOvertimeHours =
+      overtimeHours * overtimeRate * (jobDatesLength - holidayCount) +
+      overtimeHours * holidayOvertimeRate * holidayCount
+
+    const totalOvertime = totalOvertimeHours * vacancy
+    setTotalOvertime(totalOvertime)
+
+    const totalSupervisorNormalFee =
+      vacancy >= 6
+        ? normalHours * hourlySupervisorFee * (jobDatesLength - holidayCount) +
+          normalHours * hourlySupervisorFee * holidayCount
+        : 0
+
     const totalSupervisorOvertimeFee =
-      vacancy >= 6 && totalHours > 8 ? overtimeHours * overtimeSupervisorRate * jobDatesLength : 0
+      vacancy >= 6 && totalHours > 8
+        ? overtimeHours * overtimeSupervisorRate * (jobDatesLength - holidayCount) +
+          overtimeHours * holidayOvertimeRate * holidayCount
+        : 0
 
     const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
     setTotalSupervisorFee(newTotalSupervisorFee)
 
     const baseAmount =
-      hourlyRate * vacancy * (normalHours + overtimeHours) * jobDatesLength + newTotalSupervisorFee + totalOvertime
-    setTotalOvertime(totalOvertime)
+      hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount) +
+      hourlyRate * vacancy * normalHours * holidayCount +
+      totalOvertime +
+      newTotalSupervisorFee
 
     const newPreliminaryPricing = baseAmount * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
-
     const totalOfAllTempsHours = totalHours * jobDatesLength * vacancy
     const hourlyRateWithFees = newPreliminaryPricing / totalOfAllTempsHours
+
     setHourlyRateWithFees(hourlyRateWithFees)
   }, [
     hourlyRate,
@@ -305,11 +322,14 @@ export const AddEditJobWithoutPaymentsPage = () => {
     ourFee,
     processingFee,
     overTimeRateMultiplier,
+    holidayCount,
+    holidayRateMultiplier,
   ])
 
   const renderPricingTable = () => {
-    const baseAmount =
-      hourlyRate * vacancy * (normalHours + overtimeHours) * jobDatesLength + totalSupervisorFee + totalOvertime
+    const normalDayAmount = hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount)
+    const holidayAmount = hourlyRate * holidayRateMultiplier * vacancy * normalHours * holidayCount
+    const baseAmount = normalDayAmount + holidayAmount + totalOvertime + totalSupervisorFee
 
     const adminCostAmount = (baseAmount * adminCosts) / 100
     const ourFeeAmount = (baseAmount * ourFee) / 100
@@ -334,12 +354,24 @@ export const AddEditJobWithoutPaymentsPage = () => {
               <span className="text-sm font-medium leading-5 text-gray-600">Number Of Selected Working Days: </span>
               <span className="text-sm leading-5 text-gray-900">{jobDatesLength}</span>
             </li>
+
+            {holidayCount > 0 ? (
+              <li>
+                <div className="flex items-center">
+                  <span className="ext-sm mr-1 font-medium leading-5 text-gray-600">Number Of Holidays: </span>
+                  <span className="mr-2 text-sm leading-5 text-gray-900">{holidayCount}</span>
+                  <HtInfoTooltip message="Avoid extra holiday rates by selecting regular days in the calendar instead." />
+                </div>
+              </li>
+            ) : null}
+
             {vacancy >= 6 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">Supervisor Fees: </span>
                 <span className="text-sm leading-5 text-gray-900">${totalSupervisorFee.toFixed(2)}</span>
               </li>
             ) : null}
+
             {totalHours > 8 ? (
               <li>
                 <div className="flex items-center">
@@ -349,6 +381,7 @@ export const AddEditJobWithoutPaymentsPage = () => {
                 </div>
               </li>
             ) : null}
+
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Total Hours Per Day: </span>
               <span className="text-sm leading-5 text-gray-900">{totalHours.toFixed(2)}</span>
@@ -382,7 +415,7 @@ export const AddEditJobWithoutPaymentsPage = () => {
             {totalEstimatedCost !== 0 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">
-                  Estimated total Per Hour (fees Included):
+                  Estimated total Per Hour (fees Included)
                 </span>
                 <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
               </li>
@@ -449,65 +482,72 @@ export const AddEditJobWithoutPaymentsPage = () => {
               </div>
             </div>
           ) : null}
+          {/* Job Dates */}
         </div>
 
-        {/* Shift Details */}
-        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-          <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
-            <p className="mt-4 text-sm leading-6 text-gray-600">
-              Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
-              select the pay rate you are choosing to list your job.
-            </p>
-            {requiredFieldsNoticeText}
-            {totalHours !== 0 ? (
-              <div className="mt-10">
-                <div
-                  className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
-                  Total Hours: {totalHours}
-                </div>
-                <small className="text-gray-500">(Should be a minimum of 7 hours to successfully create a job)</small>
+        {isFacilitySelected ? (
+          <>
+            {/* Shift Details */}
+            <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+              <div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">Hours, Temps and Rates</h2>
+                <p className="mt-4 text-sm leading-6 text-gray-600">
+                  Please select a start and end time, the length of the lunch breaks, and number of temps needed. Please
+                  select the pay rate you are choosing to list your job.
+                </p>
+                {requiredFieldsNoticeText}
+                {totalHours !== 0 ? (
+                  <div className="mt-10">
+                    <div
+                      className={`text-base font-semibold leading-7 ${totalHours < 7 ? 'text-red-500' : 'text-gray-900'}`}>
+                      Total Hours: {totalHours}
+                    </div>
+                    <small className="text-gray-500">
+                      (Should be a minimum of 7 hours to successfully create a job)
+                    </small>
+                  </div>
+                ) : null}
               </div>
-            ) : null}
-          </div>
 
-          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            {startTime ? (
-              <div className="sm:col-span-3">
-                {renderStartTimeController(
-                  control,
-                  errors,
-                  startTime,
-                  setStartTime,
-                  isStartTimeValid,
-                  setIsStartTimeValid,
-                )}
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
+                {startTime ? (
+                  <div className="sm:col-span-3">
+                    {renderStartTimeController(
+                      control,
+                      errors,
+                      startTime,
+                      setStartTime,
+                      isStartTimeValid,
+                      setIsStartTimeValid,
+                    )}
+                  </div>
+                ) : null}
+
+                {endTime ? (
+                  <div className="sm:col-span-3">
+                    {renderEndTimeController(control, errors, endTime, setEndTime, isEndTimeValid, setIsEndTimeValid)}
+                  </div>
+                ) : null}
+
+                <div className="sm:col-span-3">{renderVacancyController(control, errors)}</div>
+
+                <div className="sm:col-span-3">{renderPayRateController(control, errors, minimun_wage)}</div>
+
+                <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
+
+                <div className="sm:col-span-3">{renderPricingTable()}</div>
+
+                <div className="sm:col-span-6 sm:col-start-1">{renderJobTipsController(control, errors)}</div>
               </div>
-            ) : null}
+            </div>
 
-            {endTime ? (
-              <div className="sm:col-span-3">
-                {renderEndTimeController(control, errors, endTime, setEndTime, isEndTimeValid, setIsEndTimeValid)}
+            <div className="mt-6 flex items-center justify-end gap-x-6">
+              <div>
+                <Button type="submit" label="Submit" loading={isSubmitting} />
               </div>
-            ) : null}
-
-            <div className="sm:col-span-3">{renderVacancyController(control, errors)}</div>
-
-            <div className="sm:col-span-3">{renderPayRateController(control, errors, minimun_wage)}</div>
-
-            <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
-
-            <div className="sm:col-span-3">{renderPricingTable()}</div>
-
-            <div className="sm:col-span-6 sm:col-start-1">{renderJobTipsController(control, errors)}</div>
-          </div>
-        </div>
-
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <div>
-            <Button type="submit" label="Submit" loading={isSubmitting} />
-          </div>
-        </div>
+            </div>
+          </>
+        ) : null}
       </form>
     </>
   )
