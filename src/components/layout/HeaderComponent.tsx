@@ -157,7 +157,7 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
           </button>
         </div>
       </header>
-      {!userIsOnboarded ? (
+      {!userIsOnboarded && role !== 'admin' ? (
         <div className="rounded-md bg-yellow-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
