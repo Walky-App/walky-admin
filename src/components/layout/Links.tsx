@@ -49,7 +49,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       ],
     },
     {
-      id: 2,
+      id: 3,
       name: 'Companies',
       href: '/admin/companies',
       icon: <FaBusinessTime />,
@@ -59,7 +59,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       ],
     },
     {
-      id: 3,
+      id: 4,
       name: 'Facilities',
       href: '/admin/facilities',
       icon: <FaBuilding />,
@@ -69,7 +69,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       ],
     },
     {
-      id: 4,
+      id: 5,
       name: 'Jobs',
       href: '/admin/jobs',
       icon: <FaBriefcase />,
@@ -80,7 +80,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       ],
     },
     {
-      id: 5,
+      id: 6,
       name: 'HTU',
       href: '/admin/learn',
       icon: <FaUserGraduate />,
@@ -91,6 +91,12 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     },
     {
       id: 6,
+      name: 'Service Orders',
+      href: '/admin/service-orders',
+      icon: <FaBriefcase />,
+    },
+    {
+      id: 7,
       name: 'Products',
       href: '/admin/products',
       icon: <MdSchool />,
@@ -100,8 +106,8 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
         { name: 'Categories', href: '/admin/products', disabled: true },
       ],
     },
-    { id: 7, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
-    { id: 8, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
+    { id: 8, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
+    { id: 9, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
   ]
 
   const clientLinks: INavLink[] = [
@@ -127,6 +133,12 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       disabled: true,
     },
     { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
+    {
+      id: 6,
+      name: 'Service Orders',
+      href: '/client/service-orders',
+      icon: <FaBriefcase />,
+    },
     {
       id: 7,
       name: 'Facilities',

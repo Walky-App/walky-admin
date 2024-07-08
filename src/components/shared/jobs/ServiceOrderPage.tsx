@@ -1,7 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
+import { useParams } from 'react-router-dom'
+
+import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
+
+import { type IServiceOrder } from '../../../interfaces/serviceOrder'
+import { requestService } from '../../../services/requestServiceNew'
 
 const projects = [
   {
@@ -23,24 +29,50 @@ const creditCards = [
 ]
 export const ServiceOrderPage = () => {
   const [selectedCard, setSelectedCard] = useState(null)
+  const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
+  // const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
+
+  const jobId = useParams().id
+  useEffect(() => {
+    const getServiceOrder = async () => {
+      try {
+        const response = await requestService({ path: `jobs/${jobId}/service-order`, method: 'GET' })
+        if (!response.ok) {
+          throw new Error('Failed to fetch service order')
+        }
+        const fetchedData = await response.json()
+        // console.log('fetchedData', fetchedData)
+        const serviceOrder = fetchedData.service_order
+        // const paymentMethods = fetchedData.payments_methods
+        setServiceOrderData(serviceOrder)
+        // console.log('serviceOrder', serviceOrder)
+        // setPaymentMethods(paymentMethods)
+        // console.log('paymentMethods', paymentMethods)
+      } catch (error) {
+        console.error('Error fetching service order data:', error)
+      }
+    }
+
+    getServiceOrder()
+  }, [jobId])
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <img className="h-16 w-auto" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
-          <h1 className="text-base font-semibold leading-6 text-gray-900">Service order #12345516</h1>
+          <h1 className="text-base font-semibold leading-6 text-gray-900">Service order #{serviceOrder?._id}</h1>
 
           <p className="mt-2 text-sm text-gray-700">
-            For Harvester job from <time dateTime="2022-08-01">August 1, 2022</time> to{' '}
-            <time dateTime="2022-08-31">August 31, 2022</time>.
+            For {serviceOrder?.job_id.title} job on:
+            {serviceOrder?.job_id.job_dates.map(date => <div key={date}>{format(new Date(date), 'PPPP')}</div>)}
           </p>
           <p className="mt-2 text-sm text-gray-700">
-            Company Information: Colorado Events. 16350 E Arapahoe Rd, Suite 108 # 161, Foxfield, CO 80016.
-            hemptemps@gmail.com
+            Company Information: {serviceOrder?.company_id.company_name} - {serviceOrder?.company_id.company_address} -{' '}
+            {serviceOrder?.company_id.company_phone_number}
           </p>
           <p className="mt-2 text-sm text-gray-700">
-            Facility information: Summit Concentrates 13800 E Moncreiff Pl Aurora, CO 80011
+            Facility information: {serviceOrder?.facility_id.name} - {serviceOrder?.facility_id.address}
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">

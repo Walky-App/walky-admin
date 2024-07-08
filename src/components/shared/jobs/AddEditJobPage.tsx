@@ -245,6 +245,7 @@ export const AddEditJobPage = () => {
           method: 'POST',
           body: JSON.stringify(requestData),
         })
+
         if (!response.ok) {
           const data = await response.json()
           const message = data.message instanceof Error ? data.message.message : data.message
@@ -252,12 +253,15 @@ export const AddEditJobPage = () => {
           return
         }
 
+        const data = await response.json()
+        const jobID = data.jobId
+
         showToast({
           severity: 'success',
           summary: 'Success',
           detail: `${requestData.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
         })
-        navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
+        navigate(isAdmin ? `/admin/jobs/${jobID}/service-order` : `/client/jobs/${jobID}/service-order`) // navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : error
         console.error('Error submitting job information:', errorMessage)
