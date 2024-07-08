@@ -8,9 +8,8 @@ import { Button } from 'primereact/button'
 
 import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
-import { type HolidayDocument } from '../../../interfaces/setting'
+import { type StatesSettingsDocument, type HolidayDocument } from '../../../interfaces/setting'
 import { requestService } from '../../../services/requestServiceNew'
-import { useSettings } from '../../../store/useSettings'
 import { useUtils } from '../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 import { roleChecker } from '../../../utils/roleChecker'
@@ -32,8 +31,6 @@ import {
   renderJobTipsController,
 } from './jobsUtils'
 
-let defaultValues = defaultJobFormValues
-
 const calculateHours = (start: Date, end: Date, lunch: number) => {
   const startHours = start.getHours() + start.getMinutes() / 60
   let endHours = end.getHours() + end.getMinutes() / 60
@@ -49,55 +46,62 @@ const calculateHours = (start: Date, end: Date, lunch: number) => {
 }
 
 export const AddEditJobPage = () => {
-  const [isFacilitySelected, setIsFacilitySelected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobFound, setJobFound] = useState<IJob | null>(null)
   const [facilities, setFacilities] = useState<IFacility[]>()
   const [formData, setFormData] = useState(defaultJobFormValues)
-  const [startTime, setStartTime] = useState<Date | null>(defaultValues.start_time)
-  const [endTime, setEndTime] = useState<Date | null>(defaultValues.end_time)
+  const [facilityStateSettings, setFacilityStateSettings] = useState<StatesSettingsDocument | null>()
+
+  // Start/End Time States
+  const [startTime, setStartTime] = useState<Date | null>(formData.start_time)
+  const [endTime, setEndTime] = useState<Date | null>(formData.end_time)
   const [isStartTimeValid, setIsStartTimeValid] = useState(true)
   const [isEndTimeValid, setIsEndTimeValid] = useState(true)
+
+  // Service Order Preview States
+  const [minimumWage, setMinimumWage] = useState(0)
   const [totalHours, setTotalHours] = useState(0)
   const [normalHours, setNormalHours] = useState(0)
-  const [totalSupervisorFee, setTotalSupervisorFee] = useState(0)
   const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
   const [totalOvertime, setTotalOvertime] = useState(0)
-  const [totalOvertimeHours, setTotalOvertimeHours] = useState(0)
+  const [overTimeRateMultiplier, setOverTimeRateMultiplier] = useState(0)
+  const [holidayRateMultiplier, setHolidayRateMultiplier] = useState(0)
+  const [adminCosts, setAdminCosts] = useState(0)
+  const [ourFee, setOurFee] = useState(0)
+  const [processingFee, setProcessingFee] = useState(0)
+  const [totalSupervisorFee, setTotalSupervisorFee] = useState(0)
+  const [hourlySupervisorFee, setHourlySupervisorFee] = useState(0)
   const [holidayCount, setHolidayCount] = useState(0)
+  const [stateHolidays, setStateHolidays] = useState<HolidayDocument[]>([])
 
   const navigate = useNavigate()
   const params = useParams()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
-  const { settings, setSettings } = useSettings()
   const role = roleChecker()
   const user_id = GetTokenInfo()._id
-
-  const minimun_wage = settings?.minimun_wage as number
-  const overTimeRateMultiplier = settings?.overtime_rate.overtime_rate as number
-  const holidayRateMultiplier = settings?.overtime_rate.holiday_rate as number
-  const adminCosts = settings?.admin_costs.total as number
-  const ourFee = settings?.our_fee as number
-  const processingFee = settings?.processing_fee as number
-  const hourlySupervisorFee = settings?.supervisor_fee as number
-  const stateHolidays = settings?.holiday as HolidayDocument[]
-
-  if (isAdmin) {
-    defaultValues = { ...defaultValues, hourly_rate: (settings?.minimun_wage as number) || 0 }
-  }
-
-  const values = formData != null && params.id != null ? formData : defaultValues
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-    watch,
     setValue,
-  } = useForm({ values })
+  } = useForm({ defaultValues: formData })
+
+  useEffect(() => {
+    if (!facilityStateSettings) return
+    setValue('hourly_rate', facilityStateSettings.minimun_wage)
+    setMinimumWage(facilityStateSettings?.minimun_wage)
+    setOverTimeRateMultiplier(facilityStateSettings?.overtime_rate.overtime_rate)
+    setHolidayRateMultiplier(facilityStateSettings?.overtime_rate.holiday_rate)
+    setAdminCosts(facilityStateSettings?.admin_costs.total)
+    setOurFee(facilityStateSettings?.our_fee)
+    setProcessingFee(facilityStateSettings?.processing_fee)
+    setHourlySupervisorFee(facilityStateSettings?.supervisor_fee)
+    setStateHolidays(facilityStateSettings?.holiday)
+  }, [facilityStateSettings, setValue])
 
   useEffect(() => {
     const getFacilities = async () => {
@@ -119,6 +123,25 @@ export const AddEditJobPage = () => {
     getFacilities()
   }, [location.pathname, user_id])
 
+  const selectedFacility = useWatch({ name: 'facility_id', control })
+
+  useEffect(() => {
+    const getFacilityStateSettings = async () => {
+      const facility = facilities?.find(facility => facility._id === selectedFacility)
+      if (facility) {
+        try {
+          const response = await requestService({ path: `settings/${facility.state}` })
+          const data = await response.json()
+          if (!response.ok) throw new Error(data.message)
+          setFacilityStateSettings(data)
+        } catch (error) {
+          console.error('Error fetching facility state settings:', error)
+        }
+      }
+    }
+    getFacilityStateSettings()
+  }, [facilities, selectedFacility])
+
   useEffect(() => {
     const getJob = async () => {
       if (!params.id) return
@@ -133,8 +156,8 @@ export const AddEditJobPage = () => {
         setJobFound(job)
 
         if (facilities && facilities.length > 0) {
-          setFormData({
-            ...defaultValues,
+          setFormData(prev => ({
+            ...prev,
             title: job.title,
             facility_id: facilities.find(facility => facility._id === job.facility._id)?._id ?? '',
             job_dates: job.job_dates.map((dateString: string) => parseISO(dateString)),
@@ -145,7 +168,7 @@ export const AddEditJobPage = () => {
             vacancy: job.vacancy,
             hourly_rate: job.hourly_rate,
             job_tips: job.job_tips,
-          })
+          }))
         }
       } catch (error) {
         console.error('Error fetching job:', error)
@@ -157,7 +180,7 @@ export const AddEditJobPage = () => {
     }
   }, [params.id, facilities])
 
-  const lunchBreak = watch('lunch_break')
+  const lunchBreak = useWatch({ name: 'lunch_break', control })
 
   useEffect(() => {
     if (startTime && endTime) {
@@ -299,8 +322,6 @@ export const AddEditJobPage = () => {
       overtimeHours * overtimeRate * (jobDatesLength - holidayCount) +
       overtimeHours * holidayOvertimeRate * holidayCount
 
-    setTotalOvertimeHours(totalOvertimeHours)
-
     const totalOvertime = totalOvertimeHours * vacancy
     setTotalOvertime(totalOvertime)
 
@@ -331,17 +352,17 @@ export const AddEditJobPage = () => {
 
     setHourlyRateWithFees(hourlyRateWithFees)
   }, [
-    hourlyRate,
-    vacancy,
-    jobDatesLength,
-    totalHours,
-    hourlySupervisorFee,
     adminCosts,
-    ourFee,
-    processingFee,
-    overTimeRateMultiplier,
     holidayCount,
     holidayRateMultiplier,
+    hourlyRate,
+    hourlySupervisorFee,
+    jobDatesLength,
+    ourFee,
+    overTimeRateMultiplier,
+    processingFee,
+    totalHours,
+    vacancy,
   ])
 
   const renderPricingTable = () => {
@@ -470,22 +491,12 @@ export const AddEditJobPage = () => {
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
               <div className="sm:col-span-3">{renderJobTitleController(control, errors)}</div>
               {facilities ? (
-                <div className="sm:col-span-3">
-                  {renderFacilityController(
-                    control,
-                    errors,
-                    facilities,
-                    setValue,
-                    setSettings,
-                    setIsFacilitySelected,
-                    !!jobFound,
-                  )}
-                </div>
+                <div className="sm:col-span-3">{renderFacilityController(control, errors, facilities, !!jobFound)}</div>
               ) : null}
             </div>
           </div>
 
-          {isFacilitySelected ? (
+          {selectedFacility ? (
             <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
               <div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">Job Dates</h2>
@@ -505,7 +516,7 @@ export const AddEditJobPage = () => {
           {/* Job Dates */}
         </div>
 
-        {isFacilitySelected ? (
+        {selectedFacility ? (
           <>
             {/* Shift Details */}
             <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
@@ -551,7 +562,7 @@ export const AddEditJobPage = () => {
 
                 <div className="sm:col-span-3">{renderVacancyController(control, errors)}</div>
 
-                <div className="sm:col-span-3">{renderPayRateController(control, errors, minimun_wage)}</div>
+                <div className="sm:col-span-3">{renderPayRateController(control, errors, minimumWage)}</div>
 
                 <div className="sm:col-span-3">{renderLunchBreakController(control, errors)}</div>
 

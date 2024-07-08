@@ -103,7 +103,9 @@ export const JobCard = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
 
           {/* Job Details */}
           <div className="flex w-full basis-2/3 cursor-pointer flex-col items-start justify-start gap-4 px-5 pb-5">
-            <p className="mt-4 text-balance text-base font-semibold capitalize text-black">{job.title}</p>
+            <p className="mt-4 text-balance text-base font-semibold capitalize text-black">
+              {job.title} - #{job.uid}
+            </p>
             <div className="flex flex-wrap gap-8">
               <div className="flex items-start gap-2">
                 <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />

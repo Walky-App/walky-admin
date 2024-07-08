@@ -37,7 +37,7 @@ export const EmployeeWelcomeDialog = ({ visible, setVisible }: WelcomeDialogProp
                 <video
                   className="aspect-video w-full"
                   src="https://hemptemps-prod.s3.amazonaws.com/Videos/orientation/job-seeker-orientation-final-cut.mp4"
-                  title="job-seeker-orientation-final-cut"
+                  title="job-seeker-orientation-video"
                   autoPlay
                   controls
                 />
