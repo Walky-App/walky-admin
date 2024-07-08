@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/media-has-caption */
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 
@@ -32,12 +33,15 @@ export const EmployeeWelcomeDialog = ({ visible, setVisible }: WelcomeDialogProp
           <div className="flex w-full flex-col items-center rounded-lg bg-white px-4 py-5 xl:px-8">
             <img src="/assets/logos/logo-horizontal-cropped.png" alt="Hemp Temps logo" className="w-6/12 xl:w-4/12" />
             <div className="mt-4 flex flex-col justify-center gap-x-8 lg:w-11/12 lg:flex-row lg:gap-x-12 2xl:w-10/12 2xl:gap-x-20">
-              <iframe
-                className="aspect-video w-full"
-                src="https://www.youtube.com/embed/5NaQa0Y_s28?autoplay=1&mute=1&rel=0&controls=1&showinfo=0&modestbranding=1&loop=1&"
-                title="YouTube video player"
-                allow="autoplay"
-              />
+              <div>
+                <video
+                  className="aspect-video w-full"
+                  src="https://hemptemps-prod.s3.amazonaws.com/Videos/orientation/job-seeker-orientation-final-cut.mp4"
+                  title="job-seeker-orientation-final-cut"
+                  autoPlay
+                  controls
+                />
+              </div>
               <div className="mt-6 flex flex-col justify-center gap-y-6 lg:w-1/2 lg:gap-y-8 xl:mt-0 2xl:gap-y-10">
                 <h2 className="text-2xl font-bold text-black sm:text-3xl">Hey, Ready for your next big opportunity?</h2>
                 {welcomeBullets.map((bullet, index) => (
