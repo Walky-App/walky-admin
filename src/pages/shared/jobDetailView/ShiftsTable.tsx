@@ -1,11 +1,12 @@
 import { type Dispatch, type SetStateAction, useState } from 'react'
 
+import { isToday, isBefore, startOfDay } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
 
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IJob } from '../../../interfaces/job'
+import { type IJobShiftDay, type IApplicant, type IJob } from '../../../interfaces/job'
 import { type ITokenInfo } from '../../../interfaces/services'
 import { type UserShiftsPopulate } from '../../../interfaces/shifts'
 import { requestService } from '../../../services/requestServiceNew'
@@ -15,14 +16,18 @@ export const ShiftsTable = ({
   job,
   setJob,
   user,
-  setIsApplyForJobLoading,
+  jobHasEnded,
   setHasDateIntersection,
+  setUserWorkingInThisJob,
+  employeeActive,
 }: {
   job: IJob
   setJob: Dispatch<SetStateAction<IJob | null>>
   user: ITokenInfo
-  setIsApplyForJobLoading: Dispatch<SetStateAction<boolean>>
+  jobHasEnded: boolean
   setHasDateIntersection: Dispatch<SetStateAction<boolean>>
+  setUserWorkingInThisJob: Dispatch<SetStateAction<boolean>>
+  employeeActive: boolean
 }) => {
   const [shiftDropReason, setShiftDropReason] = useState('')
   const [showDialog, setShowDialog] = useState(false)
@@ -36,7 +41,9 @@ export const ShiftsTable = ({
     showToast({ severity: 'success', summary: 'Rejected', detail: 'Shift was not dropped 🙂', life: 3000 })
   }
 
-  const applyForDay = async (e: React.MouseEvent<HTMLButtonElement>, dateString: string) => {
+  const today = new Date()
+
+  const applyForAShift = async (e: React.MouseEvent<HTMLButtonElement>, dateString: string) => {
     e.preventDefault()
     try {
       const [month, day, year] = dateString.split('/')
@@ -73,14 +80,10 @@ export const ShiftsTable = ({
       if (response.ok) {
         const data = await response.json()
         setJob(data)
+        setUserWorkingInThisJob(true)
         showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully picked Up Shift' })
-        setIsApplyForJobLoading(true)
-        setTimeout(() => {
-          setIsApplyForJobLoading(false)
-        }, 1500)
       }
     } catch (error: unknown) {
-      setIsApplyForJobLoading(false)
       if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
         const err = error as { status: number; message: string }
         if (err.status === 400) {
@@ -116,6 +119,12 @@ export const ShiftsTable = ({
       setJob(data)
       setShiftDropReason('')
 
+      if (data.applicants?.some((applicant: IApplicant) => applicant?.user?._id === user._id)) {
+        // setUserWorkingInThisJob(true)
+      } else {
+        setUserWorkingInThisJob(false)
+      }
+
       showToast({
         severity: 'success',
         summary: 'Confirmed',
@@ -129,18 +138,161 @@ export const ShiftsTable = ({
     }
   }
 
+  const handleWhenUserIsNotApproved = (
+    eachShift: IJobShiftDay,
+    index: number,
+    formattedDate: string,
+    dayOfWeek: string,
+  ) => {
+    return (
+      <tr key={eachShift.day.toString()}>
+        <td>{index + 1}</td>
+        <td className="whitespace-nowrap py-4 text-lg font-medium md:px-3">{formattedDate}</td>
+        <td className="hidden py-8 text-lg font-medium sm:pl-0 md:block">
+          <time dateTime={eachShift.day.toString()}>{dayOfWeek}</time>
+        </td>
+        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
+          <p>Account not Active or Verified</p>
+        </td>
+      </tr>
+    )
+  }
+
+  const handleShowWhenJobHasEnded = (
+    eachShift: IJobShiftDay,
+    index: number,
+    formattedDate: string,
+    dayOfWeek: string,
+  ) => {
+    const getUserShiftsLengthByDate = (dateString: string): UserShiftsPopulate[] => {
+      const [month, day, year] = dateString.split('/')
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      const formattedDate = date.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      const result = job?.job_days.find(jobDay => {
+        const jobDate = new Date(jobDay.day)
+        const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        return formattedJobDate === formattedDate
+      })
+      if (!result) return []
+      return result.shifts_id?.user_shifts as UserShiftsPopulate[]
+    }
+
+    return (
+      <tr key={eachShift.day.toString()}>
+        <td>{index + 1}</td>
+        <td className="whitespace-nowrap py-4 text-lg font-medium md:px-3">{formattedDate}</td>
+        <td className="hidden py-8 text-lg font-medium sm:pl-0 md:block">
+          <time dateTime={eachShift.day.toString()}>{dayOfWeek}</time>
+        </td>
+        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
+          <a href="/">
+            {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+              <p>Vacancy completed</p>
+            ) : (
+              <div>
+                <p>Job has ended</p>
+              </div>
+            )}
+          </a>
+        </td>
+      </tr>
+    )
+  }
+
+  const handleShowButtons = (eachShift: IJobShiftDay, index: number, formattedDate: string, dayOfWeek: string) => {
+    const getUserShiftsIdByUserId = (userId: string) =>
+      eachShift?.shifts_id?.user_shifts?.find(shift => shift.user_id._id === userId)?._id
+
+    const getUserShiftsLengthByDate = (dateString: string): UserShiftsPopulate[] => {
+      const [month, day, year] = dateString.split('/')
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      const formattedDate = date.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      const result = job?.job_days.find(jobDay => {
+        const jobDate = new Date(jobDay.day)
+        const formattedJobDate = jobDate.toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        return formattedJobDate === formattedDate
+      })
+      if (!result) return []
+      return result.shifts_id?.user_shifts as UserShiftsPopulate[]
+    }
+
+    return (
+      <tr key={eachShift.day.toString()}>
+        <td>{index + 1}</td>
+        <td className="whitespace-nowrap py-4 text-lg font-medium md:px-3">{formattedDate}</td>
+        <td className="hidden py-8 text-lg font-medium sm:pl-0 md:block">
+          <time dateTime={eachShift.day.toString()}>{dayOfWeek}</time>
+        </td>
+        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
+          <a href="/">
+            {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+              <p>Vacancy completed</p>
+            ) : (
+              <div>
+                {jobHasEnded ? (
+                  <p>Job has ended</p>
+                ) : getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
+                  <>
+                    <p className="flex justify-end text-sm">
+                      <HtInfoTooltip
+                        className="mr-2"
+                        message={`If you drop the shift within 24hours of Shift start time \n your account will marked down with 1 strike \n ( 2 strikes and account will be suspended )`}
+                      />
+                      Shift Confirmed
+                    </p>
+                    <Button
+                      onClick={e => {
+                        e.preventDefault()
+                        setShowDialog(true)
+                        setShiftInfo({
+                          shiftId: eachShift.shifts_id._id,
+                          userShiftId: getUserShiftsIdByUserId(user._id) ?? '',
+                        })
+                      }}
+                      severity="danger"
+                      label="Drop Shift"
+                      icon="pi pi-times"
+                    />
+                  </>
+                ) : (
+                  <Button label="Pickup Shift" onClick={e => applyForAShift(e, formattedDate)} />
+                )}
+              </div>
+            )}
+          </a>
+        </td>
+      </tr>
+    )
+  }
+
   return (
     <section className="mt-12">
       <table className="min-w-full divide-y divide-gray-300">
         <thead>
           <tr>
-            <th scope="col" className="py-3.5 pl-4 pr-3 text-left sm:pl-0">
-              Shifts
+            <th scope="col" className="py-3.5 text-left sm:pl-0 md:pl-4 md:pr-3">
+              Shift
             </th>
-            <th scope="col" className="px-3 py-3.5 text-left">
+            <th scope="col" className="px-3 text-left md:py-3.5">
               Date
             </th>
-            <th scope="col" className="py-3.5 pl-4 pr-3 text-left sm:pl-0">
+            <th scope="col" className="hidden py-3.5 pr-3 text-left sm:pl-0 md:block ">
               Day of Week
             </th>
 
@@ -155,85 +307,17 @@ export const ShiftsTable = ({
             const dateObj = new Date(eachShift.day)
             const formattedDate = dateObj.toLocaleDateString()
             const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+            const isJobEndTimePassed = job?.end_time ? isBefore(today, new Date(job.end_time)) : false
 
-            const getUserShiftsIdByUserId = (userId: string) => {
-              return eachShift?.shifts_id?.user_shifts?.find(shift => shift.user_id._id === userId)?._id
+            if (!employeeActive) {
+              return handleWhenUserIsNotApproved(eachShift, index, formattedDate, dayOfWeek)
             }
 
-            function getUserShiftsLengthByDate(dateString: string): UserShiftsPopulate[] {
-              const [month, day, year] = dateString.split('/')
-              const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-              const formattedDate = date.toLocaleDateString('en-US', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-              })
-              const result = job?.job_days.find(jobDay => {
-                const jobDate = new Date(jobDay.day)
-                const formattedJobDate = jobDate.toLocaleDateString('en-US', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })
-                return formattedJobDate === formattedDate
-              })
-              if (!result) return []
-              return result.shifts_id?.user_shifts as UserShiftsPopulate[]
+            if ((isToday(today) && isBefore(dateObj, startOfDay(today))) || isJobEndTimePassed) {
+              return handleShowWhenJobHasEnded(eachShift, index, formattedDate, dayOfWeek)
             }
 
-            return (
-              <tr key={eachShift.day.toString()}>
-                <td>{index + 1}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-lg font-medium">{formattedDate}</td>
-                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-lg font-medium sm:pl-0">
-                  <time dateTime={eachShift.day.toString()} className="w-28 flex-none">
-                    {dayOfWeek}
-                  </time>
-                </td>
-                <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
-                  <a href="/">
-                    {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
-                      <div>
-                        {getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
-                          <p>Shift Claimed</p>
-                        ) : (
-                          <p>Vacancy completed</p>
-                        )}
-                      </div>
-                    ) : (
-                      <div>
-                        {getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
-                          <>
-                            <p className="flex justify-end text-sm">
-                              <HtInfoTooltip
-                                className="mr-2"
-                                message={`If you drop the shift within 24hours of Shift start time \n your account will marked down with 1 strike \n ( 2 strikes and account will be suspended )`}
-                              />
-                              Shift Confirmed
-                            </p>
-                            <Button
-                              onClick={e => {
-                                e.preventDefault()
-                                setShowDialog(true)
-                                setShiftInfo({
-                                  shiftId: eachShift.shifts_id._id,
-                                  userShiftId: getUserShiftsIdByUserId(user._id) ?? '',
-                                })
-                              }}
-                              severity="danger"
-                              label="Drop Shift"
-                              icon="pi pi-times"
-                            />
-                          </>
-                        ) : (
-                          <Button label="Pickup Shift" onClick={e => applyForDay(e, formattedDate)} />
-                        )}
-                      </div>
-                    )}
-                  </a>
-                </td>
-              </tr>
-            )
+            return handleShowButtons(eachShift, index, formattedDate, dayOfWeek)
           })}
         </tbody>
       </table>
@@ -242,7 +326,7 @@ export const ShiftsTable = ({
           header="Drop Shift?"
           visible={showDialog}
           draggable={false}
-          style={{ width: '70%' }}
+          className="w-full md:w-1/2 "
           onHide={() => {
             if (!showDialog) return
             setShowDialog(false)
@@ -265,11 +349,11 @@ export const ShiftsTable = ({
             </h2>
             <p className="text-lg font-medium">( 2 strikes and your account will be suspended! ☹️ )</p>
             <br />
-            <h2 className="text-xl font-medium text-red-600">Reason for dropping the shift</h2>{' '}
+            <h2 className="text-xl font-medium text-red-600">Reason for dropping the shift</h2>
             <InputTextarea
               required
               rows={5}
-              cols={30}
+              cols={50}
               className="text-lg"
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setShiftDropReason(e.target.value)}
               value={shiftDropReason}

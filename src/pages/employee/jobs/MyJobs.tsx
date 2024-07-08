@@ -51,25 +51,13 @@ export const EmployeeMyJobs = () => {
     )
   }
 
-  const activeJobs = jobs?.filter(
-    job => job.applicants.length > 0 && job.applicants[0].is_approved === true && job.is_completed === false,
-  )
-
-  const pendingJobs = jobs?.filter(
-    job =>
-      job.applicants.length > 0 &&
-      job.applicants[0].is_approved === false &&
-      job.applicants[0].is_working === false &&
-      job.applicants[0].rejection_reason === '',
-  )
+  const activeJobs = jobs?.filter(job => job.is_completed === false)
 
   const rejectedJobs = jobs?.filter(job => job.applicants.length > 0 && job.applicants[0].rejection_reason !== '')
 
   const savedJobs = jobs?.filter(job => job.saved_by.length > 0 && job.saved_by.some(userId => userId === _id))
 
-  const pastJobs = jobs?.filter(
-    job => job.applicants.length > 0 && job.applicants[0].is_approved === true && job.is_completed === true,
-  )
+  const pastJobs = jobs?.filter(job => job.is_completed === true)
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -100,15 +88,6 @@ export const EmployeeMyJobs = () => {
             </TabPanel>
           </TabView>
           <TabView>
-            <TabPanel header="Pending">
-              <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-                {pendingJobs?.length > 0 ? (
-                  pendingJobs.map(job => <JobCard key={job._id} job={job} handleSaveUnsaveJob={handleSaveUnsaveJob} />)
-                ) : (
-                  <div>There are no jobs pending yet.</div>
-                )}
-              </ul>
-            </TabPanel>
             {role === adminRole ? (
               <TabPanel header="Rejected">
                 <ul className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
