@@ -255,13 +255,20 @@ export const AddEditJobPage = () => {
 
         const data = await response.json()
         const jobID = data.jobId
+        const serviceOrderId = data.serviceOrderId
 
         showToast({
           severity: 'success',
           summary: 'Success',
           detail: `${requestData.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
         })
-        navigate(isAdmin ? `/admin/jobs/${jobID}/service-order` : `/client/jobs/${jobID}/service-order`) // navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
+        setTimeout(() => {
+          navigate(
+            isAdmin
+              ? `/admin/jobs/${jobID}/service-order/${serviceOrderId}`
+              : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
+          )
+        }, 2000)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : error
         console.error('Error submitting job information:', errorMessage)

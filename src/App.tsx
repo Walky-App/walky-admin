@@ -162,7 +162,7 @@ export const App = () => {
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
                   {/* <Route element={<ServiceOrderPage />} path="/client/jobs/new/service-order" /> */}
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
-                  <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order" />
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
                   <Route element={<ServiceOrdersListPage />} path="/client/service-orders" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
@@ -226,7 +226,7 @@ export const App = () => {
                   <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
                   <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
-                  <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ServiceOrdersListPage />} path="/admin/service-orders" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
