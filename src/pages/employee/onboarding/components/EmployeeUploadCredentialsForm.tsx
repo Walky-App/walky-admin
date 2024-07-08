@@ -13,52 +13,58 @@ import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelp
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IUser } from '../../../../interfaces/User'
-import { RequestService } from '../../../../services/RequestService'
+import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
+import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
-import { FormDataContext, steps, type StepProps } from '../EmployeeOnboardingPage'
+import { type IOnboardingUpdateInfo } from '../../../client/onboarding/clientOnboardingUtils'
+import { FormDataContext, steps, type StepProps } from '../employeeOnboardingUtils'
+import { EmployeeFinishOnboardingDialog } from './EmployeeFinishOnboardingDialog'
 
-export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
+export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { currentUser, setCurrentUser } = useContext(FormDataContext)
+  const [visible, setVisible] = useState(false)
+
+  const { formData, setFormData } = useContext(FormDataContext)
+
   const fileUploadRef = useRef<FileUpload>(null)
+
   const { showToast } = useUtils()
 
-  const userId = currentUser?._id
+  const updatedOnboardingInfo: IOnboardingUpdateInfo = {
+    step_number: 3,
+    description: steps[2].label ?? 'Upload Credentials',
+    type: 'employee',
+    completed: true,
+  }
 
-  const updateUserAndIncrementStep = async (step: number) => {
-    let userId = currentUser?._id
+  const userId = formData?._id
+
+  const handleSaveButton = async () => {
+    setIsLoading(true)
 
     if (userId != null) {
       try {
-        const userFound: IUser = await RequestService(`users/${userId}`)
+        const response = await requestService({ path: `users/${userId}` })
+        const responseData = await response.json()
+        if (!response.ok) throw new Error(responseData.message)
+        const userFound = responseData as IUser
 
-        if (userFound !== null) {
+        if (userFound != null) {
           const updatedUser: IUser = {
             ...userFound,
-            onboarding: {
-              ...userFound.onboarding,
-              type: 'employee',
-              step_number: 3,
-              description: steps[2].label ?? '',
-              completed: false,
-            },
+            ...formData,
           }
 
-          const response = await RequestService(`users/${userId}`, 'PATCH', updatedUser)
-
-          if (response?._id !== null) {
-            userId = response._id
-
-            setCurrentUser(response)
-          } else {
-            throw new Error('Failed to update user')
-          }
-        } else {
-          throw new Error('User not found')
+          const response = await requestService({
+            path: `users/${userId}`,
+            method: 'PATCH',
+            body: JSON.stringify(updatedUser),
+          })
+          const responseData = await response.json()
+          if (!response.ok) throw new Error(responseData.message)
+          setFormData(updatedUser)
         }
-
-        setStep(step + 1)
       } catch (error) {
         console.error('Error updating user:', error)
 
@@ -68,19 +74,11 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
           detail: `Information could not be updated.`,
           life: 2000,
         })
-      } finally {
         setIsLoading(false)
       }
     }
-  }
 
-  const handleSaveButton = async () => {
-    setIsLoading(true)
-    setTimeout(async () => {
-      await updateUserAndIncrementStep(step)
-
-      setIsLoading(false)
-    }, 1000)
+    setVisible(true)
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -90,7 +88,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
   const handleUploadSuccess = (event: FileUploadUploadEvent) => {
     if (event.xhr.status === 200) {
-      const response: IUser = JSON.parse(event.xhr.response)
+      const responseData: IUser = JSON.parse(event.xhr.response)
 
       showToast({
         severity: 'success',
@@ -99,7 +97,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
         life: 2000,
       })
 
-      setCurrentUser(response)
+      setFormData(responseData)
     } else {
       console.error('Error status:', event.xhr.status)
       console.error('Error status text:', event.xhr.statusText)
@@ -118,33 +116,46 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
     })
   }
 
-  const documents = currentUser?.documents ?? []
+  const documents = formData?.documents ?? []
   const documentsLength = documents.length
 
   return (
     <>
+      <EmployeeFinishOnboardingDialog
+        visible={visible}
+        setVisible={setVisible}
+        onboardingInfo={updatedOnboardingInfo}
+      />
       <div className="space-y-12">
         {/* User Documents */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Badges and Credentials</h2>
-            <p className="mt-4 text-balance text-sm leading-6 text-gray-600">
-              Please upload your State-issued Credentials. If you do not have a badge or a Credential click on your
-              state for more information. &nbsp;
-              <a
-                href="https://sbg.colorado.gov/sites/sbg/files/documents/DR%208517e%20Emp%20App%2010-2022_0.pdf"
-                target="_blank">
-                CO
-              </a>
-              &nbsp; - &nbsp;
-              <a href="https://omma.us.thentiacloud.net/webs/omma/" target="_blank">
-                OK
-              </a>
-              &nbsp; - &nbsp;
-              <a href="https://cbadge.com/" target="_blank">
-                MI
-              </a>
-            </p>
+            <div className="text-balance text-sm leading-6 text-gray-600 [&>p]:mt-4">
+              <p>Please upload your State-issued Credentials.</p>
+              <p>If you do not have a badge or a Credential click on your state for more information:</p>
+              <ul className="ml-1 space-y-2 [&>li]:mt-1 [&>li]:text-balance [&>li]:text-sm [&>li]:leading-6 [&>li]:text-gray-600 [&>li]:underline">
+                <li>
+                  <a
+                    href="https://sbg.colorado.gov/sites/sbg/files/documents/DR%208517e%20Emp%20App%2010-2022_0.pdf"
+                    target="_blank"
+                    className="hover:text-primary">
+                    Colorado
+                  </a>
+                </li>
+                <li>
+                  <a href="https://omma.us.thentiacloud.net/webs/omma/" target="_blank" className="hover:text-primary">
+                    Oklahoma
+                  </a>
+                </li>
+                <li>
+                  <a href="https://cbadge.com/" target="_blank" className="hover:text-primary">
+                    Michigan
+                  </a>
+                </li>
+              </ul>
+              {requiredFieldsNoticeText}
+            </div>
           </div>
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             {documentsLength > 0 ? (
@@ -165,11 +176,11 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
 
             <div className="sm:col-span-6">
               <HtInfoTooltip message="State issued badge or certifications can help in the hiring process.">
-                <HtInputLabel htmlFor="userDocument" labelText="Upload Documents:" />
+                <HtInputLabel htmlFor="documents" asterisk labelText="Upload Documents:" />
               </HtInfoTooltip>
               <div className="mt-2">
                 <FileUpload
-                  id="userDocument"
+                  id="documents"
                   name="files"
                   ref={fileUploadRef}
                   maxFileSize={5242880}
@@ -190,7 +201,7 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
                   previewWidth={200}
                 />
                 <HtInputHelpText
-                  fieldName="userDocument"
+                  fieldName="documents"
                   helpText="Please make sure your upload is clear without any warped or blur portions and shows all relevant information."
                 />
               </div>
@@ -208,7 +219,12 @@ export const EmployeeStep2 = ({ step, setStep }: StepProps) => {
             setStep(step - 1)
           }}
         />
-        <Button label={documentsLength ? 'Save' : 'Skip for now'} onClick={handleSaveButton} loading={isLoading} />
+        <Button
+          label="Save & Continue"
+          onClick={handleSaveButton}
+          disabled={documentsLength === 0}
+          loading={isLoading}
+        />
       </div>
     </>
   )

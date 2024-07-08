@@ -1,4 +1,5 @@
-export * from './EmployeeStep1'
-export * from './EmployeeStep2'
+export * from './EmployeeProfileInformationForm'
+export * from './EmployeeUploadCredentialsForm'
 export * from './EmployeeWelcomeDialog'
 export * from './EmployeeFinishOnboardingDialog'
+export * from './EmployeeJobPreferencesForm'
