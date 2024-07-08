@@ -95,11 +95,11 @@ import { Pricing } from './pages/Pricing'
 /** Employee Pages */
 import { EmployeeDashboard } from './pages/employee/dashboard/EmployeeDashboard'
 import { EmployeeJobs } from './pages/employee/jobs'
-import { JobDetailView } from './pages/employee/jobs/JobDetailView'
 import { EmployeeMyJobs } from './pages/employee/jobs/MyJobs'
 import { EmployeeMessages } from './pages/employee/messages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
+import { JobDetailView } from './pages/shared/jobDetailView'
 import { UserProfile } from './pages/shared/userProfile'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
