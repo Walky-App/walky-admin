@@ -292,7 +292,7 @@ export const ShiftsTable = ({
             <th scope="col" className="px-3 text-left md:py-3.5">
               Date
             </th>
-            <th scope="col" className="hidden py-3.5 pr-3 text-left sm:pl-0 md:block ">
+            <th scope="col" className="hidden py-3.5 pr-3 text-left sm:pl-0 md:block">
               Day of Week
             </th>
 
@@ -326,7 +326,7 @@ export const ShiftsTable = ({
           header="Drop Shift?"
           visible={showDialog}
           draggable={false}
-          className="w-full md:w-1/2 "
+          className="w-full md:w-1/2"
           onHide={() => {
             if (!showDialog) return
             setShowDialog(false)
