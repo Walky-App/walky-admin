@@ -44,7 +44,7 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
             </div>
             <div className="mb-3 mt-3 text-center sm:mb-5 sm:mt-5">
               <h3 className="text-base font-semibold leading-6 text-gray-900">
-                Nice work Your profile is under review.
+                Nice work! Your profile is under review.
               </h3>
               <div className="mt-2">
                 <p className="text-wrap text-sm text-gray-500">
