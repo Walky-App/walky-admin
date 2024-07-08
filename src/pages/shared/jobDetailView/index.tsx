@@ -1,80 +1,35 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
 
-import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
-import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
-import { type JobShiftDay, type IJob } from '../../../interfaces/job'
+import { type IJob, type IJobShiftDay } from '../../../interfaces/job'
 import { type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
-import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { isTodaySameAsTimeStamp, formatToLocalTime } from '../../../utils/timeUtils'
+import { formatToLocalTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobDetailBottomComponents } from './BottomComponents'
 import { ShiftsTable } from './ShiftsTable'
+import { SideRightCard } from './SideRightCard'
 
 export const JobDetailView = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [isApplyForJobLoading, setIsApplyForJobLoading] = useState(false)
-  const [hasApplied, setHasApplied] = useState(false)
-  const [hasDateIntersection, setHasDateIntersection] = useState(false)
-  const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
   const [job, setJob] = useState<IJob | null>(null)
-  const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: Shifts | string } | null>(null)
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [isClockedIn, setIsClockedIn] = useState(false)
-  const [prevIsClockedIn, setPrevIsClockedIn] = useState<boolean | null>(null)
+  const [userWorkingInThisJob, setUserWorkingInThisJob] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasDateIntersection, setHasDateIntersection] = useState(false)
+  const [jobHasEnded, setJobHasEnded] = useState(false)
   const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
-  const [lastTimeSheet, setLastTimeSheet] = useState<ITimeSheet | null>(null)
-  const [openFeedback, setOpenFeedback] = useState(false)
-  const [idFeedback, setIdFeedback] = useState('')
-  const { showToast } = useUtils()
+  const [employeeActive, setEmployeeActive] = useState<boolean>(true)
+
   const { id } = useParams()
   const user = GetTokenInfo()
-  const userIsOnboarded = user?.onboarding?.completed
-
-  const [latitude, setLatitude] = useState<number>()
-  const [longitude, setLongitude] = useState<number>()
-  const [error, setError] = useState<string>()
-
-  useEffect(() => {
-    let isMounted = true
-
-    const getLocation = () => {
-      if (navigator.geolocation == null) {
-        setError('Geolocation is not supported by your browser')
-        console.error(error)
-        return
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          if (isMounted) {
-            setLatitude(position.coords.latitude)
-            setLongitude(position.coords.longitude)
-          }
-        },
-        error => {
-          if (isMounted) {
-            setError(error.message)
-          }
-        },
-      )
-    }
-
-    getLocation()
-
-    return () => {
-      isMounted = false
-    }
-  }, [error])
+  const { showToast } = useUtils()
 
   let earliestDate, latestDate
 
@@ -83,58 +38,45 @@ export const JobDetailView = () => {
     ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
   }
 
-  const startTimer = () => {
-    return setInterval(() => {
-      setCurrentDate(new Date())
-    }, 1000)
-  }
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout | undefined
-    if (job?.applicants[0]?.is_approved === true) {
-      timer = startTimer()
-    }
-
-    return () => {
-      if (timer) {
-        clearInterval(timer)
-      }
-    }
-  }, [job?.applicants])
-
   useEffect(() => {
     const getJob = async () => {
       try {
-        const job: IJob = await RequestService(`jobs/${id}`)
-        if (job._id) {
-          setJob(job)
+        const response = await requestService({ path: `jobs/${id}` })
+
+        if (response.ok) {
+          const job = await response.json()
+          const handleIsUserWorkingThisJob = () => {
+            return job?.job_days.some((day: IJobShiftDay) =>
+              day?.shifts_id?.user_shifts?.some(shift => shift.user_id._id === user._id),
+            )
+          }
           getShiftIdForToday(job.job_days)
-        } else {
-          console.error('Job not found')
+          setUserWorkingInThisJob(handleIsUserWorkingThisJob() || false)
+          setJob(job)
+
+          const user_active = await requestService({ path: `users/${user._id}` })
+          if (user_active.ok) {
+            const user_data = await user_active.json()
+
+            if (user_data.active && user_data.is_approved === false) {
+              setEmployeeActive(false)
+            } else {
+              setEmployeeActive(true)
+            }
+          }
         }
       } catch (error) {
         console.error('Failed to fetch job:', error)
+        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to fetch job' })
       } finally {
         setIsLoading(false)
-        setIsApplyForJobLoading(false)
       }
     }
 
     getJob()
-  }, [id])
+  }, [id, showToast, user._id])
 
-  const getLatestTimeSheet = (array?: ITimeSheet[] | null) => {
-    if (array?.length == null) {
-      return null
-    }
-
-    const sortedTimesheets = [...array].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    )
-    return sortedTimesheets[0]
-  }
-
-  const getShiftIdForToday = (jobDays: JobShiftDay[]): { isTodayShift: boolean; message: string | Shifts } => {
+  const getShiftIdForToday = (jobDays: IJobShiftDay[]): { isTodayShift: boolean; message: string | Shifts } => {
     const today = new Date().toISOString().split('T')[0]
 
     let upcomingDay: string | null = null
@@ -145,7 +87,7 @@ export const JobDetailView = () => {
     for (let i = 0; i < jobDays.length; i++) {
       const jobDayDate = new Date(jobDays[i].day).toISOString().split('T')[0]
       if (jobDayDate === today) {
-        setShiftId({ isTodayShift: true, message: jobDays[i].shifts_id })
+        // setShiftId({ isTodayShift: true, message: jobDays[i].shifts_id })
         return { isTodayShift: true, message: jobDays[i].shifts_id }
       } else if (jobDayDate > today) {
         if (!upcomingDay || jobDayDate < upcomingDay) {
@@ -172,181 +114,17 @@ export const JobDetailView = () => {
     return { isTodayShift: false, message: 'No shifts available.' }
   }
 
-  const getCurrentJobTimeSheets = useCallback(async () => {
-    const { access_token } = GetTokenInfo()
-    const url = `${process.env.REACT_APP_PUBLIC_API}/timesheets/employee/${user._id}?job_id=${job?._id}`
-
-    const options: RequestInit = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-    }
-
-    const getIdTimeSheetForToday = () => {
-      const shift: Shifts = shiftId?.message as Shifts
-      const userShift = shift.user_shifts?.find(us => us.user_id._id === user._id)
-      return userShift ? (userShift.timesheet_id as string) : null
-    }
-
-    try {
-      const response = await fetch(url, options)
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      if (response.status !== 204) {
-        const data: ITimeSheet[] = await response.json()
-
-        const lastTimesheetId = getIdTimeSheetForToday()
-
-        setTimesheets(data)
-
-        if (lastTimesheetId) {
-          const lastTimesheet = data.find(timesheet => timesheet._id === lastTimesheetId)
-          if (lastTimesheet) {
-            setIsClockedIn(
-              lastTimesheet.is_clocked_in === true
-                ? isTodaySameAsTimeStamp(lastTimesheet?.punches[lastTimesheet?.punches.length - 1]?.time_stamp)
-                : false,
-            )
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch timesheet:', error)
-      setTimesheets(null)
-    }
-  }, [job?._id, shiftId?.message, user._id])
-
-  const isUserApprovedApplicant = useCallback(() => {
-    return job?.applicants.some(applicant => applicant.user._id === user._id && applicant.is_approved)
-  }, [job?.applicants, user._id])
-
-  useEffect(() => {
-    if (job) {
-      if (isUserApprovedApplicant()) {
-        getCurrentJobTimeSheets()
-      }
-    }
-  }, [getCurrentJobTimeSheets, isUserApprovedApplicant, job])
-
-  const clockInOut = async (endpoint: string) => {
-    setIsClockInOutLoading(true)
-    const latestTimesheet = getLatestTimeSheet(timesheets)
-
-    const timesheetId = latestTimesheet?._id ?? null
-    try {
-      const body = {
-        job_id: job?._id,
-        timesheet_id: timesheetId,
-        location: [latitude, longitude],
-      }
-      const response: Response = await requestService({
-        path: `timesheets/${endpoint}`,
-        method: 'POST',
-        body: JSON.stringify(body),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error('Please enable location sharing in your browser in order to clock in.')
-      }
-
-      const timeSheet: ITimeSheet = data
-      setLastTimeSheet(timeSheet)
-
-      await getCurrentJobTimeSheets()
-      showToast({ severity: 'success', summary: 'Success', detail: 'Clock in/out successful' })
-
-      return timeSheet
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.'
-      showToast({ severity: 'error', summary: 'Error', detail: errorMessage })
-    } finally {
-      setIsClockInOutLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (prevIsClockedIn !== isClockedIn && lastTimeSheet) {
-      const createdAt = new Date(lastTimeSheet?.punches[lastTimeSheet?.punches.length - 1]?.time_stamp)
-      const formattedTime = createdAt.toLocaleTimeString()
-
-      showToast({
-        severity: isClockedIn ? 'success' : 'warn',
-        summary: `Clocked ${isClockedIn ? 'in' : 'out'} at:`,
-        detail: formattedTime,
-        life: 3000,
-      })
-    }
-    setPrevIsClockedIn(isClockedIn)
-  }, [isClockedIn, showToast, lastTimeSheet, prevIsClockedIn])
-
-  const clockIn = () => clockInOut('clock-in')
-  const clockOut = () => clockInOut('clock-out')
-
-  const applyForJob = async (userId: string) => {
-    try {
-      const applicant = {
-        user: userId,
-        is_approved: false,
-        is_working: false,
-      }
-      const response = await fetch(`${process.env.REACT_APP_PUBLIC_API}/jobs/${id}/apply`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${GetTokenInfo().access_token}`,
-        },
-        body: JSON.stringify(applicant),
-      })
-
-      if (!response.ok) {
-        const errorBody = await response.json()
-        throw { status: response.status, message: errorBody.message }
-      }
-
-      showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully applied for the job' })
-      setIsApplyForJobLoading(true)
-      setTimeout(() => {
-        setIsApplyForJobLoading(false)
-      }, 1500)
-    } catch (error: unknown) {
-      setIsApplyForJobLoading(false)
-      if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
-        const err = error as { status: number; message: string }
-        if (err.status === 400) {
-          setHasDateIntersection(true)
-          showToast({
-            severity: 'error',
-            summary: 'Failed',
-            detail: err.message,
-          })
-        }
-      }
-    }
-  }
-
-  const handleFeedback = () => {
-    setIdFeedback(id as string)
-    setOpenFeedback(true)
-  }
-
   return (
-    <div className="">
+    <div>
       {/* <BreadCrumbs/> */}
       <HeadingComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         {job ? (
           <>
             {/* Job Card Start*/}
-            <div className="col-span-1 md:col-span-3">
+            <div className="order-2 col-span-1 md:order-1 md:col-span-3">
               <Card
-                className="p-6"
+                className="md:p-6"
                 title={
                   <>
                     <div className="flex items-center">
@@ -355,13 +133,13 @@ export const JobDetailView = () => {
                         {job.applicants.length} / {job.vacancy} Slots
                       </div>
                     </div>
-                    {!isUserApprovedApplicant() ? job.title : null} #{job.uid}
+                    {userWorkingInThisJob ? job.title : null} #{job.uid}
                   </>
                 }>
                 {/* Job Facility */}
                 <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex">
-                    {isUserApprovedApplicant() && job.facility?.main_image ? (
+                    {userWorkingInThisJob && job.facility?.main_image ? (
                       <div className="max-w-screen-xl">
                         <img
                           className="mb-2 mr-8 h-32 w-32 flex-none rounded-lg bg-gray-50 object-cover"
@@ -372,7 +150,7 @@ export const JobDetailView = () => {
                     ) : null}
 
                     <div className="align-center flex flex-col items-start justify-start gap-1">
-                      {isUserApprovedApplicant() ? (
+                      {userWorkingInThisJob ? (
                         <>
                           <div className="flex items-center text-2xl font-bold">{job.title}</div>
                           <div className="flex items-center">
@@ -400,8 +178,7 @@ export const JobDetailView = () => {
                     </div>
                   </div>
                 </div>
-                {/* Divider */}
-                <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
+                <Divider />
                 <div className="flex flex-wrap gap-4">
                   <div className="flex items-center gap-2">
                     {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
@@ -422,44 +199,28 @@ export const JobDetailView = () => {
                   <div className="mt-0.5 flex items-center gap-2">
                     {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                     <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
-                  </div>
-                </div>
-                {/* Arrival Notes */}
-                {isUserApprovedApplicant() && job.facility?.notes ? (
-                  <>
-                    <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
-                    <div className="flex flex-wrap gap-4">
-                      <div className="flex items-start gap-2">
+                    {userWorkingInThisJob && job.facility?.notes ? (
+                      <>
                         <i className="pi pi-info-circle" />
                         <span className="text-base font-medium text-black">
                           Arrival notes: <span className="font-normal">{job.facility.notes}</span>
                         </span>
-                      </div>
-                    </div>
-                  </>
-                ) : null}
-                {/* Job Tips */}
-                {isUserApprovedApplicant() && job.job_tips ? (
-                  <>
-                    <hr className="mb-3 mt-3 h-px w-full bg-zinc-100" />
-                    <div className="flex flex-wrap gap-4">
-                      <div className="flex items-start gap-2">
+                      </>
+                    ) : null}
+                    {userWorkingInThisJob && job.job_tips.length > 0 ? (
+                      <>
                         <i className="pi pi-info-circle" />
-                        <span className="text-base font-medium text-black">
-                          Job Tips:
-                          <ul className="font-normal">
-                            {job.job_tips.map((tip, index) => (
-                              <li key={index}>{tip}</li>
-                            ))}
-                          </ul>
-                        </span>
-                      </div>
-                    </div>
-                  </>
-                ) : null}
-                {/* Divider */}
-                <hr className="mt-3" />
-                <div className="mt-6 flex justify-between text-lg">
+                        <span className="text-base font-medium text-black">Job Tips:</span>
+                        {job.job_tips.map((tip, index) => (
+                          <span key={index}>{tip}</span>
+                        ))}
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+
+                <Divider />
+                <div className="mt-6 justify-between text-lg md:flex">
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Dates</div>
                     <div className="flex items-center">
@@ -488,133 +249,66 @@ export const JobDetailView = () => {
                   job={job}
                   setJob={setJob}
                   user={user}
-                  setIsApplyForJobLoading={setIsApplyForJobLoading}
                   setHasDateIntersection={setHasDateIntersection}
+                  jobHasEnded={jobHasEnded}
+                  setUserWorkingInThisJob={setUserWorkingInThisJob}
+                  employeeActive={employeeActive}
                 />
               </Card>
+              <JobDetailBottomComponents timesheets={timesheets} job={job} />
             </div>
+            <SideRightCard
+              user={user}
+              timesheets={timesheets}
+              setTimesheets={setTimesheets}
+              job={job}
+              setJobHasEnded={setJobHasEnded}
+              userWorkingInThisJob={userWorkingInThisJob}
+            />
 
-            {/* Job Card End*/}
-
-            {/* Clock in and Map */}
-            {isLoading ? (
-              <Skeleton shape="rectangle" height="150px" />
-            ) : isUserApprovedApplicant() ? (
-              <div className="col-span-1 md:col-span-1">
-                <div className="flex flex-col">
-                  <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
-                    <ul className="w-full divide-y divide-gray-200">
-                      {shiftId?.isTodayShift ? (
-                        <>
-                          <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
-                            <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
-                            <p className="font-medium">
-                              {currentDate.toLocaleDateString('en-US', {
-                                weekday: 'short',
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                              })}
-                            </p>
-                          </li>
-                          {isClockedIn ? (
-                            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                              <Button
-                                label="Clock Out"
-                                severity="warning"
-                                onClick={() => clockOut()}
-                                loading={isClockInOutLoading}
-                                className="w-full"
-                              />
-                            </li>
-                          ) : (
-                            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                              <Button
-                                label="Clock In"
-                                onClick={() => clockIn()}
-                                loading={isClockInOutLoading}
-                                className="w-full"
-                              />
-                            </li>
-                          )}
-                        </>
+            {/* <div className="col-span-1 md:col-span-1">
+              <div className="flew-row flex md:flex-col">
+                <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
+                  <ul className="w-full divide-y divide-gray-200">
+                    <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                      {userWorkingInThisJob ? (
+                        <p>You have been accepted!</p>
+                      ) : job?.applicants.some(
+                          applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
+                        ) ? (
+                        <p>We are sorry. It was not a match. Please apply later.</p>
+                      ) : job?.applicants.some(applicant => applicant.user._id === user._id) ? (
+                        <p>Your application is pending. Please wait for response.</p>
                       ) : (
-                        <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          {getShiftIdForToday(job.job_days).message as string}
-                        </li>
-                      )}
-
-                      <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                         <Button
-                          label="Feedback"
-                          severity="secondary"
+                          label={
+                            !userIsOnboarded
+                              ? 'Apply now'
+                              : hasApplied && !hasDateIntersection
+                                ? 'Application sent'
+                                : !hasDateIntersection
+                                  ? 'Apply now'
+                                  : 'You are already booked for another job that overlaps with this one.'
+                          }
+                          disabled={!userIsOnboarded || hasApplied}
+                          onClick={() => {
+                            applyForJob(user._id)
+                            setHasApplied(true)
+                          }}
                           style={{ width: '100%', height: '100%' }}
-                          onClick={handleFeedback}
+                          loading={isApplyForJobLoading}
                         />
-                      </li>
-                    </ul>
-                  </div>
-                  {job?.facility.location_pin[0] && job?.facility.location_pin[1] ? (
-                    <div className="col-span-1 mt-2 h-64 md:col-span-1">
-                      <div className="flex h-full flex-row md:flex-col">
-                        <GoogleMapComponent
-                          locationPin={job.facility.location_pin}
-                          containerStyle={{ width: '100%', height: '100%' }}
-                        />
-                      </div>
-                    </div>
-                  ) : null}
+                      )}
+                    </li>
+                  </ul>
                 </div>
               </div>
-            ) : (
-              <>
-                <div className="col-span-1 md:col-span-1">
-                  <div className="flew-row flex md:flex-col">
-                    <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md bg-white shadow">
-                      <ul className="w-full divide-y divide-gray-200">
-                        <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                          {isUserApprovedApplicant() ? (
-                            <p>You have been accepted!</p>
-                          ) : job?.applicants.some(
-                              applicant => applicant.user._id === user._id && applicant.rejection_reason !== '',
-                            ) ? (
-                            <p>We are sorry. It was not a match. Please apply later.</p>
-                          ) : job?.applicants.some(applicant => applicant.user._id === user._id) ? (
-                            <p>Your application is pending. Please wait for response.</p>
-                          ) : (
-                            <Button
-                              label={
-                                !userIsOnboarded
-                                  ? 'Apply now'
-                                  : hasApplied && !hasDateIntersection
-                                    ? 'Application sent'
-                                    : !hasDateIntersection
-                                      ? 'Apply now'
-                                      : 'You are already booked for another job that overlaps with this one.'
-                              }
-                              disabled={!userIsOnboarded || hasApplied}
-                              onClick={() => {
-                                applyForJob(user._id)
-                                setHasApplied(true)
-                              }}
-                              style={{ width: '100%', height: '100%' }}
-                              loading={isApplyForJobLoading}
-                            />
-                          )}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <JobDetailBottomComponents timesheets={timesheets} job={job} />
-              </>
-            )}
+            </div> */}
           </>
         ) : (
           <Skeleton shape="rectangle" height="150px" />
         )}
       </div>
-      <Feedback isOpen={openFeedback} hidden={setOpenFeedback} objectId={idFeedback} job_id={id} />
     </div>
   )
 }
