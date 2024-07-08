@@ -1,38 +1,25 @@
 import { useEffect, useState } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 
-import { type IServiceOrder } from '../../../interfaces/serviceOrder'
+import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 
-const projects = [
-  {
-    id: 1,
-    name: 'Harvester',
-    description: 'New logo and digital asset playbook.',
-    dates: '2022-08-01 to 2022-08-31',
-    hours: '7.50',
-    shifts: '30',
-    rate: '$23.00',
-    price: '$2,000.00',
-  },
-  // More projects...
-]
-const creditCards = [
-  { label: 'Visa **** 1234', value: 'visa' },
-  { label: 'MasterCard **** 5678', value: 'mastercard' },
-  { label: 'Amex **** 9012', value: 'amex' },
-]
 export const ServiceOrderPage = () => {
   const [selectedCard, setSelectedCard] = useState(null)
   const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
-  // const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
-
+  const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
   const jobId = useParams().id
+  const serviceOrderId = useParams().serviceOrderId
+  const { showToast } = useUtils()
+  const navigate = useNavigate()
+  const isAdmin = window.location.pathname.includes('admin')
+
   useEffect(() => {
     const getServiceOrder = async () => {
       try {
@@ -41,13 +28,10 @@ export const ServiceOrderPage = () => {
           throw new Error('Failed to fetch service order')
         }
         const fetchedData = await response.json()
-        // console.log('fetchedData', fetchedData)
         const serviceOrder = fetchedData.service_order
-        // const paymentMethods = fetchedData.payments_methods
+        const paymentMethods = fetchedData.payments_methods
         setServiceOrderData(serviceOrder)
-        // console.log('serviceOrder', serviceOrder)
-        // setPaymentMethods(paymentMethods)
-        // console.log('paymentMethods', paymentMethods)
+        setPaymentMethods(paymentMethods)
       } catch (error) {
         console.error('Error fetching service order data:', error)
       }
@@ -55,6 +39,32 @@ export const ServiceOrderPage = () => {
 
     getServiceOrder()
   }, [jobId])
+
+  const handleAuthorizePayment = async () => {
+    try {
+      const response = await requestService({
+        path: `jobs/authorize/${serviceOrderId}`,
+        method: 'PATCH',
+        body: JSON.stringify({ payment_profile_id: selectedCard }),
+      })
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message)
+      }
+      showToast({
+        severity: 'success',
+        summary: 'Success',
+        detail: `Payment for $${serviceOrder?.details.total_cost} authorized successfully`,
+      })
+      setTimeout(() => {
+        navigate(isAdmin ? `/admin/jobs/${jobId}` : `/client/jobs/${jobId}`)
+      }, 3000)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : error
+      console.error('Error authorizing payment:', errorMessage)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Failed to authorize payment' })
+    }
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -64,8 +74,8 @@ export const ServiceOrderPage = () => {
           <h1 className="text-base font-semibold leading-6 text-gray-900">Service order #{serviceOrder?._id}</h1>
 
           <p className="mt-2 text-sm text-gray-700">
-            For {serviceOrder?.job_id.title} job on:
-            {serviceOrder?.job_id.job_dates.map(date => <div key={date}>{format(new Date(date), 'PPPP')}</div>)}
+            For {serviceOrder?.job_id.title} job on:{' '}
+            {serviceOrder?.job_id.job_dates.map(date => format(new Date(date), 'PPPP')).join(', ')}
           </p>
           <p className="mt-2 text-sm text-gray-700">
             Company Information: {serviceOrder?.company_id.company_name} - {serviceOrder?.company_id.company_address} -{' '}
@@ -99,7 +109,7 @@ export const ServiceOrderPage = () => {
               <th
                 scope="col"
                 className="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
-                Hours
+                Hours per Day
               </th>
               <th
                 scope="col"
@@ -109,7 +119,7 @@ export const ServiceOrderPage = () => {
               <th
                 scope="col"
                 className="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
-                Shifts
+                Vacancy
               </th>
 
               <th
@@ -123,29 +133,50 @@ export const ServiceOrderPage = () => {
             </tr>
           </thead>
           <tbody>
-            {projects.map(project => (
-              <tr key={project.id} className="border-b border-gray-200">
-                <td className="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
-                  <div className="font-medium text-gray-900">{project.name}</div>
-                  <div className="mt-1 truncate text-gray-500">{project.description}</div>
-                </td>
-                <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.hours}</td>
-                <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.dates}</td>
-                <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.shifts}</td>
-                <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{project.rate}</td>
-                <td className="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">{project.price}</td>
-              </tr>
-            ))}
+            <tr className="border-b border-gray-200">
+              <td className="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+                <div className="font-medium text-gray-900">{serviceOrder?.job_id.title}</div>
+                <div className="mt-1 truncate text-gray-500">
+                  {serviceOrder?.job_id.job_dates.map(date => format(new Date(date), 'PPPP')).join(', ')}
+                </div>{' '}
+              </td>
+              <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
+                {serviceOrder?.job_id.total_hours}
+              </td>
+              <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
+                {' '}
+                {serviceOrder?.job_id.job_dates.map(date => <div key={date}>{format(new Date(date), 'PPPP')}</div>)}
+              </td>
+              <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
+                {' '}
+                {serviceOrder?.job_id.vacancy}
+              </td>
+              <td className="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
+                {serviceOrder?.job_id.hourly_rate}
+              </td>
+              <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
+                $
+                {(
+                  Number(serviceOrder?.job_id.total_hours || 0) *
+                  Number(serviceOrder?.job_id.job_dates.length || 0) *
+                  Number(serviceOrder?.job_id.vacancy || 0) *
+                  Number(serviceOrder?.job_id.hourly_rate || 0)
+                ).toFixed(2)}
+              </td>
+            </tr>
           </tbody>
           <div className="mt-2 flex">
             <Dropdown
               value={selectedCard}
-              options={creditCards}
+              options={paymentMethods?.map(method => ({
+                label: method.card_name + ' ' + method.card_number,
+                value: method._id,
+              }))}
               onChange={e => setSelectedCard(e.value)}
               placeholder="Select a Credit Card"
             />
 
-            <Button label="Authorize Payment" />
+            <Button label="Authorize Payment" onClick={handleAuthorizePayment} />
           </div>
           <tfoot>
             <tr>
@@ -158,31 +189,71 @@ export const ServiceOrderPage = () => {
               <th scope="row" className="pl-4 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden">
                 Subtotal
               </th>
-              <td className="pl-3 pr-4 pt-6 text-right text-sm text-gray-500 sm:pr-0">$8,800.00</td>
+              <td className="pl-3 pr-4 pt-6 text-right text-sm text-gray-500 sm:pr-0">
+                $
+                {(
+                  Number(serviceOrder?.details.total_cost) -
+                  Number(serviceOrder?.details.admin_cost) -
+                  Number(serviceOrder?.details.our_fee) -
+                  Number(serviceOrder?.details.processing_fee)
+                ).toFixed(2)}
+              </td>
             </tr>
             <tr>
               <th
                 scope="row"
                 colSpan={3}
                 className="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
-                Tax
+                Admin Cost
               </th>
               <th scope="row" className="pl-4 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">
-                Tax
+                Admin Cost
               </th>
-              <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">$1,760.00</td>
+              <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">
+                ${Number(serviceOrder?.details.admin_cost).toFixed(2)}
+              </td>
+            </tr>
+            <tr>
+              <th
+                scope="row"
+                colSpan={3}
+                className="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
+                Our Fee
+              </th>
+              <th scope="row" className="pl-4 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">
+                Our Fee
+              </th>
+              <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">
+                ${Number(serviceOrder?.details.our_fee).toFixed(2)}
+              </td>
+            </tr>
+            <tr>
+              <th
+                scope="row"
+                colSpan={3}
+                className="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
+                Processing Fee
+              </th>
+              <th scope="row" className="pl-4 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">
+                Processing Fee
+              </th>
+              <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">
+                ${Number(serviceOrder?.details.processing_fee).toFixed(2)}
+              </td>
             </tr>
             <tr>
               <th
                 scope="row"
                 colSpan={3}
                 className="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">
-                Total
+                Total:
               </th>
               <th scope="row" className="pl-4 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">
                 Total
               </th>
-              <td className="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">$10,560.00</td>
+              <td className="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">
+                ${Number(serviceOrder?.details.total_cost).toFixed(2)}
+              </td>
             </tr>
           </tfoot>
         </table>
