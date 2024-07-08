@@ -262,6 +262,7 @@ export const JobDetailView = () => {
               timesheets={timesheets}
               setTimesheets={setTimesheets}
               job={job}
+              jobHasEnded={jobHasEnded}
               setJobHasEnded={setJobHasEnded}
               userWorkingInThisJob={userWorkingInThisJob}
             />

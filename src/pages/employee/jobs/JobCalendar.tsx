@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 
-import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@heroicons/react/20/solid'
+import { ClockIcon, CalendarIcon } from '@heroicons/react/20/solid'
 
 import { type IJob } from '../../../interfaces/job'
 import { cn } from '../../../utils/cn'
@@ -30,8 +30,8 @@ interface Props {
 }
 
 export const JobCalendar: React.FC<Props> = ({ jobs }) => {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
+  const [currentMonth] = useState(new Date().getMonth())
+  const [currentYear] = useState(new Date().getFullYear())
 
   const [days, setDays] = useState<IDay[]>([])
 
@@ -87,27 +87,27 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     )
   }
 
-  const handleToday = () => {
-    const today = new Date()
-    setCurrentMonth(today.getMonth())
-    setCurrentYear(today.getFullYear())
-  }
+  // const handleToday = () => {
+  //   const today = new Date()
+  //   setCurrentMonth(today.getMonth())
+  //   setCurrentYear(today.getFullYear())
+  // }
 
-  const handlePreviousMonth = () => {
-    setCurrentMonth(currentMonth - 1)
-    if (currentMonth === 0) {
-      setCurrentMonth(11)
-      setCurrentYear(currentYear - 1)
-    }
-  }
+  // const handlePreviousMonth = () => {
+  //   setCurrentMonth(currentMonth - 1)
+  //   if (currentMonth === 0) {
+  //     setCurrentMonth(11)
+  //     setCurrentYear(currentYear - 1)
+  //   }
+  // }
 
-  const handleNextMonth = () => {
-    setCurrentMonth(currentMonth + 1)
-    if (currentMonth === 11) {
-      setCurrentMonth(0)
-      setCurrentYear(currentYear + 1)
-    }
-  }
+  // const handleNextMonth = () => {
+  //   setCurrentMonth(currentMonth + 1)
+  //   if (currentMonth === 11) {
+  //     setCurrentMonth(0)
+  //     setCurrentYear(currentYear + 1)
+  //   }
+  // }
   const daysWithJobs = days.map(day => {
     const jobsForDay = jobs.filter(job => job.job_dates.includes(day.date))
 
@@ -171,7 +171,8 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
             dateTime={`${currentYear}-${currentMonth + 1}`}>{`${new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} ${currentYear}`}</time>
         </h1>
         <div className="flex items-center">
-          <div className="relative flex items-center rounded-md bg-white shadow-sm md:items-stretch">
+          {/* disabling these buttons for now */}
+          {/* <div className="relative flex items-center rounded-md bg-white shadow-sm md:items-stretch">
             <button
               type="button"
               onClick={handlePreviousMonth}
@@ -194,7 +195,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
               <span className="sr-only">Next month</span>
               <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
             </button>
-          </div>
+          </div> */}
         </div>
       </header>
 
