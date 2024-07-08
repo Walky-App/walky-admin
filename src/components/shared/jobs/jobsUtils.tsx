@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { type Control, Controller, type FieldErrors, type UseFormSetValue } from 'react-hook-form'
+import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
 import { isValid, parse } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
@@ -11,8 +11,7 @@ import { RadioButton } from 'primereact/radiobutton'
 import { classNames } from 'primereact/utils'
 
 import { type IFacility } from '../../../interfaces/facility'
-import { type HolidayDocument, type StatesSettingsDocument } from '../../../interfaces/setting'
-import { requestService } from '../../../services/requestServiceNew'
+import { type HolidayDocument } from '../../../interfaces/setting'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
 import { setTimeInUTC, toLocalDateTime } from '../../../utils/timeUtils'
@@ -38,7 +37,7 @@ export const defaultJobFormValues: JobFormDefaultValues = {
   title: '',
   facility_id: '',
   vacancy: 1,
-  hourly_rate: 18.0,
+  hourly_rate: 0,
   job_dates: [],
   start_time: setTimeInUTC(8, 30),
   end_time: setTimeInUTC(17),
