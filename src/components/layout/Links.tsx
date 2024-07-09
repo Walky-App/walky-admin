@@ -94,6 +94,11 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Service Orders',
       href: '/admin/service-orders',
       icon: <FaBriefcase />,
+      subLinks: [
+        { name: 'All Service Orders', href: '/admin/service-orders/all' },
+        { name: 'Pending', href: '/admin/service-orders/pending' },
+        { name: 'Authorized', href: '/admin/service-orders/authorized' },
+      ],
     },
     {
       id: 7,
@@ -138,6 +143,11 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Service Orders',
       href: '/client/service-orders',
       icon: <FaBriefcase />,
+      subLinks: [
+        { name: 'All Service Orders', href: '/client/service-orders/all' },
+        { name: 'Pending', href: '/client/service-orders/pending' },
+        { name: 'Authorized', href: '/client/service-orders/authorized' },
+      ],
     },
     {
       id: 7,
