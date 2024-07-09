@@ -5,9 +5,9 @@ import { Dropdown } from 'primereact/dropdown'
 
 import { PlusIcon } from '@heroicons/react/20/solid'
 
-import { type IApplicant, type IJob } from '../../../../interfaces/job'
-import { requestService } from '../../../../services/requestServiceNew'
-import { useUtils } from '../../../../store/useUtils'
+import { type IApplicant, type IJob } from '../../../interfaces/job'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 
 interface EmployeeOptionsProps {
   potentialApplicants: IApplicant[]

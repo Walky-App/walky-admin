@@ -15,6 +15,7 @@ import { isTodaySameAsTimeStamp } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const SideRightCard = ({
+  role,
   user,
   timesheets,
   setTimesheets,
@@ -23,6 +24,7 @@ export const SideRightCard = ({
   setJobHasEnded,
   userWorkingInThisJob,
 }: {
+  role: string
   user: ITokenInfo
   timesheets: ITimeSheet[] | null
   setTimesheets: (timesheets: ITimeSheet[] | null) => void
@@ -318,7 +320,8 @@ export const SideRightCard = ({
               </li>
             ) : null}
           </ul>
-          {userWorkingInThisJob && job?.facility.location_pin[0] && job?.facility.location_pin[1] ? (
+          {userWorkingInThisJob ||
+          (role === 'admin' && job?.facility.location_pin[0] && job?.facility.location_pin[1]) ? (
             <div className="col-span-1 mt-2 h-64 md:col-span-1">
               <div className="flex h-full flex-row md:flex-col">
                 <GoogleMapComponent
