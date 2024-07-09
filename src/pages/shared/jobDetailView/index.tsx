@@ -12,17 +12,19 @@ import { type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { roleChecker } from '../../../utils/roleChecker'
 import { formatToLocalTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobDetailBottomComponents } from './BottomComponents'
 import { ShiftsTable } from './ShiftsTable'
+import { ShiftsTableAdmin } from './ShiftsTableAdmin'
 import { SideRightCard } from './SideRightCard'
 
 export const JobDetailView = () => {
   const [job, setJob] = useState<IJob | null>(null)
   const [userWorkingInThisJob, setUserWorkingInThisJob] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasDateIntersection, setHasDateIntersection] = useState(false)
+  const [, setIsLoading] = useState(true)
+  const [, setHasDateIntersection] = useState(false)
   const [jobHasEnded, setJobHasEnded] = useState(false)
   const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
   const [employeeActive, setEmployeeActive] = useState<boolean>(true)
@@ -30,6 +32,7 @@ export const JobDetailView = () => {
   const { id } = useParams()
   const user = GetTokenInfo()
   const { showToast } = useUtils()
+  const role = roleChecker()
 
   let earliestDate, latestDate
 
@@ -121,7 +124,6 @@ export const JobDetailView = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         {job ? (
           <>
-            {/* Job Card Start*/}
             <div className="order-2 col-span-1 md:order-1 md:col-span-3">
               <Card
                 className="md:p-6"
@@ -130,16 +132,16 @@ export const JobDetailView = () => {
                     <div className="flex items-center">
                       <i className="pi pi-users" />
                       <div className="mb-2 ml-1 mt-2 text-sm text-stone-500">
-                        {job.applicants.length} / {job.vacancy} Slots
+                        {job.job_days.length * job.vacancy} Shifts
                       </div>
                     </div>
-                    {userWorkingInThisJob ? job.title : null} #{job.uid}
+                    {userWorkingInThisJob || role === 'admin' ? job.title : null} #{job.uid}
                   </>
                 }>
                 {/* Job Facility */}
                 <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex">
-                    {userWorkingInThisJob && job.facility?.main_image ? (
+                    {userWorkingInThisJob || (role === 'admin' && job.facility?.main_image) ? (
                       <div className="max-w-screen-xl">
                         <img
                           className="mb-2 mr-8 h-32 w-32 flex-none rounded-lg bg-gray-50 object-cover"
@@ -150,7 +152,7 @@ export const JobDetailView = () => {
                     ) : null}
 
                     <div className="align-center flex flex-col items-start justify-start gap-1">
-                      {userWorkingInThisJob ? (
+                      {userWorkingInThisJob || role === 'admin' ? (
                         <>
                           <div className="flex items-center text-2xl font-bold">{job.title}</div>
                           <div className="flex items-center">
@@ -199,7 +201,7 @@ export const JobDetailView = () => {
                   <div className="mt-0.5 flex items-center gap-2">
                     {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                     <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
-                    {userWorkingInThisJob && job.facility?.notes ? (
+                    {userWorkingInThisJob || (role === 'admin' && job.facility?.notes) ? (
                       <>
                         <i className="pi pi-info-circle" />
                         <span className="text-base font-medium text-black">
@@ -207,7 +209,7 @@ export const JobDetailView = () => {
                         </span>
                       </>
                     ) : null}
-                    {userWorkingInThisJob && job.job_tips.length > 0 ? (
+                    {userWorkingInThisJob || (role === 'admin' && job.job_tips.length > 0) ? (
                       <>
                         <i className="pi pi-info-circle" />
                         <span className="text-base font-medium text-black">Job Tips:</span>
@@ -245,23 +247,28 @@ export const JobDetailView = () => {
                     <strong>{job.hourly_rate || 0} USD / hour</strong>
                   </div>
                 </div>
-                <ShiftsTable
-                  job={job}
-                  setJob={setJob}
-                  user={user}
-                  setHasDateIntersection={setHasDateIntersection}
-                  jobHasEnded={jobHasEnded}
-                  setUserWorkingInThisJob={setUserWorkingInThisJob}
-                  employeeActive={employeeActive}
-                />
+                {role === 'admin' ? <ShiftsTableAdmin job={job} setJob={setJob} /> : null}
+                {role === 'employee' ? (
+                  <ShiftsTable
+                    job={job}
+                    setJob={setJob}
+                    user={user}
+                    setHasDateIntersection={setHasDateIntersection}
+                    jobHasEnded={jobHasEnded}
+                    setUserWorkingInThisJob={setUserWorkingInThisJob}
+                    employeeActive={employeeActive}
+                  />
+                ) : null}
               </Card>
               <JobDetailBottomComponents timesheets={timesheets} job={job} />
             </div>
             <SideRightCard
+              role={role}
               user={user}
               timesheets={timesheets}
               setTimesheets={setTimesheets}
               job={job}
+              jobHasEnded={jobHasEnded}
               setJobHasEnded={setJobHasEnded}
               userWorkingInThisJob={userWorkingInThisJob}
             />

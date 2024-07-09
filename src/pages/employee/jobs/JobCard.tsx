@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { Link } from 'react-router-dom'
 
-import { Badge } from 'primereact/badge'
+import { Tag } from 'primereact/tag'
 
 import { MapPinIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
 import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outline'
@@ -15,9 +15,10 @@ import { GetTokenInfo } from '../../../utils/tokenUtil'
 interface JobListItemProps {
   job: IJob
   handleSaveUnsaveJob?: (jobId: string, isSaved: boolean) => void
+  status?: string
 }
 
-export const JobCard = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
+export const JobCard = ({ job, handleSaveUnsaveJob, status }: JobListItemProps) => {
   const [savedJob, setSavedJob] = useState(false)
   const { _id } = GetTokenInfo()
 
@@ -67,43 +68,22 @@ export const JobCard = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
           <div className="mb-3 flex basis-1/3 flex-wrap justify-between gap-2 px-5 pt-5">
             <div className="flex flex-row">
               <span className="pi pi-users" />
-              <p className="ml-1 text-stone-500">
-                {job.applicants.length} Applicants / {job.vacancy} Slots
-              </p>
+              <p className="ml-1 text-stone-500">{job.job_days.length * job.vacancy} Shifts</p>
             </div>
             <div className="flex flex-row space-x-2 ">
-              {isJobNewWithinThreeDays(job.createdAt) ? <Badge value="New" size="normal" /> : null}
-              {job.applicants?.map(applicant => {
-                if (
-                  applicant.user.toString() === _id &&
-                  applicant.is_approved === false &&
-                  applicant.is_working === false &&
-                  applicant.rejection_reason === ''
-                ) {
-                  return (
-                    <Badge
-                      key={applicant.user.toString()}
-                      value="Applied"
-                      size="normal"
-                      className="p-badge-secondary"
-                    />
-                  )
-                } else if (
-                  applicant.user.toString() === _id &&
-                  applicant.is_approved === true &&
-                  applicant.is_working === false &&
-                  applicant.rejection_reason === ''
-                ) {
-                  return <Badge key={applicant.user.toString()} value="Approved" size="normal" />
-                }
-                return null
-              })}
+              {status === 'saved' ? <Tag value="Saved" rounded icon="pi pi-folder" severity="info" /> : null}
+              {status === 'active' ? <Tag value="Enrolled" rounded icon="pi pi-check" severity="success" /> : null}
+              {status === 'dropped' ? <Tag value="Dropped" rounded icon="pi pi-times" severity="danger" /> : null}
+              {status === 'past' ? <Tag value="Old Shift" rounded icon="pi pi-lock" severity="warning" /> : null}
+              {isJobNewWithinThreeDays(job.createdAt) ? <Tag rounded value="New" /> : null}
             </div>
           </div>
 
           {/* Job Details */}
           <div className="flex w-full basis-2/3 cursor-pointer flex-col items-start justify-start gap-4 px-5 pb-5">
-            <p className="mt-4 text-balance text-base font-semibold capitalize text-black">{job.title} - #{job.uid}</p>
+            <p className="mt-4 text-balance text-base font-semibold capitalize text-black">
+              {job.title} - #{job.uid}
+            </p>
             <div className="flex flex-wrap gap-8">
               <div className="flex items-start gap-2">
                 <MapPinIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
@@ -137,7 +117,7 @@ export const JobCard = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-stone-500">Hourly Rate</div>
-                <div className="text-black">{job.hourly_rate || 0} USD</div>
+                <div className="text-black">${job.hourly_rate || 0} USD</div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-stone-500">Number of Days</div>
@@ -147,12 +127,9 @@ export const JobCard = ({ job, handleSaveUnsaveJob }: JobListItemProps) => {
           </div>
         </Link>
 
-        {/* Job Card Footer */}
         <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-bl-lg rounded-br-lg bg-neutral-100 px-5 py-4">
           <div className="flex flex-wrap items-center justify-start gap-1">
             <div className="text-balance text-stone-500">Posted on {new Date(job.createdAt).toLocaleDateString()} </div>
-            <div className="h-1 w-1 rounded-full bg-stone-500" />
-            <div className="  text-stone-500">#{job.uid}</div>
           </div>
           <div
             onClick={handleSaveUnsaveClickOptimistic}
