@@ -72,6 +72,7 @@ export const JobDetailView = () => {
         console.error('Failed to fetch job:', error)
         showToast({ severity: 'error', summary: 'Error', detail: 'Failed to fetch job' })
       } finally {
+        //@ts-ignore
         setIsLoading(false)
       }
     }

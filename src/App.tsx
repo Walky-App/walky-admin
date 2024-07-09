@@ -86,6 +86,7 @@ import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
 import { AddEditJobWithoutPaymentsPage } from './components/shared/jobs/AddEditJobWithoutPaymentsPage'
 import { ServiceOrderPage } from './components/shared/jobs/ServiceOrderPage'
+import { ServiceOrdersListPage } from './components/shared/jobs/ServiceOrders'
 import { Pricing } from './pages/Pricing'
 
 /******************************************* Employee Pages ************************************/
@@ -158,8 +159,9 @@ export const App = () => {
                   <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<ClientJobs />} path="/client/jobs" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
-                  <Route element={<ServiceOrderPage />} path="/client/jobs/new/service-order" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" />
+                  <Route element={<ServiceOrdersListPage />} path="/client/service-orders" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<AdminCompanyPage />}>
@@ -221,6 +223,8 @@ export const App = () => {
                   <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
                   <Route element={<JobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
+                  <Route element={<ServiceOrdersListPage />} path="/admin/service-orders" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
                   <Route element={<AdminDetailsCategory />} path="/admin/learn/categories/:categoryId" />
