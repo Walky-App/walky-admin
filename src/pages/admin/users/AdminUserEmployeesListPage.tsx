@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { format, isToday, isYesterday } from 'date-fns'
+
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IUser } from '../../../interfaces/User'
@@ -40,6 +42,14 @@ export const AdminUserEmployeesListPage = () => {
       {
         Header: 'Status',
         accessor: (d: IUser) => (d.is_approved ? 'Active' : '❌'),
+      },
+
+      {
+        Header: 'Joined',
+        accessor: (a: IUser): string => {
+          return isToday(a.createdAt) || isYesterday(a.createdAt) ? 'New ⭐️' : format(a.createdAt, 'P')
+        },
+        width: 300,
       },
       { Header: 'Email', accessor: 'email', width: 300 },
       { Header: 'Phone', accessor: 'phone_number' },
