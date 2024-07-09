@@ -6,10 +6,9 @@ import { Divider } from 'primereact/divider'
 
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IApplicantWithoutPopulate } from '../../../../interfaces/job'
 import { useJobs } from '../../../../store/useJobs'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
-import { type IApplicantWithoutPopulate } from '../../../../interfaces/job'
-
 
 const isNew = (date: string) => {
   const today = new Date()

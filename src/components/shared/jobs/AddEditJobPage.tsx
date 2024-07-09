@@ -74,6 +74,7 @@ export const AddEditJobPage = () => {
   const [hourlySupervisorFee, setHourlySupervisorFee] = useState(0)
   const [holidayCount, setHolidayCount] = useState(0)
   const [stateHolidays, setStateHolidays] = useState<HolidayDocument[]>([])
+  const [totalOvertimeHours, setTotalOvertimeHours] = useState(0)
 
   const navigate = useNavigate()
   const params = useParams()
@@ -258,7 +259,12 @@ export const AddEditJobPage = () => {
       }
     } else {
       try {
-        const response = await requestService({ path: 'jobs', method: 'POST', body: JSON.stringify(requestData) })
+        const response = await requestService({
+          path: 'jobs/create-service-order',
+          method: 'POST',
+          body: JSON.stringify({ overtime: totalOvertimeHours }),
+        })
+
         if (!response.ok) {
           const data = await response.json()
           const message = data.message instanceof Error ? data.message.message : data.message
@@ -266,12 +272,22 @@ export const AddEditJobPage = () => {
           return
         }
 
+        const data = await response.json()
+        const jobID = data.jobId
+        const serviceOrderId = data.serviceOrderId
+
         showToast({
           severity: 'success',
           summary: 'Success',
           detail: `${requestData.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
         })
-        navigate(isAdmin ? '/admin/jobs' : '/client/jobs')
+        setTimeout(() => {
+          navigate(
+            isAdmin
+              ? `/admin/jobs/${jobID}/service-order/${serviceOrderId}`
+              : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
+          )
+        }, 2000)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : error
         console.error('Error submitting job information:', errorMessage)
@@ -299,6 +315,7 @@ export const AddEditJobPage = () => {
     const totalOvertimeHours =
       overtimeHours * overtimeRate * (jobDatesLength - holidayCount) +
       overtimeHours * holidayOvertimeRate * holidayCount
+    setTotalOvertimeHours(totalOvertimeHours)
 
     const totalOvertime = totalOvertimeHours * vacancy
     setTotalOvertime(totalOvertime)
