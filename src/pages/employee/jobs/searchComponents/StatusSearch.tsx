@@ -6,6 +6,7 @@ import { Divider } from 'primereact/divider'
 
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IApplicantWithoutPopulate } from '../../../../interfaces/job'
 import { useJobs } from '../../../../store/useJobs'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
@@ -34,7 +35,12 @@ export const StatusSearch = () => {
   }
 
   const handleAppliedStatus = (e: CheckboxChangeEvent) => {
-    const filteredResults = jobs.filter(job => job.applicants.find(applicant => applicant.user._id === _id))
+    const filteredResults = jobs.filter(job =>
+      job.applicants.find((applicant: IApplicantWithoutPopulate) => {
+        const applicantUserId = typeof applicant.user === 'object' ? applicant.user._id : applicant.user
+        return applicantUserId === _id
+      }),
+    )
     setFilteredJobs(filteredResults)
     setStatus(['applied'])
 
