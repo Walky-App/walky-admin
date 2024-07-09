@@ -262,14 +262,14 @@ export const Signup = () => {
         </div>
         <div className="flex items-center justify-center">
           <Button
-            label="Sign up as EMPLOYEE"
+            label="EMPLOYEE Sign Up"
             disabled={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: employee_role })}
             className={`mr-3 w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
           />
           <Button
-            label="Sign up as CLIENT"
+            label="EMPLOYER Sign Up"
             disabled={loading}
             type="submit"
             onClick={() => setFormData({ ...formData, role: client_role })}
