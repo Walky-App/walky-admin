@@ -50,15 +50,37 @@ export const ProfileDocuments = ({
     }
   }
 
-  const handleUploadError = (event: FileUploadErrorEvent) => {
+  const handleUploadError = async (event: FileUploadErrorEvent, uploadRef: React.RefObject<FileUpload>) => {
     console.error('Error uploading file:', event.files[0].name)
+    if (event.xhr != null && event.xhr.status >= 400) {
+      console.error('Upload failed:', event.xhr.status, event.xhr.statusText, event.xhr.responseText)
 
-    showToast({
-      severity: 'error',
-      summary: 'Error',
-      detail: `Error uploading ${event.files[0].name}`,
-      life: 2000,
-    })
+      let errorMessage = 'An error occurred while uploading the files.'
+      try {
+        const responseJson = JSON.parse(event.xhr.responseText)
+        if (responseJson != null && responseJson.message != null) {
+          errorMessage = responseJson.message
+        }
+      } catch (error) {
+        console.error('Error parsing response:', error)
+        errorMessage = 'An unexpected error occurred.'
+      }
+
+      try {
+        await showToast({
+          severity: 'error',
+          summary: 'Error uploading files',
+          detail: errorMessage,
+          life: 3000,
+        })
+      } catch (error) {
+        console.error('Error showing toast:', error)
+      }
+
+      if (uploadRef.current) {
+        uploadRef.current.clear()
+      }
+    }
   }
 
   const documents = formUser?.documents ?? []
@@ -68,24 +90,31 @@ export const ProfileDocuments = ({
     <div className="my-8">
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900 ">Badges and Credentials</h2>
-          <p className="mt-4 text-balance text-sm leading-6 text-gray-600">
-            Please upload your State-issued Credentials. If you do not have a badge or a Credential click on your state
-            for more information. &nbsp;
-            <a
-              href="https://sbg.colorado.gov/sites/sbg/files/documents/DR%208517e%20Emp%20App%2010-2022_0.pdf"
-              target="_blank">
-              CO
-            </a>
-            &nbsp; - &nbsp;
-            <a href="https://omma.us.thentiacloud.net/webs/omma/" target="_blank">
-              OK
-            </a>
-            &nbsp; - &nbsp;
-            <a href="https://cbadge.com/" target="_blank">
-              MI
-            </a>
-          </p>
+          <h2 className="text-base font-semibold leading-7 text-gray-900">Badges and Credentials</h2>
+          <div className="text-balance text-sm leading-6 text-gray-600 [&>p]:mt-4">
+            <p>Please upload your State-issued Credentials.</p>
+            <p>If you do not have a badge or a Credential click on your state for more information:</p>
+            <ul className="ml-1 space-y-2 [&>li]:mt-1 [&>li]:text-balance [&>li]:text-sm [&>li]:leading-6 [&>li]:text-gray-600 [&>li]:underline">
+              <li>
+                <a
+                  href="https://sbg.colorado.gov/sites/sbg/files/documents/DR%208517e%20Emp%20App%2010-2022_0.pdf"
+                  target="_blank"
+                  className="hover:text-primary">
+                  Colorado
+                </a>
+              </li>
+              <li>
+                <a href="https://omma.us.thentiacloud.net/webs/omma/" target="_blank" className="hover:text-primary">
+                  Oklahoma
+                </a>
+              </li>
+              <li>
+                <a href="https://cbadge.com/" target="_blank" className="hover:text-primary">
+                  Michigan
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
           {documentsLength > 0 ? (
@@ -108,11 +137,11 @@ export const ProfileDocuments = ({
 
           <div className="sm:col-span-6">
             <HtInfoTooltip message="State issued badge or certifications can help in the hiring process.">
-              <HtInputLabel htmlFor="userDocument" labelText="Upload Documents:" />
+              <HtInputLabel htmlFor="documents" labelText="Upload Documents:" />
             </HtInfoTooltip>
             <div className="mt-2">
               <FileUpload
-                id="userDocument"
+                id="documents"
                 name="files"
                 ref={fileUploadRef}
                 maxFileSize={5242880}
@@ -123,7 +152,7 @@ export const ProfileDocuments = ({
                 url={`${process.env.REACT_APP_PUBLIC_API}/users/${userId}/documents`}
                 onBeforeSend={handleBeforeSend}
                 onUpload={handleUploadSuccess}
-                onError={handleUploadError}
+                onError={event => handleUploadError(event, fileUploadRef)}
                 emptyTemplate={
                   <p>
                     Drag and drop <u>Documents and/or prior certifications</u> PDF files or images to upload. Maximum
@@ -133,7 +162,7 @@ export const ProfileDocuments = ({
                 previewWidth={200}
               />
               <HtInputHelpText
-                fieldName="userDocument"
+                fieldName="documents"
                 helpText="Please make sure your upload is clear without any warped or blur portions and shows all relevant information."
               />
             </div>

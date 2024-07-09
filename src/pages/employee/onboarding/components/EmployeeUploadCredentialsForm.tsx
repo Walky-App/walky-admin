@@ -105,15 +105,37 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
     }
   }
 
-  const handleUploadError = (event: FileUploadErrorEvent) => {
+  const handleUploadError = async (event: FileUploadErrorEvent, uploadRef: React.RefObject<FileUpload>) => {
     console.error('Error uploading file:', event.files[0].name)
+    if (event.xhr != null && event.xhr.status >= 400) {
+      console.error('Upload failed:', event.xhr.status, event.xhr.statusText, event.xhr.responseText)
 
-    showToast({
-      severity: 'error',
-      summary: 'Error',
-      detail: `Error uploading ${event.files[0].name}`,
-      life: 2000,
-    })
+      let errorMessage = 'An error occurred while uploading the files.'
+      try {
+        const responseJson = JSON.parse(event.xhr.responseText)
+        if (responseJson != null && responseJson.message != null) {
+          errorMessage = responseJson.message
+        }
+      } catch (error) {
+        console.error('Error parsing response:', error)
+        errorMessage = 'An unexpected error occurred.'
+      }
+
+      try {
+        await showToast({
+          severity: 'error',
+          summary: 'Error uploading files',
+          detail: errorMessage,
+          life: 3000,
+        })
+      } catch (error) {
+        console.error('Error showing toast:', error)
+      }
+
+      if (uploadRef.current) {
+        uploadRef.current.clear()
+      }
+    }
   }
 
   const documents = formData?.documents ?? []
@@ -191,7 +213,7 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
                   url={`${process.env.REACT_APP_PUBLIC_API}/users/${userId}/documents`}
                   onBeforeSend={handleBeforeSend}
                   onUpload={handleUploadSuccess}
-                  onError={handleUploadError}
+                  onError={event => handleUploadError(event, fileUploadRef)}
                   emptyTemplate={
                     <p>
                       Drag and drop <u>Documents and/or prior certifications</u> PDF files or images to upload. Maximum
