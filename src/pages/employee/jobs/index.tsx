@@ -13,6 +13,7 @@ import { AddressAutoComplete, type IAddressAutoComplete } from '../../../compone
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { HtScrollTop } from '../../../components/shared/general/HtScrollTop'
+import { type IApplicantWithoutPopulate } from '../../../interfaces/job'
 import { requestService } from '../../../services/requestServiceNew'
 import { useJobs } from '../../../store/useJobs'
 import { useUtils } from '../../../store/useUtils'
@@ -46,9 +47,7 @@ export const EmployeeJobs = () => {
 
   const { showToast } = useUtils()
 
-  const viewOptionsTemplate = (option: ViewOption) => {
-    return <i className={option.icon} />
-  }
+  const viewOptionsTemplate = (option: ViewOption) => <i className={option.icon} />
 
   const [isLoading, setIsLoading] = useState(false)
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>(undefined)
@@ -79,7 +78,16 @@ export const EmployeeJobs = () => {
     return (
       <div className="mx-auto mb-10 mt-4 px-4 sm:px-6 lg:px-8">
         <ul className="grid grid-cols-1 gap-6 lg:grid-cols-1 2xl:grid-cols-1">
-          {isLoading ? <HTLoadingLogo /> : filteredJobs.map(job => <JobCard key={job._id} job={job} />)}
+          {isLoading ? (
+            <HTLoadingLogo />
+          ) : (
+            filteredJobs.map(job => {
+              const userInJob = job.applicants.some((applicant: IApplicantWithoutPopulate) =>
+                typeof applicant.user === 'object' ? applicant.user._id : applicant.user,
+              )
+              return <JobCard key={job._id} job={job} status={userInJob ? 'active' : ''} />
+            })
+          )}
         </ul>
       </div>
     )

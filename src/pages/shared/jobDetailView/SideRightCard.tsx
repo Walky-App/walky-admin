@@ -15,17 +15,21 @@ import { isTodaySameAsTimeStamp } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const SideRightCard = ({
+  role,
   user,
   timesheets,
   setTimesheets,
   job,
+  jobHasEnded,
   setJobHasEnded,
   userWorkingInThisJob,
 }: {
+  role: string
   user: ITokenInfo
   timesheets: ITimeSheet[] | null
   setTimesheets: (timesheets: ITimeSheet[] | null) => void
   job: IJob
+  jobHasEnded: boolean
   setJobHasEnded: (hasEnded: boolean) => void
   userWorkingInThisJob: boolean
 }) => {
@@ -305,16 +309,19 @@ export const SideRightCard = ({
                 {getShiftIdForToday(job.job_days).message as string}
               </li>
             )}
-            <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-              <Button
-                label="Feedback"
-                severity="secondary"
-                style={{ width: '100%', height: '100%' }}
-                onClick={handleFeedback}
-              />
-            </li>
+            {jobHasEnded ? (
+              <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                <Button
+                  label="Feedback"
+                  severity="secondary"
+                  style={{ width: '100%', height: '100%' }}
+                  onClick={handleFeedback}
+                />
+              </li>
+            ) : null}
           </ul>
-          {userWorkingInThisJob && job?.facility.location_pin[0] && job?.facility.location_pin[1] ? (
+          {userWorkingInThisJob ||
+          (role === 'admin' && job?.facility.location_pin[0] && job?.facility.location_pin[1]) ? (
             <div className="col-span-1 mt-2 h-64 md:col-span-1">
               <div className="flex h-full flex-row md:flex-col">
                 <GoogleMapComponent
