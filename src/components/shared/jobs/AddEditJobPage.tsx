@@ -74,6 +74,7 @@ export const AddEditJobPage = () => {
   const [hourlySupervisorFee, setHourlySupervisorFee] = useState(0)
   const [holidayCount, setHolidayCount] = useState(0)
   const [stateHolidays, setStateHolidays] = useState<HolidayDocument[]>([])
+  const [totalOvertimeHours, setTotalOvertimeHours] = useState(0)
 
   const navigate = useNavigate()
   const params = useParams()
@@ -189,8 +190,6 @@ export const AddEditJobPage = () => {
     }
   }, [startTime, endTime, lunchBreak])
 
-  //START OF SUBMIT
-
   const onSubmit = async (data: JobFormDefaultValues) => {
     setIsSubmitting(true)
 
@@ -260,13 +259,10 @@ export const AddEditJobPage = () => {
       }
     } else {
       try {
-        //@ts-ignore
-        requestData.overtime = totalOvertimeHours
-
         const response = await requestService({
           path: 'jobs/create-service-order',
           method: 'POST',
-          body: JSON.stringify(requestData),
+          body: JSON.stringify({ overtime: totalOvertimeHours }),
         })
 
         if (!response.ok) {
@@ -302,8 +298,6 @@ export const AddEditJobPage = () => {
     }
   }
 
-  //END-OF-SUBMIT
-
   const vacancy = useWatch({ name: 'vacancy', control })
   const jobDatesLength = useWatch({ name: 'job_dates', control }).length
   const hourlyRate = useWatch({ name: 'hourly_rate', control })
@@ -321,6 +315,7 @@ export const AddEditJobPage = () => {
     const totalOvertimeHours =
       overtimeHours * overtimeRate * (jobDatesLength - holidayCount) +
       overtimeHours * holidayOvertimeRate * holidayCount
+    setTotalOvertimeHours(totalOvertimeHours)
 
     const totalOvertime = totalOvertimeHours * vacancy
     setTotalOvertime(totalOvertime)

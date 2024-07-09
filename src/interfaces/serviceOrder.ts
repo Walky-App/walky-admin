@@ -38,5 +38,4 @@ export interface IServiceOrder {
   profile_id: string
   createdAt: string
   updatedAt: string
-  __v: number
 }
