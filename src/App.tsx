@@ -27,7 +27,6 @@ import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import { ClientJobs } from './pages/client/jobs'
-import { ClientJobDetailView } from './pages/client/jobs/jobDetailView'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
@@ -161,7 +160,6 @@ export const App = () => {
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/new/service-order" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
-                  <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<AdminCompanyPage />}>
@@ -221,7 +219,7 @@ export const App = () => {
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
                   <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
-                  <Route element={<ClientJobDetailView />} path="/admin/jobs/:id" />
+                  <Route element={<JobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
