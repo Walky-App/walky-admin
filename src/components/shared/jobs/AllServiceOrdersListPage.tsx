@@ -5,7 +5,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { GlobalTable } from '../GlobalTable'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 
-export const ServiceOrdersListPage = () => {
+export const AllServiceOrdersListPage = () => {
   const [serviceOrders, setServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
