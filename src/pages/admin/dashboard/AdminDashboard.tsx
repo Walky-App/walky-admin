@@ -88,9 +88,9 @@ export const AdminDashboard = () => {
       {dashboardData ? (
         <div className="mt-8 md:flex">
           <div>
-            <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} />
-            <hr />
             <DashboardUserTable data={dashboardData?.disabled_users ?? []} />
+            <hr />
+            <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} />
             <hr />
             <DashboardReleasesList />
           </div>

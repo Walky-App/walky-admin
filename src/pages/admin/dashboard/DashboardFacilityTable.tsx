@@ -6,7 +6,7 @@ import { type IFacility } from '../../../interfaces/facility'
 
 export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
   return (
-    <div className=" px-4 sm:px-6 lg:px-8">
+    <div className="mt-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="flex">
           <BuildingLibraryIcon className="mr-4 h-7 w-7 flex-shrink-0 text-gray-400" aria-hidden="true" />

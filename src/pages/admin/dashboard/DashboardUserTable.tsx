@@ -10,7 +10,7 @@ import { roleTxt } from '../../../utils/roleChecker'
 export const DashboardUserTable = ({ data }: { data: IUser[] }) => {
   const navigate = useNavigate()
   return (
-    <div className="mt-24 px-4 sm:px-6 lg:px-8">
+    <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="flex">
           <UserGroupIcon className="mr-4 h-7 w-7 flex-shrink-0 text-gray-400" aria-hidden="true" />
