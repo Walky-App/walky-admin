@@ -215,8 +215,8 @@ export const ProfileDetail = ({
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-6">
-              <HtInfoTooltip message="The address of your facility. This is the physical location of your facility.">
-                <HtInputLabel htmlFor="address" asterisk labelText="Facility Address" />
+              <HtInfoTooltip message="This is the physical address where you get your mail.">
+                <HtInputLabel htmlFor="address" asterisk labelText="Address" />
               </HtInfoTooltip>
               <AddressAutoComplete
                 controlled
@@ -226,7 +226,7 @@ export const ProfileDetail = ({
                 classNames={classNames({ 'p-invalid': false }, 'mt-2')}
                 aria-describedby="address-help"
               />
-              <HtInputHelpText fieldName="address" helpText="Commercial Address ONLY" />
+              <HtInputHelpText fieldName="address" helpText="Residential Address ONLY" />
             </div>
           </div>
         </div>
