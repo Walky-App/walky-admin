@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 
+import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { GlobalTable } from '../GlobalTable'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 
 export const ServiceOrdersListPage = () => {
-  const [serviceOrders, setServiceOrders] = useState<[]>([])
+  const [serviceOrders, setServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -15,7 +16,6 @@ export const ServiceOrdersListPage = () => {
           path: `jobs/service-orders`,
           method: 'GET',
         })
-        // console.log('response', response)
         if (!response.ok) {
           throw new Error('Failed to fetch service orders')
         }

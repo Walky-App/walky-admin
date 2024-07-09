@@ -9,6 +9,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { roleChecker } from '../../../utils/roleChecker'
 
 export const ServiceOrderPage = () => {
   const [selectedCard, setSelectedCard] = useState(null)
@@ -18,7 +19,7 @@ export const ServiceOrderPage = () => {
   const serviceOrderId = useParams().serviceOrderId
   const { showToast } = useUtils()
   const navigate = useNavigate()
-  const isAdmin = window.location.pathname.includes('admin')
+  const role = roleChecker()
 
   useEffect(() => {
     const getServiceOrder = async () => {
@@ -28,10 +29,8 @@ export const ServiceOrderPage = () => {
           throw new Error('Failed to fetch service order')
         }
         const fetchedData = await response.json()
-        const serviceOrder = fetchedData.service_order
-        const paymentMethods = fetchedData.payments_methods
-        setServiceOrderData(serviceOrder)
-        setPaymentMethods(paymentMethods)
+        setServiceOrderData(fetchedData.service_order)
+        setPaymentMethods(fetchedData.payments_methods)
       } catch (error) {
         console.error('Error fetching service order data:', error)
       }
@@ -57,7 +56,7 @@ export const ServiceOrderPage = () => {
         detail: `Payment for $${serviceOrder?.details.total_cost} authorized successfully`,
       })
       setTimeout(() => {
-        navigate(isAdmin ? `/admin/jobs/${jobId}` : `/client/jobs/${jobId}`)
+        navigate(role === 'admin' ? `/admin/jobs/${jobId}` : `/client/jobs/${jobId}`)
       }, 3000)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : error
@@ -74,11 +73,11 @@ export const ServiceOrderPage = () => {
           <h1 className="text-base font-semibold leading-6 text-gray-900">Service order #{serviceOrder?._id}</h1>
 
           <p className="mt-2 text-sm text-gray-700">
-            For {serviceOrder?.job_id.title} job on:{' '}
+            For {serviceOrder?.job_id.title} job on:
             {serviceOrder?.job_id.job_dates.map(date => format(new Date(date), 'PPPP')).join(', ')}
           </p>
           <p className="mt-2 text-sm text-gray-700">
-            Company Information: {serviceOrder?.company_id.company_name} - {serviceOrder?.company_id.company_address} -{' '}
+            Company Information: {serviceOrder?.company_id.company_name} - {serviceOrder?.company_id.company_address} -
             {serviceOrder?.company_id.company_phone_number}
           </p>
           <p className="mt-2 text-sm text-gray-700">
@@ -138,17 +137,15 @@ export const ServiceOrderPage = () => {
                 <div className="font-medium text-gray-900">{serviceOrder?.job_id.title}</div>
                 <div className="mt-1 truncate text-gray-500">
                   {serviceOrder?.job_id.job_dates.map(date => format(new Date(date), 'PPPP')).join(', ')}
-                </div>{' '}
+                </div>
               </td>
               <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
                 {serviceOrder?.job_id.total_hours}
               </td>
               <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
-                {' '}
                 {serviceOrder?.job_id.job_dates.map(date => <div key={date}>{format(new Date(date), 'PPPP')}</div>)}
               </td>
               <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
-                {' '}
                 {serviceOrder?.job_id.vacancy}
               </td>
               <td className="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">

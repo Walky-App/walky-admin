@@ -160,7 +160,6 @@ export const App = () => {
                   <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<ClientJobs />} path="/client/jobs" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
-                  {/* <Route element={<ServiceOrderPage />} path="/client/jobs/new/service-order" /> */}
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ClientJobDetailView />} path="/client/jobs/:id" />
