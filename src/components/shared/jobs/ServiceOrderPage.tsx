@@ -15,7 +15,6 @@ export const ServiceOrderPage = () => {
   const [selectedCard, setSelectedCard] = useState(null)
   const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
-  const jobId = useParams().id
   const serviceOrderId = useParams().serviceOrderId
   const { showToast } = useUtils()
   const navigate = useNavigate()
@@ -24,7 +23,7 @@ export const ServiceOrderPage = () => {
   useEffect(() => {
     const getServiceOrder = async () => {
       try {
-        const response = await requestService({ path: `jobs/${jobId}/service-order`, method: 'GET' })
+        const response = await requestService({ path: `jobs/service-order/${serviceOrderId}` })
         if (!response.ok) {
           throw new Error('Failed to fetch service order')
         }
@@ -37,7 +36,7 @@ export const ServiceOrderPage = () => {
     }
 
     getServiceOrder()
-  }, [jobId])
+  }, [serviceOrderId])
 
   const handleAuthorizePayment = async () => {
     try {
@@ -56,7 +55,7 @@ export const ServiceOrderPage = () => {
         detail: `Payment for $${serviceOrder?.details.total_cost} authorized successfully`,
       })
       setTimeout(() => {
-        navigate(role === 'admin' ? `/admin/jobs/${jobId}` : `/client/jobs/${jobId}`)
+        navigate(role === 'admin' ? `/admin/jobs/service-orders` : `/client/jobs/service-orders`)
       }, 3000)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : error
