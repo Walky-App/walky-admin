@@ -312,7 +312,6 @@ export const AdminCompanyDetails = () => {
               <Controller
                 control={control}
                 name="users"
-                rules={{ required: 'At least one client is required' }}
                 render={({ field, fieldState }) => {
                   const selectedClients = field.value
                     .map(id => allClients.find(client => client._id === id))
@@ -320,7 +319,7 @@ export const AdminCompanyDetails = () => {
                   return (
                     <>
                       <HtInfoTooltip message="All clients related to this company">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
+                        <HtInputLabel htmlFor={field.name} labelText="Users" />
                       </HtInfoTooltip>
                       <MultiSelect
                         id={field.name}
@@ -352,7 +351,6 @@ export const AdminCompanyDetails = () => {
               <Controller
                 control={control}
                 name="facilities"
-                rules={{ required: 'At least one facility is required' }}
                 render={({ field, fieldState }) => {
                   const selectedFacilities = field.value
                     .map(item => allFacilities.find(facility => facility._id === item))
