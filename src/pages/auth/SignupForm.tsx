@@ -10,9 +10,11 @@ import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 import { Toast } from 'primereact/toast'
 
+import { HtInputHelpText } from '../../components/shared/forms/HtInputHelpText'
 import { type ISignupData } from '../../interfaces/loginData'
 import { requestService } from '../../services/requestServiceNew'
 import { type INotificationPreference } from '../../utils/formOptions'
+import { SignupDialog } from './SignupDialog'
 
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
 const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
@@ -35,6 +37,7 @@ export const Signup = () => {
     terms: { is_accepted: false, accepted_at: new Date(), ip_address: '' },
     role: employee_role,
   })
+  const [visible, setVisible] = useState(true)
 
   const [loading, setLoading] = useState(false)
   const toast = useRef<Toast>(null)
@@ -115,7 +118,7 @@ export const Signup = () => {
 
   return (
     <div className="flex items-center justify-center ">
-      <form onSubmit={handleOnSubmit} className="mx-auto max-w-md">
+      <form onSubmit={handleOnSubmit} className="mx-auto px-8 md:max-w-md">
         <div className="bg-white px-6 sm:py-12 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-base font-semibold leading-7 text-green-600">
@@ -261,22 +264,30 @@ export const Signup = () => {
           <Toast ref={toast} position="bottom-right" />
         </div>
         <div className="flex items-center justify-center">
-          <Button
-            label="EMPLOYEE Sign Up"
-            disabled={loading}
-            type="submit"
-            onClick={() => setFormData({ ...formData, role: employee_role })}
-            className={`mr-3 w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
-          />
-          <Button
-            label="EMPLOYER Sign Up"
-            disabled={loading}
-            type="submit"
-            onClick={() => setFormData({ ...formData, role: client_role })}
-            className={`w-full ${loading && 'cursor-wait hover:bg-zinc-950'}`}
-          />
+          <div className="text-center">
+            <Button
+              label="EMPLOYEE Signup"
+              disabled={loading}
+              type="submit"
+              onClick={() => setFormData({ ...formData, role: employee_role })}
+              className={`mr-3 w-full text-sm md:text-lg ${loading && 'cursor-wait hover:bg-zinc-950'}`}
+            />
+            <HtInputHelpText helpText="I want to work!" className="text-gray-600" fieldName="" />
+          </div>
+          <div className="ml-2 text-center">
+            <Button
+              label="EMPLOYER Signup"
+              disabled={loading}
+              severity="secondary"
+              type="submit"
+              onClick={() => setFormData({ ...formData, role: client_role })}
+              className={`w-full text-sm md:text-lg ${loading && 'cursor-wait hover:bg-zinc-950'}`}
+            />
+            <HtInputHelpText helpText="I want to hire workers!" className="text-gray-600" fieldName="" />
+          </div>
         </div>
       </form>
+      <SignupDialog visible={visible} setVisible={setVisible} /> 
     </div>
   )
 }
