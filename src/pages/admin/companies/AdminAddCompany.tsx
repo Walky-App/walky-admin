@@ -279,7 +279,7 @@ export const AdminAddCompany = () => {
                   render={({ field, fieldState }) => (
                     <>
                       <HtInfoTooltip message="All clients related to this company">
-                        <HtInputLabel htmlFor={field.name} asterisk labelText="Users" />
+                        <HtInputLabel htmlFor={field.name} labelText="Users" />
                       </HtInfoTooltip>
                       <MultiSelect
                         id={field.name}
