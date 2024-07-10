@@ -162,10 +162,14 @@ export const App = () => {
                   <Route element={<ClientJobs />} path="/client/jobs" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
-                  <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" />
-                  <Route element={<AllServiceOrdersListPage />} path="/client/service-orders/all" />
-                  <Route element={<PendingServiceOrdersListPage />} path="/client/service-orders/pending" />
-                  <Route element={<AuthorizedServiceOrdersListPage />} path="/client/service-orders/authorized" />
+                  {/* <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" /> */}
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/:serviceOrderId" />
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/pending/:serviceOrderId" />
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/authorized/:serviceOrderId" />
+                  {/* <Route element={<AllServiceOrdersListPage />} path="/client/service-orders/all" /> */}
+                  <Route element={<AllServiceOrdersListPage />} path="/client/jobs/service-orders" />
+                  <Route element={<PendingServiceOrdersListPage />} path="/client/jobs/service-orders/pending" />
+                  <Route element={<AuthorizedServiceOrdersListPage />} path="/client/jobs/service-orders/authorized" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<AdminCompanyPage />}>
@@ -227,10 +231,12 @@ export const App = () => {
                   <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
                   <Route element={<JobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
-                  <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
-                  <Route element={<AllServiceOrdersListPage />} path="/admin/service-orders/all" />
-                  <Route element={<PendingServiceOrdersListPage />} path="/admin/service-orders/pending" />
-                  <Route element={<AuthorizedServiceOrdersListPage />} path="/admin/service-orders/authorized" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/:serviceOrderId" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/pending/:serviceOrderId" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/authorized/:serviceOrderId" />
+                  <Route element={<AllServiceOrdersListPage />} path="/admin/jobs/service-orders" />
+                  <Route element={<PendingServiceOrdersListPage />} path="/admin/jobs/service-orders/pending" />
+                  <Route element={<AuthorizedServiceOrdersListPage />} path="/admin/jobs/service-orders/authorized" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
                   <Route element={<AdminDetailsCategory />} path="/admin/learn/categories/:categoryId" />
