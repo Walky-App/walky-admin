@@ -36,26 +36,40 @@ export const AdminUserEmployeesListPage = () => {
 
   const memoUsersColumns = useMemo(
     () => [
-      { Header: 'First Name', accessor: 'first_name' },
-      { Header: 'Last Name', accessor: 'last_name' },
-      { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
+      { Header: 'First Name', accessor: 'first_name', width: 200 },
+      { Header: 'Last Name', accessor: 'last_name', width: 200 },
       {
-        Header: 'Status',
-        accessor: (d: IUser) => (d.is_approved ? 'Active' : '❌'),
+        Header: 'Approved',
+        width: 100,
+        accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
       },
-
+      {
+        Header: 'Onboarded',
+        width: 100,
+        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
+      },
+      {
+        Header: 'Docs',
+        width: 100,
+        accessor: (d: IUser) => d.documents?.length,
+      },
+      {
+        Header: 'Supervisor',
+        width: 100,
+        accessor: (d: IUser) => (d.is_shift_supervisor ? '✅' : '❌'),
+      },
       {
         Header: 'Joined',
+        width: 100,
         accessor: (a: IUser): string => {
           return isToday(a.createdAt) || isYesterday(a.createdAt) ? 'New ⭐️' : format(a.createdAt, 'P')
         },
-        width: 300,
       },
-      { Header: 'Email', accessor: 'email', width: 300 },
+      { Header: 'Email', accessor: 'email', width: 400 },
       { Header: 'Phone', accessor: 'phone_number' },
       { Header: 'City', accessor: 'city' },
-      { Header: 'State', accessor: 'state' },
-      { Header: 'Zip', accessor: 'zip' },
+      { Header: 'State', accessor: 'state', width: 20 },
+      { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
     ],
     [],
   )
