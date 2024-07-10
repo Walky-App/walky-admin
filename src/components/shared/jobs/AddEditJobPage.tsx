@@ -65,6 +65,7 @@ export const AddEditJobPage = () => {
   const [normalHours, setNormalHours] = useState(0)
   const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
   const [totalOvertime, setTotalOvertime] = useState(0)
+  const [totalOvertimeHours, setTotalOvertimeHours] = useState(0)
   const [overTimeRateMultiplier, setOverTimeRateMultiplier] = useState(0)
   const [holidayRateMultiplier, setHolidayRateMultiplier] = useState(0)
   const [adminCosts, setAdminCosts] = useState(0)
@@ -74,7 +75,6 @@ export const AddEditJobPage = () => {
   const [hourlySupervisorFee, setHourlySupervisorFee] = useState(0)
   const [holidayCount, setHolidayCount] = useState(0)
   const [stateHolidays, setStateHolidays] = useState<HolidayDocument[]>([])
-  const [totalOvertimeHours, setTotalOvertimeHours] = useState(0)
 
   const navigate = useNavigate()
   const params = useParams()
@@ -190,6 +190,8 @@ export const AddEditJobPage = () => {
     }
   }, [startTime, endTime, lunchBreak])
 
+  //START OF SUBMIT
+
   const onSubmit = async (data: JobFormDefaultValues) => {
     setIsSubmitting(true)
 
@@ -262,9 +264,11 @@ export const AddEditJobPage = () => {
         const response = await requestService({
           path: 'jobs/create-service-order',
           method: 'POST',
-          body: JSON.stringify({ overtime: totalOvertimeHours }),
+          body: JSON.stringify({
+            ...requestData,
+            overtime: totalOvertimeHours,
+          }),
         })
-
         if (!response.ok) {
           const data = await response.json()
           const message = data.message instanceof Error ? data.message.message : data.message
@@ -297,6 +301,8 @@ export const AddEditJobPage = () => {
       }
     }
   }
+
+  //END-OF-SUBMIT
 
   const vacancy = useWatch({ name: 'vacancy', control })
   const jobDatesLength = useWatch({ name: 'job_dates', control }).length
