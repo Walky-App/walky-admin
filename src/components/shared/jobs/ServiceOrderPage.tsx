@@ -15,7 +15,6 @@ export const ServiceOrderPage = () => {
   const [selectedCard, setSelectedCard] = useState(null)
   const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
-  const jobId = useParams().id
   const serviceOrderId = useParams().serviceOrderId
   const { showToast } = useUtils()
   const navigate = useNavigate()
@@ -57,7 +56,7 @@ export const ServiceOrderPage = () => {
         detail: `Payment for $${serviceOrder?.details.total_cost} authorized successfully`,
       })
       setTimeout(() => {
-        navigate(role === 'admin' ? `/admin/jobs/${jobId}` : `/client/jobs/${jobId}`)
+        navigate(role === 'admin' ? `/admin/jobs/service-orders` : `/client/jobs/service-orders`)
       }, 3000)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : error

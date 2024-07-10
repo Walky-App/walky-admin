@@ -162,7 +162,7 @@ export const App = () => {
                   <Route element={<ClientJobs />} path="/client/jobs" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
-                  {/* <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" /> */}
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/pending/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/authorized/:serviceOrderId" />
@@ -231,6 +231,7 @@ export const App = () => {
                   <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
                   <Route element={<JobDetailView />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/pending/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/authorized/:serviceOrderId" />
