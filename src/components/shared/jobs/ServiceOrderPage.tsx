@@ -24,7 +24,8 @@ export const ServiceOrderPage = () => {
   useEffect(() => {
     const getServiceOrder = async () => {
       try {
-        const response = await requestService({ path: `jobs/${jobId}/service-order`, method: 'GET' })
+        // const response = await requestService({ path: `jobs/${jobId}/service-order`, method: 'GET' })
+        const response = await requestService({ path: `jobs/service-order/${serviceOrderId}` })
         if (!response.ok) {
           throw new Error('Failed to fetch service order')
         }
@@ -37,7 +38,7 @@ export const ServiceOrderPage = () => {
     }
 
     getServiceOrder()
-  }, [jobId])
+  }, [serviceOrderId])
 
   const handleAuthorizePayment = async () => {
     try {
