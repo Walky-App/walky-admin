@@ -42,10 +42,10 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       href: '/admin/users',
       icon: <FaUserGroup />,
       subLinks: [
-        { name: 'All Users', href: '/admin/users' },
         { name: 'Employees', href: '/admin/users/employees' },
         { name: 'Clients', href: '/admin/users/clients' },
         { name: 'Invite User', href: '/admin/users/invite' },
+        { name: 'All Users', href: '/admin/users' },
       ],
     },
     {
