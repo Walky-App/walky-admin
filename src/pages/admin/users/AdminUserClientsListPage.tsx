@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { format, isToday, isYesterday } from 'date-fns'
+
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IUser } from '../../../interfaces/User'
@@ -36,16 +38,28 @@ export const AdminUserClientsListPage = () => {
     () => [
       { Header: 'First Name', accessor: 'first_name' },
       { Header: 'Last Name', accessor: 'last_name' },
-      { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
       {
-        Header: 'Status',
-        accessor: (d: IUser) => (d.active ? '✅' : '❌'),
+        Header: 'Approved',
+        width: 100,
+        accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
+      },
+      {
+        Header: 'Onboarded',
+        width: 100,
+        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
+      },
+      {
+        Header: 'Joined',
+        width: 100,
+        accessor: (a: IUser): string => {
+          return isToday(a.createdAt) || isYesterday(a.createdAt) ? 'New ⭐️' : format(a.createdAt, 'P')
+        },
       },
       { Header: 'Email', accessor: 'email', width: 250 },
       { Header: 'Phone', accessor: 'phone_number' },
       { Header: 'City', accessor: 'city' },
       { Header: 'State', accessor: 'state' },
-      { Header: 'Zip', accessor: 'zip' },
+      { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
     ],
     [],
   )

@@ -47,4 +47,5 @@ export interface IUser {
   student_record?: ProgressHTU
   score_rating?: number
   companies?: string[]
+  is_shift_supervisor?: boolean
 }
