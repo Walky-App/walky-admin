@@ -2,23 +2,35 @@ import { useState, useEffect, useMemo } from 'react'
 
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
+import { roleChecker } from '../../../utils/roleChecker'
 import { GlobalTable } from '../GlobalTable'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 
 export const AllServiceOrdersListPage = () => {
   const [serviceOrders, setServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const role = roleChecker()
 
   useEffect(() => {
     const getAllServiceOrders = async () => {
       try {
-        const response = await requestService({
-          path: `jobs/service-orders`,
-          method: 'GET',
-        })
-        if (!response.ok) {
+        let response
+        if (role === 'admin') {
+          response = await requestService({
+            path: `jobs/service-orders`,
+            method: 'GET',
+          })
+        } else if (role === 'client') {
+          response = await requestService({
+            path: `jobs/service-orders/by-client-companies`,
+            method: 'GET',
+          })
+        }
+
+        if (!response || !response.ok) {
           throw new Error('Failed to fetch service orders')
         }
+
         const allServiceOrders = await response.json()
         setServiceOrders(allServiceOrders)
       } catch (error) {
@@ -29,7 +41,7 @@ export const AllServiceOrdersListPage = () => {
     }
 
     getAllServiceOrders()
-  }, [])
+  }, [role])
 
   const memoServiceOrdersData = useMemo(() => serviceOrders, [serviceOrders])
 

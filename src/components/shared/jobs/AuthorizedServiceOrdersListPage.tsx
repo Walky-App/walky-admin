@@ -2,23 +2,35 @@ import { useState, useEffect, useMemo } from 'react'
 
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
+import { roleChecker } from '../../../utils/roleChecker'
 import { GlobalTable } from '../GlobalTable'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 
 export const AuthorizedServiceOrdersListPage = () => {
   const [authorizedServiceOrders, setAuthorizedServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const role = roleChecker()
 
   useEffect(() => {
     const getAllAuthorizedServiceOrders = async () => {
       try {
-        const response = await requestService({
-          path: `jobs/service-orders/authorized`,
-          method: 'GET',
-        })
-        if (!response.ok) {
+        let response
+        if (role === 'admin') {
+          response = await requestService({
+            path: `jobs/service-orders/authorized`,
+            method: 'GET',
+          })
+        } else if (role === 'client') {
+          response = await requestService({
+            path: `jobs/service-orders/authorized-by-client-companies`,
+            method: 'GET',
+          })
+        }
+
+        if (!response || !response.ok) {
           throw new Error('Failed to fetch service orders')
         }
+
         const allServiceOrders = await response.json()
         setAuthorizedServiceOrders(allServiceOrders)
       } catch (error) {
@@ -29,7 +41,7 @@ export const AuthorizedServiceOrdersListPage = () => {
     }
 
     getAllAuthorizedServiceOrders()
-  }, [])
+  }, [role])
 
   const memoServiceOrdersData = useMemo(() => authorizedServiceOrders, [authorizedServiceOrders])
 
