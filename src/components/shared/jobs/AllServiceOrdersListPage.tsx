@@ -2,23 +2,35 @@ import { useState, useEffect, useMemo } from 'react'
 
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
+import { roleChecker } from '../../../utils/roleChecker'
 import { GlobalTable } from '../GlobalTable'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 
-export const ServiceOrdersListPage = () => {
+export const AllServiceOrdersListPage = () => {
   const [serviceOrders, setServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const role = roleChecker()
 
   useEffect(() => {
     const getAllServiceOrders = async () => {
       try {
-        const response = await requestService({
-          path: `jobs/service-orders`,
-          method: 'GET',
-        })
-        if (!response.ok) {
+        let response
+        if (role === 'admin') {
+          response = await requestService({
+            path: `jobs/service-orders`,
+            method: 'GET',
+          })
+        } else if (role === 'client') {
+          response = await requestService({
+            path: `jobs/service-orders/by-client-companies`,
+            method: 'GET',
+          })
+        }
+
+        if (!response || !response.ok) {
           throw new Error('Failed to fetch service orders')
         }
+
         const allServiceOrders = await response.json()
         setServiceOrders(allServiceOrders)
       } catch (error) {
@@ -29,17 +41,18 @@ export const ServiceOrdersListPage = () => {
     }
 
     getAllServiceOrders()
-  }, [])
+  }, [role])
 
   const memoServiceOrdersData = useMemo(() => serviceOrders, [serviceOrders])
 
   const memoServiceOrdersColumns = useMemo(
     () => [
       { Header: 'Status', accessor: 'status' },
-      { Header: 'Company ID', accessor: 'company_id' },
-      { Header: 'Job ID', accessor: 'job_id' },
-      { Header: 'Facility ID', accessor: 'facility_id' },
-      { Header: 'Created By', accessor: 'created_by' },
+      { Header: 'Company Name', accessor: 'company_id.company_name' },
+      { Header: 'Job Title', accessor: 'job_id.title' },
+
+      { Header: 'Facility ID', accessor: 'facility_id.name' },
+      { Header: 'Created By', accessor: 'created_by.email' },
       { Header: 'Total Cost', accessor: 'details.total_cost' },
     ],
     [],
