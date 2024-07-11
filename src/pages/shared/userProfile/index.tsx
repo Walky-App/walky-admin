@@ -31,6 +31,7 @@ export const UserProfile = () => {
     city: '',
     state: '',
     zip: '',
+    internal_notes: [],
     notifications: [],
     createdAt: '',
     role: '',
