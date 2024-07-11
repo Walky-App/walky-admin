@@ -1,21 +1,24 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from 'react'
 
 import classNames from 'classnames'
+import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Checkbox, type CheckboxChangeEvent } from 'primereact/checkbox'
 import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
+import { InputTextarea } from 'primereact/inputtextarea'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IUser } from '../../../interfaces/User'
+import { type IUserInternalNote, type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { type INotificationPreference } from '../../../utils/formOptions'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const ProfileDetail = ({
   formUser,
@@ -25,9 +28,12 @@ export const ProfileDetail = ({
   setFormUser: Dispatch<SetStateAction<IUser>>
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
+  const [userFound, setUserFound] = useState<IUser>()
+  const [internalNotes, setInternalNotes] = useState<IUserInternalNote>()
 
   const { showToast } = useUtils()
   const role = roleChecker()
+  const userId = GetTokenInfo()._id
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -43,13 +49,37 @@ export const ProfileDetail = ({
     }
   }, [moreAddressDetails, setFormUser, setMoreAddressDetails])
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await requestService({ path: `users/${userId}` })
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || 'Unknown error occurred')
+        }
+        const data = await response.json()
+        const currentUser = data as IUser
+        setUserFound(currentUser)
+      } catch (error) {
+        console.error('Error fetching user:', error)
+      }
+    }
+    fetchUser()
+  }, [userId])
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
+
+    const formPayload = {
+      ...formUser,
+      internal_notes: [...(formUser.internal_notes ?? []), internalNotes],
+    }
+
     try {
       const response = await requestService({
         path: `users/${formUser?._id}`,
         method: 'PATCH',
-        body: JSON.stringify(formUser),
+        body: JSON.stringify(formPayload),
       })
       if (response.ok) {
         const data = await response.json()
@@ -232,61 +262,147 @@ export const ProfileDetail = ({
         </div>
 
         {role === 'admin' ? (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-12 sm:gap-y-10 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">User Statuses</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your business so that we can verify you on the platform.
-              </p>
-            </div>
-            <div className="flex items-center justify-between text-center">
+          <>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b pb-12 sm:gap-y-10 md:grid-cols-3">
               <div>
-                <HtInputLabel htmlFor="active" labelText="Active" />
-                <Checkbox
-                  inputId="active"
-                  name="active"
-                  title="Active"
-                  onChange={e => setFormUser({ ...formUser, active: e.checked ?? false })}
-                  checked={formUser.active || false}
-                />
+                <h2 className="text-base font-semibold leading-7 text-gray-900">User Statuses</h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Please provide information about your business so that we can verify you on the platform.
+                </p>
+              </div>
+              <div className="flex items-center justify-between text-center">
+                <div>
+                  <HtInputLabel htmlFor="active" labelText="Active" />
+                  <Checkbox
+                    inputId="active"
+                    name="active"
+                    title="Active"
+                    onChange={e => setFormUser({ ...formUser, active: e.checked ?? false })}
+                    checked={formUser.active || false}
+                  />
+                </div>
+
+                <div>
+                  <HtInputLabel htmlFor="onboarding_complete" labelText="Onboarding Complete" />
+                  <Checkbox
+                    inputId="onboarding_complete"
+                    name="onboarding_complete"
+                    onChange={e =>
+                      setFormUser({
+                        ...formUser,
+                        onboarding: {
+                          ...formUser.onboarding,
+                          completed: e.checked ?? false,
+                          step_number: formUser.onboarding?.step_number ?? 0,
+                          description: formUser.onboarding?.description ?? '',
+                          type: formUser.onboarding?.type ?? '',
+                        },
+                      })
+                    }
+                    checked={formUser.onboarding?.completed ?? false}
+                  />
+                </div>
+                <div>
+                  <HtInputLabel htmlFor="is_approved" labelText="Approved / Verified" />
+                  <Checkbox
+                    inputId="is_approved"
+                    name="is_approved"
+                    onChange={e =>
+                      setFormUser({
+                        ...formUser,
+                        is_approved: e.checked ?? false,
+                      })
+                    }
+                    checked={formUser.is_approved ?? false}
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-gray-900/10 pb-6 md:grid-cols-3 md:gap-y-10">
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-gray-900">Internal Notes</h2>
+                </div>
+
+                <div className="max-w-2xl md:col-span-2">
+                  <HtInputLabel htmlFor="internal_notes" labelText="Note:" />
+                  <InputTextarea
+                    id="internal_notes"
+                    rows={4}
+                    cols={30}
+                    maxLength={500}
+                    onChange={e =>
+                      setInternalNotes(prev => ({
+                        ...prev,
+                        note: e.target.value,
+                        createdBy: userFound?.email ?? userId,
+                      }))
+                    }
+                    className={classNames({ 'p-invalid': false }, 'mt-2')}
+                    autoComplete="off"
+                  />
+                  <HtInputHelpText
+                    fieldName="internal_notes"
+                    helpText="Max 500 characters. Please do not enter contact information into this field."
+                  />
+                </div>
               </div>
 
-              <div>
-                <HtInputLabel htmlFor="onboarding_complete" labelText="Onboarding Complete" />
-                <Checkbox
-                  inputId="onboarding_complete"
-                  name="onboarding_complete"
-                  onChange={e =>
-                    setFormUser({
-                      ...formUser,
-                      onboarding: {
-                        ...formUser.onboarding,
-                        completed: e.checked ?? false,
-                        step_number: formUser.onboarding?.step_number ?? 0,
-                        description: formUser.onboarding?.description ?? '',
-                        type: formUser.onboarding?.type ?? '',
-                      },
-                    })
-                  }
-                  checked={formUser.onboarding?.completed ?? false}
-                />
-              </div>
-              <div>
-                <HtInputLabel htmlFor="is_approved" labelText="Approved / Verified" />
-                <Checkbox
-                  inputId="is_approved"
-                  name="is_approved"
-                  onChange={e =>
-                    setFormUser({
-                      ...formUser,
-                      is_approved: e.checked ?? false,
-                    })
-                  }
-                  checked={formUser.is_approved ?? false}
-                />
+              <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-b border-gray-900/10 pb-12 md:grid-cols-3 md:gap-y-10">
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-gray-900">Existing Notes</h2>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">Previously added notes about this user.</p>
+                </div>
+                <div className="md:col-span-2">
+                  {formUser.internal_notes?.length === 0 ? (
+                    <div className="">
+                      <h2 className="text-3xl font-semibold text-gray-900">No internal notes found</h2>
+                      <p className="mt-1 text-sm text-gray-500">Add a new note to the facility</p>
+                    </div>
+                  ) : (
+                    <div className="w-full">
+                      <div className="flow-root">
+                        <div className="py-2 align-middle">
+                          <table className="w-full divide-y divide-gray-300">
+                            <thead>
+                              <tr>
+                                <th
+                                  scope="col"
+                                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                  Note
+                                </th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                  Created By
+                                </th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                  Created At
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                              {formUser.internal_notes?.map(singleNote => (
+                                <tr key={singleNote._id}>
+                                  <td
+                                    className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                                    style={{ wordWrap: 'break-word', maxWidth: '250px' }}>
+                                    {singleNote.note}
+                                  </td>
+                                  <td className="px-3 py-4 text-sm text-gray-500">{singleNote.createdBy}</td>
+                                  <td className="px-3 py-4 text-sm text-gray-500">
+                                    {singleNote.createdAt ? format(singleNote.createdAt, 'Pp') : null}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </>
         ) : null}
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
