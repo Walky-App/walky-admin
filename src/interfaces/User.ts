@@ -14,6 +14,13 @@ export interface IUserDocument {
   key: string
   timestamp: string
 }
+
+export interface IUserInternalNote {
+  note: string
+  createdBy: string
+  _id?: string
+  createdAt?: Date
+}
 export interface IUser {
   _id: string
   access_token: string
@@ -27,6 +34,7 @@ export interface IUser {
   updated_at?: string
   experience_level?: string
   verified: boolean
+  internal_notes?: IUserInternalNote[]
   isOnboarded?: boolean
   is_approved: boolean
   onboarding?: IOnboardingStep
