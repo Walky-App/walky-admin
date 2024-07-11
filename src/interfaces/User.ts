@@ -38,6 +38,7 @@ export interface IUser {
   isOnboarded?: boolean
   is_approved: boolean
   onboarding?: IOnboardingStep
+  onboarding_notificationsSent?: boolean
   job_preferences?: string[]
   address?: string
   avatar?: string
