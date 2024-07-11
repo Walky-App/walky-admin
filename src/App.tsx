@@ -13,6 +13,7 @@ import { Error404 } from './pages/Error404'
 import { Auth } from './pages/auth'
 import { NewPasswordForm } from './pages/auth/NewPasswordForm'
 import { Otp } from './pages/auth/Otp'
+import { SignupClientInvited } from './pages/auth/SignupClientInvited'
 import { Signup } from './pages/auth/SignupForm'
 
 /******************************************* HTU Pages ************************************/
@@ -115,7 +116,7 @@ export const App = () => {
             <Route element={<Auth />} path="/login" />
             <Route element={<LayoutPublic />}>
               <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
-              <Route element={<Signup />} path="/invite/:email/:role" />
+              <Route element={<SignupClientInvited />} path="/invite-client/:invite_id" />
               <Route element={<Signup />} path="/signup" />
               <Route element={<Otp />} path="/otp/:id" />
             </Route>

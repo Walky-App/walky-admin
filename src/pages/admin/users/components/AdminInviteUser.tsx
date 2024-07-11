@@ -1,37 +1,50 @@
-import * as React from 'react'
+import { useEffect, useState } from 'react'
+
+import { format } from 'date-fns'
 
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
+import { type ICompany } from '../../../../interfaces/company'
+import { type IInvite } from '../../../../interfaces/invite'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
+import { roleTxt } from '../../../../utils/roleChecker'
 
-const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
 const client_role = process.env.REACT_APP_CLIENT_ROLE as string
-const employee_role = process.env.REACT_APP_EMPLOYEE_ROLE as string
-const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export const AdminInviteUser = () => {
-  const [updateSuccess, setUpdateSuccess] = React.useState(false)
+  const [allInvites, setAllInvites] = useState([])
+  const [allCompanies, setAllCompanies] = useState([])
+  const [updateSuccess, setUpdateSuccess] = useState(false)
+  const [formData, setFormData] = useState({ invitee: '', role: '', status: 'sent', company_id: '' } as IInvite)
   const { showToast } = useUtils()
+
+  useEffect(() => {
+    const fetchInvites = async () => {
+      try {
+        const response = await requestService({ path: 'invite/' })
+        if (response.status === 200) {
+          const jsonResponse = await response.json()
+          setAllInvites(jsonResponse.invites)
+          setAllCompanies(jsonResponse.companies)
+        }
+      } catch (error) {
+        console.error('Error fetching invites:', error)
+      }
+    }
+    fetchInvites()
+  }, [])
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const form = e.currentTarget
-
-    const target = e.target as typeof e.target & {
-      email: { value: string }
-      role: { value: string }
-    }
-
-    const formData = { email: target.email.value, role: target.role.value }
 
     try {
-      const response = await requestService({ path: 'auth/invite', method: 'POST', body: JSON.stringify(formData) })
+      const response = await requestService({ path: 'invite/', method: 'POST', body: JSON.stringify(formData) })
 
       const jsonResponse = await response.json()
       if (response.status === 200) {
         setUpdateSuccess(true)
-        form.reset()
+        setAllInvites(jsonResponse)
         showToast({ severity: 'success', summary: 'Success', detail: 'Invite sent successfully' })
         setTimeout(() => setUpdateSuccess(false), 5000)
       } else {
@@ -60,11 +73,32 @@ export const AdminInviteUser = () => {
                   id="email"
                   name="email"
                   autoComplete="email"
+                  onChange={e => setFormData({ ...formData, invitee: e.target.value })}
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
 
+            <div className="sm:col-span-3">
+              <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
+                Select Company Name*
+              </label>
+              <div className="mt-2">
+                <select
+                  required
+                  id="company_id"
+                  name="company_id"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={e => setFormData({ ...formData, company_id: e.target.value })}>
+                  <option value="">Select Company</option>
+                  {allCompanies.map((company: ICompany) => (
+                    <option key={company._id} value={company._id}>
+                      {company.company_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <div className="sm:col-span-3">
               <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
                 Select User's Role*
@@ -74,12 +108,12 @@ export const AdminInviteUser = () => {
                   required
                   id="role"
                   name="role"
+                  onChange={e => setFormData({ ...formData, role: e.target.value })}
                   className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                  <option value={admin_role}>Admin</option>
-                  <option value={employee_role}>Employee</option>
+                  <option value="">Select Role</option>
+                  {/* <option value={admin_role}>Admin</option> */}
                   <option value={client_role}>Client</option>
-                  <option value={sales_role}>Sales</option>
-                  {/* <option value={}>guest</option> */}
+                  {/* <option value={sales_role}>Sales</option> */}
                 </select>
               </div>
             </div>
@@ -109,6 +143,34 @@ export const AdminInviteUser = () => {
           Submit
         </button>
       </div>
+      {allInvites.length > 0 ? (
+        <div className="mt-12">
+          <ul className="mt-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2">
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="text-left">Invitee</th>
+                  <th className="text-left">Role</th>
+                  <th className="text-left">Status</th>
+                  <th className="text-left">Company</th>
+                  <th className="text-left">Sent on</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allInvites.map((invite: IInvite) => (
+                  <tr key={invite._id}>
+                    <td>{invite.invitee}</td>
+                    <td>{roleTxt(invite.role)}</td>
+                    <td>{invite.status}</td>
+                    <td>{typeof invite.company_id === 'object' ? invite.company_id.company_name : ''}</td>
+                    <td>{format(invite?.createdAt ?? new Date(), 'P')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ul>
+        </div>
+      ) : null}
     </form>
   )
 }
