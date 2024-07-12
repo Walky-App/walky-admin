@@ -100,7 +100,12 @@ export const DashboardReleasesList = () => {
                         <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                           <div className="flex items-center">
                             <div className="h-11 w-11 flex-shrink-0">
-                              <Avatar label={release?.developer[0]} size="large" shape="circle" />
+                              <Avatar
+                                label={release?.developer[0]}
+                                size="large"
+                                shape="circle"
+                                pt={{ image: { className: 'object-cover' } }}
+                              />
                             </div>
                             <div className="ml-4">
                               <div className="font-medium text-gray-900">{release.name}</div>

@@ -80,9 +80,9 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
               <Avatar
                 label={user?.first_name[0]}
                 image={user?.avatar}
-                className="object-cover"
                 size="normal"
                 shape="circle"
+                pt={{ image: { className: 'object-cover' } }}
               />
               <span className="hidden lg:flex lg:items-center">
                 {user?.first_name != null ? (
