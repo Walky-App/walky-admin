@@ -70,16 +70,18 @@ export const ProfileDetail = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
 
-    const formPayload = {
+    const formPayloadWithNotes = {
       ...formUser,
       internal_notes: [...(formUser.internal_notes ?? []), internalNotes],
     }
+
+    const payload = internalNotes ? formPayloadWithNotes : formUser
 
     try {
       const response = await requestService({
         path: `users/${formUser?._id}`,
         method: 'PATCH',
-        body: JSON.stringify(formPayload),
+        body: JSON.stringify(payload),
       })
       if (response.ok) {
         const data = await response.json()
