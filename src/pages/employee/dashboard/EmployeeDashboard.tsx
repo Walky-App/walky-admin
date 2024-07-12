@@ -57,7 +57,13 @@ export const EmployeeDashboard = () => {
           <div className="flex w-full items-center justify-between">
             {/* Profile */}
             <div className="flex py-6">
-              <Avatar label={user?.first_name[0]} image={avatar} size="large" shape="circle" />
+              <Avatar
+                label={user?.first_name[0]}
+                image={avatar}
+                size="large"
+                shape="circle"
+                pt={{ image: { className: 'object-cover' } }}
+              />
               <div>
                 <div className="flex items-center">
                   <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">

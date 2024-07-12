@@ -55,9 +55,9 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
                           <Avatar
                             label={facility?.name[0]}
                             image={facility?.main_image}
-                            className="object-cover"
                             size="large"
                             shape="circle"
+                            pt={{ image: { className: 'object-cover' } }}
                           />
                         </div>
                         <div className="ml-4">
