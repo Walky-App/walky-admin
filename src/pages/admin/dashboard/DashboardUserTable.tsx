@@ -65,9 +65,9 @@ export const DashboardUserTable = ({ data }: { data: IUser[] }) => {
                           <Avatar
                             label={person?.first_name[0]}
                             image={person?.avatar}
-                            className="object-cover"
                             size="large"
                             shape="circle"
+                            pt={{ image: { className: 'object-cover' } }}
                           />
                         </div>
                         <div className="ml-4">
