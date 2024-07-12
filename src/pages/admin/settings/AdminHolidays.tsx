@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 
-import { Controller, type SubmitHandler, useForm, type FieldErrors } from 'react-hook-form'
+import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
 
+import { isSameDay } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
@@ -11,6 +12,7 @@ import { classNames } from 'primereact/utils'
 
 import { type HolidayDocument } from '../../../interfaces/setting'
 import { useUtils } from '../../../store/useUtils'
+import { getFormErrorMessage } from '../../../utils/formUtils'
 
 interface IHoliday {
   _id: string
@@ -33,12 +35,8 @@ export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
     holiday_name: '',
     holiday_date: undefined,
   })
-  const [selectedHoliday, setSelectedHoliday] = useState<IHoliday | null>(null)
 
-  const deleteHoliday = async (holiday: IHoliday) => {
-    const newHolidays = holidays.filter(h => h.holiday_date !== holiday.holiday_date)
-    setHolidays(newHolidays)
-  }
+  const [selectedHoliday, setSelectedHoliday] = useState<IHoliday | null>(null)
 
   const defaultValues = {
     holiday_name: formHoliday?.holiday_name,
@@ -60,22 +58,9 @@ export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
     }
   }, [formHoliday, setValue])
 
-  function getFormErrorMessage(path: string, errors: FieldErrors) {
-    const pathParts = path.split('.')
-    let error: FieldErrors = errors
-
-    for (const part of pathParts) {
-      if (typeof error !== 'object' || error === null) {
-        return null
-      }
-      error = error[part as keyof typeof error] as FieldErrors
-    }
-
-    if (error?.message) {
-      return error.message ? <p className="mt-2 text-sm text-red-600">{String(error.message)}</p> : null
-    }
-
-    return null
+  const deleteHoliday = async (holiday: IHoliday) => {
+    const newHolidays = holidays.filter(h => h.holiday_date !== holiday.holiday_date)
+    setHolidays(newHolidays)
   }
 
   const onSubmit: SubmitHandler<IHolidayFormValues> = async data => {
@@ -117,8 +102,7 @@ export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
   }
 
   const holidayExistsForDate = (date: Date): boolean => {
-    const dateString: string = date.toISOString()
-    return holidays.some(holiday => holiday.holiday_date.toISOString() === dateString)
+    return holidays.some(holiday => isSameDay(holiday.holiday_date, date))
   }
 
   const handlerSelectHoliday = (holiday: IHoliday) => {
@@ -197,7 +181,7 @@ export const AdminHolidays = ({ holidays, setHolidays }: HolidaysProps) => {
               selection={selectedHoliday}
               onSelectionChange={e => handlerSelectHoliday(e.value as IHoliday)}
               onRowSelect={e => setFormHoliday(e.data)}
-              dataKey="_id"
+              dataKey="holiday_date"
               paginator
               rows={5}
               metaKeySelection={false}>
