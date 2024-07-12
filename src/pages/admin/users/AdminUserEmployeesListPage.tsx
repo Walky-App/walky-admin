@@ -8,6 +8,15 @@ import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleTxt } from '../../../utils/roleChecker'
 
+interface IRow {
+  row: { original: IUser }
+  value: string
+}
+
+const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
+  <img src={src} alt={alt} className="h-32 w-32 object-cover" />
+)
+
 export const AdminUserEmployeesListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [usersData, setUsersData] = useState<IUser[]>([])
@@ -36,6 +45,24 @@ export const AdminUserEmployeesListPage = () => {
 
   const memoUsersColumns = useMemo(
     () => [
+      {
+        Header: 'Profile Picture',
+        width: '200px',
+        height: '200px',
+        Cell: ({ row, value }: IRow) => {
+          const avatarUrl = row.original.avatar ?? ''
+          return (
+            <div className="flex items-center gap-2">
+              {avatarUrl ? (
+                <Avatar src={avatarUrl} alt={`${value}'s Avatar`} />
+              ) : (
+                <Avatar src="/assets/photos/no-photo-found.jpg" alt={`${value}'s Avatar`} />
+              )}
+              <div>{value}</div>
+            </div>
+          )
+        },
+      },
       { Header: 'First Name', accessor: 'first_name', width: 200 },
       { Header: 'Last Name', accessor: 'last_name', width: 200 },
       {
