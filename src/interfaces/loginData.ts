@@ -1,5 +1,5 @@
 import { type INotificationPreference } from '../utils/formOptions'
-import { type IUser } from './User'
+import { type IOnboardingStep, type IUser } from './User'
 
 export interface ILoginData {
   user: IUser
@@ -24,4 +24,6 @@ export interface ISignupData {
   phone_number: string
   otp?: string
   terms: ITerms
+  onboarding?: IOnboardingStep
+  companies?: string[]
 }
