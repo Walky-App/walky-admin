@@ -269,20 +269,20 @@ export const AddEditJobPage = () => {
     } else {
       try {
         const details = {
-          temp_pay_rate: hourlyRate,
+          temp_pay_rate: Math.round(hourlyRate * 100) / 100,
           number_of_vacancies: vacancy,
           number_of_selected_working_days: jobDatesLength,
           number_of_holidays: holidayCount,
-          supervisor_fees: serviceOrderCalculations.newTotalSupervisorFee,
-          total_overtime_fees: serviceOrderCalculations.totalOvertime,
-          total_hours_per_day: totalHours,
-          total_of_all_temps_hours: totalHours * jobDatesLength * vacancy,
-          total_base_amount: serviceOrderCalculations.baseAmount,
-          admin_costs_total: serviceOrderCalculations.adminCostAmount,
-          our_fee_total: serviceOrderCalculations.ourFeeAmount,
-          processing_fee_total: serviceOrderCalculations.processingFeeAmount,
-          estimated_total_per_hour: serviceOrderCalculations.hourlyRateWithFees,
-          total_cost: serviceOrderCalculations.totalEstimatedCost,
+          supervisor_fees: Math.round(serviceOrderCalculations.newTotalSupervisorFee * 100) / 100,
+          total_overtime_fees: Math.round(serviceOrderCalculations.totalOvertime * 100) / 100,
+          total_hours_per_day: Math.round(totalHours * 100) / 100,
+          total_of_all_temps_hours: Math.round(totalHours * jobDatesLength * vacancy * 100) / 100,
+          total_base_amount: Math.round(serviceOrderCalculations.baseAmount * 100) / 100,
+          admin_costs_total: Math.round(serviceOrderCalculations.adminCostAmount * 100) / 100,
+          our_fee_total: Math.round(serviceOrderCalculations.ourFeeAmount * 100) / 100,
+          processing_fee_total: Math.round(serviceOrderCalculations.processingFeeAmount * 100) / 100,
+          estimated_total_per_hour: Math.round(serviceOrderCalculations.hourlyRateWithFees * 100) / 100,
+          total_cost: Math.round(serviceOrderCalculations.totalEstimatedCost * 100) / 100,
         }
 
         const response = await requestService({
