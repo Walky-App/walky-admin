@@ -65,7 +65,6 @@ export const AddEditJobPage = () => {
   const [normalHours, setNormalHours] = useState(0)
   const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
   const [totalOvertime, setTotalOvertime] = useState(0)
-  const [totalOvertimeHours, setTotalOvertimeHours] = useState(0)
   const [overTimeRateMultiplier, setOverTimeRateMultiplier] = useState(0)
   const [holidayRateMultiplier, setHolidayRateMultiplier] = useState(0)
   const [adminCosts, setAdminCosts] = useState(0)
@@ -75,6 +74,11 @@ export const AddEditJobPage = () => {
   const [hourlySupervisorFee, setHourlySupervisorFee] = useState(0)
   const [holidayCount, setHolidayCount] = useState(0)
   const [stateHolidays, setStateHolidays] = useState<HolidayDocument[]>([])
+  const [baseAmount, setBaseAmount] = useState(0)
+  const [adminCostAmount, setAdminCostAmount] = useState(0)
+  const [ourFeeAmount, setOurFeeAmount] = useState(0)
+  const [processingFeeAmount, setProcessingFeeAmount] = useState(0)
+  const [totalEstimatedCost, setTotalEstimatedCost] = useState(0)
 
   const navigate = useNavigate()
   const params = useParams()
@@ -261,12 +265,29 @@ export const AddEditJobPage = () => {
       }
     } else {
       try {
+        const details = {
+          temp_pay_rate: hourlyRate,
+          number_of_vacancies: vacancy,
+          number_of_selected_working_days: jobDatesLength,
+          number_of_holidays: holidayCount,
+          supervisor_fees: totalSupervisorFee,
+          total_overtime_fees: totalOvertime,
+          total_hours_per_day: totalHours,
+          total_of_all_temps_hours: totalHours * jobDatesLength * vacancy,
+          total_base_amount: baseAmount,
+          admin_costs_total: adminCostAmount,
+          our_fee_total: ourFeeAmount,
+          processing_fee_total: processingFeeAmount,
+          estimated_total_per_hour: hourlyRateWithFees,
+          total_cost: totalEstimatedCost,
+        }
+
         const response = await requestService({
           path: 'jobs/create-service-order',
           method: 'POST',
           body: JSON.stringify({
             ...requestData,
-            overtime: totalOvertimeHours,
+            details: details,
           }),
         })
         if (!response.ok) {
@@ -321,7 +342,6 @@ export const AddEditJobPage = () => {
     const totalOvertimeHours =
       overtimeHours * overtimeRate * (jobDatesLength - holidayCount) +
       overtimeHours * holidayOvertimeRate * holidayCount
-    setTotalOvertimeHours(totalOvertimeHours)
 
     const totalOvertime = totalOvertimeHours * vacancy
     setTotalOvertime(totalOvertime)
@@ -346,6 +366,7 @@ export const AddEditJobPage = () => {
       hourlyRate * vacancy * normalHours * holidayCount +
       totalOvertime +
       newTotalSupervisorFee
+    setBaseAmount(baseAmount)
 
     const newPreliminaryPricing = baseAmount * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
     const totalOfAllTempsHours = totalHours * jobDatesLength * vacancy
@@ -372,10 +393,14 @@ export const AddEditJobPage = () => {
     const baseAmount = normalDayAmount + holidayAmount + totalOvertime + totalSupervisorFee
 
     const adminCostAmount = (baseAmount * adminCosts) / 100
+    setAdminCostAmount(adminCostAmount)
     const ourFeeAmount = (baseAmount * ourFee) / 100
+    setOurFeeAmount(ourFeeAmount)
     const processingFeeAmount = (baseAmount * processingFee) / 100
+    setProcessingFeeAmount(processingFeeAmount)
 
     const totalEstimatedCost = baseAmount + adminCostAmount + ourFeeAmount + processingFeeAmount
+    setTotalEstimatedCost(totalEstimatedCost)
 
     return (
       <div className="sm:col-span-3">
