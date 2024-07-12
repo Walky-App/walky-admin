@@ -62,23 +62,28 @@ export const AddEditJobPage = () => {
   // Service Order Preview States
   const [minimumWage, setMinimumWage] = useState(0)
   const [totalHours, setTotalHours] = useState(0)
-  const [normalHours, setNormalHours] = useState(0)
-  const [hourlyRateWithFees, setHourlyRateWithFees] = useState(0)
-  const [totalOvertime, setTotalOvertime] = useState(0)
   const [overTimeRateMultiplier, setOverTimeRateMultiplier] = useState(0)
   const [holidayRateMultiplier, setHolidayRateMultiplier] = useState(0)
   const [adminCosts, setAdminCosts] = useState(0)
   const [ourFee, setOurFee] = useState(0)
   const [processingFee, setProcessingFee] = useState(0)
-  const [totalSupervisorFee, setTotalSupervisorFee] = useState(0)
   const [hourlySupervisorFee, setHourlySupervisorFee] = useState(0)
   const [holidayCount, setHolidayCount] = useState(0)
   const [stateHolidays, setStateHolidays] = useState<HolidayDocument[]>([])
-  const [baseAmount, setBaseAmount] = useState(0)
-  const [adminCostAmount, setAdminCostAmount] = useState(0)
-  const [ourFeeAmount, setOurFeeAmount] = useState(0)
-  const [processingFeeAmount, setProcessingFeeAmount] = useState(0)
-  const [totalEstimatedCost, setTotalEstimatedCost] = useState(0)
+  const [serviceOrderCalculations, setServiceOrderCalculcations] = useState({
+    normalHours: 0,
+    totalOvertimeHours: 0,
+    totalOvertime: 0,
+    newTotalSupervisorFee: 0,
+    hourlyRateWithFees: 0,
+  })
+  const [pricingTable, setPricingTable] = useState({
+    baseAmount: 0,
+    adminCostAmount: 0,
+    ourFeeAmount: 0,
+    processingFeeAmount: 0,
+    totalEstimatedCost: 0,
+  })
 
   const navigate = useNavigate()
   const params = useParams()
@@ -270,16 +275,16 @@ export const AddEditJobPage = () => {
           number_of_vacancies: vacancy,
           number_of_selected_working_days: jobDatesLength,
           number_of_holidays: holidayCount,
-          supervisor_fees: totalSupervisorFee,
-          total_overtime_fees: totalOvertime,
+          supervisor_fees: serviceOrderCalculations.newTotalSupervisorFee,
+          total_overtime_fees: serviceOrderCalculations.totalOvertime,
           total_hours_per_day: totalHours,
           total_of_all_temps_hours: totalHours * jobDatesLength * vacancy,
-          total_base_amount: baseAmount,
-          admin_costs_total: adminCostAmount,
-          our_fee_total: ourFeeAmount,
-          processing_fee_total: processingFeeAmount,
-          estimated_total_per_hour: hourlyRateWithFees,
-          total_cost: totalEstimatedCost,
+          total_base_amount: pricingTable.baseAmount,
+          admin_costs_total: pricingTable.adminCostAmount,
+          our_fee_total: pricingTable.ourFeeAmount,
+          processing_fee_total: pricingTable.processingFeeAmount,
+          estimated_total_per_hour: serviceOrderCalculations.hourlyRateWithFees,
+          total_cost: pricingTable.totalEstimatedCost,
         }
 
         const response = await requestService({
@@ -332,7 +337,6 @@ export const AddEditJobPage = () => {
   useEffect(() => {
     const overtimeHours = totalHours > 8 ? totalHours - 8 : 0
     const normalHours = totalHours > 8 ? 8 : totalHours
-    setNormalHours(normalHours)
 
     const overtimeRate = hourlyRate * overTimeRateMultiplier
     const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier
@@ -344,7 +348,6 @@ export const AddEditJobPage = () => {
       overtimeHours * holidayOvertimeRate * holidayCount
 
     const totalOvertime = totalOvertimeHours * vacancy
-    setTotalOvertime(totalOvertime)
 
     const totalSupervisorNormalFee =
       vacancy >= 6
@@ -359,20 +362,47 @@ export const AddEditJobPage = () => {
         : 0
 
     const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
-    setTotalSupervisorFee(newTotalSupervisorFee)
 
+    // const baseAmount =
+    //   hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount) +
+    //   hourlyRate * vacancy * normalHours * holidayCount +
+    //   totalOvertime +
+    //   newTotalSupervisorFee
+
+    const normalDayAmount =
+      hourlyRate * vacancy * serviceOrderCalculations.normalHours * (jobDatesLength - holidayCount)
+    const holidayAmount =
+      hourlyRate * holidayRateMultiplier * vacancy * serviceOrderCalculations.normalHours * holidayCount
     const baseAmount =
-      hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount) +
-      hourlyRate * vacancy * normalHours * holidayCount +
-      totalOvertime +
-      newTotalSupervisorFee
-    setBaseAmount(baseAmount)
-
+      normalDayAmount +
+      holidayAmount +
+      serviceOrderCalculations.totalOvertime +
+      serviceOrderCalculations.newTotalSupervisorFee
     const newPreliminaryPricing = baseAmount * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
     const totalOfAllTempsHours = totalHours * jobDatesLength * vacancy
     const hourlyRateWithFees = newPreliminaryPricing / totalOfAllTempsHours
 
-    setHourlyRateWithFees(hourlyRateWithFees)
+    const adminCostAmount = (baseAmount * adminCosts) / 100
+    const ourFeeAmount = (baseAmount * ourFee) / 100
+    const processingFeeAmount = (baseAmount * processingFee) / 100
+
+    const totalEstimatedCost = baseAmount + adminCostAmount + ourFeeAmount + processingFeeAmount
+
+    setPricingTable({
+      baseAmount,
+      adminCostAmount,
+      ourFeeAmount,
+      processingFeeAmount,
+      totalEstimatedCost,
+    })
+
+    setServiceOrderCalculcations({
+      normalHours,
+      totalOvertimeHours,
+      totalOvertime,
+      newTotalSupervisorFee,
+      hourlyRateWithFees,
+    })
   }, [
     adminCosts,
     holidayCount,
@@ -383,25 +413,14 @@ export const AddEditJobPage = () => {
     ourFee,
     overTimeRateMultiplier,
     processingFee,
+    serviceOrderCalculations.newTotalSupervisorFee,
+    serviceOrderCalculations.normalHours,
+    serviceOrderCalculations.totalOvertime,
     totalHours,
     vacancy,
   ])
 
   const renderPricingTable = () => {
-    const normalDayAmount = hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount)
-    const holidayAmount = hourlyRate * holidayRateMultiplier * vacancy * normalHours * holidayCount
-    const baseAmount = normalDayAmount + holidayAmount + totalOvertime + totalSupervisorFee
-
-    const adminCostAmount = (baseAmount * adminCosts) / 100
-    setAdminCostAmount(adminCostAmount)
-    const ourFeeAmount = (baseAmount * ourFee) / 100
-    setOurFeeAmount(ourFeeAmount)
-    const processingFeeAmount = (baseAmount * processingFee) / 100
-    setProcessingFeeAmount(processingFeeAmount)
-
-    const totalEstimatedCost = baseAmount + adminCostAmount + ourFeeAmount + processingFeeAmount
-    setTotalEstimatedCost(totalEstimatedCost)
-
     return (
       <div className="sm:col-span-3">
         <div className="flex flex-col space-y-2 rounded-md border border-gray-300 p-4">
@@ -433,7 +452,9 @@ export const AddEditJobPage = () => {
             {vacancy >= 6 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">Supervisor Fees: </span>
-                <span className="text-sm leading-5 text-gray-900">${totalSupervisorFee.toFixed(2)}</span>
+                <span className="text-sm leading-5 text-gray-900">
+                  ${serviceOrderCalculations.newTotalSupervisorFee.toFixed(2)}
+                </span>
               </li>
             ) : null}
 
@@ -441,7 +462,9 @@ export const AddEditJobPage = () => {
               <li>
                 <div className="flex items-center">
                   <span className="mr-1 text-sm font-medium leading-5 text-gray-600">Total Overtime Fees: </span>
-                  <span className="mr-2 text-sm leading-5 text-gray-900">${totalOvertime.toFixed(2)}</span>
+                  <span className="mr-2 text-sm leading-5 text-gray-900">
+                    ${serviceOrderCalculations.totalOvertime.toFixed(2)}
+                  </span>
                   <HtInfoTooltip message="Avoid overtime by extending days or reducing hours below 8hrs." />
                 </div>
               </li>
@@ -459,35 +482,37 @@ export const AddEditJobPage = () => {
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Total Base Amount: </span>
-              <span className="text-sm leading-5 text-gray-900">${baseAmount.toFixed(2)}</span>
+              <span className="text-sm leading-5 text-gray-900">${pricingTable.baseAmount.toFixed(2)}</span>
             </li>
             <li>
               <div className="flex items-center">
                 <span className="mr-1 text-sm font-medium leading-5 text-gray-600">Admin Costs: </span>
-                <span className="mr-2 text-sm leading-5 text-gray-900">${adminCostAmount.toFixed(2)}</span>
+                <span className="mr-2 text-sm leading-5 text-gray-900">${pricingTable.adminCostAmount.toFixed(2)}</span>
                 <HtInfoTooltip message="Employer tax payments, fringe benefits, recruiting and hiring costs, training and orientation, termination costs, administrative costs, healthcare, and all employer responsibilities for insurance. This ensures comprehensive employment management and legal compliance." />
               </div>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Our Fee: </span>
-              <span className="text-sm leading-5 text-gray-900">${ourFeeAmount.toFixed(2)}</span>
+              <span className="text-sm leading-5 text-gray-900">${pricingTable.ourFeeAmount.toFixed(2)}</span>
             </li>
             <li>
               <span className="text-sm font-medium leading-5 text-gray-600">Processing Fee: </span>
-              <span className="text-sm leading-5 text-gray-900">${processingFeeAmount.toFixed(2)}</span>
+              <span className="text-sm leading-5 text-gray-900">${pricingTable.processingFeeAmount.toFixed(2)}</span>
             </li>
 
-            {totalEstimatedCost !== 0 ? (
+            {pricingTable.totalEstimatedCost !== 0 ? (
               <li>
                 <span className="text-sm font-medium leading-5 text-gray-600">
                   Estimated total Per Hour (fees Included)
                 </span>
-                <span className="text-sm leading-5 text-gray-900">${hourlyRateWithFees.toFixed(2)}</span>
+                <span className="text-sm leading-5 text-gray-900">
+                  ${serviceOrderCalculations.hourlyRateWithFees.toFixed(2)}
+                </span>
               </li>
             ) : null}
             <li className="font-medium leading-tight text-gray-900">
               <span className="text-sm">Total Estimated Cost (fees Included): </span>
-              <span className="text-sm font-semibold">${totalEstimatedCost.toFixed(2)}</span>
+              <span className="text-sm font-semibold">${pricingTable.totalEstimatedCost.toFixed(2)}</span>
             </li>
           </ul>
         </div>
