@@ -96,22 +96,26 @@ export const AdminCompanyPaymentMethodsPage = () => {
     }
   }
 
-  const footer = (paymentId: string) => (
+  //intentional any for now
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const footer = (payment: any) => (
     <>
       <Button
         label="More details"
         icon="pi pi-info-circle"
         style={{ marginLeft: '0.5em' }}
         text
-        onClick={() => navigateToDetails(paymentId)}
+        onClick={() => navigateToDetails(payment._id)}
       />
-      <Button
-        label="Set as default"
-        icon="pi pi-check-circle"
-        style={{ marginLeft: '0.5em' }}
-        text
-        onClick={() => setDefaultPayment(paymentId)}
-      />
+      {!payment.isDefault ? (
+        <Button
+          label="Set as default"
+          icon="pi pi-check-circle"
+          style={{ marginLeft: '0.5em' }}
+          text
+          onClick={() => setDefaultPayment(payment._id)}
+        />
+      ) : null}
     </>
   )
 
@@ -147,7 +151,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
               </div>
             }
             subTitle={<div className="align-center">{subTitle}</div>}
-            footer={<div className="align-center text-center">{footer(payment.payment_info?._id)}</div>}
+            footer={<div className="align-center text-center">{footer(payment.payment_info)}</div>}
             header={cardHeader}
             className="md:w-25rem mx-2 flex cursor-pointer"
           />
