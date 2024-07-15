@@ -141,25 +141,34 @@ export const ProfileDetail = ({
     <form onSubmit={handleSubmit}>
       <div className="p-fluid space-y-4 sm:space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-          <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Avatar</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              This information will be displayed publicly so be careful what you share.
-            </p>
+          <div className="flex flex-col justify-between">
+            <div>
+              <div className="flex">
+                <h2 className="mr-2 text-base font-semibold leading-7 text-gray-900">Avatar</h2>
+                <HtInfoTooltip message="This is the image that will be displayed on your profile." />
+              </div>
+              <div>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  This image will be displayed publicly so be mindful of what you share.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Button
+                label="Reset Password"
+                className="w-44 font-normal"
+                severity="secondary"
+                icon="pi pi-lock"
+                onClick={handlePasswordReset}
+              />
+              <p className="mt-1 text-sm text-gray-600">
+                You will get an email with <br /> instructions on how to reset your password.
+              </p>
+            </div>
           </div>
           <div>
             <UploadAvatar formUser={formUser} setFormUser={setFormUser as Dispatch<SetStateAction<IUser>>} />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
-          <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Password Reset </h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              This information will be displayed publicly so be careful what you share.
-            </p>
-          </div>
-          <div>
-            <Button label="Reset Password" severity="secondary" icon="pi pi-lock" onClick={handlePasswordReset} />
           </div>
         </div>
 

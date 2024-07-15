@@ -10,18 +10,18 @@ import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 import { classNames } from 'primereact/utils'
 
-import { AddressAutoComplete, type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
-import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
-import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
-import { type IFacility } from '../../../../interfaces/facility'
-import { requestService } from '../../../../services/requestServiceNew'
-import { useUtils } from '../../../../store/useUtils'
-import { getFormErrorMessage } from '../../../../utils/formUtils'
-import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { roleChecker } from '../../../../utils/roleChecker'
-import { GetTokenInfo } from '../../../../utils/tokenUtil'
-import { useAdminCompanyPageContext } from '../AdminCompanyPage'
+import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
+import { type ICompany } from '../../../interfaces/company'
+import { type IFacility } from '../../../interfaces/facility'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
+import { getFormErrorMessage } from '../../../utils/formUtils'
+import { requiredFieldsNoticeText } from '../../../utils/formUtils'
+import { roleChecker } from '../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export interface IPaymentInfo {
   _id?: string
@@ -49,10 +49,14 @@ export interface IPaymentMethod {
   payment_method: string
 }
 
-export const AdminCompanyAddPaymentMethod = () => {
+export const AdminCompanyAddPaymentMethod = ({
+  setSelectedCompanyData,
+}: {
+  setSelectedCompanyData: React.Dispatch<React.SetStateAction<ICompany>>
+}) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
-  const { setSelectedCompanyData } = useAdminCompanyPageContext()
+
   const navigate = useNavigate()
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
