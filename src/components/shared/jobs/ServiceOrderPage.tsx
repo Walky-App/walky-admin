@@ -82,13 +82,20 @@ export const ServiceOrderPage = () => {
     }
   }
 
+  const statusDisplayText = {
+    authorized: 'Authorized',
+    pending_select_payment: 'Pending Payment',
+  }
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <img className="h-16 w-auto" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
           <h1 className="text-base font-semibold leading-6 text-gray-900">Service order #{serviceOrder?._id}</h1>
-
+          <h2 className="text-base font-semibold leading-6 text-gray-900">
+            Status: {statusDisplayText[serviceOrder?.status as keyof typeof statusDisplayText] || serviceOrder?.status}
+          </h2>
           <p className="mt-2 text-sm text-gray-700">
             For {serviceOrder?.job_id.title} job on:
             {serviceOrder?.job_id.job_dates.map(date => format(new Date(date), 'PPPP')).join(', ')}
@@ -175,19 +182,23 @@ export const ServiceOrderPage = () => {
             </tr>
           </tbody>
           <div className="mt-2 flex">
-            <Dropdown
-              value={selectedCard}
-              options={paymentMethods?.map(method => ({
-                label: method.card_name + ' ' + method.card_number,
-                value: { payment_profile_id: method._id, card_number: method.card_number },
-              }))}
-              onChange={e => {
-                setSelectedCard(e.value)
-              }}
-              placeholder="Select a Credit Card"
-            />
+            {serviceOrder?.status === 'pending_select_payment' ? (
+              <>
+                <Dropdown
+                  value={selectedCard}
+                  options={paymentMethods?.map(method => ({
+                    label: method.card_name + ' ' + method.card_number,
+                    value: { payment_profile_id: method._id, card_number: method.card_number },
+                  }))}
+                  onChange={e => {
+                    setSelectedCard(e.value)
+                  }}
+                  placeholder="Select a Credit Card"
+                />
 
-            <Button label="Authorize Payment" onClick={handleAuthorizePayment} />
+                <Button label="Authorize Payment" onClick={handleAuthorizePayment} />
+              </>
+            ) : null}
           </div>
           <tfoot>
             {serviceOrder?.details?.supervisor_fees && serviceOrder.details.supervisor_fees > 0 ? (
