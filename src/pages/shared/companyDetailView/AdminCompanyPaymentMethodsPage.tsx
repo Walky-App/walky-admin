@@ -12,10 +12,10 @@ import { faCcVisa, faCcMastercard, faCcAmex, faCcDiscover } from '@fortawesome/f
 import { faBank, faUniversity } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
-import { type ICompany } from '../../../../interfaces/company'
-import { requestService } from '../../../../services/requestServiceNew'
-import { roleChecker } from '../../../../utils/roleChecker'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { type ICompany } from '../../../interfaces/company'
+import { requestService } from '../../../services/requestServiceNew'
+import { roleChecker } from '../../../utils/roleChecker'
 
 const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | null => {
   if (paymentType === 'CC') {

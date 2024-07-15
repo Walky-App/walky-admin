@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
@@ -9,29 +8,22 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacilityFile, type IFacility } from '../../../interfaces/facility'
+import { type IFacility } from '../../../interfaces/facility'
 import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { cn } from '../../../utils/cn'
 import { roleChecker } from '../../../utils/roleChecker'
 import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
-const statuses = {
-  Complete: 'text-green-700 bg-green-50 ring-green-600/20',
-  'In progress': 'text-gray-600 bg-gray-50 ring-gray-500/10',
-  Archived: 'text-yellow-800 bg-yellow-50 ring-yellow-600/20',
-}
-
 export const AdminFacilityLicenses = () => {
   const [facility, setFacility] = useState<IFacility>()
   const [uploading, setUploading] = useState(false)
-  const [files, setFiles] = useState<any>([])
+  const [files, setFiles] = useState<FileList | never[]>([])
   const { facilityId } = useParams()
   const role = roleChecker()
 
-  const filesInputRef = useRef<any>()
+  const filesInputRef = useRef<HTMLInputElement>(null)
   const { showToast } = useUtils()
 
   useEffect(() => {
@@ -55,9 +47,9 @@ export const AdminFacilityLicenses = () => {
   const handleImagesUpload = async () => {
     setUploading(true)
     const formData = new FormData()
-    for (const file of files) {
-      formData.append('files', file)
-    }
+    Array.from(files).forEach(file => {
+      formData.append('files[]', file)
+    })
 
     const updatedFacility = await RequestService(`facilities/${facilityId}/licenses`, 'POST', formData, 'binary')
 
@@ -67,7 +59,7 @@ export const AdminFacilityLicenses = () => {
   }
 
   const pickImageHandler = () => {
-    filesInputRef.current.click()
+    filesInputRef?.current?.click()
   }
 
   const handleDelete = async (fileKey: string, licenseId: string) => {
@@ -91,6 +83,11 @@ export const AdminFacilityLicenses = () => {
     } catch (error) {
       showToast({ severity: 'error', summary: 'Error', detail: 'An error occurred while deleting the file' })
     }
+  }
+
+  const handleLinkPathSplit = (link: string) => {
+    const result = link.split('/')
+    return result[result.length - 1]
   }
 
   return (
@@ -127,48 +124,64 @@ export const AdminFacilityLicenses = () => {
       ) : (
         <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
       )}
-      <ul className="divide-y divide-gray-100">
-        {facility?.licenses?.map((license: IFacilityFile) => (
-          <li key={license._id} className="flex items-center justify-between gap-x-6 py-5">
-            <div className="min-w-0">
-              <div className="flex items-start gap-x-3">
-                <a href={license.url} target="_blank" className="hidden px-5 py-1.5 text-sm font-semibold sm:block">
-                  <p className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-500">{license.key}</p>
-                </a>
-                <p
-                  className={cn(
-                    statuses['Complete'],
-                    'mt-0.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset',
-                  )}>
-                  Approved
-                </p>
-              </div>
-              <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
-                <p className="whitespace-nowrap">
-                  Uploaded on <time>{new Date(license.timestamp).toLocaleString()}</time>
-                </p>
 
-                {license.uploaded_by ? (
-                  <>
-                    <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
-                      <circle cx={1} cy={1} r={1} />
-                    </svg>
-                    <p className="truncate">Uploaded by {license.uploaded_by}</p>
-                  </>
-                ) : null}
-              </div>
-            </div>
-
-            <Button
-              label="Delete"
-              severity="secondary"
-              outlined
-              size="small"
-              onClick={() => handleDelete(license.key ?? '', license._id ?? '')}
-            />
-          </li>
-        ))}
-      </ul>
+      <div className="mt-8 flow-root">
+        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <table className="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                    Name
+                  </th>
+                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                    Link
+                  </th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Uploaded On
+                  </th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Uploaded by
+                  </th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Expires
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {facility?.licenses?.map(license => (
+                  <tr key={license._id}>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">-</td>
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                      <a
+                        href={license.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline  hover:text-gray-600">
+                        {handleLinkPathSplit(license.key)}
+                      </a>
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <time>{new Date(license.timestamp).toLocaleString()}</time>
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{license.uploaded_by}</td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">-</td>
+                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                      <Button
+                        label="Delete"
+                        severity="secondary"
+                        outlined
+                        size="small"
+                        onClick={() => handleDelete(license.key ?? '', license._id ?? '')}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
