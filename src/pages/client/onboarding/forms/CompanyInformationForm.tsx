@@ -186,7 +186,6 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <div className="space-y-4 sm:space-y-12">
-        {/* Company Information */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Company Information</h2>
