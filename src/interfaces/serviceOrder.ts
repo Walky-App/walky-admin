@@ -25,6 +25,7 @@ export interface IPaymentMethod {
   _id: string
   card_name: string
   card_number: string
+  isDefault: boolean
 }
 
 export interface IServiceOrder {
