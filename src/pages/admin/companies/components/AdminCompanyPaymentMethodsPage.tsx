@@ -79,13 +79,22 @@ export const AdminCompanyPaymentMethodsPage = () => {
   }
 
   const footer = (paymentId: string) => (
-    <Button
-      label="More details"
-      icon="pi pi-info-circle"
+    <>
+      <Button
+        label="More details"
+        icon="pi pi-info-circle"
+        style={{ marginLeft: '0.5em' }}
+        text
+        onClick={() => navigateToDetails(paymentId)}
+      />
+      {/* <Button
+      label="Set as default"
+      icon="pi pi-check-circle"
       style={{ marginLeft: '0.5em' }}
       text
-      onClick={() => navigateToDetails(paymentId)}
-    />
+      onClick={() => setDefaultPayment(paymentId)}
+    /> */}
+    </>
   )
 
   if (isLoading) {

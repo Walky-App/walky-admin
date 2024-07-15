@@ -206,10 +206,10 @@ export const ServiceOrderPage = () => {
               <th
                 scope="row"
                 colSpan={3}
-                className="hidden pl-4 pr-3 pt-6 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
+                className="hidden pl-4 pr-3 pt-6 text-right text-sm font-semibold text-gray-500 sm:table-cell sm:pl-0">
                 Subtotal
               </th>
-              <th scope="row" className="pl-4 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden">
+              <th scope="row" className="pl-4 pr-3 pt-6 text-left text-sm font-semibold text-gray-500 sm:hidden">
                 Subtotal
               </th>
               <td className="pl-3 pr-4 pt-6 text-right text-sm text-gray-500 sm:pr-0">
