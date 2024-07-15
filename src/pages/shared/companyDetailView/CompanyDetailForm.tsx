@@ -9,19 +9,19 @@ import { InputText } from 'primereact/inputtext'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
 import { classNames } from 'primereact/utils'
 
-import { AddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { type IAddressAutoComplete } from '../../../../components/shared/forms/AddressAutoComplete'
-import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
-import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
-import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
-import { type IUser } from '../../../../interfaces/User'
-import { type IFacility } from '../../../../interfaces/facility'
-import { requestService } from '../../../../services/requestServiceNew'
-import { useUtils } from '../../../../store/useUtils'
-import { getFormErrorMessage } from '../../../../utils/formUtils'
-import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { roleChecker } from '../../../../utils/roleChecker'
-import { useAdminCompanyPageContext } from '../AdminCompanyPage'
+import { AddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
+import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
+import { type IUser } from '../../../interfaces/User'
+import { type ICompany } from '../../../interfaces/company'
+import { type IFacility } from '../../../interfaces/facility'
+import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
+import { getFormErrorMessage } from '../../../utils/formUtils'
+import { requiredFieldsNoticeText } from '../../../utils/formUtils'
+import { roleChecker } from '../../../utils/roleChecker'
 
 interface ICompanyFormInputs {
   company_name: string
@@ -37,7 +37,7 @@ interface ICompanyFormInputs {
   users: string[]
 }
 
-export const AdminCompanyDetails = () => {
+export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData: ICompany }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const params = useParams()
   const navigate = useNavigate()
@@ -46,8 +46,6 @@ export const AdminCompanyDetails = () => {
 
   const [allFacilities, setFacilities] = useState<IFacility[]>([])
   const [allClients, setClients] = useState<IUser[]>([])
-
-  const { selectedCompanyData } = useAdminCompanyPageContext()
 
   useEffect(() => {
     const getAllFacilities = async () => {
