@@ -33,6 +33,10 @@ export const EmployeeDashboard = () => {
   const { _id, onboarding, avatar } = GetTokenInfo()
 
   useEffect(() => {
+    if (!(onboarding?.completed ?? false)) navigate('/employee/onboarding')
+  }, [onboarding?.completed, navigate])
+
+  useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await requestService({ path: `users/${_id}` })
@@ -45,10 +49,9 @@ export const EmployeeDashboard = () => {
         console.error(error)
       }
     }
-    if (!(onboarding?.completed ?? false)) navigate('/employee/onboarding')
 
     fetchUser()
-  }, [_id, navigate, onboarding?.completed])
+  }, [_id])
 
   return (
     <div className="min-h-full">
