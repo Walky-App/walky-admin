@@ -15,6 +15,7 @@ export interface IPaymentInfo {
   card_number?: string
   card_name?: string
   expiration_date?: string
+  isDefault?: boolean
   createdAt: string
   updatedAt: string
   __v: number
