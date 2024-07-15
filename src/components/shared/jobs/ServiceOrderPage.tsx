@@ -12,7 +12,7 @@ import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 
 export const ServiceOrderPage = () => {
-  const [selectedCard, setSelectedCard] = useState(null)
+  const [selectedCard, setSelectedCard] = useState<string | null>(null)
   const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
   const serviceOrderId = useParams().serviceOrderId
@@ -37,6 +37,13 @@ export const ServiceOrderPage = () => {
 
     getServiceOrder()
   }, [serviceOrderId])
+
+  useEffect(() => {
+    const defaultPaymentMethod = paymentMethods?.find(method => method.isDefault)
+    if (defaultPaymentMethod) {
+      setSelectedCard(defaultPaymentMethod._id)
+    }
+  }, [paymentMethods])
 
   const handleAuthorizePayment = async () => {
     try {
