@@ -11,8 +11,13 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 
+interface SelectedCard {
+  payment_profile_id: string
+  card_number: string
+}
+
 export const ServiceOrderPage = () => {
-  const [selectedCard, setSelectedCard] = useState<string | null>(null)
+  const [selectedCard, setSelectedCard] = useState<SelectedCard | null>(null)
   const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
   const serviceOrderId = useParams().serviceOrderId
@@ -41,7 +46,10 @@ export const ServiceOrderPage = () => {
   useEffect(() => {
     const defaultPaymentMethod = paymentMethods?.find(method => method.isDefault)
     if (defaultPaymentMethod) {
-      setSelectedCard(defaultPaymentMethod._id)
+      setSelectedCard({
+        payment_profile_id: defaultPaymentMethod._id,
+        card_number: defaultPaymentMethod.card_number,
+      })
     }
   }, [paymentMethods])
 
@@ -50,7 +58,10 @@ export const ServiceOrderPage = () => {
       const response = await requestService({
         path: `jobs/authorize/${serviceOrderId}`,
         method: 'PATCH',
-        body: JSON.stringify({ payment_profile_id: selectedCard }),
+        body: JSON.stringify({
+          payment_profile_id: selectedCard?.payment_profile_id,
+          card_number: selectedCard?.card_number,
+        }),
       })
       if (!response.ok) {
         const message = await response.text()
@@ -168,9 +179,11 @@ export const ServiceOrderPage = () => {
               value={selectedCard}
               options={paymentMethods?.map(method => ({
                 label: method.card_name + ' ' + method.card_number,
-                value: method._id,
+                value: { payment_profile_id: method._id, card_number: method.card_number },
               }))}
-              onChange={e => setSelectedCard(e.value)}
+              onChange={e => {
+                setSelectedCard(e.value)
+              }}
               placeholder="Select a Credit Card"
             />
 
