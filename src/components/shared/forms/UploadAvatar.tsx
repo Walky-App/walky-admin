@@ -77,10 +77,10 @@ export const UploadAvatar = ({
         {!uploading ? (
           <button
             type="button"
-            className="relative inline-block rounded-full hover:cursor-pointer hover:bg-gray-500 hover:ring-2 "
+            className="relative inline-block rounded-full hover:cursor-pointer hover:bg-gray-500 hover:ring-2"
             onClick={pickImageHandler}>
             {previewUrl ? (
-              <img src={uniqueImageUrl} className="h-50 inline-block w-52 object-cover object-center" alt="Preview" />
+              <img src={uniqueImageUrl} className="h-50 inline-block w-52" alt="Preview" />
             ) : (
               <UserCircleIcon className="h-20 w-20 text-gray-300" aria-hidden="true" />
             )}
