@@ -112,7 +112,7 @@ export const ServiceOrderPage = () => {
               <th
                 scope="col"
                 className="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
-                Dates
+                Number of Working Days
               </th>
               <th
                 scope="col"
@@ -120,13 +120,11 @@ export const ServiceOrderPage = () => {
                 Vacancy
               </th>
 
-              <th
-                scope="col"
-                className="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
-                Base Rate
+              <th scope="col" className="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">
+                Hourly Rate
               </th>
               <th scope="col" className="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">
-                Amount
+                Hours Total
               </th>
             </tr>
           </thead>
@@ -134,30 +132,27 @@ export const ServiceOrderPage = () => {
             <tr className="border-b border-gray-200">
               <td className="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
                 <div className="font-medium text-gray-900">{serviceOrder?.job_id.title}</div>
-                <div className="mt-1 truncate text-gray-500">
-                  {serviceOrder?.job_id.job_dates.map(date => format(new Date(date), 'PPPP')).join(', ')}
-                </div>
               </td>
               <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
                 {serviceOrder?.job_id.total_hours}
               </td>
               <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
-                {serviceOrder?.job_id.job_dates.map(date => <div key={date}>{format(new Date(date), 'PPPP')}</div>)}
+                {serviceOrder?.details.number_of_selected_working_days}{' '}
+                {serviceOrder?.details.number_of_holidays ?? 0 > 0
+                  ? `(including ${serviceOrder?.details.number_of_holidays} holidays)`
+                  : null}
               </td>
               <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
                 {serviceOrder?.job_id.vacancy}
               </td>
-              <td className="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
-                {serviceOrder?.job_id.hourly_rate}
+              <td className="hidden py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
+                {serviceOrder?.details.total_of_all_temps_hours} ${serviceOrder?.job_id.hourly_rate}
               </td>
-              <td className="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
-                $
-                {(
-                  Number(serviceOrder?.job_id.total_hours || 0) *
-                  Number(serviceOrder?.job_id.job_dates.length || 0) *
-                  Number(serviceOrder?.job_id.vacancy || 0) *
-                  Number(serviceOrder?.job_id.hourly_rate || 0)
-                ).toFixed(2)}
+              <td className="px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
+                ${serviceOrder?.job_id.hourly_rate}
+              </td>
+              <td className="px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
+                {serviceOrder?.details.total_of_all_temps_hours}
               </td>
             </tr>
           </tbody>
@@ -175,24 +170,50 @@ export const ServiceOrderPage = () => {
             <Button label="Authorize Payment" onClick={handleAuthorizePayment} />
           </div>
           <tfoot>
+            {serviceOrder?.details?.supervisor_fees && serviceOrder.details.supervisor_fees > 0 ? (
+              <tr>
+                <th
+                  scope="row"
+                  colSpan={3}
+                  className="hidden pl-4 pr-3 pt-6 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
+                  Supervisor Fees
+                </th>
+                <th scope="row" className="pl-4 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden">
+                  Supervisor Fees
+                </th>
+                <td className="pl-3 pr-4 pt-6 text-right text-sm text-gray-500 sm:pr-0">
+                  ${serviceOrder.details.supervisor_fees}
+                </td>
+              </tr>
+            ) : null}
+            {serviceOrder?.details?.total_overtime_fees && serviceOrder.details.total_overtime_fees > 0 ? (
+              <tr>
+                <th
+                  scope="row"
+                  colSpan={3}
+                  className="hidden pl-4 pr-3 pt-6 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
+                  Total Overtime Fees
+                </th>
+                <th scope="row" className="pl-4 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden">
+                  Total Overtime Fees
+                </th>
+                <td className="pl-3 pr-4 pt-6 text-right text-sm text-gray-500 sm:pr-0">
+                  ${serviceOrder.details.total_overtime_fees}
+                </td>
+              </tr>
+            ) : null}
             <tr>
               <th
                 scope="row"
                 colSpan={3}
-                className="hidden pl-4 pr-3 pt-6 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
+                className="hidden pl-4 pr-3 pt-6 text-right text-sm font-semibold text-gray-500 sm:table-cell sm:pl-0">
                 Subtotal
               </th>
-              <th scope="row" className="pl-4 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden">
+              <th scope="row" className="pl-4 pr-3 pt-6 text-left text-sm font-semibold text-gray-500 sm:hidden">
                 Subtotal
               </th>
               <td className="pl-3 pr-4 pt-6 text-right text-sm text-gray-500 sm:pr-0">
-                $
-                {(
-                  Number(serviceOrder?.details.total_cost) -
-                  Number(serviceOrder?.details.admin_cost) -
-                  Number(serviceOrder?.details.our_fee) -
-                  Number(serviceOrder?.details.processing_fee)
-                ).toFixed(2)}
+                ${serviceOrder?.details.total_base_amount}
               </td>
             </tr>
             <tr>
@@ -200,13 +221,13 @@ export const ServiceOrderPage = () => {
                 scope="row"
                 colSpan={3}
                 className="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
-                Admin Cost
+                Admin Costs
               </th>
               <th scope="row" className="pl-4 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">
-                Admin Cost
+                Admin Costs
               </th>
               <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">
-                ${Number(serviceOrder?.details.admin_cost).toFixed(2)}
+                ${Number(serviceOrder?.details.admin_costs_total).toFixed(2)}
               </td>
             </tr>
             <tr>
@@ -220,7 +241,7 @@ export const ServiceOrderPage = () => {
                 Our Fee
               </th>
               <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">
-                ${Number(serviceOrder?.details.our_fee).toFixed(2)}
+                ${Number(serviceOrder?.details.our_fee_total).toFixed(2)}
               </td>
             </tr>
             <tr>
@@ -234,7 +255,21 @@ export const ServiceOrderPage = () => {
                 Processing Fee
               </th>
               <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">
-                ${Number(serviceOrder?.details.processing_fee).toFixed(2)}
+                ${Number(serviceOrder?.details.processing_fee_total).toFixed(2)}
+              </td>
+            </tr>
+            <tr>
+              <th
+                scope="row"
+                colSpan={3}
+                className="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">
+                Estimated Total per Hour
+              </th>
+              <th scope="row" className="pl-4 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">
+                Estimated Total per Hour
+              </th>
+              <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-0">
+                ${Number(serviceOrder?.details.estimated_total_per_hour).toFixed(2)}
               </td>
             </tr>
             <tr>
