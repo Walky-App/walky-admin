@@ -226,8 +226,13 @@ export const FacilityDetailsForm = ({
                 id="dbas"
                 required
                 autoComplete="off"
-                onChange={handleFormUpdate}
-                value={formData.name}
+                onChange={e => {
+                  setFormData(prevFormData => ({
+                    ...prevFormData,
+                    facility_dbas: e.target.value.split(', '),
+                  }))
+                }}
+                value={formData.facility_dbas?.join(', ')}
                 placeholder="e.g. Another name for the facility"
                 className="w-full"
               />
