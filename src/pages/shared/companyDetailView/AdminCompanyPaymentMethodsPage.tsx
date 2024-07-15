@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Chip } from 'primereact/chip'
 
 import { type IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { faCcVisa, faCcMastercard, faCcAmex, faCcDiscover } from '@fortawesome/free-brands-svg-icons'
@@ -53,7 +54,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
   const selectedCompanyId = useParams().id
 
   useEffect(() => {
-    const getCompany = async () => {
+    const getCompanyWithPayments = async () => {
       try {
         const response = await requestService({ path: `companies/${selectedCompanyId}/payments` })
         if (!response.ok) {
@@ -67,7 +68,7 @@ export const AdminCompanyPaymentMethodsPage = () => {
         setIsLoading(false)
       }
     }
-    getCompany()
+    getCompanyWithPayments()
   }, [selectedCompanyId])
 
   const navigateToDetails = (paymentId: string) => {
@@ -78,22 +79,43 @@ export const AdminCompanyPaymentMethodsPage = () => {
     }
   }
 
-  const footer = (paymentId: string) => (
+  const setDefaultPayment = async (paymentId: string) => {
+    try {
+      const response = await requestService({
+        path: `companies/${selectedCompanyId}/payments/set-default-payment`,
+        method: 'POST',
+        body: JSON.stringify({ paymentId }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to set payment method as default')
+      }
+      const companyFound: ICompany = await response.json()
+      setSelectedCompanyData(companyFound)
+    } catch (error) {
+      console.error('Error setting default payment method: ', error)
+    }
+  }
+
+  //intentional any for now
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const footer = (payment: any) => (
     <>
       <Button
         label="More details"
         icon="pi pi-info-circle"
         style={{ marginLeft: '0.5em' }}
         text
-        onClick={() => navigateToDetails(paymentId)}
+        onClick={() => navigateToDetails(payment._id)}
       />
-      {/* <Button
-      label="Set as default"
-      icon="pi pi-check-circle"
-      style={{ marginLeft: '0.5em' }}
-      text
-      onClick={() => setDefaultPayment(paymentId)}
-    /> */}
+      {!payment.isDefault ? (
+        <Button
+          label="Set as default"
+          icon="pi pi-check-circle"
+          style={{ marginLeft: '0.5em' }}
+          text
+          onClick={() => setDefaultPayment(payment._id)}
+        />
+      ) : null}
     </>
   )
 
@@ -122,9 +144,14 @@ export const AdminCompanyPaymentMethodsPage = () => {
         return (
           <Card
             key={index}
-            title={<div className="align-center">{title}</div>}
+            title={
+              <div className="align-center">
+                {title}
+                {payment?.payment_info.isDefault === true ? <Chip label="Default" icon="pi pi-check" /> : null}{' '}
+              </div>
+            }
             subTitle={<div className="align-center">{subTitle}</div>}
-            footer={<div className="align-center text-center">{footer(payment.payment_info?._id)}</div>}
+            footer={<div className="align-center text-center">{footer(payment.payment_info)}</div>}
             header={cardHeader}
             className="md:w-25rem mx-2 flex cursor-pointer"
           />
