@@ -107,7 +107,8 @@ export const FacilityDetailsForm = ({
 
         showToast({ severity: 'success', summary: 'Success', detail: 'Facility updated successfully' })
       } else {
-        console.error('Failed to update the facility.')
+        const errorData = await response.json()
+        console.error('Failed to update the facility.', errorData.message)
         showToast({ severity: 'error', summary: 'Error', detail: 'Error updating facility' })
       }
     } catch (error) {
@@ -219,12 +220,11 @@ export const FacilityDetailsForm = ({
 
             <div className="sm:col-span-3">
               <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
-                <HtInputLabel htmlFor="name" asterisk labelText="Dbas" />
+                <HtInputLabel htmlFor="name" labelText="Dbas" />
               </HtInfoTooltip>
               <InputText
                 name="dbas"
                 id="dbas"
-                required
                 autoComplete="off"
                 onChange={e => {
                   setFormData(prevFormData => ({
