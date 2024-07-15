@@ -32,7 +32,7 @@ export const CompanyDetailView = () => {
     <div>
       <div className="mb-8">
         <div className="text-3xl font-bold">{selectedCompanyData.company_name}</div>
-        <div className="">{selectedCompanyData.company_address}</div>
+        <div>{selectedCompanyData.company_address}</div>
       </div>
       <TabView>
         <TabPanel header="Details">
