@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 import { Menu, Transition } from '@headlessui/react'
 import { MapPinIcon, MapIcon, ChevronDownIcon, BriefcaseIcon } from '@heroicons/react/20/solid'
@@ -45,25 +45,9 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
   const { pathname } = useLocation()
   const basePath = getBasePathFromPathname(pathname)
 
-  const { _id, name, city, address } = data
+  const { city, address } = data
 
   const isValid = (value: string | string[] | null | undefined) => value !== null && value !== undefined && value !== ''
-
-  const renderName = isValid(name) ? (
-    <Link
-      className="text-2xl font-bold leading-7 text-gray-900 hover:text-primary sm:truncate sm:text-3xl sm:tracking-tight"
-      to={`${basePath}/${_id}`}>
-      {name}
-    </Link>
-  ) : null
-
-  const renderCorpName = isValid(data.company_name) ? (
-    <Link
-      className="text-2xl font-bold leading-7 text-gray-900 hover:text-primary sm:truncate sm:text-3xl sm:tracking-tight"
-      to={`${basePath}/${_id}`}>
-      {data.company_name}
-    </Link>
-  ) : null
 
   const renderCompanyDbas = isValid(data.company_dbas) ? (
     <div className="flex items-center text-sm text-gray-500">
@@ -152,8 +136,8 @@ export const SubHeader: React.FC<SubHeaderProps> = ({ data, links }) => {
 
   return (
     <div className="mb-10 flex w-full flex-col flex-wrap gap-y-4 border-b border-gray-300 py-4 xl:flex-row xl:items-end xl:justify-between">
-      <div className="flex flex-col gap-y-2">
-        {renderName ? renderName : renderCorpName ? renderCorpName : null}
+      <div className="flex flex-col gap-y-2 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        {data.name}
         {renderCompanyDbas}
         <div className="flex flex-wrap gap-x-2 gap-y-1">
           {renderCity}
