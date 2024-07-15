@@ -71,37 +71,35 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
     if (!selectedUserId) {
       console.error('selectedUserId is undefined')
+      setIsLoading(false)
       return
     }
 
     const pathString = `timesheets/employee/${selectedUserId}/pay-periods`
-
-    let initialSelectedPayPeriod
+    const noPayPeriodsObject = { label: 'No pay periods found', start: '', end: '' } as IPayPeriod
 
     try {
       const response = await requestService({ path: pathString })
 
-      if (!response.ok) {
+      if (!response.ok && response.status !== 204) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const payPeriods: IPayPeriod[] = await response.json()
+      let payPeriods = [noPayPeriodsObject]
+      if (response.status !== 204) {
+        payPeriods = await response.json()
+        if (!payPeriods.length) payPeriods = [noPayPeriodsObject]
+      }
 
-      const noPayPeriodsObject = { label: 'No pay periods found', start: '', end: '' }
-
-      const [newPayPeriods, newSelectedPayPeriod] =
-        payPeriods.length > 0 ? [payPeriods, payPeriods[0]] : [[noPayPeriodsObject], noPayPeriodsObject]
-
-      initialSelectedPayPeriod = newSelectedPayPeriod
-      setPayPeriods(newPayPeriods)
-      setSelectedPayPeriod(newSelectedPayPeriod)
+      const selectedPayPeriod = payPeriods[0]
+      setPayPeriods(payPeriods)
+      setSelectedPayPeriod(selectedPayPeriod)
+      return selectedPayPeriod
     } catch (error) {
       console.error('Failed to fetch pay periods:', error)
     } finally {
       setIsLoading(false)
     }
-
-    return initialSelectedPayPeriod
   }, [selectedUserId])
 
   const fetchTimesheets = useCallback(
@@ -155,7 +153,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }, [fetchPayPeriodsByEmployee])
 
   useEffect(() => {
-    if (selectedPayPeriod) {
+    if (selectedPayPeriod && selectedPayPeriod.start && selectedPayPeriod.end) {
       fetchTimesheets(selectedPayPeriod)
     }
   }, [selectedPayPeriod, fetchTimesheets])
