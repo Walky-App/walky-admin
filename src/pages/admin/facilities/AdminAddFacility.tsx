@@ -150,7 +150,6 @@ export const AdminAddFacility = () => {
     try {
       const response = await requestService({ path: 'facilities', method: 'POST', body: JSON.stringify(formData) })
       if (response.ok) {
-        await response.json()
         showToast({
           severity: 'success',
           summary: 'Facility Added',
@@ -160,15 +159,20 @@ export const AdminAddFacility = () => {
         setTimeout(() => {
           navigate(`/${role}/facilities/`)
         }, 2000)
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to create the facility.', errorData.message)
+        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to add facility' })
       }
     } catch (error) {
-      console.error('error', error)
+      console.error('Error occurred while creating facility:', error)
       showToast({
         severity: 'error',
         summary: 'Failed to add facility',
-        detail: 'Unable to add facility. Please try again.',
-        life: 2000,
+        detail: 'Unable to add facility.',
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
