@@ -10,6 +10,7 @@ import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/ser
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+import { HTLoadingLogo } from '../HTLoadingLogo'
 
 interface SelectedCard {
   payment_profile_id: string
@@ -20,6 +21,7 @@ export const ServiceOrderPage = () => {
   const [selectedCard, setSelectedCard] = useState<SelectedCard | null>(null)
   const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const serviceOrderId = useParams().serviceOrderId
   const { showToast } = useUtils()
   const navigate = useNavigate()
@@ -35,6 +37,7 @@ export const ServiceOrderPage = () => {
         const fetchedData = await response.json()
         setServiceOrderData(fetchedData.service_order)
         setPaymentMethods(fetchedData.payments_methods)
+        setIsLoading(false)
       } catch (error) {
         console.error('Error fetching service order data:', error)
       }
@@ -87,7 +90,9 @@ export const ServiceOrderPage = () => {
     pending_select_payment: 'Pending Payment',
   }
 
-  return (
+  return isLoading ? (
+    <HTLoadingLogo />
+  ) : (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
