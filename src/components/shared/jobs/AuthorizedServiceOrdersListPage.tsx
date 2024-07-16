@@ -51,12 +51,13 @@ export const AuthorizedServiceOrdersListPage = () => {
     () => [
       { Header: 'Status', accessor: 'status' },
       { Header: 'UID', accessor: 'uid' },
+      { Header: 'Transaction ID', accessor: 'transaction_id' },
       { Header: 'Company Name', accessor: 'company_id.company_name' },
       { Header: 'Job Title', accessor: 'job_id.title' },
 
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },
-      { Header: 'Total Cost', accessor: 'details.total_cost' },
+      { Header: 'Total Cost, $', accessor: 'details.total_cost' },
       {
         Header: 'Created At',
         accessor: (row: { createdAt: Date }) => format(row.createdAt, 'yyyy-MM-dd HH:mm:ss'),

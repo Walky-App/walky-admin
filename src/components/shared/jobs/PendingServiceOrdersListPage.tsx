@@ -56,7 +56,7 @@ export const PendingServiceOrdersListPage = () => {
 
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },
-      { Header: 'Total Cost', accessor: 'details.total_cost' },
+      { Header: 'Total Cost, $', accessor: 'details.total_cost' },
       {
         Header: 'Created At',
         accessor: (row: { createdAt: Date }) => format(row.createdAt, 'yyyy-MM-dd HH:mm:ss'),
