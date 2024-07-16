@@ -29,10 +29,11 @@ export const ProfileTraining = ({ userTraining }: { userTraining: ITrainingData 
               {trainingData.is_completed ? (
                 <div className="mb-4 flex justify-between">
                   <Badge value="Passed" size="normal" />
-
-                  <a href={trainingData.url_certificate}>
-                    <i className="pi pi-check-circle" /> Certificate Link
-                  </a>
+                  {trainingData.url_certificate ? (
+                    <a href={trainingData.url_certificate}>
+                      <i className="pi pi-check-circle" /> Certificate Link
+                    </a>
+                  ) : null}
                 </div>
               ) : null}
 

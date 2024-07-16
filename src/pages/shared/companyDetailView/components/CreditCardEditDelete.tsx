@@ -8,17 +8,17 @@ import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { MultiSelect } from 'primereact/multiselect'
 
-import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
-import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
-import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IFacility } from '../../../interfaces/facility'
-import { requestService } from '../../../services/requestServiceNew'
-import { useUtils } from '../../../store/useUtils'
-import { roleChecker } from '../../../utils/roleChecker'
-import { type IPaymentMethod } from './AdminCompanyAddPaymentMethod'
+import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
+import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IFacility } from '../../../../interfaces/facility'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
+import { type IPaymentMethod } from '../CreditCardView'
 
-export const PaymentMethodDetails = () => {
+export const CreditCardEditDelete = () => {
   const { id, paymentId } = useParams()
   const [paymentMethod, setPaymentMethod] = useState<IPaymentMethod | null>(null)
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
@@ -196,7 +196,7 @@ export const PaymentMethodDetails = () => {
         </div>
         <div className="mt-6 flex items-center justify-end gap-x-6" />
       </div>
-      <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-4  border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
         <h2 className="text-base font-semibold leading-7 text-gray-900">Delete Payment Method</h2>
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1 md:col-span-2">
           <div className="flex flex-col items-center sm:col-span-3">
