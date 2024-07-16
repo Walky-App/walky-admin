@@ -43,8 +43,6 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
     completed: false,
   }
 
-  const userId = formData?.user_id
-
   const formValues = formData != null ? formData : defaultValues
 
   const {
@@ -97,7 +95,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
       company_zip: data.company_zip,
       company_location_pin: data.company_location_pin,
       facilities: formData.facilities,
-      users: [userId],
+      users: [formData?.user_id],
     }
 
     if (companyId) {
