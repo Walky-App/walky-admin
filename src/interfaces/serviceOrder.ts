@@ -31,6 +31,7 @@ export interface IPaymentMethod {
 export interface IServiceOrder {
   details: IDetails
   _id: string
+  uid: string
   status: string
   created_by: string
   company_id: ICompany
@@ -39,4 +40,5 @@ export interface IServiceOrder {
   profile_id: string
   createdAt: string
   updatedAt: string
+  transaction_id: string
 }
