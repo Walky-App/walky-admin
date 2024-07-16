@@ -251,13 +251,12 @@ export const ProfileDetail = ({
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please type in the address and choose from the dropdown to select the correct address.
             </p>
-            {/* {requiredFieldsNoticeText} */}
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-6">
               <HtInfoTooltip message="This is the physical address where you get your mail.">
-                <HtInputLabel htmlFor="address" asterisk labelText="Address" />
+                <HtInputLabel htmlFor="address" labelText="Address" />
               </HtInfoTooltip>
               <AddressAutoComplete
                 controlled
@@ -268,6 +267,20 @@ export const ProfileDetail = ({
                 aria-describedby="address-help"
               />
               <HtInputHelpText fieldName="address" helpText="Residential Address ONLY" />
+              <div className="mt-4">
+                <p className="mt-1 text-sm leading-6">
+                  <strong>State:</strong> {formUser.state}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>Zip:</strong> {formUser.zip}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>City:</strong> {formUser.city}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>Address:</strong> {formUser.address}
+                </p>
+              </div>
             </div>
           </div>
         </div>
