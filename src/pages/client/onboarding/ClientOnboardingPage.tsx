@@ -112,6 +112,12 @@ export const ClientOnboarding = () => {
 
       try {
         const userData = await getUserData()
+
+        setFormData(prev => ({
+          ...prev,
+          user_id: userData?._id ?? userId,
+        }))
+
         const companiesData = await getUserCompanies()
 
         let companyFormData: ICompany = {} as ICompany
@@ -120,7 +126,6 @@ export const ClientOnboarding = () => {
           setFormData(prev => ({
             ...prev,
             ...companyFormData,
-            user_id: userData?._id ?? userId,
             company_id: companyFormData?._id ?? '',
           }))
         }
