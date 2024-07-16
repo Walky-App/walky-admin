@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { InputMask } from 'primereact/inputmask'
@@ -20,7 +20,6 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { getFormErrorMessage } from '../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
-import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export interface IPaymentInfo {
@@ -49,7 +48,7 @@ export interface IPaymentMethod {
   payment_method: string
 }
 
-export const AdminCompanyAddPaymentMethod = ({
+export const CreditCardView = ({
   setSelectedCompanyData,
 }: {
   setSelectedCompanyData: React.Dispatch<React.SetStateAction<ICompany>>
@@ -57,10 +56,8 @@ export const AdminCompanyAddPaymentMethod = ({
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
 
-  const navigate = useNavigate()
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
-  const role = roleChecker()
 
   const paymentMethodOptions = [
     { label: 'Automated Clearing House', value: 'ACH' },
@@ -148,18 +145,12 @@ export const AdminCompanyAddPaymentMethod = ({
       const updatedCompanyData = await response.json()
       setSelectedCompanyData(updatedCompanyData)
       showToast({ severity: 'success', summary: 'Payment method added successfully' })
-      setTimeout(() => {
-        if (role === 'client') {
-          navigate(`/client/companies/${id}/payment`)
-        } else {
-          navigate(`/admin/companies/${id}/payment`)
-        }
-      }, 2000)
     } catch (error) {
       console.error('Error adding company: ', error)
       showToast({ severity: 'error', summary: 'Failed to add company' })
     }
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <div className="space-y-4 sm:space-y-12">
