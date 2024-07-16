@@ -47,7 +47,7 @@ export const AdminDashboard = () => {
   const [user, setUser] = useState<IUser | null>(null)
 
   const navigate = useNavigate()
-  const userId = GetTokenInfo()._id
+  const { _id, avatar } = GetTokenInfo()
 
   useMemo(() => {
     const getDashboardData = async () => {
@@ -69,7 +69,7 @@ export const AdminDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await requestService({ path: `users/${userId}` })
+        const response = await requestService({ path: `users/${_id}` })
         if (response.ok) {
           const data = await response.json()
 
@@ -80,7 +80,7 @@ export const AdminDashboard = () => {
       }
     }
     fetchUser()
-  }, [userId])
+  }, [_id])
 
   const statCardsData: IStatCard[] = [
     { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: dashboardData?.users_count },
@@ -96,40 +96,45 @@ export const AdminDashboard = () => {
   return (
     <main>
       <DashboardHeader>
-        <div className="flex w-full items-center justify-between">
-          {/* Profile */}
-          <div className="flex py-6">
-            <Avatar
-              label={user?.first_name[0]}
-              image={user?.avatar}
-              size="large"
-              shape="circle"
-              pt={{ image: { className: 'object-cover' } }}
-            />
-            <div>
-              <div className="flex items-center">
-                <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
-                  Welcome Back, {user?.first_name}
-                </h1>
+        <div className="md:flex md:items-center md:justify-between md:space-x-5">
+          <div className="flex items-start space-x-5">
+            <div className="flex-shrink-0">
+              <div className="relative">
+                <Avatar
+                  label={user?.first_name[0]}
+                  image={avatar}
+                  size="large"
+                  shape="circle"
+                  pt={{ image: { className: 'object-cover' } }}
+                  className="h-16 w-16"
+                />
               </div>
-              <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
-                <dt className="sr-only">Company</dt>
-                <dd className="flex items-center text-sm font-medium text-gray-500 sm:mr-6">
+            </div>
+            <div className="pt-1.5">
+              <h1 className="text-2xl font-bold text-gray-900">Welcome Back, {user?.first_name}</h1>
+              <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:gap-x-6">
+                <div className="mt-2 flex items-center text-sm text-gray-500">
                   <BuildingOfficeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                   {user?.email}
-                </dd>
-              </dl>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="space-x-2">
+          <div className="justify mt-6 flex flex-col-reverse space-y-4 space-y-reverse md:flex-row md:justify-end md:gap-x-3 md:space-y-0 md:space-x-reverse lg:mt-0">
             <Button
               label="Facilities"
               severity="secondary"
               outlined
               size="small"
               onClick={() => navigate('/admin/facilities')}
+              pt={{ label: { className: 'text-nowrap' } }}
             />
-            <Button label="Jobs" size="small" onClick={() => navigate('/admin/jobs')} />
+            <Button
+              label="Jobs"
+              size="small"
+              onClick={() => navigate('/admin/jobs')}
+              pt={{ label: { className: 'text-nowrap' } }}
+            />
           </div>
         </div>
       </DashboardHeader>
