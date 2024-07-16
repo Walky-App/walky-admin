@@ -31,12 +31,14 @@ export interface IPaymentMethod {
 export interface IServiceOrder {
   details: IDetails
   _id: string
+  uid: string
   status: string
   created_by: string
   company_id: ICompany
   job_id: IJob
   facility_id: IFacility
   profile_id: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
+  transaction_id: string
 }
