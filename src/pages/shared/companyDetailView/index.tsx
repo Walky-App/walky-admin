@@ -6,8 +6,9 @@ import { TabPanel, TabView } from 'primereact/tabview'
 
 import { type ICompany } from '../../../interfaces/company'
 import { requestService } from '../../../services/requestServiceNew'
-import { AdminCompanyAddPaymentMethod } from './AdminCompanyAddPaymentMethod'
 import { CompanyDetailForm } from './CompanyDetailForm'
+import { CreditCardView } from './CreditCardView'
+import { PaymentCards } from './components/PaymentCards'
 
 export const CompanyDetailView = () => {
   const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
@@ -28,6 +29,7 @@ export const CompanyDetailView = () => {
     }
     getCompany()
   }, [selectedCompanyId])
+
   return (
     <div>
       <div className="mb-8">
@@ -38,8 +40,12 @@ export const CompanyDetailView = () => {
         <TabPanel header="Details">
           <CompanyDetailForm selectedCompanyData={selectedCompanyData} />
         </TabPanel>
-        <TabPanel header="Credit Card">
-          <AdminCompanyAddPaymentMethod setSelectedCompanyData={setSelectedCompanyData} />
+        <TabPanel header="Credit Cards">
+          <PaymentCards selectedCompanyData={selectedCompanyData} />
+          <CreditCardView setSelectedCompanyData={setSelectedCompanyData} />
+        </TabPanel>
+        <TabPanel header="ACH / Terms">
+          <h2> Coming soon</h2>
         </TabPanel>
       </TabView>
     </div>

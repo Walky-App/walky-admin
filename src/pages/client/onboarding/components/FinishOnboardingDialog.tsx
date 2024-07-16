@@ -47,7 +47,7 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
                 Nice work! Your profile is under review.
               </h3>
               <div className="mt-2">
-                <p className="text-wrap text-sm text-gray-500">
+                <p className="text-wrap">
                   Congratulations! your profile is successfully created and submitted to admin approval once admin
                   approved you received confirmation email.
                 </p>
