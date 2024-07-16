@@ -97,7 +97,7 @@ import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimeshee
 import { CompanyDetailView } from './pages/shared/companyDetailView'
 
 /******************************************* Shared Pages ************************************/
-import { PaymentMethodDetails } from './pages/shared/companyDetailView/PaymentMethodDetails'
+import { CreditCardEditDelete } from './pages/shared/companyDetailView/components/CreditCardEditDelete'
 import { JobDetailView } from './pages/shared/jobDetailView'
 import { UserProfile } from './pages/shared/userProfile'
 
@@ -170,7 +170,7 @@ export const App = () => {
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<CompanyDetailView />} path="/client/companies/:id" />
-                  <Route element={<PaymentMethodDetails />} path="/client/companies/:id/payment/:paymentId" />
+                  <Route element={<CreditCardEditDelete />} path="/client/companies/:id/payment/:paymentId" />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route element={<SalesDashboard />} path="/sales/dashboard" />
@@ -202,7 +202,7 @@ export const App = () => {
                   <Route element={<AdminCompanyListPage />} path="/admin/companies" />
                   <Route element={<AdminAddCompany />} path="/admin/companies/new" />
                   <Route element={<CompanyDetailView />} path="/admin/companies/:id" />
-                  <Route element={<PaymentMethodDetails />} path="/admin/companies/:id/payment/:paymentId" />
+                  <Route element={<CreditCardEditDelete />} path="/admin/companies/:id/payment/:paymentId" />
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />
