@@ -38,7 +38,7 @@ export interface IServiceOrder {
   job_id: IJob
   facility_id: IFacility
   profile_id: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
   transaction_id: string
 }
