@@ -143,6 +143,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Service Orders',
       href: '/client/service-orders',
       icon: <FaBriefcase />,
+      disabled: !userIsOnboarded,
       subLinks: [
         { name: 'All Service Orders', href: '/client/jobs/service-orders' },
         { name: 'Pending', href: '/client/jobs/service-orders/pending' },

@@ -52,7 +52,7 @@ export const AllServiceOrdersListPage = () => {
       { Header: 'Job Title', accessor: 'job_id.title' },
 
       { Header: 'Facility ID', accessor: 'facility_id.name' },
-      { Header: 'Created By', accessor: 'created_by.email' },
+      { Header: 'Created By', accessor: 'created_by' },
       { Header: 'Total Cost', accessor: 'details.total_cost' },
     ],
     [],
