@@ -57,56 +57,67 @@ export const EmployeeDashboard = () => {
     <div className="min-h-full">
       <main className="flex-1 pb-8">
         <DashboardHeader>
-          <div className="flex w-full items-center justify-between">
-            {/* Profile */}
-            <div className="flex py-6">
-              <Avatar
-                label={user?.first_name[0]}
-                image={avatar}
-                size="large"
-                shape="circle"
-                pt={{ image: { className: 'object-cover' } }}
-              />
-              <div>
-                <div className="flex items-center">
-                  <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
-                    Welcome Back, {user?.first_name}
-                  </h1>
+          <div className="md:flex md:items-center md:justify-between md:space-x-5">
+            <div className="flex items-start space-x-5">
+              <div className="flex-shrink-0">
+                <div className="relative">
+                  <Avatar
+                    label={user?.first_name[0]}
+                    image={avatar}
+                    size="large"
+                    shape="circle"
+                    pt={{ image: { className: 'object-cover' } }}
+                    className="h-16 w-16"
+                  />
                 </div>
-                <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
-                  <dt className="sr-only">Company</dt>
-                  <dd className="flex items-center text-sm font-medium text-gray-500 sm:mr-6">
+              </div>
+              <div className="pt-1.5">
+                <h1 className="text-2xl font-bold text-gray-900">Welcome Back, {user?.first_name}</h1>
+                <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:gap-x-6">
+                  <div className="mt-2 flex items-center text-sm text-gray-500">
                     <BuildingOfficeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                     {user?.email}
-                  </dd>
-                  <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
+                  </div>
+                  <div className="mt-2 flex items-center text-sm text-gray-500">
                     <CheckCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400" aria-hidden="true" />
                     Verified account
-                  </dd>
-                  <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
+                  </div>
+                  <div className="mt-2 flex items-center text-sm text-gray-500">
                     <CheckCircleIcon
                       className={cn(
                         onboarding?.completed ?? false ? 'text-green-400' : 'text-gray-400',
-                        'mr-1.5 h-5 w-5 flex-shrink-0 ',
+                        'mr-1.5 h-5 w-5 flex-shrink-0',
                       )}
                     />
                     Onboarding Complete
-                  </dd>
-                  <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
+                  </div>
+                  <div className="mt-2 flex items-center text-sm text-gray-500">
                     <CheckCircleIcon
                       className={cn(
                         user?.is_approved ?? false ? 'text-green-400' : 'text-gray-400',
-                        'mr-1.5 h-5 w-5 flex-shrink-0 ',
+                        'mr-1.5 h-5 w-5 flex-shrink-0',
                       )}
                     />
                     Profile Approved
-                  </dd>
-                </dl>
+                  </div>
+                </div>
               </div>
             </div>
-            <div>
-              <Button label="Training" severity="secondary" outlined size="small" onClick={() => navigate('/learn')} />
-              <Button label="Jobs" size="small" onClick={() => navigate('/employee/jobs')} className="ml-2" />
+            <div className="justify mt-6 flex flex-col-reverse space-y-4 space-y-reverse md:flex-row md:justify-end md:gap-x-3 md:space-y-0 md:space-x-reverse lg:mt-0">
+              <Button
+                label="Training"
+                severity="secondary"
+                outlined
+                size="small"
+                onClick={() => navigate('/learn')}
+                pt={{ label: { className: 'text-nowrap' } }}
+              />
+              <Button
+                label="Jobs"
+                size="small"
+                onClick={() => navigate('/employee/jobs')}
+                pt={{ label: { className: 'text-nowrap' } }}
+              />
             </div>
           </div>
         </DashboardHeader>
