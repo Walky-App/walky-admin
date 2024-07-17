@@ -11,43 +11,9 @@
   ],
   "routes": [{ "src": "/(.*)", "dest": "/index.html" }],
   "env": {
-    "REACT_APP_API_URL": "@react_app_api_url"
-  },
-  "build": {
-    "env": {
-      "REACT_APP_ENV": "production"
-    }
+    "REACT_APP_API_URL": "@react_app_api_url",
+    "REACT_APP_ENV": "@react_app_env"
   },
   "devCommand": "env-cmd -f .env.development react-scripts start",
-  "buildCommand": "env-cmd -f .env.production react-scripts build",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
-  "development": {
-    "buildCommand": "env-cmd -f .env.development react-scripts build",
-    "env": {
-      "REACT_APP_API_URL": "https://hemp-temps-api-dev.uk.r.appspot.com/v1",
-      "REACT_APP_ENV": "development"
-    }
-  },
-  "preview": {
-    "buildCommand": "env-cmd -f .env.staging react-scripts build",
-    "env": {
-      "REACT_APP_API_URL": "https://hemp-temps-api-dev.uk.r.appspot.com/v1",
-      "REACT_APP_ENV": "staging"
-    }
-  },
-  "production": {
-    "buildCommand": "env-cmd -f .env.production react-scripts build",
-    "env": {
-      "REACT_APP_API_URL": "https://api.hemptemps.com/v1",
-      "REACT_APP_ENV": "production"
-    }
-  }
+  "buildCommand": "env-cmd -f .env.production react-scripts build"
 }
