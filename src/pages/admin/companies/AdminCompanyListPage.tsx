@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { format, isToday, isYesterday } from 'date-fns'
+
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type ICompany } from '../../../interfaces/company'
 import { requestService } from '../../../services/requestServiceNew'
 import { formatPhoneNumber } from '../../../utils/dataUtils'
 import { roleChecker } from '../../../utils/roleChecker'
-import { formatToDateTime } from '../../../utils/timeUtils'
 
 export const AdminCompanyListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -51,6 +52,17 @@ export const AdminCompanyListPage = () => {
       },
       { Header: 'Tax ID', accessor: 'company_tax_id' },
       {
+        Header: 'Created',
+        width: 200,
+        accessor: (a: ICompany) => {
+          return isToday(a.createdAt as string)
+            ? 'Today'
+            : isYesterday(a.createdAt as string)
+              ? 'Yesterday'
+              : format(a.createdAt as string, 'P')
+        },
+      },
+      {
         Header: 'Phone',
         accessor: (company: ICompany) =>
           company.company_phone_number?.length ? formatPhoneNumber(company.company_phone_number) : '',
@@ -61,10 +73,6 @@ export const AdminCompanyListPage = () => {
       { Header: 'State', accessor: 'company_state' },
       { Header: 'Zip', accessor: 'company_zip' },
       { Header: 'Facilities', width: '10px', accessor: (company: ICompany) => company.facilities.length },
-      {
-        Header: 'Created At',
-        accessor: (company: ICompany) => (company.createdAt != null ? formatToDateTime(company.createdAt) : ''),
-      },
     ],
     [],
   )

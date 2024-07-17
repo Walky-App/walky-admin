@@ -1,19 +1,25 @@
-import React from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { format, isToday, isYesterday } from 'date-fns'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IJob } from '../../../interfaces/job'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 
 export const AdminJobs = () => {
-  const [jobsData, setJobsData] = React.useState<IJob[]>([])
-  const [isLoading, setIsLoading] = React.useState(true)
+  const [jobsData, setJobsData] = useState<IJob[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const getJobs = async () => {
       try {
-        const allJobs = await RequestService('jobs')
-        setJobsData(allJobs)
+        const response = await requestService({ path: 'jobs' })
+
+        if (response.ok) {
+          const allJobs = await response.json()
+          setJobsData(allJobs)
+        }
       } catch (error) {
         console.error('Error fetching job data:', error)
       } finally {
@@ -24,14 +30,21 @@ export const AdminJobs = () => {
     getJobs()
   }, [])
 
-  const memoJobsData = React.useMemo(() => jobsData, [jobsData])
+  const memoJobsData = useMemo(() => jobsData, [jobsData])
 
-  const memoJobsColumns = React.useMemo(
+  const memoJobsColumns = useMemo(
     () => [
       { Header: 'ID', width: '100px', accessor: (d: IJob) => `#${d.uid}` || 0 },
       { Header: 'Job Title', accessor: 'title' },
       { Header: 'Facility', accessor: 'facility.name' },
       { Header: 'Created By', accessor: 'created_by', width: 250 },
+      {
+        Header: 'Created',
+        width: 200,
+        accessor: (a: IJob) => {
+          return isToday(a.createdAt) ? 'Today' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
+        },
+      },
       { Header: 'Job Starts', width: 120, accessor: (item: IJob) => new Date(item.job_dates[0]).toLocaleDateString() },
       {
         Header: 'Job Ends',
