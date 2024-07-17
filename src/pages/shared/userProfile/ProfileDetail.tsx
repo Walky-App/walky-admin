@@ -181,35 +181,41 @@ export const ProfileDetail = ({
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
               <HtInputLabel htmlFor="first_name" asterisk labelText="First Name" />
-              <InputText
-                required
-                value={formUser?.first_name}
-                name="first_name"
-                id="first_name"
-                autoComplete="off"
-                onChange={handleFormUpdate}
-              />
+              <div className="mt-2">
+                <InputText
+                  required
+                  value={formUser?.first_name}
+                  name="first_name"
+                  id="first_name"
+                  autoComplete="off"
+                  onChange={handleFormUpdate}
+                />
+              </div>
             </div>
 
             <div className="sm:col-span-3">
               <HtInputLabel htmlFor="last_name" asterisk labelText="Last Name" />
-              <InputText
-                required
-                value={formUser?.last_name}
-                name="last_name"
-                id="last_name"
-                autoComplete="off"
-                onChange={handleFormUpdate}
-              />
+              <div className="mt-2">
+                <InputText
+                  required
+                  value={formUser?.last_name}
+                  name="last_name"
+                  id="last_name"
+                  autoComplete="off"
+                  onChange={handleFormUpdate}
+                />
+              </div>
             </div>
             <div className="sm:col-span-3">
               <HtInputLabel htmlFor="middle_name" labelText="Middle Name" />
-              <InputText
-                id="middle_name"
-                value={formUser?.middle_name}
-                name="middle_name"
-                onChange={handleFormUpdate}
-              />
+              <div className="mt-2">
+                <InputText
+                  id="middle_name"
+                  value={formUser?.middle_name}
+                  name="middle_name"
+                  onChange={handleFormUpdate}
+                />
+              </div>
             </div>
 
             <div className="sm:col-span-3">
