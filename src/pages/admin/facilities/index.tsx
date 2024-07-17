@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { format, isToday, isYesterday } from 'date-fns'
+
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
 import { type IFacility } from '../../../interfaces/facility'
@@ -57,6 +59,17 @@ export const AdminFacilities = () => {
     },
     { Header: 'Name', accessor: 'name', width: '200px' },
     { Header: 'DBAs', accessor: 'company_dbas' },
+    {
+      Header: 'Created',
+      width: 200,
+      accessor: (a: IFacility) => {
+        return isToday(a.createdAt as string)
+          ? 'Today'
+          : isYesterday(a.createdAt as string)
+            ? 'Yesterday'
+            : format(a.createdAt as string, 'P')
+      },
+    },
     { Header: 'Address', accessor: 'address', width: '300px' },
     { Header: 'State', accessor: 'state', width: '10px' },
     {
