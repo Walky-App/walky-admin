@@ -13,6 +13,7 @@ export const SignupDialog = ({ visible, setVisible }: WelcomeDialogProps) => {
         blockScroll
         header="Welcome to HempTemps"
         dismissableMask
+        draggable={false}
         onHide={() => setVisible(false)}
         className="md:w-4/5 lg:w-10/12">
         <div className="flex w-full flex-col items-center rounded-lg bg-white px-4 py-5 xl:px-8">
