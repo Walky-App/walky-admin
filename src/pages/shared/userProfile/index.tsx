@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { TabPanel, TabView } from 'primereact/tabview'
 
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { useAuth } from '../../../contexts/AuthContext'
 import { type IUser } from '../../../interfaces/User'
 import { type ITrainingData } from '../../../interfaces/training'
@@ -15,6 +16,7 @@ import { ProfileTimesheets } from './ProfileTimesheets'
 import { ProfileTraining } from './ProfileTraining'
 
 export const UserProfile = () => {
+  const [loading, setLoading] = useState(false)
   const [userTraining, setUserTraining] = useState<ITrainingData>({} as ITrainingData)
   const [formUser, setFormUser] = useState<IUser>({
     _id: '',
@@ -46,6 +48,7 @@ export const UserProfile = () => {
   useEffect(() => {
     if (!user) return
     const getUser = async () => {
+      setLoading(true)
       try {
         const response = await requestService({ path: `users/${id ? id : user?._id}` })
         if (response.ok) {
@@ -61,30 +64,38 @@ export const UserProfile = () => {
       } catch (error) {
         console.error('Error fetching user:', error)
         showToast({ severity: 'error', summary: 'Error', detail: 'Error fetching user' })
+      } finally {
+        setLoading(false)
       }
     }
     getUser()
-  }, [user, showToast, id])
+  }, [id, showToast, user])
 
-  return (
+  const isVisibleToUser = (userRole: string): boolean => {
+    return userRole !== process.env.REACT_APP_CLIENT_ROLE && userRole !== process.env.REACT_APP_ADMIN_ROLE
+  }
+
+  return loading ? (
+    <HTLoadingLogo />
+  ) : (
     <div>
       <div className="mb-8">
         <div className="text-3xl font-bold">
           {formUser.first_name} {formUser.last_name}
         </div>
-        <div className="">{formUser.address}</div>
+        <div>{formUser.address}</div>
       </div>
       <TabView>
         <TabPanel header="User Detail">
           <ProfileDetail formUser={formUser} setFormUser={setFormUser} />
         </TabPanel>
-        <TabPanel header="Documents">
+        <TabPanel header="Documents" visible={isVisibleToUser(formUser.role)}>
           <ProfileDocuments formUser={formUser} setFormUser={setFormUser} />
         </TabPanel>
-        <TabPanel header="Training">
+        <TabPanel header="Training" visible={isVisibleToUser(formUser.role)}>
           <ProfileTraining userTraining={userTraining} />
         </TabPanel>
-        <TabPanel header="TimeSheets">
+        <TabPanel header="TimeSheets" visible={isVisibleToUser(formUser.role)}>
           <ProfileTimesheets userId={formUser._id} />
         </TabPanel>
       </TabView>

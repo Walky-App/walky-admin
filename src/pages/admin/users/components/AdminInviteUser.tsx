@@ -162,7 +162,7 @@ export const AdminInviteUser = () => {
                     <td>{invite.invitee}</td>
                     <td>{roleTxt(invite.role)}</td>
                     <td>{invite.status}</td>
-                    <td>{typeof invite.company_id === 'object' ? invite.company_id.company_name : ''}</td>
+                    <td>{typeof invite.company_id === 'object' ? invite.company_id?.company_name : ''}</td>
                     <td>{format(invite?.createdAt ?? new Date(), 'P')}</td>
                   </tr>
                 ))}
