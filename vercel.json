@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/index.tsx",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "build"
@@ -10,10 +10,6 @@
     }
   ],
   "routes": [{ "src": "/(.*)", "dest": "/index.html" }],
-  "env": {
-    "REACT_APP_API_URL": "@react_app_api_url",
-    "REACT_APP_ENV": "@react_app_env"
-  },
   "devCommand": "env-cmd -f .env.development react-scripts start",
-  "buildCommand": "env-cmd -f .env.production react-scripts build"
-} 
+  "buildCommand": "react-scripts build"
+}
