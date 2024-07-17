@@ -47,7 +47,7 @@ export const AdminUserEmployeesListPage = () => {
     () => [
       {
         Header: 'Profile Picture',
-        width: '200px',
+        width: '300px',
         height: '200px',
         Cell: ({ row, value }: IRow) => {
           const avatarUrl = row.original.avatar ?? ''
@@ -66,14 +66,14 @@ export const AdminUserEmployeesListPage = () => {
       { Header: 'First Name', accessor: 'first_name', width: 200 },
       { Header: 'Last Name', accessor: 'last_name', width: 200 },
       {
-        Header: 'Approved',
-        width: 100,
-        accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
-      },
-      {
         Header: 'Onboarded',
         width: 100,
         accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
+      },
+      {
+        Header: 'HT Certs',
+        width: 150,
+        accessor: (d: IUser) => d.student_record?.categories?.filter(cat => cat?.is_completed === true).length,
       },
       {
         Header: 'Docs',
@@ -81,20 +81,31 @@ export const AdminUserEmployeesListPage = () => {
         accessor: (d: IUser) => d.documents?.length,
       },
       {
-        Header: 'Supervisor',
+        Header: 'Approved',
         width: 100,
-        accessor: (d: IUser) => (d.is_shift_supervisor ? '✅' : '❌'),
+        accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
       },
+
       {
         Header: 'Joined',
-        width: 100,
-        accessor: (a: IUser): string => {
-          return isToday(a.createdAt) || isYesterday(a.createdAt) ? 'New ⭐️' : format(a.createdAt, 'P')
+        width: 200,
+        accessor: (a: IUser) => {
+          return isToday(a.createdAt as string)
+            ? 'Today ⭐️'
+            : isYesterday(a.createdAt as string)
+              ? 'Yesterday'
+              : format(a.createdAt as string, 'P')
         },
       },
-      { Header: 'Email', accessor: 'email', width: 400 },
+      {
+        Header: 'Supervisor',
+        width: 100,
+        accessor: (d: IUser) => (d.is_shift_supervisor ? 'Yes' : 'No'),
+      },
+      { Header: 'Email', accessor: 'email', width: 300 },
       { Header: 'Phone', accessor: 'phone_number' },
       { Header: 'City', accessor: 'city' },
+      { Header: 'Zip', accessor: 'zip' },
       { Header: 'State', accessor: 'state', width: 20 },
       { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
     ],
