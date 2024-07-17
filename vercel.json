@@ -11,5 +11,5 @@
   ],
   "routes": [{ "src": "/(.*)", "dest": "/index.html" }],
   "devCommand": "env-cmd -f .env.development react-scripts start",
-  "buildCommand": "react-scripts build"
+  "buildCommand": "npm run vercel-build"
 }
