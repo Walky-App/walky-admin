@@ -89,8 +89,12 @@ export const AdminUserEmployeesListPage = () => {
       {
         Header: 'Joined',
         width: 200,
-        accessor: (a: IUser): string => {
-          return isToday(a.createdAt) || isYesterday(a.createdAt) ? 'New ⭐️' : format(a.createdAt, 'P')
+        accessor: (a: IUser) => {
+          return isToday(a.createdAt as string)
+            ? 'Today ⭐️'
+            : isYesterday(a.createdAt as string)
+              ? 'Yesterday'
+              : format(a.createdAt as string, 'P')
         },
       },
       {

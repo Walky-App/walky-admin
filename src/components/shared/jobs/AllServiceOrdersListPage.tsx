@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 
-import { format } from 'date-fns'
+import { format, isToday, isYesterday } from 'date-fns'
 
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
@@ -53,15 +53,16 @@ export const AllServiceOrdersListPage = () => {
       { Header: 'UID', accessor: 'uid' },
       { Header: 'Company Name', accessor: 'company_id.company_name' },
       { Header: 'Job Title', accessor: 'job_id.title' },
-
+      {
+        Header: 'Created',
+        width: 200,
+        accessor: (a: IServiceOrder) => {
+          return isToday(a.createdAt) ? 'Today ⭐️' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
+        },
+      },
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },
       { Header: 'Total Cost, $', accessor: 'details.total_cost' },
-      {
-        Header: 'Created At',
-        accessor: (row: { createdAt: Date }) => format(row.createdAt, 'yyyy-MM-dd HH:mm:ss'),
-        id: 'createdAt',
-      },
     ],
     [],
   )
