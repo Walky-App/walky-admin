@@ -119,13 +119,13 @@ export const Signup = () => {
   return (
     <div className="flex items-center justify-center ">
       <form onSubmit={handleOnSubmit} className="mx-auto px-8 md:max-w-md">
-        <div className="bg-white px-6 sm:py-12 lg:px-8">
+        <div className="bg-white px-6 py-6 sm:py-8 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-base font-semibold leading-7 text-green-600">
               Sign Up Now and Get the Support You Deserve!
             </p>
-            <h2 className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Signup Today!</h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
+            <h2 className="mt-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Signup Today!</h2>
+            <p className="mt-4 text-lg leading-8 text-gray-600">
               Connect and Thrive: Your Premier Hub for Cannabis Industry Temp Jobs
             </p>
           </div>
@@ -185,6 +185,12 @@ export const Signup = () => {
             placeholder="(561) 999-9999"
             className="w-full"
             autoComplete="off"
+            pt={{
+              root: {
+                className:
+                  'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+              },
+            }}
           />
         </div>
         <div>
@@ -222,7 +228,7 @@ export const Signup = () => {
             }}
             className="mt-5 w-full"
           />
-          <div className="my-4 flex flex-col space-y-1 text-sm text-zinc-500">
+          <div className="my-6 flex flex-col space-y-2 text-sm text-zinc-500">
             <span>Please choose notifications you would like to receive:</span>
             <div>
               <Checkbox
@@ -247,7 +253,7 @@ export const Signup = () => {
               </label>
             </div>
           </div>
-          <div className="my-3 text-sm text-zinc-500">
+          <div className="my-4 text-sm text-zinc-500">
             <Checkbox
               required
               inputId="terms"
@@ -287,7 +293,7 @@ export const Signup = () => {
           </div>
         </div>
       </form>
-      <SignupDialog visible={visible} setVisible={setVisible} /> 
+      <SignupDialog visible={visible} setVisible={setVisible} />
     </div>
   )
 }
