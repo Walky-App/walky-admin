@@ -185,6 +185,12 @@ export const Signup = () => {
             placeholder="(561) 999-9999"
             className="w-full"
             autoComplete="off"
+            pt={{
+              root: {
+                className:
+                  'w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500',
+              },
+            }}
           />
         </div>
         <div>
@@ -287,7 +293,7 @@ export const Signup = () => {
           </div>
         </div>
       </form>
-      <SignupDialog visible={visible} setVisible={setVisible} /> 
+      <SignupDialog visible={visible} setVisible={setVisible} />
     </div>
   )
 }
