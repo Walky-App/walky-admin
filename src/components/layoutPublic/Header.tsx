@@ -82,7 +82,11 @@ export const Header = () => {
           <div className="flex justify-start lg:w-0 lg:flex-1">
             <a href="/">
               <span className="sr-only">HempTemps</span>
-              <img className="h-16 w-auto" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
+              <img
+                className="h-12 w-auto sm:h-16"
+                src="/assets/logos/logo-horizontal-cropped.png"
+                alt="HempTemps Logo"
+              />
             </a>
           </div>
           <div className="-my-2 -mr-2 md:hidden">
@@ -250,7 +254,11 @@ export const Header = () => {
               <div className="space-y-6 px-5 pb-6 pt-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <img className="h-16 w-auto" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
+                    <img
+                      className="h-12 w-auto sm:h-16"
+                      src="/assets/logos/logo-horizontal-cropped.png"
+                      alt="HempTemps Logo"
+                    />
                   </div>
                   <div className="-mr-2">
                     <PopoverButton className="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500">
