@@ -11,6 +11,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 import { HTLoadingLogo } from '../HTLoadingLogo'
+import { HtInputHelpText } from '../forms/HtInputHelpText'
 
 interface SelectedCard {
   payment_profile_id: string
@@ -196,21 +197,27 @@ export const ServiceOrderPage = () => {
             </tbody>
             <div className="mt-2 flex">
               {serviceOrder?.status === 'pending_select_payment' ? (
-                <>
-                  <Dropdown
-                    value={selectedCard}
-                    options={paymentMethods?.map(method => ({
-                      label: method.card_name + ' ' + method.card_number,
-                      value: { payment_profile_id: method._id, card_number: method.card_number },
-                    }))}
-                    onChange={e => {
-                      setSelectedCard(e.value)
-                    }}
-                    placeholder="Select a Credit Card"
-                  />
+                <div className="flex flex-col">
+                  <div>
+                    <Dropdown
+                      value={selectedCard}
+                      options={paymentMethods?.map(method => ({
+                        label: method.card_name + ' ' + method.card_number,
+                        value: { payment_profile_id: method._id, card_number: method.card_number },
+                      }))}
+                      onChange={e => {
+                        setSelectedCard(e.value)
+                      }}
+                      placeholder="Select a Credit Card"
+                    />
 
-                  <Button label="Authorize Payment" onClick={handleAuthorizePayment} />
-                </>
+                    <Button label="Authorize Hold on Card" onClick={handleAuthorizePayment} />
+                  </div>
+                  <HtInputHelpText
+                    fieldName="Authorize Payment"
+                    helpText="A hold will be placed on this card for the total job cost, similar to a hotel's incidental hold."
+                  />
+                </div>
               ) : null}
             </div>
             <tfoot>
