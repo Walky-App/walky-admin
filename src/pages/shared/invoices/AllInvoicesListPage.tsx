@@ -1,30 +1,30 @@
 import { useState, useEffect, useMemo } from 'react'
 
-import { format } from 'date-fns'
+import { format, isToday, isYesterday } from 'date-fns'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
-import { GlobalTable } from '../GlobalTable'
-import { HTLoadingLogo } from '../HTLoadingLogo'
 
-export const AuthorizedServiceOrdersListPage = () => {
-  const [authorizedServiceOrders, setAuthorizedServiceOrders] = useState<IServiceOrder[]>([])
+export const AllInvoicesListPage = () => {
+  const [invoices, setInvoices] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const role = roleChecker()
 
   useEffect(() => {
-    const getAllAuthorizedServiceOrders = async () => {
+    const getAllServiceOrders = async () => {
       try {
         let response
         if (role === 'admin') {
           response = await requestService({
-            path: `jobs/service-orders/authorized`,
+            path: `invoices/list`,
             method: 'GET',
           })
         } else if (role === 'client') {
           response = await requestService({
-            path: `jobs/service-orders/authorized-by-client-companies`,
+            path: `jobs/service-orders/by-client-companies`,
             method: 'GET',
           })
         }
@@ -34,7 +34,7 @@ export const AuthorizedServiceOrdersListPage = () => {
         }
 
         const allServiceOrders = await response.json()
-        setAuthorizedServiceOrders(allServiceOrders)
+        setInvoices(allServiceOrders)
       } catch (error) {
         console.error('Error fetching service orders data:', error)
       } finally {
@@ -42,27 +42,27 @@ export const AuthorizedServiceOrdersListPage = () => {
       }
     }
 
-    getAllAuthorizedServiceOrders()
+    getAllServiceOrders()
   }, [role])
 
-  const memoServiceOrdersData = useMemo(() => authorizedServiceOrders, [authorizedServiceOrders])
+  const memoServiceOrdersData = useMemo(() => invoices, [invoices])
 
   const memoServiceOrdersColumns = useMemo(
     () => [
       { Header: 'Status', accessor: 'status' },
       { Header: 'UID', accessor: 'uid' },
-      { Header: 'Transaction ID', accessor: 'transaction_id' },
       { Header: 'Company Name', accessor: 'company_id.company_name' },
       { Header: 'Job Title', accessor: 'job_id.title' },
-
+      {
+        Header: 'Created',
+        width: 200,
+        accessor: (a: IServiceOrder) => {
+          return isToday(a.createdAt) ? 'Today ⭐️' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
+        },
+      },
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },
       { Header: 'Total Cost, $', accessor: 'details.total_cost' },
-      {
-        Header: 'Created At',
-        accessor: (row: { createdAt: Date }) => format(row.createdAt, 'yyyy-MM-dd HH:mm:ss'),
-        id: 'createdAt',
-      },
     ],
     [],
   )
