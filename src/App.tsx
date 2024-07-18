@@ -81,10 +81,6 @@ import { AdminSettings } from './pages/admin/settings/AdminSettings'
 import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
 import { AddEditJobWithoutPaymentsPage } from './components/shared/jobs/AddEditJobWithoutPaymentsPage'
-import { AllServiceOrdersListPage } from './components/shared/jobs/AllServiceOrdersListPage'
-import { AuthorizedServiceOrdersListPage } from './components/shared/jobs/AuthorizedServiceOrdersListPage'
-import { PendingServiceOrdersListPage } from './components/shared/jobs/PendingServiceOrdersListPage'
-import { ServiceOrderPage } from './components/shared/jobs/ServiceOrderPage'
 import { Pricing } from './pages/Pricing'
 
 /******************************************* Employee Pages ************************************/
@@ -98,7 +94,13 @@ import { CompanyDetailView } from './pages/shared/companyDetailView'
 
 /******************************************* Shared Pages ************************************/
 import { CreditCardEditDelete } from './pages/shared/companyDetailView/components/CreditCardEditDelete'
+import { AllInvoicesListPage } from './pages/shared/invoices/AllInvoicesListPage'
+import { InvoiceDetailsPage } from './pages/shared/invoices/InvoiceDetailsPage'
 import { JobDetailView } from './pages/shared/jobDetailView'
+import { AllServiceOrdersListPage } from './pages/shared/serviceOrders/AllServiceOrdersListPage'
+import { AuthorizedServiceOrdersListPage } from './pages/shared/serviceOrders/AuthorizedServiceOrdersListPage'
+import { PendingServiceOrdersListPage } from './pages/shared/serviceOrders/PendingServiceOrdersListPage'
+import { ServiceOrderPage } from './pages/shared/serviceOrders/ServiceOrderPage'
 import { UserProfile } from './pages/shared/userProfile'
 
 const admin_role = process.env.REACT_APP_ADMIN_ROLE as string
@@ -222,11 +224,12 @@ export const App = () => {
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/:serviceOrderId" />
-                  <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/pending/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/authorized/:serviceOrderId" />
                   <Route element={<AllServiceOrdersListPage />} path="/admin/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/admin/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/admin/jobs/service-orders/authorized" />
+                  <Route element={<InvoiceDetailsPage />} path="/admin/invoices/:id" />
+                  <Route element={<AllInvoicesListPage />} path="/admin/invoices" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
                   <Route element={<AdminDetailsCategory />} path="/admin/learn/categories/:categoryId" />
