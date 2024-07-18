@@ -1,30 +1,30 @@
 import { useState, useEffect, useMemo } from 'react'
 
-import { format } from 'date-fns'
+import { format, isToday, isYesterday } from 'date-fns'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
-import { GlobalTable } from '../GlobalTable'
-import { HTLoadingLogo } from '../HTLoadingLogo'
 
-export const PendingServiceOrdersListPage = () => {
-  const [pendingServiceOrders, setPendingServiceOrders] = useState<IServiceOrder[]>([])
+export const AllServiceOrdersListPage = () => {
+  const [serviceOrders, setServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const role = roleChecker()
 
   useEffect(() => {
-    const getAllPendingServiceOrders = async () => {
+    const getAllServiceOrders = async () => {
       try {
         let response
         if (role === 'admin') {
           response = await requestService({
-            path: `jobs/service-orders/pending`,
+            path: `jobs/service-orders`,
             method: 'GET',
           })
         } else if (role === 'client') {
           response = await requestService({
-            path: `jobs/service-orders/pending-by-client-companies`,
+            path: `jobs/service-orders/by-client-companies`,
             method: 'GET',
           })
         }
@@ -34,7 +34,7 @@ export const PendingServiceOrdersListPage = () => {
         }
 
         const allServiceOrders = await response.json()
-        setPendingServiceOrders(allServiceOrders)
+        setServiceOrders(allServiceOrders)
       } catch (error) {
         console.error('Error fetching service orders data:', error)
       } finally {
@@ -42,10 +42,10 @@ export const PendingServiceOrdersListPage = () => {
       }
     }
 
-    getAllPendingServiceOrders()
+    getAllServiceOrders()
   }, [role])
 
-  const memoServiceOrdersData = useMemo(() => pendingServiceOrders, [pendingServiceOrders])
+  const memoServiceOrdersData = useMemo(() => serviceOrders, [serviceOrders])
 
   const memoServiceOrdersColumns = useMemo(
     () => [
@@ -53,15 +53,16 @@ export const PendingServiceOrdersListPage = () => {
       { Header: 'UID', accessor: 'uid' },
       { Header: 'Company Name', accessor: 'company_id.company_name' },
       { Header: 'Job Title', accessor: 'job_id.title' },
-
+      {
+        Header: 'Created',
+        width: 200,
+        accessor: (a: IServiceOrder) => {
+          return isToday(a.createdAt) ? 'Today ⭐️' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
+        },
+      },
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },
       { Header: 'Total Cost, $', accessor: 'details.total_cost' },
-      {
-        Header: 'Created At',
-        accessor: (row: { createdAt: Date }) => format(row.createdAt, 'yyyy-MM-dd HH:mm:ss'),
-        id: 'createdAt',
-      },
     ],
     [],
   )
