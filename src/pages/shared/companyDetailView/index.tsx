@@ -8,6 +8,7 @@ import { type ICompany } from '../../../interfaces/company'
 import { requestService } from '../../../services/requestServiceNew'
 import { CompanyDetailForm } from './CompanyDetailForm'
 import { CreditCardView } from './CreditCardView'
+import { ACHAddPayment } from './components/ACHAddPayment'
 import { PaymentCards } from './components/PaymentCards'
 
 export const CompanyDetailView = () => {
@@ -45,7 +46,8 @@ export const CompanyDetailView = () => {
           <CreditCardView setSelectedCompanyData={setSelectedCompanyData} />
         </TabPanel>
         <TabPanel header="ACH / Terms">
-          <h2> Coming soon</h2>
+          <PaymentCards selectedCompanyData={selectedCompanyData} />
+          <ACHAddPayment setSelectedCompanyData={setSelectedCompanyData} />
         </TabPanel>
       </TabView>
     </div>
