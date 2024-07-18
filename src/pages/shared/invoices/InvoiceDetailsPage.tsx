@@ -2,13 +2,13 @@ import { useState, useEffect, useMemo } from 'react'
 
 import { format, isToday, isYesterday } from 'date-fns'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
-import { GlobalTable } from '../GlobalTable'
-import { HTLoadingLogo } from '../HTLoadingLogo'
 
-export const AllServiceOrdersListPage = () => {
+export const InvoiceDetailsPage = () => {
   const [serviceOrders, setServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const role = roleChecker()
