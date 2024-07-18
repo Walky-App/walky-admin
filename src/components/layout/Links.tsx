@@ -6,6 +6,7 @@ import {
   FaFileInvoiceDollar,
   FaBuilding,
   FaUserGraduate,
+  FaDollarSign,
 } from 'react-icons/fa'
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
@@ -98,6 +99,17 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
         { name: 'All Service Orders', href: '/admin/jobs/service-orders' },
         { name: 'Pending', href: '/admin/jobs/service-orders/pending' },
         { name: 'Authorized', href: '/admin/jobs/service-orders/authorized' },
+      ],
+    },
+    {
+      id: 6.2,
+      name: 'Invoices',
+      href: '/admin/invoices',
+      icon: <FaDollarSign />,
+      subLinks: [
+        { name: 'All Invoices', href: '/admin/invoices' },
+        // { name: 'Pending', href: '/admin/jobs/service-orders/pending' },
+        // { name: 'Authorized', href: '/admin/jobs/service-orders/authorized' },
       ],
     },
     {
