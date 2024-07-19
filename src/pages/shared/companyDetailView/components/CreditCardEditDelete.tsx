@@ -107,36 +107,66 @@ export const CreditCardEditDelete = () => {
               </p>
             </div>
             <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1 md:col-span-2">
-              {paymentMethod.payment_info.method === 'CC' ? (
-                <div className="sm:col-span-3">
-                  <HtInfoTooltip message="A credit card number is a unique identifier assigned to the card.">
-                    <HtInputLabel htmlFor="card_number" asterisk labelText="Card Number" />
-                  </HtInfoTooltip>
-                  <InputText
-                    id="card_number"
-                    value={paymentMethod.payment_info.card_number}
-                    className="mt-2"
-                    disabled
-                  />
-                </div>
-              ) : null}
-
-              {paymentMethod.payment_info.type === 'ACH' || paymentMethod.payment_info.type === 'ECheck' ? (
+              {paymentMethod.payment_method === 'CC' ? (
                 <>
                   <div className="sm:col-span-3">
-                    <HtInfoTooltip message="Name of the bank.">
-                      <HtInputLabel htmlFor="bank_name" asterisk labelText="Bank Name" />
+                    <HtInfoTooltip message="A credit card number is a unique identifier assigned to the card.">
+                      <HtInputLabel htmlFor="card_number" asterisk labelText="Card Number" />
                     </HtInfoTooltip>
-                    <InputText id="bank_name" value={paymentMethod.payment_info.bank_name} className="mt-2" readOnly />
+                    <InputText
+                      id="card_number"
+                      value={paymentMethod.payment_info.card_number}
+                      className="mt-2"
+                      disabled
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <HtInfoTooltip message="Reference name for the card in the application.">
+                      <HtInputLabel htmlFor="card_name" asterisk labelText="Card Name" />
+                    </HtInfoTooltip>
+                    <InputText id="card_name" value={paymentMethod.payment_info.card_name} className="mt-2" readOnly />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <HtInfoTooltip message="Provide billing address.">
+                      <HtInputLabel htmlFor="address" asterisk labelText="Billing Address" />
+                    </HtInfoTooltip>
+                    <InputText id="address" value={paymentMethod.payment_info.address} className="mt-2" readOnly />
+                  </div>
+                </>
+              ) : null}
+
+              {paymentMethod.payment_method === 'ACH' ? (
+                <>
+                  <div className="sm:col-span-3">
+                    <HtInfoTooltip message="The routing number is a nine-digit number that identifies the bank.">
+                      <HtInputLabel htmlFor="ach_account_name" asterisk labelText="Account Name" />
+                    </HtInfoTooltip>
+                    <InputText
+                      id="ach_account_name"
+                      value={paymentMethod.payment_info.ach_account_name}
+                      className="mt-2"
+                      readOnly
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <HtInfoTooltip message="Name of the bank.">
+                      <HtInputLabel htmlFor="ach_bank_name" asterisk labelText="Bank Name" />
+                    </HtInfoTooltip>
+                    <InputText
+                      id="ach_bank_name"
+                      value={paymentMethod.payment_info.ach_bank_name}
+                      className="mt-2"
+                      readOnly
+                    />
                   </div>
 
                   <div className="sm:col-span-3">
                     <HtInfoTooltip message="The account number is the unique identifier for the bank account.">
-                      <HtInputLabel htmlFor="account_number" asterisk labelText="Account Number" />
+                      <HtInputLabel htmlFor="ach_account_number" asterisk labelText="Account Number" />
                     </HtInfoTooltip>
                     <InputText
-                      id="account_number"
-                      value={paymentMethod.payment_info.account_number}
+                      id="ach_account_number"
+                      value={paymentMethod.payment_info.ach_account_number}
                       className="mt-2"
                       readOnly
                     />
@@ -147,28 +177,14 @@ export const CreditCardEditDelete = () => {
                       <HtInputLabel htmlFor="routing_number" asterisk labelText="Routing Number" />
                     </HtInfoTooltip>
                     <InputText
-                      id="routing_number"
-                      value={paymentMethod.payment_info.routing_number}
+                      id="ach_routing_number"
+                      value={paymentMethod.payment_info.ach_routing_number}
                       className="mt-2"
                       readOnly
                     />
                   </div>
                 </>
               ) : null}
-
-              <div className="sm:col-span-3">
-                <HtInfoTooltip message="Reference name for the card in the application.">
-                  <HtInputLabel htmlFor="card_name" asterisk labelText="Card Name" />
-                </HtInfoTooltip>
-                <InputText id="card_name" value={paymentMethod.payment_info.card_name} className="mt-2" readOnly />
-              </div>
-
-              <div className="sm:col-span-3">
-                <HtInfoTooltip message="Provide billing address.">
-                  <HtInputLabel htmlFor="address" asterisk labelText="Billing Address" />
-                </HtInfoTooltip>
-                <InputText id="address" value={paymentMethod.payment_info.address} className="mt-2" readOnly />
-              </div>
 
               <div className="sm:col-span-3">
                 <HtInfoTooltip message="All facilities related to this company which will be using this payment method to list jobs">

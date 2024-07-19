@@ -34,10 +34,11 @@ export interface IPaymentInfo {
   card_number?: string
   expiration_date?: string
   method?: string
-  bank_name?: string
+  ach_bank_name?: string
+  ach_account_name?: string
   card_name: string
-  account_number?: string
-  routing_number?: string
+  ach_account_number?: string
+  ach_routing_number?: string
   created_by?: string
   facilities?: string[]
 }
@@ -239,7 +240,7 @@ export const CreditCardView = ({
               <div className="sm:col-span-3">
                 <Controller
                   control={control}
-                  name="bank_name"
+                  name="ach_bank_name"
                   rules={{ required: 'Bank Name is required' }}
                   render={({ field, fieldState }) => (
                     <>
@@ -258,7 +259,7 @@ export const CreditCardView = ({
 
                 <Controller
                   control={control}
-                  name="account_number"
+                  name="ach_account_number"
                   rules={{ required: 'Account Number is required' }}
                   render={({ field, fieldState }) => (
                     <>
@@ -277,7 +278,7 @@ export const CreditCardView = ({
 
                 <Controller
                   control={control}
-                  name="routing_number"
+                  name="ach_routing_number"
                   rules={{ required: 'Routing Number is required' }}
                   render={({ field, fieldState }) => (
                     <>
