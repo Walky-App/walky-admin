@@ -49,17 +49,34 @@ export const AllServiceOrdersListPage = () => {
 
   const memoServiceOrdersColumns = useMemo(
     () => [
-      { Header: 'Status', accessor: 'status' },
+      {
+        Header: 'Status',
+        accessor: (row: IServiceOrder) => {
+          if (row.status === 'authorized') {
+            return 'Authorized / Published'
+          } else if (row.status === 'pending_select_payment') {
+            return 'Pending / Needs Authorization'
+          } else {
+            return row.status
+          }
+        },
+        id: 'status',
+      },
       { Header: 'SO_UID', accessor: 'uid' },
-      { Header: 'Company Name', accessor: 'company_id.company_name' },
-      { Header: 'Job Title', accessor: 'job_id.title' },
-      { Header: 'Job UID', accessor: 'job_id.uid' },
       {
         Header: 'Created',
         width: 200,
         accessor: (a: IServiceOrder) => {
           return isToday(a.createdAt) ? 'Today ⭐️' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
         },
+      },
+      { Header: 'Company Name', accessor: 'company_id.company_name' },
+      { Header: 'Job Title', accessor: 'job_id.title' },
+      { Header: 'Job UID', accessor: 'job_id.uid' },
+      {
+        Header: 'Job has ended?',
+        accessor: (row: IServiceOrder) => (row.job_id.is_completed ? 'Yes' : 'No'),
+        id: 'is_completed',
       },
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },
