@@ -4,6 +4,7 @@ import { format, isToday, isYesterday } from 'date-fns'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
+import { type ICompany } from '../../../interfaces/company'
 import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -11,6 +12,10 @@ import { useUtils } from '../../../store/useUtils'
 interface IRow {
   row: { original: IFacility }
   value: string
+}
+
+interface IFacilityWithPaymentInfo {
+  company_id: ICompany
 }
 
 const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
@@ -71,6 +76,11 @@ export const AdminFacilities = () => {
       },
     },
     { Header: 'Address', accessor: 'address', width: '300px' },
+    {
+      Header: 'Payment Methods',
+      accessor: (row: IFacilityWithPaymentInfo) => row.company_id?.payment_information?.length ?? 0,
+      width: '300px',
+    },
     { Header: 'State', accessor: 'state', width: '10px' },
     {
       Header: 'Polygon',
