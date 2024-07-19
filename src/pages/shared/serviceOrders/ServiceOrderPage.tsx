@@ -46,7 +46,7 @@ export const ServiceOrderPage = () => {
         const fetchedData = await response.json()
         setServiceOrderData(fetchedData.service_order)
         setPaymentMethods(fetchedData.payments_methods)
-        setACHPaymentDetails(fetchedData.ach_payment.payment_info)
+        setACHPaymentDetails(fetchedData.ach_payment)
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching service order data:', error)
@@ -57,7 +57,7 @@ export const ServiceOrderPage = () => {
   }, [serviceOrderId])
 
   useEffect(() => {
-    const defaultPaymentMethod = paymentMethods?.find(method => method.isDefault)
+    const defaultPaymentMethod = paymentMethods?.find(method => method.is_default)
     if (defaultPaymentMethod) {
       setSelectedCard({
         payment_profile_id: defaultPaymentMethod._id,
@@ -245,46 +245,49 @@ export const ServiceOrderPage = () => {
           </tbody>
           <div className="mt-2 flex">
             {serviceOrder?.status === 'pending_select_payment' && paymentMethods !== undefined ? (
-              <>
-                <Dropdown
-                  value={selectedCard}
-                  options={paymentMethods?.map(method => ({
-                    label: method.card_name + ' ' + method.card_number,
-                    value: { payment_profile_id: method._id, card_number: method.card_number },
-                  }))}
-                  onChange={e => {
-                    setSelectedCard(e.value)
-                  }}
-                  placeholder="Select a Credit Card"
-                />
+              <div className="flex flex-col">
+                <div>
+                  <Dropdown
+                    value={selectedCard}
+                    options={paymentMethods?.map(method => ({
+                      label: method.card_name + ' ' + method.card_number,
+                      value: { payment_profile_id: method._id, card_number: method.card_number },
+                    }))}
+                    onChange={e => {
+                      setSelectedCard(e.value)
+                    }}
+                    placeholder="Select a Credit Card"
+                  />
 
-                <Button label="Authorize Hold On Card" onClick={handleAuthorizePayment} />
+                  <Button label="Authorize Hold On Card" onClick={handleAuthorizePayment} />
+                </div>
                 <HtInputHelpText
                   fieldName="Authorize"
                   helpText="We will put a hold on your card for the total amount of the service order similar to a hotel reservation."
                 />
-              </>
+              </div>
             ) : serviceOrder?.status === 'pending_select_payment' &&
               paymentMethods === undefined &&
               achPaymentDetails !== null ? (
-              <>
+              <div className="flex flex-col space-y-4">
                 <div>
-                  <h2 className="text-lg font-semibold">ACH Payment Details</h2>
-                  <p>
-                    Your default ACH payment method is set to
-                    <span className="font-semibold">{achPaymentDetails.ach_account_name}</span>
-                    <span className="font-semibold">{achPaymentDetails.ach_account_number}</span>
-                    <span className="font-semibold">{achPaymentDetails.ach_bank_name}</span>
-                    <span className="font-semibold">{achPaymentDetails.ach_routing_number}</span>
+                  <h2 className="text-xl font-bold">ACH Payment Details</h2>
+                  <p className="text-base">
+                    Your default ACH payment method is set to:
+                    <span className="block font-medium">Account Name: {achPaymentDetails?.ach_account_name}</span>
+                    <span className="block font-medium">Account Number: {achPaymentDetails?.ach_account_number}</span>
+                    <span className="block font-medium">Bank Name: {achPaymentDetails?.ach_bank_name}</span>
+                    <span className="block font-medium">Routing Number: {achPaymentDetails?.ach_routing_number}</span>
                   </p>
                 </div>
 
                 <Button label="Authorize ACH Transfer" onClick={handleAuthorizeACHTransfer} />
+
                 <HtInputHelpText
                   fieldName="Authorize"
                   helpText="We will process the payment for this service order via your default ACH payment method."
                 />
-              </>
+              </div>
             ) : serviceOrder?.status === 'authorized' && achPaymentDetails !== null && paymentMethods === undefined ? (
               <div>
                 <h2 className="text-lg font-semibold">Payment Authorization Successful</h2>
@@ -292,16 +295,16 @@ export const ServiceOrderPage = () => {
                   The payment has been authorized using the following ACH account details:
                   <ul>
                     <li>
-                      <strong>Account Name:</strong> {achPaymentDetails.ach_account_name}
+                      <strong>Account Name:</strong> {achPaymentDetails?.ach_account_name}
                     </li>
                     <li>
-                      <strong>Account Number:</strong> {achPaymentDetails.ach_account_number}
+                      <strong>Account Number:</strong> {achPaymentDetails?.ach_account_number}
                     </li>
                     <li>
-                      <strong>Bank Name:</strong> {achPaymentDetails.ach_bank_name}
+                      <strong>Bank Name:</strong> {achPaymentDetails?.ach_bank_name}
                     </li>
                     <li>
-                      <strong>Routing Number:</strong> {achPaymentDetails.ach_routing_number}
+                      <strong>Routing Number:</strong> {achPaymentDetails?.ach_routing_number}
                     </li>
                   </ul>
                 </p>

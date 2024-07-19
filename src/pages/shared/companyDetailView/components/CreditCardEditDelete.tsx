@@ -62,7 +62,7 @@ export const CreditCardEditDelete = () => {
     }
 
     getAllFacilities()
-  }, [id])
+  }, [id, paymentMethod])
 
   const handleDeletePaymentMethod = async () => {
     try {
@@ -96,6 +96,8 @@ export const CreditCardEditDelete = () => {
       if (!response.ok) {
         throw new Error('Failed to set payment method as default')
       }
+      const responseData = await response.json()
+      setPaymentMethod(responseData)
     } catch (error) {
       console.error('Error setting default payment method: ', error)
     }
