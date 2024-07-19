@@ -29,7 +29,7 @@ export const AdminFacilities = () => {
   useEffect(() => {
     const getFacilities = async () => {
       try {
-        const response = await requestService({ path: 'facilities' })
+        const response = await requestService({ path: 'facilities/with-company-info' })
 
         if (response.ok) {
           const data = await response.json()
