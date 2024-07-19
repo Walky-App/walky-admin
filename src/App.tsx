@@ -72,6 +72,7 @@ import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
 import { AdminJobs } from './pages/admin/jobs'
+import { JobDetailViewAdmin } from './pages/admin/jobs/JobDetailViewAdmin'
 
 import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
 import { AdminCompanyListPage } from './pages/admin/companies/AdminCompanyListPage'
@@ -220,7 +221,7 @@ export const App = () => {
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
                   <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
-                  <Route element={<JobDetailView />} path="/admin/jobs/:id" />
+                  <Route element={<JobDetailViewAdmin />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/:serviceOrderId" />
