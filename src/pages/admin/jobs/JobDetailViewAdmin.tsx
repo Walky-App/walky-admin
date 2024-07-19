@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
+import { format } from 'date-fns'
+import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
@@ -12,26 +14,20 @@ import { type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { roleChecker } from '../../../utils/roleChecker'
-import { formatToLocalTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
-import { JobDetailBottomComponents } from './BottomComponents'
-import { ShiftsTable } from './ShiftsTable'
-import { SideRightCard } from './SideRightCard'
+import { JobDetailBottomAdmin } from './components/JobDetailBottomAdmin'
+import { ShiftsTableAdmin } from './components/JobDetailShiftsTableAdmin'
 
-export const JobDetailView = () => {
+export const JobDetailViewAdmin = () => {
   const [job, setJob] = useState<IJob | null>(null)
-  const [userWorkingInThisJob, setUserWorkingInThisJob] = useState<boolean>(false)
   const [, setIsLoading] = useState(true)
-  const [, setHasDateIntersection] = useState(false)
-  const [jobHasEnded, setJobHasEnded] = useState(false)
-  const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
-  const [employeeActive, setEmployeeActive] = useState<boolean>(true)
+  // const [, setHasDateIntersection] = useState(false)
+  const [, setJobHasEnded] = useState(false)
+  const [timesheets] = useState<ITimeSheet[] | null>(null)
 
   const { id } = useParams()
   const user = GetTokenInfo()
   const { showToast } = useUtils()
-  const role = roleChecker()
 
   let earliestDate, latestDate
 
@@ -44,34 +40,15 @@ export const JobDetailView = () => {
     const getJob = async () => {
       try {
         const response = await requestService({ path: `jobs/${id}` })
-
         if (response.ok) {
           const job = await response.json()
-          const handleIsUserWorkingThisJob = () => {
-            return job?.job_days.some((day: IJobShiftDay) =>
-              day?.shifts_id?.user_shifts?.some(shift => shift.user_id._id === user._id),
-            )
-          }
           getShiftIdForToday(job.job_days)
-          setUserWorkingInThisJob(handleIsUserWorkingThisJob() || false)
           setJob(job)
-
-          const user_active = await requestService({ path: `users/${user._id}` })
-          if (user_active.ok) {
-            const user_data = await user_active.json()
-
-            if (user_data.active && user_data.is_approved === false) {
-              setEmployeeActive(false)
-            } else {
-              setEmployeeActive(true)
-            }
-          }
         }
       } catch (error) {
         console.error('Failed to fetch job:', error)
         showToast({ severity: 'error', summary: 'Error', detail: 'Failed to fetch job' })
       } finally {
-        //@ts-ignore
         setIsLoading(false)
       }
     }
@@ -117,31 +94,65 @@ export const JobDetailView = () => {
     return { isTodayShift: false, message: 'No shifts available.' }
   }
 
+  const handleJobStatus = async (summary: string, detail: string) => {
+    try {
+      const requestData = { is_active: !job?.is_active, is_completed: !job?.is_completed }
+      const response = await requestService({
+        path: `jobs/${job?._id}/status`,
+        method: 'PATCH',
+        body: JSON.stringify(requestData),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setJob(data)
+        setJobHasEnded(!data.is_active)
+        showToast({ severity: 'success', summary: summary, detail: detail })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <div>
       {/* <BreadCrumbs/> */}
       <HeadingComponent title="Job Details" />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div>
         {job ? (
           <>
-            <div className="order-2 col-span-1 md:order-1 md:col-span-3">
+            <div>
               <Card
-                className="md:p-6"
+                className="p-4"
                 title={
-                  <>
-                    <div className="flex items-center">
-                      <i className="pi pi-users" />
-                      <div className="mb-2 ml-1 mt-2 text-sm text-stone-500">
-                        {job.job_days.length * job.vacancy} Shifts
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center">
+                        <i className="pi pi-users" />
+                        <div className="mb-2 ml-1 mt-2 text-sm text-stone-500">{job.vacancy} Shifts per Day</div>
                       </div>
+                      #{job.uid} / {job.is_active ? 'Active' : 'Closed'}
                     </div>
-                    {userWorkingInThisJob || role === 'admin' ? job.title : null} #{job.uid}
-                  </>
+                    <div>
+                      {!job?.is_active ? (
+                        <Button
+                          label="Reopen Job"
+                          severity="secondary"
+                          onClick={() => handleJobStatus('Job Reopened', 'Job has been reopened')}
+                        />
+                      ) : (
+                        <Button
+                          label="Close Job"
+                          severity="danger"
+                          onClick={() => handleJobStatus('Job Closed', 'Job has been closed')}
+                        />
+                      )}
+                    </div>
+                  </div>
                 }>
-                {/* Job Facility */}
                 <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex">
-                    {userWorkingInThisJob || (role === 'admin' && job.facility?.main_image) ? (
+                    {job.facility?.main_image !== null && job.facility?.main_image !== '' ? (
                       <div className="max-w-screen-xl">
                         <img
                           className="mb-2 mr-8 h-32 w-32 flex-none rounded-lg bg-gray-50 object-cover"
@@ -150,27 +161,21 @@ export const JobDetailView = () => {
                         />
                       </div>
                     ) : null}
-
                     <div className="align-center flex flex-col items-start justify-start gap-1">
-                      {userWorkingInThisJob || role === 'admin' ? (
-                        <>
-                          <div className="flex items-center text-2xl font-bold">{job.title}</div>
-                          <div className="flex items-center">
-                            <i className="pi pi-building" />
-                            <h2 className="ml-2 text-xl ">{job.facility.name}</h2>
-                          </div>
-
-                          <div className="flex items-center">
-                            <i className="pi pi-directions" />
-                            <a
-                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.facility.address)}`}
-                              target="_blank"
-                              rel="noopener noreferrer">
-                              <div className="ml-2 text-xl underline">{job.facility.address}</div>
-                            </a>
-                          </div>
-                        </>
-                      ) : null}
+                      <div className="flex items-center text-2xl font-bold">{job.title}</div>
+                      <div className="flex items-center">
+                        <i className="pi pi-building" />
+                        <h2 className="ml-2 text-xl ">{job.facility.name}</h2>
+                      </div>
+                      <div className="flex items-center">
+                        <i className="pi pi-directions" />
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.facility.address)}`}
+                          target="_blank"
+                          rel="noopener noreferrer">
+                          <div className="ml-2 text-xl underline">{job.facility.address}</div>
+                        </a>
+                      </div>
                       <div className="flex items-center">
                         <i className="pi pi-map-marker" />
                         <div className="ml-2 text-xl">
@@ -201,7 +206,7 @@ export const JobDetailView = () => {
                   <div className="mt-0.5 flex items-center gap-2">
                     {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                     <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
-                    {userWorkingInThisJob || (role === 'admin' && job.facility?.notes) ? (
+                    {job.facility?.notes !== null && job.facility?.notes !== undefined ? (
                       <>
                         <i className="pi pi-info-circle" />
                         <span className="text-base font-medium text-black">
@@ -209,7 +214,7 @@ export const JobDetailView = () => {
                         </span>
                       </>
                     ) : null}
-                    {userWorkingInThisJob || (role === 'admin' && job.job_tips.length > 0) ? (
+                    {job.job_tips.length > 0 ? (
                       <>
                         <i className="pi pi-info-circle" />
                         <span className="text-base font-medium text-black">Job Tips:</span>
@@ -232,7 +237,7 @@ export const JobDetailView = () => {
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Start / End Time</div>
-                    {formatToLocalTime(job.start_time)} &nbsp; - &nbsp; {formatToLocalTime(job.end_time)}
+                    {format(job.start_time, 'p')} &nbsp; - &nbsp; {format(job.end_time, 'p')}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Lunch Breaks</div>
@@ -247,28 +252,10 @@ export const JobDetailView = () => {
                     <strong>{job.hourly_rate || 0} USD / hour</strong>
                   </div>
                 </div>
-                <ShiftsTable
-                  job={job}
-                  setJob={setJob}
-                  user={user}
-                  setHasDateIntersection={setHasDateIntersection}
-                  jobHasEnded={jobHasEnded}
-                  setUserWorkingInThisJob={setUserWorkingInThisJob}
-                  employeeActive={employeeActive}
-                />
+                <ShiftsTableAdmin job={job} setJob={setJob} />
               </Card>
-              <JobDetailBottomComponents timesheets={timesheets} job={job} />
+              <JobDetailBottomAdmin timesheets={timesheets} job={job} />
             </div>
-            <SideRightCard
-              role={role}
-              user={user}
-              timesheets={timesheets}
-              setTimesheets={setTimesheets}
-              job={job}
-              jobHasEnded={jobHasEnded}
-              setJobHasEnded={setJobHasEnded}
-              userWorkingInThisJob={userWorkingInThisJob}
-            />
 
             {/* <div className="col-span-1 md:col-span-1">
               <div className="flew-row flex md:flex-col">
