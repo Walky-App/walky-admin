@@ -50,10 +50,11 @@ export const AuthorizedServiceOrdersListPage = () => {
   const memoServiceOrdersColumns = useMemo(
     () => [
       { Header: 'Status', accessor: 'status' },
-      { Header: 'UID', accessor: 'uid' },
+      { Header: 'SO_UID', accessor: 'uid' },
       { Header: 'Transaction ID', accessor: 'transaction_id' },
       { Header: 'Company Name', accessor: 'company_id.company_name' },
       { Header: 'Job Title', accessor: 'job_id.title' },
+      { Header: 'Job UID', accessor: 'job_id.uid' },
 
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },

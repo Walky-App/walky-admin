@@ -314,7 +314,9 @@ export const ServiceOrderPage = () => {
         </table>
         <div className="mt-12 flex">
           <div className="text-lg sm:flex-auto">
-            <h2 className="mt-2 font-bold ">For {serviceOrder?.job_id.title} job on:</h2>
+            <h2 className="mt-2 font-bold ">
+              For {serviceOrder?.job_id.title} job #{serviceOrder?.job_id.uid} on:
+            </h2>
             <ul>
               {serviceOrder?.job_id.job_dates.map(date => (
                 <li key={date} className="mt-4">
