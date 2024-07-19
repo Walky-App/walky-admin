@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
+import { Chip } from 'primereact/chip'
 import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
@@ -83,6 +84,20 @@ export const CreditCardEditDelete = () => {
     } catch (error) {
       console.error(error)
       showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting payment method' })
+    }
+  }
+
+  const setDefaultPayment = async () => {
+    try {
+      const response = await requestService({
+        path: `companies/${id}/payment/${paymentId}/set-as-default`,
+        method: 'POST',
+      })
+      if (!response.ok) {
+        throw new Error('Failed to set payment method as default')
+      }
+    } catch (error) {
+      console.error('Error setting default payment method: ', error)
     }
   }
 
@@ -207,6 +222,12 @@ export const CreditCardEditDelete = () => {
                   helpText="All facilities using this payment method as primary."
                 />
               </div>
+
+              {paymentMethod.is_default === true ? (
+                <Chip className="ml-2" label="Default Payment Method" icon="pi pi-check" />
+              ) : (
+                <Button label="Set as Default" severity="secondary" text raised onClick={setDefaultPayment} />
+              )}
             </div>
           </div>
         </div>
