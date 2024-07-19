@@ -18,6 +18,7 @@ interface IHtFileUploadProps {
   maxFileSize?: number
   mode?: 'basic' | 'advanced'
   emptyUploaderTemplate?: React.ReactNode
+  disabled?: boolean
   onUploadSuccess?: () => void
 }
 
@@ -39,6 +40,7 @@ export const HtFileUpload = ({
   maxFileSize = 5242880,
   mode = 'advanced',
   emptyUploaderTemplate = defaultEmptyTemplate,
+  disabled = false,
   onUploadSuccess,
 }: IHtFileUploadProps) => {
   const fileUploadRef = useRef<FileUpload>(null)
@@ -133,6 +135,7 @@ export const HtFileUpload = ({
       onUpload={event => handleUploadSuccess(event, onUploadSuccess)}
       onError={event => handleUploadError(event, fileUploadRef)}
       emptyTemplate={emptyUploaderTemplate}
+      disabled={disabled}
       previewWidth={200}
       pt={{ actions: { className: 'hidden' } }}
     />
