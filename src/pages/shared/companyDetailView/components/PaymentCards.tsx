@@ -83,8 +83,8 @@ export const PaymentCards = ({ selectedCompanyData }: { selectedCompanyData: ICo
           subTitle = `${payment.payment_info?.card_number ?? ''}`
           cardHeader = createHeader(cardIcon)
         } else {
-          title = `Account **** ${payment.payment_info?.account_number?.slice(-4) ?? ''}`
-          subTitle = `${payment.payment_info?.bank_name}`
+          title = `ACH Account **** ${payment.payment_info?.ach_account_number?.slice(-4) ?? ''}`
+          subTitle = `${payment.payment_info?.ach_bank_name}`
           cardHeader = createHeader(getCardIcon(payment.payment_info?.type))
         }
         return (
@@ -94,7 +94,7 @@ export const PaymentCards = ({ selectedCompanyData }: { selectedCompanyData: ICo
             title={
               <div className="align-center">
                 {title}
-                {payment?.payment_info.isDefault === true ? <Chip label="Default" icon="pi pi-check" /> : null}{' '}
+                {payment?.is_default === true ? <Chip className="ml-2" label="Default" icon="pi pi-check" /> : null}
               </div>
             }
             subTitle={<div className="align-center">{subTitle}</div>}
