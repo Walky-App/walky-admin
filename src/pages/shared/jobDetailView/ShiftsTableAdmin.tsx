@@ -13,9 +13,10 @@ import { EmployeeOptions } from './EmployeeOptions'
 interface IShiftTableAdminProps {
   job: IJob
   setJob: Dispatch<SetStateAction<IJob | null>>
+  setJobHasEnded: Dispatch<SetStateAction<boolean>>
 }
 
-export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
+export const ShiftsTableAdmin = ({ job, setJob, setJobHasEnded }: IShiftTableAdminProps) => {
   const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
   const { showToast } = useUtils()
 
@@ -122,11 +123,16 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
     }
   }
 
-  const handleJobStatus = async (is_active: boolean, summary: string, detail: string) => {
+  const handleJobStatus = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    summary: string,
+    detail: string,
+  ) => {
+    // e.preventDefault()
     try {
-      const requestData = { is_active: is_active }
+      const requestData = { is_active: !job.is_active, is_completed: !job.is_completed }
       const response = await requestService({
-        path: `jobs/${job._id}`,
+        path: `jobs/${job._id}/status`,
         method: 'PATCH',
         body: JSON.stringify(requestData),
       })
@@ -134,6 +140,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
       if (response.ok) {
         const data = await response.json()
         setJob({ ...data })
+        setJobHasEnded(!data.is_active)
         showToast({ severity: 'success', summary: summary, detail: detail })
       }
     } catch (error) {
@@ -184,21 +191,21 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
           )
         })}
       </ol>
-      {!job?.is_active ? (
-        <Button
-          className="w-full"
-          label="Reopen Job"
-          severity="secondary"
-          onClick={() => handleJobStatus(true, 'Job Reopened', 'Job has been reopened')}
-        />
-      ) : (
-        <Button
-          className="w-full"
-          label="Close Job"
-          severity="danger"
-          onClick={() => handleJobStatus(false, 'Job Closed', 'Job has been closed')}
-        />
-      )}
+      <div className="mt-12">
+        {!job?.is_active ? (
+          <Button
+            label="Reopen Job"
+            severity="secondary"
+            onClick={e => handleJobStatus(e, 'Job Reopened', 'Job has been reopened')}
+          />
+        ) : (
+          <Button
+            label="Close Job"
+            severity="danger"
+            onClick={e => handleJobStatus(e, 'Job Closed', 'Job has been reopened')}
+          />
+        )}
+      </div>
     </section>
   )
 }
