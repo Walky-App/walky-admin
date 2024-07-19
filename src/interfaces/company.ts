@@ -8,14 +8,14 @@ export interface IPaymentInfo {
   zip_code: string
   payment_status: 'Active' | 'Inactive' | 'Expired'
   method: 'CC' | 'ACH'
-  bank_name?: string
+  ach_bank_name?: string //check
   holder_name?: string
-  account_number?: string
-  routing_number?: string
+  ach_account_name?: string //check
+  ach_account_number?: string //check
+  ach_routing_number?: string //check
   card_number?: string
   card_name?: string
   expiration_date?: string
-  isDefault?: boolean
   createdAt: string
   updatedAt: string
   __v: number
@@ -25,6 +25,7 @@ export interface IPaymentMethod {
   payment_info: IPaymentInfo
   facilities: string[]
   payment_method: 'CC' | 'ACH'
+  is_default: boolean
 }
 
 export interface ICompanySlim {
