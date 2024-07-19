@@ -171,17 +171,14 @@ export const FacilityDetailsForm = ({
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
             <div className="sm:col-span-3">
-              <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions.">
-                <HtInputLabel htmlFor="tax-id" labelText="Tax ID" />
+              <HtInfoTooltip message="Primary state or city license number for this facility.">
+                <HtInputLabel htmlFor="license_number" labelText="License Number" />
               </HtInfoTooltip>
-              <InputMask
-                value={formData.tax_id}
-                name="tax_id"
-                onChange={handleFormUpdateNumber}
-                placeholder="xx-xxxxxxx"
-                id="tax-id"
-                mask="99-9999999"
-                slotChar="x"
+              <InputText
+                value={formData.license_number}
+                id="license_number"
+                name="license_number"
+                onChange={handleFormUpdate}
                 autoComplete="off"
                 className="w-full"
               />

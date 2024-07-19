@@ -33,6 +33,7 @@ export interface IFacility {
   company_id: string
   name: string
   tax_id?: string
+  license_number?: string
   phone_number: string
   timezone: string
   contacts: IFacilityContact[]

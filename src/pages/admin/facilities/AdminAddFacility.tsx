@@ -33,7 +33,7 @@ const defaultFacilityFormValues: IFacility = {
   state: '',
   zip: '',
   location_pin: [],
-  tax_id: '',
+  license_number: '',
   phone_number: '',
   notes: '',
   active: false,
@@ -162,7 +162,11 @@ export const AdminAddFacility = () => {
       } else {
         const errorData = await response.json()
         console.error('Failed to create the facility.', errorData.message)
-        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to add facility' })
+        showToast({
+          severity: 'error',
+          summary: 'Error',
+          detail: `Failed to add facility. ${errorData?.error?.keyPattern?.address === 1 ? 'Check facility address' : null}`,
+        })
       }
     } catch (error) {
       console.error('Error occurred while creating facility:', error)
@@ -197,7 +201,7 @@ export const AdminAddFacility = () => {
       setFormData(prevState => ({
         ...prevState,
         name: '',
-        tax_id: '',
+        license_number: '',
         phone_number: '',
         address: '',
         city: '',
@@ -320,19 +324,15 @@ export const AdminAddFacility = () => {
 
                   <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
                     <div className="sm:col-span-3">
-                      <HtInfoTooltip message="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes. It helps government authorities track financial activities, ensure accurate tax reporting, and maintain transparency in financial transactions.">
-                        <HtInputLabel htmlFor="tax-id" labelText="Tax ID" />
+                      <HtInfoTooltip message="Primary state or city license number for this facility.">
+                        <HtInputLabel htmlFor="license_number" labelText="License Number" />
                       </HtInfoTooltip>
-                      <InputMask
-                        value={formData.tax_id}
-                        name="tax_id"
-                        onChange={handleFormUpdateNumber}
-                        placeholder="xx-xxxxxxx"
-                        id="tax-id"
-                        mask="99-9999999"
-                        slotChar="x"
+                      <InputText
+                        value={formData.license_number}
+                        id="license_number"
+                        name="license_number"
+                        onChange={handleFormUpdate}
                         autoComplete="off"
-                        disabled={checked}
                       />
                     </div>
 

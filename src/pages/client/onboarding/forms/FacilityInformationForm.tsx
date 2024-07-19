@@ -94,7 +94,6 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
   useEffect(() => {
     const isSameAsCompany =
       formData.name === formData.company_name &&
-      formData.tax_id === formData.company_tax_id &&
       formData.phone_number === formData.company_phone_number &&
       formData.address === formData.company_address &&
       formData.city === formData.company_city &&
@@ -114,21 +113,18 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
     formData.company_name,
     formData.company_phone_number,
     formData.company_state,
-    formData.company_tax_id,
     formData.company_zip,
     formData.country,
     formData.location_pin,
     formData.name,
     formData.phone_number,
     formData.state,
-    formData.tax_id,
     formData.zip,
   ])
 
   useLayoutEffect(() => {
     if (checked) {
       setValue('name', formData?.company_name)
-      setValue('tax_id', formData?.company_tax_id)
       setValue('phone_number', formData?.company_phone_number)
       setValue('address', formData?.company_address)
       setValue('city', formData?.company_city)
@@ -138,7 +134,6 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
       setValue('location_pin', formData?.company_location_pin)
     } else {
       setValue('name', formData?.name)
-      setValue('tax_id', formData?.tax_id)
       setValue('phone_number', formData?.phone_number)
       setValue('address', formData?.address)
       setValue('city', formData?.city)
@@ -155,7 +150,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
     const facilityData: IFacility = {
       ...formData,
       name: data.name,
-      tax_id: data.tax_id,
+      license_number: data.license_number,
       phone_number: data.phone_number,
       sqft: data.sqft,
       services: data.services,
@@ -321,20 +316,17 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
             <div className="sm:col-span-3">
               <Controller
                 control={control}
-                name="tax_id"
+                name="license_number"
                 render={({ field, fieldState }) => (
                   <>
-                    <HtInfoTooltip message="A Tax Identification Number (TIN) is a unique identifier assigned to individuals and businesses for tax purposes.">
-                      <HtInputLabel htmlFor={field.name} labelText="Tax ID" />
+                    <HtInfoTooltip message="Primary state or city license number for this facility.">
+                      <HtInputLabel htmlFor={field.name} labelText="License Number" />
                     </HtInfoTooltip>
-                    <InputMask
+                    <InputText
                       id={field.name}
                       {...field}
-                      mask="99-9999999"
-                      slotChar="x"
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
-                      disabled={checked}
                     />
                     {getFormErrorMessage(field.name, errors)}
                   </>
