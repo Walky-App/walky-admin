@@ -1,3 +1,10 @@
+export interface ICompanyDocument {
+  id: number
+  url: string
+  key: string
+  timestamp: string
+}
+
 export interface IPaymentInfo {
   _id: string
   type: 'CC' | 'ACH'
@@ -46,6 +53,7 @@ export interface ICompany {
   company_city: string
   company_state: string
   company_zip: string
+  company_documents?: ICompanyDocument[]
   facilities: string[]
   users: string[]
   createdAt?: string
