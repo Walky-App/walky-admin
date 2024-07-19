@@ -263,7 +263,7 @@ export const ServiceOrderPage = () => {
                 </div>
                 <HtInputHelpText
                   fieldName="Authorize"
-                  helpText="We will put a hold on your card for the total amount of the service order similar to a hotel reservation."
+                  helpText="This button will authorize a hold for the total amount on your credit card. Once the services are rendered and timesheets are reconciled, you will be billed against this hold. More definitions can be found under 'Terms and Conditions.'"
                 />
               </div>
             ) : serviceOrder?.status === 'pending_select_payment' &&
