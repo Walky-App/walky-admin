@@ -45,7 +45,7 @@ export const ServiceOrderPage = () => {
         }
         const fetchedData = await response.json()
         setServiceOrderData(fetchedData.service_order)
-        setPaymentMethods(fetchedData.payments_methods)
+        setPaymentMethods(fetchedData?.payments_methods)
         setACHPaymentDetails(fetchedData.ach_payment)
         setIsLoading(false)
       } catch (error) {
@@ -288,7 +288,7 @@ export const ServiceOrderPage = () => {
                   helpText="We will process the payment for this service order via your default ACH payment method."
                 />
               </div>
-            ) : serviceOrder?.status === 'authorized' && achPaymentDetails !== null && paymentMethods === undefined ? (
+            ) : serviceOrder?.status === 'authorized' && achPaymentDetails && paymentMethods === undefined ? (
               <div>
                 <h2 className="text-lg font-semibold">Payment Authorization Successful</h2>
                 <p>
