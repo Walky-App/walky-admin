@@ -7,10 +7,18 @@ import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+
+interface AchPaymentDetails {
+  ach_account_name: string
+  ach_account_number: string
+  ach_bank_name: string
+  ach_routing_number: string
+}
 
 interface SelectedCard {
   payment_profile_id: string
@@ -21,6 +29,7 @@ export const ServiceOrderPage = () => {
   const [selectedCard, setSelectedCard] = useState<SelectedCard | null>(null)
   const [serviceOrder, setServiceOrderData] = useState<IServiceOrder | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[] | null>(null)
+  const [achPaymentDetails, setACHPaymentDetails] = useState<AchPaymentDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const serviceOrderId = useParams().serviceOrderId
   const { showToast } = useUtils()
@@ -37,6 +46,7 @@ export const ServiceOrderPage = () => {
         const fetchedData = await response.json()
         setServiceOrderData(fetchedData.service_order)
         setPaymentMethods(fetchedData.payments_methods)
+        setACHPaymentDetails(fetchedData.ach_payment.payment_info)
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching service order data:', error)
@@ -82,6 +92,31 @@ export const ServiceOrderPage = () => {
       const errorMessage = error instanceof Error ? error.message : error
       console.error('Error authorizing payment:', errorMessage)
       showToast({ severity: 'error', summary: 'Error', detail: 'Failed to authorize payment' })
+    }
+  }
+
+  const handleAuthorizeACHTransfer = async () => {
+    try {
+      const response = await requestService({
+        path: `jobs/authorize-ach/${serviceOrderId}`,
+        method: 'PATCH',
+      })
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message)
+      }
+      showToast({
+        severity: 'success',
+        summary: 'Success',
+        detail: `ACH Transfer for $${serviceOrder?.details.total_cost} authorized successfully`,
+      })
+      setTimeout(() => {
+        navigate(role === 'admin' ? `/admin/jobs/service-orders` : `/client/jobs/service-orders`)
+      }, 3000)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : error
+      console.error('Error authorizing payment:', errorMessage)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Failed to authorize ACH Transfer' })
     }
   }
 
@@ -152,9 +187,7 @@ export const ServiceOrderPage = () => {
                   {statusDisplayText[serviceOrder?.status as keyof typeof statusDisplayText] || serviceOrder?.status}
                 </td>
                 <td className="border border-gray-300 p-4">
-                  {serviceOrder?.transaction_id != null ? (
-                    <h3 className="text-base font-semibold leading-6">{serviceOrder?.facility_id.name}</h3>
-                  ) : null}
+                  <h3 className="text-base font-semibold leading-6">{serviceOrder?.facility_id.name}</h3>
                 </td>
                 <td className="border border-gray-300 p-4">{serviceOrder?.facility_id.address}</td>
               </tr>
@@ -211,7 +244,7 @@ export const ServiceOrderPage = () => {
             </tr>
           </tbody>
           <div className="mt-2 flex">
-            {serviceOrder?.status === 'pending_select_payment' ? (
+            {serviceOrder?.status === 'pending_select_payment' && paymentMethods !== undefined ? (
               <>
                 <Dropdown
                   value={selectedCard}
@@ -225,8 +258,54 @@ export const ServiceOrderPage = () => {
                   placeholder="Select a Credit Card"
                 />
 
-                <Button label="Authorize Payment" onClick={handleAuthorizePayment} />
+                <Button label="Authorize Hold On Card" onClick={handleAuthorizePayment} />
+                <HtInputHelpText
+                  fieldName="Authorize"
+                  helpText="We will put a hold on your card for the total amount of the service order similar to a hotel reservation."
+                />
               </>
+            ) : serviceOrder?.status === 'pending_select_payment' &&
+              paymentMethods === undefined &&
+              achPaymentDetails !== null ? (
+              <>
+                <div>
+                  <h2 className="text-lg font-semibold">ACH Payment Details</h2>
+                  <p>
+                    Your default ACH payment method is set to
+                    <span className="font-semibold">{achPaymentDetails.ach_account_name}</span>
+                    <span className="font-semibold">{achPaymentDetails.ach_account_number}</span>
+                    <span className="font-semibold">{achPaymentDetails.ach_bank_name}</span>
+                    <span className="font-semibold">{achPaymentDetails.ach_routing_number}</span>
+                  </p>
+                </div>
+
+                <Button label="Authorize ACH Transfer" onClick={handleAuthorizeACHTransfer} />
+                <HtInputHelpText
+                  fieldName="Authorize"
+                  helpText="We will process the payment for this service order via your default ACH payment method."
+                />
+              </>
+            ) : serviceOrder?.status === 'authorized' && achPaymentDetails !== null && paymentMethods === undefined ? (
+              <div>
+                <h2 className="text-lg font-semibold">Payment Authorization Successful</h2>
+                <p>
+                  The payment has been authorized using the following ACH account details:
+                  <ul>
+                    <li>
+                      <strong>Account Name:</strong> {achPaymentDetails.ach_account_name}
+                    </li>
+                    <li>
+                      <strong>Account Number:</strong> {achPaymentDetails.ach_account_number}
+                    </li>
+                    <li>
+                      <strong>Bank Name:</strong> {achPaymentDetails.ach_bank_name}
+                    </li>
+                    <li>
+                      <strong>Routing Number:</strong> {achPaymentDetails.ach_routing_number}
+                    </li>
+                  </ul>
+                </p>
+              </div>
             ) : null}
           </div>
         </table>
