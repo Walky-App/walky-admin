@@ -6,7 +6,9 @@ import { TabPanel, TabView } from 'primereact/tabview'
 
 import { type ICompany } from '../../../interfaces/company'
 import { requestService } from '../../../services/requestServiceNew'
+import { roleChecker } from '../../../utils/roleChecker'
 import { CompanyDetailForm } from './CompanyDetailForm'
+import { CompanyDocumentsView } from './CompanyDocumentsView'
 import { CreditCardView } from './CreditCardView'
 import { ACHAddPayment } from './components/ACHAddPayment'
 import { PaymentCards } from './components/PaymentCards'
@@ -14,9 +16,11 @@ import { PaymentCards } from './components/PaymentCards'
 export const CompanyDetailView = () => {
   const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
 
+  const role = roleChecker()
+
   const selectedCompanyId = useParams().id
   useEffect(() => {
-    const getCompany = async () => {
+    const getCompanyWithPaymentInfo = async () => {
       try {
         const response = await requestService({ path: `companies/${selectedCompanyId}/payments` })
         if (!response.ok) {
@@ -28,7 +32,7 @@ export const CompanyDetailView = () => {
         console.error('Error fetching company data: ', error)
       }
     }
-    getCompany()
+    getCompanyWithPaymentInfo()
   }, [selectedCompanyId])
 
   return (
@@ -48,6 +52,9 @@ export const CompanyDetailView = () => {
         <TabPanel header="ACH / Terms">
           <PaymentCards selectedCompanyData={selectedCompanyData} />
           <ACHAddPayment setSelectedCompanyData={setSelectedCompanyData} />
+        </TabPanel>
+        <TabPanel header="Documents" visible={role === 'admin' ? true : false}>
+          <CompanyDocumentsView selectedCompanyData={selectedCompanyData} />
         </TabPanel>
       </TabView>
     </div>
