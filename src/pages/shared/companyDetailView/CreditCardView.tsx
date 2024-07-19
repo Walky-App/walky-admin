@@ -47,6 +47,7 @@ export interface IPaymentMethod {
   payment_info: IPaymentInfo
   facilities?: string[]
   payment_method: string
+  is_default: boolean
 }
 
 export const CreditCardView = ({

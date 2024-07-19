@@ -54,21 +54,6 @@ export const PaymentCards = ({ selectedCompanyData }: { selectedCompanyData: ICo
     }
   }
 
-  // const setDefaultPayment = async (paymentId: string) => {
-  //   try {
-  //     const response = await requestService({
-  //       path: `companies/${selectedCompanyId}/payments/set-default-payment`,
-  //       method: 'POST',
-  //       body: JSON.stringify({ paymentId }),
-  //     })
-  //     if (!response.ok) {
-  //       throw new Error('Failed to set payment method as default')
-  //     }
-  //   } catch (error) {
-  //     console.error('Error setting default payment method: ', error)
-  //   }
-  // }
-
   return (
     <div className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-3">
       {selectedCompanyData.payment_information?.map((payment, index) => {
