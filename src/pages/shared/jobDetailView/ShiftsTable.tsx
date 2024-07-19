@@ -1,6 +1,6 @@
 import { type Dispatch, type SetStateAction, useState } from 'react'
 
-import { isToday, isBefore, startOfDay } from 'date-fns'
+import { isBefore, startOfDay } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
@@ -307,13 +307,12 @@ export const ShiftsTable = ({
             const dateObj = new Date(eachShift.day)
             const formattedDate = dateObj.toLocaleDateString()
             const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
-            const isJobEndTimePassed = job?.end_time ? isBefore(today, new Date(job.end_time)) : false
 
             if (!employeeActive) {
               return handleWhenUserIsNotApproved(eachShift, index, formattedDate, dayOfWeek)
             }
 
-            if ((isToday(today) && isBefore(dateObj, startOfDay(today))) || isJobEndTimePassed) {
+            if (isBefore(dateObj, startOfDay(today))) {
               return handleShowWhenJobHasEnded(eachShift, index, formattedDate, dayOfWeek)
             }
 
