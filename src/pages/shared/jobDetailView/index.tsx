@@ -248,7 +248,9 @@ export const JobDetailView = () => {
                     <strong>{job.hourly_rate || 0} USD / hour</strong>
                   </div>
                 </div>
-                {role === 'admin' ? <ShiftsTableAdmin job={job} setJob={setJob} /> : null}
+                {role === 'admin' ? (
+                  <ShiftsTableAdmin job={job} setJob={setJob} setJobHasEnded={setJobHasEnded} />
+                ) : null}
                 {role === 'employee' ? (
                   <ShiftsTable
                     job={job}

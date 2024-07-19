@@ -33,9 +33,12 @@ export const SideRightCard = ({
   setJobHasEnded: (hasEnded: boolean) => void
   userWorkingInThisJob: boolean
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date())
+  // const [currentDate, setCurrentDate] = useState(new Date())
   const [lastTimeSheet, setLastTimeSheet] = useState<ITimeSheet | null>(null)
-  const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: Shifts | string } | null>(null)
+  const [shiftId, setShiftId] = useState<{ isTodayShift: boolean; message: Shifts | string } | null>({
+    isTodayShift: false,
+    message: '',
+  })
   const [idFeedback, setIdFeedback] = useState('')
   const [openFeedback, setOpenFeedback] = useState(false)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState(false)
@@ -46,43 +49,29 @@ export const SideRightCard = ({
 
   const { showToast } = useUtils()
 
-  const startTimer = () => {
-    return setInterval(() => {
-      setCurrentDate(new Date())
-    }, 1000)
-  }
+  // const startTimer = () => {
+  //   return setInterval(() => {
+  //     setCurrentDate(new Date())
+  //   }, 1000)
+  // }
 
   useEffect(() => {
-    let isMounted = true
-
     const getLocation = () => {
-      if (navigator.geolocation == null) {
-        // setError('Geolocation is not supported by your browser')
-        // console.error(error)
-        return
+      try {
+        if (navigator.geolocation == null) {
+          showToast({ severity: 'error', summary: 'Error', detail: 'Geolocation is not enabled on your browser' })
+          return
+        }
+        navigator.geolocation.getCurrentPosition(position => {
+          setLatitude(position.coords.latitude)
+          setLongitude(position.coords.longitude)
+        })
+      } catch (error) {
+        console.error(error)
       }
-
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          if (isMounted) {
-            setLatitude(position.coords.latitude)
-            setLongitude(position.coords.longitude)
-          }
-        },
-        // error => {
-        //   if (isMounted) {
-        //     setError(error.message)
-        //   }
-        // },
-      )
     }
-
     getLocation()
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
+  }, [showToast])
 
   useEffect(() => {
     if (prevIsClockedIn !== isClockedIn && lastTimeSheet) {
@@ -99,19 +88,19 @@ export const SideRightCard = ({
     setPrevIsClockedIn(isClockedIn)
   }, [isClockedIn, showToast, lastTimeSheet, prevIsClockedIn])
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout | undefined
+  // useEffect(() => {
+  //   let timer: NodeJS.Timeout | undefined
 
-    if (userWorkingInThisJob) {
-      timer = startTimer()
-    }
+  //   if (userWorkingInThisJob) {
+  //     timer = startTimer()
+  //   }
 
-    return () => {
-      if (timer) {
-        clearInterval(timer)
-      }
-    }
-  }, [job.applicants, userWorkingInThisJob])
+  //   return () => {
+  //     if (timer) {
+  //       clearInterval(timer)
+  //     }
+  //   }
+  // }, [job.applicants, userWorkingInThisJob])
 
   const getCurrentJobTimeSheets = useCallback(async () => {
     const { access_token } = GetTokenInfo()
@@ -268,9 +257,9 @@ export const SideRightCard = ({
       <Card className="order-1 col-span-1">
         <div className="flex flex-col">
           <ul className="w-full divide-y divide-gray-200">
-            {shiftId?.isTodayShift ? (
+            {shiftId?.isTodayShift !== null && shiftId?.isTodayShift ? (
               <>
-                <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
+                {/* <li className="flex flex-col items-center justify-center gap-4 gap-y-4 px-6 py-4 md:flex-col">
                   <p className="text-2xl font-semibold">{currentDate.toLocaleTimeString()}</p>
                   <p className="font-medium">
                     {currentDate.toLocaleDateString('en-US', {
@@ -280,7 +269,7 @@ export const SideRightCard = ({
                       day: 'numeric',
                     })}
                   </p>
-                </li>
+                </li> */}
                 {userWorkingInThisJob ? (
                   isClockedIn ? (
                     <li className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
@@ -320,12 +309,11 @@ export const SideRightCard = ({
               </li>
             ) : null}
           </ul>
-          {userWorkingInThisJob ||
-          (role === 'admin' && job?.facility.location_pin[0] && job?.facility.location_pin[1]) ? (
+          {userWorkingInThisJob || (role === 'admin' && job?.facility?.location_pin?.length > 0) ? (
             <div className="col-span-1 mt-2 h-64 md:col-span-1">
               <div className="flex h-full flex-row md:flex-col">
                 <GoogleMapComponent
-                  locationPin={job.facility.location_pin}
+                  locationPin={job?.facility?.location_pin || []}
                   containerStyle={{ width: '100%', height: '100%' }}
                 />
               </div>
