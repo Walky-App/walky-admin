@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { parseISO } from 'date-fns'
+import { parseISO, eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
 import { Button } from 'primereact/button'
 
 import { type IFacility } from '../../../interfaces/facility'
@@ -198,11 +198,45 @@ export const AddEditJobPage = () => {
   }, [startTime, endTime, lunchBreak])
 
   //START OF SUBMIT
+  const jobDates = useWatch({ name: 'job_dates', control })
+  jobDates.sort((a, b) => a.getTime() - b.getTime())
+  const firstDate = Math.min(...jobDates.map(date => date.getTime()))
+  const lastDate = Math.max(...jobDates.map(date => date.getTime()))
+
+  const weeks = eachWeekOfInterval({ start: firstDate, end: lastDate })
 
   const onSubmit = async (data: JobFormDefaultValues) => {
     setIsSubmitting(true)
 
+    const requestDataForWeeks: {
+      job_dates: Date[]
+      title: string
+      facility_id?: string
+      vacancy: number
+      hourly_rate: number
+      start_time: Date
+      end_time: Date
+      lunch_break: number
+      job_tips: string[]
+      created_by?: string
+      total_hours: number
+    }[] = []
+
     const requestData = { ...data }
+    for (const week of weeks) {
+      const startOfWeekDate = startOfWeek(week)
+      const endOfWeekDate = endOfWeek(week)
+      const job_dates_in_week = jobDates.filter(date =>
+        isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate }),
+      )
+
+      const requestDataForWeek = {
+        ...requestData,
+        job_dates: job_dates_in_week,
+        total_hours: totalHours,
+      }
+      requestDataForWeeks.push(requestDataForWeek)
+    }
 
     if (startTime && endTime && data.lunch_break != null) {
       const totalHours = calculateHours(startTime, endTime, data.lunch_break)
@@ -268,54 +302,57 @@ export const AddEditJobPage = () => {
       }
     } else {
       try {
-        const details = {
-          temp_pay_rate: Math.round(hourlyRate * 100) / 100,
-          number_of_vacancies: vacancy,
-          number_of_selected_working_days: jobDatesLength,
-          number_of_holidays: holidayCount,
-          supervisor_fees: Math.round(serviceOrderCalculations.newTotalSupervisorFee * 100) / 100,
-          total_overtime_fees: Math.round(serviceOrderCalculations.totalOvertime * 100) / 100,
-          total_hours_per_day: Math.round(totalHours * 100) / 100,
-          total_of_all_temps_hours: Math.round(totalHours * jobDatesLength * vacancy * 100) / 100,
-          total_base_amount: Math.round(serviceOrderCalculations.baseAmount * 100) / 100,
-          admin_costs_total: Math.round(serviceOrderCalculations.adminCostAmount * 100) / 100,
-          our_fee_total: Math.round(serviceOrderCalculations.ourFeeAmount * 100) / 100,
-          processing_fee_total: Math.round(serviceOrderCalculations.processingFeeAmount * 100) / 100,
-          estimated_total_per_hour: Math.round(serviceOrderCalculations.hourlyRateWithFees * 100) / 100,
-          total_cost: Math.round(serviceOrderCalculations.totalEstimatedCost * 100) / 100,
-        }
+        for (const requestDataForWeek of requestDataForWeeks) {
+          const details = {
+            temp_pay_rate: Math.round(hourlyRate * 100) / 100,
+            number_of_vacancies: vacancy,
+            number_of_selected_working_days: jobDatesLength,
+            number_of_holidays: holidayCount,
+            supervisor_fees: Math.round(serviceOrderCalculations.newTotalSupervisorFee * 100) / 100,
+            total_overtime_fees: Math.round(serviceOrderCalculations.totalOvertime * 100) / 100,
+            total_hours_per_day: Math.round(totalHours * 100) / 100,
+            total_of_all_temps_hours: Math.round(totalHours * jobDatesLength * vacancy * 100) / 100,
+            total_base_amount: Math.round(serviceOrderCalculations.baseAmount * 100) / 100,
+            admin_costs_total: Math.round(serviceOrderCalculations.adminCostAmount * 100) / 100,
+            our_fee_total: Math.round(serviceOrderCalculations.ourFeeAmount * 100) / 100,
+            processing_fee_total: Math.round(serviceOrderCalculations.processingFeeAmount * 100) / 100,
+            estimated_total_per_hour: Math.round(serviceOrderCalculations.hourlyRateWithFees * 100) / 100,
+            total_cost: Math.round(serviceOrderCalculations.totalEstimatedCost * 100) / 100,
+          }
 
-        const response = await requestService({
-          path: 'jobs/create-service-order',
-          method: 'POST',
-          body: JSON.stringify({
-            ...requestData,
-            details: details,
-          }),
-        })
-        if (!response.ok) {
+          const response = await requestService({
+            path: 'jobs/create-service-order',
+            method: 'POST',
+            body: JSON.stringify({
+              ...requestDataForWeek,
+              details: details,
+            }),
+          })
+
+          if (!response.ok) {
+            const data = await response.json()
+            const message = data.message instanceof Error ? data.message.message : data.message
+            showToast({ severity: 'error', summary: 'Error', detail: message })
+            continue
+          }
+
           const data = await response.json()
-          const message = data.message instanceof Error ? data.message.message : data.message
-          showToast({ severity: 'error', summary: 'Error', detail: message })
-          return
+          const jobID = data.jobId
+          const serviceOrderId = data.serviceOrderId
+
+          showToast({
+            severity: 'success',
+            summary: 'Success',
+            detail: `${requestDataForWeek.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
+          })
+          setTimeout(() => {
+            navigate(
+              isAdmin
+                ? `/admin/jobs/${jobID}/service-order/${serviceOrderId}`
+                : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
+            )
+          }, 2000)
         }
-
-        const data = await response.json()
-        const jobID = data.jobId
-        const serviceOrderId = data.serviceOrderId
-
-        showToast({
-          severity: 'success',
-          summary: 'Success',
-          detail: `${requestData.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
-        })
-        setTimeout(() => {
-          navigate(
-            isAdmin
-              ? `/admin/jobs/${jobID}/service-order/${serviceOrderId}`
-              : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
-          )
-        }, 2000)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : error
         console.error('Error submitting job information:', errorMessage)
