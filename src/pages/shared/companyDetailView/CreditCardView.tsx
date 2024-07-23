@@ -193,6 +193,9 @@ export const CreditCardView = ({
                   <Controller
                     control={control}
                     name="card_number"
+                    rules={{
+                      required: 'Card number is required',
+                    }}
                     render={({ field, fieldState }) => (
                       <>
                         <HtInfoTooltip message="A credit card number is a unique identifier assigned to the card.">
