@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
+import { Sidebar } from 'primereact/sidebar'
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { type ICompany } from '../../../interfaces/company'
@@ -11,14 +12,17 @@ import { CompanyDetailForm } from './CompanyDetailForm'
 import { CompanyDocumentsView } from './CompanyDocumentsView'
 import { CreditCardView } from './CreditCardView'
 import { ACHAddPayment } from './components/ACHAddPayment'
+import { CreditCardEditDelete } from './components/CreditCardEditDelete'
 import { PaymentCards } from './components/PaymentCards'
 
 export const CompanyDetailView = () => {
   const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
+  const [selectedPaymentId, setSelectedPaymentId] = useState<string>('')
 
   const role = roleChecker()
 
-  const selectedCompanyId = useParams().id
+  const selectedCompanyId = useParams().id ?? ''
+
   useEffect(() => {
     const getCompanyWithPaymentInfo = async () => {
       try {
@@ -37,6 +41,14 @@ export const CompanyDetailView = () => {
 
   return (
     <div>
+      <Sidebar
+        visible={selectedPaymentId ? true : false}
+        onHide={() => setSelectedPaymentId('')}
+        position="right"
+        blockScroll={true}
+        className="w-full sm:w-1/2">
+        <CreditCardEditDelete companyId={selectedCompanyId} selectedPaymentId={selectedPaymentId} />
+      </Sidebar>
       <div className="mb-8">
         <div className="text-3xl font-bold">{selectedCompanyData.company_name}</div>
         <div>{selectedCompanyData.company_address}</div>
@@ -46,11 +58,11 @@ export const CompanyDetailView = () => {
           <CompanyDetailForm selectedCompanyData={selectedCompanyData} />
         </TabPanel>
         <TabPanel header="Credit Cards">
-          <PaymentCards selectedCompanyData={selectedCompanyData} />
+          <PaymentCards selectedCompanyData={selectedCompanyData} cc setSelectedPaymentId={setSelectedPaymentId} />
           <CreditCardView setSelectedCompanyData={setSelectedCompanyData} />
         </TabPanel>
         <TabPanel header="ACH / Terms">
-          <PaymentCards selectedCompanyData={selectedCompanyData} />
+          <PaymentCards selectedCompanyData={selectedCompanyData} ach setSelectedPaymentId={setSelectedPaymentId} />
           <ACHAddPayment setSelectedCompanyData={setSelectedCompanyData} />
         </TabPanel>
         <TabPanel header="Documents" visible={role === 'admin' ? true : false}>

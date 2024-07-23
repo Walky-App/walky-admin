@@ -92,9 +92,6 @@ import { EmployeeMessages } from './pages/employee/messages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
 import { CompanyDetailView } from './pages/shared/companyDetailView'
-
-/******************************************* Shared Pages ************************************/
-import { CreditCardEditDelete } from './pages/shared/companyDetailView/components/CreditCardEditDelete'
 import { AllInvoicesListPage } from './pages/shared/invoices/AllInvoicesListPage'
 import { InvoiceDetailsPage } from './pages/shared/invoices/InvoiceDetailsPage'
 import { JobDetailView } from './pages/shared/jobDetailView'
@@ -173,7 +170,6 @@ export const App = () => {
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<CompanyDetailView />} path="/client/companies/:id" />
-                  <Route element={<CreditCardEditDelete />} path="/client/companies/:id/payment/:paymentId" />
                 </Route>
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={sales_role} />}>
                   <Route element={<SalesDashboard />} path="/sales/dashboard" />
@@ -205,7 +201,6 @@ export const App = () => {
                   <Route element={<AdminCompanyListPage />} path="/admin/companies" />
                   <Route element={<AdminAddCompany />} path="/admin/companies/new" />
                   <Route element={<CompanyDetailView />} path="/admin/companies/:id" />
-                  <Route element={<CreditCardEditDelete />} path="/admin/companies/:id/payment/:paymentId" />
                   <Route element={<AdminFacilities />} path="/admin/facilities" />
                   <Route element={<FacilityDetailsPage />} path="/admin/facilities/:facilityId" />
                   <Route element={<AdminFacilityActivity />} path="/admin/facilities/:facilityId/activity" />
