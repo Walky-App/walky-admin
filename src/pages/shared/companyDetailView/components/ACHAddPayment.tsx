@@ -222,11 +222,11 @@ export const ACHAddPayment = ({
                 emptyUploaderTemplate={uploaderTemplate}
                 onUploadSuccess={async () => setIsCheckImageUploaded(true)}
                 disabled={
-                  formData.ach_account_name == '' ||
-                  formData.ach_account_number == '' ||
-                  formData.ach_bank_name == '' ||
-                  formData.ach_routing_number == '' ||
-                  formData.facilities?.length == 0
+                  formData.ach_account_name === '' ||
+                  formData.ach_account_number === '' ||
+                  formData.ach_bank_name === '' ||
+                  formData.ach_routing_number === '' ||
+                  formData.facilities?.length === 0
                 }
               />
               <HtInputHelpText
