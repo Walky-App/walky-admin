@@ -104,6 +104,7 @@ export const CreditCardView = ({
     formState: { errors },
     handleSubmit,
     setValue,
+    reset,
   } = useForm<IPaymentInfo>({ defaultValues })
 
   useEffect(() => {
@@ -152,6 +153,7 @@ export const CreditCardView = ({
       const updatedCompanyData = await response.json()
       setSelectedCompanyData(updatedCompanyData)
       showToast({ severity: 'success', summary: 'Payment method added successfully' })
+      reset()
     } catch (error) {
       console.error('Error adding company: ', error)
       showToast({ severity: 'error', summary: 'Failed to add company' })
@@ -199,11 +201,12 @@ export const CreditCardView = ({
                         <InputMask
                           id={field.name}
                           {...field}
-                          mask="9999 9999 9999 9999"
+                          mask="9999 9999 9999 999?9"
                           slotChar="x"
                           className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                           autoComplete="cc-number"
                         />
+                        <HtInputHelpText fieldName={field.name} helpText="It can be 15 or 16 digits." />
                         {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
@@ -317,7 +320,9 @@ export const CreditCardView = ({
                       id={field.name}
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      autoComplete="off"
                     />
+                    <HtInputHelpText fieldName={field.name} helpText="Example: My AMEX, or My Visa." />
                     {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
