@@ -31,6 +31,7 @@ export const Assessment = () => {
   const params = useParams()
   const [finishAssessment, setFinishAssessment] = useState(false)
   const [nextStep, setNextStep] = useState<string>('')
+  const [categoryId, setCategoryId] = useState<string>('')
   const [validatorResponse, setValidatorResponse] = useState<IAssessmentResponse>({
     correct_questions: 0,
     minimum_score: 0,
@@ -60,6 +61,9 @@ export const Assessment = () => {
       setRecord(response.AssessmentRecord)
       setValidatorResponse(response.reponseAssessment)
       setNextStep(response.nextStep)
+      if (response.nextStep == '/learn') {
+        setCategoryId(response.categoryId)
+      }
       setFinishAssessment(true)
       showToast({ severity: 'error', detail: 'Assessment sent due to time expiration', summary: 'Information' })
     }
@@ -100,6 +104,9 @@ export const Assessment = () => {
           setRecord(response.AssessmentRecord)
           setValidatorResponse(response.reponseAssessment)
           setNextStep(response.nextStep)
+          if (response.nextStep == '/learn') {
+            setCategoryId(response.categoryId)
+          }
           setFinishAssessment(true)
         },
       })
@@ -189,7 +196,7 @@ export const Assessment = () => {
           </div>
         </div>
       ) : (
-        <AssessmentResponse validatorResponse={validatorResponse} nextStep={nextStep} />
+        <AssessmentResponse validatorResponse={validatorResponse} nextStep={nextStep} categoryId={categoryId} />
       )}
     </div>
   )
