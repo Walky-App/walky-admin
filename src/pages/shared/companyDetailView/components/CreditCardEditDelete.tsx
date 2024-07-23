@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
-
 import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
 import { Dialog } from 'primereact/dialog'
@@ -37,7 +35,6 @@ export const CreditCardEditDelete = ({
   const [showDialog, setShowDialog] = useState(false)
 
   const { showToast } = useUtils()
-  const navigate = useNavigate()
   const role = roleChecker()
 
   useEffect(() => {
@@ -79,24 +76,27 @@ export const CreditCardEditDelete = ({
 
   const handleDeletePaymentMethod = async () => {
     try {
+      if (paymentMethod?.is_default)
+        throw new Error('Please set another payment method as default before deleting this one.')
       const response = await requestService({
         path: `companies/${companyId}/payment-method/${selectedPaymentId}`,
         method: 'DELETE',
       })
 
-      showToast({ severity: 'success', summary: 'Success', detail: 'Payment method deleted successfully' })
-      if (response.ok) {
-        await response.json()
-
-        if (role === 'client') {
-          navigate(`/client/companies/${companyId}/payment`)
-        } else {
-          navigate(`/admin/companies/${companyId}/payment`)
-        }
+      if (!response.ok) {
+        throw new Error('Failed to delete payment method')
       }
+
+      const responseData = await response.json()
+      setSelectedCompanyData(responseData)
+      setShowDialog(false)
+      setSelectedPaymentId('')
+      showToast({ severity: 'success', summary: 'Success', detail: 'Payment method deleted successfully' })
     } catch (error) {
-      console.error(error)
-      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting payment method' })
+      console.error('Error deleting payment method', error)
+      const errorMessage = error instanceof Error ? error.message : 'Error deleting payment method'
+      showToast({ severity: 'error', summary: 'Error', detail: errorMessage ?? 'Error deleting payment method' })
+      setShowDialog(false)
     }
   }
 
@@ -115,14 +115,15 @@ export const CreditCardEditDelete = ({
       showToast({ severity: 'success', summary: 'Success', detail: 'Payment method set as default' })
     } catch (error) {
       console.error('Error setting default payment method: ', error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error setting default payment method' })
     }
   }
 
   const renderDialogFooter = () => {
     return (
       <div>
-        <Button label="No" onClick={() => setShowDialog(false)} className="p-button-text" />
-        <Button label="Yes" onClick={handleDeletePaymentMethod} />
+        <Button severity="secondary" label="No" text outlined onClick={() => setShowDialog(false)} />
+        <Button severity="danger" label="Yes" onClick={handleDeletePaymentMethod} />
       </div>
     )
   }
