@@ -23,7 +23,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
   const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
   const [showDialog, setShowDialog] = useState(false)
   const [shiftDropReason, setShiftDropReason] = useState('')
-  const [employeeShiftInfolToRemove, setEmployeeShiftInfoToRemove] = useState({ shiftId: '', userShiftId: '' })
+  const [employeeShiftInfoToRemove, setEmployeeShiftInfoToRemove] = useState({ shiftId: '', userShiftId: '' })
   const { showToast } = useUtils()
 
   const role = roleChecker()
@@ -95,15 +95,14 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
               severity="danger"
               icon="pi pi-times"
               onClick={() =>
-                removeEmployeeShift(employeeShiftInfolToRemove.userShiftId, employeeShiftInfolToRemove.shiftId)
+                removeEmployeeShift(employeeShiftInfoToRemove.userShiftId, employeeShiftInfoToRemove.shiftId)
               }
             />
           </div>
         )}>
         <div className="m-0">
-          <h2 className="text-lg font-medium">Sure you want to drop this user?</h2>
-          <br />
-          <h2 className="text-xl font-medium text-red-600">Reason for dropping the user from shift</h2>
+          <h2 className="mb-8 text-lg font-medium">Sure you want to drop this user?</h2>
+          <h3 className="text-xl font-medium text-red-600">Reason for dropping the user from shift</h3>
           <InputTextarea
             placeholder="More than 30 characters"
             required
@@ -136,7 +135,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                               ? userShift?.user_id?.avatar
                               : '/assets/photos/no-photo-found.jpg'
                           }
-                          className="h-10 w-10 "
+                          className="h-10 w-10"
                           alt="profile"
                         />
                       )}
