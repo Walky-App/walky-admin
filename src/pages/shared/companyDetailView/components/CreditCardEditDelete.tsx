@@ -14,6 +14,7 @@ import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
 import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type ICompany } from '../../../../interfaces/company'
 import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
@@ -23,13 +24,18 @@ import { type IPaymentMethod } from '../CreditCardView'
 export const CreditCardEditDelete = ({
   companyId,
   selectedPaymentId,
+  setSelectedPaymentId,
+  setSelectedCompanyData,
 }: {
   companyId: string
   selectedPaymentId: string
+  setSelectedPaymentId: (paymentId: string) => void
+  setSelectedCompanyData: (company: ICompany) => void
 }) => {
   const [paymentMethod, setPaymentMethod] = useState<IPaymentMethod | null>(null)
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
   const [showDialog, setShowDialog] = useState(false)
+
   const { showToast } = useUtils()
   const navigate = useNavigate()
   const role = roleChecker()
@@ -37,6 +43,7 @@ export const CreditCardEditDelete = ({
   useEffect(() => {
     const fetchPaymentMethod = async () => {
       try {
+        if (!selectedPaymentId) return
         const response = await requestService({ path: `companies/${companyId}/payment-method/${selectedPaymentId}` })
         if (response.ok) {
           const paymentMethod: IPaymentMethod = await response.json()
@@ -102,8 +109,10 @@ export const CreditCardEditDelete = ({
       if (!response.ok) {
         throw new Error('Failed to set payment method as default')
       }
-      const responseData = await response.json()
-      setPaymentMethod(responseData)
+      const responseData: ICompany = await response.json()
+      setSelectedCompanyData(responseData)
+      setSelectedPaymentId('')
+      showToast({ severity: 'success', summary: 'Success', detail: 'Payment method set as default' })
     } catch (error) {
       console.error('Error setting default payment method: ', error)
     }
