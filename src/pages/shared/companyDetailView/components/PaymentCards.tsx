@@ -1,6 +1,3 @@
-import { useNavigate } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
-
 import { Card } from 'primereact/card'
 import { Chip } from 'primereact/chip'
 
@@ -10,7 +7,6 @@ import { faBank, faUniversity } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { type ICompany } from '../../../../interfaces/company'
-import { roleChecker } from '../../../../utils/roleChecker'
 
 const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | null => {
   if (paymentType === 'CC') {
@@ -19,7 +15,7 @@ const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | n
         return faCcVisa
       case 'MasterCard':
         return faCcMastercard
-      case 'Amex':
+      case 'AmericanExpress':
         return faCcAmex
       case 'Discover':
         return faCcDiscover
@@ -40,23 +36,36 @@ const createHeader = (cardIcon: IconDefinition | null) => (
   </div>
 )
 
-export const PaymentCards = ({ selectedCompanyData }: { selectedCompanyData: ICompany }) => {
-  const navigate = useNavigate()
-  const role = roleChecker()
+export const PaymentCards = ({
+  selectedCompanyData,
+  setSelectedPaymentId,
+  cc,
+  ach,
+}: {
+  selectedCompanyData: ICompany
+  setSelectedPaymentId: (paymentId: string) => void
+  cc?: boolean
+  ach?: boolean
+}) => {
+  const showAllPayments = cc === undefined && ach === undefined
 
-  const selectedCompanyId = useParams().id
-
-  const navigateToDetails = (paymentId: string) => {
-    if (role === 'client') {
-      navigate(`/client/companies/${selectedCompanyId}/payment/${paymentId}`)
-    } else {
-      navigate(`/admin/companies/${selectedCompanyId}/payment/${paymentId}`)
-    }
-  }
+  const filteredPaymentInformation =
+    selectedCompanyData.payment_information?.filter(payment => {
+      if (showAllPayments) {
+        return true
+      }
+      if (cc && payment.payment_method === 'CC') {
+        return true
+      }
+      if (ach && payment.payment_method === 'ACH') {
+        return true
+      }
+      return false
+    }) || []
 
   return (
     <div className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-3">
-      {selectedCompanyData.payment_information?.map((payment, index) => {
+      {filteredPaymentInformation?.map((payment, index) => {
         let title = ''
         let subTitle = ''
         let cardHeader = null
@@ -75,7 +84,9 @@ export const PaymentCards = ({ selectedCompanyData }: { selectedCompanyData: ICo
         return (
           <Card
             key={index}
-            onClick={() => navigateToDetails(payment.payment_info._id)}
+            onClick={() => {
+              setSelectedPaymentId(payment.payment_info._id ?? '')
+            }}
             title={
               <div className="align-center">
                 {title}
