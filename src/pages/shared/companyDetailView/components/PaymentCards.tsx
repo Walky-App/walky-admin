@@ -30,11 +30,8 @@ const getCardIcon = (paymentType: string, cardType?: string): IconDefinition | n
   return null
 }
 
-const createHeader = (cardIcon: IconDefinition | null) => (
-  <div className="mt-2 flex justify-center">
-    {cardIcon ? <FontAwesomeIcon icon={cardIcon} size="6x" className="ml-2" /> : null}
-  </div>
-)
+const createHeader = (cardIcon: IconDefinition | null) =>
+  cardIcon ? <FontAwesomeIcon icon={cardIcon} size="6x" /> : null
 
 export const PaymentCards = ({
   selectedCompanyData,
@@ -95,7 +92,8 @@ export const PaymentCards = ({
             }
             subTitle={<div className="align-center">{subTitle}</div>}
             header={cardHeader}
-            className="md:w-25rem mx-2 flex cursor-pointer"
+            pt={{ header: { className: 'flex items-center' } }}
+            className="md:w-25rem flex cursor-pointer p-3"
           />
         )
       })}
