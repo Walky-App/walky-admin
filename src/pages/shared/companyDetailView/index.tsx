@@ -29,7 +29,6 @@ export const CompanyDetailView = () => {
     setLoading(true)
     const getCompanyWithPaymentInfo = async () => {
       try {
-        if (selectedPaymentId !== '') return
         const response = await requestService({ path: `companies/${selectedCompanyId}/payments` })
         if (!response.ok) {
           throw new Error('Failed to fetch company data')
@@ -43,7 +42,7 @@ export const CompanyDetailView = () => {
       }
     }
     getCompanyWithPaymentInfo()
-  }, [selectedCompanyId, selectedPaymentId])
+  }, [selectedCompanyId])
 
   const headerSkeleton = (
     <div>
