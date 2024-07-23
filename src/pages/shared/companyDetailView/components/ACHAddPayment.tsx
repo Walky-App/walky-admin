@@ -106,12 +106,6 @@ export const ACHAddPayment = ({
       ach_is_approved: e.checked ?? false,
     }))
   }
-  const handleDefaultACHMethod = (e: CheckboxChangeEvent) => {
-    setFormData(prevState => ({
-      ...prevState,
-      isDefault: e.checked ?? false,
-    }))
-  }
 
   const uploaderTemplate = (
     <p>
@@ -248,15 +242,6 @@ export const ACHAddPayment = ({
                 <label htmlFor="ach_is_approved">
                   I approve this ACH payment method to be used for future payments
                 </label>
-              </div>
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  inputId="isDefault"
-                  name="isDefault"
-                  onChange={e => handleDefaultACHMethod(e)}
-                  checked={formData.isDefault}
-                />
-                <label htmlFor="isDefault">Select as Default Payment Method</label>
               </div>
               <div>
                 <Button type="submit" size="large" disabled={!isCheckImageUploaded || !formData.ach_is_approved}>
