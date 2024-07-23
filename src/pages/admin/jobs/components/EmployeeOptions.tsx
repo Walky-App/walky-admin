@@ -32,6 +32,7 @@ export const EmployeeOptions = ({ potentialApplicants, shiftId, setJob, job, shi
       if (response.ok) {
         setJob(data)
         showToast({ severity: 'success', summary: 'Success', detail: 'Employee added to shift' })
+        setApplicantId({})
       }
     } catch (error) {
       console.error(error)
@@ -52,9 +53,7 @@ export const EmployeeOptions = ({ potentialApplicants, shiftId, setJob, job, shi
         value={applicantId}
         placeholder="Select an applicant"
         name="employee"
-        onChange={event => {
-          return setApplicantId(event.value)
-        }}
+        onChange={event => setApplicantId(event.value)}
         options={handleDropdownOptions()}
         optionLabel="first_name"
         filter
