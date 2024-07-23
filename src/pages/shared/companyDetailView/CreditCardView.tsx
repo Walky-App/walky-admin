@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
+import { Controller, type SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
@@ -128,6 +128,11 @@ export const CreditCardView = ({
     }
   }, [moreAddressDetails, setValue])
 
+  const address = useWatch({ control, name: 'address' })
+  const city = useWatch({ control, name: 'city' })
+  const state = useWatch({ control, name: 'state' })
+  const zip = useWatch({ control, name: 'zip_code' })
+
   const onSubmit: SubmitHandler<IPaymentInfo> = async (data: IPaymentInfo) => {
     try {
       data = {
@@ -197,12 +202,12 @@ export const CreditCardView = ({
                           mask="9999 9999 9999 9999"
                           slotChar="x"
                           className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                          autoComplete="off"
+                          autoComplete="cc-number"
                         />
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
-                  {getFormErrorMessage('card_number', errors)}
                 </div>
 
                 <div className="sm:col-span-3">
@@ -227,12 +232,12 @@ export const CreditCardView = ({
                           mask="99/99"
                           slotChar="x"
                           className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                          autoComplete="off"
+                          autoComplete="cc-exp"
                         />
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
-                  {getFormErrorMessage('expiration_date', errors)}
                 </div>
               </>
             ) : null}
@@ -253,10 +258,10 @@ export const CreditCardView = ({
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage('bank_name', errors)}
 
                 <Controller
                   control={control}
@@ -272,10 +277,10 @@ export const CreditCardView = ({
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage('account_number', errors)}
 
                 <Controller
                   control={control}
@@ -291,10 +296,10 @@ export const CreditCardView = ({
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage('routing_number', errors)}
               </div>
             ) : null}
 
@@ -313,10 +318,10 @@ export const CreditCardView = ({
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('card_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -338,10 +343,24 @@ export const CreditCardView = ({
                       classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('address', errors)}
+              <div className="mt-4">
+                <p className="mt-1 text-sm leading-6">
+                  <strong>State:</strong> {state}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>Zip:</strong> {zip}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>City:</strong> {city}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>Address:</strong> {address}
+                </p>
+              </div>
             </div>
 
             <div className="sm:col-span-3">
@@ -373,7 +392,7 @@ export const CreditCardView = ({
                       fieldName={field.name}
                       helpText="Please select all facilities which will be using this payment method as primary."
                     />
-                    {getFormErrorMessage('services', errors)}
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
