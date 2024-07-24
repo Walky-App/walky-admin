@@ -6,32 +6,32 @@ export interface ICompanyDocument {
 }
 
 export interface IPaymentInfo {
-  _id: string
-  type: 'CC' | 'ACH'
-  address: string
-  city: string
-  state: string
-  country: string
-  zip_code: string
-  payment_status: 'Active' | 'Inactive' | 'Expired'
-  method: 'CC' | 'ACH'
-  ach_bank_name?: string //check
+  _id?: string
+  type?: 'CC' | 'ACH' | string
+  address?: string
+  city?: string
+  state?: string
+  country?: string
+  zip_code?: string
+  payment_status?: 'Active' | 'Inactive' | 'Expired'
+  method?: string
+  ach_bank_name?: string
+  ach_account_name?: string
+  ach_account_number?: string
+  ach_routing_number?: string
   holder_name?: string
-  ach_account_name?: string //check
-  ach_account_number?: string //check
-  ach_routing_number?: string //check
   card_number?: string
   card_name?: string
   expiration_date?: string
-  createdAt: string
-  updatedAt: string
-  __v: number
+  created_by?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
-export interface IPaymentMethod {
-  payment_info: IPaymentInfo
+export interface ICompanyPaymentMethod {
   facilities: string[]
-  payment_method: 'CC' | 'ACH'
+  payment_info: IPaymentInfo
+  payment_method: 'CC' | 'ACH' | string
   is_default: boolean
 }
 
@@ -47,7 +47,7 @@ export interface ICompany {
   company_dbas?: string[]
   company_tax_id?: string
   company_phone_number: string
-  payment_information?: IPaymentMethod[]
+  payment_information?: ICompanyPaymentMethod[]
   company_country: string
   company_address: string
   company_city: string

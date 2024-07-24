@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
+import { Sidebar } from 'primereact/sidebar'
+import { Skeleton } from 'primereact/skeleton'
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { type ICompany } from '../../../interfaces/company'
@@ -11,15 +13,20 @@ import { CompanyDetailForm } from './CompanyDetailForm'
 import { CompanyDocumentsView } from './CompanyDocumentsView'
 import { CreditCardView } from './CreditCardView'
 import { ACHAddPayment } from './components/ACHAddPayment'
+import { CreditCardEditDelete } from './components/CreditCardEditDelete'
 import { PaymentCards } from './components/PaymentCards'
 
 export const CompanyDetailView = () => {
   const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
+  const [selectedPaymentId, setSelectedPaymentId] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
 
   const role = roleChecker()
 
-  const selectedCompanyId = useParams().id
+  const selectedCompanyId = useParams().id ?? ''
+
   useEffect(() => {
+    setLoading(true)
     const getCompanyWithPaymentInfo = async () => {
       try {
         const response = await requestService({ path: `companies/${selectedCompanyId}/payments` })
@@ -30,27 +37,63 @@ export const CompanyDetailView = () => {
         setSelectedCompanyData(companyFound)
       } catch (error) {
         console.error('Error fetching company data: ', error)
+      } finally {
+        setLoading(false)
       }
     }
     getCompanyWithPaymentInfo()
   }, [selectedCompanyId])
 
+  const headerSkeleton = (
+    <div>
+      <Skeleton width="5rem" height="2rem" className="mb-2" />
+      <Skeleton width="10rem" height="2rem" className="mb-2" />
+    </div>
+  )
+
   return (
     <div>
-      <div className="mb-8">
-        <div className="text-3xl font-bold">{selectedCompanyData.company_name}</div>
-        <div>{selectedCompanyData.company_address}</div>
-      </div>
+      <Sidebar
+        visible={selectedPaymentId ? true : false}
+        onHide={() => setSelectedPaymentId('')}
+        position="right"
+        blockScroll={true}
+        className="w-full sm:w-1/2">
+        <CreditCardEditDelete
+          companyId={selectedCompanyId}
+          selectedPaymentId={selectedPaymentId}
+          setSelectedPaymentId={setSelectedPaymentId}
+          setSelectedCompanyData={setSelectedCompanyData}
+        />
+      </Sidebar>
+
+      {loading ? (
+        headerSkeleton
+      ) : (
+        <div className="mb-8">
+          <div className="text-3xl font-bold">{selectedCompanyData.company_name}</div>
+          <div>{selectedCompanyData.company_address}</div>
+        </div>
+      )}
+
       <TabView>
         <TabPanel header="Details">
           <CompanyDetailForm selectedCompanyData={selectedCompanyData} />
         </TabPanel>
         <TabPanel header="Credit Cards">
-          <PaymentCards selectedCompanyData={selectedCompanyData} />
+          {loading ? (
+            <Skeleton height="5rem" />
+          ) : (
+            <PaymentCards selectedCompanyData={selectedCompanyData} cc setSelectedPaymentId={setSelectedPaymentId} />
+          )}
           <CreditCardView setSelectedCompanyData={setSelectedCompanyData} />
         </TabPanel>
         <TabPanel header="ACH / Terms">
-          <PaymentCards selectedCompanyData={selectedCompanyData} />
+          {loading ? (
+            <Skeleton height="5rem" />
+          ) : (
+            <PaymentCards selectedCompanyData={selectedCompanyData} ach setSelectedPaymentId={setSelectedPaymentId} />
+          )}
           <ACHAddPayment setSelectedCompanyData={setSelectedCompanyData} />
         </TabPanel>
         <TabPanel header="Documents" visible={role === 'admin' ? true : false}>
