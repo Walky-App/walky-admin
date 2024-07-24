@@ -41,7 +41,7 @@ export const ACHAddPayment = ({
     ach_bank_name: '',
     ach_account_name: '',
     ach_is_approved: false,
-    isDefault: false,
+    isDefault: true,
     facilities: [],
   })
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
@@ -100,10 +100,10 @@ export const ACHAddPayment = ({
     setFormData(prevState => ({ ...prevState, [name]: value }))
   }
 
-  const handleApprovedACH = (e: CheckboxChangeEvent) => {
+  const handleCheckboxChange = (e: CheckboxChangeEvent, fieldName: string) => {
     setFormData(prevState => ({
       ...prevState,
-      ach_is_approved: e.checked ?? false,
+      [fieldName]: e.checked ?? false,
     }))
   }
 
@@ -230,23 +230,26 @@ export const ACHAddPayment = ({
               <Image src="/assets/ht-voided-check-sample.png" alt="Voided Check" width="300" />
             </div>
 
-            <div className="my-6 flex flex-col space-y-4 text-zinc-500">
+            <div className="my-6 flex flex-col space-y-4 text-zinc-500 sm:col-span-3">
               <span className="underline underline-offset-2">Please accept the terms below:</span>
               <div className="flex items-center gap-3">
                 <Checkbox
                   inputId="ach_is_approved"
                   name="ach_is_approved"
-                  onChange={e => handleApprovedACH(e)}
+                  onChange={e => handleCheckboxChange(e, 'ach_is_approved')}
                   checked={formData.ach_is_approved}
                 />
                 <label htmlFor="ach_is_approved">
-                  I approve this ACH payment method to be used for future payments
+                  "I approve this ACH payment method to be used for future payments"
                 </label>
               </div>
               <div>
-                <Button type="submit" size="large" disabled={!isCheckImageUploaded || !formData.ach_is_approved}>
-                  Add ACH Payment Method
-                </Button>
+                <Button
+                  type="submit"
+                  size="large"
+                  label="Add ACH Payment Method"
+                  disabled={!isCheckImageUploaded || !formData.ach_is_approved}
+                />
               </div>
             </div>
           </div>
