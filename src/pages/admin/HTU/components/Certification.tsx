@@ -1,3 +1,4 @@
+import { Button } from 'primereact/button'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ShieldCheckIcon } from '@heroicons/react/24/solid'
@@ -7,6 +8,7 @@ import { useAuth } from '../../../../contexts/AuthContext'
 import type { IUser } from '../../../../interfaces/User'
 import type { Category } from '../../../../interfaces/category'
 import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
 
 interface CertificationProps {
   urlCertificate: string | undefined
@@ -15,25 +17,30 @@ interface CertificationProps {
 
 export const Certification = ({ urlCertificate, category }: CertificationProps) => {
   const { user } = useAuth()
+  const { showToast } = useUtils()
 
   const generateOrGetCertification = async () => {
-    if (urlCertificate != '') {
-      window.open(urlCertificate)
-    } else {
-      const certificationId = uuidv4()
-      const blob = await pdf(<Pdf data={category} user={user} id={certificationId} />).toBlob()
-      const formData = new FormData()
-      formData.append('categoryId', category._id)
-      formData.append('userId', user?._id as string)
-      formData.append('file', blob, 'certificate.pdf')
-      const response = await requestService({
-        path: `lms/certificate/${certificationId}`,
-        method: 'POST',
-        dataType: 'formData',
-        body: formData,
-      })
-      const data = await response.json()
-      window.open(data.url)
+    try {
+      if (urlCertificate != '') {
+        window.open(urlCertificate)
+      } else {
+        const certificationId = uuidv4()
+        const blob = await pdf(<Pdf data={category} user={user} id={certificationId} />).toBlob()
+        const formData = new FormData()
+        formData.append('categoryId', category._id)
+        formData.append('userId', user?._id as string)
+        formData.append('file', blob, 'certificate.pdf')
+        const response = await requestService({
+          path: `lms/certificate/${certificationId}`,
+          method: 'POST',
+          dataType: 'formData',
+          body: formData,
+        })
+        const data = await response.json()
+        window.open(data.url)
+      }
+    } catch (error) {
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error generating certificate' })
     }
   }
 
@@ -49,6 +56,43 @@ interface PdfProps {
   data: Category | undefined
   user: IUser | undefined
   id: string
+}
+
+interface CertificationButtonProps {
+  categoryId: string
+}
+
+export const CertificationButton = ({ categoryId }: CertificationButtonProps) => {
+  const { user } = useAuth()
+  const { showToast } = useUtils()
+
+  const generateOrGetCertification = async () => {
+    try {
+      const responseCategory = await requestService({ path: `categories/${categoryId}` })
+      const category = await responseCategory.json()
+
+      const certificationId = uuidv4()
+      const blob = await pdf(<Pdf data={category} user={user} id={certificationId} />).toBlob()
+      const formData = new FormData()
+      formData.append('categoryId', category._id)
+      formData.append('userId', user?._id as string)
+      formData.append('file', blob, 'certificate.pdf')
+      const response = await requestService({
+        path: `lms/certificate/${certificationId}`,
+        method: 'POST',
+        dataType: 'formData',
+        body: formData,
+      })
+      if (response.ok) {
+        const data = await response.json()
+        window.open(data.url)
+      }
+    } catch (error) {
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error generating certificate' })
+    }
+  }
+
+  return <Button size="large" label="Show certificate" onClick={generateOrGetCertification} />
 }
 
 export const Pdf = ({ data, user, id }: PdfProps) => {
