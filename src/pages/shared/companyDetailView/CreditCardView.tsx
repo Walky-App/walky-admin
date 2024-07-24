@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
+import { Controller, type SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
@@ -14,7 +14,7 @@ import { AddressAutoComplete, type IAddressAutoComplete } from '../../../compone
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type ICompany } from '../../../interfaces/company'
+import { type ICompany, type IPaymentInfo } from '../../../interfaces/company'
 import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -22,31 +22,8 @@ import { getFormErrorMessage } from '../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
-export interface IPaymentInfo {
-  _id?: string
-  type?: string
-  address: string
-  city: string
-  state: string
-  country: string
-  zip_code: string
-  payment_status: 'Active' | 'Inactive' | 'Expired'
-  card_number?: string
-  expiration_date?: string
-  method?: string
-  ach_bank_name?: string
-  ach_account_name?: string
-  card_name: string
-  ach_account_number?: string
-  ach_routing_number?: string
-  created_by?: string
-  facilities?: string[]
-}
-
-export interface IPaymentMethod {
-  payment_info: IPaymentInfo
-  facilities?: string[]
-  payment_method: string
+export interface IAddCCPaymentFormData extends IPaymentInfo {
+  facilities: string[]
   is_default: boolean
 }
 
@@ -57,6 +34,7 @@ export const CreditCardView = ({
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
 
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
@@ -89,22 +67,25 @@ export const CreditCardView = ({
 
   const { showToast } = useUtils()
 
-  const defaultValues: IPaymentInfo = {
-    type: '',
-    address: '',
-    city: '',
-    state: '',
-    country: '',
-    zip_code: '',
-    payment_status: 'Active',
+  const defaultValues: IAddCCPaymentFormData = {
+    card_number: '',
+    expiration_date: '',
     card_name: '',
+    address: '',
+    state: '',
+    zip_code: '',
+    city: '',
+    facilities: [],
+    is_default: true,
   }
+
   const {
     control,
     formState: { errors },
     handleSubmit,
     setValue,
-  } = useForm<IPaymentInfo>({ defaultValues })
+    reset,
+  } = useForm<IAddCCPaymentFormData>({ defaultValues })
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -128,7 +109,14 @@ export const CreditCardView = ({
     }
   }, [moreAddressDetails, setValue])
 
+  const address = useWatch({ control, name: 'address' })
+  const city = useWatch({ control, name: 'city' })
+  const state = useWatch({ control, name: 'state' })
+  const zip = useWatch({ control, name: 'zip_code' })
+
   const onSubmit: SubmitHandler<IPaymentInfo> = async (data: IPaymentInfo) => {
+    setLoading(true)
+
     try {
       data = {
         ...data,
@@ -147,9 +135,12 @@ export const CreditCardView = ({
       const updatedCompanyData = await response.json()
       setSelectedCompanyData(updatedCompanyData)
       showToast({ severity: 'success', summary: 'Payment method added successfully' })
+      reset()
     } catch (error) {
       console.error('Error adding company: ', error)
       showToast({ severity: 'error', summary: 'Failed to add company' })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -158,7 +149,7 @@ export const CreditCardView = ({
       <div className="space-y-4 sm:space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Payment Information</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">Add Payment Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please take a moment to fill out payment information.
             </p>
@@ -186,6 +177,9 @@ export const CreditCardView = ({
                   <Controller
                     control={control}
                     name="card_number"
+                    rules={{
+                      required: 'Card number is required',
+                    }}
                     render={({ field, fieldState }) => (
                       <>
                         <HtInfoTooltip message="A credit card number is a unique identifier assigned to the card.">
@@ -194,15 +188,16 @@ export const CreditCardView = ({
                         <InputMask
                           id={field.name}
                           {...field}
-                          mask="9999 9999 9999 9999"
+                          mask="9999 9999 9999 999?9"
                           slotChar="x"
                           className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                           autoComplete="off"
                         />
+                        <HtInputHelpText fieldName={field.name} helpText="It can be 15 or 16 digits." />
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
-                  {getFormErrorMessage('card_number', errors)}
                 </div>
 
                 <div className="sm:col-span-3">
@@ -229,10 +224,10 @@ export const CreditCardView = ({
                           className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                           autoComplete="off"
                         />
+                        {getFormErrorMessage(field.name, errors)}
                       </>
                     )}
                   />
-                  {getFormErrorMessage('expiration_date', errors)}
                 </div>
               </>
             ) : null}
@@ -253,10 +248,10 @@ export const CreditCardView = ({
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage('bank_name', errors)}
 
                 <Controller
                   control={control}
@@ -272,10 +267,10 @@ export const CreditCardView = ({
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage('account_number', errors)}
 
                 <Controller
                   control={control}
@@ -291,10 +286,10 @@ export const CreditCardView = ({
                         {...field}
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )}
                 />
-                {getFormErrorMessage('routing_number', errors)}
               </div>
             ) : null}
 
@@ -312,11 +307,13 @@ export const CreditCardView = ({
                       id={field.name}
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      autoComplete="off"
                     />
+                    <HtInputHelpText fieldName={field.name} helpText="Example: My AMEX, or My Visa." />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('card_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -332,16 +329,30 @@ export const CreditCardView = ({
                     <AddressAutoComplete
                       controlled
                       setMoreAddressDetails={setMoreAddressDetails}
-                      currentAddress={field.value}
+                      currentAddress={field.value ?? ''}
                       onChange={field.onChange}
                       value={field.value}
                       classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       aria-describedby={`${field.name}-help`}
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('address', errors)}
+              <div className="mt-4">
+                <p className="mt-1 text-sm leading-6">
+                  <strong>State:</strong> {state}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>Zip:</strong> {zip}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>City:</strong> {city}
+                </p>
+                <p className="mt-1 text-sm leading-6">
+                  <strong>Address:</strong> {address}
+                </p>
+              </div>
             </div>
 
             <div className="sm:col-span-3">
@@ -373,17 +384,15 @@ export const CreditCardView = ({
                       fieldName={field.name}
                       helpText="Please select all facilities which will be using this payment method as primary."
                     />
-                    {getFormErrorMessage('services', errors)}
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
             </div>
+            <div className="sm:col-span-3">
+              <Button type="submit" size="large" label="Add CC Payment Method" loading={loading} />
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="mt-6 flex items-center justify-end gap-x-6">
-        <div>
-          <Button type="submit" label="Submit" />
         </div>
       </div>
     </form>
