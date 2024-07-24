@@ -76,7 +76,7 @@ export const PaymentCards = ({
         } else {
           title = `ACH Account **** ${payment.payment_info?.ach_account_number?.slice(-4) ?? ''}`
           subTitle = `${payment.payment_info?.ach_bank_name}`
-          cardHeader = createHeader(getCardIcon(payment.payment_info?.type))
+          cardHeader = createHeader(getCardIcon(payment.payment_info?.type ?? 'ACH'))
         }
         return (
           <Card
