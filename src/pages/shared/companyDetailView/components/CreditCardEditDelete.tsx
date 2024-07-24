@@ -12,12 +12,11 @@ import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
 import { HtInputHelpText } from '../../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
-import { type ICompany } from '../../../../interfaces/company'
+import { type ICompanyPaymentMethod, type ICompany } from '../../../../interfaces/company'
 import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
-import { type IPaymentMethod } from '../CreditCardView'
 
 export const CreditCardEditDelete = ({
   companyId,
@@ -30,7 +29,7 @@ export const CreditCardEditDelete = ({
   setSelectedPaymentId: (paymentId: string) => void
   setSelectedCompanyData: (company: ICompany) => void
 }) => {
-  const [paymentMethod, setPaymentMethod] = useState<IPaymentMethod | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<ICompanyPaymentMethod | null>(null)
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
   const [showDialog, setShowDialog] = useState(false)
 
@@ -43,7 +42,7 @@ export const CreditCardEditDelete = ({
         if (!selectedPaymentId) return
         const response = await requestService({ path: `companies/${companyId}/payment-method/${selectedPaymentId}` })
         if (response.ok) {
-          const paymentMethod: IPaymentMethod = await response.json()
+          const paymentMethod: ICompanyPaymentMethod = await response.json()
           setPaymentMethod(paymentMethod)
         } else {
           console.error('Failed to fetch payment method')
