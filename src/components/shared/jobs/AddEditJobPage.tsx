@@ -12,7 +12,6 @@ import { type StatesSettingsDocument, type HolidayDocument } from '../../../inte
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
-import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 import { HeadingComponent } from '../general/HeadingComponent'
@@ -88,7 +87,6 @@ export const AddEditJobPage = () => {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
-  const role = roleChecker()
   const user_id = GetTokenInfo()._id
 
   const {
@@ -260,106 +258,64 @@ export const AddEditJobPage = () => {
       return
     }
 
-    if (jobFound != null) {
-      const { job_dates } = jobFound
+    try {
+      for (const requestDataForWeek of requestDataForWeeks) {
+        const details = {
+          temp_pay_rate: Math.round(hourlyRate * 100) / 100,
+          number_of_vacancies: vacancy,
+          number_of_selected_working_days: jobDatesLength,
+          number_of_holidays: holidayCount,
+          supervisor_fees: Math.round(serviceOrderCalculations.newTotalSupervisorFee * 100) / 100,
+          total_overtime_fees: Math.round(serviceOrderCalculations.totalOvertime * 100) / 100,
+          total_hours_per_day: Math.round(totalHours * 100) / 100,
+          total_of_all_temps_hours: Math.round(totalHours * jobDatesLength * vacancy * 100) / 100,
+          total_base_amount: Math.round(serviceOrderCalculations.baseAmount * 100) / 100,
+          admin_costs_total: Math.round(serviceOrderCalculations.adminCostAmount * 100) / 100,
+          our_fee_total: Math.round(serviceOrderCalculations.ourFeeAmount * 100) / 100,
+          processing_fee_total: Math.round(serviceOrderCalculations.processingFeeAmount * 100) / 100,
+          estimated_total_per_hour: Math.round(serviceOrderCalculations.hourlyRateWithFees * 100) / 100,
+          total_cost: Math.round(serviceOrderCalculations.totalEstimatedCost * 100) / 100,
+        }
 
-      const jobDates = job_dates.map((dateString: string) => new Date(dateString))
-
-      const earliestJobDate = jobDates.sort((a, b) => a.getTime() - b.getTime())[0]
-
-      const now = new Date()
-      const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-      const isWithin24Hours = earliestJobDate != null && earliestJobDate.getTime() <= twentyFourHoursFromNow.getTime()
-      if (role === 'client' && isWithin24Hours) {
-        showToast({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'You cannot edit a job within 24 hours of its start time.',
-        })
-        return
-      }
-
-      try {
         const response = await requestService({
-          path: `jobs/${params.id}`,
-          method: 'PATCH',
-          body: JSON.stringify(requestData),
+          path: 'jobs/create-service-order',
+          method: 'POST',
+          body: JSON.stringify({
+            ...requestDataForWeek,
+            details: details,
+          }),
         })
+
         if (!response.ok) {
-          const message = await response.text()
-          throw new Error(message)
-        }
-        showToast({ severity: 'success', summary: 'Success', detail: `${requestData.title} updated successfully` })
-        setTimeout(() => {
-          navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
-        }, 3000)
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : error
-        console.error('Error updating job:', errorMessage)
-        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to update job' })
-      } finally {
-        setIsSubmitting(false)
-      }
-    } else {
-      try {
-        for (const requestDataForWeek of requestDataForWeeks) {
-          const details = {
-            temp_pay_rate: Math.round(hourlyRate * 100) / 100,
-            number_of_vacancies: vacancy,
-            number_of_selected_working_days: jobDatesLength,
-            number_of_holidays: holidayCount,
-            supervisor_fees: Math.round(serviceOrderCalculations.newTotalSupervisorFee * 100) / 100,
-            total_overtime_fees: Math.round(serviceOrderCalculations.totalOvertime * 100) / 100,
-            total_hours_per_day: Math.round(totalHours * 100) / 100,
-            total_of_all_temps_hours: Math.round(totalHours * jobDatesLength * vacancy * 100) / 100,
-            total_base_amount: Math.round(serviceOrderCalculations.baseAmount * 100) / 100,
-            admin_costs_total: Math.round(serviceOrderCalculations.adminCostAmount * 100) / 100,
-            our_fee_total: Math.round(serviceOrderCalculations.ourFeeAmount * 100) / 100,
-            processing_fee_total: Math.round(serviceOrderCalculations.processingFeeAmount * 100) / 100,
-            estimated_total_per_hour: Math.round(serviceOrderCalculations.hourlyRateWithFees * 100) / 100,
-            total_cost: Math.round(serviceOrderCalculations.totalEstimatedCost * 100) / 100,
-          }
-
-          const response = await requestService({
-            path: 'jobs/create-service-order',
-            method: 'POST',
-            body: JSON.stringify({
-              ...requestDataForWeek,
-              details: details,
-            }),
-          })
-
-          if (!response.ok) {
-            const data = await response.json()
-            const message = data.message instanceof Error ? data.message.message : data.message
-            showToast({ severity: 'error', summary: 'Error', detail: message })
-            continue
-          }
-
           const data = await response.json()
-          const jobID = data.jobId
-          const serviceOrderId = data.serviceOrderId
-
-          showToast({
-            severity: 'success',
-            summary: 'Success',
-            detail: `${requestDataForWeek.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
-          })
-          setTimeout(() => {
-            navigate(
-              isAdmin
-                ? `/admin/jobs/${jobID}/service-order/${serviceOrderId}`
-                : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
-            )
-          }, 2000)
+          const message = data.message instanceof Error ? data.message.message : data.message
+          showToast({ severity: 'error', summary: 'Error', detail: message })
+          continue
         }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : error
-        console.error('Error submitting job information:', errorMessage)
-        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to submit job information' })
-      } finally {
-        setIsSubmitting(false)
+
+        const data = await response.json()
+        const jobID = data.jobId
+        const serviceOrderId = data.serviceOrderId
+
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: `${requestDataForWeek.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
+        })
+        setTimeout(() => {
+          navigate(
+            isAdmin
+              ? `/admin/jobs/${jobID}/service-order/${serviceOrderId}`
+              : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
+          )
+        }, 2000)
       }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : error
+      console.error('Error submitting job information:', errorMessage)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Failed to submit job information' })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -397,12 +353,6 @@ export const AddEditJobPage = () => {
         : 0
 
     const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
-
-    // const baseAmount =
-    //   hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount) +
-    //   hourlyRate * vacancy * normalHours * holidayCount +
-    //   totalOvertime +
-    //   newTotalSupervisorFee
 
     const normalDayAmount =
       hourlyRate * vacancy * serviceOrderCalculations.normalHours * (jobDatesLength - holidayCount)
