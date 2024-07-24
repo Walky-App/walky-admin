@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { parseISO } from 'date-fns'
+import { parseISO, eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
 import { Button } from 'primereact/button'
 
 import { type IFacility } from '../../../interfaces/facility'
@@ -12,7 +12,6 @@ import { type StatesSettingsDocument, type HolidayDocument } from '../../../inte
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
-import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { HTLoadingLogo } from '../HTLoadingLogo'
 import { HeadingComponent } from '../general/HeadingComponent'
@@ -88,7 +87,6 @@ export const AddEditJobPage = () => {
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
-  const role = roleChecker()
   const user_id = GetTokenInfo()._id
 
   const {
@@ -198,11 +196,45 @@ export const AddEditJobPage = () => {
   }, [startTime, endTime, lunchBreak])
 
   //START OF SUBMIT
+  const jobDates = useWatch({ name: 'job_dates', control })
+  jobDates.sort((a, b) => a.getTime() - b.getTime())
+  const firstDate = Math.min(...jobDates.map(date => date.getTime()))
+  const lastDate = Math.max(...jobDates.map(date => date.getTime()))
+
+  const weeks = eachWeekOfInterval({ start: firstDate, end: lastDate })
 
   const onSubmit = async (data: JobFormDefaultValues) => {
     setIsSubmitting(true)
 
+    const requestDataForWeeks: {
+      job_dates: Date[]
+      title: string
+      facility_id?: string
+      vacancy: number
+      hourly_rate: number
+      start_time: Date
+      end_time: Date
+      lunch_break: number
+      job_tips: string[]
+      created_by?: string
+      total_hours: number
+    }[] = []
+
     const requestData = { ...data }
+    for (const week of weeks) {
+      const startOfWeekDate = startOfWeek(week)
+      const endOfWeekDate = endOfWeek(week)
+      const job_dates_in_week = jobDates.filter(date =>
+        isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate }),
+      )
+
+      const requestDataForWeek = {
+        ...requestData,
+        job_dates: job_dates_in_week,
+        total_hours: totalHours,
+      }
+      requestDataForWeeks.push(requestDataForWeek)
+    }
 
     if (startTime && endTime && data.lunch_break != null) {
       const totalHours = calculateHours(startTime, endTime, data.lunch_break)
@@ -226,48 +258,8 @@ export const AddEditJobPage = () => {
       return
     }
 
-    if (jobFound != null) {
-      const { job_dates } = jobFound
-
-      const jobDates = job_dates.map((dateString: string) => new Date(dateString))
-
-      const earliestJobDate = jobDates.sort((a, b) => a.getTime() - b.getTime())[0]
-
-      const now = new Date()
-      const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-      const isWithin24Hours = earliestJobDate != null && earliestJobDate.getTime() <= twentyFourHoursFromNow.getTime()
-      if (role === 'client' && isWithin24Hours) {
-        showToast({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'You cannot edit a job within 24 hours of its start time.',
-        })
-        return
-      }
-
-      try {
-        const response = await requestService({
-          path: `jobs/${params.id}`,
-          method: 'PATCH',
-          body: JSON.stringify(requestData),
-        })
-        if (!response.ok) {
-          const message = await response.text()
-          throw new Error(message)
-        }
-        showToast({ severity: 'success', summary: 'Success', detail: `${requestData.title} updated successfully` })
-        setTimeout(() => {
-          navigate(isAdmin ? `/admin/jobs/${params.id}` : `/client/jobs/${params.id}`)
-        }, 3000)
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : error
-        console.error('Error updating job:', errorMessage)
-        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to update job' })
-      } finally {
-        setIsSubmitting(false)
-      }
-    } else {
-      try {
+    try {
+      for (const requestDataForWeek of requestDataForWeeks) {
         const details = {
           temp_pay_rate: Math.round(hourlyRate * 100) / 100,
           number_of_vacancies: vacancy,
@@ -289,15 +281,16 @@ export const AddEditJobPage = () => {
           path: 'jobs/create-service-order',
           method: 'POST',
           body: JSON.stringify({
-            ...requestData,
+            ...requestDataForWeek,
             details: details,
           }),
         })
+
         if (!response.ok) {
           const data = await response.json()
           const message = data.message instanceof Error ? data.message.message : data.message
           showToast({ severity: 'error', summary: 'Error', detail: message })
-          return
+          continue
         }
 
         const data = await response.json()
@@ -307,7 +300,7 @@ export const AddEditJobPage = () => {
         showToast({
           severity: 'success',
           summary: 'Success',
-          detail: `${requestData.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
+          detail: `${requestDataForWeek.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
         })
         setTimeout(() => {
           navigate(
@@ -316,13 +309,13 @@ export const AddEditJobPage = () => {
               : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
           )
         }, 2000)
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : error
-        console.error('Error submitting job information:', errorMessage)
-        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to submit job information' })
-      } finally {
-        setIsSubmitting(false)
       }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : error
+      console.error('Error submitting job information:', errorMessage)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Failed to submit job information' })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -360,12 +353,6 @@ export const AddEditJobPage = () => {
         : 0
 
     const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
-
-    // const baseAmount =
-    //   hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount) +
-    //   hourlyRate * vacancy * normalHours * holidayCount +
-    //   totalOvertime +
-    //   newTotalSupervisorFee
 
     const normalDayAmount =
       hourlyRate * vacancy * serviceOrderCalculations.normalHours * (jobDatesLength - holidayCount)
