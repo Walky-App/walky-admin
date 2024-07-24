@@ -14,7 +14,7 @@ import { AddressAutoComplete, type IAddressAutoComplete } from '../../../compone
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type ICompany } from '../../../interfaces/company'
+import { type ICompany, type IPaymentInfo } from '../../../interfaces/company'
 import { type IFacility } from '../../../interfaces/facility'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -22,31 +22,8 @@ import { getFormErrorMessage } from '../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../utils/formUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
-export interface IPaymentInfo {
-  _id?: string
-  type?: string
-  address: string
-  city: string
-  state: string
-  country: string
-  zip_code: string
-  payment_status: 'Active' | 'Inactive' | 'Expired'
-  card_number?: string
-  expiration_date?: string
-  method?: string
-  ach_bank_name?: string
-  ach_account_name?: string
-  card_name: string
-  ach_account_number?: string
-  ach_routing_number?: string
-  created_by?: string
-  facilities?: string[]
-}
-
-export interface IPaymentMethod {
-  payment_info: IPaymentInfo
-  facilities?: string[]
-  payment_method: string
+export interface IAddCCPaymentFormData extends IPaymentInfo {
+  facilities: string[]
   is_default: boolean
 }
 
@@ -57,6 +34,7 @@ export const CreditCardView = ({
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete | undefined>()
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
 
   const { id } = useParams()
   const { first_name } = GetTokenInfo()
@@ -89,23 +67,25 @@ export const CreditCardView = ({
 
   const { showToast } = useUtils()
 
-  const defaultValues: IPaymentInfo = {
-    type: '',
-    address: '',
-    city: '',
-    state: '',
-    country: '',
-    zip_code: '',
-    payment_status: 'Active',
+  const defaultValues: IAddCCPaymentFormData = {
+    card_number: '',
+    expiration_date: '',
     card_name: '',
+    address: '',
+    state: '',
+    zip_code: '',
+    city: '',
+    facilities: [],
+    is_default: true,
   }
+
   const {
     control,
     formState: { errors },
     handleSubmit,
     setValue,
     reset,
-  } = useForm<IPaymentInfo>({ defaultValues })
+  } = useForm<IAddCCPaymentFormData>({ defaultValues })
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -135,6 +115,8 @@ export const CreditCardView = ({
   const zip = useWatch({ control, name: 'zip_code' })
 
   const onSubmit: SubmitHandler<IPaymentInfo> = async (data: IPaymentInfo) => {
+    setLoading(true)
+
     try {
       data = {
         ...data,
@@ -157,6 +139,8 @@ export const CreditCardView = ({
     } catch (error) {
       console.error('Error adding company: ', error)
       showToast({ severity: 'error', summary: 'Failed to add company' })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -207,7 +191,7 @@ export const CreditCardView = ({
                           mask="9999 9999 9999 999?9"
                           slotChar="x"
                           className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                          autoComplete="cc-number"
+                          autoComplete="off"
                         />
                         <HtInputHelpText fieldName={field.name} helpText="It can be 15 or 16 digits." />
                         {getFormErrorMessage(field.name, errors)}
@@ -238,7 +222,7 @@ export const CreditCardView = ({
                           mask="99/99"
                           slotChar="x"
                           className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                          autoComplete="cc-exp"
+                          autoComplete="off"
                         />
                         {getFormErrorMessage(field.name, errors)}
                       </>
@@ -345,7 +329,7 @@ export const CreditCardView = ({
                     <AddressAutoComplete
                       controlled
                       setMoreAddressDetails={setMoreAddressDetails}
-                      currentAddress={field.value}
+                      currentAddress={field.value ?? ''}
                       onChange={field.onChange}
                       value={field.value}
                       classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
@@ -405,12 +389,10 @@ export const CreditCardView = ({
                 )}
               />
             </div>
+            <div className="sm:col-span-3">
+              <Button type="submit" size="large" label="Add CC Payment Method" loading={loading} />
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="mt-6 flex items-center justify-end gap-x-6">
-        <div>
-          <Button type="submit" label="Submit" />
         </div>
       </div>
     </form>
