@@ -1,28 +1,39 @@
+import { useState } from 'react'
+
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 
 import { useAdmin } from '../../../contexts/AdminContext'
 import type { IAssessmentResponse } from '../../../interfaces/unit'
+import { CategoryCompletedDialog } from './CategoryCompletedDialog'
 
 interface AssessmentResponseProps {
   validatorResponse: IAssessmentResponse
   nextStep: string
+  categoryId: string
 }
 
-export const AssessmentResponse = ({ validatorResponse, nextStep }: AssessmentResponseProps) => {
+export const AssessmentResponse = ({ validatorResponse, nextStep, categoryId }: AssessmentResponseProps) => {
   const params = useParams()
   const navigate = useNavigate()
   const { setModule, setUnit } = useAdmin()
 
+  const [visible, setVisible] = useState<boolean>(true)
+
   const handleNextStep = () => {
-    setModule(undefined)
-    setUnit(undefined)
-    navigate(`${nextStep}`)
+    if (nextStep === '/learn') {
+      setVisible(true)
+    } else {
+      setModule(undefined)
+      setUnit(undefined)
+      navigate(`${nextStep}`)
+    }
   }
 
   return (
     <div>
+      <CategoryCompletedDialog visible={visible} setVisible={setVisible} categoryId={categoryId} nextStep={nextStep} />
       {validatorResponse?.pass_assessment ? (
         <div className="rounded-md border-2 border-gray-300">
           <div className="flex h-96 flex-col items-center justify-center">
