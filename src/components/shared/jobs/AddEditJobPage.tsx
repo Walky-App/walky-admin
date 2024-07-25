@@ -96,6 +96,8 @@ export const AddEditJobPage = () => {
     setValue,
   } = useForm({ defaultValues: formData })
 
+  const selectedFacility = useWatch({ name: 'facility_id', control })
+
   useEffect(() => {
     if (!facilityStateSettings) return
     setValue('hourly_rate', facilityStateSettings.minimun_wage)
@@ -128,8 +130,6 @@ export const AddEditJobPage = () => {
     }
     getFacilities()
   }, [location.pathname, user_id])
-
-  const selectedFacility = useWatch({ name: 'facility_id', control })
 
   useEffect(() => {
     const getFacilityStateSettings = async () => {
@@ -195,7 +195,6 @@ export const AddEditJobPage = () => {
     }
   }, [startTime, endTime, lunchBreak])
 
-  //START OF SUBMIT
   const jobDates = useWatch({ name: 'job_dates', control })
   jobDates.sort((a, b) => a.getTime() - b.getTime())
   const firstDate = Math.min(...jobDates.map(date => date.getTime()))
@@ -259,6 +258,7 @@ export const AddEditJobPage = () => {
     }
 
     try {
+      let errorOccurred = false
       for (const requestDataForWeek of requestDataForWeeks) {
         const details = {
           temp_pay_rate: Math.round(hourlyRate * 100) / 100,
@@ -286,29 +286,24 @@ export const AddEditJobPage = () => {
           }),
         })
 
-        if (!response.ok) {
+        if (response.ok) {
+          showToast({
+            severity: 'success',
+            summary: 'Success',
+            detail: `${requestDataForWeek.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
+          })
+          setTimeout(() => {
+            navigate(isAdmin ? `/admin/jobs/service-orders/pending` : `/client/jobs/service-orders/pending`)
+          }, 2000)
+        }
+
+        if (!response.ok && !errorOccurred) {
           const data = await response.json()
           const message = data.message instanceof Error ? data.message.message : data.message
           showToast({ severity: 'error', summary: 'Error', detail: message })
+          errorOccurred = true
           continue
         }
-
-        const data = await response.json()
-        const jobID = data.jobId
-        const serviceOrderId = data.serviceOrderId
-
-        showToast({
-          severity: 'success',
-          summary: 'Success',
-          detail: `${requestDataForWeek.title} job ${isAdmin ? 'created' : 'submitted'} successfully`,
-        })
-        setTimeout(() => {
-          navigate(
-            isAdmin
-              ? `/admin/jobs/${jobID}/service-order/${serviceOrderId}`
-              : `/client/jobs/${jobID}/service-order/${serviceOrderId}`,
-          )
-        }, 2000)
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : error
@@ -318,8 +313,6 @@ export const AddEditJobPage = () => {
       setIsSubmitting(false)
     }
   }
-
-  //END-OF-SUBMIT
 
   const vacancy = useWatch({ name: 'vacancy', control })
   const jobDatesLength = useWatch({ name: 'job_dates', control }).length
