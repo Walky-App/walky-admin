@@ -70,21 +70,21 @@ export const ProfileDetail = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
 
-    let formPayloadWithNotes
-    if (internalNoteObj != null && internalNoteObj.note != null && internalNoteObj.createdBy != null) {
-      formPayloadWithNotes = {
-        ...formUser,
-        internal_notes: [...(formUser.internal_notes ?? []), internalNoteObj],
-      }
-    }
+    // let formPayloadWithNotes
+    // if (internalNoteObj != null && internalNoteObj.note != null && internalNoteObj.createdBy != null) {
+    //   formPayloadWithNotes = {
+    //     ...formUser,
+    //     internal_notes: [...(formUser.internal_notes ?? []), internalNoteObj],
+    //   }
+    // }
 
-    const payload = formPayloadWithNotes?.internal_notes.length !== 0 ? formPayloadWithNotes : formUser
+    // const payload = formPayloadWithNotes?.internal_notes.length !== 0 ? formPayloadWithNotes : formUser
 
     try {
       const response = await requestService({
         path: `users/${formUser?._id}`,
         method: 'PATCH',
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formUser),
       })
       if (response.ok) {
         const data = await response.json()
@@ -255,7 +255,7 @@ export const ProfileDetail = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Address</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
