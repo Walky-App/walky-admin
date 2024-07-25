@@ -15,6 +15,7 @@ import { CreditCardView } from './CreditCardView'
 import { ACHAddPayment } from './components/ACHAddPayment'
 import { CreditCardEditDelete } from './components/CreditCardEditDelete'
 import { PaymentCards } from './components/PaymentCards'
+import { RequestACHApproval } from './components/RequestACHApproval'
 
 export const CompanyDetailView = () => {
   const [selectedCompanyData, setSelectedCompanyData] = useState<ICompany>({} as ICompany)
@@ -92,9 +93,18 @@ export const CompanyDetailView = () => {
           {loading ? (
             <Skeleton height="5rem" />
           ) : (
-            <PaymentCards selectedCompanyData={selectedCompanyData} ach setSelectedPaymentId={setSelectedPaymentId} />
+            <>
+              <PaymentCards selectedCompanyData={selectedCompanyData} ach setSelectedPaymentId={setSelectedPaymentId} />
+              {role === 'client' ? (
+                <RequestACHApproval
+                  selectedCompanyData={selectedCompanyData}
+                  setSelectedCompanyData={setSelectedCompanyData}
+                />
+              ) : (
+                <ACHAddPayment setSelectedCompanyData={setSelectedCompanyData} />
+              )}
+            </>
           )}
-          <ACHAddPayment setSelectedCompanyData={setSelectedCompanyData} />
         </TabPanel>
         <TabPanel header="Documents" visible={role === 'admin' ? true : false}>
           <CompanyDocumentsView selectedCompanyData={selectedCompanyData} />

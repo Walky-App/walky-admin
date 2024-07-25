@@ -59,4 +59,5 @@ export interface ICompany {
   createdAt?: string
   updatedAt?: string
   company_location_pin: number[]
+  company_ach_requested?: boolean
 }
