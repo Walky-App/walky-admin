@@ -75,7 +75,7 @@ export const ClientJobs = () => {
   return isLoading ? (
     <HTLoadingLogo />
   ) : jobsData.length > 0 ? (
-    <GlobalTable data={jobsData} columns={jobsColumns} allowClick />
+    <GlobalTable data={jobsData} columns={jobsColumns} />
   ) : (
     <div className="mt-4">No jobs have been posted yet.</div>
   )
