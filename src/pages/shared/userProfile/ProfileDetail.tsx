@@ -29,7 +29,7 @@ export const ProfileDetail = ({
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
   const [userFound, setUserFound] = useState<IUser>()
-  const [internalNotes, setInternalNotes] = useState<IUserInternalNote>()
+  const [internalNoteObj, setInternalNoteObj] = useState<IUserInternalNote>()
 
   const { showToast } = useUtils()
   const role = roleChecker()
@@ -70,12 +70,15 @@ export const ProfileDetail = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
 
-    const formPayloadWithNotes = {
-      ...formUser,
-      internal_notes: [...(formUser.internal_notes ?? []), internalNotes],
+    let formPayloadWithNotes
+    if (internalNoteObj != null && internalNoteObj.note != null && internalNoteObj.createdBy != null) {
+      formPayloadWithNotes = {
+        ...formUser,
+        internal_notes: [...(formUser.internal_notes ?? []), internalNoteObj],
+      }
     }
 
-    const payload = internalNotes ? formPayloadWithNotes : formUser
+    const payload = formPayloadWithNotes?.internal_notes.length !== 0 ? formPayloadWithNotes : formUser
 
     try {
       const response = await requestService({
@@ -87,6 +90,7 @@ export const ProfileDetail = ({
         const data = await response.json()
         showToast({ severity: 'success', summary: 'Success', detail: 'User updated' })
         setFormUser(data)
+        setInternalNoteObj(undefined)
       }
     } catch (error) {
       console.error('Error updating user:', error)
@@ -361,13 +365,18 @@ export const ProfileDetail = ({
                     rows={4}
                     cols={30}
                     maxLength={500}
-                    onChange={e =>
-                      setInternalNotes(prev => ({
-                        ...prev,
-                        note: e.target.value,
-                        createdBy: userFound?.email ?? userId,
-                      }))
-                    }
+                    value={internalNoteObj?.note ?? ''}
+                    onChange={e => {
+                      if (e.target.value != null && e.target.value !== '') {
+                        setInternalNoteObj(prev => ({
+                          ...prev,
+                          note: e.target.value,
+                          createdBy: userFound?.email ?? userId,
+                        }))
+                      } else if (e.target.value === '') {
+                        setInternalNoteObj(undefined)
+                      }
+                    }}
                     className={classNames({ 'p-invalid': false }, 'mt-2')}
                     autoComplete="off"
                   />
@@ -385,7 +394,7 @@ export const ProfileDetail = ({
                 </div>
                 <div className="md:col-span-2">
                   {formUser.internal_notes?.length === 0 ? (
-                    <div className="">
+                    <div>
                       <h2 className="text-3xl font-semibold text-gray-900">No internal notes found</h2>
                       <p className="mt-1 text-sm text-gray-500">Add a new note to the facility</p>
                     </div>
@@ -410,19 +419,29 @@ export const ProfileDetail = ({
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                              {formUser.internal_notes?.map(singleNote => (
-                                <tr key={singleNote._id}>
-                                  <td
-                                    className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                                    style={{ wordWrap: 'break-word', maxWidth: '250px' }}>
-                                    {singleNote.note}
-                                  </td>
-                                  <td className="px-3 py-4 text-sm text-gray-500">{singleNote.createdBy}</td>
-                                  <td className="px-3 py-4 text-sm text-gray-500">
-                                    {singleNote.createdAt ? format(singleNote.createdAt, 'Pp') : null}
-                                  </td>
-                                </tr>
-                              ))}
+                              {formUser.internal_notes?.map(singleNote => {
+                                if (
+                                  singleNote != null &&
+                                  singleNote.note != null &&
+                                  singleNote.createdBy != null &&
+                                  singleNote.createdAt != null &&
+                                  singleNote._id != null
+                                ) {
+                                  return (
+                                    <tr key={singleNote._id}>
+                                      <td
+                                        className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                                        style={{ wordWrap: 'break-word', maxWidth: '250px' }}>
+                                        {singleNote.note}
+                                      </td>
+                                      <td className="px-3 py-4 text-sm text-gray-500">{singleNote.createdBy}</td>
+                                      <td className="px-3 py-4 text-sm text-gray-500">
+                                        {singleNote.createdAt ? format(singleNote.createdAt, 'Pp') : null}
+                                      </td>
+                                    </tr>
+                                  )
+                                }
+                              })}
                             </tbody>
                           </table>
                         </div>
