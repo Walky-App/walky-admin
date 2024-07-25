@@ -40,10 +40,11 @@ export const EmployeeOptions = ({ potentialApplicants, shiftId, setJob, job, shi
   }
 
   const handleDropdownOptions = () => {
-    const filteredApplicants = potentialApplicants.filter(applicant =>
-      shiftDay?.shifts_id?.user_shifts?.every(userShift => userShift.user_id._id !== applicant._id),
-    )
-
+    const filteredApplicants = potentialApplicants
+      .filter(applicant =>
+        shiftDay?.shifts_id?.user_shifts?.every(userShift => userShift.user_id._id !== applicant._id),
+      )
+      .map(applicant => ({ label: applicant.first_name + ' ' + applicant.last_name, value: applicant }))
     return filteredApplicants
   }
 
@@ -55,7 +56,6 @@ export const EmployeeOptions = ({ potentialApplicants, shiftId, setJob, job, shi
         name="employee"
         onChange={event => setApplicantId(event.value)}
         options={handleDropdownOptions()}
-        optionLabel="first_name"
         filter
       />
       {applicantId._id ? (

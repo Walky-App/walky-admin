@@ -1,11 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useMemo } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { format, isToday, isYesterday } from 'date-fns'
+
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { type IFacility } from '../../../interfaces/facility'
+import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
 import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
@@ -20,7 +22,7 @@ export const AdminFacilityJobs = () => {
   const userRole = GetTokenInfo().role
   const { facilityId } = useParams()
   const [facility, setFacility] = useState<IFacility>()
-  const [facilityJobs, setFacilityJobs] = useState<any>([])
+  const [facilityJobs, setFacilityJobs] = useState<IJob[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const role = roleChecker()
 
@@ -57,45 +59,45 @@ export const AdminFacilityJobs = () => {
 
   const memoFacilityJobsColumns = useMemo(
     () => [
+      { Header: 'ID', width: '100px', accessor: (d: IJob) => `#${d.uid}` || 0 },
       { Header: 'Job Title', accessor: 'title' },
+      { Header: 'Facility', accessor: 'facility.name' },
+      { Header: 'Created By', accessor: 'created_by', width: 250 },
       {
-        Header: 'Status',
-        accessor: (d: any) => (d.is_active ? 'Active' : 'Disabled'),
-        sortType: (a: any, b: any) => {
-          if (a.original.is_active === b.original.active) return 0
-          return a.original.is_active ? -1 : 1
+        Header: 'Created',
+        width: 200,
+        accessor: (a: IJob) => {
+          return isToday(a.createdAt) ? 'Today' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
         },
       },
+      { Header: 'Job Starts', width: 120, accessor: (item: IJob) => new Date(item.job_dates[0]).toLocaleDateString() },
       {
-        Header: 'Hours per Day',
+        Header: 'Job Ends',
+        width: 100,
+        accessor: (item: IJob) => new Date(item.job_dates[item.job_dates.length - 1]).toLocaleDateString(),
+      },
+      {
+        Header: 'Status',
+        width: 100,
+        accessor: (d: IJob) => (d.is_active ? 'Active' : 'Disabled'),
+        sortType: (a: IJob, b: IJob) => {
+          if (a.is_active === b.is_active) return 0
+          return a.is_active ? -1 : 1
+        },
+      },
+      { Header: 'Shifts', accessor: 'vacancy', width: 100 },
+      { Header: 'Temps', width: 100, accessor: (a: IJob) => a.applicants.length || '0 ❌' },
+      {
+        Header: 'Shift Hours',
         accessor: 'total_hours',
+        width: 120,
       },
-      {
-        Header: 'Facility',
-        accessor: 'facility.name',
-      },
-      {
-        Header: 'Number of Days',
-        accessor: (row: { job_dates: string[] }) => row.job_dates.length,
-      },
-      {
-        Header: 'Rate ($/h)',
-        accessor: 'hourly_rate',
-      },
-      {
-        Header: 'Lunch (min)',
-        accessor: 'lunch_break',
-      },
-
-      { Header: 'Vacancy', accessor: 'vacancy' },
-      { Header: 'Job ID', accessor: 'uid' },
-
       {
         Header: 'Availability',
-        accessor: (d: any) => (d.is_full ? 'Full' : 'Open'),
-        sortType: (a: any, b: any) => {
-          if (a.original.is_full === b.original.is_full) return 0
-          return a.original.is_full ? -1 : 1
+        accessor: (d: IJob) => (d.vacancy === d.applicants.length ? '✅' : 'Open'),
+        sortType: (a: IJob, b: IJob) => {
+          if (a.is_full === b.is_full) return 0
+          return a.is_full ? -1 : 1
         },
       },
     ],
