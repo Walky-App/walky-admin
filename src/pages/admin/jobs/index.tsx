@@ -14,7 +14,7 @@ export const AdminJobs = () => {
   useEffect(() => {
     const getJobs = async () => {
       try {
-        const response = await requestService({ path: 'jobs' })
+        const response = await requestService({ path: 'jobs/by-admin' })
 
         if (response.ok) {
           const allJobs = await response.json()
