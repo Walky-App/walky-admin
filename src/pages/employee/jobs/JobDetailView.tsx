@@ -528,7 +528,7 @@ export const JobDetailView = () => {
                   </time>
                 </td>
                 <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
-                  <a href="/">
+                  <div>
                     {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
                       <div>
                         {getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
@@ -562,7 +562,7 @@ export const JobDetailView = () => {
                         )}
                       </div>
                     )}
-                  </a>
+                  </div>
                 </td>
               </tr>
             )
