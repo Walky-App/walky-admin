@@ -100,7 +100,7 @@ export const ProfileDetail = ({
   const handlePasswordReset = async () => {
     try {
       const request = await requestService({
-        path: '/auth/reset',
+        path: 'auth/reset',
         method: 'POST',
         body: JSON.stringify({ email: formUser.email }),
       })

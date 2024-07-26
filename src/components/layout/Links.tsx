@@ -117,8 +117,9 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Products',
       href: '/admin/products',
       icon: <MdSchool />,
+      disabled: true,
       subLinks: [
-        { name: 'All Products', href: '/admin/products' },
+        { name: 'All Products', href: '/admin/products', disabled: true },
         { name: 'New Product', href: '/admin/products', disabled: true },
         { name: 'Categories', href: '/admin/products', disabled: true },
       ],
@@ -203,7 +204,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
 
   const salesLinks: INavLink[] = [
     { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-    { id: 2, name: 'Products', href: '/sales/products', icon: <MdSchool /> },
+    { id: 2, name: 'Products', href: '/sales/products', disabled: true, icon: <MdSchool /> },
     { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
     { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool /> },
     { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },

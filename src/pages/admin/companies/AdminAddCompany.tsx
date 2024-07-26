@@ -127,7 +127,11 @@ export const AdminAddCompany = () => {
       }
       showToast({ severity: 'success', summary: 'Company added successfully' })
       setTimeout(() => {
-        navigate('/admin/companies')
+        if (role === 'admin') {
+          navigate('/admin/companies')
+        } else {
+          navigate('/client/companies')
+        }
       }, 2000)
     } catch (error) {
       console.error('Error adding company: ', error)
