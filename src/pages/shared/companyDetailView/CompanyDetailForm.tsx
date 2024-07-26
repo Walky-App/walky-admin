@@ -4,6 +4,7 @@ import { useForm, type SubmitHandler, Controller } from 'react-hook-form'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
+import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { InputMask } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
 import { MultiSelect, type MultiSelectChangeEvent } from 'primereact/multiselect'
@@ -170,10 +171,42 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
     }
   }
 
+  const accept = async () => {
+    try {
+      const response = await requestService({ path: `companies/${selectedCompanyData._id}`, method: 'DELETE' })
+      if (response.ok) {
+        const data = await response.json()
+        showToast({ severity: 'success', summary: 'Success', detail: data.message })
+        navigate('/admin/companies')
+      }
+    } catch (error) {
+      console.error(error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting facility' })
+    }
+  }
+
+  const reject = () => {
+    showToast({ severity: 'warn', summary: 'Rejected', detail: 'You have canceled the facility delete' })
+  }
+
+  const handleDeleteConfirm = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    confirmPopup({
+      target: event.currentTarget as HTMLElement,
+      message:
+        'If you delete this facility, all associated jobs, licenses, images and company association will be removed. Are you sure you want to proceed?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept,
+      reject,
+    })
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <div className="space-y-4 sm:space-y-12">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 py-12 sm:gap-y-10 md:grid-cols-3">
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Company Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
@@ -386,10 +419,16 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
           </div>
         </div>
       </div>
-      <div className="mt-6 flex items-center justify-end gap-x-6">
+      <div className="mt-6 flex items-center justify-between gap-x-6">
         <div>
-          <Button type="submit" label="Submit" />
+          <Button type="submit" label="Update" />
         </div>
+        {role === 'admin' ? (
+          <div>
+            <ConfirmPopup />
+            <Button onClick={handleDeleteConfirm} icon="pi pi-times" label="Delete Company" severity="danger" />
+          </div>
+        ) : null}
       </div>
     </form>
   )

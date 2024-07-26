@@ -18,7 +18,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { DashboardActivity } from './DashboardActivity'
 import { DashboardFacilityTable } from './DashboardFacilityTable'
-import { DashboardReleasesList } from './DashboardReleasesList'
+// import { DashboardReleasesList } from './DashboardReleasesList'
 import { DashboardUserTable } from './DashboardUserTable'
 
 export interface ITransaction {
@@ -146,7 +146,7 @@ export const AdminDashboard = () => {
             <hr />
             <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} />
             <hr />
-            <DashboardReleasesList />
+            {/* <DashboardReleasesList /> */}
           </div>
           <div className="mx-auto sm:px-6 lg:px-8">
             <h2 className="text-lg font-medium leading-6 text-gray-900">Active Records</h2>
