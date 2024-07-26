@@ -164,6 +164,7 @@ export const App = () => {
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/pending/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/authorized/:serviceOrderId" />
+                  <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/pending/:serviceOrderId" />
                   <Route element={<AllServiceOrdersListPage />} path="/client/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/client/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/client/jobs/service-orders/authorized" />
@@ -219,6 +220,7 @@ export const App = () => {
                   <Route element={<JobDetailViewAdmin />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/service-order/pending/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/authorized/:serviceOrderId" />
                   <Route element={<AllServiceOrdersListPage />} path="/admin/jobs/service-orders" />
