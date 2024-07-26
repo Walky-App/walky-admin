@@ -194,7 +194,7 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
     confirmPopup({
       target: event.currentTarget as HTMLElement,
       message:
-        'If you delete this facility, all associated jobs, licenses, images and company association will be removed. Are you sure you want to proceed?',
+        'If you delete this Company, all associated facilities, users, jobs, licenses, images and company association will be removed. Are you sure you want to proceed?',
       icon: 'pi pi-info-circle',
       defaultFocus: 'reject',
       acceptClassName: 'p-button-danger',
