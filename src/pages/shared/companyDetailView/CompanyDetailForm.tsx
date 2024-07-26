@@ -55,7 +55,7 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
         if (role === 'client') {
           response = await requestService({ path: `facilities/company/${params.id}` })
         } else {
-          response = await requestService({ path: 'facilities' })
+          response = await requestService({ path: 'facilities/without-company' })
         }
 
         if (response.ok) {
@@ -162,9 +162,6 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
         throw new Error('Failed to update company')
       }
       showToast({ severity: 'success', summary: 'Company updated successfully' })
-      setTimeout(() => {
-        navigate(`/${role}/companies`)
-      }, 2000)
     } catch (error) {
       console.error('Error updating company: ', error)
       showToast({ severity: 'error', summary: 'Failed to update company' })
@@ -174,6 +171,7 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
   const accept = async () => {
     try {
       const response = await requestService({ path: `companies/${selectedCompanyData._id}`, method: 'DELETE' })
+
       if (response.ok) {
         const data = await response.json()
         showToast({ severity: 'success', summary: 'Success', detail: data.message })
@@ -182,6 +180,7 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
     } catch (error) {
       console.error(error)
       showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting facility' })
+      navigate('/admin/companies')
     }
   }
 
