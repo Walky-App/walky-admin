@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form'
 import { useParams, useNavigate } from 'react-router-dom'
 
+import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { InputMask } from 'primereact/inputmask'
@@ -210,8 +211,12 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
             <h2 className="text-base font-semibold leading-7 text-gray-900">Company Information</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Please take a moment to provide the essential information for the company.
+              {requiredFieldsNoticeText}
+              <br />
+              <br />
+              Created by: {selectedCompanyData.created_by} on{' '}
+              {format(selectedCompanyData?.createdAt ?? new Date(), 'MM/dd/yyyy')}
             </p>
-            {requiredFieldsNoticeText}
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">

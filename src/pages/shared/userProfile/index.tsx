@@ -10,6 +10,8 @@ import { type IUser } from '../../../interfaces/User'
 import { type ITrainingData } from '../../../interfaces/training'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { roleChecker, roleTxt } from '../../../utils/roleChecker'
+import ProfileCompanies from './ProfileCompanies'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
 import { ProfileTimesheets } from './ProfileTimesheets'
@@ -44,6 +46,7 @@ export const UserProfile = () => {
   const { user } = useAuth()
   const { showToast } = useUtils()
   const { id } = useParams()
+  const role = roleChecker()
 
   useEffect(() => {
     if (!user) return
@@ -71,9 +74,7 @@ export const UserProfile = () => {
     getUser()
   }, [id, showToast, user])
 
-  const isVisibleToUser = (userRole: string): boolean => {
-    return userRole !== process.env.REACT_APP_CLIENT_ROLE && userRole !== process.env.REACT_APP_ADMIN_ROLE
-  }
+  const showTabForClient = () => role !== 'client' && roleTxt(formUser.role) !== 'Client'
 
   return loading ? (
     <HTLoadingLogo />
@@ -89,15 +90,26 @@ export const UserProfile = () => {
         <TabPanel header="User Detail">
           <ProfileDetail formUser={formUser} setFormUser={setFormUser} />
         </TabPanel>
-        <TabPanel header="Documents" visible={isVisibleToUser(formUser.role)}>
-          <ProfileDocuments formUser={formUser} setFormUser={setFormUser} />
-        </TabPanel>
-        <TabPanel header="Training" visible={isVisibleToUser(formUser.role)}>
-          <ProfileTraining userTraining={userTraining} />
-        </TabPanel>
-        <TabPanel header="TimeSheets" visible={isVisibleToUser(formUser.role)}>
-          <ProfileTimesheets userId={formUser._id} />
-        </TabPanel>
+        {showTabForClient() ? (
+          <TabPanel header="Documents">
+            <ProfileDocuments formUser={formUser} setFormUser={setFormUser} />
+          </TabPanel>
+        ) : null}
+        {showTabForClient() ? (
+          <TabPanel header="Training">
+            <ProfileTraining userTraining={userTraining} />
+          </TabPanel>
+        ) : null}
+        {showTabForClient() || role === 'Admin' ? (
+          <TabPanel header="TimeSheets">
+            <ProfileTimesheets userId={formUser._id} />
+          </TabPanel>
+        ) : null}
+        {role !== 'employee' ? (
+          <TabPanel header="Companies">
+            <ProfileCompanies formUser={formUser} />
+          </TabPanel>
+        ) : null}
       </TabView>
     </div>
   )
