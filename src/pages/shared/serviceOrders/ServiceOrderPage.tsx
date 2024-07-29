@@ -128,7 +128,7 @@ export const ServiceOrderPage = () => {
   const handleGenerateInvoice = async () => {
     try {
       const response = await requestService({
-        path: `invoice/${serviceOrder?.job_id._id}`,
+        path: `invoices/${serviceOrder?.job_id._id}`,
         method: 'POST',
         body: JSON.stringify({}),
       })
@@ -138,7 +138,7 @@ export const ServiceOrderPage = () => {
 
       if (response.ok) {
         const invoice = await response.json()
-        navigate(`/admin/invoices/${invoice._id}`)
+        navigate(`/admin/invoices/${invoice.invoiceId}`)
         showToast({ severity: 'success', summary: 'Success', detail: 'Invoice generated successfully' })
       }
     } catch (error) {
