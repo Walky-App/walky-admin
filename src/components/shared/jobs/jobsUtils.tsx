@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 
 import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
+import { eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
 import { isValid, parse } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
@@ -136,6 +137,12 @@ export const renderJobDatesController = (
         setHolidayCount(holidayCount)
       }, [field.value])
 
+      const jobDates = [...field.value]
+      jobDates.sort((a, b) => a.getTime() - b.getTime())
+      const firstDate = jobDates[0]
+      const lastDate = jobDates[jobDates.length - 1]
+      const weeks = eachWeekOfInterval({ start: firstDate, end: lastDate })
+
       return (
         <>
           <HtInfoTooltip message="Select the dates you need temps at your facility.  Only up to 30 days from today!">
@@ -157,20 +164,34 @@ export const renderJobDatesController = (
             <div className="mt-2">
               <HtInputLabel htmlFor={field.name} labelText="Selected Dates" className="text-base" />
               <ul className="mt-2 grid grid-cols-5 gap-2">
-                {field.value
-                  .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-                  .map((date: Date, index: number) => {
-                    const holiday = stateHolidays.find(
-                      holiday => new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
-                    )
-                    const isHoliday = Boolean(holiday)
-                    return (
-                      <li key={index} style={{ color: isHoliday ? 'red' : 'inherit' }}>
-                        {date.toLocaleDateString()}
-                        {isHoliday ? ` (${holiday?.holiday_name})` : ''}
-                      </li>
-                    )
-                  })}
+                {weeks.map((week, weekIndex) => {
+                  const startOfWeekDate = startOfWeek(week)
+                  const endOfWeekDate = endOfWeek(week)
+                  const job_dates_in_week = field.value
+                    .filter(date => isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate }))
+                    .sort((a: Date, b: Date) => a.getTime() - b.getTime())
+
+                  return (
+                    <li key={weekIndex}>
+                      <strong>Week {weekIndex + 1}</strong>
+                      <ul>
+                        {job_dates_in_week.map((date: Date, index: number) => {
+                          const holiday = stateHolidays.find(
+                            holiday =>
+                              new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
+                          )
+                          const isHoliday = Boolean(holiday)
+                          return (
+                            <li key={index} style={{ color: isHoliday ? 'red' : 'inherit' }}>
+                              {date.toLocaleDateString()}
+                              {isHoliday ? ` (${holiday?.holiday_name})` : ''}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           ) : null}
