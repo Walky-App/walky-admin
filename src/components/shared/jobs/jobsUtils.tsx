@@ -151,7 +151,13 @@ export const renderJobDatesController = (
           <Calendar
             inputId={field.name}
             value={field.value}
-            onChange={field.onChange}
+            onChange={e => {
+              if (e.value !== null) {
+                field.onChange(e.value)
+              } else {
+                field.onChange([])
+              }
+            }}
             dateFormat="mm/dd/yy"
             maxDate={new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)} // Set max date to 30 days from today
             selectionMode="multiple"
