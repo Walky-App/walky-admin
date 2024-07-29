@@ -103,6 +103,7 @@ export const AdminUserEmployeesListPage = () => {
         accessor: (d: IUser) => (d.is_shift_supervisor ? 'Yes' : 'No'),
       },
       { Header: 'Email', accessor: 'email', width: 300 },
+      { Header: 'WPS', accessor: user => (user.wps_training ? format(user.wps_training, 'P') : null), width: 300 },
       { Header: 'City', accessor: 'city' },
       { Header: 'Zip', accessor: 'zip' },
       { Header: 'State', accessor: 'state', width: 20 },
