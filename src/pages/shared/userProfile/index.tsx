@@ -13,6 +13,7 @@ import { useUtils } from '../../../store/useUtils'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
+import { ProfileNotes } from './ProfileNotes'
 import { ProfileTimesheets } from './ProfileTimesheets'
 import { ProfileTraining } from './ProfileTraining'
 
@@ -73,19 +74,7 @@ export const UserProfile = () => {
     getUser()
   }, [id, showToast, user])
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault()
-
-    // let formPayloadWithNotes
-    // if (internalNoteObj != null && internalNoteObj.note != null && internalNoteObj.createdBy != null) {
-    //   formPayloadWithNotes = {
-    //     ...formUser,
-    //     internal_notes: [...(formUser.internal_notes ?? []), internalNoteObj],
-    //   }
-    // }
-
-    // const payload = formPayloadWithNotes?.internal_notes.length !== 0 ? formPayloadWithNotes : formUser
-
+  const handleSubmit = async (): Promise<void> => {
     try {
       const response = await requestService({
         path: `users/${formUser?._id}`,
@@ -96,14 +85,13 @@ export const UserProfile = () => {
         const data = await response.json()
         showToast({ severity: 'success', summary: 'Success', detail: 'User updated' })
         setFormUser(data)
-        // setInternalNoteObj(undefined)
       }
     } catch (error) {
       console.error('Error updating user:', error)
     }
   }
 
-  const showTabForClient = () => role !== 'client' && roleTxt(formUser.role) !== 'Client'
+  const notShowTabForClient = () => role !== 'client' && roleTxt(formUser.role) !== 'Client'
 
   return loading ? (
     <HTLoadingLogo />
@@ -119,12 +107,12 @@ export const UserProfile = () => {
         <TabPanel header="User Detail">
           <ProfileDetail formUser={formUser} setFormUser={setFormUser} updateUser={handleSubmit} />
         </TabPanel>
-        {showTabForClient() ? (
+        {notShowTabForClient() ? (
           <TabPanel header="Documents">
             <ProfileDocuments formUser={formUser} setFormUser={setFormUser} />
           </TabPanel>
         ) : null}
-        {showTabForClient() ? (
+        {notShowTabForClient() ? (
           <TabPanel header="Training">
             <ProfileTraining
               userTraining={userTraining}
@@ -135,9 +123,14 @@ export const UserProfile = () => {
             />
           </TabPanel>
         ) : null}
-        {showTabForClient() || role === 'Admin' ? (
+        {notShowTabForClient() || role === 'admin' ? (
           <TabPanel header="TimeSheets">
             <ProfileTimesheets userId={formUser._id} />
+          </TabPanel>
+        ) : null}
+        {role === 'admin' ? (
+          <TabPanel header="Notes">
+            <ProfileNotes formUser={formUser} setFormUser={setFormUser} role={role} updateUser={handleSubmit} />
           </TabPanel>
         ) : null}
       </TabView>
