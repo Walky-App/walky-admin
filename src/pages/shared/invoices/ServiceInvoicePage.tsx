@@ -4,14 +4,20 @@ import { useParams } from 'react-router-dom'
 
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
+import { InputNumber } from 'primereact/inputnumber'
+
+import { TrashIcon } from '@heroicons/react/20/solid'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
+import { DiscountDialog } from './DiscountDialog'
 
 export const ServiceInvoicePage = () => {
   const [invoice, setInvoice] = useState<IServiceInvoice | null>(null)
+  const [discount, setDiscount] = useState<number>(0)
+  const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const { invoiceId } = useParams()
   const role = roleChecker()
@@ -55,10 +61,52 @@ export const ServiceInvoicePage = () => {
     }
   }
 
+  const handlerSetDiscount = async (comment: string) => {
+    try {
+      setIsLoading(true)
+      const response = await requestService({
+        path: `invoices/discount/${invoiceId}`,
+        method: 'POST',
+        body: JSON.stringify({ discount, comment }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to apply discount to invoice')
+      }
+      const fetchedData = await response.json()
+      setInvoice(fetchedData)
+      setIsOpen(false)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error regenerating invoice:', error)
+      setIsLoading(false)
+    }
+  }
+
+  const handlerRemoveDiscount = async () => {
+    try {
+      setIsLoading(true)
+      const response = await requestService({
+        path: `invoices/discount/${invoiceId}`,
+        method: 'DELETE',
+      })
+      if (!response.ok) {
+        throw new Error('Failed to apply discount to invoice')
+      }
+      const fetchedData = await response.json()
+      setInvoice(fetchedData)
+      setDiscount(0)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error regenerating invoice:', error)
+      setIsLoading(false)
+    }
+  }
+
   return isLoading ? (
     <HTLoadingLogo />
   ) : (
     <div className="px-4 sm:px-6 lg:px-24">
+      <DiscountDialog isOpen={isOpen} hidden={setIsOpen} handlerSetDiscount={handlerSetDiscount} />
       <div className="my-8 flex items-center justify-between">
         <img className="w</div>-auto h-16" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
         <h1 className="text-base text-xl font-semibold leading-6">
@@ -205,6 +253,39 @@ export const ServiceInvoicePage = () => {
               </td>
             </tr>
             <tr className="border-t-2">
+              {invoice?.details.discount ? (
+                <>
+                  <th
+                    scope="row"
+                    colSpan={3}
+                    className="hidden pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
+                    <div className="flex items-center justify-end">
+                      <TrashIcon className="mr-1 h-4 w-4 text-red-600" onClick={handlerRemoveDiscount} />
+                      Discount:
+                    </div>
+                  </th>
+                  <td className="pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
+                    - ${Number(invoice?.details.discount).toFixed(2)}
+                  </td>
+                </>
+              ) : (
+                <>
+                  <th scope="row" colSpan={3} className="pr-3 pt-4">
+                    <InputNumber
+                      className="w-full"
+                      prefix="$"
+                      placeholder="Enter Discount"
+                      value={discount}
+                      onChange={e => setDiscount(Number(e.value))}
+                    />
+                  </th>
+                  <td className="pr-4 pt-4">
+                    <Button label="Apply" onClick={() => setIsOpen(true)} disabled={discount == 0} />
+                  </td>
+                </>
+              )}
+            </tr>
+            <tr>
               <th
                 scope="row"
                 colSpan={3}
