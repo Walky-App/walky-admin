@@ -358,7 +358,7 @@ export const renderVacancyController = (
     }}
     render={({ field, fieldState }) => (
       <>
-        <HtInfoTooltip message="If you have more than 10 vacancies for this job, please message Support.">
+        <HtInfoTooltip message="If you have more than 15 vacancies for this job, please message Support.">
           <HtInputLabel htmlFor={field.name} asterisk labelText="Number of Vacancies" />
         </HtInfoTooltip>
         <InputNumber
@@ -367,7 +367,7 @@ export const renderVacancyController = (
           value={field.value}
           onBlur={field.onBlur}
           onValueChange={(e: InputNumberValueChangeEvent) => {
-            if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
+            if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 15) {
               field.onChange(e.value)
             }
           }}
@@ -375,7 +375,7 @@ export const renderVacancyController = (
           mode="decimal"
           showButtons
           min={1}
-          max={10}
+          max={15}
           inputClassName={classNames({ 'p-invalid': fieldState.error })}
           className="mt-2"
         />
