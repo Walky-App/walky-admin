@@ -93,7 +93,7 @@ import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardi
 import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
 import { CompanyDetailView } from './pages/shared/companyDetailView'
 import { AllInvoicesListPage } from './pages/shared/invoices/AllInvoicesListPage'
-import { InvoiceDetailsPage } from './pages/shared/invoices/InvoiceDetailsPage'
+import { ServiceInvoicePage } from './pages/shared/invoices/ServiceInvoicePage'
 import { JobDetailView } from './pages/shared/jobDetailView'
 import { AllServiceOrdersListPage } from './pages/shared/serviceOrders/AllServiceOrdersListPage'
 import { AuthorizedServiceOrdersListPage } from './pages/shared/serviceOrders/AuthorizedServiceOrdersListPage'
@@ -226,7 +226,7 @@ export const App = () => {
                   <Route element={<AllServiceOrdersListPage />} path="/admin/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/admin/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/admin/jobs/service-orders/authorized" />
-                  <Route element={<InvoiceDetailsPage />} path="/admin/invoices/:id" />
+                  <Route element={<ServiceInvoicePage />} path="/admin/invoices/:invoiceId" />
                   <Route element={<AllInvoicesListPage />} path="/admin/invoices" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
                   <Route element={<AdminCategoryLearn />} path="/admin/learn/categories" />
