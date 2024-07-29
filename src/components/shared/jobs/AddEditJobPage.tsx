@@ -44,6 +44,73 @@ const calculateHours = (start: Date, end: Date, lunch: number) => {
   return parseFloat(totalHours.toFixed(2))
 }
 
+const calculateServiceOrder = (
+  totalHours: number,
+  hourlyRate: number,
+  hourlySupervisorFee: number,
+  overTimeRateMultiplier: number,
+  holidayRateMultiplier: number,
+  jobDatesLength: number,
+  holidayCount: number,
+  vacancy: number,
+  adminCosts: number,
+  ourFee: number,
+  processingFee: number,
+) => {
+  const overtimeHours = totalHours > 8 ? totalHours - 8 : 0
+  const normalHours = totalHours > 8 ? 8 : totalHours
+
+  const overtimeRate = hourlyRate * overTimeRateMultiplier
+  const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier
+
+  const holidayOvertimeRate = overtimeRate * holidayRateMultiplier
+
+  const totalOvertimeHours =
+    overtimeHours * overtimeRate * (jobDatesLength - holidayCount) + overtimeHours * holidayOvertimeRate * holidayCount
+
+  const totalOvertime = totalOvertimeHours * vacancy
+
+  const totalSupervisorNormalFee =
+    vacancy >= 6
+      ? normalHours * hourlySupervisorFee * (jobDatesLength - holidayCount) +
+        normalHours * hourlySupervisorFee * holidayCount
+      : 0
+
+  const totalSupervisorOvertimeFee =
+    vacancy >= 6 && totalHours > 8
+      ? overtimeHours * overtimeSupervisorRate * (jobDatesLength - holidayCount) +
+        overtimeHours * holidayOvertimeRate * holidayCount
+      : 0
+
+  const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
+
+  const normalDayAmount = hourlyRate * vacancy * normalHours * (jobDatesLength - holidayCount)
+  const holidayAmount = hourlyRate * holidayRateMultiplier * vacancy * normalHours * holidayCount
+  const baseAmount = normalDayAmount + holidayAmount + totalOvertime + newTotalSupervisorFee
+  const newPreliminaryPricing = baseAmount * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
+  const totalOfAllTempsHours = totalHours * jobDatesLength * vacancy
+  const hourlyRateWithFees = newPreliminaryPricing / totalOfAllTempsHours
+
+  const adminCostAmount = (baseAmount * adminCosts) / 100
+  const ourFeeAmount = (baseAmount * ourFee) / 100
+  const processingFeeAmount = (baseAmount * processingFee) / 100
+
+  const totalEstimatedCost = baseAmount + adminCostAmount + ourFeeAmount + processingFeeAmount
+
+  return {
+    normalHours,
+    totalOvertimeHours,
+    totalOvertime,
+    newTotalSupervisorFee,
+    hourlyRateWithFees,
+    baseAmount,
+    adminCostAmount,
+    ourFeeAmount,
+    processingFeeAmount,
+    totalEstimatedCost,
+  }
+}
+
 export const AddEditJobPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -97,6 +164,10 @@ export const AddEditJobPage = () => {
   } = useForm({ defaultValues: formData })
 
   const selectedFacility = useWatch({ name: 'facility_id', control })
+  const lunchBreak = useWatch({ name: 'lunch_break', control })
+  const vacancy = useWatch({ name: 'vacancy', control })
+  const jobDatesLength = useWatch({ name: 'job_dates', control }).length
+  const hourlyRate = useWatch({ name: 'hourly_rate', control })
 
   useEffect(() => {
     if (!facilityStateSettings) return
@@ -186,8 +257,6 @@ export const AddEditJobPage = () => {
     }
   }, [params.id, facilities])
 
-  const lunchBreak = useWatch({ name: 'lunch_break', control })
-
   useEffect(() => {
     if (startTime && endTime) {
       const totalHoursCalc = calculateHours(startTime, endTime, lunchBreak)
@@ -199,7 +268,6 @@ export const AddEditJobPage = () => {
   jobDates.sort((a, b) => a.getTime() - b.getTime())
   const firstDate = Math.min(...jobDates.map(date => date.getTime()))
   const lastDate = Math.max(...jobDates.map(date => date.getTime()))
-
   const weeks = eachWeekOfInterval({ start: firstDate, end: lastDate })
 
   const onSubmit = async (data: JobFormDefaultValues) => {
@@ -260,6 +328,28 @@ export const AddEditJobPage = () => {
     try {
       let errorOccurred = false
       for (const requestDataForWeek of requestDataForWeeks) {
+        const jobDatesLength = requestDataForWeek.job_dates.length
+        const holidayCount = requestDataForWeek.job_dates.reduce((count, date) => {
+          const isHoliday = stateHolidays.some(
+            holiday => new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
+          )
+          return isHoliday ? count + 1 : count
+        }, 0)
+
+        const serviceOrderCalculations = calculateServiceOrder(
+          totalHours,
+          hourlyRate,
+          hourlySupervisorFee,
+          overTimeRateMultiplier,
+          holidayRateMultiplier,
+          jobDatesLength,
+          holidayCount,
+          vacancy,
+          adminCosts,
+          ourFee,
+          processingFee,
+        )
+
         const details = {
           temp_pay_rate: Math.round(hourlyRate * 100) / 100,
           number_of_vacancies: vacancy,
@@ -314,36 +404,32 @@ export const AddEditJobPage = () => {
     }
   }
 
-  const vacancy = useWatch({ name: 'vacancy', control })
-  const jobDatesLength = useWatch({ name: 'job_dates', control }).length
-  const hourlyRate = useWatch({ name: 'hourly_rate', control })
-
   useEffect(() => {
-    const overtimeHours = totalHours > 8 ? totalHours - 8 : 0
-    const normalHours = totalHours > 8 ? 8 : totalHours
+    const overtimeHours = totalHours > 8 ? totalHours - 8 : 0 //same
+    const normalHours = totalHours > 8 ? 8 : totalHours //same
 
-    const overtimeRate = hourlyRate * overTimeRateMultiplier
-    const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier
+    const overtimeRate = hourlyRate * overTimeRateMultiplier //same
+    const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier //same
 
-    const holidayOvertimeRate = overtimeRate * holidayRateMultiplier
+    const holidayOvertimeRate = overtimeRate * holidayRateMultiplier //same
 
     const totalOvertimeHours =
       overtimeHours * overtimeRate * (jobDatesLength - holidayCount) +
-      overtimeHours * holidayOvertimeRate * holidayCount
+      overtimeHours * holidayOvertimeRate * holidayCount //this one is gonna be different week to week
 
-    const totalOvertime = totalOvertimeHours * vacancy
+    const totalOvertime = totalOvertimeHours * vacancy //different because of the reason above
 
     const totalSupervisorNormalFee =
       vacancy >= 6
         ? normalHours * hourlySupervisorFee * (jobDatesLength - holidayCount) +
           normalHours * hourlySupervisorFee * holidayCount
-        : 0
+        : 0 //different because of jobDatesLength and holidayCount
 
     const totalSupervisorOvertimeFee =
       vacancy >= 6 && totalHours > 8
         ? overtimeHours * overtimeSupervisorRate * (jobDatesLength - holidayCount) +
           overtimeHours * holidayOvertimeRate * holidayCount
-        : 0
+        : 0 //
 
     const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
 
