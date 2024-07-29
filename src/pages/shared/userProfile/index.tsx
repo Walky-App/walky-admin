@@ -73,6 +73,36 @@ export const UserProfile = () => {
     getUser()
   }, [id, showToast, user])
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
+
+    // let formPayloadWithNotes
+    // if (internalNoteObj != null && internalNoteObj.note != null && internalNoteObj.createdBy != null) {
+    //   formPayloadWithNotes = {
+    //     ...formUser,
+    //     internal_notes: [...(formUser.internal_notes ?? []), internalNoteObj],
+    //   }
+    // }
+
+    // const payload = formPayloadWithNotes?.internal_notes.length !== 0 ? formPayloadWithNotes : formUser
+
+    try {
+      const response = await requestService({
+        path: `users/${formUser?._id}`,
+        method: 'PATCH',
+        body: JSON.stringify(formUser),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        showToast({ severity: 'success', summary: 'Success', detail: 'User updated' })
+        setFormUser(data)
+        // setInternalNoteObj(undefined)
+      }
+    } catch (error) {
+      console.error('Error updating user:', error)
+    }
+  }
+
   const showTabForClient = () => role !== 'client' && roleTxt(formUser.role) !== 'Client'
 
   return loading ? (
@@ -87,7 +117,7 @@ export const UserProfile = () => {
       </div>
       <TabView>
         <TabPanel header="User Detail">
-          <ProfileDetail formUser={formUser} setFormUser={setFormUser} />
+          <ProfileDetail formUser={formUser} setFormUser={setFormUser} updateUser={handleSubmit} />
         </TabPanel>
         {showTabForClient() ? (
           <TabPanel header="Documents">
@@ -96,7 +126,13 @@ export const UserProfile = () => {
         ) : null}
         {showTabForClient() ? (
           <TabPanel header="Training">
-            <ProfileTraining userTraining={userTraining} />
+            <ProfileTraining
+              userTraining={userTraining}
+              formUser={formUser}
+              setFormUser={setFormUser}
+              role={role}
+              updateUser={handleSubmit}
+            />
           </TabPanel>
         ) : null}
         {showTabForClient() || role === 'Admin' ? (
