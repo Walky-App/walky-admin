@@ -23,7 +23,7 @@ export const ProfileTraining = ({
   formUser: IUser
   setFormUser: Dispatch<SetStateAction<IUser>>
   role: string
-  updateUser: React.FormEventHandler<HTMLFormElement>
+  updateUser: () => void
 }) => {
   if (userTraining.categories.length === 0)
     return (
@@ -43,7 +43,7 @@ export const ProfileTraining = ({
             <div className="mb-12">
               <div className="sm:col-span-3">
                 <HtInputLabel htmlFor="wps_training" asterisk labelText="WPS Training date" />
-                <form onSubmit={updateUser}>
+                <div>
                   {role === 'employee' ? (
                     <h2> {formUser.wps_training?.toDateString()}</h2>
                   ) : (
@@ -53,10 +53,10 @@ export const ProfileTraining = ({
                         onChange={e => setFormUser({ ...formUser, wps_training: e.value ?? undefined })}
                         disabled={role === 'employee'}
                       />
-                      <Button type="submit" label="Update" disabled={role === 'employee'} />
+                      <Button onClick={updateUser} type="submit" label="Update" disabled={role === 'employee'} />
                     </div>
                   )}
-                </form>
+                </div>
               </div>
             </div>
 
