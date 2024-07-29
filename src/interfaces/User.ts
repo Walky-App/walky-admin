@@ -58,4 +58,5 @@ export interface IUser {
   score_rating?: number
   companies?: string[] | ICompany[]
   is_shift_supervisor?: boolean
+  wps_training?: Date
 }

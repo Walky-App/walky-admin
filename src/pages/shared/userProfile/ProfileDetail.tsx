@@ -23,9 +23,11 @@ import { GetTokenInfo } from '../../../utils/tokenUtil'
 export const ProfileDetail = ({
   formUser,
   setFormUser,
+  updateUser,
 }: {
   formUser: IUser
   setFormUser: Dispatch<SetStateAction<IUser>>
+  updateUser: React.FormEventHandler<HTMLFormElement>
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
   const [userFound, setUserFound] = useState<IUser>()
@@ -66,36 +68,6 @@ export const ProfileDetail = ({
     }
     fetchUser()
   }, [userId])
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault()
-
-    // let formPayloadWithNotes
-    // if (internalNoteObj != null && internalNoteObj.note != null && internalNoteObj.createdBy != null) {
-    //   formPayloadWithNotes = {
-    //     ...formUser,
-    //     internal_notes: [...(formUser.internal_notes ?? []), internalNoteObj],
-    //   }
-    // }
-
-    // const payload = formPayloadWithNotes?.internal_notes.length !== 0 ? formPayloadWithNotes : formUser
-
-    try {
-      const response = await requestService({
-        path: `users/${formUser?._id}`,
-        method: 'PATCH',
-        body: JSON.stringify(formUser),
-      })
-      if (response.ok) {
-        const data = await response.json()
-        showToast({ severity: 'success', summary: 'Success', detail: 'User updated' })
-        setFormUser(data)
-        setInternalNoteObj(undefined)
-      }
-    } catch (error) {
-      console.error('Error updating user:', error)
-    }
-  }
 
   const handlePasswordReset = async () => {
     try {
@@ -142,7 +114,7 @@ export const ProfileDetail = ({
   }
 
   return formUser?.role ? (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={updateUser}>
       <div className="p-fluid space-y-4 sm:space-y-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div className="flex flex-col justify-between">
