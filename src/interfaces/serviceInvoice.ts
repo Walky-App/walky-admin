@@ -19,6 +19,7 @@ interface IDetails {
   estimated_total_per_hour: number
   state_settings_history: StatesSettingsDocument
   temps_details: EmployeeShift[]
+  discount: number
   total_cost: number
 }
 
