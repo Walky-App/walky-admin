@@ -379,7 +379,7 @@ export const renderVacancyController = (
           inputClassName={classNames({ 'p-invalid': fieldState.error })}
           className="mt-2"
         />
-        <HtInputHelpText fieldName={field.name} helpText="Max number of vacancies: 10" />
+        <HtInputHelpText fieldName={field.name} helpText="Max number of vacancies: 15" />
         {getFormErrorMessage(field.name, errors)}
       </>
     )}
