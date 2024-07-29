@@ -405,65 +405,21 @@ export const AddEditJobPage = () => {
   }
 
   useEffect(() => {
-    const overtimeHours = totalHours > 8 ? totalHours - 8 : 0 //same
-    const normalHours = totalHours > 8 ? 8 : totalHours //same
+    const serviceOrderCalculations = calculateServiceOrder(
+      totalHours,
+      hourlyRate,
+      hourlySupervisorFee,
+      overTimeRateMultiplier,
+      holidayRateMultiplier,
+      jobDatesLength,
+      holidayCount,
+      vacancy,
+      adminCosts,
+      ourFee,
+      processingFee,
+    )
 
-    const overtimeRate = hourlyRate * overTimeRateMultiplier //same
-    const overtimeSupervisorRate = hourlySupervisorFee * overTimeRateMultiplier //same
-
-    const holidayOvertimeRate = overtimeRate * holidayRateMultiplier //same
-
-    const totalOvertimeHours =
-      overtimeHours * overtimeRate * (jobDatesLength - holidayCount) +
-      overtimeHours * holidayOvertimeRate * holidayCount //this one is gonna be different week to week
-
-    const totalOvertime = totalOvertimeHours * vacancy //different because of the reason above
-
-    const totalSupervisorNormalFee =
-      vacancy >= 6
-        ? normalHours * hourlySupervisorFee * (jobDatesLength - holidayCount) +
-          normalHours * hourlySupervisorFee * holidayCount
-        : 0 //different because of jobDatesLength and holidayCount
-
-    const totalSupervisorOvertimeFee =
-      vacancy >= 6 && totalHours > 8
-        ? overtimeHours * overtimeSupervisorRate * (jobDatesLength - holidayCount) +
-          overtimeHours * holidayOvertimeRate * holidayCount
-        : 0 //
-
-    const newTotalSupervisorFee = totalSupervisorNormalFee + totalSupervisorOvertimeFee
-
-    const normalDayAmount =
-      hourlyRate * vacancy * serviceOrderCalculations.normalHours * (jobDatesLength - holidayCount)
-    const holidayAmount =
-      hourlyRate * holidayRateMultiplier * vacancy * serviceOrderCalculations.normalHours * holidayCount
-    const baseAmount =
-      normalDayAmount +
-      holidayAmount +
-      serviceOrderCalculations.totalOvertime +
-      serviceOrderCalculations.newTotalSupervisorFee
-    const newPreliminaryPricing = baseAmount * (1 + adminCosts / 100 + ourFee / 100 + processingFee / 100)
-    const totalOfAllTempsHours = totalHours * jobDatesLength * vacancy
-    const hourlyRateWithFees = newPreliminaryPricing / totalOfAllTempsHours
-
-    const adminCostAmount = (baseAmount * adminCosts) / 100
-    const ourFeeAmount = (baseAmount * ourFee) / 100
-    const processingFeeAmount = (baseAmount * processingFee) / 100
-
-    const totalEstimatedCost = baseAmount + adminCostAmount + ourFeeAmount + processingFeeAmount
-
-    setServiceOrderCalculations({
-      normalHours,
-      totalOvertimeHours,
-      totalOvertime,
-      newTotalSupervisorFee,
-      hourlyRateWithFees,
-      baseAmount,
-      adminCostAmount,
-      ourFeeAmount,
-      processingFeeAmount,
-      totalEstimatedCost,
-    })
+    setServiceOrderCalculations(serviceOrderCalculations)
   }, [
     adminCosts,
     holidayCount,
@@ -474,9 +430,6 @@ export const AddEditJobPage = () => {
     ourFee,
     overTimeRateMultiplier,
     processingFee,
-    serviceOrderCalculations.newTotalSupervisorFee,
-    serviceOrderCalculations.normalHours,
-    serviceOrderCalculations.totalOvertime,
     totalHours,
     vacancy,
   ])
