@@ -60,8 +60,14 @@ export const AdminUserClientsListPage = () => {
         },
       },
       { Header: 'Email', accessor: 'email', width: 250 },
-      { Header: 'Phone', accessor: 'phone_number' },
-      { Header: 'City', accessor: 'city' },
+      {
+        Header: 'Companies',
+        accessor: (client: IUser) => {
+          if (!client?.companies?.length) return 'n/a'
+          return client?.companies?.map(company => (typeof company === 'object' ? company.company_name : '')).join(', ')
+        },
+        width: 250,
+      },
       { Header: 'State', accessor: 'state' },
       { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
     ],

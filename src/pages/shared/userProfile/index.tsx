@@ -11,7 +11,6 @@ import { type ITrainingData } from '../../../interfaces/training'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
-import ProfileCompanies from './ProfileCompanies'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
 import { ProfileTimesheets } from './ProfileTimesheets'
@@ -103,11 +102,6 @@ export const UserProfile = () => {
         {showTabForClient() || role === 'Admin' ? (
           <TabPanel header="TimeSheets">
             <ProfileTimesheets userId={formUser._id} />
-          </TabPanel>
-        ) : null}
-        {role !== 'employee' ? (
-          <TabPanel header="Companies">
-            <ProfileCompanies formUser={formUser} />
           </TabPanel>
         ) : null}
       </TabView>
