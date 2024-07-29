@@ -58,6 +58,7 @@ export interface ICompany {
   users: string[]
   createdAt?: string
   updatedAt?: string
+  created_by?: string
   company_location_pin: number[]
   company_ach_requested?: boolean
 }
