@@ -69,7 +69,7 @@ export const PendingServiceOrdersListPage = () => {
       {
         Header: 'Job has ended?',
         accessor: (row: IServiceOrder) =>
-          row.job_id && typeof row.job_id?.is_completed !== 'undefined'
+          row.job_id !== null && typeof row.job_id?.is_completed !== 'undefined'
             ? row.job_id?.is_completed
               ? 'Yes'
               : 'No'
