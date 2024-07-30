@@ -9,6 +9,7 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { RequestService } from '../../../services/RequestService'
+import { formatPhoneNumber } from '../../../utils/dataUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
@@ -152,9 +153,9 @@ export const AdminFacilityContacts = () => {
                       id="phone-number"
                       autoComplete="tel"
                       className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                      placeholder="123-456-7890"
-                      title="Phone number should be in the format: 123-456-7890"
+                      pattern="[0-9]{10}"
+                      placeholder="9999999999"
+                      title="Phone number should be in the format: 9999999999"
                     />
                   </div>
                 </div>
@@ -260,7 +261,7 @@ export const AdminFacilityContacts = () => {
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{singleContact.role}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{singleContact.email}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {singleContact.phone_number}
+                          {formatPhoneNumber(singleContact.phone_number)}
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                           <button
