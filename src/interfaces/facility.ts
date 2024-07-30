@@ -30,7 +30,7 @@ interface IDnr {
 export interface IFacility {
   _id?: string
   createdAt?: string
-  company_id: string
+  company_id: string | null
   name: string
   tax_id?: string
   license_number?: string
