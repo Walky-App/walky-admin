@@ -1,15 +1,13 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
-import { ProgressSpinner } from 'primereact/progressspinner'
-
-import { PlusCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
 import { SubHeader } from '../../../components/shared/SubHeader'
+import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
+import { HtFileUpload } from '../../../components/shared/general/HtFileUpload'
 import { type IFacility } from '../../../interfaces/facility'
-import { RequestService } from '../../../services/RequestService'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
@@ -18,49 +16,29 @@ import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityLicenses = () => {
   const [facility, setFacility] = useState<IFacility>()
-  const [uploading, setUploading] = useState(false)
-  const [files, setFiles] = useState<FileList | never[]>([])
+  const [isNewFileUploaded, setIsNewFileUploaded] = useState(false)
   const { facilityId } = useParams()
   const role = roleChecker()
 
-  const filesInputRef = useRef<HTMLInputElement>(null)
   const { showToast } = useUtils()
 
   useEffect(() => {
     const getFacility = async () => {
       try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
+        const response = await requestService({ path: `facilities/${facilityId}` })
+        if (!response.ok) {
+          throw new Error('Failed to fetch facility data')
+        }
+        const facilityFound: IFacility = await response.json()
         setFacility(facilityFound)
       } catch (error) {
         console.error('Error fetching facility data:', error)
+      } finally {
+        setIsNewFileUploaded(false)
       }
     }
     getFacility()
-  }, [facilityId])
-
-  const pickedHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setFiles(event.target.files)
-    }
-  }
-
-  const handleImagesUpload = async () => {
-    setUploading(true)
-    const formData = new FormData()
-    Array.from(files).forEach(file => {
-      formData.append('files[]', file)
-    })
-
-    const updatedFacility = await RequestService(`facilities/${facilityId}/licenses`, 'POST', formData, 'binary')
-
-    setFacility(updatedFacility)
-    setFiles([])
-    setUploading(false)
-  }
-
-  const pickImageHandler = () => {
-    filesInputRef?.current?.click()
-  }
+  }, [facilityId, isNewFileUploaded])
 
   const handleDelete = async (fileKey: string, licenseId: string) => {
     const body = {
@@ -95,35 +73,17 @@ export const AdminFacilityLicenses = () => {
       {facility ? (
         <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
       ) : null}
-      <input
-        ref={filesInputRef}
-        className="hidden"
-        type="file"
-        name="new-images"
-        multiple
-        id="new-images"
-        onChange={pickedHandler}
-      />
 
-      {!uploading ? (
-        <div className="my-5 flex items-center">
-          {files.length === 0 ? (
-            <Button className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
-              <PlusCircleIcon aria-hidden="true" />
-            </Button>
-          ) : (
-            <button
-              onClick={handleImagesUpload}
-              type="button"
-              className="inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
-              Upload {files.length} files
-              <CheckCircleIcon className="-mr-0.5 h-5 w-5" aria-hidden="true" />
-            </button>
-          )}
-        </div>
-      ) : (
-        <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
-      )}
+      <div className="space-y-2">
+        <HtInputLabel htmlFor="facility_licenses_upload" labelText="Upload Facility Licenses:" />
+        <HtFileUpload
+          inputId="facility_licenses_upload"
+          path={`facilities/${facilityId}/licenses`}
+          acceptMultipleFiles={false}
+          mode="basic"
+          onUploadSuccess={async () => setIsNewFileUploaded(true)}
+        />
+      </div>
 
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
