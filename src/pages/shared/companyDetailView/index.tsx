@@ -107,7 +107,10 @@ export const CompanyDetailView = () => {
           )}
         </TabPanel>
         <TabPanel header="Documents" visible={role === 'admin' ? true : false}>
-          <CompanyDocumentsView selectedCompanyData={selectedCompanyData} />
+          <CompanyDocumentsView
+            selectedCompanyData={selectedCompanyData}
+            setSelectedCompanyData={setSelectedCompanyData}
+          />
         </TabPanel>
       </TabView>
     </div>
