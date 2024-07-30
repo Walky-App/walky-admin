@@ -56,7 +56,7 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
         if (role === 'client') {
           response = await requestService({ path: `facilities/company/${params.id}` })
         } else {
-          response = await requestService({ path: 'facilities/without-company' })
+          response = await requestService({ path: `facilities/company/${params.id}/with-unassigned-facilities` })
         }
 
         if (response.ok) {
@@ -155,7 +155,7 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
   const onSubmit: SubmitHandler<ICompanyFormInputs> = async data => {
     try {
       const response = await requestService({
-        path: `companies/${params.id}`,
+        path: `companies/${params.id}/with-facility-assignment`,
         method: 'PATCH',
         body: JSON.stringify(data),
       })
@@ -235,10 +235,10 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
                       {...field}
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('company_name', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -261,10 +261,10 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
                       fieldName={field.name}
                       helpText="Enter DBAs separated by a comma: dba1, dba2, dba3"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('company_dbas', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -284,36 +284,10 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('company_tax_id', errors)}
-            </div>
-
-            <div className="sm:col-span-3">
-              <Controller
-                control={control}
-                name="company_address"
-                rules={{ required: 'Address is required' }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <HtInfoTooltip message="Legal address of the company.">
-                      <HtInputLabel htmlFor={field.name} asterisk labelText="Company Address" />
-                    </HtInfoTooltip>
-                    <AddressAutoComplete
-                      controlled
-                      setMoreAddressDetails={setMoreAddressDetails}
-                      currentAddress={field.value}
-                      onChange={field.onChange}
-                      value={field.value}
-                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      aria-describedby={`${field.name}-help`}
-                    />
-                    <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
-                  </>
-                )}
-              />
-              {getFormErrorMessage('address', errors)}
             </div>
 
             <div className="sm:col-span-3">
@@ -337,50 +311,78 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
                       className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
                       autoComplete="off"
                     />
+                    {getFormErrorMessage(field.name, errors)}
                   </>
                 )}
               />
-              {getFormErrorMessage('company_phone_number', errors)}
             </div>
 
-            <div className="sm:col-span-3">
+            <div className="sm:col-span-6">
               <Controller
                 control={control}
-                name="users"
-                render={({ field, fieldState }) => {
-                  const selectedClients = field.value
-                    .map(id => allClients.find(client => client._id === id))
-                    .filter(Boolean)
-                  return (
-                    <>
-                      <HtInfoTooltip message="All clients related to this company">
-                        <HtInputLabel htmlFor={field.name} labelText="Users" />
-                      </HtInfoTooltip>
-                      <MultiSelect
-                        id={field.name}
-                        {...field}
-                        value={selectedClients}
-                        optionLabel="email"
-                        options={allClients}
-                        display="chip"
-                        selectAll
-                        selectAllLabel="Select All"
-                        onChange={(e: MultiSelectChangeEvent) => {
-                          field.onChange(e.value.map((client: IUser) => client._id))
-                        }}
-                        placeholder="Select Services"
-                        className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
-                      />
-                      <HtInputHelpText
-                        fieldName={field.name}
-                        helpText="Please select all users related to this company."
-                      />
-                      {getFormErrorMessage('services', errors)}
-                    </>
-                  )
-                }}
+                name="company_address"
+                rules={{ required: 'Address is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <HtInfoTooltip message="Legal address of the company.">
+                      <HtInputLabel htmlFor={field.name} asterisk labelText="Company Address" />
+                    </HtInfoTooltip>
+                    <AddressAutoComplete
+                      controlled
+                      setMoreAddressDetails={setMoreAddressDetails}
+                      currentAddress={field.value}
+                      onChange={field.onChange}
+                      value={field.value}
+                      classNames={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                      aria-describedby={`${field.name}-help`}
+                    />
+                    <HtInputHelpText fieldName={field.name} helpText="Only Commercial Address" />
+                    {getFormErrorMessage(field.name, errors)}
+                  </>
+                )}
               />
             </div>
+
+            {role === 'admin' ? (
+              <div className="sm:col-span-6">
+                <Controller
+                  control={control}
+                  name="users"
+                  render={({ field, fieldState }) => {
+                    const selectedClients = field.value
+                      .map(id => allClients.find(client => client._id === id))
+                      .filter(Boolean)
+                    return (
+                      <>
+                        <HtInfoTooltip message="All clients related to this company">
+                          <HtInputLabel htmlFor={field.name} labelText="Users" />
+                        </HtInfoTooltip>
+                        <MultiSelect
+                          id={field.name}
+                          {...field}
+                          value={selectedClients}
+                          optionLabel="email"
+                          options={allClients}
+                          display="chip"
+                          selectAll
+                          selectAllLabel="Select All"
+                          onChange={(e: MultiSelectChangeEvent) => {
+                            field.onChange(e.value.map((client: IUser) => client._id))
+                          }}
+                          placeholder="Select Services"
+                          className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        />
+                        <HtInputHelpText
+                          fieldName={field.name}
+                          helpText="Please select all users related to this company."
+                        />
+                        {getFormErrorMessage(field.name, errors)}
+                      </>
+                    )
+                  }}
+                />
+              </div>
+            ) : null}
 
             <div className="sm:col-span-6">
               <Controller
@@ -409,30 +411,37 @@ export const CompanyDetailForm = ({ selectedCompanyData }: { selectedCompanyData
                         }}
                         placeholder="Select Services"
                         className={classNames({ 'p-invalid': fieldState.invalid }, 'mt-2')}
+                        disabled={role === 'client'}
                       />
-                      <HtInputHelpText
-                        fieldName={field.name}
-                        helpText="Please select all facilities that this company owns."
-                      />
-                      {getFormErrorMessage('services', errors)}
+                      <HtInputHelpText fieldName={field.name} helpText="All facilities which this company owns." />
+                      {getFormErrorMessage(field.name, errors)}
                     </>
                   )
                 }}
               />
             </div>
+            <div className="flex gap-2 sm:col-span-6">
+              <Button
+                type="submit"
+                label="Update Company"
+                icon="pi pi-save"
+                pt={{ label: { className: 'text-nowrap' } }}
+              />
+              {role === 'admin' ? (
+                <div className="basis-2/5">
+                  <ConfirmPopup />
+                  <Button
+                    onClick={handleDeleteConfirm}
+                    icon="pi pi-times"
+                    label="Delete Company"
+                    severity="danger"
+                    pt={{ label: { className: 'text-nowrap' } }}
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="mt-6 flex items-center justify-between gap-x-6">
-        <div>
-          <Button type="submit" label="Update" />
-        </div>
-        {role === 'admin' ? (
-          <div>
-            <ConfirmPopup />
-            <Button onClick={handleDeleteConfirm} icon="pi pi-times" label="Delete Company" severity="danger" />
-          </div>
-        ) : null}
       </div>
     </form>
   )
