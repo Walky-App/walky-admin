@@ -65,28 +65,10 @@ export const AdminUserEmployeesListPage = () => {
       { Header: 'F-Name', accessor: 'first_name', width: 200 },
       { Header: 'L-Name', accessor: 'last_name', width: 200 },
       {
-        Header: 'Onboarded',
-        width: 100,
-        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
-      },
-      {
-        Header: 'HTU-Certs',
-        width: 150,
-        accessor: (d: IUser) => d.student_record?.categories?.filter(cat => cat?.is_completed === true).length,
-      },
-      { Header: 'WPS', accessor: user => (user.wps_training ? format(user.wps_training, 'P') : null), width: 400 },
-      {
         Header: 'Approved',
         width: 100,
         accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
       },
-      {
-        Header: 'Docs',
-        width: 100,
-        text: 'center',
-        accessor: (d: IUser) => d.documents?.length,
-      },
-
       {
         Header: 'Joined',
         width: 200,
@@ -98,6 +80,25 @@ export const AdminUserEmployeesListPage = () => {
               : format(a.createdAt as string, 'P')
         },
       },
+
+      {
+        Header: 'Onboarded',
+        width: 100,
+        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
+      },
+      {
+        Header: 'Docs',
+        width: 100,
+        text: 'center',
+        accessor: (d: IUser) => d.documents?.length,
+      },
+      {
+        Header: 'HTU-Certs',
+        width: 150,
+        accessor: (d: IUser) => d.student_record?.categories?.filter(cat => cat?.is_completed === true).length,
+      },
+      { Header: 'WPS', accessor: user => (user.wps_training ? format(user.wps_training, 'P') : null), width: 400 },
+
       {
         Header: 'Supervisor',
         width: 100,
