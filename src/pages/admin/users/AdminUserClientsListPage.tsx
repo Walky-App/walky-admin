@@ -6,7 +6,6 @@ import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
-import { roleTxt } from '../../../utils/roleChecker'
 
 export const AdminUserClientsListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -44,11 +43,6 @@ export const AdminUserClientsListPage = () => {
         accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
       },
       {
-        Header: 'Onboarded',
-        width: 100,
-        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
-      },
-      {
         Header: 'Joined',
         width: 200,
         accessor: (a: IUser) => {
@@ -58,6 +52,11 @@ export const AdminUserClientsListPage = () => {
               ? 'Yesterday'
               : format(a.createdAt as string, 'P')
         },
+      },
+      {
+        Header: 'Onboarded',
+        width: 100,
+        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
       },
       { Header: 'Email', accessor: 'email', width: 250 },
       {
@@ -69,7 +68,6 @@ export const AdminUserClientsListPage = () => {
         width: 250,
       },
       { Header: 'State', accessor: 'state' },
-      { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
     ],
     [],
   )
