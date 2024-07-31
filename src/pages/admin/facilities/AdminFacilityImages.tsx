@@ -1,45 +1,39 @@
-/* eslint-disable @typescript-eslint/prefer-for-of */
-
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
 import { Badge } from 'primereact/badge'
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
+import { type FileUploadHandlerEvent } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
-import { ProgressSpinner } from 'primereact/progressspinner'
 
 import { Dialog, Transition } from '@headlessui/react'
-import { PlusCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
+import { XMarkIcon } from '@heroicons/react/24/solid'
 
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { SubHeader } from '../../../components/shared/SubHeader'
-import { type IFacility } from '../../../interfaces/facility'
-import { RequestService } from '../../../services/RequestService'
+import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
+import { HtFileUpload } from '../../../components/shared/general/HtFileUpload'
+import { type IFacilityFile, type IFacility } from '../../../interfaces/facility'
+import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLinks'
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityImages = () => {
+  const [loading, setLoading] = useState<boolean>(false)
   const [facility, setFacility] = useState<IFacility>()
-  const [uploading, setUploading] = useState(false)
-  const [files, setFiles] = useState<any>([])
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const role = roleChecker()
 
-  const filesInputRef = useRef<any>()
   const cancelButtonRef = useRef(null)
 
-  const selectedImage = useRef<any>(null)
+  const selectedImage = useRef<IFacilityFile | null>(null)
 
   const { showToast } = useUtils()
 
-  const handleDialogOpen = (file: any) => {
+  const handleDialogOpen = (file: IFacilityFile) => {
     selectedImage.current = file
     setOpenDialog(true)
   }
@@ -53,7 +47,11 @@ export const AdminFacilityImages = () => {
   useEffect(() => {
     const getFacility = async () => {
       try {
-        const facilityFound = await RequestService(`facilities/${facilityId}`)
+        const response = await requestService({ path: `facilities/${facilityId}` })
+        if (!response.ok) throw new Error('Failed to fetch facility data')
+
+        const facilityFound: IFacility = await response.json()
+
         setFacility(facilityFound)
       } catch (error) {
         console.error('Error fetching facility data:', error)
@@ -62,66 +60,119 @@ export const AdminFacilityImages = () => {
     getFacility()
   }, [facilityId])
 
-  const pickedHandler = (event: any) => {
-    if (event.target.files.length > 0) {
-      setFiles(event.target.files)
-    }
-  }
+  const handleImagesUpload = async (event: FileUploadHandlerEvent) => {
+    setLoading(true)
 
-  const handleImagesUpload = async () => {
-    setUploading(true)
+    const files = event.files
     const formData = new FormData()
-    for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i])
+
+    for (const file of files) {
+      formData.append('files', file)
     }
 
-    const updatedFacilityWithAddedImage = await RequestService(
-      `facilities/${facilityId}/images`,
-      'POST',
-      formData,
-      'binary',
-    )
-
-    if (updatedFacilityWithAddedImage.images.length === 1) {
-      await RequestService(`facilities/${facilityId}`, 'PATCH', {
-        ...updatedFacilityWithAddedImage,
-        main_image: updatedFacilityWithAddedImage.images[0].url,
+    try {
+      const uploadFacilityImagesResponse = await requestService({
+        path: `facilities/${facilityId}/images`,
+        method: 'POST',
+        body: formData,
+        dataType: 'formData',
       })
+
+      if (!uploadFacilityImagesResponse.ok) throw new Error('Failed to upload facility images')
+
+      const facilityWithAddedImage: IFacility = await uploadFacilityImagesResponse.json()
+      const images = facilityWithAddedImage.images ?? []
+
+      if (images.length === 1) {
+        const updateFacilityResponse = await requestService({
+          path: `facilities/${facilityId}`,
+          method: 'PATCH',
+          body: JSON.stringify({
+            ...images,
+            main_image: images[0]?.url,
+          }),
+        })
+
+        if (!updateFacilityResponse.ok) throw new Error('Failed to update facility')
+
+        const facilityWithNewMainImage: IFacility = await updateFacilityResponse.json()
+
+        setFacility(facilityWithNewMainImage)
+      } else {
+        setFacility(facilityWithAddedImage)
+      }
+      showToast({ severity: 'success', summary: 'Success', detail: 'Image uploaded successfully' })
+    } catch (error) {
+      console.error('Error uploading facility images:', error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'An error occurred while uploading the images' })
+    } finally {
+      if (event.options != null) {
+        event.options.clear()
+      }
+      setLoading(false)
     }
-
-    const updatedFacility = await RequestService(`facilities/${facilityId}`)
-
-    setFacility(updatedFacility)
-    setFiles([])
-    setUploading(false)
-  }
-
-  const pickImageHandler = () => {
-    filesInputRef.current.click()
   }
 
   const handleRemoveImage = async (event: React.MouseEvent<HTMLButtonElement>) => {
     const accept = async () => {
-      const body = {
-        file_type: 'images',
-        file_id: selectedImage.current._id,
-        file_path: selectedImage.current.key,
+      if (!selectedImage?.current) {
+        showToast({ severity: 'error', summary: 'Error', detail: 'No image selected' })
+        setOpenDialog(false)
+        return
       }
 
-      const updatedFacility: IFacility = await RequestService(`facilities/${facilityId}/file`, 'DELETE', body)
+      try {
+        const body = {
+          file_type: 'images',
+          file_id: selectedImage?.current?._id,
+          file_path: selectedImage?.current?.key,
+        }
 
-      if (updatedFacility?.images && updatedFacility.images.length > 0) {
-        const newMainImage = updatedFacility.images[0]
-        await RequestService(`facilities/${facilityId}`, 'PATCH', {
-          ...facility,
-          main_image: newMainImage.url,
+        const deleteFacilityFileResponse = await requestService({
+          path: `facilities/${facilityId}/file`,
+          method: 'DELETE',
+          body: JSON.stringify(body),
         })
-        setFacility({ ...updatedFacility, main_image: newMainImage.url })
+
+        if (!deleteFacilityFileResponse.ok) throw new Error('Failed to delete facility file')
+
+        const updatedFacility: IFacility = await deleteFacilityFileResponse.json()
+
+        setFacility(updatedFacility)
+
+        const images = updatedFacility.images ?? []
+
+        if (images.length > 0) {
+          const newMainImage = images[0]
+          const updateFacilityResponse = await requestService({
+            path: `facilities/${facilityId}`,
+            method: 'PATCH',
+            body: JSON.stringify({
+              ...updatedFacility,
+              main_image: newMainImage.url,
+            }),
+          })
+          if (!updateFacilityResponse.ok) throw new Error('Failed to update facility')
+          const updatedFacilityWithNewMainImage: IFacility = await updateFacilityResponse.json()
+
+          setFacility(updatedFacilityWithNewMainImage)
+        } else if (images.length === 0) {
+          const updateFacilityResponse = await requestService({
+            path: `facilities/${facilityId}`,
+            method: 'PATCH',
+            body: JSON.stringify({ ...updatedFacility, main_image: '' }),
+          })
+          if (!updateFacilityResponse.ok) throw new Error('Failed to update facility')
+          const updatedFacilityWithoutMainImage: IFacility = await updateFacilityResponse.json()
+
+          setFacility(updatedFacilityWithoutMainImage)
+        }
+        showToast({ severity: 'warn', summary: 'Confirmed', detail: 'Image removed', life: 3000 })
+      } catch (error) {
+        console.error('Error deleting facility image:', error)
+        showToast({ severity: 'error', summary: 'Error', detail: 'An error occurred while deleting the image' })
       }
 
-      setFacility(updatedFacility)
-
-      showToast({ severity: 'warn', summary: 'Confirmed', detail: 'Image removed', life: 3000 })
       setOpenDialog(false)
     }
 
@@ -135,22 +186,44 @@ export const AdminFacilityImages = () => {
     })
   }
 
-  const handleFacilityUpdate = async () => {
-    setOpenDialog(false)
+  const handleFacilityUpdateMainImage = async () => {
+    if (!selectedImage?.current) {
+      showToast({ severity: 'error', summary: 'Error', detail: 'No image selected' })
+      setOpenDialog(false)
+      return
+    }
 
-    const updatedFacility = await RequestService(`facilities/${facilityId}`, 'PATCH', {
-      ...facility,
-      main_image: selectedImage.current.url,
-    })
+    try {
+      const updatedFacilityResponse = await requestService({
+        path: `facilities/${facilityId}`,
+        method: 'PATCH',
+        body: JSON.stringify({
+          ...facility,
+          main_image: selectedImage?.current?.url,
+        }),
+      })
+      if (!updatedFacilityResponse.ok) throw new Error('Failed to update facility')
+      const updatedFacility: IFacility = await updatedFacilityResponse.json()
 
-    setFacility(updatedFacility)
+      setFacility(updatedFacility)
 
-    showToast({
-      severity: 'success',
-      summary: 'Main Image Updated',
-      detail: 'The main image has been updated successfully',
-      life: 3000,
-    })
+      showToast({
+        severity: 'success',
+        summary: 'Main Image Updated',
+        detail: 'The main image has been updated successfully',
+        life: 3000,
+      })
+    } catch (error) {
+      console.error('Error updating facility:', error)
+      showToast({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'An error occurred while updating the main image',
+        life: 3000,
+      })
+    } finally {
+      setOpenDialog(false)
+    }
   }
 
   const sortedImagesWithMainImageFirst = useMemo(() => {
@@ -166,54 +239,41 @@ export const AdminFacilityImages = () => {
       {facility ? (
         <SubHeader data={facility} links={role === 'admin' ? adminFacilitiesLinks : clientFacilitiesLink} />
       ) : null}
-      <input
-        ref={filesInputRef}
-        className="hidden"
-        type="file"
-        name="new-images"
-        multiple
-        id="new-images"
-        onChange={pickedHandler}
-      />
 
-      {!uploading ? (
-        <div className="my-5 flex items-center">
-          {files.length === 0 ? (
-            <span className="relative inline-block rounded-full hover:cursor-pointer" onClick={pickImageHandler}>
-              <PlusCircleIcon className="h-20 w-20 text-primaryDark hover:text-primary" aria-hidden="true" />
-            </span>
-          ) : (
-            <button
-              onClick={handleImagesUpload}
-              type="button"
-              className="inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
-              Upload {files.length} files
-              <CheckCircleIcon className="-mr-0.5 h-5 w-5" aria-hidden="true" />
-            </button>
-          )}
-        </div>
+      <div className="space-y-2">
+        <HtInputLabel htmlFor="facility_images_upload" labelText="Upload Facility Licenses:" />
+        <HtFileUpload
+          inputId="facility_images_upload"
+          path={`facilities/${facilityId}/images`}
+          acceptMultipleFiles={true}
+          mode="basic"
+          customUpload
+          uploadHandler={handleImagesUpload}
+        />
+      </div>
+      {loading ? (
+        <HTLoadingLogo />
       ) : (
-        <ProgressSpinner aria-label="Loading" style={{ color: 'green' }} />
+        <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+          {sortedImagesWithMainImageFirst?.map(file => (
+            <li key={file._id} className="relative transform transition-transform hover:scale-105 hover:shadow-xl">
+              {facility?.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
+              <div className="flex justify-center">
+                <Image
+                  src={file.url}
+                  alt="facility"
+                  onClick={() => handleDialogOpen(file)}
+                  pt={{
+                    image: {
+                      className: 'aspect-[4/3] max-w-full object-cover rounded-lg cursor-pointer mx-auto',
+                    },
+                  }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
-      <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-        {sortedImagesWithMainImageFirst?.map(file => (
-          <li key={file._id} className="relative transform transition-transform hover:scale-105 hover:shadow-xl">
-            {facility?.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
-            <div className="flex justify-center">
-              <Image
-                src={file.url}
-                alt="facility"
-                onClick={() => handleDialogOpen(file)}
-                pt={{
-                  image: {
-                    className: 'aspect-[4/3] max-w-full object-cover rounded-lg cursor-pointer mx-auto',
-                  },
-                }}
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
       <Transition.Root show={openDialog} as={Fragment}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleDialogClose}>
           <Transition.Child
@@ -262,7 +322,7 @@ export const AdminFacilityImages = () => {
                     <button
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:col-start-2"
-                      onClick={handleFacilityUpdate}
+                      onClick={handleFacilityUpdateMainImage}
                       ref={cancelButtonRef}>
                       Set as Main Image
                     </button>
