@@ -10,6 +10,7 @@ import { Image } from 'primereact/image'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
 
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { SubHeader } from '../../../components/shared/SubHeader'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtFileUpload } from '../../../components/shared/general/HtFileUpload'
@@ -21,6 +22,7 @@ import { clientFacilitiesLink } from '../../client/facilities/clientSubHeaderLin
 import { adminFacilitiesLinks } from './adminFacilitySubHeaderLinks'
 
 export const AdminFacilityImages = () => {
+  const [loading, setLoading] = useState<boolean>(false)
   const [facility, setFacility] = useState<IFacility>()
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const role = roleChecker()
@@ -59,6 +61,8 @@ export const AdminFacilityImages = () => {
   }, [facilityId])
 
   const handleImagesUpload = async (event: FileUploadHandlerEvent) => {
+    setLoading(true)
+
     const files = event.files
     const formData = new FormData()
 
@@ -105,6 +109,7 @@ export const AdminFacilityImages = () => {
       if (event.options != null) {
         event.options.clear()
       }
+      setLoading(false)
     }
   }
 
@@ -246,26 +251,29 @@ export const AdminFacilityImages = () => {
           uploadHandler={handleImagesUpload}
         />
       </div>
-
-      <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-        {sortedImagesWithMainImageFirst?.map(file => (
-          <li key={file._id} className="relative transform transition-transform hover:scale-105 hover:shadow-xl">
-            {facility?.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
-            <div className="flex justify-center">
-              <Image
-                src={file.url}
-                alt="facility"
-                onClick={() => handleDialogOpen(file)}
-                pt={{
-                  image: {
-                    className: 'aspect-[4/3] max-w-full object-cover rounded-lg cursor-pointer mx-auto',
-                  },
-                }}
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <HTLoadingLogo />
+      ) : (
+        <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+          {sortedImagesWithMainImageFirst?.map(file => (
+            <li key={file._id} className="relative transform transition-transform hover:scale-105 hover:shadow-xl">
+              {facility?.main_image === file.url ? <Badge value="Main Image" className="absolute -m-2" /> : null}
+              <div className="flex justify-center">
+                <Image
+                  src={file.url}
+                  alt="facility"
+                  onClick={() => handleDialogOpen(file)}
+                  pt={{
+                    image: {
+                      className: 'aspect-[4/3] max-w-full object-cover rounded-lg cursor-pointer mx-auto',
+                    },
+                  }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
       <Transition.Root show={openDialog} as={Fragment}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleDialogClose}>
           <Transition.Child
