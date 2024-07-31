@@ -75,7 +75,6 @@ export const ACHAddPayment = ({
         body: JSON.stringify(formData),
       })
 
-      showToast({ severity: 'success', summary: 'Success', detail: 'ACH Payment method added successfully' })
       if (response.ok) {
         const updatedCompanyData = await response.json()
         setSelectedCompanyData(updatedCompanyData)
@@ -85,9 +84,11 @@ export const ACHAddPayment = ({
           ach_bank_name: '',
           ach_account_name: '',
           ach_is_approved: false,
-          isDefault: false,
+          isDefault: true,
           facilities: [],
         })
+
+        showToast({ severity: 'success', summary: 'Success', detail: 'ACH Payment method added successfully' })
       }
     } catch (error) {
       console.error(error)
