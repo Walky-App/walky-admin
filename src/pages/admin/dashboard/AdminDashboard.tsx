@@ -74,7 +74,6 @@ export const AdminDashboard = () => {
           const data = await response.json()
 
           setUser(data)
-          // setLoggedInUser(data)
         }
       } catch (error) {
         console.error(error)
