@@ -161,22 +161,16 @@ export const AdminFacilityContacts = () => {
                 </div>
                 <div className="sm:col-span-2">
                   <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                    Role*
+                    Title*
                   </label>
                   <div className="mt-2">
-                    <select
+                    <input
                       required
+                      type="text"
                       name="role"
                       id="role"
-                      autoComplete="role"
-                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
-                      <option value="">Select a role</option>
-                      <option value="Owner">Owner</option>
-                      <option value="AP">AP</option>
-                      <option value="Onsite">Onsite</option>
-                      <option value="Manager">Manager</option>
-                      <option value="Security">Security</option>
-                    </select>
+                      className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                    />
                   </div>
                 </div>
               </div>
@@ -236,7 +230,7 @@ export const AdminFacilityContacts = () => {
                         Last Name
                       </th>
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Role
+                        Title
                       </th>
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Email

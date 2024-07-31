@@ -74,8 +74,37 @@ export const AuthorizedServiceOrdersListPage = () => {
       { Header: 'Job Title', accessor: 'job_id.title' },
       { Header: 'Job UID', accessor: 'job_id.uid' },
       {
+        Header: 'Job Start Date',
+        accessor: (row: IServiceOrder) => {
+          if (row.job_id && Array.isArray(row.job_id.job_dates) && row.job_id.job_dates.length > 0) {
+            const sortedDates = [...row.job_id.job_dates].sort()
+            const earliestDate = sortedDates[0]
+            return format(new Date(earliestDate), 'P')
+          }
+          return 'N/A'
+        },
+        id: 'job_start_date',
+      },
+      {
+        Header: 'Job End Date',
+        accessor: (row: IServiceOrder) => {
+          if (row.job_id && Array.isArray(row.job_id.job_dates) && row.job_id.job_dates.length > 0) {
+            const sortedDates = [...row.job_id.job_dates].sort()
+            const latestDate = sortedDates[sortedDates.length - 1]
+            return format(new Date(latestDate), 'P')
+          }
+          return 'N/A'
+        },
+        id: 'job_end_date',
+      },
+      {
         Header: 'Job has ended?',
-        accessor: (row: IServiceOrder) => (row?.job_id?.is_completed ? 'Yes' : 'No'),
+        accessor: (row: IServiceOrder) =>
+          row.job_id !== null && typeof row.job_id?.is_completed !== 'undefined'
+            ? row.job_id?.is_completed
+              ? 'Yes'
+              : 'No'
+            : 'N/A',
         id: 'is_completed',
       },
       { Header: 'Facility ID', accessor: 'facility_id.name' },
