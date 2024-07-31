@@ -448,7 +448,7 @@ export const ProfileDetail = ({
                     />
                   </div>
                   <div className="text-sm leading-6">
-                    <label htmlFor="notification_email" className="font-medium text-gray-900">
+                    <label htmlFor="email_notifications" className="font-medium text-gray-900">
                       Email Notifications
                     </label>
                     <p className="text-gray-500">Get notified when someones posts a comment on a posting.</p>
@@ -464,7 +464,7 @@ export const ProfileDetail = ({
                     />
                   </div>
                   <div className="text-sm leading-6">
-                    <label htmlFor="notification_sms" className="font-medium text-gray-900">
+                    <label htmlFor="sms_notifications" className="font-medium text-gray-900">
                       SMS Push Notifications
                     </label>
                     <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
