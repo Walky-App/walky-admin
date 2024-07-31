@@ -223,6 +223,7 @@ export const App = () => {
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-order/pending/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/authorized/:serviceOrderId" />
+                  <Route element={<ServiceOrderPage />} path="/admin/jobs/service-orders/pending/:serviceOrderId" />
                   <Route element={<AllServiceOrdersListPage />} path="/admin/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/admin/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/admin/jobs/service-orders/authorized" />

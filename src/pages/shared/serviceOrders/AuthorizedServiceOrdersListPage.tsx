@@ -75,7 +75,7 @@ export const AuthorizedServiceOrdersListPage = () => {
       { Header: 'Job UID', accessor: 'job_id.uid' },
       {
         Header: 'Job has ended?',
-        accessor: (row: IServiceOrder) => (row.job_id.is_completed ? 'Yes' : 'No'),
+        accessor: (row: IServiceOrder) => (row?.job_id?.is_completed ? 'Yes' : 'No'),
         id: 'is_completed',
       },
       { Header: 'Facility ID', accessor: 'facility_id.name' },

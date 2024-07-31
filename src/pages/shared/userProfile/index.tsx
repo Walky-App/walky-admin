@@ -11,6 +11,7 @@ import { type ITrainingData } from '../../../interfaces/training'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
+import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
 import { ProfileNotes } from './ProfileNotes'
@@ -20,6 +21,7 @@ import { ProfileTraining } from './ProfileTraining'
 export const UserProfile = () => {
   const [loading, setLoading] = useState(false)
   const [userTraining, setUserTraining] = useState<ITrainingData>({} as ITrainingData)
+  const [loggedInUser, setLoggedInUser] = useState<IUser | undefined>(({} as IUser) ?? undefined)
   const [formUser, setFormUser] = useState<IUser>({
     _id: '',
     access_token: '',
@@ -47,6 +49,7 @@ export const UserProfile = () => {
   const { showToast } = useUtils()
   const { id } = useParams()
   const role = roleChecker()
+  const loggedInuser_id = GetTokenInfo()._id
 
   useEffect(() => {
     if (!user) return
@@ -63,6 +66,12 @@ export const UserProfile = () => {
             const trainingData = (await trainingResponse.json()) as ITrainingData
             setUserTraining(trainingData)
           }
+
+          const loggedInUser = await requestService({ path: `users/${loggedInuser_id}` })
+          if (loggedInUser.ok) {
+            const loggedInUserData = (await loggedInUser.json()) as IUser
+            setLoggedInUser(loggedInUserData)
+          }
         }
       } catch (error) {
         console.error('Error fetching user:', error)
@@ -72,7 +81,7 @@ export const UserProfile = () => {
       }
     }
     getUser()
-  }, [id, showToast, user])
+  }, [id, loggedInuser_id, showToast, user])
 
   const handleSubmit = async (): Promise<void> => {
     try {
@@ -130,7 +139,7 @@ export const UserProfile = () => {
         ) : null}
         {role === 'admin' ? (
           <TabPanel header="Notes">
-            <ProfileNotes formUser={formUser} setFormUser={setFormUser} role={role} updateUser={handleSubmit} />
+            <ProfileNotes formUser={formUser} loggedInUser={loggedInUser} />
           </TabPanel>
         ) : null}
       </TabView>

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 
 import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
+import { eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
 import { isValid, parse } from 'date-fns'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
@@ -136,6 +137,12 @@ export const renderJobDatesController = (
         setHolidayCount(holidayCount)
       }, [field.value])
 
+      const jobDates = [...field.value]
+      jobDates.sort((a, b) => a.getTime() - b.getTime())
+      const firstDate = jobDates[0]
+      const lastDate = jobDates[jobDates.length - 1]
+      const weeks = eachWeekOfInterval({ start: firstDate, end: lastDate })
+
       return (
         <>
           <HtInfoTooltip message="Select the dates you need temps at your facility.  Only up to 30 days from today!">
@@ -144,7 +151,13 @@ export const renderJobDatesController = (
           <Calendar
             inputId={field.name}
             value={field.value}
-            onChange={field.onChange}
+            onChange={e => {
+              if (e.value !== null) {
+                field.onChange(e.value)
+              } else {
+                field.onChange([])
+              }
+            }}
             dateFormat="mm/dd/yy"
             maxDate={new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)} // Set max date to 30 days from today
             selectionMode="multiple"
@@ -157,20 +170,34 @@ export const renderJobDatesController = (
             <div className="mt-2">
               <HtInputLabel htmlFor={field.name} labelText="Selected Dates" className="text-base" />
               <ul className="mt-2 grid grid-cols-5 gap-2">
-                {field.value
-                  .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-                  .map((date: Date, index: number) => {
-                    const holiday = stateHolidays.find(
-                      holiday => new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
-                    )
-                    const isHoliday = Boolean(holiday)
-                    return (
-                      <li key={index} style={{ color: isHoliday ? 'red' : 'inherit' }}>
-                        {date.toLocaleDateString()}
-                        {isHoliday ? ` (${holiday?.holiday_name})` : ''}
-                      </li>
-                    )
-                  })}
+                {weeks.map((week, weekIndex) => {
+                  const startOfWeekDate = startOfWeek(week)
+                  const endOfWeekDate = endOfWeek(week)
+                  const job_dates_in_week = field.value
+                    .filter(date => isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate }))
+                    .sort((a: Date, b: Date) => a.getTime() - b.getTime())
+
+                  return (
+                    <li key={weekIndex}>
+                      <strong>Week {weekIndex + 1}</strong>
+                      <ul>
+                        {job_dates_in_week.map((date: Date, index: number) => {
+                          const holiday = stateHolidays.find(
+                            holiday =>
+                              new Date(holiday.holiday_date).toLocaleDateString() === date.toLocaleDateString(),
+                          )
+                          const isHoliday = Boolean(holiday)
+                          return (
+                            <li key={index} style={{ color: isHoliday ? 'red' : 'inherit' }}>
+                              {date.toLocaleDateString()}
+                              {isHoliday ? ` (${holiday?.holiday_name})` : ''}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           ) : null}
@@ -331,7 +358,7 @@ export const renderVacancyController = (
     }}
     render={({ field, fieldState }) => (
       <>
-        <HtInfoTooltip message="If you have more than 10 vacancies for this job, please message Support.">
+        <HtInfoTooltip message="If you have more than 15 vacancies for this job, please message Support.">
           <HtInputLabel htmlFor={field.name} asterisk labelText="Number of Vacancies" />
         </HtInfoTooltip>
         <InputNumber
@@ -340,7 +367,7 @@ export const renderVacancyController = (
           value={field.value}
           onBlur={field.onBlur}
           onValueChange={(e: InputNumberValueChangeEvent) => {
-            if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 10) {
+            if (e.value !== undefined && e.value !== null && e.value >= 1 && e.value <= 15) {
               field.onChange(e.value)
             }
           }}
@@ -348,11 +375,11 @@ export const renderVacancyController = (
           mode="decimal"
           showButtons
           min={1}
-          max={10}
+          max={15}
           inputClassName={classNames({ 'p-invalid': fieldState.error })}
           className="mt-2"
         />
-        <HtInputHelpText fieldName={field.name} helpText="Max number of vacancies: 10" />
+        <HtInputHelpText fieldName={field.name} helpText="Max number of vacancies: 15" />
         {getFormErrorMessage(field.name, errors)}
       </>
     )}
