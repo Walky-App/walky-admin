@@ -2,6 +2,7 @@ import { useRef } from 'react'
 
 import {
   FileUpload,
+  type FileUploadHandlerEvent,
   type FileUploadBeforeSendEvent,
   type FileUploadErrorEvent,
   type FileUploadUploadEvent,
@@ -12,7 +13,7 @@ import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface IHtFileUploadProps {
   inputId: string
-  path: string
+  path?: string
   fileTypes?: string
   acceptMultipleFiles?: boolean
   maxFileSize?: number
@@ -20,6 +21,8 @@ interface IHtFileUploadProps {
   emptyUploaderTemplate?: React.ReactNode
   disabled?: boolean
   onUploadSuccess?: () => void
+  customUpload?: boolean
+  uploadHandler?: (event: FileUploadHandlerEvent) => void
 }
 
 const defaultEmptyTemplate = (
@@ -42,6 +45,8 @@ export const HtFileUpload = ({
   emptyUploaderTemplate = defaultEmptyTemplate,
   disabled = false,
   onUploadSuccess,
+  customUpload,
+  uploadHandler,
 }: IHtFileUploadProps) => {
   const fileUploadRef = useRef<FileUpload>(null)
 
@@ -134,6 +139,8 @@ export const HtFileUpload = ({
       onBeforeSend={handleBeforeSend}
       onUpload={event => handleUploadSuccess(event, onUploadSuccess)}
       onError={event => handleUploadError(event, fileUploadRef)}
+      customUpload={customUpload}
+      uploadHandler={uploadHandler}
       emptyTemplate={emptyUploaderTemplate}
       disabled={disabled}
       previewWidth={200}
