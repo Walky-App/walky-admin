@@ -40,7 +40,7 @@ export const HtFileUpload = ({
   path,
   fileTypes = 'application/pdf, image/*',
   acceptMultipleFiles = true,
-  maxFileSize = 5242880,
+  maxFileSize = 3145728,
   mode = 'advanced',
   emptyUploaderTemplate = defaultEmptyTemplate,
   disabled = false,
