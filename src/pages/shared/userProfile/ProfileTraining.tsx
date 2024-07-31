@@ -34,7 +34,7 @@ export const ProfileTraining = ({
             ) : (
               <div className="card justify-content-center flex">
                 <Calendar
-                  value={new Date(formUser.wps_training || new Date())}
+                  value={formUser.wps_training ? new Date(formUser.wps_training) : null}
                   onChange={e => setFormUser({ ...formUser, wps_training: e.value ?? undefined })}
                   disabled={role === 'employee'}
                 />
