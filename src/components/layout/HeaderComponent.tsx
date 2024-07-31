@@ -1,6 +1,6 @@
 import { type Dispatch, Fragment, type SetStateAction, useEffect } from 'react'
 
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import cn from 'classnames'
 import { Avatar } from 'primereact/avatar'
@@ -18,7 +18,6 @@ import { LogosPack } from './LogosPack'
 
 interface HeaderComponentProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>
-  activePage: string
 }
 
 export interface UserNavigationItem {
@@ -26,11 +25,12 @@ export interface UserNavigationItem {
   href: string
 }
 
-export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentProps) => {
+export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
   const { avatarImageUrl, setAvatarImageUrl } = useUtils()
   const role = roleChecker()
   const tokenInfo = GetTokenInfo()
+  const location = useLocation()
 
   const userIsOnboarded = tokenInfo?.onboarding?.completed
 
@@ -60,9 +60,10 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
           <div className="flex shrink-0 items-center justify-center">
             <Link to={user ? `/${role}/dashboard` : '/'}>{LogosPack('header')}</Link>
           </div>
-          {activePage !== '' ? (
-            <h3 className="text-base font-semibold leading-6 text-gray-900"> /&nbsp; {activePage}</h3>
-          ) : null}
+
+          <h3 className="text-base font-semibold capitalize leading-6 text-gray-900">
+            /&nbsp; {location.pathname.split('/', 3)[2]}
+          </h3>
         </div>
 
         {/* Right hand side header */}
