@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import classNames from 'classnames'
 import { format } from 'date-fns'
-import { Button } from 'flowbite-react'
+import { Button } from 'primereact/button'
 import { InputTextarea } from 'primereact/inputtextarea'
 
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
@@ -87,7 +87,7 @@ export const NotesComponent = ({ ref_id, model, created_by }: INotesComponentPro
               className={classNames({ 'p-invalid': false }, 'mt-2')}
               autoComplete="off"
             />
-            <Button onClick={handleAddNote} type="submit" label="+" />
+            <Button onClick={handleAddNote} type="submit" label="Add Note" />
           </div>
           <HtInputHelpText
             fieldName="internal_notes"
