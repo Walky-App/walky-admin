@@ -101,6 +101,10 @@ export const AdminFacilityImages = () => {
     } catch (error) {
       console.error('Error uploading facility images:', error)
       showToast({ severity: 'error', summary: 'Error', detail: 'An error occurred while uploading the images' })
+    } finally {
+      if (event.options != null) {
+        event.options.clear()
+      }
     }
   }
 
@@ -145,7 +149,18 @@ export const AdminFacilityImages = () => {
           })
           if (!updateFacilityResponse.ok) throw new Error('Failed to update facility')
           const updatedFacilityWithNewMainImage: IFacility = await updateFacilityResponse.json()
+
           setFacility(updatedFacilityWithNewMainImage)
+        } else if (images.length === 0) {
+          const updateFacilityResponse = await requestService({
+            path: `facilities/${facilityId}`,
+            method: 'PATCH',
+            body: JSON.stringify({ ...updatedFacility, main_image: '' }),
+          })
+          if (!updateFacilityResponse.ok) throw new Error('Failed to update facility')
+          const updatedFacilityWithoutMainImage: IFacility = await updateFacilityResponse.json()
+
+          setFacility(updatedFacilityWithoutMainImage)
         }
         showToast({ severity: 'warn', summary: 'Confirmed', detail: 'Image removed', life: 3000 })
       } catch (error) {
