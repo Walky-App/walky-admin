@@ -6,7 +6,6 @@ import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
-import { roleTxt } from '../../../utils/roleChecker'
 
 interface IRow {
   row: { original: IUser }
@@ -46,7 +45,7 @@ export const AdminUserEmployeesListPage = () => {
   const memoUsersColumns = useMemo(
     () => [
       {
-        Header: 'Profile Picture',
+        Header: 'Avatar',
         width: '300px',
         height: '200px',
         Cell: ({ row, value }: IRow) => {
@@ -63,29 +62,13 @@ export const AdminUserEmployeesListPage = () => {
           )
         },
       },
-      { Header: 'First Name', accessor: 'first_name', width: 200 },
-      { Header: 'Last Name', accessor: 'last_name', width: 200 },
-      {
-        Header: 'Onboarded',
-        width: 100,
-        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
-      },
-      {
-        Header: 'HT Certs',
-        width: 150,
-        accessor: (d: IUser) => d.student_record?.categories?.filter(cat => cat?.is_completed === true).length,
-      },
-      {
-        Header: 'Docs',
-        width: 100,
-        accessor: (d: IUser) => d.documents?.length,
-      },
+      { Header: 'F-Name', accessor: 'first_name', width: 200 },
+      { Header: 'L-Name', accessor: 'last_name', width: 200 },
       {
         Header: 'Approved',
         width: 100,
         accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
       },
-
       {
         Header: 'Joined',
         width: 200,
@@ -97,17 +80,34 @@ export const AdminUserEmployeesListPage = () => {
               : format(a.createdAt as string, 'P')
         },
       },
+
+      {
+        Header: 'Onboarded',
+        width: 100,
+        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
+      },
+      {
+        Header: 'Docs',
+        width: 100,
+        text: 'center',
+        accessor: (d: IUser) => d.documents?.length,
+      },
+      {
+        Header: 'HTU-Certs',
+        width: 150,
+        accessor: (d: IUser) => d.student_record?.categories?.filter(cat => cat?.is_completed === true).length,
+      },
+      { Header: 'WPS', accessor: user => (user.wps_training ? format(user.wps_training, 'P') : null), width: 400 },
+
       {
         Header: 'Supervisor',
         width: 100,
         accessor: (d: IUser) => (d.is_shift_supervisor ? 'Yes' : 'No'),
       },
       { Header: 'Email', accessor: 'email', width: 300 },
-      { Header: 'WPS', accessor: user => (user.wps_training ? format(user.wps_training, 'P') : null), width: 300 },
-      { Header: 'City', accessor: 'city' },
+      { Header: 'City', accessor: 'city', width: 300 },
       { Header: 'Zip', accessor: 'zip' },
-      { Header: 'State', accessor: 'state', width: 20 },
-      { Header: 'Role', accessor: (user: IUser) => roleTxt(user.role) },
+      { Header: 'ST', accessor: 'state', width: 20 },
     ],
     [],
   )

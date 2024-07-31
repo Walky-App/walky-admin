@@ -1,6 +1,41 @@
-import { type ICompany } from '../../../interfaces/company'
+import { useEffect, useState } from 'react'
 
-export const CompanyDocumentsView = ({ selectedCompanyData }: { selectedCompanyData: ICompany }) => {
+import { useParams } from 'react-router-dom'
+
+import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
+import { HtFileUpload } from '../../../components/shared/general/HtFileUpload'
+import { type ICompany } from '../../../interfaces/company'
+import { requestService } from '../../../services/requestServiceNew'
+
+export const CompanyDocumentsView = ({
+  selectedCompanyData,
+  setSelectedCompanyData,
+}: {
+  selectedCompanyData: ICompany
+  setSelectedCompanyData: React.Dispatch<React.SetStateAction<ICompany>>
+}) => {
+  const [isNewFileUploaded, setIsNewFileUploaded] = useState(false)
+
+  const selectedCompanyId = useParams().id ?? ''
+
+  useEffect(() => {
+    const getCompanyWithPaymentInfo = async () => {
+      try {
+        const response = await requestService({ path: `companies/${selectedCompanyId}/payments` })
+        if (!response.ok) {
+          throw new Error('Failed to fetch company data')
+        }
+        const companyFound: ICompany = await response.json()
+        setSelectedCompanyData(companyFound)
+      } catch (error) {
+        console.error('Error fetching company data: ', error)
+      } finally {
+        setIsNewFileUploaded(false)
+      }
+    }
+    getCompanyWithPaymentInfo()
+  }, [selectedCompanyId, setSelectedCompanyData, isNewFileUploaded])
+
   const handleLinkPathSplit = (link: string) => {
     const result = link.split('/')
     return result[result.length - 1]
@@ -8,17 +43,19 @@ export const CompanyDocumentsView = ({ selectedCompanyData }: { selectedCompanyD
   return (
     <div className="space-y-4 sm:space-y-12">
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
-        {/* <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Company Information</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Please take a moment to provide the essential information for the company.
-          </p>
-          {requiredFieldsNoticeText}
-        </div> */}
-
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-          <div className="sm:col-span-full">
-            <div className="mt-8 flow-root">
+          <div className="mt-4 sm:col-span-full">
+            <div className="space-y-2">
+              <HtInputLabel htmlFor="company_document_upload" labelText="Upload Company Documents:" />
+              <HtFileUpload
+                inputId="company_document_upload"
+                path={`companies/${selectedCompanyId}/documents`}
+                acceptMultipleFiles={false}
+                mode="basic"
+                onUploadSuccess={async () => setIsNewFileUploaded(true)}
+              />
+            </div>
+            <div className="mt-6 flow-root">
               <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                   <table className="min-w-full divide-y divide-gray-300">
