@@ -53,7 +53,6 @@ import { AdminFacilityContacts } from './pages/admin/facilities/AdminFacilityCon
 import { AdminFacilityDNR } from './pages/admin/facilities/AdminFacilityDNR'
 import { AdminFacilityImages } from './pages/admin/facilities/AdminFacilityImages'
 import { AdminFacilityInternalNotes } from './pages/admin/facilities/AdminFacilityInternalNotes'
-import { AdminFacilityJobDetails } from './pages/admin/facilities/AdminFacilityJobDetails'
 import { AdminFacilityJobs } from './pages/admin/facilities/AdminFacilityJobs'
 import { AdminFacilityLicenses } from './pages/admin/facilities/AdminFacilityLicenses'
 import { FacilityDetailsPage } from './pages/admin/facilities/FacilityDetailsPage'
@@ -210,7 +209,7 @@ export const App = () => {
                   <Route element={<AdminFacilityInternalNotes />} path="/admin/facilities/:facilityId/internal_notes" />
                   <Route element={<AdminFacilityJobs />} path="/admin/facilities/:facilityId/jobs" />
                   <Route element={<AdminFacilityAddJob />} path="/admin/facilities/:facilityId/jobs/new" />
-                  <Route element={<AdminFacilityJobDetails />} path="/admin/facilities/:facilityId/jobs/:jobId" />
+                  <Route element={<JobDetailViewAdmin />} path="/admin/facilities/:facilityId/jobs/:id" />
                   <Route element={<AdminFacilityImages />} path="/admin/facilities/:facilityId/images" />
                   <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
