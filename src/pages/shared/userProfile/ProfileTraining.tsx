@@ -21,7 +21,7 @@ export const ProfileTraining = ({
   formUser: IUser
   setFormUser: Dispatch<SetStateAction<IUser>>
   role: string
-  updateUser: React.FormEventHandler<HTMLFormElement>
+  updateUser: () => void
 }) => {
   return (
     <>
