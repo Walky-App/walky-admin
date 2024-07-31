@@ -1,24 +1,21 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from 'react'
 
 import classNames from 'classnames'
-import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Checkbox, type CheckboxChangeEvent } from 'primereact/checkbox'
 import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
-import { InputTextarea } from 'primereact/inputtextarea'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IUserInternalNote, type IUser } from '../../../interfaces/User'
+import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { type INotificationPreference } from '../../../utils/formOptions'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
-import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const ProfileDetail = ({
   formUser,
@@ -30,12 +27,9 @@ export const ProfileDetail = ({
   updateUser: React.FormEventHandler<HTMLFormElement>
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
-  const [userFound, setUserFound] = useState<IUser>()
-  const [internalNoteObj, setInternalNoteObj] = useState<IUserInternalNote>()
 
   const { showToast } = useUtils()
   const role = roleChecker()
-  const userId = GetTokenInfo()._id
 
   useEffect(() => {
     if (moreAddressDetails) {
@@ -50,24 +44,6 @@ export const ProfileDetail = ({
       }))
     }
   }, [moreAddressDetails, setFormUser, setMoreAddressDetails])
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await requestService({ path: `users/${userId}` })
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.message || 'Unknown error occurred')
-        }
-        const data = await response.json()
-        const currentUser = data as IUser
-        setUserFound(currentUser)
-      } catch (error) {
-        console.error('Error fetching user:', error)
-      }
-    }
-    fetchUser()
-  }, [userId])
 
   const handlePasswordReset = async () => {
     try {
@@ -325,41 +301,7 @@ export const ProfileDetail = ({
               </div>
             </div>
             <div>
-              <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-gray-900/10 pb-6 md:grid-cols-3 md:gap-y-10">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Internal Notes</h2>
-                </div>
-
-                <div className="max-w-2xl md:col-span-2">
-                  <HtInputLabel htmlFor="internal_notes" labelText="Note:" />
-                  <InputTextarea
-                    id="internal_notes"
-                    rows={4}
-                    cols={30}
-                    maxLength={500}
-                    value={internalNoteObj?.note ?? ''}
-                    onChange={e => {
-                      if (e.target.value != null && e.target.value !== '') {
-                        setInternalNoteObj(prev => ({
-                          ...prev,
-                          note: e.target.value,
-                          createdBy: userFound?.email ?? userId,
-                        }))
-                      } else if (e.target.value === '') {
-                        setInternalNoteObj(undefined)
-                      }
-                    }}
-                    className={classNames({ 'p-invalid': false }, 'mt-2')}
-                    autoComplete="off"
-                  />
-                  <HtInputHelpText
-                    fieldName="internal_notes"
-                    helpText="Max 500 characters. Please do not enter contact information into this field."
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-b border-gray-900/10 pb-12 md:grid-cols-3 md:gap-y-10">
+              {/* <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-b border-gray-900/10 pb-12 md:grid-cols-3 md:gap-y-10">
                 <div>
                   <h2 className="text-base font-semibold leading-7 text-gray-900">Existing Notes</h2>
                   <p className="mt-1 text-sm leading-6 text-gray-600">Previously added notes about this user.</p>
@@ -421,7 +363,7 @@ export const ProfileDetail = ({
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </>
         ) : null}

@@ -73,7 +73,6 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
         return setError(new Error('Email/Password invalid'))
       } else {
         const { access_token, user }: ILoginData = data
-
         if (user && access_token) {
           const data: ITokenInfo = {
             first_name: user.first_name,
