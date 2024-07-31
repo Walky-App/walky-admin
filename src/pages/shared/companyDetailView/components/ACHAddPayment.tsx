@@ -33,8 +33,7 @@ export const ACHAddPayment = ({
 }: {
   setSelectedCompanyData: React.Dispatch<React.SetStateAction<ICompany>>
 }) => {
-  const { id } = useParams()
-  const { showToast } = useUtils()
+  const [loading, setLoading] = useState<boolean>(false)
   const [formData, setFormData] = useState<IACHAddPaymentFormData>({
     ach_account_number: '',
     ach_routing_number: '',
@@ -46,6 +45,9 @@ export const ACHAddPayment = ({
   })
   const [facilitiesByCompany, setFacilitiesByCompany] = useState<IFacility[]>([])
   const [isCheckImageUploaded, setIsCheckImageUploaded] = useState(false)
+
+  const { id } = useParams()
+  const { showToast } = useUtils()
 
   useEffect(() => {
     const getAllFacilities = async () => {
@@ -67,10 +69,11 @@ export const ACHAddPayment = ({
 
   const handleAddACHPayment = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
+    setLoading(true)
 
     try {
       const response = await requestService({
-        path: `payment/${id}`,
+        path: `companies/${id}/add-ach`,
         method: 'POST',
         body: JSON.stringify(formData),
       })
@@ -93,6 +96,8 @@ export const ACHAddPayment = ({
     } catch (error) {
       console.error(error)
       showToast({ severity: 'error', summary: 'Error', detail: 'Error adding payment method' })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -250,6 +255,7 @@ export const ACHAddPayment = ({
                   size="large"
                   label="Add ACH Payment Method"
                   disabled={!isCheckImageUploaded || !formData.ach_is_approved}
+                  loading={loading}
                 />
               </div>
             </div>
