@@ -79,7 +79,7 @@ export const AllServiceOrdersListPage = () => {
           if (row.job_id && Array.isArray(row.job_id.job_dates) && row.job_id.job_dates.length > 0) {
             const sortedDates = [...row.job_id.job_dates].sort()
             const earliestDate = sortedDates[0]
-            return earliestDate.split('T')[0]
+            return format(new Date(earliestDate), 'P')
           }
           return 'N/A'
         },
@@ -91,7 +91,7 @@ export const AllServiceOrdersListPage = () => {
           if (row.job_id && Array.isArray(row.job_id.job_dates) && row.job_id.job_dates.length > 0) {
             const sortedDates = [...row.job_id.job_dates].sort()
             const latestDate = sortedDates[sortedDates.length - 1]
-            return latestDate.split('T')[0]
+            return format(new Date(latestDate), 'P')
           }
           return 'N/A'
         },
