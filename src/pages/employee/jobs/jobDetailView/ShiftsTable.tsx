@@ -5,12 +5,12 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
 
-import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IJobShiftDay, type IApplicant, type IJob } from '../../../interfaces/job'
-import { type ITokenInfo } from '../../../interfaces/services'
-import { type UserShiftsPopulate } from '../../../interfaces/shifts'
-import { requestService } from '../../../services/requestServiceNew'
-import { useUtils } from '../../../store/useUtils'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type IJobShiftDay, type IApplicant, type IJob } from '../../../../interfaces/job'
+import { type ITokenInfo } from '../../../../interfaces/services'
+import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
 
 export const ShiftsTable = ({
   job,
