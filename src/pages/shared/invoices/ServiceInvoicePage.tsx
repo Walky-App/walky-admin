@@ -61,6 +61,22 @@ export const ServiceInvoicePage = () => {
     }
   }
 
+  const handlerAuthorizeInvoice = async () => {
+    try {
+      setIsLoading(true)
+      const response = await requestService({ path: `invoices/authorize/${invoiceId}`, method: 'POST' })
+      if (!response.ok) {
+        throw new Error('Failed to authorize invoice')
+      }
+      const fetchedData = await response.json()
+      setInvoice(fetchedData)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error authorizing invoice:', error)
+      setIsLoading(false)
+    }
+  }
+
   const handlerSetDiscount = async (comment: string) => {
     try {
       setIsLoading(true)
@@ -253,37 +269,41 @@ export const ServiceInvoicePage = () => {
               </td>
             </tr>
             <tr className="border-t-2">
-              {invoice?.details.discount ? (
-                <>
-                  <th
-                    scope="row"
-                    colSpan={3}
-                    className="hidden pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
-                    <div className="flex items-center justify-end">
-                      <TrashIcon className="mr-1 h-4 w-4 text-red-600" onClick={handlerRemoveDiscount} />
-                      Discount:
-                    </div>
-                  </th>
-                  <td className="pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
-                    - ${Number(invoice?.details.discount).toFixed(2)}
-                  </td>
-                </>
-              ) : (
-                <>
-                  <th scope="row" colSpan={3} className="pr-3 pt-4">
-                    <InputNumber
-                      className="w-full"
-                      prefix="$"
-                      placeholder="Enter Discount"
-                      value={discount}
-                      onChange={e => setDiscount(Number(e.value))}
-                    />
-                  </th>
-                  <td className="pr-4 pt-4">
-                    <Button label="Apply" onClick={() => setIsOpen(true)} disabled={discount == 0} />
-                  </td>
-                </>
-              )}
+              {invoice?.status !== 'completed' ? (
+                <div>
+                  {invoice?.details.discount ? (
+                    <>
+                      <th
+                        scope="row"
+                        colSpan={3}
+                        className="hidden pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
+                        <div className="flex items-center justify-end">
+                          <TrashIcon className="mr-1 h-4 w-4 text-red-600" onClick={handlerRemoveDiscount} />
+                          Discount:
+                        </div>
+                      </th>
+                      <td className="pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
+                        - ${Number(invoice?.details.discount).toFixed(2)}
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <th scope="row" colSpan={3} className="pr-3 pt-4">
+                        <InputNumber
+                          className="w-full"
+                          prefix="$"
+                          placeholder="Enter Discount"
+                          value={discount}
+                          onChange={e => setDiscount(Number(e.value))}
+                        />
+                      </th>
+                      <td className="pr-4 pt-4">
+                        <Button label="Apply" onClick={() => setIsOpen(true)} disabled={discount == 0} />
+                      </td>
+                    </>
+                  )}
+                </div>
+              ) : null}
             </tr>
             <tr>
               <th
@@ -303,7 +323,13 @@ export const ServiceInvoicePage = () => {
             Authorized.net Transaction Number
             {invoice?.transaction_id != null ? <h2 className="text-base leading-6">{invoice.transaction_id}</h2> : null}
           </div>
-          {role === 'admin' ? <Button className="mt-6" label="Re-generate" onClick={handlerRegenerateInvoice} /> : null}
+          {role === 'admin' && invoice?.status !== 'completed' ? (
+            <Button className="mt-6" label="Re-generate" onClick={handlerRegenerateInvoice} />
+          ) : null}
+
+          {role === 'admin' && invoice?.status !== 'completed' ? (
+            <Button className="ml-3 mt-6" label="Charge" onClick={handlerAuthorizeInvoice} />
+          ) : null}
         </footer>
       </div>
     </div>

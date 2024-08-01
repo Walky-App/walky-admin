@@ -133,6 +133,8 @@ export const ServiceOrderPage = () => {
         body: JSON.stringify({}),
       })
       if (!response.ok) {
+        const invoice = await response.json()
+        showToast({ severity: 'error', summary: 'Error', detail: invoice.message })
         throw new Error('Failed to generate invoice')
       }
 
