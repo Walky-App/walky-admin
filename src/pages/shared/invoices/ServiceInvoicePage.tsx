@@ -269,7 +269,7 @@ export const ServiceInvoicePage = () => {
               </td>
             </tr>
             <tr className="border-t-2">
-              {invoice?.status !== 'completed' ? (
+              {invoice?.status !== 'paid' ? (
                 <div>
                   {invoice?.details.discount ? (
                     <>
@@ -323,11 +323,11 @@ export const ServiceInvoicePage = () => {
             Authorized.net Transaction Number
             {invoice?.transaction_id != null ? <h2 className="text-base leading-6">{invoice.transaction_id}</h2> : null}
           </div>
-          {role === 'admin' && invoice?.status !== 'completed' ? (
+          {role === 'admin' && invoice?.status !== 'paid' ? (
             <Button className="mt-6" label="Re-generate" onClick={handlerRegenerateInvoice} />
           ) : null}
 
-          {role === 'admin' && invoice?.status !== 'completed' ? (
+          {role === 'admin' && invoice?.status !== 'paid' ? (
             <Button className="ml-3 mt-6" label="Charge" onClick={handlerAuthorizeInvoice} />
           ) : null}
         </footer>
