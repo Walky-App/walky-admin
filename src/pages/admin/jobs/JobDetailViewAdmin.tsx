@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
@@ -14,6 +13,7 @@ import { type Shifts } from '../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { formatToLocalTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobDetailBottomAdmin } from './components/JobDetailBottomAdmin'
 import { ShiftsTableAdmin } from './components/JobDetailShiftsTableAdmin'
@@ -237,7 +237,7 @@ export const JobDetailViewAdmin = () => {
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Start / End Time</div>
-                    {format(job.start_time, 'p')} &nbsp; - &nbsp; {format(job.end_time, 'p')}
+                    {formatToLocalTime(job.start_time)} &nbsp; - &nbsp; {formatToLocalTime(job.end_time)}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Lunch Breaks</div>

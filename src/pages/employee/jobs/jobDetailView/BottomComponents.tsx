@@ -9,10 +9,10 @@ import {
   createPunchPairsWithTotalTime,
   getAllPunches,
   sortPunches,
-} from '../../../components/shared/timesheets/timesheetsUtils'
-import { type IJob } from '../../../interfaces/job'
-import { type ITimeSheet } from '../../../interfaces/timesheet'
-import { formatToDate, formatToTime, isTodaySameAsTimeStamp, isValidDate } from '../../../utils/timeUtils'
+} from '../../../../components/shared/timesheets/timesheetsUtils'
+import { type IJob } from '../../../../interfaces/job'
+import { type ITimeSheet } from '../../../../interfaces/timesheet'
+import { formatToDate, formatToTime, isTodaySameAsTimeStamp, isValidDate } from '../../../../utils/timeUtils'
 
 const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[]) => {
   return (
