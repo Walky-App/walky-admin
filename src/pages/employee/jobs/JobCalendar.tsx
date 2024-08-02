@@ -1,10 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom'
 
+import {
+  startOfWeek,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  endOfWeek,
+  subMonths,
+  addMonths,
+  isToday,
+  getMonth,
+  format,
+} from 'date-fns'
 import { Button } from 'primereact/button'
 
-import { ClockIcon, CalendarIcon } from '@heroicons/react/20/solid'
+import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@heroicons/react/20/solid'
 
 import { type IJob } from '../../../interfaces/job'
 import { cn } from '../../../utils/cn'
@@ -17,9 +29,9 @@ interface IEvent {
   datetime: string
 }
 
-interface IDay {
-  date: string
-  isCurrentMonth?: boolean
+interface IDayWithDetails {
+  formattedDate: string
+  isWithinSelectedMonth?: boolean
   isToday?: boolean
   isSelected?: boolean
   events: IEvent[]
@@ -30,29 +42,33 @@ interface Props {
 }
 
 export const JobCalendar: React.FC<Props> = ({ jobs }) => {
-  const [currentMonth] = useState(new Date().getMonth())
-  const [currentYear] = useState(new Date().getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState(new Date())
 
-  const [days, setDays] = useState<IDay[]>([])
+  const [daysWithDetails, setDaysWithDetails] = useState<IDayWithDetails[]>([])
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const firstDay = new Date(currentYear, currentMonth, 1)
-    const lastDay = new Date(currentYear, currentMonth + 1, 0)
+  const calendarDays = useMemo(() => {
+    const firstWeekStart = startOfWeek(startOfMonth(selectedMonth))
+    const lastWeekEnd = endOfWeek(endOfMonth(selectedMonth))
+    return eachDayOfInterval({ start: firstWeekStart, end: lastWeekEnd })
+  }, [selectedMonth])
 
-    const newDays: IDay[] = []
-    for (let day = firstDay; day <= lastDay; day.setDate(day.getDate() + 1)) {
-      newDays.push({
-        date: day.toISOString().split('T')[0],
-        isCurrentMonth: true,
+  useEffect(() => {
+    const newDays: IDayWithDetails[] = calendarDays.map(day => {
+      return {
+        formattedDate: format(day, 'yyyy-MM-dd'),
+        isWithinSelectedMonth: getMonth(day) === getMonth(selectedMonth),
+        isToday: isToday(day),
+        isSelected: true,
         events: [],
-      })
-    }
+      }
+    })
 
     for (const job of jobs) {
       for (const jobDate of job.job_dates) {
-        const day = newDays.find(day => day.date === jobDate.split('T')[0])
+        const formattedJobDate = format(jobDate, 'yyyy-MM-dd')
+        const day = newDays.find(day => day.formattedDate === formattedJobDate)
 
         if (day) {
           let jobStartTime
@@ -73,43 +89,11 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
       }
     }
 
-    setDays(newDays)
-  }, [currentMonth, currentYear, jobs])
+    setDaysWithDetails(newDays)
+  }, [calendarDays, jobs, selectedMonth])
 
-  const isToday = (date: string) => {
-    const today = new Date()
-
-    const [year, month, day] = date.split('-').map(Number)
-    const d = new Date(year, month - 1, day)
-
-    return (
-      d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()
-    )
-  }
-
-  // const handleToday = () => {
-  //   const today = new Date()
-  //   setCurrentMonth(today.getMonth())
-  //   setCurrentYear(today.getFullYear())
-  // }
-
-  // const handlePreviousMonth = () => {
-  //   setCurrentMonth(currentMonth - 1)
-  //   if (currentMonth === 0) {
-  //     setCurrentMonth(11)
-  //     setCurrentYear(currentYear - 1)
-  //   }
-  // }
-
-  // const handleNextMonth = () => {
-  //   setCurrentMonth(currentMonth + 1)
-  //   if (currentMonth === 11) {
-  //     setCurrentMonth(0)
-  //     setCurrentYear(currentYear + 1)
-  //   }
-  // }
-  const daysWithJobs = days.map(day => {
-    const jobsForDay = jobs.filter(job => job.job_dates.includes(day.date))
+  const daysWithJobs = daysWithDetails.map(day => {
+    const jobsForDay = jobs.filter(job => job.job_dates.includes(day.formattedDate))
 
     const jobEvents = jobsForDay.map(job => ({
       id: job._id,
@@ -126,27 +110,28 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
 
   const renderEventListItems = () => {
     return daysWithJobs.map(day => {
-      const { events } = day
-
-      return events.map(event => {
-        const { id, name, datetime } = event
-        const date = new Date(datetime)
-        const formattedDate = date.toLocaleDateString()
-
+      return day.events.map(event => {
         return (
-          <li key={id} className="group flex p-2 focus-within:bg-gray-50 hover:bg-gray-50 sm:p-4">
+          <li key={event.id} className="group flex p-2 sm:p-4">
             <div className="flex-auto">
-              <p className="font-semibold text-gray-900">{name}</p>
+              <p className={cn('font-semibold text-gray-900', { 'text-primary': day.isToday })}>{event.name}</p>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-y-2 text-gray-700 sm:justify-between">
-                <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 xs:gap-x-6 sm:justify-around">
-                  <time dateTime={datetime} className="flex items-center">
-                    <ClockIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                <div className="flex flex-col justify-between gap-x-2 gap-y-2 xs:gap-x-6 sm:justify-around">
+                  <span className="flex items-center">
+                    <CalendarIcon
+                      className={cn('mr-2 h-5 w-5 text-gray-400', { 'text-primary': day.isToday })}
+                      aria-hidden="true"
+                    />
+                    {format(event.datetime, 'PPPP')}
+                    {day.isToday ? ' (Today)' : ''}
+                  </span>
+                  <time dateTime={event.datetime} className="flex items-center">
+                    <ClockIcon
+                      className={cn('mr-2 h-5 w-5 text-gray-400', { 'text-primary': day.isToday })}
+                      aria-hidden="true"
+                    />
                     {event.time}
                   </time>
-                  <span className="flex items-center">
-                    <CalendarIcon className="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                    {formattedDate}
-                  </span>
                 </div>
                 <Button
                   size="small"
@@ -163,19 +148,29 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     })
   }
 
+  function formatDate(date: Date, options?: Intl.DateTimeFormatOptions) {
+    return new Intl.DateTimeFormat(undefined, options).format(date)
+  }
+
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
       <header className="flex items-center justify-between border-b border-gray-200 py-4 pl-2 lg:flex-none">
         <h1 className="text-base font-semibold leading-6 text-gray-900">
           <time
-            dateTime={`${currentYear}-${currentMonth + 1}`}>{`${new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} ${currentYear}`}</time>
+            dateTime={formatDate(selectedMonth, {
+              month: 'long',
+              year: 'numeric',
+            })}>
+            {formatDate(selectedMonth, { month: 'long', year: 'numeric' })}
+          </time>
         </h1>
         <div className="flex items-center">
-          {/* disabling these buttons for now */}
-          {/* <div className="relative flex items-center rounded-md bg-white shadow-sm md:items-stretch">
+          <div className="relative flex items-center rounded-md bg-white shadow-sm md:items-stretch">
             <button
               type="button"
-              onClick={handlePreviousMonth}
+              onClick={() => {
+                setSelectedMonth(m => subMonths(m, 1))
+              }}
               className="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50">
               <span className="sr-only">Previous month</span>
               <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
@@ -183,25 +178,30 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
             <span className="relative -mx-px h-5 w-px bg-gray-300 md:hidden" />
             <button
               type="button"
-              onClick={handleToday}
+              onClick={() => setSelectedMonth(new Date())}
               className="h-9 border-y border-gray-300 px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative md:block">
               Today
             </button>
             <span className="relative -mx-px h-5 w-px bg-gray-300 md:hidden" />
             <button
               type="button"
-              onClick={handleNextMonth}
+              onClick={() => {
+                setSelectedMonth(m => addMonths(m, 1))
+              }}
               className="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pl-0 md:hover:bg-gray-50">
               <span className="sr-only">Next month</span>
               <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
             </button>
-          </div> */}
+          </div>
         </div>
       </header>
 
       {/* Day column headings */}
       <div className="shadow ring-1 ring-black ring-opacity-5 lg:flex lg:flex-auto lg:flex-col">
         <div className="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs font-semibold leading-6 text-gray-700 lg:flex-none">
+          <div className="bg-white py-2">
+            S<span className="sr-only sm:not-sr-only">un</span>
+          </div>
           <div className="bg-white py-2">
             M<span className="sr-only sm:not-sr-only">on</span>
           </div>
@@ -220,9 +220,6 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
           <div className="bg-white py-2">
             S<span className="sr-only sm:not-sr-only">at</span>
           </div>
-          <div className="bg-white py-2">
-            S<span className="sr-only sm:not-sr-only">un</span>
-          </div>
         </div>
 
         <div className="flex bg-gray-100 text-xs leading-6 text-gray-700 lg:flex-auto">
@@ -230,32 +227,30 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
           <div className="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-5 lg:gap-px">
             {daysWithJobs.map(day => (
               <div
-                key={day.date}
+                key={day.formattedDate}
                 className={cn(
-                  day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-500',
+                  day.isWithinSelectedMonth ? 'bg-white' : 'bg-gray-50 text-gray-500',
                   'relative px-3 py-2 lg:min-h-28',
                 )}>
                 <time
-                  dateTime={day.date}
+                  dateTime={day.formattedDate}
                   className={
-                    isToday(day.date)
+                    day.isToday
                       ? 'flex h-6 w-6 items-center justify-center rounded-full bg-primary font-semibold text-white'
                       : undefined
                   }>
-                  {day.date.split('-').pop()?.replace(/^0/, '')}
+                  {day.formattedDate.split('-').pop()?.replace(/^0/, '')}
                 </time>
                 {day.events.length > 0 ? (
                   <ol className="mt-2">
                     {day.events.slice(0, 2).map(event => (
                       <li key={event.id}>
                         <Link to={`/employee/jobs/${event.id}`} className="group flex">
-                          <Button size="small" link raised className="flex flex-col 2xl:flex-row">
-                            <p className="flex-auto text-nowrap font-medium text-gray-900  group-hover:text-primary group-hover:underline">
+                          <Button size="small" link raised className="flex w-full flex-col items-start">
+                            <p className="flex-auto text-left font-medium text-gray-900  group-hover:text-primary group-hover:underline">
                               {event.name}
                             </p>
-                            <time
-                              dateTime={event.datetime}
-                              className="hidden flex-none text-gray-500 lg:block 2xl:ml-3">
+                            <time dateTime={event.datetime} className="hidden flex-none text-gray-500 lg:block">
                               {event.time}
                             </time>
                           </Button>
@@ -272,25 +267,23 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
           <div className="isolate grid w-full grid-cols-7 grid-rows-5 gap-px lg:hidden">
             {daysWithJobs.map(day => (
               <button
-                key={day.date}
+                key={day.formattedDate}
                 type="button"
                 className={cn('flex h-14 flex-col px-3 py-2 focus:z-10', {
-                  'bg-white': day.isCurrentMonth,
-                  'bg-gray-50': !day.isCurrentMonth,
-                  'font-semibold': day.isSelected || day.isToday,
-                  'text-white': day.isSelected,
-                  'text-indigo-600': !day.isSelected && day.isToday,
-                  'text-gray-900': !day.isSelected && day.isCurrentMonth && !day.isToday,
-                  'text-gray-500': !day.isSelected && !day.isCurrentMonth && !day.isToday,
+                  'bg-white': day.isWithinSelectedMonth,
+                  'bg-gray-50': !day.isWithinSelectedMonth,
+                  'font-semibold': day.isToday,
+                  'text-white': day.isToday,
+                  'text-gray-900': day.isWithinSelectedMonth && !day.isToday,
+                  'text-gray-500': !day.isWithinSelectedMonth && !day.isToday,
                 })}>
                 <time
-                  dateTime={day.date}
+                  dateTime={day.formattedDate}
                   className={cn('ml-auto', {
                     'flex h-6 w-6 items-center justify-center rounded-full': day.isSelected,
-                    'bg-indigo-600': day.isSelected && day.isToday,
-                    'bg-gray-900': day.isSelected && !day.isToday,
+                    'bg-primary': day.isSelected && day.isToday,
                   })}>
-                  {day.date.split('-').pop()?.replace(/^0/, '')}
+                  {day.formattedDate.split('-').pop()?.replace(/^0/, '')}
                 </time>
                 <span className="sr-only">{day.events.length} events</span>
                 {day.events.length > 0 ? (
