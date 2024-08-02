@@ -10,7 +10,6 @@ import { Skeleton } from 'primereact/skeleton'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IJob, type IJobShiftDay } from '../../../interfaces/job'
 import { type Shifts } from '../../../interfaces/shifts'
-import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { formatToLocalTime } from '../../../utils/timeUtils'
@@ -23,7 +22,6 @@ export const JobDetailViewAdmin = () => {
   const [, setIsLoading] = useState(true)
   // const [, setHasDateIntersection] = useState(false)
   const [, setJobHasEnded] = useState(false)
-  const [timesheets] = useState<ITimeSheet[] | null>(null)
 
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -254,7 +252,7 @@ export const JobDetailViewAdmin = () => {
                 </div>
                 <ShiftsTableAdmin job={job} setJob={setJob} />
               </Card>
-              <JobDetailBottomAdmin timesheets={timesheets} job={job} />
+              <JobDetailBottomAdmin job={job} />
             </div>
 
             {/* <div className="col-span-1 md:col-span-1">
