@@ -21,7 +21,13 @@ const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[
   return (
     <>
       <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
-      <DataTable value={punchPairsAndTotalTime} stripedRows paginator rows={7} rowsPerPageOptions={[7, 14, 30]}>
+      <DataTable
+        value={punchPairsAndTotalTime}
+        stripedRows
+        paginator
+        rows={7}
+        rowsPerPageOptions={[7, 14, 30]}
+        emptyMessage="No time data to display">
         <Column
           field="punchIn.time_stamp"
           header="Date"
