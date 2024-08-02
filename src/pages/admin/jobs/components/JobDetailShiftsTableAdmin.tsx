@@ -130,6 +130,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                       key={userShift._id}
                       icon={() => (
                         <img
+                          key={userShift._id}
                           src={
                             userShift?.user_id?.avatar
                               ? userShift?.user_id?.avatar
