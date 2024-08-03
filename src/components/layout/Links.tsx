@@ -105,12 +105,12 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     },
 
     { id: 8, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
-    {
-      id: 1,
-      name: 'Messages (Beta)',
-      href: '/admin/messages',
-      icon: <IoMdMail />,
-    },
+    // {
+    //   id: 1,
+    //   name: 'Messages (Beta)',
+    //   href: '/admin/messages',
+    //   icon: <IoMdMail />,
+    // },
     { id: 9, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
   ]
 
@@ -170,7 +170,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
   ]
 
   const employeeLinks: INavLink[] = [
-    // { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+    { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
     { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime />, disabled: !userIsOnboarded },
     { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
     { id: 3, name: 'Training', href: '/learn', icon: <MdSchool /> },
