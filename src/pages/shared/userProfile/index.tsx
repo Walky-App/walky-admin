@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { Chat } from '../../../components/shared/messages/Chat'
 import { useAuth } from '../../../contexts/AuthContext'
 import { type IUser } from '../../../interfaces/User'
 import { type ITrainingData } from '../../../interfaces/training'
@@ -140,6 +141,11 @@ export const UserProfile = () => {
         {role === 'admin' ? (
           <TabPanel header="Notes">
             <ProfileNotes formUser={formUser} loggedInUser={loggedInUser} />
+          </TabPanel>
+        ) : null}
+        {role === 'admin' ? (
+          <TabPanel header="Messages">
+            <Chat formUser={formUser} />
           </TabPanel>
         ) : null}
       </TabView>
