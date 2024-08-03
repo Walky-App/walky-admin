@@ -135,7 +135,7 @@ export const JobDetailView = () => {
                         {job.job_days.length * job.vacancy} Shifts
                       </div>
                     </div>
-                    {userWorkingInThisJob || role === 'admin' ? job.title : null} #{job.uid}
+                    {job.title} #{job.uid}
                   </>
                 }>
                 {/* Job Facility */}

@@ -241,39 +241,35 @@ export const ShiftsTable = ({
         </td>
         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
           <a href="/">
-            {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+            {jobHasEnded ? (
+              <p>Job has ended</p>
+            ) : getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
+              <>
+                <p className="flex justify-end text-sm">
+                  <HtInfoTooltip
+                    className="mr-2"
+                    message={`If you drop the shift within 24hours of Shift start time \n your account will marked down with 1 strike \n ( 2 strikes and account will be suspended )`}
+                  />
+                  Shift Confirmed
+                </p>
+                <Button
+                  onClick={e => {
+                    e.preventDefault()
+                    setShowDialog(true)
+                    setShiftInfo({
+                      shiftId: eachShift.shifts_id._id,
+                      userShiftId: getUserShiftsIdByUserId(user._id) ?? '',
+                    })
+                  }}
+                  severity="danger"
+                  label="Drop Shift"
+                  icon="pi pi-times"
+                />
+              </>
+            ) : getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
               <p>Vacancy completed</p>
             ) : (
-              <div>
-                {jobHasEnded ? (
-                  <p>Job has ended</p>
-                ) : getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
-                  <>
-                    <p className="flex justify-end text-sm">
-                      <HtInfoTooltip
-                        className="mr-2"
-                        message={`If you drop the shift within 24hours of Shift start time \n your account will marked down with 1 strike \n ( 2 strikes and account will be suspended )`}
-                      />
-                      Shift Confirmed
-                    </p>
-                    <Button
-                      onClick={e => {
-                        e.preventDefault()
-                        setShowDialog(true)
-                        setShiftInfo({
-                          shiftId: eachShift.shifts_id._id,
-                          userShiftId: getUserShiftsIdByUserId(user._id) ?? '',
-                        })
-                      }}
-                      severity="danger"
-                      label="Drop Shift"
-                      icon="pi pi-times"
-                    />
-                  </>
-                ) : (
-                  <Button label="Pickup Shift" onClick={e => applyForAShift(e, formattedDate)} />
-                )}
-              </div>
+              <Button label="Pickup Shift" onClick={e => applyForAShift(e, formattedDate)} />
             )}
           </a>
         </td>
