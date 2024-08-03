@@ -190,7 +190,7 @@ export const SideRightCard = ({
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error('Please enable location sharing in your browser in order to clock in.')
+        throw new Error(data.message)
       }
 
       const timeSheet: ITimeSheet = data
