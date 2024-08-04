@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
@@ -190,6 +190,9 @@ export const ServiceOrderPage = () => {
                 <th className="border border-gray-300 bg-gray-100 p-4 text-left">SO Status</th>
                 <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility</th>
                 <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility Address</th>
+                {serviceOrder?.service_invoice_id ? (
+                  <th className="border border-gray-300 bg-gray-100 p-4 text-left">Invoice Ref</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -201,6 +204,13 @@ export const ServiceOrderPage = () => {
                   <h3 className="text-base font-semibold leading-6">{serviceOrder?.facility_id.name}</h3>
                 </td>
                 <td className="border border-gray-300 p-4">{serviceOrder?.facility_id.address}</td>
+                {serviceOrder?.service_invoice_id ? (
+                  <td className="border border-gray-300 p-4">
+                    <Link to={`/admin/invoices/${serviceOrder.service_invoice_id}`}>
+                      {serviceOrder.service_invoice_id}
+                    </Link>
+                  </td>
+                ) : null}
               </tr>
             </tbody>
           </table>
