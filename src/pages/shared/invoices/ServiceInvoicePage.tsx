@@ -4,7 +4,9 @@ import { Link, useParams } from 'react-router-dom'
 
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
+import { FloatLabel } from 'primereact/floatlabel'
 import { InputNumber } from 'primereact/inputnumber'
+import { InputTextarea } from 'primereact/inputtextarea'
 
 import { TrashIcon } from '@heroicons/react/20/solid'
 
@@ -17,6 +19,7 @@ import { DiscountDialog } from './DiscountDialog'
 export const ServiceInvoicePage = () => {
   const [invoice, setInvoice] = useState<IServiceInvoice | null>(null)
   const [discount, setDiscount] = useState<number>(0)
+  const [note, setNote] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const { invoiceId } = useParams()
@@ -95,6 +98,26 @@ export const ServiceInvoicePage = () => {
       setIsLoading(false)
     } catch (error) {
       console.error('Error regenerating invoice:', error)
+      setIsLoading(false)
+    }
+  }
+
+  const handlerSetNote = async () => {
+    try {
+      setIsLoading(true)
+      const response = await requestService({
+        path: `invoices/note/${invoiceId}`,
+        method: 'POST',
+        body: JSON.stringify({ note }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to send email')
+      }
+      const fetchedData = await response.json()
+      setInvoice(fetchedData)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error sending email:', error)
       setIsLoading(false)
     }
   }
@@ -231,6 +254,20 @@ export const ServiceInvoicePage = () => {
                 </li>
               ))}
             </ul>
+            {!invoice?.note ? (
+              <div className="flex flex-col pb-3">
+                <FloatLabel>
+                  <InputTextarea id="note" value={note} onChange={e => setNote(e.target.value)} rows={5} cols={30} />
+                  <label htmlFor="note">Note</label>
+                </FloatLabel>
+                <Button className="w-1/4" label="Save note" onClick={handlerSetNote} />
+              </div>
+            ) : (
+              <div>
+                <h2 className="mt-2 font-bold">Note:</h2>
+                <p>{invoice.note}</p>
+              </div>
+            )}
           </div>
           <table className="float-right">
             {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (

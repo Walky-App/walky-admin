@@ -34,6 +34,7 @@ export interface IServiceInvoice {
   job_id: IJob
   facility_id: IFacility
   profile_id: string
+  note: string
   createdAt: Date
   updatedAt: Date
   transaction_id: string
