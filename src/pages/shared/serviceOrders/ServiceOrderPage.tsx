@@ -405,7 +405,9 @@ export const ServiceOrderPage = () => {
               <h2 className="text-base leading-6">{serviceOrder.transaction_id}</h2>
             ) : null}
           </div>
-          {role === 'admin' ? <Button className="mt-6" label="Create Invoice" onClick={handleGenerateInvoice} /> : null}
+          {role === 'admin' && !serviceOrder?.service_invoice_id ? (
+            <Button className="mt-6" label="Create Invoice" onClick={handleGenerateInvoice} />
+          ) : null}
         </footer>
       </div>
     </div>
