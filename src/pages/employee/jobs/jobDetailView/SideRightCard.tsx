@@ -5,6 +5,7 @@ import { Card } from 'primereact/card'
 
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { Feedback } from '../../../../components/shared/dialog/Feedback'
+import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IJobShiftDay, type IJob } from '../../../../interfaces/job'
 import { type ITokenInfo } from '../../../../interfaces/services'
 import { type Shifts } from '../../../../interfaces/shifts'
@@ -316,6 +317,55 @@ export const SideRightCard = ({
                   locationPin={job?.facility?.location_pin || []}
                   containerStyle={{ width: '100%', height: '100%' }}
                 />
+              </div>
+            </div>
+          ) : null}
+          {userWorkingInThisJob ? (
+            <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+              <div className="flex">
+                <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                  {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
+                  <div className="mt-0.5 flex flex-col gap-1">
+                    <span className="font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                  {job.is_completed === false ? (
+                    <i className="pi pi-calendar" />
+                  ) : (
+                    <i className="pi pi-calendar-times" />
+                  )}
+                  <div className="mt-0.5 flex flex-col gap-1">
+                    <span className="font-medium text-black">{job.is_completed === false ? 'Live' : 'Archived'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                  {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
+                  <div className="mt-0.5 flex flex-col gap-1">
+                    <span className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                {userWorkingInThisJob || (role === 'admin' && job.facility?.notes) ? (
+                  <>
+                    <HtInfoTooltip message="These notes will help you find your destination faster." />
+                    <span className="text-base font-medium text-black">
+                      Arrival notes: <span className="font-normal">{job.facility.notes}</span>
+                    </span>
+                  </>
+                ) : null}
+              </div>
+              <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                {userWorkingInThisJob || (role === 'admin' && job.job_tips.length > 0) ? (
+                  <>
+                    <HtInfoTooltip message="These tips will help you better prepare for the job" />
+                    <span className="text-base font-medium text-black">Job Tips:</span>
+                    {job.job_tips.map((tip, index) => (
+                      <span key={index}>{tip}</span>
+                    ))}
+                  </>
+                ) : null}
               </div>
             </div>
           ) : null}
