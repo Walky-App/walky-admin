@@ -1,98 +1,17 @@
-import { useState, type Dispatch, type SetStateAction } from 'react'
-
 import { format } from 'date-fns'
-import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
-import { Dialog } from 'primereact/dialog'
 import { Fieldset } from 'primereact/fieldset'
-import { InputTextarea } from 'primereact/inputtextarea'
 
 import { type IJobShiftDay, type IJob } from '../../../../interfaces/job'
 import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
-import { requestService } from '../../../../services/requestServiceNew'
-import { useUtils } from '../../../../store/useUtils'
 
 interface IShiftTableAdminProps {
   job: IJob
-  setJob: Dispatch<SetStateAction<IJob | null>>
 }
 
-export const ShiftsTableClient = ({ job, setJob }: IShiftTableAdminProps) => {
-  const [showDialog, setShowDialog] = useState(false)
-  const [shiftDropReason, setShiftDropReason] = useState('')
-  const [employeeShiftInfoToRemove, setEmployeeShiftInfoToRemove] = useState({ shiftId: '', userShiftId: '' })
-  const { showToast } = useUtils()
-
-  const removeEmployeeShift = async (userShiftId: string, shiftId: string) => {
-    try {
-      const response = await requestService({
-        path: `shifts/drop/${shiftId}`,
-        method: 'PATCH',
-        body: JSON.stringify({ userShiftId }),
-      })
-      const data = await response.json()
-      if (response.ok) {
-        setJob(data)
-        showToast({
-          severity: 'success',
-          summary: 'Employee removed',
-          detail: 'Employee has been removed from the shift',
-        })
-        setShowDialog(false)
-        setEmployeeShiftInfoToRemove({ shiftId: '', userShiftId: '' })
-        setShiftDropReason('')
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const reject = () => {
-    setShowDialog(false)
-    setShiftDropReason('')
-    showToast({ severity: 'success', summary: 'Rejected', detail: 'Shift was not dropped 🙂', life: 3000 })
-  }
-
+export const ShiftsTableClient = ({ job }: IShiftTableAdminProps) => {
   return (
     <section className="mt-12">
-      <Dialog
-        header="Drop Shift?"
-        visible={showDialog}
-        draggable={false}
-        className="w-full md:w-1/2"
-        onHide={() => {
-          if (!showDialog) return
-          setShowDialog(false)
-        }}
-        footer={() => (
-          <div>
-            <Button label="No" icon="pi pi-check" onClick={reject} className="p-button-text" />
-            <Button
-              disabled={shiftDropReason.length < 20}
-              label="Yes, Drop the Shift"
-              severity="danger"
-              icon="pi pi-times"
-              onClick={() =>
-                removeEmployeeShift(employeeShiftInfoToRemove.userShiftId, employeeShiftInfoToRemove.shiftId)
-              }
-            />
-          </div>
-        )}>
-        <div className="m-0">
-          <h2 className="mb-8 text-lg font-medium">Sure you want to drop this user?</h2>
-          <h3 className="text-xl font-medium text-red-600">Reason for dropping the user from shift</h3>
-          <InputTextarea
-            placeholder="More than 30 characters"
-            required
-            rows={5}
-            cols={50}
-            className="text-lg"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setShiftDropReason(e.target.value)}
-            value={shiftDropReason}
-          />
-        </div>
-      </Dialog>
-
       <h2 className="text-base font-semibold leading-6 text-gray-900">Schedule ({job?.job_dates?.length} days)</h2>
       <ol className="mt-2 text-base leading-6 ">
         {job?.job_days.map((day: IJobShiftDay, index: number) => {
