@@ -29,7 +29,7 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
       const response = await requestService({
         path: `messages/byusers`,
         method: 'POST',
-        body: JSON.stringify({ participants: [formUser?._id, loggedInUserId] }),
+        body: JSON.stringify({ participants: [formUser?._id, AdminId] }),
       })
 
       if (response.ok) {
@@ -39,11 +39,11 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
     } catch (error) {
       console.error('error fetching messages', error)
     }
-  }, [formUser?._id, loggedInUserId])
+  }, [formUser?._id])
 
   useEffect(() => {
     getMessagesByUsers()
-  }, [formUser?._id, getMessagesByUsers, loggedInUserId])
+  }, [formUser?._id, getMessagesByUsers])
 
   const handleNewChat = async () => {
     try {
@@ -53,7 +53,7 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
         body: JSON.stringify({
           name: `New chat with ${formUser?.first_name} ${formUser?.last_name}`,
           description: `Admin converstation with ${formUser?._id}`,
-          recipients: [formUser?._id, loggedInUserId],
+          recipients: [formUser?._id, AdminId],
         }),
       })
       if (response.ok) {
