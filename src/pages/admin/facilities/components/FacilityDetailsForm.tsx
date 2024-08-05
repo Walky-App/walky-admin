@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import classNames from 'classnames'
 import { Button } from 'primereact/button'
@@ -188,16 +188,9 @@ export const FacilityDetailsForm = ({
               <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
                 <HtInputLabel htmlFor="name" labelText="Company Name" />
               </HtInfoTooltip>
-              <InputText
-                name="company_name"
-                id="name"
-                disabled
-                autoComplete="off"
-                onChange={handleFormUpdate}
-                value={company?.company_name}
-                placeholder="e.g. Main Facility"
-                className="w-full"
-              />
+              <Link className="p-4 text-2xl underline hover:text-gray-500" to={`/${role}/companies/${company?._id}`}>
+                {company?.company_name}
+              </Link>
             </div>
             <div className="sm:col-span-3">
               <HtInfoTooltip message="The name of your first facility. You will be able to add additional facilities after you complete the onboarding process for this facility.">
