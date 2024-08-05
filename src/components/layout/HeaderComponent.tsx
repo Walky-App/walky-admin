@@ -1,6 +1,6 @@
 import { type Dispatch, Fragment, type SetStateAction, useEffect } from 'react'
 
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import cn from 'classnames'
 import { Avatar } from 'primereact/avatar'
@@ -18,7 +18,6 @@ import { LogosPack } from './LogosPack'
 
 interface HeaderComponentProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>
-  activePage: string
 }
 
 export interface UserNavigationItem {
@@ -26,11 +25,12 @@ export interface UserNavigationItem {
   href: string
 }
 
-export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentProps) => {
+export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
   const { avatarImageUrl, setAvatarImageUrl } = useUtils()
   const role = roleChecker()
   const tokenInfo = GetTokenInfo()
+  const location = useLocation()
 
   const userIsOnboarded = tokenInfo?.onboarding?.completed
 
@@ -60,17 +60,25 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
           <div className="flex shrink-0 items-center justify-center">
             <Link to={user ? `/${role}/dashboard` : '/'}>{LogosPack('header')}</Link>
           </div>
-          {activePage !== '' ? (
-            <h3 className="text-base font-semibold leading-6 text-gray-900"> /&nbsp; {activePage}</h3>
-          ) : null}
+
+          <h3 className="text-base font-semibold capitalize leading-6 text-gray-900">
+            {location.pathname.split('/').slice(1).join(' / ')}
+          </h3>
         </div>
 
-        {/* Right hand side header */}
-        <div className="flex items-center gap-x-4 lg:gap-x-6">
-          <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
-            <span className="sr-only">View notifications</span>
-            {/* <BellIcon className="h-6 w-6" aria-hidden="true" /> */}
-          </button>
+        <div className="flex items-center gap-x-4">
+          {role !== 'admin' ? (
+            <button
+              type="button"
+              className="mt-2 text-gray-400 hover:text-gray-500"
+              disabled={role === 'admin'}
+              onClick={() => navigate(`${role}/messages`)}>
+              <span className="sr-only">View notifications</span>
+              <i className="pi pi-envelope p-overlay-badge" style={{ fontSize: '1.2rem' }}>
+                {/* <Badge value="2" /> */}
+              </i>
+            </button>
+          ) : null}
 
           {/* Profile dropdown */}
           <Menu as="div" className="relative">
@@ -131,26 +139,6 @@ export const HeaderComponent = ({ setSidebarOpen, activePage }: HeaderComponentP
           </Menu>
           {/* Responsive Separator */}
           <div className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
-          {/* Search Form *OPTIONAL* */}
-          {/* <div className="flex self-stretch lg:justify-end lg:gap-x-6">
-            <form className="relative flex flex-1" action="#" method="GET">
-                <label htmlFor="search-field" className="sr-only">
-                  Search
-                </label>
-                <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field"
-                  className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                  placeholder="Search..."
-                  type="search"
-                  name="search"
-                />
-              </form>
-          </div> */}
-
           <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />

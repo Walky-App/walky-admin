@@ -18,10 +18,9 @@ import { LogosPack } from './LogosPack'
 interface SidebarComponentProps {
   sidebarOpen: boolean
   setSidebarOpen: Dispatch<SetStateAction<boolean>>
-  setActivePage: Dispatch<SetStateAction<string>>
 }
 
-export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }: SidebarComponentProps) => {
+export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarComponentProps) => {
   const [visible, setVisible] = useState(false)
   const [links, setLinks] = useState<INavLink[]>([])
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
@@ -45,9 +44,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
         'ring-1 ring-white/10': sidebarOpen,
       })}>
       <div className="mt-4 flex shrink-0 items-center justify-center">
-        <Link to={user ? `/${role}/dashboard` : '/'} onClick={() => setActivePage('')}>
-          {LogosPack('sidebar')}
-        </Link>
+        <Link to={user ? `/${role}/dashboard` : '/'}>{LogosPack('sidebar')}</Link>
       </div>
       <nav className="flex flex-1 flex-col">
         <ul className="flex flex-1 flex-col gap-y-7">
@@ -60,10 +57,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
                     {!link.subLinks ? (
                       <NavLink
                         to={link.href}
-                        onClick={() => {
-                          setSidebarOpen(false)
-                          setActivePage(link.name)
-                        }}
+                        onClick={() => setSidebarOpen(false)}
                         className={({ isActive }) =>
                           cn(
                             isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white',
@@ -71,7 +65,9 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
                           )
                         }>
                         <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                        {link.name}
+                        <NavLink to={link.href} className="hover:text-base hover:text-white">
+                          {link.name}
+                        </NavLink>
                       </NavLink>
                     ) : (
                       <Disclosure as="div">
@@ -83,7 +79,9 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
                                 'links-center flex w-full gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-400',
                               )}>
                               <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                              {link.name}
+                              <NavLink to={link.href} className="hover:text-base hover:text-white">
+                                {link.name}
+                              </NavLink>
                               <ChevronRightIcon
                                 className={cn(
                                   open ? 'rotate-90 text-gray-500' : 'text-gray-400',
@@ -97,10 +95,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen, setActivePage }:
                                 <li key={subItem.name}>
                                   <NavLink
                                     to={subItem.href}
-                                    onClick={() => {
-                                      setSidebarOpen(false)
-                                      setActivePage(subItem.name)
-                                    }}
+                                    onClick={() => setSidebarOpen(false)}
                                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                     className={({ isActive, isPending }) => {
                                       return cn(

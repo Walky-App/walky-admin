@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Chat } from '../../../components/shared/messages/Chat'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
-export const ClientMessages = () => {
+export const EmployeeMessages = () => {
   const [user, setUser] = useState<IUser>()
   const { _id } = GetTokenInfo()
 
