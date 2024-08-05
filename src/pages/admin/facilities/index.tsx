@@ -63,7 +63,10 @@ export const AdminFacilities = () => {
       },
     },
     { Header: 'Name', accessor: 'name', width: '200px' },
-    { Header: 'DBAs', accessor: 'company_dbas' },
+    {
+      Header: 'DBAs',
+      accessor: (row: IFacility) => row.facility_dbas?.join(', '),
+    },
     {
       Header: 'Created',
       width: 200,
@@ -76,6 +79,7 @@ export const AdminFacilities = () => {
       },
     },
     { Header: 'Address', accessor: 'address', width: '300px' },
+    { Header: 'Company', accessor: 'company_id.company_name', width: '300px' },
     {
       Header: 'Payment Methods',
       accessor: (row: IFacilityWithPaymentInfo) => row.company_id?.payment_information?.length ?? 0,

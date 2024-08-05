@@ -83,6 +83,15 @@ export const ShiftsTable = ({
         setUserWorkingInThisJob(true)
         showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully picked Up Shift' })
       }
+      if (!response.ok) {
+        const data = await response.json()
+        setHasDateIntersection(true)
+        showToast({
+          severity: 'error',
+          summary: 'Failed',
+          detail: data.message,
+        })
+      }
     } catch (error: unknown) {
       if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
         const err = error as { status: number; message: string }
@@ -193,15 +202,13 @@ export const ShiftsTable = ({
           <time dateTime={eachShift.day.toString()}>{dayOfWeek}</time>
         </td>
         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
-          <a href="/">
-            {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
-              <p>Vacancy completed</p>
-            ) : (
-              <div>
-                <p>Job has ended</p>
-              </div>
-            )}
-          </a>
+          {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+            <p>Vacancy completed</p>
+          ) : (
+            <div>
+              <p>Job has ended</p>
+            </div>
+          )}
         </td>
       </tr>
     )

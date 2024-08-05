@@ -90,7 +90,6 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
           <div>
             <Button label="No" icon="pi pi-check" onClick={reject} className="p-button-text" />
             <Button
-              disabled={shiftDropReason.length < 20}
               label="Yes, Drop the Shift"
               severity="danger"
               icon="pi pi-times"
@@ -104,7 +103,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
           <h2 className="mb-8 text-lg font-medium">Sure you want to drop this user?</h2>
           <h3 className="text-xl font-medium text-red-600">Reason for dropping the user from shift</h3>
           <InputTextarea
-            placeholder="More than 30 characters"
+            placeholder="Type in the reason for dropping the user from the shift"
             required
             rows={5}
             cols={50}
