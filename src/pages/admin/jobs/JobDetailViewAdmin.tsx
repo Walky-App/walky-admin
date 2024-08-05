@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
@@ -11,9 +10,9 @@ import { Skeleton } from 'primereact/skeleton'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type IJob, type IJobShiftDay } from '../../../interfaces/job'
 import { type Shifts } from '../../../interfaces/shifts'
-import { type ITimeSheet } from '../../../interfaces/timesheet'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { formatToLocalTime } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { JobDetailBottomAdmin } from './components/JobDetailBottomAdmin'
 import { ShiftsTableAdmin } from './components/JobDetailShiftsTableAdmin'
@@ -23,7 +22,6 @@ export const JobDetailViewAdmin = () => {
   const [, setIsLoading] = useState(true)
   // const [, setHasDateIntersection] = useState(false)
   const [, setJobHasEnded] = useState(false)
-  const [timesheets] = useState<ITimeSheet[] | null>(null)
 
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -237,7 +235,7 @@ export const JobDetailViewAdmin = () => {
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Start / End Time</div>
-                    {format(job.start_time, 'p')} &nbsp; - &nbsp; {format(job.end_time, 'p')}
+                    {formatToLocalTime(job.start_time)} &nbsp; - &nbsp; {formatToLocalTime(job.end_time)}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Lunch Breaks</div>
@@ -254,7 +252,7 @@ export const JobDetailViewAdmin = () => {
                 </div>
                 <ShiftsTableAdmin job={job} setJob={setJob} />
               </Card>
-              <JobDetailBottomAdmin timesheets={timesheets} job={job} />
+              <JobDetailBottomAdmin job={job} />
             </div>
 
             {/* <div className="col-span-1 md:col-span-1">
