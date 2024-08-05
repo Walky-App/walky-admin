@@ -83,6 +83,15 @@ export const ShiftsTable = ({
         setUserWorkingInThisJob(true)
         showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully picked Up Shift' })
       }
+      if (!response.ok) {
+        const data = await response.json()
+        setHasDateIntersection(true)
+        showToast({
+          severity: 'error',
+          summary: 'Failed',
+          detail: data.message,
+        })
+      }
     } catch (error: unknown) {
       if (typeof error === 'object' && error !== null && 'status' in error && 'message' in error) {
         const err = error as { status: number; message: string }
