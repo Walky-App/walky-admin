@@ -52,8 +52,8 @@ export const AdminFacilities = () => {
       Cell: ({ row, value }: IRow) => {
         return (
           <div className="flex items-center gap-2">
-            {Array.isArray(row.original.images) && row.original.images.length > 0 ? (
-              <Avatar src={row.original.images[0].url} alt={`${value}'s Avatar`} />
+            {row.original.main_image ? (
+              <Avatar src={row.original.main_image} alt={`${value}'s Avatar`} />
             ) : (
               <Avatar src="/assets/photos/no-photo-found.jpg" alt={`${value}'s Avatar`} />
             )}

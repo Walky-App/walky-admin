@@ -316,7 +316,7 @@ export const ProfileDetail = ({
                 <div className="relative flex gap-x-3">
                   <div className="flex h-6 items-center">
                     <Checkbox
-                      inputId="email_notifications"
+                      inputId="notification_email"
                       name="notifications.email"
                       onChange={e => handleNotificationPreferenceChange(e, 'notification_email')}
                       checked={formUser?.notifications?.includes('notification_email') ?? false ? true : false}
@@ -332,7 +332,7 @@ export const ProfileDetail = ({
                 <div className="relative flex gap-x-3">
                   <div className="flex h-6 items-center">
                     <Checkbox
-                      inputId="sms_notifications"
+                      inputId="notification_sms"
                       name="notifications.sms"
                       onChange={e => handleNotificationPreferenceChange(e, 'notification_sms')}
                       checked={formUser?.notifications?.includes('notification_sms') ?? false ? true : false}

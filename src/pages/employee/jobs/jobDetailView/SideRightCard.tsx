@@ -3,16 +3,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 
-import { GoogleMapComponent } from '../../../components/shared/GoogleMap'
-import { Feedback } from '../../../components/shared/dialog/Feedback'
-import { type IJobShiftDay, type IJob } from '../../../interfaces/job'
-import { type ITokenInfo } from '../../../interfaces/services'
-import { type Shifts } from '../../../interfaces/shifts'
-import { type ITimeSheet } from '../../../interfaces/timesheet'
-import { requestService } from '../../../services/requestServiceNew'
-import { useUtils } from '../../../store/useUtils'
-import { isTodaySameAsTimeStamp } from '../../../utils/timeUtils'
-import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
+import { Feedback } from '../../../../components/shared/dialog/Feedback'
+import { type IJobShiftDay, type IJob } from '../../../../interfaces/job'
+import { type ITokenInfo } from '../../../../interfaces/services'
+import { type Shifts } from '../../../../interfaces/shifts'
+import { type ITimeSheet } from '../../../../interfaces/timesheet'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
+import { isTodaySameAsTimeStamp } from '../../../../utils/timeUtils'
+import { GetTokenInfo } from '../../../../utils/tokenUtil'
 
 export const SideRightCard = ({
   role,
@@ -190,7 +190,7 @@ export const SideRightCard = ({
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error('Please enable location sharing in your browser in order to clock in.')
+        throw new Error(data.message)
       }
 
       const timeSheet: ITimeSheet = data

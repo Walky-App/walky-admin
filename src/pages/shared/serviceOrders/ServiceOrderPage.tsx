@@ -12,6 +12,7 @@ import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/ser
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+import { formatToLocalTime } from '../../../utils/timeUtils'
 
 interface AchPaymentDetails {
   ach_account_name: string
@@ -133,6 +134,8 @@ export const ServiceOrderPage = () => {
         body: JSON.stringify({}),
       })
       if (!response.ok) {
+        const invoice = await response.json()
+        showToast({ severity: 'error', summary: 'Error', detail: invoice.message })
         throw new Error('Failed to generate invoice')
       }
 
@@ -158,11 +161,19 @@ export const ServiceOrderPage = () => {
       </div>
       <div className="">
         <div className="ml-6 flex items-center justify-between">
-          <div>
-            <h1 className="mb-6 border-b border-gray-200 text-xl font-bold">Customer: </h1>
-            <h1 className="font-bold">{serviceOrder?.company_id.company_name}</h1>
-            <h2>{serviceOrder?.company_id.company_address}</h2>
-            <h2>Phone: {serviceOrder?.company_id.company_phone_number}</h2>
+          <div className="text-lg sm:flex-auto">
+            <h2 className="mb-6 border-b border-gray-200 text-xl font-bold">
+              For {serviceOrder?.job_id.title} job #{serviceOrder?.job_id.uid} on:
+            </h2>
+            <ul>
+              {serviceOrder?.job_id.job_dates.map(date => (
+                <li key={date} className="mt-4">
+                  {format(new Date(date), 'PPPP')}, &nbsp;
+                  {formatToLocalTime(serviceOrder?.job_id.start_time)} to{' '}
+                  {formatToLocalTime(serviceOrder?.job_id.end_time)}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
             <Button icon="pi pi-print" className="mr-2" outlined onClick={() => window.print()} />
@@ -312,18 +323,12 @@ export const ServiceOrderPage = () => {
             ) : null}
           </div>
         </table>
-        <div className="mt-12 flex">
-          <div className="text-lg sm:flex-auto">
-            <h2 className="mt-2 font-bold ">
-              For {serviceOrder?.job_id.title} job #{serviceOrder?.job_id.uid} on:
-            </h2>
-            <ul>
-              {serviceOrder?.job_id.job_dates.map(date => (
-                <li key={date} className="mt-4">
-                  {format(new Date(date), 'PPPP')}
-                </li>
-              ))}
-            </ul>
+        <div className="mt-12 flex justify-between">
+          <div>
+            <h1 className="mb-6 border-b border-gray-200 text-xl font-bold">Customer: </h1>
+            <h1 className="font-bold">{serviceOrder?.company_id.company_name}</h1>
+            <h2>{serviceOrder?.company_id.company_address}</h2>
+            <h2>Phone: {serviceOrder?.company_id.company_phone_number}</h2>
           </div>
           <table className="float-right">
             {serviceOrder?.details?.supervisor_fees && serviceOrder.details.supervisor_fees > 0 ? (
