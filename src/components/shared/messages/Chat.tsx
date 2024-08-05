@@ -1,20 +1,24 @@
 import React, { useCallback, useState } from 'react'
 import { useEffect } from 'react'
 
-import { format } from 'date-fns'
+import { format, isToday } from 'date-fns'
 import { Button } from 'primereact/button'
+import { Divider } from 'primereact/divider'
 
 import { type IUser } from '../../../interfaces/User'
 import { type IMessageDocument, type IChatInfo } from '../../../interfaces/messages'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
+import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
   const [chatInfo, setChatInfo] = useState<IChatInfo>()
   const [input, setInput] = useState<string>('')
-  const loggedInUser_id = GetTokenInfo()._id
+  const loggedInUserId = GetTokenInfo()._id
+
+  const role = roleChecker()
 
   const { showToast } = useUtils()
 
@@ -25,7 +29,7 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
       const response = await requestService({
         path: `messages/byusers`,
         method: 'POST',
-        body: JSON.stringify({ participants: [formUser?._id, loggedInUser_id] }),
+        body: JSON.stringify({ participants: [formUser?._id, loggedInUserId] }),
       })
 
       if (response.ok) {
@@ -35,11 +39,11 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
     } catch (error) {
       console.error('error fetching messages', error)
     }
-  }, [formUser?._id, loggedInUser_id])
+  }, [formUser?._id, loggedInUserId])
 
   useEffect(() => {
     getMessagesByUsers()
-  }, [formUser?._id, getMessagesByUsers, loggedInUser_id])
+  }, [formUser?._id, getMessagesByUsers, loggedInUserId])
 
   const handleNewChat = async () => {
     try {
@@ -49,7 +53,7 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
         body: JSON.stringify({
           name: `New chat with ${formUser?.first_name} ${formUser?.last_name}`,
           description: `Admin converstation with ${formUser?._id}`,
-          recipients: [formUser?._id, loggedInUser_id],
+          recipients: [formUser?._id, loggedInUserId],
         }),
       })
       if (response.ok) {
@@ -68,8 +72,8 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
         path: `messages/${chatInfo?._id}`,
         method: 'POST',
         body: JSON.stringify({
-          recipients: [{ user_id: formUser?._id === loggedInUser_id ? AdminId : formUser?._id }],
-          sender_id: loggedInUser_id,
+          recipients: [{ user_id: role === 'admin' ? formUser?._id : AdminId }],
+          sender_id: loggedInUserId,
           message_content: input,
         }),
       })
@@ -89,32 +93,45 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
     <div className="h-4/6 w-1/2">
       {chatInfo !== undefined && chatInfo !== null ? (
         <>
-          <ul className="overflow-y-scroll p-4">
-            <Button label="Refresh" onClick={getMessagesByUsers} />
-            {chatInfo.messages.map((message: IMessageDocument) => (
-              <li
-                key={message._id}
-                className={cn(message.sender_id.toString() === loggedInUser_id ? 'text-right' : 'text-left', 'mt-3')}>
-                <p className="font-bold">
-                  <small>{format(message.createdAt, 'Pp')}</small>
-                </p>
-                <p>{message.message_content}</p>
-              </li>
-            ))}
-          </ul>
-          <div className="flex border-t p-4">
+          <div className="border-b p-4">
+            <h2 className="mb-3 text-xl text-gray-500">
+              {role === 'admin' ? `Chat with ${formUser?.first_name} ${formUser?.last_name}` : 'Chat with Admins'}
+            </h2>
             <input
               type="text"
-              className="mr-2 flex-1 rounded border p-2"
+              className="mr-2 w-3/4 flex-1 rounded border p-2"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && sendMessage()}
             />
             <Button label="Send" onClick={sendMessage} />
+            <Button icon="pi pi-refresh" onClick={getMessagesByUsers} className="ml-2" />
           </div>
+          <ul className="overflow-y-scroll p-4">
+            {chatInfo.messages
+              .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+              .map((message: IMessageDocument) => (
+                <li
+                  key={message._id}
+                  className={cn(message.sender_id.toString() === loggedInUserId ? 'text-right' : 'text-left', 'mt-3')}>
+                  <p className="text-gray-400">
+                    <small>
+                      {isToday(message.createdAt)
+                        ? 'Today' + format(message.createdAt, ' p')
+                        : format(message.createdAt, 'Pp')}
+                    </small>
+                  </p>
+                  <p>{message.message_content}</p>
+                </li>
+              ))}
+            <Divider className="mt-12" />
+            <h3 className="text-center text-xl text-gray-500"> Oldest Messages </h3>
+          </ul>
         </>
-      ) : (
+      ) : role === 'admin' ? (
         <Button label="New Chat" onClick={handleNewChat} />
+      ) : (
+        <p>No messages, yet </p>
       )}
     </div>
   )
