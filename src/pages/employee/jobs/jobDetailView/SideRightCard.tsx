@@ -348,19 +348,23 @@ export const SideRightCard = ({
               </div>
               <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                 {userWorkingInThisJob || (role === 'admin' && job.facility?.notes) ? (
-                  <>
-                    <HtInfoTooltip message="These notes will help you find your destination faster." />
+                  <div className="flex">
+                    <div>
+                      <HtInfoTooltip message="These notes will help you find your destination faster." />
+                    </div>
                     <span className="text-base font-medium text-black">
                       Arrival notes: <span className="font-normal">{job.facility.notes}</span>
                     </span>
-                  </>
+                  </div>
                 ) : null}
               </div>
               <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
                 {userWorkingInThisJob || (role === 'admin' && job.job_tips.length > 0) ? (
                   <>
-                    <HtInfoTooltip message="These tips will help you better prepare for the job" />
-                    <span className="text-base font-medium text-black">Job Tips:</span>
+                    <div className="flex">
+                      <HtInfoTooltip message="These tips will help you better prepare for the job" />
+                      <span className="text-base font-medium text-black">Job Tips:</span>
+                    </div>
                     {job.job_tips.map((tip, index) => (
                       <span key={index}>{tip}</span>
                     ))}
