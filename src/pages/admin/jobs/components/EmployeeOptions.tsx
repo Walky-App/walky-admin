@@ -28,14 +28,22 @@ export const EmployeeOptions = ({ potentialApplicants, shiftId, setJob, job, shi
         method: 'PATCH',
         body: JSON.stringify({ userId: applicantId._id, jobId: job._id }),
       })
-      const data = await response.json()
-      if (response.ok) {
-        setJob(data)
-        showToast({ severity: 'success', summary: 'Success', detail: 'Employee added to shift' })
-        setApplicantId({})
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.message)
       }
+
+      const data = await response.json()
+      setJob(data)
+      showToast({ severity: 'success', summary: 'Success', detail: 'Employee added to shift' })
+      setApplicantId({})
     } catch (error) {
-      console.error(error)
+      if (error instanceof Error) {
+        showToast({ severity: 'error', summary: 'Error', detail: error.message })
+      } else {
+        console.error(error)
+      }
     }
   }
 
