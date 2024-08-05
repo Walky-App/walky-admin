@@ -8,6 +8,7 @@ import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
 
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
+import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type IJob, type IJobShiftDay } from '../../../interfaces/job'
 import { type Shifts } from '../../../interfaces/shifts'
 import { requestService } from '../../../services/requestServiceNew'
@@ -201,27 +202,35 @@ export const JobDetailViewAdmin = () => {
                       <span className="font-medium text-black">{job.is_completed === false ? 'Live' : 'Archived'}</span>
                     </div>
                   </div>
-                  <div className="mt-0.5 flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
-                    <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
-                    {job.facility?.notes !== null && job.facility?.notes !== undefined ? (
-                      <>
-                        <i className="pi pi-info-circle" />
-                        <span className="text-base font-medium text-black">
-                          Arrival notes: <span className="font-normal">{job.facility.notes}</span>
-                        </span>
-                      </>
-                    ) : null}
-                    {job.job_tips.length > 0 ? (
-                      <>
-                        <i className="pi pi-info-circle" />
-                        <span className="text-base font-medium text-black">Job Tips:</span>
-                        {job.job_tips.map((tip, index) => (
-                          <span key={index}>{tip}</span>
-                        ))}
-                      </>
-                    ) : null}
+                    <div className="mt-0.5 flex flex-col gap-1">
+                      <span className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</span>
+                    </div>
                   </div>
+
+                  {job.facility?.notes !== null && job.facility?.notes !== undefined ? (
+                    <div className="flex">
+                      <div>
+                        <HtInfoTooltip message="These facility arrival notes will help the employee find the destination faster." />
+                      </div>
+                      <span className="text-base font-medium text-black">
+                        Arrival notes: <span className="font-normal">{job.facility.notes}</span>
+                      </span>
+                    </div>
+                  ) : null}
+
+                  {job.job_tips.length > 0 ? (
+                    <div className="flex">
+                      <div>
+                        <HtInfoTooltip message="These tips will help employee better prepare for the job." />
+                      </div>
+                      <span className="text-base font-medium text-black">Job Tips:</span>
+                      {job.job_tips.map((tip, index) => (
+                        <span key={index}>{tip}</span>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
 
                 <Divider />
