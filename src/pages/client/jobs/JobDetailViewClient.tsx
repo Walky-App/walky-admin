@@ -208,7 +208,7 @@ export const JobDetailViewClient = () => {
                   <strong>{job.hourly_rate || 0} USD / hour</strong>
                 </div>
               </div>
-              <ShiftsTableClient job={job} setJob={setJob} />
+              <ShiftsTableClient job={job} />
             </Card>
           </div>
         ) : (
