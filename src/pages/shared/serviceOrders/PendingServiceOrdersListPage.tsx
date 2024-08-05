@@ -63,6 +63,17 @@ export const PendingServiceOrdersListPage = () => {
         id: 'status',
       },
       { Header: 'SO_UID', accessor: 'uid' },
+      {
+        Header: 'Created',
+        accessor: (row: IServiceOrder) => {
+          return isToday(row.createdAt)
+            ? 'Today ⭐️'
+            : isYesterday(row.createdAt)
+              ? 'Yesterday'
+              : format(row.createdAt, 'P')
+        },
+        id: 'createdAt',
+      },
       { Header: 'Company Name', accessor: 'company_id.company_name' },
       { Header: 'Job Title', accessor: 'job_id.title' },
       { Header: 'Job UID', accessor: 'job_id.uid' },
@@ -91,29 +102,18 @@ export const PendingServiceOrdersListPage = () => {
         id: 'job_end_date',
       },
       {
-        Header: 'Job has ended?',
-        accessor: (row: IServiceOrder) =>
-          row.job_id !== null && typeof row.job_id?.is_completed !== 'undefined'
-            ? row.job_id?.is_completed
-              ? 'Yes'
-              : 'No'
-            : 'N/A',
-        id: 'is_completed',
+        Header: 'Number of days',
+        accessor: (row: IServiceOrder) => {
+          if (row.job_id && Array.isArray(row.job_id.job_dates) && row.job_id.job_dates.length > 0) {
+            return row.job_id.job_dates.length
+          }
+          return 'N/A'
+        },
+        id: 'total_days',
       },
       { Header: 'Facility ID', accessor: 'facility_id.name' },
       { Header: 'Created By', accessor: 'created_by' },
       { Header: 'Total Cost, $', accessor: 'details.total_cost' },
-      {
-        Header: 'Created At',
-        accessor: (row: IServiceOrder) => {
-          return isToday(row.createdAt)
-            ? 'Today ⭐️'
-            : isYesterday(row.createdAt)
-              ? 'Yesterday'
-              : format(row.createdAt, 'P')
-        },
-        id: 'createdAt',
-      },
     ],
     [],
   )
