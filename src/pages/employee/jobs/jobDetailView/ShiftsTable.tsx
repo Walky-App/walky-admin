@@ -193,15 +193,13 @@ export const ShiftsTable = ({
           <time dateTime={eachShift.day.toString()}>{dayOfWeek}</time>
         </td>
         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
-          <a href="/">
-            {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
-              <p>Vacancy completed</p>
-            ) : (
-              <div>
-                <p>Job has ended</p>
-              </div>
-            )}
-          </a>
+          {getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+            <p>Vacancy completed</p>
+          ) : (
+            <div>
+              <p>Job has ended</p>
+            </div>
+          )}
         </td>
       </tr>
     )
