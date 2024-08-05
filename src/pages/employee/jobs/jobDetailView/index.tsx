@@ -180,46 +180,6 @@ export const JobDetailView = () => {
                     </div>
                   </div>
                 </div>
-                <Divider />
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2">
-                    {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
-                    <div className="mt-0.5 flex flex-col gap-1">
-                      <span className="font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {job.is_completed === false ? (
-                      <i className="pi pi-calendar" />
-                    ) : (
-                      <i className="pi pi-calendar-times" />
-                    )}
-                    <div className="mt-0.5 flex flex-col gap-1">
-                      <span className="font-medium text-black">{job.is_completed === false ? 'Live' : 'Archived'}</span>
-                    </div>
-                  </div>
-                  <div className="mt-0.5 flex items-center gap-2">
-                    {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
-                    <div className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</div>
-                    {userWorkingInThisJob || (role === 'admin' && job.facility?.notes) ? (
-                      <>
-                        <i className="pi pi-info-circle" />
-                        <span className="text-base font-medium text-black">
-                          Arrival notes: <span className="font-normal">{job.facility.notes}</span>
-                        </span>
-                      </>
-                    ) : null}
-                    {userWorkingInThisJob || (role === 'admin' && job.job_tips.length > 0) ? (
-                      <>
-                        <i className="pi pi-info-circle" />
-                        <span className="text-base font-medium text-black">Job Tips:</span>
-                        {job.job_tips.map((tip, index) => (
-                          <span key={index}>{tip}</span>
-                        ))}
-                      </>
-                    ) : null}
-                  </div>
-                </div>
 
                 <Divider />
                 <div className="mt-6 justify-between text-lg md:flex">
