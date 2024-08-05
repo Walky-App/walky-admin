@@ -17,7 +17,7 @@ export interface IMessageDocument {
   message_content: string
   recipients: IRecipient[]
   updatedAt: string
-  createdAt: string
+  createdAt: Date
 }
 
 export interface IAllMessages {

@@ -115,7 +115,6 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
   ]
 
   const clientLinks: INavLink[] = [
-    // { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
     {
       id: 1,
       name: 'Jobs',
@@ -167,10 +166,10 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       disabled: !userIsOnboarded,
       subLinks: [{ name: 'New Company', href: '/client/companies/new' }],
     },
+    { id: 9, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
   ]
 
   const employeeLinks: INavLink[] = [
-    { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
     { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime />, disabled: !userIsOnboarded },
     { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
     { id: 3, name: 'Training', href: '/learn', icon: <MdSchool /> },
@@ -181,7 +180,8 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       icon: <MdOutlineAccessTimeFilled />,
       disabled: !userIsOnboarded,
     },
-    { id: 6, name: 'Settings', href: '/employee/settings', icon: <IoMdCog />, disabled: true },
+    { id: 6, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+    { id: 7, name: 'Settings', href: '/employee/settings', icon: <IoMdCog />, disabled: true },
   ]
 
   const salesLinks: INavLink[] = [
