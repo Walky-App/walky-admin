@@ -10,7 +10,7 @@ import {
 } from 'react-icons/fa'
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
-import { IoMdCog } from 'react-icons/io'
+import { IoMdCog, IoMdMail } from 'react-icons/io'
 import { MdOutlineAccessTimeFilled, MdSchool } from 'react-icons/md'
 
 interface INavLinkChildren {
@@ -31,12 +31,6 @@ export interface INavLink {
 
 export const userLinks = (userIsOnboarded: boolean, role: string) => {
   const adminLinks: INavLink[] = [
-    // {
-    //   id: 1,
-    //   name: 'Messages',
-    //   href: '/admin/messages',
-    //   icon: <IoMdMail />,
-    // },
     {
       id: 2,
       name: 'Users',
@@ -46,7 +40,6 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
         { name: 'Employees', href: '/admin/users/employees' },
         { name: 'Clients', href: '/admin/users/clients' },
         { name: 'Invite User', href: '/admin/users/invite' },
-        { name: 'All Users', href: '/admin/users' },
       ],
     },
     {
@@ -54,20 +47,14 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Companies',
       href: '/admin/companies',
       icon: <FaBusinessTime />,
-      subLinks: [
-        { name: 'All Companies', href: '/admin/companies' },
-        { name: 'Add Company', href: '/admin/companies/new' },
-      ],
+      subLinks: [{ name: 'New Company', href: '/admin/companies/new' }],
     },
     {
       id: 4,
       name: 'Facilities',
       href: '/admin/facilities',
       icon: <FaBuilding />,
-      subLinks: [
-        { name: 'All Facilities', href: '/admin/facilities' },
-        { name: 'Add Facility', href: '/admin/facilities/new' },
-      ],
+      subLinks: [{ name: 'Add Facility', href: '/admin/facilities/new' }],
     },
     {
       id: 5,
@@ -75,7 +62,6 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       href: '/admin/jobs',
       icon: <FaBriefcase />,
       subLinks: [
-        { name: 'All Jobs', href: '/admin/jobs' },
         { name: 'Add Job', href: '/admin/jobs/new' },
         { name: 'Add Job (without-payments)', href: '/admin/jobs/new-without-payments' },
       ],
@@ -96,7 +82,6 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       href: '/admin/service-orders',
       icon: <FaBriefcase />,
       subLinks: [
-        { name: 'All Service Orders', href: '/admin/jobs/service-orders' },
         { name: 'Pending', href: '/admin/jobs/service-orders/pending' },
         { name: 'Authorized', href: '/admin/jobs/service-orders/authorized' },
       ],
@@ -106,11 +91,6 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Invoices',
       href: '/admin/invoices',
       icon: <FaDollarSign />,
-      subLinks: [
-        { name: 'All Invoices', href: '/admin/invoices' },
-        // { name: 'Pending', href: '/admin/jobs/service-orders/pending' },
-        // { name: 'Authorized', href: '/admin/jobs/service-orders/authorized' },
-      ],
     },
     {
       id: 7,
@@ -119,17 +99,22 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       icon: <MdSchool />,
       disabled: true,
       subLinks: [
-        { name: 'All Products', href: '/admin/products', disabled: true },
         { name: 'New Product', href: '/admin/products', disabled: true },
         { name: 'Categories', href: '/admin/products', disabled: true },
       ],
     },
+
     { id: 8, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
+    // {
+    //   id: 1,
+    //   name: 'Messages (Beta)',
+    //   href: '/admin/messages',
+    //   icon: <IoMdMail />,
+    // },
     { id: 9, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
   ]
 
   const clientLinks: INavLink[] = [
-    // { id: 6, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
     {
       id: 1,
       name: 'Jobs',
@@ -158,7 +143,6 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       icon: <FaBriefcase />,
       disabled: !userIsOnboarded,
       subLinks: [
-        { name: 'All Service Orders', href: '/client/jobs/service-orders' },
         { name: 'Pending', href: '/client/jobs/service-orders/pending' },
         { name: 'Authorized', href: '/client/jobs/service-orders/authorized' },
       ],
@@ -171,7 +155,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       disabled: !userIsOnboarded,
       subLinks: [
         { name: 'My Facilities', href: '/client/facilities' },
-        { name: 'Add Facility', href: '/client/facilities/new' },
+        { name: 'New Facility', href: '/client/facilities/new' },
       ],
     },
     {
@@ -180,15 +164,12 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       href: '/client/companies',
       icon: <FaBusinessTime />,
       disabled: !userIsOnboarded,
-      subLinks: [
-        { name: 'All Companies', href: '/client/companies' },
-        { name: 'Add Company', href: '/client/companies/new' },
-      ],
+      subLinks: [{ name: 'New Company', href: '/client/companies/new' }],
     },
+    { id: 9, name: 'Messages', href: '/client/messages', icon: <IoMdMail /> },
   ]
 
   const employeeLinks: INavLink[] = [
-    // { id: 4, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
     { id: 1, name: 'My Jobs', href: '/employee/myjobs', icon: <FaBusinessTime />, disabled: !userIsOnboarded },
     { id: 2, name: 'Jobs', href: '/employee/jobs', icon: <HiSearchCircle /> },
     { id: 3, name: 'Training', href: '/learn', icon: <MdSchool /> },
@@ -199,7 +180,8 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       icon: <MdOutlineAccessTimeFilled />,
       disabled: !userIsOnboarded,
     },
-    { id: 6, name: 'Settings', href: '/employee/settings', icon: <IoMdCog />, disabled: true },
+    { id: 6, name: 'Messages', href: '/employee/messages', icon: <IoMdMail /> },
+    { id: 7, name: 'Settings', href: '/employee/settings', icon: <IoMdCog />, disabled: true },
   ]
 
   const salesLinks: INavLink[] = [
