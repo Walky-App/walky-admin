@@ -30,9 +30,11 @@ export interface IServiceInvoice {
   status: string
   created_by: string
   company_id: ICompany
+  service_order_id: string
   job_id: IJob
   facility_id: IFacility
   profile_id: string
+  note: string
   createdAt: Date
   updatedAt: Date
   transaction_id: string

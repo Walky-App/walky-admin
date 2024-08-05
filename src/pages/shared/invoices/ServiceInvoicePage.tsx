@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
+import { FloatLabel } from 'primereact/floatlabel'
 import { InputNumber } from 'primereact/inputnumber'
+import { InputTextarea } from 'primereact/inputtextarea'
 
 import { TrashIcon } from '@heroicons/react/20/solid'
 
@@ -17,6 +19,7 @@ import { DiscountDialog } from './DiscountDialog'
 export const ServiceInvoicePage = () => {
   const [invoice, setInvoice] = useState<IServiceInvoice | null>(null)
   const [discount, setDiscount] = useState<number>(0)
+  const [note, setNote] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const { invoiceId } = useParams()
@@ -43,6 +46,7 @@ export const ServiceInvoicePage = () => {
   const statusDisplayText = {
     authorized: 'Authorized',
     pending_select_payment: 'Pending Payment',
+    paid: 'Transaction Successful - Invoice Paid',
   }
 
   const handlerRegenerateInvoice = async () => {
@@ -98,6 +102,26 @@ export const ServiceInvoicePage = () => {
     }
   }
 
+  const handlerSetNote = async () => {
+    try {
+      setIsLoading(true)
+      const response = await requestService({
+        path: `invoices/note/${invoiceId}`,
+        method: 'POST',
+        body: JSON.stringify({ note }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to send email')
+      }
+      const fetchedData = await response.json()
+      setInvoice(fetchedData)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error sending email:', error)
+      setIsLoading(false)
+    }
+  }
+
   const handlerRemoveDiscount = async () => {
     try {
       setIsLoading(true)
@@ -149,9 +173,12 @@ export const ServiceInvoicePage = () => {
           <table className="w-full border-collapse border border-gray-400">
             <thead>
               <tr>
-                <th className="border border-gray-300 bg-gray-100 p-4 text-left">SO Status</th>
+                <th className="border border-gray-300 bg-gray-100 p-4 text-left">Invoice Status</th>
                 <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility</th>
                 <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility Address</th>
+                {invoice?.service_order_id ? (
+                  <th className="border border-gray-300 bg-gray-100 p-4 text-left">SO Ref</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -163,6 +190,13 @@ export const ServiceInvoicePage = () => {
                   <h3 className="text-base font-semibold leading-6">{invoice?.facility_id.name}</h3>
                 </td>
                 <td className="border border-gray-300 p-4">{invoice?.facility_id.address}</td>
+                {invoice?.service_order_id ? (
+                  <td className="border border-gray-300 p-4">
+                    <Link to={`/admin/jobs/service-orders/${invoice?.service_order_id}`}>
+                      {invoice?.service_order_id}
+                    </Link>
+                  </td>
+                ) : null}
               </tr>
             </tbody>
           </table>
@@ -220,6 +254,20 @@ export const ServiceInvoicePage = () => {
                 </li>
               ))}
             </ul>
+            {!invoice?.note ? (
+              <div className="flex flex-col pb-3">
+                <FloatLabel>
+                  <InputTextarea id="note" value={note} onChange={e => setNote(e.target.value)} rows={5} cols={30} />
+                  <label htmlFor="note">Note</label>
+                </FloatLabel>
+                <Button className="w-1/4" label="Save note" onClick={handlerSetNote} />
+              </div>
+            ) : (
+              <div>
+                <h2 className="mt-2 font-bold">Note:</h2>
+                <p>{invoice.note}</p>
+              </div>
+            )}
           </div>
           <table className="float-right">
             {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (

@@ -37,6 +37,7 @@ export interface IServiceOrder {
   company_id: ICompany
   job_id: IJob
   facility_id: IFacility
+  service_invoice_id: string
   profile_id: string
   createdAt: Date
   updatedAt: Date
