@@ -28,6 +28,7 @@ import { ClientDashboard } from './pages/client/dashboard/ClientDashboard'
 import { ClientFacilities } from './pages/client/facilities'
 import ClientAddFacility from './pages/client/facilities/ClientAddFacility'
 import { ClientJobs } from './pages/client/jobs'
+import { JobDetailViewClient } from './pages/client/jobs/JobDetailViewClient'
 import { ClientMessages } from './pages/client/messages'
 import { ClientOnboarding } from './pages/client/onboarding/ClientOnboardingPage'
 
@@ -158,7 +159,7 @@ export const App = () => {
                   <Route element={<AdminFacilityActivity />} path="/client/facilities/:facilityId/activity" />
                   <Route element={<ClientJobs />} path="/client/jobs" />
                   <Route element={<AddEditJobPage />} path="/client/jobs/new" />
-                  <Route element={<AddEditJobPage />} path="/client/jobs/:id/edit" />
+                  <Route element={<JobDetailViewClient />} path="/client/jobs/:id" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/:id/service-order/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/:serviceOrderId" />
                   <Route element={<ServiceOrderPage />} path="/client/jobs/service-orders/pending/:serviceOrderId" />

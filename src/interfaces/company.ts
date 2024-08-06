@@ -39,6 +39,7 @@ export interface ICompanySlim {
   company_name: string
   company_tax_id: string
   company_dbas: string[]
+  _id?: string
 }
 
 export interface ICompany {
