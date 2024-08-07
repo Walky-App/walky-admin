@@ -13,6 +13,7 @@ import { TrashIcon } from '@heroicons/react/20/solid'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 import { DiscountDialog } from './DiscountDialog'
 
@@ -22,6 +23,7 @@ export const ServiceInvoicePage = () => {
   const [note, setNote] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const { showToast } = useUtils()
   const { invoiceId } = useParams()
   const role = roleChecker()
 
@@ -115,6 +117,27 @@ export const ServiceInvoicePage = () => {
       }
       const fetchedData = await response.json()
       setInvoice(fetchedData)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error sending email:', error)
+      setIsLoading(false)
+    }
+  }
+
+  const handlerSendEmail = async () => {
+    try {
+      setIsLoading(true)
+      const response = await requestService({ path: `invoices/send-email/${invoiceId}`, method: 'POST' })
+      if (!response.ok) {
+        throw new Error('Failed to send email')
+      }
+      const fetchedData = await response.json()
+      setInvoice(fetchedData)
+      showToast({
+        severity: 'success',
+        summary: 'Completed',
+        detail: 'Email sent successfully',
+      })
       setIsLoading(false)
     } catch (error) {
       console.error('Error sending email:', error)
@@ -377,6 +400,10 @@ export const ServiceInvoicePage = () => {
 
           {role === 'admin' && invoice?.status !== 'paid' ? (
             <Button className="ml-3 mt-6" label="Charge" onClick={handlerAuthorizeInvoice} />
+          ) : null}
+
+          {role === 'admin' && invoice?.status === 'paid' ? (
+            <Button className="ml-3 mt-6" label="Send email" onClick={handlerSendEmail} />
           ) : null}
         </footer>
       </div>
