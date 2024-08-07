@@ -16,7 +16,7 @@ const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
   <img src={src} alt={alt} className="h-32 w-32 object-cover" />
 )
 
-export const AdminUserEmployeesListPage = () => {
+export const AdminEmployeeInactiveListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [usersData, setUsersData] = useState<IUser[]>([])
 
@@ -24,7 +24,7 @@ export const AdminUserEmployeesListPage = () => {
     setIsLoading(true)
     const getActiveEmployees = async () => {
       try {
-        const response = await requestService({ path: 'users/employees' })
+        const response = await requestService({ path: 'users/employees/inactive' })
         const data = await response.json()
 
         if (!response.ok) throw new Error(data.message ?? 'Failed to fetch users')

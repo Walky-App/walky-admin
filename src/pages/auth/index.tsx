@@ -43,7 +43,9 @@ export const Auth = () => {
   }, [])
 
   return (
-    <section className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center">
+    <section
+      className="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center"
+      data-testId="auth-section">
       <div className="flex flex-col gap-10 md:basis-1/2">
         <div className="w-full px-4 sm:px-0">
           <div className="flex justify-center">{LogosPack('login')}</div>
@@ -84,7 +86,7 @@ export const Auth = () => {
         <footer className="bg-white py-6" aria-labelledby="footer-heading">
           <div className=" pt-8 text-center md:items-center md:justify-center">
             <p className="mt-24 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
-              Copyright © {new Date().getFullYear()} Hemp Temps
+              © {new Date().getFullYear()} Hemp Temps
             </p>
             <p className="mt-24 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
               <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="underline">
