@@ -81,7 +81,6 @@ import { AdminSettings } from './pages/admin/settings/AdminSettings'
 
 import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
-import { AddEditJobWithoutPaymentsPage } from './components/shared/jobs/AddEditJobWithoutPaymentsPage'
 import { Pricing } from './pages/Pricing'
 
 /******************************************* Employee Pages ************************************/
@@ -216,7 +215,6 @@ export const App = () => {
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
-                  <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
                   <Route element={<JobDetailViewAdmin />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />
