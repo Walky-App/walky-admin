@@ -83,7 +83,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       {/* App Side */}
       <div className="lg:pl-60">
         <HeaderComponent setSidebarOpen={setSidebarOpen} />
-        <main className="py-10">
+        <main className="py-5">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
         <div className="px-4 sm:px-6 lg:px-8">

@@ -32,14 +32,23 @@ export interface INavLink {
 export const userLinks = (userIsOnboarded: boolean, role: string) => {
   const adminLinks: INavLink[] = [
     {
-      id: 2,
+      id: 1,
       name: 'Users',
       href: '/admin/users',
       icon: <FaUserGroup />,
       subLinks: [
-        { name: 'Employees', href: '/admin/users/employees' },
         { name: 'Clients', href: '/admin/users/clients' },
         { name: 'Invite User', href: '/admin/users/invite' },
+      ],
+    },
+    {
+      id: 2,
+      name: 'Employees',
+      href: '/admin/users/employees',
+      icon: <FaUserGroup />,
+      subLinks: [
+        { name: 'Active & Approved', href: '/admin/users/employees/active' },
+        { name: 'Inactive ', href: '/admin/users/employees/inactive' },
       ],
     },
     {
@@ -79,7 +88,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     {
       id: 6,
       name: 'Service Orders',
-      href: '/admin/service-orders',
+      href: '/admin/jobs/service-orders',
       icon: <FaBriefcase />,
       subLinks: [
         { name: 'Pending', href: '/admin/jobs/service-orders/pending' },
