@@ -41,6 +41,8 @@ import ProductDetail from './pages/sales/products/ProductDetail'
 /******************************************* Admin Pages ************************************/
 import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
+import { AdminEmployeeActiveListPage } from './pages/admin/users/AdminEmployeesActiveListPage'
+import { AdminEmployeeInactiveListPage } from './pages/admin/users/AdminEmployeesInactiveListPage'
 import { AdminUserClientsListPage } from './pages/admin/users/AdminUserClientsListPage'
 import { AdminUserEmployeesListPage } from './pages/admin/users/AdminUserEmployeesListPage'
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
@@ -77,7 +79,8 @@ import { JobDetailViewAdmin } from './pages/admin/jobs/JobDetailViewAdmin'
 import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
 import { AdminCompanyListPage } from './pages/admin/companies/AdminCompanyListPage'
 import { AdminMessages } from './pages/admin/messages'
-import { AdminSettings } from './pages/admin/settings/AdminSettings'
+import { Settings } from './pages/admin/settings'
+import { StateSettings } from './pages/admin/settings/StateSettings'
 
 import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
@@ -190,10 +193,13 @@ export const App = () => {
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={admin_role} />}>
                   <Route element={<AdminDashboard />} path="/admin/dashboard" />
                   <Route element={<UserProfile />} path="/admin/profile" />
-                  <Route element={<AdminSettings />} path="/admin/settings" />
+                  <Route element={<Settings />} path="/admin/settings" />
+                  <Route element={<StateSettings />} path="/admin/settings/:state" />
                   <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminUserEmployeesListPage />} path="/admin/users/employees" />
+                  <Route element={<AdminEmployeeActiveListPage />} path="/admin/users/employees/active" />
+                  <Route element={<AdminEmployeeInactiveListPage />} path="/admin/users/employees/inactive" />
                   <Route element={<AdminUserClientsListPage />} path="/admin/users/clients" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<UserProfile />} path="/admin/users/:id" />
