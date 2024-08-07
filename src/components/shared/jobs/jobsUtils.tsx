@@ -4,7 +4,7 @@ import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
 import { eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
 import { isValid, parse } from 'date-fns'
-import { fromZonedTime, toZonedTime } from 'date-fns-tz'
+import { format, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
@@ -226,7 +226,11 @@ export const renderStartTimeController = (
         return (
           <>
             <HtInfoTooltip message="Select the start time for the job.">
-              <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
+              <HtInputLabel
+                htmlFor={field.name}
+                labelText={`Start Time (${format(new Date(), 'zzz', { timeZone: facilityTimezone })}, ${format(new Date(), 'zzzz', { timeZone: facilityTimezone })})`}
+                asterisk
+              />
             </HtInfoTooltip>
             <Calendar
               inputId={field.name}
@@ -316,7 +320,11 @@ export const renderEndTimeController = (
     render={({ field, fieldState }) => (
       <>
         <HtInfoTooltip message="Select the end time for the job.">
-          <HtInputLabel htmlFor={field.name} labelText="End Time" asterisk />
+          <HtInputLabel
+            htmlFor={field.name}
+            labelText={`End Time (${format(new Date(), 'zzz', { timeZone: facilityTimezone })}, ${format(new Date(), 'zzzz', { timeZone: facilityTimezone })})`}
+            asterisk
+          />
         </HtInfoTooltip>
         <Calendar
           inputId={field.name}
