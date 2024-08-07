@@ -163,7 +163,9 @@ export const AddEditJobPage = () => {
     setValue,
   } = useForm({ defaultValues: formData })
 
-  const selectedFacility = useWatch({ name: 'facility_id', control })
+  const facilityId = useWatch({ name: 'facility_id', control })
+  const selectedFacility = facilities?.find(facility => facility._id === facilityId)
+  const facilityTimezone = selectedFacility?.timezone
   const lunchBreak = useWatch({ name: 'lunch_break', control })
   const vacancy = useWatch({ name: 'vacancy', control })
   const jobDatesLength = useWatch({ name: 'job_dates', control }).length
@@ -621,13 +623,22 @@ export const AddEditJobPage = () => {
                       setStartTime,
                       isStartTimeValid,
                       setIsStartTimeValid,
+                      facilityTimezone ?? '',
                     )}
                   </div>
                 ) : null}
 
                 {endTime ? (
                   <div className="sm:col-span-3">
-                    {renderEndTimeController(control, errors, endTime, setEndTime, isEndTimeValid, setIsEndTimeValid)}
+                    {renderEndTimeController(
+                      control,
+                      errors,
+                      endTime,
+                      setEndTime,
+                      isEndTimeValid,
+                      setIsEndTimeValid,
+                      facilityTimezone ?? '',
+                    )}
                   </div>
                 ) : null}
 

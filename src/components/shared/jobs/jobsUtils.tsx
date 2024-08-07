@@ -4,6 +4,7 @@ import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
 import { eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
 import { isValid, parse } from 'date-fns'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
@@ -15,7 +16,7 @@ import { type IFacility } from '../../../interfaces/facility'
 import { type HolidayDocument } from '../../../interfaces/setting'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
-import { setTimeInUTC, toLocalDateTime } from '../../../utils/timeUtils'
+import { setTimeInUTC } from '../../../utils/timeUtils'
 import { HtInputHelpText } from '../forms/HtInputHelpText'
 import { HtInputLabel } from '../forms/HtInputLabel'
 import { HtInfoTooltip } from '../general/HtInfoTooltip'
@@ -214,68 +215,90 @@ export const renderStartTimeController = (
   setStartTime: (time: Date | null) => void,
   isStartTimeValid: boolean,
   setIsStartTimeValid: (valid: boolean) => void,
-) => (
-  <Controller
-    name="start_time"
-    control={control}
-    rules={{ required: 'Start Time is required.' }}
-    render={({ field, fieldState }) => {
-      return (
-        <>
-          <HtInfoTooltip message="Select the start time for the job.">
-            <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
-          </HtInfoTooltip>
-          <Calendar
-            inputId={field.name}
-            value={field.value == null ? toLocalDateTime(startTime) : toLocalDateTime(field.value)}
-            invalid={!isStartTimeValid}
-            onChange={e => {
-              const newValue = e.value as Date
-              const isValidDate = newValue != null && isValid(newValue)
-              if (isValidDate) {
-                const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
-                setIsStartTimeValid(true)
-                field.onChange(utcTime)
-                setStartTime(utcTime)
-              } else {
-                setIsStartTimeValid(false)
+  facilityTimezone: string,
+) => {
+  return (
+    <Controller
+      name="start_time"
+      control={control}
+      rules={{ required: 'Start Time is required.' }}
+      render={({ field, fieldState }) => {
+        return (
+          <>
+            <HtInfoTooltip message="Select the start time for the job.">
+              <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
+            </HtInfoTooltip>
+            <Calendar
+              inputId={field.name}
+              value={
+                field.value == null
+                  ? toZonedTime(startTime, facilityTimezone)
+                  : toZonedTime(field.value, facilityTimezone)
               }
-            }}
-            onInput={e => {
-              const newValue = (e.target as HTMLInputElement).value
-              const newDate = parse(newValue, 'hh:mm a', new Date())
-              const isValidDate = newValue != null && isValid(newDate)
-              if (isValidDate) {
-                const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
-                setIsStartTimeValid(true)
-                field.onChange(utcTime)
-              } else {
-                setIsStartTimeValid(false)
-              }
-            }}
-            onBlur={e => {
-              const newValue = (e.target as HTMLInputElement).value
-              const newDate = parse(newValue, 'hh:mm a', new Date())
-              const isValidDate = newValue != null && isValid(newDate)
-              if (isValidDate) {
-                const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
-                setStartTime(utcTime)
-              }
-            }}
-            onHide={() => setIsStartTimeValid(true)}
-            timeOnly
-            hourFormat="12"
-            parseDateTime={string => new Date(string)}
-            showIcon
-            icon={() => <i className="pi pi-clock" />}
-            className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
-          />
-          {getFormErrorMessage(field.name, errors)}
-        </>
-      )
-    }}
-  />
-)
+              invalid={!isStartTimeValid}
+              onChange={e => {
+                const newValue = e.value as Date
+                const isValidDate = newValue != null && isValid(newValue)
+                if (isValidDate) {
+                  const localTime = new Date(newValue.setSeconds(0))
+                  const zonedTime = toZonedTime(localTime, facilityTimezone)
+                  const utcTime = fromZonedTime(zonedTime, facilityTimezone)
+                  // console.log('start onChange localTime:', localTime)
+                  // console.log('start onChange zonedTime:', zonedTime)
+                  // console.log('start onChange utcTime:', utcTime)
+                  setIsStartTimeValid(true)
+                  field.onChange(utcTime)
+                  setStartTime(utcTime)
+                } else {
+                  setIsStartTimeValid(false)
+                }
+              }}
+              onInput={e => {
+                const newValue = (e.target as HTMLInputElement).value
+                const newDate = parse(newValue, 'hh:mm a', new Date())
+                const isValidDate = newValue != null && isValid(newDate)
+                if (isValidDate) {
+                  const localTime = new Date(newDate.setSeconds(0))
+                  const zonedTime = toZonedTime(localTime, facilityTimezone)
+                  const utcTime = fromZonedTime(zonedTime, facilityTimezone)
+                  // console.log('start onInput localTime:', localTime)
+                  // console.log('start onInput zonedTime:', zonedTime)
+                  // console.log('start onInput utcTime:', utcTime)
+                  setIsStartTimeValid(true)
+                  field.onChange(utcTime)
+                } else {
+                  setIsStartTimeValid(false)
+                }
+              }}
+              onBlur={e => {
+                const newValue = (e.target as HTMLInputElement).value
+                const newDate = parse(newValue, 'hh:mm a', new Date())
+                const isValidDate = newValue != null && isValid(newDate)
+                if (isValidDate) {
+                  const localTime = new Date(newDate.setSeconds(0))
+                  const zonedTime = toZonedTime(localTime, facilityTimezone)
+                  const utcTime = fromZonedTime(zonedTime, facilityTimezone)
+                  // console.log('start onBlue localTime:', localTime)
+                  // console.log('start onBlue zonedTime:', zonedTime)
+                  // console.log('start onBlue utcTime:', utcTime)
+                  setStartTime(utcTime)
+                }
+              }}
+              onHide={() => setIsStartTimeValid(true)}
+              timeOnly
+              hourFormat="12"
+              parseDateTime={string => new Date(string)}
+              showIcon
+              icon={() => <i className="pi pi-clock" />}
+              className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
+            />
+            {getFormErrorMessage(field.name, errors)}
+          </>
+        )
+      }}
+    />
+  )
+}
 
 export const renderEndTimeController = (
   control: Control<JobFormDefaultValues>,
@@ -284,6 +307,7 @@ export const renderEndTimeController = (
   setEndTime: (time: Date | null) => void,
   isEndTimeValid: boolean,
   setIsEndTimeValid: (valid: boolean) => void,
+  facilityTimezone: string,
 ) => (
   <Controller
     name="end_time"
@@ -296,13 +320,20 @@ export const renderEndTimeController = (
         </HtInfoTooltip>
         <Calendar
           inputId={field.name}
-          value={field.value == null ? toLocalDateTime(endTime) : toLocalDateTime(field.value)}
+          value={
+            field.value == null ? toZonedTime(endTime, facilityTimezone) : toZonedTime(field.value, facilityTimezone)
+          }
           invalid={!isEndTimeValid}
           onChange={e => {
             const newValue = e.value as Date
             const isValidDate = newValue != null && isValid(newValue)
             if (isValidDate) {
-              const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
+              const localTime = new Date(newValue.setSeconds(0))
+              const zonedTime = toZonedTime(localTime, facilityTimezone)
+              const utcTime = fromZonedTime(zonedTime, facilityTimezone)
+              // console.log('end onChange localTime:', localTime)
+              // console.log('end onChange zonedTime:', zonedTime)
+              // console.log('end onChange utcTime:', utcTime)
               setIsEndTimeValid(true)
               field.onChange(utcTime)
               setEndTime(utcTime)
@@ -315,7 +346,12 @@ export const renderEndTimeController = (
             const newDate = parse(newValue, 'hh:mm a', new Date())
             const isValidDate = newValue != null && isValid(newDate)
             if (isValidDate) {
-              const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
+              const localTime = new Date(newDate.setSeconds(0))
+              const zonedTime = toZonedTime(localTime, facilityTimezone)
+              const utcTime = fromZonedTime(zonedTime, facilityTimezone)
+              // console.log('end onInput localTime:', localTime)
+              // console.log('end onInput zonedTime:', zonedTime)
+              // console.log('end onInput utcTime:', utcTime)
               setIsEndTimeValid(true)
               field.onChange(utcTime)
             } else {
@@ -327,7 +363,12 @@ export const renderEndTimeController = (
             const newDate = parse(newValue, 'hh:mm a', new Date())
             const isValidDate = newValue != null && isValid(newDate)
             if (isValidDate) {
-              const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
+              const localTime = new Date(newDate.setSeconds(0))
+              const zonedTime = toZonedTime(localTime, facilityTimezone)
+              const utcTime = fromZonedTime(zonedTime, facilityTimezone)
+              // console.log('end onBlur localTime:', localTime)
+              // console.log('end onBlur zonedTime:', zonedTime)
+              // console.log('end onBlur utcTime:', utcTime)
               setEndTime(utcTime)
             }
           }}
