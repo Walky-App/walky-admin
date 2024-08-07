@@ -199,7 +199,9 @@ export const App = () => {
                   <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminUserEmployeesListPage />} path="/admin/users/employees" />
                   <Route element={<AdminEmployeeActiveListPage />} path="/admin/users/employees/active" />
+                  <Route element={<UserProfile />} path="/admin/users/employees/active/:id" />
                   <Route element={<AdminEmployeeInactiveListPage />} path="/admin/users/employees/inactive" />
+                  <Route element={<UserProfile />} path="/admin/users/employees/inactive/:id" />
                   <Route element={<AdminUserClientsListPage />} path="/admin/users/clients" />
                   <Route element={<AdminInviteUser />} path="/admin/users/invite" />
                   <Route element={<UserProfile />} path="/admin/users/:id" />
