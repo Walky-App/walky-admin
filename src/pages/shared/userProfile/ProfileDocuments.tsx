@@ -109,7 +109,7 @@ export const ProfileDocuments = ({
                 </a>
               </li>
               <li>
-                <a href="https://cbadge.com/" target="_blank" className="hover:text-primary">
+                <a href="https://cbadge.com/states/michigan/" target="_blank" className="hover:text-primary">
                   Michigan
                 </a>
               </li>

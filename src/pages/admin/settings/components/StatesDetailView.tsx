@@ -180,7 +180,7 @@ export const StatesDetailView = ({
           </p>
         </div>
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-          <div className="col-span-4 ">
+          <div className="col-span-4">
             <DataTable ref={dt} value={adminCost} editMode="cell">
               {columns.map((field, header) => {
                 return (
