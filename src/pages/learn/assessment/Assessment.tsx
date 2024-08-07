@@ -104,7 +104,7 @@ export const Assessment = () => {
           setRecord(response.AssessmentRecord)
           setValidatorResponse(response.reponseAssessment)
           setNextStep(response.nextStep)
-          if (response.nextStep == '/learn') {
+          if (response.nextStep === '/learn') {
             setCategoryId(response.categoryId)
           }
           setFinishAssessment(true)
