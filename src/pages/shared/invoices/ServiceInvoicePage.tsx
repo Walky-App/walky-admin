@@ -230,7 +230,15 @@ export const ServiceInvoicePage = () => {
             {invoice?.details.temps_details.map((detail, index) => (
               <tr key={index}>
                 <td className="flex-1 py-5 pl-4 pr-3 sm:table-cell">
-                  <div className="font-medium">{detail.description}</div>
+                  {role === 'admin' ? (
+                    <Link
+                      className="cursor-pointer font-medium hover:text-primary"
+                      to={`/admin/users/employees/${detail.temp_id}`}>
+                      {detail.description}
+                    </Link>
+                  ) : (
+                    <div className="font-medium">{detail.description}</div>
+                  )}
                 </td>
                 <td className="py-5 pl-4 pr-3 text-left sm:table-cell">
                   <div className="font-medium">{detail.activity}</div>
@@ -245,7 +253,13 @@ export const ServiceInvoicePage = () => {
         <div className="mt-12 flex">
           <div className="text-lg sm:flex-auto">
             <h2 className="mt-2 font-bold ">
-              For {invoice?.job_id.title} job #{invoice?.job_id.uid} on:
+              For {invoice?.job_id.title} job{' '}
+              <Link
+                className="cursor-pointer hover:text-primary"
+                to={role === 'admin' ? `/admin/jobs/${invoice?.job_id._id}` : `/client/jobs/${invoice?.job_id._id}`}>
+                #{invoice?.job_id.uid}
+              </Link>{' '}
+              on:
             </h2>
             <ul>
               {invoice?.job_id.job_dates.map(date => (

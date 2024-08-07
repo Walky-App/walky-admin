@@ -241,7 +241,7 @@ export const AdminFacilityImages = () => {
       ) : null}
 
       <div className="space-y-2">
-        <HtInputLabel htmlFor="facility_images_upload" labelText="Upload Facility Licenses:" />
+        <HtInputLabel htmlFor="facility_images_upload" labelText="Upload Facility Images:" />
         <HtFileUpload
           inputId="facility_images_upload"
           path={`facilities/${facilityId}/images`}

@@ -19,7 +19,7 @@ export const AssessmentResponse = ({ validatorResponse, nextStep, categoryId }: 
   const navigate = useNavigate()
   const { setModule, setUnit } = useAdmin()
 
-  const [visible, setVisible] = useState<boolean>(true)
+  const [visible, setVisible] = useState<boolean>(false)
 
   const handleNextStep = () => {
     if (nextStep === '/learn') {
