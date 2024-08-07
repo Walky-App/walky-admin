@@ -1,12 +1,15 @@
 import { MemoryRouter } from 'react-router-dom'
 
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
+import { render, screen, cleanup } from '@testing-library/react'
 
 import { Auth } from '.'
 import { LoginForm } from './LoginForm'
 
 describe('Auth Page', () => {
+  afterEach(() => {
+    cleanup()
+  })
   it('should render auth view', () => {
     render(
       <MemoryRouter>
@@ -18,7 +21,7 @@ describe('Auth Page', () => {
   it('should render the login component', async () => {
     render(
       <MemoryRouter>
-        <LoginForm setUserForm={() => jest.mock} />
+        <LoginForm setUserForm={() => jest.fn()} />
       </MemoryRouter>,
     ).container
 
@@ -29,7 +32,7 @@ describe('Auth Page', () => {
   it('should render the email input field', async () => {
     render(
       <MemoryRouter>
-        <LoginForm setUserForm={() => jest.mock} />
+        <LoginForm setUserForm={() => jest.fn()} />
       </MemoryRouter>,
     )
 

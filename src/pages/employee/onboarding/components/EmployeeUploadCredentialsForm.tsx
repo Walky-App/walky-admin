@@ -154,7 +154,7 @@ export const EmployeeUploadCredentialsForm = ({ step, setStep }: StepProps) => {
           <div>
             <h2 className="text-base font-semibold leading-7 text-gray-900">Badges and Credentials</h2>
             <div className="text-balance text-sm leading-6 text-gray-600 [&>p]:mt-4">
-              <p>Please upload your State-issued Credentials.</p>
+              <p>Please upload your State-issued Badge or Background Check.</p>
               <p>If you do not have a badge or a Credential click on your state for more information:</p>
               <ul className="ml-1 space-y-2 [&>li]:mt-1 [&>li]:text-balance [&>li]:text-sm [&>li]:leading-6 [&>li]:text-gray-600 [&>li]:underline">
                 <li>
