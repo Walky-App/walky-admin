@@ -34,27 +34,25 @@ export const Settings = () => {
   }
 
   return (
-    <div>
-      <div className="card text-2xl">
-        <DataTable
-          data-testid="states-detail-view"
-          value={settings}
-          sortField="our_fee"
-          sortOrder={-1}
-          selectionMode="single"
-          selection={selectedState!}
-          onSelectionChange={e => {
-            setSelectedS(e.value)
-            navigate(`/admin/settings/${e.value.state}`)
-          }}
-          dataKey="_id"
-          className="text-lg"
-          tableStyle={{ minWidth: '50rem' }}>
-          <Column sortable field="state" header="State" />
-          <Column sortable field="our_fee" header="Our Fee" />
-          <Column sortable field="holiday.length" header="Holiday" body={holidayFormatRow} />
-        </DataTable>
-      </div>
+    <div className="card text-2xl">
+      <DataTable
+        data-testid="states-detail-view"
+        value={settings}
+        sortField="our_fee"
+        sortOrder={-1}
+        selectionMode="single"
+        selection={selectedState!}
+        onSelectionChange={e => {
+          setSelectedS(e.value)
+          navigate(`/admin/settings/${e.value.state}`)
+        }}
+        dataKey="_id"
+        className="text-lg"
+        tableStyle={{ minWidth: '50rem' }}>
+        <Column sortable field="state" header="State" />
+        <Column sortable field="our_fee" header="Our Fee" />
+        <Column sortable field="holiday.length" header="Holiday" body={holidayFormatRow} />
+      </DataTable>
     </div>
   )
 }
