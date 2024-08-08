@@ -1,4 +1,4 @@
-import { Navigate, Outlet, type RouteProps } from 'react-router-dom'
+import { Navigate, Outlet, useLocation, type RouteProps } from 'react-router-dom'
 
 import { GetTokenInfo } from './tokenUtil'
 
@@ -6,8 +6,19 @@ type ProtectedRouteProps = RouteProps & { redirectTo?: string }
 
 export const ProtectedRouteAuth = ({ redirectTo = '/login' }: ProtectedRouteProps) => {
   const { access_token } = GetTokenInfo()
+  const location = useLocation()
 
-  if (!access_token) return <Navigate to={redirectTo} replace />
+  if (!access_token) {
+    return (
+      <Navigate
+        to={{
+          pathname: redirectTo,
+          search: `?redirect=${location.pathname}${location.search}`,
+        }}
+        replace
+      />
+    )
+  }
 
   return <Outlet />
 }
