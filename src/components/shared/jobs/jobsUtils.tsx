@@ -247,9 +247,6 @@ export const renderStartTimeController = (
                   const localTime = new Date(newValue.setSeconds(0))
                   const zonedTime = toZonedTime(localTime, facilityTimezone)
                   const utcTime = fromZonedTime(zonedTime, facilityTimezone)
-                  // console.log('start onChange localTime:', localTime)
-                  // console.log('start onChange zonedTime:', zonedTime)
-                  // console.log('start onChange utcTime:', utcTime)
                   setIsStartTimeValid(true)
                   field.onChange(utcTime)
                   setStartTime(utcTime)
@@ -265,9 +262,6 @@ export const renderStartTimeController = (
                   const localTime = new Date(newDate.setSeconds(0))
                   const zonedTime = toZonedTime(localTime, facilityTimezone)
                   const utcTime = fromZonedTime(zonedTime, facilityTimezone)
-                  // console.log('start onInput localTime:', localTime)
-                  // console.log('start onInput zonedTime:', zonedTime)
-                  // console.log('start onInput utcTime:', utcTime)
                   setIsStartTimeValid(true)
                   field.onChange(utcTime)
                 } else {
@@ -282,9 +276,6 @@ export const renderStartTimeController = (
                   const localTime = new Date(newDate.setSeconds(0))
                   const zonedTime = toZonedTime(localTime, facilityTimezone)
                   const utcTime = fromZonedTime(zonedTime, facilityTimezone)
-                  // console.log('start onBlue localTime:', localTime)
-                  // console.log('start onBlue zonedTime:', zonedTime)
-                  // console.log('start onBlue utcTime:', utcTime)
                   setStartTime(utcTime)
                 }
               }}

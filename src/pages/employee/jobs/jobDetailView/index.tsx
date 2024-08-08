@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
+import { formatInTimeZone, format } from 'date-fns-tz'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
@@ -13,7 +14,6 @@ import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
-import { formatToLocalTime } from '../../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { JobDetailBottomComponents } from './BottomComponents'
 import { ShiftsTable } from './ShiftsTable'
@@ -191,8 +191,11 @@ export const JobDetailView = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-stone-500">Job Start / End Time</div>
-                    {formatToLocalTime(job.start_time)} &nbsp; - &nbsp; {formatToLocalTime(job.end_time)}
+                    <div className="text-stone-500">
+                      Job Start / End Time ({format(new Date(), 'zzz', { timeZone: job.facility.timezone })})
+                    </div>
+                    {formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a')} &nbsp; - &nbsp;
+                    {formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a')}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Lunch Breaks</div>
