@@ -402,9 +402,7 @@ export const ServiceInvoicePage = () => {
             <Button className="ml-3 mt-6" label="Charge" onClick={handlerAuthorizeInvoice} />
           ) : null}
 
-          {role === 'admin' && invoice?.status === 'paid' ? (
-            <Button className="ml-3 mt-6" label="Send email" onClick={handlerSendEmail} />
-          ) : null}
+          {role === 'admin' ? <Button className="ml-3 mt-6" label="Send invoice" onClick={handlerSendEmail} /> : null}
         </footer>
       </div>
     </div>
