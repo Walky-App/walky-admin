@@ -171,6 +171,7 @@ export const App = () => {
                   <Route element={<AllServiceOrdersListPage />} path="/client/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/client/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/client/jobs/service-orders/authorized" />
+                  <Route element={<ServiceInvoicePage />} path="/client/invoices/:invoiceId" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<CompanyDetailView />} path="/client/companies/:id" />
