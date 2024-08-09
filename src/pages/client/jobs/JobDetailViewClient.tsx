@@ -18,6 +18,7 @@ import { ShiftsTableClient } from './components/JobDetailShiftsTableClient'
 export const JobDetailViewClient = () => {
   const [job, setJob] = useState<IJob | null>(null)
   const [, setIsLoading] = useState(true)
+  const [formattedTimes, setFormattedTimes] = useState<string | null>(null)
 
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -37,7 +38,13 @@ export const JobDetailViewClient = () => {
         if (response.ok) {
           const job = await response.json()
           getShiftIdForToday(job.job_days)
-          setJob(job)
+          if (job.facility && job.facility.timezone) {
+            setJob(job)
+            const startTime = formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a')
+            const endTime = formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a')
+            const timezone = format(new Date(), 'zzz', { timeZone: job.facility.timezone })
+            setFormattedTimes(`${startTime} - ${endTime} (${timezone})`)
+          }
         }
       } catch (error) {
         console.error('Failed to fetch job:', error)
@@ -192,11 +199,8 @@ export const JobDetailViewClient = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                  <div className="text-stone-500">
-                    Job Start / End Time ({format(new Date(), 'zzz', { timeZone: job.facility.timezone })})
-                  </div>
-                  {formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a').toString()} &nbsp; - &nbsp;
-                  {formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a').toString()}
+                  <div className="text-stone-500">Job Start / End Time</div>
+                  {formattedTimes}
                 </div>
                 <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                   <div className="text-stone-500">Lunch Breaks</div>

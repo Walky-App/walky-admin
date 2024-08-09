@@ -27,6 +27,7 @@ export const JobDetailView = () => {
   const [jobHasEnded, setJobHasEnded] = useState(false)
   const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
   const [employeeActive, setEmployeeActive] = useState<boolean>(true)
+  const [formattedTimes, setFormattedTimes] = useState<string | null>(null)
 
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -55,6 +56,13 @@ export const JobDetailView = () => {
           getShiftIdForToday(job.job_days)
           setUserWorkingInThisJob(handleIsUserWorkingThisJob() || false)
           setJob(job)
+
+          if (job.facility && job.facility.timezone) {
+            const startTime = formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a')
+            const endTime = formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a')
+            const timezone = format(new Date(), 'zzz', { timeZone: job.facility.timezone })
+            setFormattedTimes(`${startTime} - ${endTime} (${timezone})`)
+          }
 
           const user_active = await requestService({ path: `users/${user._id}` })
           if (user_active.ok) {
@@ -191,11 +199,8 @@ export const JobDetailView = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-stone-500">
-                      Job Start / End Time ({format(new Date(), 'zzz', { timeZone: job.facility.timezone })})
-                    </div>
-                    {formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a')} &nbsp; - &nbsp;
-                    {formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a')}
+                    <div className="text-stone-500">Job Start / End Time</div>
+                    {formattedTimes}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Lunch Breaks</div>
