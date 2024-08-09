@@ -163,8 +163,8 @@ export const AddEditJobPage = () => {
     setValue,
   } = useForm({ defaultValues: formData })
 
-  const facilityId = useWatch({ name: 'facility_id', control })
-  const selectedFacility = facilities?.find(facility => facility._id === facilityId)
+  const selectedFacilityId = useWatch({ name: 'facility_id', control })
+  const selectedFacility = facilities?.find(facility => facility._id === selectedFacilityId)
   const facilityTimezone = selectedFacility?.timezone
   const lunchBreak = useWatch({ name: 'lunch_break', control })
   const vacancy = useWatch({ name: 'vacancy', control })
@@ -206,9 +206,10 @@ export const AddEditJobPage = () => {
 
   useEffect(() => {
     const getFacilityStateSettings = async () => {
-      const facility = facilities?.find(facility => facility._id === selectedFacility)
+      const facility = facilities?.find(facility => facility._id === selectedFacilityId)
       if (facility) {
         try {
+          //@ts-ignore
           const response = await requestService({ path: `settings/${facility.state}` })
           const data = await response.json()
           if (!response.ok) throw new Error(data.message)
@@ -219,7 +220,7 @@ export const AddEditJobPage = () => {
       }
     }
     getFacilityStateSettings()
-  }, [facilities, selectedFacility])
+  }, [facilities, selectedFacilityId])
 
   useEffect(() => {
     const getJob = async () => {
