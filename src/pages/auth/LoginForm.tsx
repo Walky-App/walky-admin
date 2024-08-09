@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -21,39 +21,14 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
   const [value, setValue] = useState<string>('')
   const { setAvatarImageUrl } = useUtils()
 
+  const location = useLocation()
+
+  const params = new URLSearchParams(location.search)
+  const redirectPath = params.get('redirect')
+
   const { setUser } = useAuth()
   const navigate = useNavigate()
-
-  const role = roleChecker()
   const tokenInfo = GetTokenInfo()
-
-  /* This is to persist the user in the app */
-  useEffect(() => {
-    switch (role) {
-      case 'admin':
-        navigate('/admin/dashboard')
-        break
-      case 'client':
-        if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
-          navigate('/client/onboarding')
-        } else {
-          navigate('/client/dashboard')
-        }
-        break
-      case 'employee':
-        if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
-          navigate('/employee/onboarding')
-        } else {
-          navigate('/employee/dashboard')
-        }
-        break
-      case 'sales':
-        navigate('/sales/dashboard')
-        break
-      default:
-        navigate('/login')
-    }
-  }, [navigate, role, tokenInfo.onboarding])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -87,22 +62,33 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
           SetToken(data)
           setUser({ ...user, access_token: access_token, onboarding: user.onboarding })
           setAvatarImageUrl(user.avatar as string)
-
-          switch (role) {
-            case 'admin':
-              navigate('/admin/dashboard')
-              break
-            case 'client':
-              navigate('/client/dashboard')
-              break
-            case 'employee':
-              navigate('/employee/dashboard')
-              break
-            case 'sales':
-              navigate('/sales/dashboard')
-              break
-            default:
-              navigate('/login')
+          if (redirectPath) {
+            navigate(redirectPath, { replace: true })
+          } else {
+            switch (roleChecker()) {
+              case 'admin':
+                navigate('/admin/dashboard')
+                break
+              case 'client':
+                if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
+                  navigate('/client/onboarding')
+                } else {
+                  navigate('/client/dashboard')
+                }
+                break
+              case 'employee':
+                if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
+                  navigate('/employee/onboarding')
+                } else {
+                  navigate('/employee/dashboard')
+                }
+                break
+              case 'sales':
+                navigate('/sales/dashboard')
+                break
+              default:
+                navigate('/login')
+            }
           }
         } else {
           setError(data.message)
