@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
+import { formatInTimeZone } from 'date-fns-tz'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
@@ -13,7 +14,6 @@ import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
-import { formatToLocalTime } from '../../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
 import { JobDetailBottomComponents } from './BottomComponents'
 import { ShiftsTable } from './ShiftsTable'
@@ -27,6 +27,7 @@ export const JobDetailView = () => {
   const [jobHasEnded, setJobHasEnded] = useState(false)
   const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
   const [employeeActive, setEmployeeActive] = useState<boolean>(true)
+  const [formattedTimes, setFormattedTimes] = useState<string | null>(null)
 
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -55,6 +56,12 @@ export const JobDetailView = () => {
           getShiftIdForToday(job.job_days)
           setUserWorkingInThisJob(handleIsUserWorkingThisJob() || false)
           setJob(job)
+
+          if (job.facility && job.facility.timezone) {
+            const startTime = formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a')
+            const endTime = formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a (z)')
+            setFormattedTimes(`${startTime} - ${endTime}`)
+          }
 
           const user_active = await requestService({ path: `users/${user._id}` })
           if (user_active.ok) {
@@ -186,13 +193,12 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Dates</div>
                     <div className="flex items-center">
-                      <i className="pi pi-calendar-times" />
                       {earliestDate?.toLocaleDateString()} &nbsp; - &nbsp; {latestDate?.toLocaleDateString()}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Start / End Time</div>
-                    {formatToLocalTime(job.start_time)} &nbsp; - &nbsp; {formatToLocalTime(job.end_time)}
+                    {formattedTimes}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Lunch Breaks</div>

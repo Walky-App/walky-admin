@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 
 import { useForm, useWatch } from 'react-hook-form'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-import { parseISO, eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
+import { eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek, set } from 'date-fns'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 
 import { type IFacility } from '../../../interfaces/facility'
@@ -17,7 +18,6 @@ import { HTLoadingLogo } from '../HTLoadingLogo'
 import { HeadingComponent } from '../general/HeadingComponent'
 import { HtInfoTooltip } from '../general/HtInfoTooltip'
 import {
-  defaultJobFormValues,
   type JobFormDefaultValues,
   renderJobTitleController,
   renderFacilityController,
@@ -111,12 +111,25 @@ const calculateServiceOrder = (
   }
 }
 
+export const defaultJobFormValues: JobFormDefaultValues = {
+  title: '',
+  facility_id: '',
+  vacancy: 1,
+  hourly_rate: 0,
+  job_dates: [],
+  start_time: set(new Date(), { hours: 8, minutes: 30 }),
+  end_time: set(new Date(), { hours: 17, minutes: 0 }),
+  lunch_break: 30,
+  job_tips: [],
+  total_hours: 0,
+}
+
 export const AddEditJobPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [jobFound, setJobFound] = useState<IJob | null>(null)
+  const [jobFound] = useState<IJob | null>(null)
   const [facilities, setFacilities] = useState<IFacility[]>()
-  const [formData, setFormData] = useState(defaultJobFormValues)
+  const [formData] = useState(defaultJobFormValues)
   const [facilityStateSettings, setFacilityStateSettings] = useState<StatesSettingsDocument | null>()
 
   // Start/End Time States
@@ -150,7 +163,6 @@ export const AddEditJobPage = () => {
   })
 
   const navigate = useNavigate()
-  const params = useParams()
   const location = useLocation()
   const isAdmin = location.pathname.includes('/admin')
   const { showToast } = useUtils()
@@ -163,11 +175,20 @@ export const AddEditJobPage = () => {
     setValue,
   } = useForm({ defaultValues: formData })
 
-  const selectedFacility = useWatch({ name: 'facility_id', control })
+  const selectedFacilityId = useWatch({ name: 'facility_id', control })
+  const selectedFacility = facilities?.find(facility => facility._id === selectedFacilityId)
+  const facilityTimezone = selectedFacility?.timezone
   const lunchBreak = useWatch({ name: 'lunch_break', control })
   const vacancy = useWatch({ name: 'vacancy', control })
   const jobDatesLength = useWatch({ name: 'job_dates', control }).length
   const hourlyRate = useWatch({ name: 'hourly_rate', control })
+
+  useEffect(() => {
+    if (facilityTimezone) {
+      setValue('start_time', toZonedTime(set(new Date(), { hours: 10, minutes: 30 }), facilityTimezone))
+      setValue('end_time', toZonedTime(set(new Date(), { hours: 19, minutes: 0 }), facilityTimezone))
+    }
+  }, [facilityTimezone, setValue])
 
   useEffect(() => {
     if (!facilityStateSettings) return
@@ -204,7 +225,7 @@ export const AddEditJobPage = () => {
 
   useEffect(() => {
     const getFacilityStateSettings = async () => {
-      const facility = facilities?.find(facility => facility._id === selectedFacility)
+      const facility = facilities?.find(facility => facility._id === selectedFacilityId)
       if (facility) {
         try {
           const response = await requestService({ path: `settings/${facility.state}` })
@@ -217,45 +238,7 @@ export const AddEditJobPage = () => {
       }
     }
     getFacilityStateSettings()
-  }, [facilities, selectedFacility])
-
-  useEffect(() => {
-    const getJob = async () => {
-      if (!params.id) return
-
-      try {
-        const response = await requestService({ path: `jobs/${params.id}` })
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch job')
-        }
-        const job: IJob = await response.json()
-        setJobFound(job)
-
-        if (facilities && facilities.length > 0) {
-          setFormData(prev => ({
-            ...prev,
-            title: job.title,
-            facility_id: facilities.find(facility => facility._id === job.facility._id)?._id ?? '',
-            job_dates: job.job_dates.map((dateString: string) => parseISO(dateString)),
-            start_time: new Date(job.start_time),
-            end_time: new Date(job.end_time),
-            total_hours: job.total_hours,
-            lunch_break: job.lunch_break,
-            vacancy: job.vacancy,
-            hourly_rate: job.hourly_rate,
-            job_tips: job.job_tips,
-          }))
-        }
-      } catch (error) {
-        console.error('Error fetching job:', error)
-      }
-    }
-
-    if (facilities && facilities.length > 0) {
-      getJob()
-    }
-  }, [params.id, facilities])
+  }, [facilities, selectedFacilityId])
 
   useEffect(() => {
     if (startTime && endTime) {
@@ -287,24 +270,38 @@ export const AddEditJobPage = () => {
       total_hours: number
     }[] = []
 
-    const requestData = { ...data }
-    for (const week of weeks) {
-      const startOfWeekDate = startOfWeek(week)
-      const endOfWeekDate = endOfWeek(week)
-      const job_dates_in_week = jobDates.filter(date =>
-        isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate }),
-      )
+    let requestData
 
-      const requestDataForWeek = {
-        ...requestData,
-        job_dates: job_dates_in_week,
-        total_hours: totalHours,
+    if (facilityTimezone && startTime && endTime) {
+      const utcStartTime = fromZonedTime(startTime, facilityTimezone)
+      const utcEndTime = fromZonedTime(endTime, facilityTimezone)
+
+      requestData = {
+        ...data,
+        start_time: utcStartTime,
+        end_time: utcEndTime,
       }
-      requestDataForWeeks.push(requestDataForWeek)
+
+      for (const week of weeks) {
+        const startOfWeekDate = startOfWeek(week)
+        const endOfWeekDate = endOfWeek(week)
+        const job_dates_in_week = jobDates.filter(date =>
+          isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate }),
+        )
+
+        const requestDataForWeek = {
+          ...requestData,
+
+          job_dates: job_dates_in_week,
+          total_hours: totalHours,
+        }
+        requestDataForWeeks.push(requestDataForWeek)
+      }
     }
 
-    if (startTime && endTime && data.lunch_break != null) {
+    if (startTime && endTime && facilityTimezone && data.lunch_break != null && requestData != null) {
       const totalHours = calculateHours(startTime, endTime, data.lunch_break)
+
       requestData.total_hours = totalHours
       setTotalHours(totalHours)
 
@@ -621,13 +618,22 @@ export const AddEditJobPage = () => {
                       setStartTime,
                       isStartTimeValid,
                       setIsStartTimeValid,
+                      facilityTimezone ?? '',
                     )}
                   </div>
                 ) : null}
 
                 {endTime ? (
                   <div className="sm:col-span-3">
-                    {renderEndTimeController(control, errors, endTime, setEndTime, isEndTimeValid, setIsEndTimeValid)}
+                    {renderEndTimeController(
+                      control,
+                      errors,
+                      endTime,
+                      setEndTime,
+                      isEndTimeValid,
+                      setIsEndTimeValid,
+                      facilityTimezone ?? '',
+                    )}
                   </div>
                 ) : null}
 
