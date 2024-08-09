@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { format } from 'date-fns-tz'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
@@ -23,6 +23,7 @@ export const JobDetailViewAdmin = () => {
   const [, setIsLoading] = useState(true)
   // const [, setHasDateIntersection] = useState(false)
   const [, setJobHasEnded] = useState(false)
+  const [formattedTimes, setFormattedTimes] = useState<string | null>(null)
 
   const { id } = useParams()
   const user = GetTokenInfo()
@@ -42,7 +43,12 @@ export const JobDetailViewAdmin = () => {
         if (response.ok) {
           const job = await response.json()
           getShiftIdForToday(job.job_days)
-          setJob(job)
+          if (job.facility && job.facility.timezone) {
+            setJob(job)
+            const startTime = formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a')
+            const endTime = formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a (z)')
+            setFormattedTimes(`${startTime} - ${endTime}`)
+          }
         }
       } catch (error) {
         console.error('Failed to fetch job:', error)
@@ -238,14 +244,12 @@ export const JobDetailViewAdmin = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Dates</div>
                     <div className="flex items-center">
-                      <i className="pi pi-calendar-times" />
                       {earliestDate?.toLocaleDateString()} &nbsp; - &nbsp; {latestDate?.toLocaleDateString()}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Start / End Time</div>
-                    {format(job.start_time, 'hh:mm a (z)', { timeZone: job.facility.timezone })} &nbsp; - &nbsp;{' '}
-                    {format(job.end_time, 'hh:mm a (z)', { timeZone: job.facility.timezone })}
+                    {formattedTimes}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Lunch Breaks</div>

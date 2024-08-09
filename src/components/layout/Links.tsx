@@ -70,10 +70,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Jobs',
       href: '/admin/jobs',
       icon: <FaBriefcase />,
-      subLinks: [
-        { name: 'Add Job', href: '/admin/jobs/new' },
-        { name: 'Add Job (without-payments)', href: '/admin/jobs/new-without-payments' },
-      ],
+      subLinks: [{ name: 'Add Job', href: '/admin/jobs/new' }],
     },
     {
       id: 6,
