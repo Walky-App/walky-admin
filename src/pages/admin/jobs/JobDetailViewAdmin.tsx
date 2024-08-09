@@ -245,7 +245,6 @@ export const JobDetailViewAdmin = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Dates</div>
                     <div className="flex items-center">
-                      <i className="pi pi-calendar-times" />
                       {earliestDate?.toLocaleDateString()} &nbsp; - &nbsp; {latestDate?.toLocaleDateString()}
                     </div>
                   </div>
