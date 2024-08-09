@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { formatInTimeZone, format } from 'date-fns-tz'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
@@ -59,9 +59,8 @@ export const JobDetailView = () => {
 
           if (job.facility && job.facility.timezone) {
             const startTime = formatInTimeZone(job.start_time, job.facility.timezone, 'hh:mm a')
-            const endTime = formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a')
-            const timezone = format(new Date(), 'zzz', { timeZone: job.facility.timezone })
-            setFormattedTimes(`${startTime} - ${endTime} (${timezone})`)
+            const endTime = formatInTimeZone(job.end_time, job.facility.timezone, 'hh:mm a (z)')
+            setFormattedTimes(`${startTime} - ${endTime}`)
           }
 
           const user_active = await requestService({ path: `users/${user._id}` })
