@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
+import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
@@ -12,6 +13,7 @@ import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoToolt
 import {
   applicantHasPunchInWithoutPunchOut,
   applicantHasPunchOut,
+  shiftDayAndTimeUTC,
   workingApplicantsDropdownData,
   workingApplicantShiftsDropdownData,
 } from '../../../../components/shared/jobDetail/jobDetailUtils'
@@ -26,7 +28,7 @@ import { type Shifts } from '../../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
-import { formatToDate, formatToTime, isTodaySameAsTimeStamp, isValidDate } from '../../../../utils/timeUtils'
+import { isTodaySameAsTimeStamp, isValidDate } from '../../../../utils/timeUtils'
 
 export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
   const [timesheets, setTimesheets] = useState<ITimeSheet[]>([])
@@ -115,6 +117,14 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
     }
   }, [punchPairsAndTotalTime, selectedShift, timesheets])
 
+  const punchInTimeStampUTC = selectedShift?.shift_day
+    ? shiftDayAndTimeUTC(selectedShift.shift_day, selectedShift.shift_start_time)
+    : undefined
+
+  const punchOutTimeStampUTC = selectedShift?.shift_day
+    ? shiftDayAndTimeUTC(selectedShift.shift_day, selectedShift.shift_end_time)
+    : undefined
+
   const clockInOut = async (endpoint: string) => {
     setIsClockInOutLoading(true)
 
@@ -124,6 +134,7 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
         location: [latitude, longitude],
         applicant_id: selectedUserId,
         shift_id: selectedShift?._id,
+        time_stamp: isClockedIn ? punchOutTimeStampUTC : punchInTimeStampUTC,
       }
       const response: Response = await requestService({
         path: `timesheets/${endpoint}/by-admin`,
@@ -212,12 +223,12 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
           </div>
         </div>
       </div>
-      <div>{timesheetTableTemplate(punchPairsAndTotalTime)}</div>
+      <div>{timesheetTableTemplate(punchPairsAndTotalTime, job.facility.timezone)}</div>
     </section>
   )
 }
 
-const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[]) => {
+const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[], facilityTimezone: string) => {
   return (
     <>
       <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
@@ -232,15 +243,20 @@ const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[
           field="punchIn.time_stamp"
           header="Date"
           body={(rowData: IPunchPairWithTotalTime) =>
-            isValidDate(rowData.punchIn.time_stamp) ? formatToDate(rowData.punchIn.time_stamp) : 'No Timestamp'
+            isValidDate(rowData.punchIn.time_stamp)
+              ? formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'P')
+              : 'No Timestamp'
           }
         />
-        <Column header="Time In" body={rowData => formatToTime(rowData.punchIn.time_stamp)} />
+        <Column
+          header="Time In"
+          body={rowData => formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'hh:mm a (z)')}
+        />
         <Column
           header="Time Out"
           body={(rowData: IPunchPairWithTotalTime) =>
             rowData.punchOut
-              ? formatToTime(rowData.punchOut.time_stamp)
+              ? formatInTimeZone(rowData.punchOut.time_stamp, facilityTimezone, 'hh:mm a (z)')
               : isTodaySameAsTimeStamp(rowData.punchIn.time_stamp)
                 ? 'Clocked In'
                 : 'Clock Out not recorded'
