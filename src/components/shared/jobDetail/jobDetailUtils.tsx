@@ -1,4 +1,5 @@
-import { format } from 'date-fns'
+import { format, set } from 'date-fns'
+import { fromZonedTime } from 'date-fns-tz'
 
 import { type IJob, type IJobShiftDay } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
@@ -83,4 +84,21 @@ export const applicantHasPunchOut = (punchPairsAndTotalTime: IPunchPairWithTotal
     return true
 
   return false
+}
+
+export const shiftDayAndTimeUTC = (shiftDay: Date, shiftTime: string) => {
+  const timeUTC = fromZonedTime(shiftTime, 'UTC')
+
+  const hours = timeUTC.getUTCHours()
+  const minutes = timeUTC.getUTCMinutes()
+  const seconds = timeUTC.getUTCSeconds()
+  const milliseconds = timeUTC.getUTCMilliseconds()
+
+  const shiftDayAndTimeUTC = set(shiftDay, {
+    hours,
+    minutes,
+    seconds,
+    milliseconds,
+  })
+  return shiftDayAndTimeUTC
 }
