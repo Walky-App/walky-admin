@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 
 import { HTLoadingLogo } from '../../../../components/shared/HTLoadingLogo'
-import { type IJob } from '../../../../interfaces/job'
 import { requestService } from '../../../../services/requestServiceNew'
+import { type IShift } from '../MyJobs'
 import { ShiftCard } from '../ShiftCard'
 
 export const DroppedShifts = ({ employeeId }: { employeeId: string }) => {
-  const [droppedShifts, setDroppedShifts] = useState<IJob[]>([])
+  const [droppedShifts, setDroppedShifts] = useState<IShift[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
