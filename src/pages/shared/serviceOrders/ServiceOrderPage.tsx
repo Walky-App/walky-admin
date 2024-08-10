@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { format } from 'date-fns'
+import { formatInTimeZone, format } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 
@@ -12,7 +12,6 @@ import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/ser
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
-import { formatToLocalTime } from '../../../utils/timeUtils'
 
 interface AchPaymentDetails {
   ach_account_name: string
@@ -169,8 +168,10 @@ export const ServiceOrderPage = () => {
               {serviceOrder?.job_id.job_dates.map(date => (
                 <li key={date} className="mt-4">
                   {format(new Date(date), 'PPPP')}, &nbsp;
-                  {formatToLocalTime(serviceOrder?.job_id.start_time)} to{' '}
-                  {formatToLocalTime(serviceOrder?.job_id.end_time)}
+                  {formatInTimeZone(serviceOrder?.job_id.start_time, serviceOrder?.facility_id.timezone, 'hh:mm a')}
+                  &nbsp; - &nbsp;
+                  {formatInTimeZone(serviceOrder?.job_id.end_time, serviceOrder?.facility_id.timezone, 'hh:mm a')} (
+                  {format(new Date(), 'zzz', { timeZone: serviceOrder?.facility_id.timezone })})
                 </li>
               ))}
             </ul>

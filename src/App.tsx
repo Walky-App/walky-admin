@@ -84,7 +84,6 @@ import { StateSettings } from './pages/admin/settings/StateSettings'
 
 import { LayoutPublic } from './components/layoutPublic'
 import { AddEditJobPage } from './components/shared/jobs/AddEditJobPage'
-import { AddEditJobWithoutPaymentsPage } from './components/shared/jobs/AddEditJobWithoutPaymentsPage'
 import { Pricing } from './pages/Pricing'
 
 /******************************************* Employee Pages ************************************/
@@ -171,6 +170,7 @@ export const App = () => {
                   <Route element={<AllServiceOrdersListPage />} path="/client/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/client/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/client/jobs/service-orders/authorized" />
+                  <Route element={<ServiceInvoicePage />} path="/client/invoices/:invoiceId" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<CompanyDetailView />} path="/client/companies/:id" />
@@ -224,7 +224,6 @@ export const App = () => {
                   <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                   <Route element={<AdminJobs />} path="/admin/jobs" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
-                  <Route element={<AddEditJobWithoutPaymentsPage />} path="/admin/jobs/new-without-payments" />
                   <Route element={<JobDetailViewAdmin />} path="/admin/jobs/:id" />
                   <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />
                   <Route element={<ServiceOrderPage />} path="/admin/jobs/:id/service-order/:serviceOrderId" />

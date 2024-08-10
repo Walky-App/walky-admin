@@ -197,6 +197,13 @@ export const SideRightCard = ({
       const timeSheet: ITimeSheet = data
       setLastTimeSheet(timeSheet)
 
+      if (
+        !latestTimesheet ||
+        !isTodaySameAsTimeStamp(latestTimesheet?.punches[latestTimesheet?.punches.length - 1]?.time_stamp)
+      ) {
+        setIsClockedIn(endpoint === 'clock-in')
+      }
+
       await getCurrentJobTimeSheets()
       showToast({ severity: 'success', summary: 'Success', detail: 'Clock in/out successful' })
 
