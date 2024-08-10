@@ -4,6 +4,7 @@ import { type Control, Controller, type FieldErrors } from 'react-hook-form'
 
 import { eachWeekOfInterval, isWithinInterval, startOfWeek, endOfWeek } from 'date-fns'
 import { isValid, parse } from 'date-fns'
+import { format } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
@@ -15,7 +16,6 @@ import { type IFacility } from '../../../interfaces/facility'
 import { type HolidayDocument } from '../../../interfaces/setting'
 import { jobTipsOptions, jobTitlesOptions, lunchTimeOptions } from '../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../utils/formUtils'
-import { setTimeInUTC, toLocalDateTime } from '../../../utils/timeUtils'
 import { HtInputHelpText } from '../forms/HtInputHelpText'
 import { HtInputLabel } from '../forms/HtInputLabel'
 import { HtInfoTooltip } from '../general/HtInfoTooltip'
@@ -32,19 +32,6 @@ export interface JobFormDefaultValues {
   job_tips: string[]
   created_by?: string
   total_hours: number
-}
-
-export const defaultJobFormValues: JobFormDefaultValues = {
-  title: '',
-  facility_id: '',
-  vacancy: 1,
-  hourly_rate: 0,
-  job_dates: [],
-  start_time: setTimeInUTC(8, 30),
-  end_time: setTimeInUTC(17),
-  lunch_break: 30,
-  job_tips: [],
-  total_hours: 0,
 }
 
 export const renderJobTitleController = (
@@ -214,31 +201,109 @@ export const renderStartTimeController = (
   setStartTime: (time: Date | null) => void,
   isStartTimeValid: boolean,
   setIsStartTimeValid: (valid: boolean) => void,
-) => (
-  <Controller
-    name="start_time"
-    control={control}
-    rules={{ required: 'Start Time is required.' }}
-    render={({ field, fieldState }) => {
-      return (
+  facilityTimezone: string,
+) => {
+  return (
+    <Controller
+      name="start_time"
+      control={control}
+      rules={{ required: 'Start Time is required.' }}
+      render={({ field, fieldState }) => {
+        return (
+          <>
+            <HtInfoTooltip message="Select the start time for the job.">
+              <HtInputLabel
+                htmlFor={field.name}
+                labelText={`Start Time (${format(new Date(), 'zzz', { timeZone: facilityTimezone })}, ${format(new Date(), 'zzzz', { timeZone: facilityTimezone })})`}
+                asterisk
+              />
+            </HtInfoTooltip>
+            <Calendar
+              inputId={field.name}
+              value={field.value == null ? startTime : field.value}
+              invalid={!isStartTimeValid}
+              onChange={e => {
+                const newValue = e.value as Date
+                const isValidDate = newValue != null && isValid(newValue)
+                if (isValidDate) {
+                  setIsStartTimeValid(true)
+                  field.onChange(newValue)
+                  setStartTime(newValue)
+                } else {
+                  setIsStartTimeValid(false)
+                }
+              }}
+              onInput={e => {
+                const newValue = (e.target as HTMLInputElement).value
+                const newDate = parse(newValue, 'hh:mm a', new Date())
+                const isValidDate = newValue != null && isValid(newDate)
+                if (isValidDate) {
+                  setIsStartTimeValid(true)
+                  field.onChange(newDate)
+                } else {
+                  setIsStartTimeValid(false)
+                }
+              }}
+              onBlur={e => {
+                const newValue = (e.target as HTMLInputElement).value
+                const newDate = parse(newValue, 'hh:mm a', new Date())
+                const isValidDate = newValue != null && isValid(newDate)
+                if (isValidDate) {
+                  setStartTime(newDate)
+                }
+              }}
+              onHide={() => setIsStartTimeValid(true)}
+              timeOnly
+              hourFormat="12"
+              parseDateTime={string => new Date(string)}
+              showIcon
+              icon={() => <i className="pi pi-clock" />}
+              className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
+            />
+            {getFormErrorMessage(field.name, errors)}
+          </>
+        )
+      }}
+    />
+  )
+}
+
+export const renderEndTimeController = (
+  control: Control<JobFormDefaultValues>,
+  errors: FieldErrors<JobFormDefaultValues>,
+  endTime: Date,
+  setEndTime: (time: Date | null) => void,
+  isEndTimeValid: boolean,
+  setIsEndTimeValid: (valid: boolean) => void,
+  facilityTimezone: string,
+) => {
+  return (
+    <Controller
+      name="end_time"
+      control={control}
+      rules={{ required: 'End Time is required.' }}
+      render={({ field, fieldState }) => (
         <>
-          <HtInfoTooltip message="Select the start time for the job.">
-            <HtInputLabel htmlFor={field.name} labelText="Start Time" asterisk />
+          <HtInfoTooltip message="Select the end time for the job.">
+            <HtInputLabel
+              htmlFor={field.name}
+              labelText={`End Time (${format(new Date(), 'zzz', { timeZone: facilityTimezone })}, ${format(new Date(), 'zzzz', { timeZone: facilityTimezone })})`}
+              asterisk
+            />
           </HtInfoTooltip>
           <Calendar
             inputId={field.name}
-            value={field.value == null ? toLocalDateTime(startTime) : toLocalDateTime(field.value)}
-            invalid={!isStartTimeValid}
+            value={field.value == null ? endTime : field.value}
+            invalid={!isEndTimeValid}
             onChange={e => {
               const newValue = e.value as Date
               const isValidDate = newValue != null && isValid(newValue)
               if (isValidDate) {
-                const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
-                setIsStartTimeValid(true)
-                field.onChange(utcTime)
-                setStartTime(utcTime)
+                setIsEndTimeValid(true)
+                field.onChange(newValue)
+                setEndTime(newValue)
               } else {
-                setIsStartTimeValid(false)
+                setIsEndTimeValid(false)
               }
             }}
             onInput={e => {
@@ -246,11 +311,10 @@ export const renderStartTimeController = (
               const newDate = parse(newValue, 'hh:mm a', new Date())
               const isValidDate = newValue != null && isValid(newDate)
               if (isValidDate) {
-                const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
-                setIsStartTimeValid(true)
-                field.onChange(utcTime)
+                setIsEndTimeValid(true)
+                field.onChange(newDate)
               } else {
-                setIsStartTimeValid(false)
+                setIsEndTimeValid(false)
               }
             }}
             onBlur={e => {
@@ -258,11 +322,10 @@ export const renderStartTimeController = (
               const newDate = parse(newValue, 'hh:mm a', new Date())
               const isValidDate = newValue != null && isValid(newDate)
               if (isValidDate) {
-                const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
-                setStartTime(utcTime)
+                setEndTime(newDate)
               }
             }}
-            onHide={() => setIsStartTimeValid(true)}
+            onHide={() => setIsEndTimeValid(true)}
             timeOnly
             hourFormat="12"
             parseDateTime={string => new Date(string)}
@@ -272,78 +335,10 @@ export const renderStartTimeController = (
           />
           {getFormErrorMessage(field.name, errors)}
         </>
-      )
-    }}
-  />
-)
-
-export const renderEndTimeController = (
-  control: Control<JobFormDefaultValues>,
-  errors: FieldErrors<JobFormDefaultValues>,
-  endTime: Date,
-  setEndTime: (time: Date | null) => void,
-  isEndTimeValid: boolean,
-  setIsEndTimeValid: (valid: boolean) => void,
-) => (
-  <Controller
-    name="end_time"
-    control={control}
-    rules={{ required: 'End Time is required.' }}
-    render={({ field, fieldState }) => (
-      <>
-        <HtInfoTooltip message="Select the end time for the job.">
-          <HtInputLabel htmlFor={field.name} labelText="End Time" asterisk />
-        </HtInfoTooltip>
-        <Calendar
-          inputId={field.name}
-          value={field.value == null ? toLocalDateTime(endTime) : toLocalDateTime(field.value)}
-          invalid={!isEndTimeValid}
-          onChange={e => {
-            const newValue = e.value as Date
-            const isValidDate = newValue != null && isValid(newValue)
-            if (isValidDate) {
-              const utcTime = setTimeInUTC(newValue.getHours(), newValue.getMinutes(), newValue.getSeconds())
-              setIsEndTimeValid(true)
-              field.onChange(utcTime)
-              setEndTime(utcTime)
-            } else {
-              setIsEndTimeValid(false)
-            }
-          }}
-          onInput={e => {
-            const newValue = (e.target as HTMLInputElement).value
-            const newDate = parse(newValue, 'hh:mm a', new Date())
-            const isValidDate = newValue != null && isValid(newDate)
-            if (isValidDate) {
-              const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
-              setIsEndTimeValid(true)
-              field.onChange(utcTime)
-            } else {
-              setIsEndTimeValid(false)
-            }
-          }}
-          onBlur={e => {
-            const newValue = (e.target as HTMLInputElement).value
-            const newDate = parse(newValue, 'hh:mm a', new Date())
-            const isValidDate = newValue != null && isValid(newDate)
-            if (isValidDate) {
-              const utcTime = setTimeInUTC(newDate.getHours(), newDate.getMinutes(), newDate.getSeconds())
-              setEndTime(utcTime)
-            }
-          }}
-          onHide={() => setIsEndTimeValid(true)}
-          timeOnly
-          hourFormat="12"
-          parseDateTime={string => new Date(string)}
-          showIcon
-          icon={() => <i className="pi pi-clock" />}
-          className={classNames({ 'p-invalid': fieldState.error }, 'mt-2')}
-        />
-        {getFormErrorMessage(field.name, errors)}
-      </>
-    )}
-  />
-)
+      )}
+    />
+  )
+}
 
 export const renderVacancyController = (
   control: Control<JobFormDefaultValues>,

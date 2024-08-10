@@ -14,6 +14,7 @@ import {
   getMonth,
   format,
 } from 'date-fns'
+import { formatInTimeZone, format as formatTz } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 
 import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@heroicons/react/20/solid'
@@ -21,7 +22,6 @@ import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@her
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { requestService } from '../../../services/requestServiceNew'
 import { cn } from '../../../utils/cn'
-import { formatToLocalTime } from '../../../utils/timeUtils'
 import { type IShift } from './MyJobs'
 
 interface IEvent {
@@ -90,7 +90,7 @@ export const JobCalendar = ({ employeeId }: { employeeId: string }) => {
         if (day) {
           let jobStartTime
           try {
-            jobStartTime = formatToLocalTime(job?.job_id?.start_time)
+            jobStartTime = `${formatInTimeZone(job.job_id?.start_time, job.job_id?.facility?.timezone, 'hh:mm a')} (${formatTz(new Date(), 'zzz', { timeZone: job.job_id?.facility?.timezone })})`
           } catch (error) {
             console.error(error)
             jobStartTime = ''

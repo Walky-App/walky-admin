@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { Link } from 'react-router-dom'
 
+import { formatInTimeZone, format } from 'date-fns-tz'
 import { Tag } from 'primereact/tag'
 
 import { MapPinIcon, BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/20/solid'
@@ -9,7 +10,7 @@ import { BookmarkIcon as BookmarkIconOutlined } from '@heroicons/react/24/outlin
 
 import { type IJob } from '../../../interfaces/job'
 import { RequestService } from '../../../services/RequestService'
-import { formatToLocalTime, isJobNewWithinThreeDays } from '../../../utils/timeUtils'
+import { isJobNewWithinThreeDays } from '../../../utils/timeUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface JobListItemProps {
@@ -108,7 +109,9 @@ export const JobCard = ({ job, handleSaveUnsaveJob, status }: JobListItemProps) 
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-stone-500">Job Time</div>
                 <div className="text-black">
-                  {formatToLocalTime(job.start_time)} - {formatToLocalTime(job.end_time)}
+                  {formatInTimeZone(job.start_time, job.facility?.timezone, 'hh:mm a')} &nbsp;-&nbsp;
+                  {formatInTimeZone(job.end_time, job.facility?.timezone, 'hh:mm a')}(
+                  {format(new Date(), 'zzz', { timeZone: job.facility?.timezone })})
                 </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
