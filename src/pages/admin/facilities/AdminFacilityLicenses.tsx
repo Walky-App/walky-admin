@@ -126,15 +126,18 @@ export const AdminFacilityLicenses = () => {
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{license.uploaded_by}</td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">-</td>
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <Button
-                        label="Delete"
-                        severity="secondary"
-                        outlined
-                        size="small"
-                        onClick={() => handleDelete(license.key ?? '', license._id ?? '')}
-                      />
-                    </td>
+
+                    {role === 'admin' ? (
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                        <Button
+                          label="Delete"
+                          severity="secondary"
+                          outlined
+                          size="small"
+                          onClick={() => handleDelete(license.key ?? '', license._id ?? '')}
+                        />
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>
