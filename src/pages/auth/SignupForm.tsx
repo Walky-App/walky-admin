@@ -138,6 +138,7 @@ export const Signup = () => {
             onChange={handleFormOnChange}
             className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
             placeholder="*First Name"
+            autoComplete="off"
           />
           <InputText
             required
@@ -146,6 +147,7 @@ export const Signup = () => {
             onChange={e => setFormData({ ...formData, last_name: e.target.value })}
             className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
             placeholder="*Last Name"
+            autoComplete="off"
           />
         </div>
         <div className="relative mb-5">
@@ -158,6 +160,7 @@ export const Signup = () => {
             onChange={handleFormOnChange}
             className="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500"
             placeholder="*Email"
+            autoComplete="off"
           />
 
           <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
@@ -201,6 +204,7 @@ export const Signup = () => {
             placeholder="*Password"
             toggleMask
             onChange={handleFormOnChange}
+            autoComplete="off"
             pt={{
               panel: { className: 'hidden' },
               input: {
@@ -216,6 +220,7 @@ export const Signup = () => {
             name="password_confirmed"
             inputId="password_confirmed"
             placeholder="*Password confirmed"
+            autoComplete="off"
             toggleMask
             onChange={handleFormOnChange}
             pt={{

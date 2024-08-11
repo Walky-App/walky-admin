@@ -19,8 +19,10 @@ import { Button } from 'primereact/button'
 
 import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@heroicons/react/20/solid'
 
-import { type IJob } from '../../../interfaces/job'
+import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { requestService } from '../../../services/requestServiceNew'
 import { cn } from '../../../utils/cn'
+import { type IShift } from './MyJobs'
 
 interface IEvent {
   id: string
@@ -37,12 +39,10 @@ interface IDayWithDetails {
   events: IEvent[]
 }
 
-interface Props {
-  jobs: IJob[]
-}
-
-export const JobCalendar: React.FC<Props> = ({ jobs }) => {
+export const JobCalendar = ({ employeeId }: { employeeId: string }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date())
+  const [jobs, setJobs] = useState<IShift[]>([])
+  const [loading, setLoading] = useState(false)
 
   const [daysWithDetails, setDaysWithDetails] = useState<IDayWithDetails[]>([])
 
@@ -53,6 +53,23 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     const lastWeekEnd = endOfWeek(endOfMonth(selectedMonth))
     return eachDayOfInterval({ start: firstWeekStart, end: lastWeekEnd })
   }, [selectedMonth])
+
+  useEffect(() => {
+    setLoading(true)
+    const getJobs = async () => {
+      try {
+        const response = await requestService({ path: `shifts/by-employee/${employeeId}` })
+        if (response.ok) {
+          const allJobs = await response.json()
+          setJobs(allJobs)
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error('Failed to fetch jobs:', error)
+      }
+    }
+    getJobs()
+  }, [employeeId])
 
   useEffect(() => {
     const newDays: IDayWithDetails[] = calendarDays.map(day => {
@@ -66,22 +83,22 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     })
 
     for (const job of jobs) {
-      for (const jobDate of job.job_dates) {
+      for (const jobDate of job?.job_id?.job_dates ?? []) {
         const formattedJobDate = format(jobDate, 'yyyy-MM-dd')
         const day = newDays.find(day => day.formattedDate === formattedJobDate)
 
         if (day) {
           let jobStartTime
           try {
-            jobStartTime = `${formatInTimeZone(job.start_time, job.facility?.timezone, 'hh:mm a')} (${formatTz(new Date(), 'zzz', { timeZone: job.facility?.timezone })})`
+            jobStartTime = `${formatInTimeZone(job.job_id?.start_time, job.job_id?.facility?.timezone, 'hh:mm a')} (${formatTz(new Date(), 'zzz', { timeZone: job.job_id?.facility?.timezone })})`
           } catch (error) {
             console.error(error)
             jobStartTime = ''
           }
 
           day.events.push({
-            id: job._id,
-            name: job.title,
+            id: job?.job_id?._id,
+            name: job?.job_id?.title,
             time: jobStartTime,
             datetime: jobDate,
           })
@@ -93,13 +110,13 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
   }, [calendarDays, jobs, selectedMonth])
 
   const daysWithJobs = daysWithDetails.map(day => {
-    const jobsForDay = jobs.filter(job => job.job_dates.includes(day.formattedDate))
+    const jobsForDay = jobs.filter(job => job?.job_id?.job_dates.includes(day.formattedDate))
 
     const jobEvents = jobsForDay.map(job => ({
-      id: job._id,
-      name: job.title,
-      time: job.start_time,
-      datetime: job.job_dates[0],
+      id: job?.job_id?._id,
+      name: job?.job_id?.title,
+      time: job?.job_id?.start_time,
+      datetime: job?.job_id?.job_dates[0],
     }))
 
     return {
@@ -116,7 +133,7 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
             <div className="flex-auto">
               <p className={cn('font-semibold text-gray-900', { 'text-primary': day.isToday })}>{event.name}</p>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-y-2 text-gray-700 sm:justify-between">
-                <div className="flex flex-col justify-between gap-x-2 gap-y-2 xs:gap-x-6 sm:justify-around">
+                <div className="gap-x-2 gap-y-2 xs:gap-x-6 sm:justify-around">
                   <span className="flex items-center">
                     <CalendarIcon
                       className={cn('mr-2 h-5 w-5 text-gray-400', { 'text-primary': day.isToday })}
@@ -152,7 +169,9 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
     return new Intl.DateTimeFormat(undefined, options).format(date)
   }
 
-  return (
+  return loading ? (
+    <HTLoadingLogo />
+  ) : (
     <div className="lg:flex lg:h-full lg:flex-col">
       <header className="flex items-center justify-between border-b border-gray-200 py-4 pl-2 lg:flex-none">
         <h1 className="text-base font-semibold leading-6 text-gray-900">
@@ -243,21 +262,17 @@ export const JobCalendar: React.FC<Props> = ({ jobs }) => {
                 </time>
                 {day.events.length > 0 ? (
                   <ol className="mt-2">
-                    {day.events.slice(0, 2).map(event => (
+                    {day.events.map(event => (
                       <li key={event.id}>
                         <Link to={`/employee/jobs/${event.id}`} className="group flex">
                           <Button size="small" link raised className="flex w-full flex-col items-start">
                             <p className="flex-auto text-left font-medium text-gray-900  group-hover:text-primary group-hover:underline">
-                              {event.name}
+                              {event.name} @ {event.time}
                             </p>
-                            <time dateTime={event.datetime} className="hidden flex-none text-gray-500 lg:block">
-                              {event.time}
-                            </time>
                           </Button>
                         </Link>
                       </li>
                     ))}
-                    {day.events.length > 2 ? <li className="text-gray-500">+ {day.events.length - 2} more</li> : null}
                   </ol>
                 ) : null}
               </div>
