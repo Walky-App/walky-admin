@@ -1,17 +1,34 @@
 import { useState, useEffect, useMemo } from 'react'
 
 import { format, isToday, isYesterday } from 'date-fns'
+import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
+import { ServiceOrderCalendar } from './ServiceOrderCalendar'
+
+interface ViewOption {
+  icon: string
+  value: string
+}
 
 export const AllServiceOrdersListPage = () => {
   const [serviceOrders, setServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [view, setView] = useState<string>('list')
   const role = roleChecker()
+
+  const viewOptions: ViewOption[] = [
+    { icon: 'pi pi-bars', value: 'list' },
+    { icon: 'pi pi-calendar', value: 'calendar' },
+  ]
+
+  const viewOptionsTemplate = (option: ViewOption) => {
+    return <i className={option.icon} />
+  }
 
   useEffect(() => {
     const getAllServiceOrders = async () => {
@@ -117,6 +134,22 @@ export const AllServiceOrdersListPage = () => {
   return isLoading ? (
     <HTLoadingLogo />
   ) : (
-    <GlobalTable data={memoServiceOrdersData} columns={memoServiceOrdersColumns} allowClick />
+    <>
+      <div className="flex w-full justify-end">
+        <SelectButton
+          value={view}
+          onChange={(e: SelectButtonChangeEvent) => setView(e.value)}
+          options={viewOptions}
+          optionLabel="value"
+          itemTemplate={viewOptionsTemplate}
+          pt={{ button: { className: 'justify-center' } }}
+        />
+      </div>
+      {view === 'calendar' ? (
+        <ServiceOrderCalendar serviceOrders={serviceOrders} />
+      ) : (
+        <GlobalTable data={memoServiceOrdersData} columns={memoServiceOrdersColumns} allowClick />
+      )}
+    </>
   )
 }
