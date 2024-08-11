@@ -30,32 +30,7 @@ export const StatesDetailView = ({
 }) => {
   const dt = useRef<DataTable<Cost[]>>(null)
 
-  const [adminCost, setAdminCost] = useState<Cost[]>([
-    {
-      name: 'FICA',
-      value: 0,
-    },
-    {
-      name: 'FUTA',
-      value: 0,
-    },
-    {
-      name: 'Average SUI',
-      value: 0,
-    },
-    {
-      name: `Worker's Comp.`,
-      value: 0,
-    },
-    {
-      name: `Other state fees`,
-      value: 0,
-    },
-    {
-      name: `Other (hedge)`,
-      value: 0,
-    },
-  ])
+  const [adminCost] = useState<Cost[]>(settings.admin_costs.fees)
 
   const columns: ColumnMeta[] = [
     { field: 'name', header: 'name' },
@@ -63,8 +38,8 @@ export const StatesDetailView = ({
   ]
 
   const sumAdminCost = useMemo(() => {
-    return adminCost.reduce((acc, cost) => acc + cost.value, 0)
-  }, [adminCost])
+    return settings.admin_costs.fees.reduce((acc, cost) => acc + cost.value, 0)
+  }, [settings.admin_costs.fees])
 
   const onCellEditComplete = (e: ColumnEvent) => {
     const { rowData, newValue, field, originalEvent: event } = e
@@ -73,22 +48,29 @@ export const StatesDetailView = ({
       case 'value':
         if (newValue >= 0) {
           rowData[field] = newValue
-          setAdminCost([...adminCost])
+          setSettings({
+            ...settings,
+            admin_costs: {
+              total: sumAdminCost,
+              fees: adminCost,
+            },
+          })
         } else event.preventDefault()
         break
 
       default:
         if (newValue.trim().length > 0) {
           rowData[field] = newValue
-          setAdminCost([...adminCost])
+          setSettings({
+            ...settings,
+            admin_costs: {
+              total: sumAdminCost,
+              fees: adminCost,
+            },
+          })
         } else event.preventDefault()
         break
     }
-  }
-
-  const cellEditor = (options: ColumnEditorOptions) => {
-    if (options.field === 'value') return valueEditor(options)
-    return options.value
   }
 
   const valueEditor = (options: ColumnEditorOptions) => {
@@ -102,6 +84,11 @@ export const StatesDetailView = ({
         onChange={e => options.editorCallback && options.editorCallback(e?.value as number)}
       />
     )
+  }
+
+  const cellEditor = (options: ColumnEditorOptions) => {
+    if (options.field === 'value') return valueEditor(options)
+    return options.value
   }
 
   return (
