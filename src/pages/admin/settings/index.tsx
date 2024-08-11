@@ -50,6 +50,10 @@ export const Settings = () => {
         className="text-lg"
         tableStyle={{ minWidth: '50rem' }}>
         <Column sortable field="state" header="State" />
+        <Column sortable field="admin_costs.total" header="Admin Costs" />
+        <Column sortable field="minimun_wage" header="Minimum Wage" />
+        <Column sortable field="processing_fee" header="Processing Fee" />
+        <Column sortable field="licenses_required" header="Licenses Required" />
         <Column sortable field="our_fee" header="Our Fee" />
         <Column sortable field="holiday.length" header="Holiday" body={holidayFormatRow} />
       </DataTable>
