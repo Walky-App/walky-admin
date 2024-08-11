@@ -37,7 +37,7 @@ const viewOptions: ViewOption[] = [
   { icon: 'pi pi-calendar', value: 'calendar' },
 ]
 
-export const EmployeeMyJobs = () => {
+export const EmployeeMyJobs = ({ id }: { id?: string | undefined }) => {
   const [view, setView] = useState<string>('list')
 
   const viewOptionsTemplate = (option: ViewOption) => {
@@ -45,6 +45,8 @@ export const EmployeeMyJobs = () => {
   }
 
   const { _id } = GetTokenInfo()
+
+  const employeeId = id ?? _id
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,21 +61,21 @@ export const EmployeeMyJobs = () => {
         />
       </div>
       {view === 'calendar' ? (
-        <JobCalendar employeeId={_id} />
+        <JobCalendar employeeId={employeeId} />
       ) : (
         <div className="[&>*:last-child]:mt-8">
           <TabView>
             <TabPanel header="Active & Upcoming Shifts">
-              <ActiveShifts employeeId={_id} />
+              <ActiveShifts employeeId={employeeId} />
             </TabPanel>
             <TabPanel header="Saved Jobs">
-              <SavedJobs employeeId={_id} />
+              <SavedJobs employeeId={employeeId} />
             </TabPanel>
             <TabPanel header="Dropped Shifts">
-              <DroppedShifts employeeId={_id} />
+              <DroppedShifts employeeId={employeeId} />
             </TabPanel>
             <TabPanel header="Past Shifts">
-              <PassedShifts employeeId={_id} />
+              <PassedShifts employeeId={employeeId} />
             </TabPanel>
           </TabView>
         </div>

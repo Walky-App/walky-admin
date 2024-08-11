@@ -13,6 +13,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { EmployeeMyJobs } from '../../employee/jobs/MyJobs'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
 import { ProfileNotes } from './ProfileNotes'
@@ -146,6 +147,11 @@ export const UserProfile = () => {
         {role === 'admin' ? (
           <TabPanel header="Messages">
             <Chat formUser={formUser} />
+          </TabPanel>
+        ) : null}
+        {role === 'admin' ? (
+          <TabPanel header="Shifts">
+            <EmployeeMyJobs id={formUser._id} />
           </TabPanel>
         ) : null}
       </TabView>
