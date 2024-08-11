@@ -68,4 +68,5 @@ export interface IJob {
   createdAt: Date
   updatedAt: Date
   applicants_feedback_ids: string[]
+  job_id?: IJob
 }

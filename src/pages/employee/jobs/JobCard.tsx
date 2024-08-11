@@ -134,23 +134,25 @@ export const JobCard = ({ job, handleSaveUnsaveJob, status }: JobListItemProps) 
           <div className="flex flex-wrap items-center justify-start gap-1">
             <div className="text-balance text-stone-500">Posted on {new Date(job.createdAt).toLocaleDateString()} </div>
           </div>
-          <div
-            onClick={handleSaveUnsaveClickOptimistic}
-            role="button"
-            tabIndex={0}
-            onKeyDown={event => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                handleSaveUnsaveClickOptimistic()
-              }
-            }}
-            className="flex h-4 cursor-pointer items-center justify-start gap-1">
-            {savedJob ? (
-              <BookmarkIconSolid className="h-5 w-5 text-stone-500" />
-            ) : (
-              <BookmarkIconOutlined className="h-5 w-5 text-stone-500" />
-            )}
-            <div className="text-stone-500">{savedJob ? 'Un-save' : 'Save Job'}</div>
-          </div>
+          {status !== 'active' ? (
+            <div
+              onClick={handleSaveUnsaveClickOptimistic}
+              role="button"
+              tabIndex={0}
+              onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  handleSaveUnsaveClickOptimistic()
+                }
+              }}
+              className="flex h-4 cursor-pointer items-center justify-start gap-1">
+              {savedJob ? (
+                <BookmarkIconSolid className="h-5 w-5 text-stone-500" />
+              ) : (
+                <BookmarkIconOutlined className="h-5 w-5 text-stone-500" />
+              )}
+              <div className="text-stone-500">{savedJob ? 'Un-save' : 'Save Job'}</div>
+            </div>
+          ) : null}
         </div>
       </div>
     </li>

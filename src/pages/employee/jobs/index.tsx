@@ -13,7 +13,7 @@ import { AddressAutoComplete, type IAddressAutoComplete } from '../../../compone
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { HtScrollTop } from '../../../components/shared/general/HtScrollTop'
-import { type IApplicantWithoutPopulate } from '../../../interfaces/job'
+import { type IJob, type IApplicantWithoutPopulate } from '../../../interfaces/job'
 import { requestService } from '../../../services/requestServiceNew'
 import { useJobs } from '../../../store/useJobs'
 import { useUtils } from '../../../store/useUtils'
@@ -81,7 +81,7 @@ export const EmployeeJobs = () => {
           {isLoading ? (
             <HTLoadingLogo />
           ) : (
-            filteredJobs.map(job => {
+            filteredJobs.map((job: IJob) => {
               const userInJob = job.applicants.some((applicant: IApplicantWithoutPopulate) =>
                 typeof applicant.user === 'object' ? applicant.user._id : applicant.user,
               )
