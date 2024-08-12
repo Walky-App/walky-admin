@@ -50,6 +50,7 @@ export interface IPunchPairsWithData {
   scheduled_time: string
   difference: React.ReactNode
   punchesWithDetails: IPunchDetails[]
+  timesheet_id: string
 }
 
 export interface IPunchPairWithTotalTime {
@@ -200,6 +201,7 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
     scheduled_time: scheduledHours.toFixed(2),
     difference: formatDifference(workedScheduledDifference),
     punchesWithDetails: punchPairs,
+    timesheet_id: _id,
   }
 }
 
