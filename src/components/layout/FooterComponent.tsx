@@ -3,7 +3,7 @@ import { roleChecker } from '../../utils/roleChecker'
 
 export const FooterComponent = () => {
   return (
-    <footer className="bg-white py-6" aria-labelledby="footer-heading">
+    <footer className="bg-white py-6 print:hidden" aria-labelledby="footer-heading">
       <div className="border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
         <div className="flex space-x-6 md:order-2">
           {navigation.social.map(item => (
