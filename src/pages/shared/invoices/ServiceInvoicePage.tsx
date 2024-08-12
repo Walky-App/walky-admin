@@ -168,7 +168,7 @@ export const ServiceInvoicePage = () => {
   return isLoading ? (
     <HTLoadingLogo />
   ) : (
-    <div className="px-4 sm:px-6 lg:px-24">
+    <div className="px-4 sm:px-6 lg:px-24 print:block print:text-xs">
       <DiscountDialog isOpen={isOpen} hidden={setIsOpen} handlerSetDiscount={handlerSetDiscount} />
       <div className="my-8 flex items-center justify-between">
         <img className="w</div>-auto h-16" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
@@ -409,14 +409,16 @@ export const ServiceInvoicePage = () => {
             {invoice?.transaction_id != null ? <h2 className="text-base leading-6">{invoice.transaction_id}</h2> : null}
           </div>
           {role === 'admin' && invoice?.status !== 'paid' ? (
-            <Button className="mt-6" label="Re-generate" onClick={handlerRegenerateInvoice} />
+            <Button className="mt-6 print:hidden" label="Re-generate" onClick={handlerRegenerateInvoice} />
           ) : null}
 
           {role === 'admin' && invoice?.status !== 'paid' ? (
-            <Button className="ml-3 mt-6" label="Charge" onClick={handlerAuthorizeInvoice} />
+            <Button className="ml-3 mt-6 print:hidden" label="Charge" onClick={handlerAuthorizeInvoice} />
           ) : null}
 
-          {role === 'admin' ? <Button className="ml-3 mt-6" label="Send invoice" onClick={handlerSendEmail} /> : null}
+          {role === 'admin' ? (
+            <Button className="ml-3 mt-6 print:hidden" label="Send invoice" onClick={handlerSendEmail} />
+          ) : null}
         </footer>
       </div>
     </div>
