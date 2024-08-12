@@ -462,7 +462,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
       <DataTable
         header={`Regular ${totalTimeSum.toFixed(2)} | Scheduled ${scheduledTimeSum.toFixed(2)} | Difference ${formatDifference(workedScheduledDifference)}`}
-        dataKey="time_stamp"
+        dataKey="timesheet_id"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
         tableStyle={{ minWidth: '50rem' }}
