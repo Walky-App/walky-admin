@@ -53,7 +53,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
     <>
       <header
         id="header-shell"
-        className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 print:hidden">
         {/* Left hand side header */}
         <div className="flex items-center">
           {/* Mobile logo and sidebar toggle */}
