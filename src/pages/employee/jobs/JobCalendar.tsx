@@ -22,6 +22,7 @@ import { ChevronLeftIcon, ChevronRightIcon, ClockIcon, CalendarIcon } from '@her
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { requestService } from '../../../services/requestServiceNew'
 import { cn } from '../../../utils/cn'
+import { roleChecker } from '../../../utils/roleChecker'
 import { type IShift } from './MyJobs'
 
 interface IEvent {
@@ -47,6 +48,7 @@ export const JobCalendar = ({ employeeId }: { employeeId: string }) => {
   const [daysWithDetails, setDaysWithDetails] = useState<IDayWithDetails[]>([])
 
   const navigate = useNavigate()
+  const role = roleChecker()
 
   const calendarDays = useMemo(() => {
     const firstWeekStart = startOfWeek(startOfMonth(selectedMonth))
@@ -155,7 +157,7 @@ export const JobCalendar = ({ employeeId }: { employeeId: string }) => {
                   link
                   outlined
                   label="View Details"
-                  onClick={() => navigate(`/employee/jobs/${event.id}`)}
+                  onClick={() => navigate(`/${role}/jobs/${event.id}`)}
                 />
               </div>
             </div>
@@ -264,7 +266,7 @@ export const JobCalendar = ({ employeeId }: { employeeId: string }) => {
                   <ol className="mt-2">
                     {day.events.map(event => (
                       <li key={event.id}>
-                        <Link to={`/employee/jobs/${event.id}`} className="group flex">
+                        <Link to={`/${role}/jobs/${event.id}`} className="group flex">
                           <Button size="small" link raised className="flex w-full flex-col items-start">
                             <p className="flex-auto text-left font-medium text-gray-900  group-hover:text-primary group-hover:underline">
                               {event.name} @ {event.time}
