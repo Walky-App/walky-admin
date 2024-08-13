@@ -17,7 +17,6 @@ import { cn } from '../../../utils/cn'
 import { roleChecker } from '../../../utils/roleChecker'
 import { formatToDateTime, formatToTime } from '../../../utils/timeUtils'
 import { HtInputLabel } from '../forms/HtInputLabel'
-import { HtInfoTooltip } from '../general/HtInfoTooltip'
 import {
   type IPunchPair,
   processPunchPairsWithData,
@@ -25,6 +24,7 @@ import {
   type IPunchDetails,
   type IPunchPairsWithData,
   type ITimesheetWithJobDetails,
+  adjustForFloatingPointError,
 } from './timesheetsUtils'
 
 interface IUserTimesheetsProps {
@@ -41,11 +41,9 @@ const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'day', header: 'Day', sortable: true },
   { field: 'in_time', header: 'First In', sortable: false },
   { field: 'out_time', header: 'Last Out', sortable: false },
-  {
-    field: 'details',
-    header: <HtInfoTooltip message="Lunch break, Job title, Facility name">Job Details</HtInfoTooltip>,
-    sortable: false,
-  },
+  { field: 'lunch_time', header: 'Lunch Break', sortable: false },
+  { field: 'job_title', header: 'Job Title', sortable: false },
+  { field: 'facility_name', header: 'Facility', sortable: false },
   { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
   { field: 'worked_time', header: 'Total Hours', sortable: false },
   { field: 'difference', header: 'Difference', sortable: false },
@@ -423,7 +421,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
               )
             }
           })}
-          <Column className={cn([commonColumnStyle])} field="total_time" header="Total Hours" />
         </DataTable>
       </div>
     )
@@ -440,6 +437,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }, 0)
 
   const workedScheduledDifference = totalTimeSum - scheduledTimeSum
+  const adjustedWorkedScheduledDifference = adjustForFloatingPointError(workedScheduledDifference)
 
   const payPeriodSelectorContent = (
     <div className="flex flex-col items-baseline gap-y-2">
@@ -460,19 +458,16 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
 
       <DataTable
-        header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${workedScheduledDifference} hours`}
+        header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${adjustedWorkedScheduledDifference} hours`}
         dataKey="timesheet_id"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
-        tableStyle={{ minWidth: '50rem' }}
         size="small"
         paginator
         rows={14}
         rowsPerPageOptions={[7, 14, 30, 90]}
         stripedRows
         showGridlines
-        resizableColumns
-        columnResizeMode="fit"
         expandedRows={expandedRows}
         onRowToggle={e => setExpandedRows(e.data)}
         rowExpansionTemplate={rowExpansionTemplate}
