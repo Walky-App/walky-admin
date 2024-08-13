@@ -25,7 +25,6 @@ import {
   type IPunchDetails,
   type IPunchPairsWithData,
   type ITimesheetWithJobDetails,
-  formatDifference,
 } from './timesheetsUtils'
 
 interface IUserTimesheetsProps {
@@ -461,7 +460,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
 
       <DataTable
-        header={`Regular ${totalTimeSum.toFixed(2)} | Scheduled ${scheduledTimeSum.toFixed(2)} | Difference ${formatDifference(workedScheduledDifference)}`}
+        header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${workedScheduledDifference} hours`}
         dataKey="timesheet_id"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
