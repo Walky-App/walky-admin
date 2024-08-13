@@ -6,6 +6,7 @@ import { Tag } from 'primereact/tag'
 
 import { MapPinIcon } from '@heroicons/react/20/solid'
 
+import { roleChecker } from '../../../utils/roleChecker'
 import { isJobNewWithinThreeDays } from '../../../utils/timeUtils'
 import { type IShift } from './MyJobs'
 
@@ -15,12 +16,13 @@ interface JobListItemProps {
 }
 
 export const ShiftCard = ({ shift, status }: JobListItemProps) => {
+  const role = roleChecker()
   return (
     <li
       key={shift._id}
       className="col-span-1 divide-y divide-gray-200 rounded-lg transition delay-150 ease-in-out hover:shadow-2xl">
       <div className="h-full flex-col items-start justify-center rounded-lg border border-zinc-100 bg-white">
-        <Link to={`/employee/jobs/${shift.job_id._id}`}>
+        <Link to={`/${role}/jobs/${shift.job_id._id}`}>
           <div className="mb-3 flex basis-1/3 flex-wrap justify-between gap-2 px-5 pt-5">
             <div className="flex flex-row">
               <span className="pi pi-users" />
