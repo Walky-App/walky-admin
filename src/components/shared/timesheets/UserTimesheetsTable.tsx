@@ -47,8 +47,8 @@ const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
     header: <HtInfoTooltip message="Lunch break, Job title, Facility name">Job Details</HtInfoTooltip>,
     sortable: false,
   },
-  { field: 'worked_time', header: 'Total Hours', sortable: false },
   { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
+  { field: 'worked_time', header: 'Total Hours', sortable: false },
   { field: 'difference', header: 'Difference', sortable: false },
 ]
 
