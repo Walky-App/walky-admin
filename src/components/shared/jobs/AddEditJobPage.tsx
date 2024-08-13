@@ -117,8 +117,8 @@ export const defaultJobFormValues: JobFormDefaultValues = {
   vacancy: 1,
   hourly_rate: 0,
   job_dates: [],
-  start_time: set(new Date(), { hours: 8, minutes: 30 }),
-  end_time: set(new Date(), { hours: 17, minutes: 0 }),
+  start_time: set(new Date(), { hours: 8, minutes: 30, seconds: 0 }),
+  end_time: set(new Date(), { hours: 17, minutes: 0, seconds: 0 }),
   lunch_break: 30,
   job_tips: [],
   total_hours: 0,
@@ -185,8 +185,8 @@ export const AddEditJobPage = () => {
 
   useEffect(() => {
     if (facilityTimezone) {
-      setValue('start_time', toZonedTime(set(new Date(), { hours: 10, minutes: 30 }), facilityTimezone))
-      setValue('end_time', toZonedTime(set(new Date(), { hours: 19, minutes: 0 }), facilityTimezone))
+      setValue('start_time', toZonedTime(set(new Date(), { hours: 10, minutes: 30, seconds: 0 }), facilityTimezone))
+      setValue('end_time', toZonedTime(set(new Date(), { hours: 19, minutes: 0, seconds: 0 }), facilityTimezone))
     }
   }, [facilityTimezone, setValue])
 
