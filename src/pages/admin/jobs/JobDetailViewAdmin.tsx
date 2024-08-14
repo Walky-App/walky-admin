@@ -216,24 +216,29 @@ export const JobDetailViewAdmin = () => {
                   </div>
 
                   {job.facility?.notes !== null && job.facility?.notes !== undefined ? (
-                    <div className="flex">
+                    <div className="flex items-center gap-2">
                       <div>
                         <HtInfoTooltip message="These facility arrival notes will help the employee find the destination faster." />
                       </div>
                       <span className="text-base font-medium text-black">
-                        Arrival notes: <span className="font-normal">{job.facility.notes}</span>
+                        Arrival notes:{' '}
+                        <span className="font-normal">{job.facility.notes ? job.facility.notes : '(N/A)'}</span>
                       </span>
                     </div>
                   ) : null}
 
                   {job.job_tips.length > 0 ? (
-                    <div className="flex">
+                    <div className="flex items-center gap-2">
                       <div>
                         <HtInfoTooltip message="These tips will help employee better prepare for the job." />
                       </div>
                       <span className="text-base font-medium text-black">Job Tips:</span>
+
                       {job.job_tips.map((tip, index) => (
-                        <span key={index}>{tip}</span>
+                        <span key={tip}>
+                          {tip}
+                          {job.job_tips.length - 1 !== index ? ',' : null}
+                        </span>
                       ))}
                     </div>
                   ) : null}

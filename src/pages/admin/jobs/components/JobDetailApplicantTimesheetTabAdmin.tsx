@@ -60,6 +60,16 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
     getLocation()
   }, [showToast])
 
+  useEffect(() => {
+    const applicants = workingApplicantsDropdownData(job)
+    const selectedApplicantExists = applicants.find(applicant => applicant.value === selectedUserId)
+    if (applicants.length > 0 && !selectedApplicantExists) {
+      setSelectedUserId(undefined)
+      setSelectedShift(null)
+      setIsClockedIn(false)
+    }
+  }, [job, selectedUserId])
+
   const getCurrentJobTimeSheets = useCallback(async () => {
     try {
       const response = await requestService({
@@ -89,7 +99,7 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
   }, [getCurrentJobTimeSheets, selectedUserId])
 
   const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
-    if (!timesheets) {
+    if (!timesheets || !selectedUserId) {
       return []
     }
 
@@ -106,7 +116,7 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
       const punchInDay = new Date(punchPair.punchIn.time_stamp)
       return shiftDay.toDateString() === punchInDay.toDateString()
     })
-  }, [timesheets, selectedShift])
+  }, [timesheets, selectedUserId, selectedShift])
 
   useEffect(() => {
     if (timesheets != null && timesheets.length > 0 && selectedShift) {
