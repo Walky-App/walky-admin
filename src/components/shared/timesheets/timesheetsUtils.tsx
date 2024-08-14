@@ -44,12 +44,15 @@ export interface IPunchPairsWithData {
   day: string
   in_time: Date | null
   out_time: Date | null
+  lunch_time: React.ReactNode
+  job_title: React.ReactNode
+  facility_name: React.ReactNode
   total_time: string
-  details: React.ReactNode
   worked_time: string
   scheduled_time: string
   difference: React.ReactNode
   punchesWithDetails: IPunchDetails[]
+  timesheet_id: string
 }
 
 export interface IPunchPairWithTotalTime {
@@ -123,6 +126,29 @@ export function createPunchPairsWithTotalTime(punches: IPunch[]): IPunchPairWith
 }
 
 /**
+ * Adjusts a numerical difference to zero if it is within a specified threshold to handle floating-point precision errors.
+ *
+ * @param {number} value - The numerical value to adjust.
+ * @param {number} threshold - The threshold value to determine if the difference should be considered zero.
+ * @returns {number} - The adjusted numerical value.
+ */
+export const adjustForFloatingPointError = (value: number, threshold = 0.001): number => {
+  return Math.abs(value) < threshold ? 0 : value
+}
+
+/**
+ * Formats a numerical difference as a string with two decimal places.
+ * If the difference is positive, it returns a JSX element with the difference in red color.
+ * If the difference is zero or negative, it returns the difference as a string.
+ *
+ * @param {number} difference - The numerical difference to format.
+ * @returns {React.ReactNode} - A formatted JSX element or string representing the difference.
+ */
+export const formatDifference = (difference: number): React.ReactNode => {
+  return difference > 0 ? <span style={{ color: 'red' }}>+{difference.toFixed(2)}</span> : difference.toFixed(2)
+}
+
+/**
  * Processes an array of punches into a processed timesheet.
  * @param {IPunch[]} punches - An array of punches.
  * @param {string} jobId - The job ID associated with the timesheet.
@@ -130,6 +156,7 @@ export function createPunchPairsWithTotalTime(punches: IPunch[]): IPunchPairWith
  */
 export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): IPunchPairsWithData {
   const { punches, _id, job_details } = timesheet
+  const role = roleChecker()
 
   const sortedPunches = sortPunches(punches)
 
@@ -185,49 +212,67 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
     })
   }
 
-  const totalWorkedHours = totalWorkedTime / 1000 / 60 / 60
   const scheduledHours = job_details.total_hours
+  const lunchHours = job_details.lunch_break / 60
+  const workedHours = totalWorkedTime / 1000 / 60 / 60
+
+  const totalWorkedHours = workedHours - lunchHours
   const workedScheduledDifference = totalWorkedHours - scheduledHours
+
+  const adjustedWorkedScheduledDifference = adjustForFloatingPointError(workedScheduledDifference)
+
+  const lunchTimeTemplate = () => {
+    if (job_details.lunch_break) {
+      return <Chip label={`${job_details.lunch_break.toLocaleString()} min`} icon="pi pi-clock" />
+    }
+    return null
+  }
+
+  const facilityNameTemplate = () => {
+    const { facility } = job_details
+
+    if (facility?.name && facility?._id) {
+      if (role === 'employee') {
+        return (
+          <Button label={facility.name} size="small" severity="secondary" disabled rounded icon="pi pi-map-marker" />
+        )
+      } else if (role === 'admin') {
+        return (
+          <Link to={`/admin/facilities/${facility._id}`}>
+            <Button label={facility.name} size="small" severity="secondary" rounded outlined icon="pi pi-map-marker" />
+          </Link>
+        )
+      }
+    }
+    return null
+  }
+
+  const jobTitleTemplate = () => {
+    const { title } = job_details
+
+    if (title) {
+      return (
+        <Link to={`/${role}/jobs/${job_details._id}`}>
+          <Button label={title} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
+        </Link>
+      )
+    }
+    return null
+  }
 
   return {
     time_stamp: sortedPunches[0].time_stamp,
     day: format(sortedPunches[0].time_stamp, 'EEE, MMM d'),
     in_time: inTime,
     out_time: outTime,
+    lunch_time: lunchTimeTemplate(),
+    job_title: jobTitleTemplate(),
+    facility_name: facilityNameTemplate(),
     total_time: totalWorkedHours.toFixed(2),
-    details: <TimesheetJobDetails job={job_details} />,
     worked_time: totalWorkedHours.toFixed(2),
     scheduled_time: scheduledHours.toFixed(2),
-    difference: formatDifference(workedScheduledDifference),
+    difference: formatDifference(adjustedWorkedScheduledDifference),
     punchesWithDetails: punchPairs,
+    timesheet_id: _id,
   }
-}
-
-export const formatDifference = (difference: number) => {
-  return difference > 0 ? <span style={{ color: 'red' }}>+{difference.toFixed(2)}</span> : difference.toFixed(2)
-}
-
-const TimesheetJobDetails = ({ job }: { job: IJobDetails }) => {
-  const { title, facility, lunch_break } = job
-
-  const role = roleChecker()
-
-  return (
-    <div className="space-x-2">
-      {lunch_break ? <Chip label={`${lunch_break.toLocaleString()} min`} icon="pi pi-clock" /> : null}
-      {title ? (
-        <Link to={`/${role}/jobs/${job._id}`}>
-          <Button label={title} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
-        </Link>
-      ) : null}
-      {facility?.name && facility?._id && role === 'employee' ? (
-        <Button label={facility.name} size="small" severity="secondary" disabled rounded icon="pi pi-map-marker" />
-      ) : null}
-      {facility?.name && facility?._id && role === 'admin' ? (
-        <Link to={`/admin/facilities/${facility._id}`}>
-          <Button label={facility.name} size="small" severity="secondary" rounded outlined icon="pi pi-map-marker" />
-        </Link>
-      ) : null}
-    </div>
-  )
 }
