@@ -65,9 +65,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                           )
                         }>
                         <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                        <NavLink to={link.href} className="hover:text-base hover:text-white">
-                          {link.name}
-                        </NavLink>
+                        {link.name}
                       </NavLink>
                     ) : (
                       <Disclosure as="div">
