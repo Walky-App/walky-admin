@@ -2,8 +2,6 @@ import { type ChangeEvent, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { FileInput } from 'flowbite-react'
-
 import { XMarkIcon } from '@heroicons/react/20/solid'
 
 import { type Category } from '../../../../interfaces/category'
@@ -25,7 +23,7 @@ export const FormCategory = ({ action, category }: Props) => {
   const [imagePreview, setImagePreview] = useState<string | undefined>(category?.image || undefined)
   const navigate = useNavigate()
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>): void => {
     if (event.target.files && event.target.files.length > 0) {
       setImage(event.target.files[0])
     }
@@ -154,13 +152,29 @@ export const FormCategory = ({ action, category }: Props) => {
                   </button>
                 </div>
               ) : (
-                <FileInput
-                  accept="image/png, image/gif, image/jpeg"
-                  className="mt-3"
-                  helperText="PNG or JPG."
-                  id="file-upload-helper-text"
-                  onChange={handleImageChange}
-                />
+                <div className="flex flex-col space-y-2">
+                  <div className="relative w-10/12">
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept=".png,.jpg,.jpeg"
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      onChange={handleImageChange}
+                    />
+                    <div className="flex items-center justify-start rounded-lg border border-gray-300 bg-white shadow-sm">
+                      <button
+                        type="button"
+                        className="hover:bg-primary-dark rounded-lg bg-primary px-4 py-2 text-white">
+                        Choose file
+                      </button>
+                      <span className="pl-2 text-gray-500">No file chosen</span>
+                    </div>
+
+                    <label id="file-accept" htmlFor="file-upload" className="text-gray-400">
+                      .PNG or .JPG
+                    </label>
+                  </div>
+                </div>
               )}
             </div>
 
