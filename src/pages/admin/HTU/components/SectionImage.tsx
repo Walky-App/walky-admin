@@ -1,6 +1,5 @@
 import { type ChangeEvent, useEffect, useState } from 'react'
 
-import { FileInput } from 'flowbite-react'
 import { Editor, type EditorTextChangeEvent } from 'primereact/editor'
 
 import { XMarkIcon } from '@heroicons/react/24/outline'
@@ -183,13 +182,27 @@ export const SectionImage = ({ setSection, selectedSection, deleteSelectedSectio
           </button>
         </div>
       ) : (
-        <FileInput
-          accept="image/png, image/gif, image/jpeg"
-          className="mt-3"
-          helperText="PNG or JPG."
-          id="file-upload-helper-text"
-          onChange={handleImageChange}
-        />
+        <div className="flex flex-col space-y-2">
+          <div className="relative w-10/12">
+            <input
+              id="file-upload"
+              type="file"
+              accept=".png,.jpg,.jpeg"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              onChange={handleImageChange}
+            />
+            <div className="flex items-center justify-start rounded-lg border border-gray-300 bg-white shadow-sm">
+              <button type="button" className="hover:bg-primary-dark rounded-lg bg-primary px-4 py-2 text-white">
+                Choose file
+              </button>
+              <span className="pl-2 text-gray-500">No file chosen</span>
+            </div>
+
+            <label id="file-accept" htmlFor="file-upload" className="text-gray-400">
+              .PNG or .JPG
+            </label>
+          </div>
+        </div>
       )}
       <div className="mt-2 flex justify-end gap-2">
         {selectedSection ? (
