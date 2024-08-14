@@ -31,8 +31,8 @@ export const ActiveShifts = ({ employeeId }: { employeeId: string }) => {
       {!loading ? (
         shifts.length > 0 ? (
           shifts.map(shift => {
-            const jobiInfo = shift.job_id
-            if (!jobiInfo || !jobiInfo.facility) return null
+            const jobInfo = shift.job_id
+            if (!jobInfo || !jobInfo.facility) return null
             return <ShiftCard key={shift._id} shift={shift} status="active" />
           })
         ) : (
