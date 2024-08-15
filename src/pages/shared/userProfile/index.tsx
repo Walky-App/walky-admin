@@ -134,7 +134,7 @@ export const UserProfile = () => {
             />
           </TabPanel>
         ) : null}
-        {notShowTabForClient() || role === 'admin' ? (
+        {notShowTabForClient() ?? role === 'admin' ? (
           <TabPanel header="TimeSheets">
             <ProfileTimesheets userId={formUser._id} />
           </TabPanel>
@@ -149,7 +149,7 @@ export const UserProfile = () => {
             <Chat formUser={formUser} />
           </TabPanel>
         ) : null}
-        {role === 'admin' ? (
+        {notShowTabForClient() ?? role === 'admin' ? (
           <TabPanel header="Shifts">
             <EmployeeMyJobs id={formUser._id} />
           </TabPanel>
