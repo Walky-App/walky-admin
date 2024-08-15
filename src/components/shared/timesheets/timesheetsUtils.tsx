@@ -28,6 +28,7 @@ export interface IPunchPair {
   out_time_stamp: string
   total_time: string
   timesheet_id: string
+  facility_timezone: string
   in_notes?: string
   out_notes?: string
 }
@@ -47,6 +48,7 @@ export interface IPunchPairsWithData {
   lunch_time: React.ReactNode
   job_title: React.ReactNode
   facility_name: React.ReactNode
+  facility_timezone: string
   total_time: string
   worked_time: string
   scheduled_time: string
@@ -71,6 +73,7 @@ interface IJobDetails {
   facility: {
     _id: string
     name: string
+    timezone: string
   }
 }
 
@@ -191,6 +194,7 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
         in_notes: punchIn.note,
         out_notes: punchOut.note,
         timesheet_id: _id,
+        facility_timezone: job_details.facility.timezone,
       })
       punchIn = null
     }
@@ -209,6 +213,7 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
       in_notes: punchIn.note,
       out_notes: '',
       timesheet_id: _id,
+      facility_timezone: job_details.facility.timezone,
     })
   }
 
@@ -268,6 +273,7 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
     lunch_time: lunchTimeTemplate(),
     job_title: jobTitleTemplate(),
     facility_name: facilityNameTemplate(),
+    facility_timezone: job_details.facility.timezone,
     total_time: totalWorkedHours.toFixed(2),
     worked_time: totalWorkedHours.toFixed(2),
     scheduled_time: scheduledHours.toFixed(2),
