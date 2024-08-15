@@ -60,6 +60,11 @@ export const AdminJobs = () => {
           return a.is_active ? -1 : 1
         },
       },
+      {
+        Header: 'Job Days',
+        accessor: 'job_days.length',
+        width: 120,
+      },
       { Header: 'Shifts', accessor: 'vacancy', width: 100 },
       { Header: 'Temps', width: 100, accessor: (a: IJob) => a.applicants.length || '0 ❌' },
       {
@@ -67,9 +72,10 @@ export const AdminJobs = () => {
         accessor: 'total_hours',
         width: 120,
       },
+
       {
         Header: 'Availability',
-        accessor: (d: IJob) => (d.vacancy === d.applicants.length ? '✅' : 'Open'),
+        accessor: (d: IJob) => (d.vacancy * d.job_days.length === d.applicants.length ? '✅' : 'Open'),
         sortType: (a: IJob, b: IJob) => {
           if (a.is_full === b.is_full) return 0
           return a.is_full ? -1 : 1
