@@ -66,7 +66,15 @@ const facilityImagesTemplate = (job: IJob) => {
   )
 }
 
-export const JobDetailBottomComponents = ({ timesheets, job }: { timesheets: ITimeSheet[] | null; job: IJob }) => {
+export const JobDetailBottomComponents = ({
+  timesheets,
+  job,
+  userWorkingInThisJob,
+}: {
+  timesheets: ITimeSheet[] | null
+  job: IJob
+  userWorkingInThisJob: boolean
+}) => {
   const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
     if (!timesheets) {
       return []
@@ -84,9 +92,11 @@ export const JobDetailBottomComponents = ({ timesheets, job }: { timesheets: ITi
         <TabPanel header="Timesheet">
           <section className="mt-4">{timesheetTableTemplate(punchPairsAndTotalTime)}</section>
         </TabPanel>
-        <TabPanel header="Facility Images">
-          <section className="mt-4">{facilityImagesTemplate(job)}</section>
-        </TabPanel>
+        {userWorkingInThisJob ? (
+          <TabPanel header="Facility Images">
+            <section className="mt-4">{facilityImagesTemplate(job)}</section>
+          </TabPanel>
+        ) : null}
       </TabView>
     </div>
   )
