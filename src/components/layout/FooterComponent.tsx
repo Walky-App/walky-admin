@@ -19,10 +19,10 @@ export const FooterComponent = () => {
           <a href="https://hemptemps.com/terms-and-conditions/" target="_blank" className="underline">
             Terms and Conditions
           </a>
-          {roleChecker() === 'client' ? (
+          {roleChecker() !== 'employee' ? (
             <>
               &nbsp; &nbsp; | &nbsp; &nbsp;
-              <a href="/pricing" className="underline">
+              <a href="https://hemptemps.com/pricing/" className="underline" target="_blank">
                 Pricing
               </a>
             </>
