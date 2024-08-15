@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 
 import { CheckIcon, MinusIcon } from '@heroicons/react/20/solid'
 
@@ -48,6 +48,11 @@ const sections = [
 ]
 
 export const Pricing = () => {
+  useEffect(() => {
+    window.location.href = 'https://hemptemps.com/pricing/'
+  }, [])
+
+  return null // Return null since we are redirecting
   return (
     <div className="bg-white">
       <div>

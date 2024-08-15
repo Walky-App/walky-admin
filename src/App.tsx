@@ -120,6 +120,7 @@ export const App = () => {
               <Route element={<SignupClientInvited />} path="/invite-client/:invite_id" />
               <Route element={<Signup />} path="/signup" />
               <Route element={<Otp />} path="/otp/:id" />
+              <Route element={<Pricing />} path="/pricing" />
             </Route>
             <Route element={<NewPasswordForm />} path="/reset/:id/:at" />
             <Route element={<Signup />} path="/signup" />
@@ -142,7 +143,6 @@ export const App = () => {
                 <Route element={<UnitDetail />} path="/learn/module/:moduleId/unit/:unitId" />
                 <Route element={<Assessment />} path="/learn/module/:moduleId/unit/:unitId/assesment" />
                 <Route element={<ProtectedRouteRol redirectTo="/notFound" roleAccess={client_role} />}>
-                  <Route element={<Pricing />} path="/pricing" />
                   <Route element={<ClientOnboarding />} path="/client/onboarding" />
                   <Route element={<ClientDashboard />} path="/client/dashboard" />
                   <Route element={<ClientMessages />} path="/client/messages" />
