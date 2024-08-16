@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
-import { format, isEqual, isToday, isValid } from 'date-fns'
+import { format, isBefore, isEqual, isToday, isValid } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
@@ -225,8 +225,19 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         value: Date | string | null
       }
 
-      if (newValue == null) return
-      if (value == null) return
+      const newValueDate = newValue instanceof Date ? newValue : newValue
+
+      const isNewValueBeforePunchInTime =
+        newValueDate != null && rowData.in_time != null && isBefore(newValueDate, rowData.in_time)
+
+      if (newValue == null || isNewValueBeforePunchInTime) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value',
+          detail: 'Punch Out must be after existing Punch In time',
+        })
+        return
+      }
 
       const handleToastAndFetchTimesheets = async ({ severity, summary, detail }: IToastParameters) => {
         if (selectedPayPeriod) {
@@ -259,9 +270,13 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             return
           }
 
-          const isNewValueSameAsInitial = isEqual(newValue, value)
+          const hasPunchOut = rowData.out_time != null
 
-          if (isNewValueSameAsInitial) {
+          const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
+
+          const isClockOutByAdmin = !hasPunchOut && newValue != null
+
+          if (isNewValueSameAsInitial && isClockOutByAdmin) {
             showToast({
               severity: 'warn',
               summary: 'Invalid date/time value or no change',
