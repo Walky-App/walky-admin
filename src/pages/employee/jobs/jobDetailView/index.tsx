@@ -7,7 +7,6 @@ import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
 
-import { HeadingComponent } from '../../../../components/shared/general/HeadingComponent'
 import { type IJob, type IJobShiftDay } from '../../../../interfaces/job'
 import { type Shifts } from '../../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
@@ -126,8 +125,6 @@ export const JobDetailView = () => {
 
   return (
     <div>
-      {/* <BreadCrumbs/> */}
-      <HeadingComponent title="Job Details" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         {job ? (
           <>
@@ -147,7 +144,7 @@ export const JobDetailView = () => {
                 }>
                 {/* Job Facility */}
                 <div className="mr-8 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex">
+                  <div className="flex flex-col sm:flex-row">
                     {userWorkingInThisJob || (role === 'admin' && job.facility?.main_image) ? (
                       <div className="max-w-screen-xl">
                         <img
@@ -161,7 +158,6 @@ export const JobDetailView = () => {
                     <div className="align-center flex flex-col items-start justify-start gap-1">
                       {userWorkingInThisJob || role === 'admin' ? (
                         <>
-                          <div className="flex items-center text-2xl font-bold">{job.title}</div>
                           <div className="flex items-center">
                             <i className="pi pi-building" />
                             <h2 className="ml-2 text-xl ">{job.facility.name}</h2>
@@ -219,6 +215,7 @@ export const JobDetailView = () => {
                   user={user}
                   setHasDateIntersection={setHasDateIntersection}
                   jobHasEnded={jobHasEnded}
+                  userWorkingInThisJob={userWorkingInThisJob}
                   setUserWorkingInThisJob={setUserWorkingInThisJob}
                   employeeActive={employeeActive}
                 />

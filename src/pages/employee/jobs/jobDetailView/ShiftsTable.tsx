@@ -1,10 +1,12 @@
 import { type Dispatch, type SetStateAction, useState } from 'react'
 
-import { isBefore, startOfDay } from 'date-fns'
+import { format, isBefore, startOfDay } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
 
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IJobShiftDay, type IApplicant, type IJob } from '../../../../interfaces/job'
 import { type ITokenInfo } from '../../../../interfaces/services'
@@ -18,6 +20,7 @@ export const ShiftsTable = ({
   user,
   jobHasEnded,
   setHasDateIntersection,
+  userWorkingInThisJob,
   setUserWorkingInThisJob,
   employeeActive,
 }: {
@@ -26,18 +29,22 @@ export const ShiftsTable = ({
   user: ITokenInfo
   jobHasEnded: boolean
   setHasDateIntersection: Dispatch<SetStateAction<boolean>>
+  userWorkingInThisJob: boolean
   setUserWorkingInThisJob: Dispatch<SetStateAction<boolean>>
   employeeActive: boolean
 }) => {
+  const [pickupShiftLoading, setPickupShiftLoading] = useState(false)
+  const [dropShiftLoading, setDropShiftLoading] = useState(false)
   const [shiftDropReason, setShiftDropReason] = useState('')
-  const [showDialog, setShowDialog] = useState(false)
-  const [shiftInfo, setShiftInfo] = useState({ shiftId: '', userShiftId: '' })
+  const [showDialogPickupShift, setShowDialogPickupShift] = useState(false)
+  const [showDialogDropShift, setShowDialogDropShift] = useState(false)
+  const [shiftInfo, setShiftInfo] = useState({ shiftId: '', shiftDay: '', userShiftId: '' })
   const { showToast } = useUtils()
 
   const reject = () => {
-    setShowDialog(false)
+    setShowDialogDropShift(false)
     setShiftDropReason('')
-    setShiftInfo({ shiftId: '', userShiftId: '' })
+    setShiftInfo({ shiftId: '', shiftDay: '', userShiftId: '' })
     showToast({ severity: 'success', summary: 'Rejected', detail: 'Shift was not dropped 🙂', life: 3000 })
   }
 
@@ -45,6 +52,7 @@ export const ShiftsTable = ({
 
   const applyForAShift = async (e: React.MouseEvent<HTMLButtonElement>, dateString: string) => {
     e.preventDefault()
+    setPickupShiftLoading(true)
     try {
       const [month, day, year] = dateString.split('/')
       const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
@@ -82,6 +90,7 @@ export const ShiftsTable = ({
         setJob(data)
         setUserWorkingInThisJob(true)
         showToast({ severity: 'success', summary: 'Success', detail: 'You have successfully picked Up Shift' })
+        setShowDialogPickupShift(false)
       }
       if (!response.ok) {
         const data = await response.json()
@@ -104,10 +113,13 @@ export const ShiftsTable = ({
           })
         }
       }
+    } finally {
+      setPickupShiftLoading(false)
     }
   }
 
   const handleJobDropRequest = async () => {
+    setDropShiftLoading(true)
     try {
       const response = await requestService({
         path: `shifts/drop/${shiftInfo.shiftId}`,
@@ -140,10 +152,12 @@ export const ShiftsTable = ({
         detail: 'You have Dropped the Shift',
         life: 3000,
       })
-      setShowDialog(false)
+      setShowDialogDropShift(false)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.'
       showToast({ severity: 'error', summary: 'Error', detail: errorMessage, life: 3000 })
+    } finally {
+      setDropShiftLoading(false)
     }
   }
 
@@ -214,6 +228,37 @@ export const ShiftsTable = ({
     )
   }
 
+  const pickupDropShiftPopupJobDetailsTemplate = (job: IJob, formattedDate: string) => (
+    <>
+      <div className="text-lg font-bold sm:text-xl">
+        {formattedDate} @ {formatInTimeZone(job.start_time, job.facility.timezone, 'p')} -{' '}
+        {formatInTimeZone(job.end_time, job.facility.timezone, 'p (z)')}
+      </div>
+      <div className="align-center flex flex-col items-start justify-start gap-1">
+        <div className="flex items-center text-xl font-bold sm:text-2xl">{job.title}</div>
+        <div className="flex items-center">
+          <i className="pi pi-building" />
+          <h2 className="ml-2 text-lg sm:text-xl">{job.facility.name}</h2>
+        </div>
+        <div className="flex items-center">
+          <i className="pi pi-directions" />
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.facility.address)}`}
+            target="_blank"
+            rel="noopener noreferrer">
+            <div className="ml-2 text-lg underline sm:text-xl">{job.facility.address}</div>
+          </a>
+        </div>
+        <div className="flex items-center">
+          <i className="pi pi-map-marker" />
+          <div className="ml-2 text-lg sm:text-xl">
+            {job.facility.city}, {job.facility.state}, {job.facility.zip}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+
   const handleShowButtons = (eachShift: IJobShiftDay, index: number, formattedDate: string, dayOfWeek: string) => {
     const getUserShiftsIdByUserId = (userId: string) =>
       eachShift?.shifts_id?.user_shifts?.find(shift => shift.user_id._id === userId)?._id
@@ -247,38 +292,46 @@ export const ShiftsTable = ({
           <time dateTime={eachShift.day.toString()}>{dayOfWeek}</time>
         </td>
         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right sm:pr-0">
-          <a href="/">
+          <div className="flex justify-end">
             {jobHasEnded ? (
               <p>Job has ended</p>
             ) : getUserShiftsLengthByDate(formattedDate).some(shift => shift.user_id._id === user._id) ? (
-              <>
-                <p className="flex justify-end text-sm">
-                  <HtInfoTooltip
-                    className="mr-2"
-                    message={`If you drop the shift within 24hours of Shift start time \n your account will marked down with 1 strike \n ( 2 strikes and account will be suspended )`}
-                  />
-                  Shift Confirmed
-                </p>
+              <div>
+                <HtInfoTooltip
+                  message={`If you drop the shift within 24hours of Shift start time \n your account will marked down with 1 strike \n ( 2 strikes and account will be suspended )`}>
+                  <p className="text-sm">Shift Confirmed</p>
+                </HtInfoTooltip>
                 <Button
-                  onClick={e => {
-                    e.preventDefault()
-                    setShowDialog(true)
+                  onClick={() => {
+                    setShowDialogDropShift(true)
                     setShiftInfo({
                       shiftId: eachShift.shifts_id._id,
+                      shiftDay: format(eachShift.day, 'MM/dd/yyyy'),
                       userShiftId: getUserShiftsIdByUserId(user._id) ?? '',
                     })
                   }}
                   severity="danger"
                   label="Drop Shift"
                   icon="pi pi-times"
+                  className="mt-1 w-full"
                 />
-              </>
+              </div>
             ) : getUserShiftsLengthByDate(formattedDate).length >= job.vacancy ? (
               <p>Vacancy completed</p>
             ) : (
-              <Button label="Pickup Shift" onClick={e => applyForAShift(e, formattedDate)} />
+              <Button
+                label="Pickup Shift"
+                onClick={() => {
+                  setShowDialogPickupShift(true)
+                  setShiftInfo({
+                    shiftId: eachShift.shifts_id._id,
+                    shiftDay: format(eachShift.day, 'MM/dd/yyyy'),
+                    userShiftId: getUserShiftsIdByUserId(user._id) ?? '',
+                  })
+                }}
+              />
             )}
-          </a>
+          </div>
         </td>
       </tr>
     )
@@ -323,46 +376,101 @@ export const ShiftsTable = ({
           })}
         </tbody>
       </table>
-      <div>
+      {shiftInfo.shiftId ? (
         <Dialog
-          header="Drop Shift?"
-          visible={showDialog}
+          header="Are you sure you would like to PICKUP this shift?"
+          visible={showDialogPickupShift}
           draggable={false}
           className="w-full md:w-1/2"
           onHide={() => {
-            if (!showDialog) return
-            setShowDialog(false)
+            if (!showDialogPickupShift) return
+            setShowDialogPickupShift(false)
+          }}
+          footer={() => (
+            <div>
+              <Button
+                label="Cancel"
+                outlined
+                severity="secondary"
+                onClick={() => {
+                  setShowDialogPickupShift(false)
+                  setShiftInfo({ shiftId: '', shiftDay: '', userShiftId: '' })
+                }}
+              />
+              <Button
+                label="Yes - Pickup this Shift"
+                onClick={e => {
+                  applyForAShift(e, shiftInfo.shiftDay)
+                }}
+                loading={pickupShiftLoading}
+              />
+            </div>
+          )}>
+          <div className="m-0 space-y-4">
+            {userWorkingInThisJob
+              ? pickupDropShiftPopupJobDetailsTemplate(job, format(shiftInfo.shiftDay, 'MM/dd/yyyy'))
+              : null}
+            <div>
+              <p className="font-medium sm:text-lg">
+                If you drop the shift within 24 hours of the Shift start time your account will marked down with 1
+                strike.
+              </p>
+              <p className="font-medium sm:text-lg">(2 strikes and your account will be suspended! ☹️)</p>
+            </div>
+          </div>
+        </Dialog>
+      ) : null}
+      {shiftInfo.shiftId ? (
+        <Dialog
+          header="Are you sure you would like to DROP this shift?"
+          visible={showDialogDropShift}
+          draggable={false}
+          className="w-full md:w-1/2"
+          onHide={() => {
+            if (!showDialogDropShift) return
+            setShowDialogDropShift(false)
           }}
           footer={() => (
             <div>
               <Button label="No" icon="pi pi-check" onClick={reject} className="p-button-text" />
               <Button
                 disabled={shiftDropReason.length < 20}
-                label="Yes, Drop the Shift"
+                label="Yes, Drop this Shift"
                 severity="danger"
                 icon="pi pi-times"
                 onClick={handleJobDropRequest}
+                loading={dropShiftLoading}
               />
             </div>
           )}>
-          <p className="m-0">
-            <h2 className="text-lg font-medium">
-              If you drop the shift within 24hours of Shift start time your account will marked down with 1 strike
-            </h2>
-            <p className="text-lg font-medium">( 2 strikes and your account will be suspended! ☹️ )</p>
-            <br />
-            <h2 className="text-xl font-medium text-red-600">Reason for dropping the shift</h2>
+          <div className="m-0 space-y-4">
+            {userWorkingInThisJob
+              ? pickupDropShiftPopupJobDetailsTemplate(job, format(shiftInfo.shiftDay, 'MM/dd/yyyy'))
+              : null}
+            <div>
+              <p className="font-medium sm:text-lg">
+                If you drop the shift within 24 hours of the Shift start time your account will marked down with 1
+                strike.
+              </p>
+              <p className="font-medium sm:text-lg">(2 strikes and your account will be suspended! ☹️)</p>
+            </div>
+            <HtInputLabel
+              htmlFor="shiftDropReason"
+              labelText="Reason for dropping the shift:"
+              className="font-medium text-red-600 sm:text-xl"
+            />
             <InputTextarea
+              id="shiftDropReason"
               required
-              rows={5}
-              cols={50}
-              className="text-lg"
+              autoResize
+              className="w-full text-lg sm:w-2/3"
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setShiftDropReason(e.target.value)}
               value={shiftDropReason}
+              placeholder="Must be at least 20 characters"
             />
-          </p>
+          </div>
         </Dialog>
-      </div>
+      ) : null}
     </section>
   )
 }
