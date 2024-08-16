@@ -314,7 +314,7 @@ export const ShiftsTable = ({
                   className="mt-1 w-full"
                 />
               </div>
-            ) : getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+            ) : getUserShiftsLengthByDate(formattedDate).length >= job.vacancy ? (
               <p>Vacancy completed</p>
             ) : (
               <Button

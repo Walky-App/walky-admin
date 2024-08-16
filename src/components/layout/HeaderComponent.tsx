@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import cn from 'classnames'
 import { Avatar } from 'primereact/avatar'
+import { BreadCrumb } from 'primereact/breadcrumb'
 
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
@@ -49,6 +50,29 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
     }
   }, [avatarImageUrl, setAvatarImageUrl, user?.avatar])
 
+  const locationPath = location.pathname.split('/', 5).splice(1)
+
+  const breadCrumbs = locationPath.map((url, index) => {
+    if (index === 0) {
+      return {
+        label: url,
+        url: `/${role}/dashboard`,
+      }
+    }
+
+    if (/^[a-f0-9]{24}$/.test(url)) {
+      return {
+        label: 'Detail View',
+        url: ``,
+      }
+    }
+
+    return {
+      label: url,
+      url: `/${locationPath.slice(0, index + 1).join('/')}`,
+    }
+  })
+
   return (
     <>
       <header
@@ -62,7 +86,11 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
           </div>
 
           <h3 className="text-base font-semibold capitalize leading-6 text-gray-900">
-            {location.pathname.split('/').slice(1).join(' / ')}
+            <BreadCrumb
+              model={breadCrumbs}
+              home={{ icon: 'pi pi-home p-mr-2', url: `/${role}/dashboard` }}
+              className="hidden border-none lg:block"
+            />
           </h3>
         </div>
 
@@ -181,6 +209,12 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
           </div>
         </div>
       ) : null}
+
+      <BreadCrumb
+        model={breadCrumbs}
+        home={{ icon: 'pi pi-home p-mr-2', url: `/${role}/dashboard` }}
+        className="border-none capitalize lg:hidden"
+      />
     </>
   )
 }

@@ -120,7 +120,18 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
           return (
             <li key={day.shifts_id._id} className="flex items-center justify-between py-4">
               <Fieldset
-                legend={'Day ' + (index + 1) + ' - ' + format(new Date(day.day), 'EEEE, MMMM d, yyyy')}
+                legend={
+                  'Day ' +
+                  (index + 1) +
+                  ' - ' +
+                  format(new Date(day.day), 'EEEE, MMMM d, yyyy') +
+                  ' - ' +
+                  'Shifts (' +
+                  day?.shifts_id?.user_shifts?.length +
+                  '/' +
+                  job?.vacancy +
+                  ')'
+                }
                 toggleable
                 className="w-3/4">
                 {day?.shifts_id?.user_shifts?.map((userShift: UserShiftsPopulate) => {
@@ -135,7 +146,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                               ? userShift?.user_id?.avatar
                               : '/assets/photos/no-photo-found.jpg'
                           }
-                          className="h-10 w-10"
+                          className="h-10 w-10 object-cover"
                           alt="profile"
                         />
                       )}
@@ -152,17 +163,21 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                   )
                 })}
               </Fieldset>
-              {day?.shifts_id?.user_shifts?.length === job?.vacancy ? (
-                <p className="text-end text-green-500 md:text-start">Shift Filled</p>
-              ) : (
-                <EmployeeOptions
-                  shiftDay={day}
-                  job={job}
-                  potentialApplicants={potentialApplicants}
-                  shiftId={day.shifts_id._id}
-                  setJob={setJob}
-                />
-              )}
+              {day?.shifts_id?.user_shifts === undefined ? null : day.shifts_id.user_shifts.length >= job?.vacancy ? (
+                <p className="text-end text-green-500 md:text-start">
+                  {'Shift Filled' +
+                    (day.shifts_id.user_shifts.length > job?.vacancy
+                      ? ' (+' + (day.shifts_id.user_shifts.length - job.vacancy) + ' extra)'
+                      : '')}
+                </p>
+              ) : null}
+              <EmployeeOptions
+                shiftDay={day}
+                job={job}
+                potentialApplicants={potentialApplicants}
+                shiftId={day.shifts_id._id}
+                setJob={setJob}
+              />
             </li>
           )
         })}
