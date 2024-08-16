@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
-import { format, isToday, isValid } from 'date-fns'
+import { format, isEqual, isToday, isValid } from 'date-fns'
+import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
@@ -15,7 +16,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
 import { roleChecker } from '../../../utils/roleChecker'
-import { formatToDateTime, formatToTime } from '../../../utils/timeUtils'
+import { formatToDateTime } from '../../../utils/timeUtils'
 import { HtInputLabel } from '../forms/HtInputLabel'
 import {
   type IPunchPair,
@@ -38,7 +39,7 @@ interface IPayPeriod {
 }
 
 const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
-  { field: 'day', header: 'Day', sortable: true },
+  { field: 'day', header: 'Day', sortable: false },
   { field: 'in_time', header: 'First In', sortable: false },
   { field: 'out_time', header: 'Last Out', sortable: false },
   { field: 'lunch_time', header: 'Lunch Break', sortable: false },
@@ -53,7 +54,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
-  const [isEditorValid, setIsEditorValid] = useState(false)
   const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<IPayPeriod>()
 
@@ -156,7 +156,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }, [selectedPayPeriod, fetchTimesheets])
 
   const sortedTimeSheets = useMemo(() => {
-    return [...processedTimeSheets].sort((a, b) => new Date(b.time_stamp).getTime() - new Date(a.time_stamp).getTime())
+    return [...processedTimeSheets].sort((a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
   }, [processedTimeSheets])
 
   const cellEditor = (options: ColumnEditorOptions) => {
@@ -181,20 +181,18 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     }
 
     const cellTimeValue = options.value ?? new Date(timeStamp)
+    const zonedCellTimeValue = toZonedTime(cellTimeValue, options.rowData.facility_timezone)
 
     return (
       <Calendar
-        value={cellTimeValue}
+        value={zonedCellTimeValue}
         hourFormat="12"
-        invalid={!isEditorValid}
         onChange={e => {
           const newValue = e.value as Date
-          const isValidDate = newValue !== null && isValid(newValue)
+          const utcNewValue = fromZonedTime(newValue, options.rowData.facility_timezone)
+          const isValidDate = newValue != null && isValid(utcNewValue)
           if (isValidDate) {
-            options.editorCallback!(newValue)
-            setIsEditorValid(true)
-          } else {
-            setIsEditorValid(false)
+            options.editorCallback!(utcNewValue)
           }
         }}
         showTime
@@ -220,9 +218,15 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const onCellEditComplete = async (e: ColumnEvent) => {
     try {
-      const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: Date | string | null; field: string }
+      const { rowData, newValue, field, value } = e as {
+        rowData: IPunchPair
+        newValue: Date | string | null
+        field: string
+        value: Date | string | null
+      }
 
       if (newValue == null) return
+      if (value == null) return
 
       const handleToastAndFetchTimesheets = async ({ severity, summary, detail }: IToastParameters) => {
         if (selectedPayPeriod) {
@@ -255,11 +259,13 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             return
           }
 
-          if (!isEditorValid) {
+          const isNewValueSameAsInitial = isEqual(newValue, value)
+
+          if (isNewValueSameAsInitial) {
             showToast({
-              severity: 'error',
-              summary: 'Invalid date/time value',
-              detail: 'Please use correct format (mm/dd/yyyy hh:mm)',
+              severity: 'warn',
+              summary: 'Invalid date/time value or no change',
+              detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
             })
             return
           }
@@ -284,7 +290,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
               await handleToastAndFetchTimesheets({
                 severity: 'success',
                 summary: `Updated ${field === 'in_time' ? 'In' : 'Out'} time`,
-                detail: formatToTime(newTimeStamp),
+                detail: formatInTimeZone(newTimeStamp, rowData.facility_timezone, 'hh:mm a (z)'),
               })
             }
           }
@@ -347,7 +353,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       if (Array.isArray(value)) {
         return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
       } else if (value instanceof Date) {
-        return format(value, 'hh:mm a')
+        return formatInTimeZone(value, rowData.facility_timezone, 'hh:mm a (z)')
       } else {
         return value
       }
@@ -377,9 +383,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         field: 'in_time',
         header: 'Punch In',
         body: (rowData: IPunchDetails) =>
-          rowData.in_time
-            ? rowData.in_time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-            : 'Not recorded',
+          rowData.in_time ? formatInTimeZone(rowData.in_time, data.facility_timezone, 'hh:mm a (z)') : 'Not recorded',
       },
       currentUserRole === 'admin' && {
         field: 'in_notes',
@@ -391,7 +395,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         header: 'Punch Out',
         body: (rowData: IPunchDetails) =>
           rowData.out_time
-            ? rowData.out_time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            ? formatInTimeZone(rowData.out_time, data.facility_timezone, 'hh:mm a (z)')
             : rowData.in_time && isToday(rowData.in_time)
               ? 'Clocked In'
               : 'Clock Out not recorded',
@@ -406,7 +410,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return (
       <div className="p-4">
         <h5 className="text-sm font-semibold">Punch Details</h5>
-        <DataTable value={data.punchesWithDetails} sortField="in_time" sortOrder={-1} editMode="cell">
+        <DataTable value={data.punchesWithDetails} editMode="cell">
           {punchColumns.map(column => {
             if (typeof column === 'object' && column.body != null) {
               return (
@@ -458,7 +462,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
 
       <DataTable
-        header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${adjustedWorkedScheduledDifference} hours`}
+        header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${adjustedWorkedScheduledDifference.toFixed(2)} hours`}
         dataKey="timesheet_id"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
@@ -478,13 +482,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         }}>
         <Column expander={allowExpansion} />
         {cols.map(col => (
-          <Column
-            key={col.field}
-            field={col.field}
-            header={col.header}
-            body={rowData => getCellValue(col, rowData)}
-            sortable={col.sortable}
-          />
+          <Column key={col.field} field={col.field} header={col.header} body={rowData => getCellValue(col, rowData)} />
         ))}
       </DataTable>
     </>

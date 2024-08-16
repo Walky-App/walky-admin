@@ -214,10 +214,8 @@ export const ServiceInvoicePage = () => {
                 </td>
                 <td className="border border-gray-300 p-4">{invoice?.facility_id.address}</td>
                 {invoice?.service_order_id ? (
-                  <td className="border border-gray-300 p-4">
-                    <Link to={`/admin/jobs/service-orders/${invoice?.service_order_id}`}>
-                      {invoice?.service_order_id}
-                    </Link>
+                  <td className="cursor-pointer border border-gray-300 p-4">
+                    <Link to={`/admin/jobs/service-orders/${invoice?.service_order_id}`}>{invoice?.uid}</Link>
                   </td>
                 ) : null}
               </tr>
@@ -266,9 +264,9 @@ export const ServiceInvoicePage = () => {
                 <td className="py-5 pl-4 pr-3 text-left sm:table-cell">
                   <div className="font-medium">{detail.activity}</div>
                 </td>
-                <td className="hidden px-3 py-5 text-right sm:table-cell">{detail.total_worked_hours}</td>
+                <td className="hidden px-3 py-5 text-right sm:table-cell">{detail.total_worked_hours.toFixed(2)}</td>
                 <td className="hidden px-3 py-5 text-right sm:table-cell">${detail.pay_rate}</td>
-                <td className="hidden px-3 py-5 text-right sm:table-cell">${detail.amount}</td>
+                <td className="hidden px-3 py-5 text-right sm:table-cell">${detail.amount.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -291,20 +289,30 @@ export const ServiceInvoicePage = () => {
                 </li>
               ))}
             </ul>
-            {!invoice?.note ? (
-              <div className="flex flex-col pb-3">
-                <FloatLabel>
-                  <InputTextarea id="note" value={note} onChange={e => setNote(e.target.value)} rows={5} cols={30} />
-                  <label htmlFor="note">Note</label>
-                </FloatLabel>
-                <Button className="w-1/4" label="Save note" onClick={handlerSetNote} />
-              </div>
-            ) : (
+            {invoice?.status !== 'paid' ? (
               <div>
-                <h2 className="mt-2 font-bold">Note:</h2>
-                <p>{invoice.note}</p>
+                {!invoice?.note ? (
+                  <div className="flex flex-col pb-3">
+                    <FloatLabel>
+                      <InputTextarea
+                        id="note"
+                        value={note}
+                        onChange={e => setNote(e.target.value)}
+                        rows={5}
+                        cols={30}
+                      />
+                      <label htmlFor="note">Note</label>
+                    </FloatLabel>
+                    <Button className="w-1/4" label="Save note" onClick={handlerSetNote} />
+                  </div>
+                ) : (
+                  <div>
+                    <h2 className="mt-2 font-bold">Note:</h2>
+                    <p>{invoice.note}</p>
+                  </div>
+                )}
               </div>
-            )}
+            ) : null}
           </div>
           <table className="float-right">
             {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (

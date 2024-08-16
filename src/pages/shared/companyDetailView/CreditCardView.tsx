@@ -138,7 +138,7 @@ export const CreditCardView = ({
       reset()
     } catch (error) {
       console.error('Error adding company: ', error)
-      showToast({ severity: 'error', summary: 'Failed to add company' })
+      showToast({ severity: 'error', summary: 'Failed to verify and add payment information' })
     } finally {
       setLoading(false)
     }

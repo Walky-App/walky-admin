@@ -207,9 +207,7 @@ export const ServiceOrderPage = () => {
                 <td className="border border-gray-300 p-4">{serviceOrder?.facility_id.address}</td>
                 {serviceOrder?.service_invoice_id ? (
                   <td className="border border-gray-300 p-4">
-                    <Link to={`/admin/invoices/${serviceOrder.service_invoice_id}`}>
-                      {serviceOrder.service_invoice_id}
-                    </Link>
+                    <Link to={`/admin/invoices/${serviceOrder.service_invoice_id}`}>{serviceOrder.uid}</Link>
                   </td>
                 ) : null}
               </tr>
