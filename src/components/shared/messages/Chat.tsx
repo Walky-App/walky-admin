@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { format, isToday } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Divider } from 'primereact/divider'
+import { InputTextarea } from 'primereact/inputtextarea'
 
 import { type IUser } from '../../../interfaces/User'
 import { type IMessageDocument, type IChatInfo } from '../../../interfaces/messages'
@@ -12,6 +13,7 @@ import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
 import { roleChecker } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { HtInputHelpText } from '../forms/HtInputHelpText'
 
 export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
   const [chatInfo, setChatInfo] = useState<IChatInfo>()
@@ -90,23 +92,28 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
   }
 
   return (
-    <div className="h-4/6 w-1/2">
+    <div className="h-4/6 w-full space-y-4 sm:w-1/2">
       {chatInfo !== undefined && chatInfo !== null ? (
         <>
-          <div className="border-b p-4">
-            <h2 className="mb-3 text-xl text-gray-500">
+          <div className="space-y-2">
+            <label htmlFor="chat-input" className="mb-3 text-xl text-gray-500">
               {role === 'admin' ? `Chat with ${formUser?.first_name} ${formUser?.last_name}` : 'Chat with Admins'}
-            </h2>
-            <input
-              type="text"
-              className="mr-2 w-3/4 flex-1 rounded border p-2"
+            </label>
+            <InputTextarea
+              id="chat-input"
+              autoResize
               value={input}
               onChange={e => setInput(e.target.value)}
-              onKeyPress={e => e.key === 'Enter' && sendMessage()}
+              onKeyDown={e => e.key === 'Enter' && sendMessage()}
+              className="w-full"
             />
-            <Button label="Send" onClick={sendMessage} />
-            <Button icon="pi pi-refresh" onClick={getMessagesByUsers} className="ml-2" />
+            <HtInputHelpText fieldName="chat-input" helpText="Press Enter to send message" />
+            <div className="flex w-full justify-between space-x-2">
+              <Button label="Send" onClick={sendMessage} />
+              <Button icon="pi pi-refresh" severity="secondary" onClick={getMessagesByUsers} />
+            </div>
           </div>
+          <Divider />
           <ul className="overflow-y-scroll p-4">
             {chatInfo.messages
               .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
