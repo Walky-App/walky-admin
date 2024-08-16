@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Chip } from 'primereact/chip'
+import { Divider } from 'primereact/divider'
 
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { Feedback } from '../../../../components/shared/dialog/Feedback'
@@ -328,55 +330,72 @@ export const SideRightCard = ({
             </div>
           ) : null}
           {userWorkingInThisJob ? (
-            <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-              <div className="flex">
-                <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+            <div className="mt-6 flex flex-col md:flex-col">
+              <div className="grid grid-cols-3">
+                <div className="flex flex-col items-center justify-center gap-2">
                   {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                   <div className="mt-0.5 flex flex-col gap-1">
-                    <span className="font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
+                    <Chip
+                      template={<span className="font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>}
+                    />
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                <div className="flex flex-col items-center justify-center gap-2">
                   {job.is_completed === false ? (
                     <i className="pi pi-calendar" />
                   ) : (
                     <i className="pi pi-calendar-times" />
                   )}
                   <div className="mt-0.5 flex flex-col gap-1">
-                    <span className="font-medium text-black">{job.is_completed === false ? 'Live' : 'Archived'}</span>
+                    <Chip
+                      template={
+                        <span className="font-medium text-black">
+                          {job.is_completed === false ? 'Live' : 'Archived'}
+                        </span>
+                      }
+                    />
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
+                <div className="flex flex-col items-center justify-center gap-2">
                   {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                   <div className="mt-0.5 flex flex-col gap-1">
-                    <span className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</span>
+                    <Chip
+                      template={
+                        <span className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</span>
+                      }
+                    />
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                {userWorkingInThisJob || (role === 'admin' && job.facility?.notes) ? (
-                  <div className="flex">
-                    <div>
-                      <HtInfoTooltip message="These notes will help you find your destination faster." />
+              <Divider />
+              <div className="flex flex-col">
+                <div className="flex flex-col">
+                  {userWorkingInThisJob || (role === 'admin' && job.facility?.notes) ? (
+                    <div className="flex flex-col space-y-2">
+                      <HtInfoTooltip message="These notes will help you find your destination faster.">
+                        <span className="text-base font-medium text-black">Arrival notes:</span>
+                      </HtInfoTooltip>
+                      <p>{job.facility.notes}</p>
                     </div>
-                    <span className="text-base font-medium text-black">
-                      Arrival notes: <span className="font-normal">{job.facility.notes}</span>
-                    </span>
-                  </div>
-                ) : null}
-              </div>
-              <div className="flex items-center justify-center gap-4 px-6 py-4 md:flex-col">
-                {userWorkingInThisJob || (role === 'admin' && job.job_tips.length > 0) ? (
-                  <>
-                    <div className="flex">
-                      <HtInfoTooltip message="These tips will help you better prepare for the job" />
-                      <span className="text-base font-medium text-black">Job Tips:</span>
+                  ) : null}
+                </div>
+                <Divider />
+                <div className="flex flex-col">
+                  {userWorkingInThisJob || (role === 'admin' && job.job_tips.length > 0) ? (
+                    <div className="flex flex-col space-y-2">
+                      <HtInfoTooltip message="These tips will help you better prepare for the job">
+                        <span className="text-base font-medium text-black">Job Tips:</span>
+                      </HtInfoTooltip>
+                      <ul>
+                        {job.job_tips.map(tip => (
+                          <li key={tip} className="list-inside list-disc">
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    {job.job_tips.map((tip, index) => (
-                      <span key={index}>{tip}</span>
-                    ))}
-                  </>
-                ) : null}
+                  ) : null}
+                </div>
               </div>
             </div>
           ) : null}
