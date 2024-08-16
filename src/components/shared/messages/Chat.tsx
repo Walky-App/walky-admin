@@ -95,8 +95,8 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
     <div className="h-4/6 w-full space-y-4 sm:w-1/2">
       {chatInfo !== undefined && chatInfo !== null ? (
         <>
-          <div className="space-y-2">
-            <label htmlFor="chat-input" className="mb-3 text-xl text-gray-500">
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="chat-input" className="text-lg text-gray-500 sm:text-xl">
               {role === 'admin' ? `Chat with ${formUser?.first_name} ${formUser?.last_name}` : 'Chat with Admins'}
             </label>
             <InputTextarea
@@ -108,10 +108,10 @@ export const Chat = ({ formUser }: { formUser: IUser | undefined }) => {
               className="w-full"
             />
             <HtInputHelpText fieldName="chat-input" helpText="Press Enter to send message" />
-            <div className="flex w-full justify-between space-x-2">
-              <Button label="Send" onClick={sendMessage} />
-              <Button icon="pi pi-refresh" severity="secondary" onClick={getMessagesByUsers} />
-            </div>
+          </div>
+          <div className="flex w-full justify-between space-x-2">
+            <Button label="Send" onClick={sendMessage} />
+            <Button icon="pi pi-refresh" severity="secondary" onClick={getMessagesByUsers} />
           </div>
           <Divider />
           <ul className="overflow-y-scroll p-4">
