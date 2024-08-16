@@ -273,7 +273,7 @@ export const ShiftsTable = ({
                   icon="pi pi-times"
                 />
               </>
-            ) : getUserShiftsLengthByDate(formattedDate).length === job.vacancy ? (
+            ) : getUserShiftsLengthByDate(formattedDate).length >= job.vacancy ? (
               <p>Vacancy completed</p>
             ) : (
               <Button label="Pickup Shift" onClick={e => applyForAShift(e, formattedDate)} />
