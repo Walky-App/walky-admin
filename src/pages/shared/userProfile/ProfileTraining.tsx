@@ -28,20 +28,18 @@ export const ProfileTraining = ({
       <div className="mb-12">
         <div className="sm:col-span-3">
           <HtInputLabel htmlFor="wps_training" asterisk labelText="WPS Training date" />
-          <form onSubmit={updateUser}>
-            {role === 'employee' ? (
-              <h2> {formUser.wps_training?.toDateString()}</h2>
-            ) : (
-              <div className="card justify-content-center flex">
-                <Calendar
-                  value={formUser.wps_training ? new Date(formUser.wps_training) : null}
-                  onChange={e => setFormUser({ ...formUser, wps_training: e.value ?? undefined })}
-                  disabled={role === 'employee'}
-                />
-                <Button type="submit" label="Update" disabled={role === 'employee'} />
-              </div>
-            )}
-          </form>
+          {role === 'employee' ? (
+            <h2> {formUser.wps_training?.toDateString()}</h2>
+          ) : (
+            <div className="card justify-content-center flex">
+              <Calendar
+                value={formUser.wps_training ? new Date(formUser.wps_training) : null}
+                onChange={e => setFormUser({ ...formUser, wps_training: e.value ?? undefined })}
+                disabled={role === 'employee'}
+              />
+              <Button type="submit" label="Update" onClick={updateUser} disabled={role === 'employee'} />
+            </div>
+          )}
         </div>
       </div>
 
