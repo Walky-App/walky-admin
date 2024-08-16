@@ -139,7 +139,7 @@ export const JobDetailView = () => {
                         {job.job_days.length * job.vacancy} Shifts
                       </div>
                     </div>
-                    Job ID: {job.uid}
+                    {job.title} #{job.uid}
                   </>
                 }>
                 {/* Job Facility */}
@@ -158,7 +158,6 @@ export const JobDetailView = () => {
                     <div className="align-center flex flex-col items-start justify-start gap-1">
                       {userWorkingInThisJob || role === 'admin' ? (
                         <>
-                          <div className="flex items-center text-2xl font-bold">{job.title}</div>
                           <div className="flex items-center">
                             <i className="pi pi-building" />
                             <h2 className="ml-2 text-xl ">{job.facility.name}</h2>
@@ -216,6 +215,7 @@ export const JobDetailView = () => {
                   user={user}
                   setHasDateIntersection={setHasDateIntersection}
                   jobHasEnded={jobHasEnded}
+                  userWorkingInThisJob={userWorkingInThisJob}
                   setUserWorkingInThisJob={setUserWorkingInThisJob}
                   employeeActive={employeeActive}
                 />
