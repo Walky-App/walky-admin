@@ -37,7 +37,7 @@ export const ProfileTraining = ({
                 onChange={e => setFormUser({ ...formUser, wps_training: e.value ?? undefined })}
                 disabled={role === 'employee'}
               />
-              <Button type="submit" label="Update" onClick={updateUser} disabled={role === 'employee'} />
+              <Button type="button" label="Update" onClick={updateUser} disabled={role === 'employee'} />
             </div>
           )}
         </div>
