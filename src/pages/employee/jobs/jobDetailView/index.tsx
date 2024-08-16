@@ -223,7 +223,11 @@ export const JobDetailView = () => {
                   employeeActive={employeeActive}
                 />
               </Card>
-              <JobDetailBottomComponents timesheets={timesheets} job={job} />
+              <JobDetailBottomComponents
+                timesheets={timesheets}
+                job={job}
+                userWorkingInThisJob={userWorkingInThisJob}
+              />
             </div>
             <SideRightCard
               role={role}
