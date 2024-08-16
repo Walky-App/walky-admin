@@ -6,6 +6,7 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
 
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import { type IJobShiftDay, type IApplicant, type IJob } from '../../../../interfaces/job'
 import { type ITokenInfo } from '../../../../interfaces/services'
@@ -447,8 +448,13 @@ export const ShiftsTable = ({
               </p>
               <p className="font-medium sm:text-lg">(2 strikes and your account will be suspended! ☹️)</p>
             </div>
-            <h2 className="font-medium text-red-600 sm:text-xl">Reason for dropping the shift:</h2>
+            <HtInputLabel
+              htmlFor="shiftDropReason"
+              labelText="Reason for dropping the shift:"
+              className="font-medium text-red-600 sm:text-xl"
+            />
             <InputTextarea
+              id="shiftDropReason"
               required
               autoResize
               className="w-full text-lg sm:w-2/3"
