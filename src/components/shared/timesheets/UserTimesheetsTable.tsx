@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
-import { format, isToday, isValid } from 'date-fns'
+import { format, isEqual, isToday, isValid } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
@@ -54,7 +54,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
-  const [isEditorValid, setIsEditorValid] = useState(false)
   const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<IPayPeriod>()
 
@@ -188,15 +187,12 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       <Calendar
         value={zonedCellTimeValue}
         hourFormat="12"
-        invalid={!isEditorValid}
         onChange={e => {
           const newValue = e.value as Date
-          const isValidDate = newValue !== null && isValid(newValue)
+          const utcNewValue = fromZonedTime(newValue, options.rowData.facility_timezone)
+          const isValidDate = newValue != null && isValid(utcNewValue)
           if (isValidDate) {
-            options.editorCallback!(newValue)
-            setIsEditorValid(true)
-          } else {
-            setIsEditorValid(false)
+            options.editorCallback!(utcNewValue)
           }
         }}
         showTime
@@ -222,9 +218,15 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const onCellEditComplete = async (e: ColumnEvent) => {
     try {
-      const { rowData, newValue, field } = e as { rowData: IPunchPair; newValue: Date | string | null; field: string }
+      const { rowData, newValue, field, value } = e as {
+        rowData: IPunchPair
+        newValue: Date | string | null
+        field: string
+        value: Date | string | null
+      }
 
       if (newValue == null) return
+      if (value == null) return
 
       const handleToastAndFetchTimesheets = async ({ severity, summary, detail }: IToastParameters) => {
         if (selectedPayPeriod) {
@@ -257,25 +259,26 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             return
           }
 
-          if (!isEditorValid) {
+          const isNewValueSameAsInitial = isEqual(newValue, value)
+
+          if (isNewValueSameAsInitial) {
             showToast({
-              severity: 'error',
-              summary: 'Invalid date/time value',
-              detail: 'Please use correct format (mm/dd/yyyy hh:mm)',
+              severity: 'warn',
+              summary: 'Invalid date/time value or no change',
+              detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
             })
             return
           }
 
           if (field === 'in_time' || field === 'out_time') {
             const newTimeStamp: string = newValueDateString
-            const utcTimestamp = fromZonedTime(newTimeStamp, rowData.facility_timezone)
             const punchId = field === 'in_time' ? rowData.in_id : rowData.out_id
             const timeSheetId = rowData.timesheet_id
 
             const body =
               field === 'in_time'
-                ? { punch_in_id: punchId, new_time_stamp_in: utcTimestamp }
-                : { punch_out_id: punchId, new_time_stamp_out: utcTimestamp }
+                ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
+                : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
 
             const response = await requestService({
               path: `timesheets/${timeSheetId}/in-out-punches`,
@@ -287,7 +290,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
               await handleToastAndFetchTimesheets({
                 severity: 'success',
                 summary: `Updated ${field === 'in_time' ? 'In' : 'Out'} time`,
-                detail: formatInTimeZone(utcTimestamp, rowData.facility_timezone, 'hh:mm a (z)'),
+                detail: formatInTimeZone(newTimeStamp, rowData.facility_timezone, 'hh:mm a (z)'),
               })
             }
           }
