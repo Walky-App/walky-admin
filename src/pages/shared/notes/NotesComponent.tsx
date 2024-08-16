@@ -75,27 +75,26 @@ export const NotesComponent = ({ ref_id, model, created_by }: INotesComponentPro
           <p className="mt-1 text-sm leading-6 text-gray-600">Previously added notes about this user.</p>
         </div>
 
-        <div className="max-w-2xl md:col-span-2">
-          <HtInputLabel htmlFor="internal_notes" labelText="Note:" />
+        <div className="max-w-2xl space-y-2 md:col-span-2">
           <div>
+            <HtInputLabel htmlFor="internal_notes" labelText="Note:" />
             <InputTextarea
               id="internal_notes"
-              rows={4}
-              cols={60}
+              autoResize
               maxLength={500}
               onChange={e => setNewNote(e.target.value)}
-              className={classNames({ 'p-invalid': false }, 'mt-2')}
+              className={classNames({ 'p-invalid': false }, 'mt-2 w-full')}
               autoComplete="off"
             />
-            <Button onClick={handleAddNote} type="submit" label="Add Note" />
+            <HtInputHelpText
+              fieldName="internal_notes"
+              helpText="Max 500 characters. Please do not enter contact information into this field."
+            />
           </div>
-          <HtInputHelpText
-            fieldName="internal_notes"
-            helpText="Max 500 characters. Please do not enter contact information into this field."
-          />
+          <Button type="button" label="Add Note" onClick={handleAddNote} />
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-x-8 gap-y-5 pb-12 md:grid-cols-3 md:gap-y-10">
+      <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-5 pb-12 md:grid-cols-3 md:gap-y-10">
         <div>
           <h2 className="text-base font-semibold leading-7 text-gray-900">Existing Notes</h2>
           <p className="mt-1 text-sm leading-6 text-gray-600">Previously added notes about this user.</p>
