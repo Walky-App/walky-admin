@@ -163,17 +163,21 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                   )
                 })}
               </Fieldset>
-              {day?.shifts_id?.user_shifts?.length === job?.vacancy ? (
-                <p className="text-end text-green-500 md:text-start">Shift Filled</p>
-              ) : (
-                <EmployeeOptions
-                  shiftDay={day}
-                  job={job}
-                  potentialApplicants={potentialApplicants}
-                  shiftId={day.shifts_id._id}
-                  setJob={setJob}
-                />
-              )}
+              {day?.shifts_id?.user_shifts === undefined ? null : day.shifts_id.user_shifts.length >= job?.vacancy ? (
+                <p className="text-end text-green-500 md:text-start">
+                  {'Shift Filled' +
+                    (day.shifts_id.user_shifts.length > job?.vacancy
+                      ? ' (+' + (day.shifts_id.user_shifts.length - job.vacancy) + ' extra)'
+                      : '')}
+                </p>
+              ) : null}
+              <EmployeeOptions
+                shiftDay={day}
+                job={job}
+                potentialApplicants={potentialApplicants}
+                shiftId={day.shifts_id._id}
+                setJob={setJob}
+              />
             </li>
           )
         })}
