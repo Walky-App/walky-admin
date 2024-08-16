@@ -20,6 +20,7 @@ export const ShiftsTable = ({
   user,
   jobHasEnded,
   setHasDateIntersection,
+  userWorkingInThisJob,
   setUserWorkingInThisJob,
   employeeActive,
 }: {
@@ -28,6 +29,7 @@ export const ShiftsTable = ({
   user: ITokenInfo
   jobHasEnded: boolean
   setHasDateIntersection: Dispatch<SetStateAction<boolean>>
+  userWorkingInThisJob: boolean
   setUserWorkingInThisJob: Dispatch<SetStateAction<boolean>>
   employeeActive: boolean
 }) => {
@@ -405,7 +407,9 @@ export const ShiftsTable = ({
             </div>
           )}>
           <div className="m-0 space-y-4">
-            {pickupDropShiftPopupJobDetailsTemplate(job, format(shiftInfo.shiftDay, 'MM/dd/yyyy'))}
+            {userWorkingInThisJob
+              ? pickupDropShiftPopupJobDetailsTemplate(job, format(shiftInfo.shiftDay, 'MM/dd/yyyy'))
+              : null}
             <div>
               <p className="font-medium sm:text-lg">
                 If you drop the shift within 24 hours of the Shift start time your account will marked down with 1
@@ -440,7 +444,9 @@ export const ShiftsTable = ({
             </div>
           )}>
           <div className="m-0 space-y-4">
-            {pickupDropShiftPopupJobDetailsTemplate(job, format(shiftInfo.shiftDay, 'MM/dd/yyyy'))}
+            {userWorkingInThisJob
+              ? pickupDropShiftPopupJobDetailsTemplate(job, format(shiftInfo.shiftDay, 'MM/dd/yyyy'))
+              : null}
             <div>
               <p className="font-medium sm:text-lg">
                 If you drop the shift within 24 hours of the Shift start time your account will marked down with 1
