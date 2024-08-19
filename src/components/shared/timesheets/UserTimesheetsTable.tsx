@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
-import { isBefore, isEqual, isToday, isValid } from 'date-fns'
+import { isAfter, isBefore, isEqual, isToday, isValid } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
@@ -251,13 +251,24 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         return
       }
 
+      const isNewValueAfterPunchOutTime = rowData.out_time != null && isAfter(newValue, rowData.out_time)
+
+      if (field === 'in_time' && isNewValueAfterPunchOutTime) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value',
+          detail: 'Punch-In must be before existing Punch-Out time',
+        })
+        return
+      }
+
       const isNewValueBeforePunchInTime = rowData.in_time != null && isBefore(newValue, rowData.in_time)
 
       if (field === 'out_time' && isNewValueBeforePunchInTime) {
         showToast({
           severity: 'warn',
           summary: 'Invalid date/time value',
-          detail: 'Punch Out must be after existing Punch In time',
+          detail: 'Punch-Out must be after existing Punch-In time',
         })
         return
       }
@@ -269,7 +280,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         showToast({
           severity: 'warn',
           summary: 'Invalid date/time value or no change',
-          detail: 'Punch out format must be (mm/dd/yyyy hh:mm AM/PM)',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
         })
         return
       }
