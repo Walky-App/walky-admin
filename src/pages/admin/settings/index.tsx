@@ -36,7 +36,7 @@ export const Settings = () => {
   return (
     <div className="card text-2xl">
       <DataTable
-        data-testId="states-detail-view"
+        data-testid="states-detail-view"
         value={settings}
         sortField="our_fee"
         sortOrder={-1}

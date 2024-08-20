@@ -43,6 +43,7 @@ import { AdminDashboard } from './pages/admin/dashboard/AdminDashboard'
 
 import { AdminEmployeeActiveListPage } from './pages/admin/users/AdminEmployeesActiveListPage'
 import { AdminEmployeeInactiveListPage } from './pages/admin/users/AdminEmployeesInactiveListPage'
+import { AdminTimesheetsPage } from './pages/admin/users/AdminTimesheetsPage'
 import { AdminUserClientsListPage } from './pages/admin/users/AdminUserClientsListPage'
 import { AdminUserEmployeesListPage } from './pages/admin/users/AdminUserEmployeesListPage'
 import { AdminUserListPage } from './pages/admin/users/AdminUserListPage'
@@ -198,6 +199,7 @@ export const App = () => {
                   <Route element={<AdminMessages />} path="/admin/messages" />
                   <Route element={<AdminUserListPage />} path="/admin/users" />
                   <Route element={<AdminUserEmployeesListPage />} path="/admin/users/employees" />
+                  <Route element={<AdminTimesheetsPage />} path="/admin/users/employees/timesheets" />
                   <Route element={<AdminEmployeeActiveListPage />} path="/admin/users/employees/active" />
                   <Route element={<UserProfile />} path="/admin/users/employees/active/:id" />
                   <Route element={<AdminEmployeeInactiveListPage />} path="/admin/users/employees/inactive" />
