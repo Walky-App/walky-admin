@@ -60,13 +60,15 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                       <NavLink
                         to={link.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={({ isActive }) =>
-                          cn(
-                            isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                            'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                        className={({ isActive }) => {
+                          return cn(
+                            isActive
+                              ? 'w-full bg-gray-800 text-white'
+                              : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                            'group my-3 flex  gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                           )
-                        }>
-                        <span className="h-5 w-5 text-2xl">{link.icon}</span>
+                        }}>
+                        <span className="mr-2 h-5 w-5 text-2xl">{link.icon}</span>
                         {link.name}
                       </NavLink>
                     ) : (
@@ -75,11 +77,20 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                           <>
                             <Disclosure.Button
                               className={cn(
-                                link.current ? 'bg-gray-50' : 'hover:bg-gray-800',
-                                'links-center flex w-full gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-400',
+                                link.current ? '' : 'hover:bg-gray-800',
+                                'links-center flex w-full items-center gap-x-3 rounded-md p-2 font-semibold leading-6 text-gray-400',
                               )}>
                               <span className="h-5 w-5 text-2xl">{link.icon}</span>
-                              <NavLink to={link.href} className="hover:text-base hover:text-white">
+                              <NavLink
+                                to={link.href}
+                                className={({ isActive }) => {
+                                  return cn(
+                                    isActive
+                                      ? 'w-full bg-gray-800 text-white'
+                                      : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                                  )
+                                }}>
                                 {link.name}
                               </NavLink>
                               <ChevronRightIcon
@@ -96,19 +107,13 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                                   <NavLink
                                     to={subItem.href}
                                     onClick={() => setSidebarOpen(false)}
-                                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                    className={({ isActive, isPending }) => {
+                                    className={({ isActive }) => {
                                       return cn(
-                                        'text-gray-400 hover:bg-gray-800 hover:text-white',
+                                        isActive
+                                          ? 'bg-gray-800 text-white'
+                                          : 'text-gray-400 hover:bg-gray-800 hover:text-white',
                                         'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                                       )
-
-                                      // cn(
-                                      //   isActive
-                                      //     ? 'bg-gray-800 text-white'
-                                      //     : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                                      //   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                                      // )
                                     }}>
                                     {subItem.name}
                                   </NavLink>
