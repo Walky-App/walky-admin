@@ -92,7 +92,7 @@ export const Auth = () => {
                 Terms and Conditions
               </a>
             </p>
-            <small className="text-[10px]  font-extralight">v{packageJson.version}</small>
+            <small className="text-[10px] font-extralight">v{packageJson.version}</small>
           </div>
         </footer>
       </div>
