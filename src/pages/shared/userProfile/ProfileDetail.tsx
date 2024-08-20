@@ -306,7 +306,7 @@ export const ProfileDetail = ({
                 <div>
                   <h2 className="text-base font-semibold leading-7 text-gray-900">Organizational Structure</h2>
                   <p className="mt-1 text-sm leading-6 text-gray-600">
-                    We'll always let you know about important changes, but you pick what else you want to hear about.
+                    Company / Facilities that Client is associated with.
                   </p>
                 </div>
 
