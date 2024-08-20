@@ -63,7 +63,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                         className={({ isActive }) => {
                           return cn(
                             isActive
-                              ? 'w-full bg-gray-800 text-white '
+                              ? 'w-full bg-gray-800 text-white'
                               : 'text-gray-400 hover:bg-gray-800 hover:text-white',
                             'group my-3 flex  gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                           )
@@ -77,7 +77,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                           <>
                             <Disclosure.Button
                               className={cn(
-                                link.current ? '' : 'hover:bg-gray-800 ',
+                                link.current ? '' : 'hover:bg-gray-800',
                                 'links-center flex w-full items-center gap-x-3 rounded-md p-2 font-semibold leading-6 text-gray-400',
                               )}>
                               <span className="h-5 w-5 text-2xl">{link.icon}</span>
