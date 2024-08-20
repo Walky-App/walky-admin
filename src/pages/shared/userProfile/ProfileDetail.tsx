@@ -301,7 +301,7 @@ export const ProfileDetail = ({
                 </div>
               </div>
             </div>
-            {formUser?.companies?.length ?? 0 > 0 ? (
+            {(roleTxt(formUser.role) === 'Client' && formUser?.companies?.length) ?? 0 > 0 ? (
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                 <div>
                   <h2 className="text-base font-semibold leading-7 text-gray-900">Organizational Structure</h2>
@@ -319,9 +319,9 @@ export const ProfileDetail = ({
                             return {
                               label: company?.company_name,
                               expanded: true,
-                              children: company.facilities?.map(facility => {
+                              children: company?.facilities?.map(facility => {
                                 return {
-                                  label: facility.name,
+                                  label: facility?.name,
                                 }
                               }),
                             }
