@@ -251,7 +251,10 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         return
       }
 
+      const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
       const isNewValueAfterPunchOutTime = rowData.out_time != null && isAfter(newValue, rowData.out_time)
+      const isNewValueBeforePunchInTime = rowData.in_time != null && isBefore(newValue, rowData.in_time)
+      const hasPunchOut = rowData.out_time != null
 
       if (field === 'in_time' && isNewValueAfterPunchOutTime) {
         showToast({
@@ -262,7 +265,14 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         return
       }
 
-      const isNewValueBeforePunchInTime = rowData.in_time != null && isBefore(newValue, rowData.in_time)
+      if (field === 'in_time' && isNewValueSameAsInitial) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value or no change',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+        })
+        return
+      }
 
       if (field === 'out_time' && isNewValueBeforePunchInTime) {
         showToast({
@@ -272,9 +282,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         })
         return
       }
-
-      const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
-      const hasPunchOut = rowData.out_time != null
 
       if (field === 'out_time' && isNewValueSameAsInitial && !hasPunchOut) {
         showToast({
