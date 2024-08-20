@@ -1,8 +1,11 @@
 import { format, set } from 'date-fns'
-import { fromZonedTime } from 'date-fns-tz'
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
 
 import { type IJob, type IJobShiftDay } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
+import { isTodaySameAsTimeStamp, isValidDate } from '../../../utils/timeUtils'
 import { type IPunchPairWithTotalTime } from '../timesheets/timesheetsUtils'
 
 export const getLatestTimeSheet = (array?: ITimeSheet[] | null) => {
@@ -101,4 +104,47 @@ export const shiftDayAndTimeUTC = (shiftDay: Date, shiftTime: string) => {
     milliseconds,
   })
   return shiftDayAndTimeUTC
+}
+
+export const applicantTimesheetTableTemplate = (
+  punchPairsAndTotalTime: IPunchPairWithTotalTime[],
+  facilityTimezone: string,
+) => {
+  return (
+    <>
+      <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
+      <DataTable
+        value={punchPairsAndTotalTime}
+        stripedRows
+        paginator
+        rows={7}
+        rowsPerPageOptions={[7, 14, 30]}
+        emptyMessage="No time data to display">
+        <Column
+          field="punchIn.time_stamp"
+          header="Date"
+          body={(rowData: IPunchPairWithTotalTime) =>
+            isValidDate(rowData.punchIn.time_stamp)
+              ? formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'P')
+              : 'No Timestamp'
+          }
+        />
+        <Column
+          header="Time In"
+          body={rowData => formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'hh:mm a (z)')}
+        />
+        <Column
+          header="Time Out"
+          body={(rowData: IPunchPairWithTotalTime) =>
+            rowData.punchOut
+              ? formatInTimeZone(rowData.punchOut.time_stamp, facilityTimezone, 'hh:mm a (z)')
+              : isTodaySameAsTimeStamp(rowData.punchIn.time_stamp)
+                ? 'Clocked In'
+                : 'Clock Out not recorded'
+          }
+        />
+        <Column header="Total Time" body={(rowData: IPunchPairWithTotalTime) => rowData.totalTime ?? ''} />
+      </DataTable>
+    </>
+  )
 }
