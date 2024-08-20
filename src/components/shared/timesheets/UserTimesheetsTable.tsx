@@ -276,7 +276,16 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
       const hasPunchOut = rowData.out_time != null
 
-      if (field === 'out_time' && (isNewValueSameAsInitial || !hasPunchOut)) {
+      if (field === 'out_time' && isNewValueSameAsInitial && !hasPunchOut) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value or no change',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+        })
+        return
+      }
+
+      if (field === 'out_time' && isNewValueSameAsInitial) {
         showToast({
           severity: 'warn',
           summary: 'Invalid date/time value or no change',
