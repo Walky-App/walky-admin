@@ -5,13 +5,14 @@ import { Button } from 'primereact/button'
 import { Checkbox, type CheckboxChangeEvent } from 'primereact/checkbox'
 import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
+import { OrganizationChart } from 'primereact/organizationchart'
 
 import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IUser } from '../../../interfaces/User'
+import { type IUserPopulated, type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { type INotificationPreference } from '../../../utils/formOptions'
@@ -22,8 +23,8 @@ export const ProfileDetail = ({
   setFormUser,
   updateUser,
 }: {
-  formUser: IUser
-  setFormUser: Dispatch<SetStateAction<IUser>>
+  formUser: IUserPopulated
+  setFormUser: Dispatch<SetStateAction<IUserPopulated>>
   updateUser: React.FormEventHandler<HTMLFormElement>
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
@@ -67,7 +68,7 @@ export const ProfileDetail = ({
 
   const handleFormUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target as HTMLInputElement
-    setFormUser((prevState: IUser) => ({ ...prevState, [name]: value }))
+    setFormUser(prevState => ({ ...prevState, [name]: value }))
   }
 
   const handleFormUpdateNumber = (e: InputMaskChangeEvent) => {
@@ -244,61 +245,95 @@ export const ProfileDetail = ({
         </div>
 
         {role === 'admin' ? (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b pb-12 sm:gap-y-10 md:grid-cols-3">
-            <div>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">User Statuses</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your business so that we can verify you on the platform.
-              </p>
-            </div>
-            <div className="flex items-center justify-between text-center">
+          <>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b pb-12 sm:gap-y-10 md:grid-cols-3">
               <div>
-                <HtInputLabel htmlFor="active" labelText="Active" />
-                <Checkbox
-                  inputId="active"
-                  name="active"
-                  title="Active"
-                  onChange={e => setFormUser({ ...formUser, active: e.checked ?? false })}
-                  checked={formUser.active || false}
-                />
+                <h2 className="text-base font-semibold leading-7 text-gray-900">User Statuses</h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Please provide information about your business so that we can verify you on the platform.
+                </p>
               </div>
+              <div className="flex items-center justify-between text-center">
+                <div>
+                  <HtInputLabel htmlFor="active" labelText="Active" />
+                  <Checkbox
+                    inputId="active"
+                    name="active"
+                    title="Active"
+                    onChange={e => setFormUser({ ...formUser, active: e.checked ?? false })}
+                    checked={formUser.active || false}
+                  />
+                </div>
 
-              <div>
-                <HtInputLabel htmlFor="onboarding_complete" labelText="Onboarding Complete" />
-                <Checkbox
-                  inputId="onboarding_complete"
-                  name="onboarding_complete"
-                  onChange={e =>
-                    setFormUser({
-                      ...formUser,
-                      onboarding: {
-                        ...formUser.onboarding,
-                        completed: e.checked ?? false,
-                        step_number: formUser.onboarding?.step_number ?? 0,
-                        description: formUser.onboarding?.description ?? '',
-                        type: formUser.onboarding?.type ?? '',
-                      },
-                    })
-                  }
-                  checked={formUser.onboarding?.completed ?? false}
-                />
-              </div>
-              <div>
-                <HtInputLabel htmlFor="is_approved" labelText="Approved / Verified" />
-                <Checkbox
-                  inputId="is_approved"
-                  name="is_approved"
-                  onChange={e =>
-                    setFormUser({
-                      ...formUser,
-                      is_approved: e.checked ?? false,
-                    })
-                  }
-                  checked={formUser.is_approved ?? false}
-                />
+                <div>
+                  <HtInputLabel htmlFor="onboarding_complete" labelText="Onboarding Complete" />
+                  <Checkbox
+                    inputId="onboarding_complete"
+                    name="onboarding_complete"
+                    onChange={e =>
+                      setFormUser({
+                        ...formUser,
+                        onboarding: {
+                          ...formUser.onboarding,
+                          completed: e.checked ?? false,
+                          step_number: formUser.onboarding?.step_number ?? 0,
+                          description: formUser.onboarding?.description ?? '',
+                          type: formUser.onboarding?.type ?? '',
+                        },
+                      })
+                    }
+                    checked={formUser.onboarding?.completed ?? false}
+                  />
+                </div>
+                <div>
+                  <HtInputLabel htmlFor="is_approved" labelText="Approved / Verified" />
+                  <Checkbox
+                    inputId="is_approved"
+                    name="is_approved"
+                    onChange={e =>
+                      setFormUser({
+                        ...formUser,
+                        is_approved: e.checked ?? false,
+                      })
+                    }
+                    checked={formUser.is_approved ?? false}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+            {formUser?.companies?.length ?? 0 > 0 ? (
+              <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-gray-900">Organizational Structure</h2>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">
+                    Company / Facilities that Client is associated with.
+                  </p>
+                </div>
+
+                <div className="max-w-2xl space-y-10 md:col-span-2">
+                  <fieldset>
+                    <div className="mt-6 space-y-6">
+                      {typeof formUser.companies === 'object' ? (
+                        <OrganizationChart
+                          value={formUser?.companies?.map(company => {
+                            return {
+                              label: company?.company_name,
+                              expanded: true,
+                              children: company.facilities?.map(facility => {
+                                return {
+                                  label: facility.name,
+                                }
+                              }),
+                            }
+                          })}
+                        />
+                      ) : null}
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            ) : null}
+          </>
         ) : null}
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
