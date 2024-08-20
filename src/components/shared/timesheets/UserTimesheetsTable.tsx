@@ -88,6 +88,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       }
 
       const selectedPayPeriod = payPeriods[0]
+
       setPayPeriods(payPeriods)
       setSelectedPayPeriod(selectedPayPeriod)
       return selectedPayPeriod
@@ -106,6 +107,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         console.error('selectedUserId is undefined')
         return
       }
+      setProcessedTimeSheets([])
 
       const selectedPayPeriodStart = selectedPayPeriod?.start
       const selectedPayPeriodEnd = selectedPayPeriod?.end
