@@ -1,5 +1,5 @@
 /* eslint-disable filename-rules/match */
-import { type ICompany } from './company'
+import { type ICompanyWithFacilities, type ICompany } from './company'
 import { type ProgressHTU } from './htu'
 
 export interface IOnboardingStep {
@@ -56,7 +56,11 @@ export interface IUser {
   documents?: IUserDocument[]
   student_record?: ProgressHTU
   score_rating?: number
-  companies?: string[] | ICompany[]
   is_shift_supervisor?: boolean
   wps_training?: Date
+  companies?: string[] | ICompany[]
+}
+
+export interface IUserPopulated extends IUser {
+  companies: ICompanyWithFacilities[]
 }

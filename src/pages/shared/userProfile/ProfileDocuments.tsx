@@ -11,7 +11,7 @@ import { Panel } from 'primereact/panel'
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IUser } from '../../../interfaces/User'
+import { type IUserPopulated, type IUser } from '../../../interfaces/User'
 import { useUtils } from '../../../store/useUtils'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
@@ -19,8 +19,8 @@ export const ProfileDocuments = ({
   formUser,
   setFormUser,
 }: {
-  formUser: IUser
-  setFormUser: Dispatch<SetStateAction<IUser>>
+  formUser: IUserPopulated
+  setFormUser: Dispatch<SetStateAction<IUserPopulated>>
 }) => {
   const fileUploadRef = useRef<FileUpload>(null)
 

@@ -1,3 +1,5 @@
+import { type IFacility } from './facility'
+
 export interface ICompanyDocument {
   id: number
   url: string
@@ -55,11 +57,15 @@ export interface ICompany {
   company_state: string
   company_zip: string
   company_documents?: ICompanyDocument[]
-  facilities: string[]
+  facilities: string[] | IFacility[]
   users: string[]
   createdAt?: string
   updatedAt?: string
   created_by?: string
   company_location_pin: number[]
   company_ach_requested?: boolean
+}
+
+export interface ICompanyWithFacilities extends ICompany {
+  facilities: IFacility[]
 }

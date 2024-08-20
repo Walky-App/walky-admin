@@ -7,7 +7,7 @@ import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
-import { type IUser } from '../../../interfaces/User'
+import { type IUserPopulated } from '../../../interfaces/User'
 import { type ITrainingData } from '../../../interfaces/training'
 
 export const ProfileTraining = ({
@@ -18,8 +18,8 @@ export const ProfileTraining = ({
   updateUser,
 }: {
   userTraining: ITrainingData
-  formUser: IUser
-  setFormUser: Dispatch<SetStateAction<IUser>>
+  formUser: IUserPopulated
+  setFormUser: Dispatch<SetStateAction<IUserPopulated>>
   role: string
   updateUser: () => void
 }) => {
