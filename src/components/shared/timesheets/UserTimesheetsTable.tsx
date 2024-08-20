@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
-import { format, isBefore, isEqual, isToday, isValid } from 'date-fns'
+import { isAfter, isBefore, isEqual, isToday, isValid } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
@@ -16,7 +16,6 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { cn } from '../../../utils/cn'
 import { roleChecker } from '../../../utils/roleChecker'
-import { formatToDateTime } from '../../../utils/timeUtils'
 import { HtInputLabel } from '../forms/HtInputLabel'
 import {
   type IPunchPair,
@@ -217,142 +216,150 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }
 
   const onCellEditComplete = async (e: ColumnEvent) => {
-    try {
-      const { rowData, newValue, field, value } = e as {
-        rowData: IPunchPair
-        newValue: Date | string | null
-        field: string
-        value: Date | string | null
+    const { rowData, newValue, field, value } = e as {
+      rowData: IPunchPair
+      newValue: Date | string | null
+      field: string
+      value: Date | string | null
+    }
+
+    const handleToastAndFetchTimesheets = async ({ severity, summary, detail }: IToastParameters) => {
+      if (selectedPayPeriod) {
+        await fetchTimesheets(selectedPayPeriod)
+        showToast({ severity, summary, detail })
+      } else {
+        showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
       }
+    }
 
-      const newValueDate = newValue instanceof Date ? newValue : newValue
+    const handleErrorResponse = async (response: Response) => {
+      if (!response.ok) {
+        const message = await response.text()
+        showToast({ severity: 'error', summary: 'Error', detail: message })
+        return false
+      }
+      return true
+    }
 
-      const isNewValueBeforePunchInTime =
-        newValueDate != null && rowData.in_time != null && isBefore(newValueDate, rowData.in_time)
-
-      if (newValue == null || isNewValueBeforePunchInTime) {
+    try {
+      if (newValue == null) {
         showToast({
           severity: 'warn',
-          summary: 'Invalid date/time value',
-          detail: 'Punch Out must be after existing Punch In time',
+          summary: 'Invalid date/time value or no change',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
         })
         return
       }
 
-      const handleToastAndFetchTimesheets = async ({ severity, summary, detail }: IToastParameters) => {
-        if (selectedPayPeriod) {
-          await fetchTimesheets(selectedPayPeriod)
-          showToast({ severity, summary, detail })
-        } else {
-          showToast({ severity: 'error', summary: 'Error', detail: 'No selected pay period' })
-        }
+      const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
+      const isNewValueAfterPunchOutTime = rowData.out_time != null && isAfter(newValue, rowData.out_time)
+      const isNewValueBeforePunchInTime = rowData.in_time != null && isBefore(newValue, rowData.in_time)
+      const hasPunchOut = rowData.out_time != null
+
+      if (field === 'in_time' && isNewValueAfterPunchOutTime) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value',
+          detail: 'Punch-In must be before existing Punch-Out time',
+        })
+        return
       }
 
-      const handleErrorResponse = async (response: Response) => {
-        if (!response.ok) {
-          const message = await response.text()
-          showToast({ severity: 'error', summary: 'Error', detail: message })
-          return false
-        }
-        return true
+      if (field === 'in_time' && isNewValueSameAsInitial) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value or no change',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+        })
+        return
       }
 
-      switch (field) {
-        case 'in_time':
-        case 'out_time': {
-          const newValueDateString = newValue instanceof Date ? newValue.toISOString() : newValue
-          const formattedNewValue = formatToDateTime(newValueDateString)
+      if (field === 'out_time' && isNewValueBeforePunchInTime) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value',
+          detail: 'Punch-Out must be after existing Punch-In time',
+        })
+        return
+      }
 
-          if (
-            (field === 'in_time' && rowData.in_time && formattedNewValue === format(rowData.in_time, 'hh:mm a')) ||
-            (field === 'out_time' && rowData.out_time && formattedNewValue === format(rowData.out_time, 'hh:mm a'))
-          ) {
-            return
-          }
+      if (field === 'out_time' && isNewValueSameAsInitial && !hasPunchOut) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value or no change',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+        })
+        return
+      }
 
-          const hasPunchOut = rowData.out_time != null
+      if (field === 'out_time' && isNewValueSameAsInitial) {
+        showToast({
+          severity: 'warn',
+          summary: 'Invalid date/time value or no change',
+          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+        })
+        return
+      }
 
-          const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
+      if (field === 'in_time' || field === 'out_time') {
+        const newTimeStamp = newValue
+        const punchId = field === 'in_time' ? rowData.in_id : rowData.out_id
+        const timeSheetId = rowData.timesheet_id
 
-          const isClockOutByAdmin = !hasPunchOut && newValue != null
+        const body =
+          field === 'in_time'
+            ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
+            : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
 
-          if (isNewValueSameAsInitial && isClockOutByAdmin) {
-            showToast({
-              severity: 'warn',
-              summary: 'Invalid date/time value or no change',
-              detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
-            })
-            return
-          }
+        const response = await requestService({
+          path: `timesheets/${timeSheetId}/in-out-punches`,
+          method: 'PATCH',
+          body: JSON.stringify(body),
+        })
 
-          if (field === 'in_time' || field === 'out_time') {
-            const newTimeStamp: string = newValueDateString
-            const punchId = field === 'in_time' ? rowData.in_id : rowData.out_id
-            const timeSheetId = rowData.timesheet_id
-
-            const body =
-              field === 'in_time'
-                ? { punch_in_id: punchId, new_time_stamp_in: newTimeStamp }
-                : { punch_out_id: punchId, new_time_stamp_out: newTimeStamp }
-
-            const response = await requestService({
-              path: `timesheets/${timeSheetId}/in-out-punches`,
-              method: 'PATCH',
-              body: JSON.stringify(body),
-            })
-
-            if (await handleErrorResponse(response)) {
-              await handleToastAndFetchTimesheets({
-                severity: 'success',
-                summary: `Updated ${field === 'in_time' ? 'In' : 'Out'} time`,
-                detail: formatInTimeZone(newTimeStamp, rowData.facility_timezone, 'hh:mm a (z)'),
-              })
-            }
-          }
-          break
-        }
-        case 'in_notes':
-        case 'out_notes': {
-          if (typeof newValue !== 'string') {
-            showToast({
-              severity: 'error',
-              summary: 'Invalid note value',
-              detail: 'Please enter a valid text',
-            })
-            return
-          }
-
-          const newNote = newValue
-          const punchId = field === 'in_notes' ? rowData.in_id : rowData.out_id
-          const timeSheetId = rowData.timesheet_id
-
-          const body = { punch_id: punchId, note: newNote }
-
-          const response = await requestService({
-            path: `timesheets/${timeSheetId}/punch-note`,
-            method: 'PATCH',
-            body: JSON.stringify(body),
+        if (await handleErrorResponse(response)) {
+          await handleToastAndFetchTimesheets({
+            severity: 'success',
+            summary: `Updated ${field === 'in_time' ? 'In' : 'Out'} time`,
+            detail: formatInTimeZone(newTimeStamp, rowData.facility_timezone, 'hh:mm a (z)'),
           })
-
-          if (await handleErrorResponse(response)) {
-            await handleToastAndFetchTimesheets({
-              severity: 'success',
-              summary: newNote ? `${field === 'in_notes' ? 'In' : 'Out'} Note updated:` : 'Note erased successfully',
-              detail: newNote ? `${newNote}` : '',
-            })
-          }
-
-          break
         }
-        default:
-          break
+      } else if (field === 'in_notes' || field === 'out_notes') {
+        if (typeof newValue !== 'string') {
+          showToast({
+            severity: 'error',
+            summary: 'Invalid note value',
+            detail: 'Please enter a valid text',
+          })
+          return
+        }
+
+        const newNote = newValue
+        const punchId = field === 'in_notes' ? rowData.in_id : rowData.out_id
+        const timeSheetId = rowData.timesheet_id
+
+        const body = { punch_id: punchId, note: newNote }
+
+        const response = await requestService({
+          path: `timesheets/${timeSheetId}/punch-note`,
+          method: 'PATCH',
+          body: JSON.stringify(body),
+        })
+
+        if (await handleErrorResponse(response)) {
+          await handleToastAndFetchTimesheets({
+            severity: 'success',
+            summary: newNote ? `${field === 'in_notes' ? 'In' : 'Out'} Note updated:` : 'Note erased successfully',
+            detail: newNote ? `${newNote}` : '',
+          })
+        }
       }
     } catch (error) {
-      if (error instanceof Error) {
-        showToast({ severity: 'error', summary: 'Error', detail: error.message })
-      } else {
-        showToast({ severity: 'error', summary: 'Error', detail: 'An unknown error occurred' })
-      }
+      showToast({
+        severity: 'error',
+        summary: 'Error',
+        detail: error instanceof Error ? error.message : 'An unknown error occurred',
+      })
     }
   }
 
