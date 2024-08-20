@@ -104,7 +104,7 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
     <form
       onSubmit={handleSubmit}
       className="mb-6 ml-auto mr-auto max-w-md space-y-4 px-4 sm:px-0"
-      data-testId="login-form">
+      data-testid="login-form">
       <div className="mx-auto max-w-lg text-center" />
       <div>
         <label htmlFor="email" className="sr-only">

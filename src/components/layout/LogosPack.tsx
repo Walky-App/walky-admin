@@ -1,6 +1,7 @@
 export const LogosPack = (logoType: string) => {
-  const currentURL = window.location.href
-  const isHydropallet = currentURL.toLowerCase().includes('hydropallet')
+  // const currentURL = window.location.href
+  // const isHydropallet = currentURL.toLowerCase().includes('hydropallet')
+  const isHydropallet = false
 
   switch (logoType) {
     case 'sidebar':
