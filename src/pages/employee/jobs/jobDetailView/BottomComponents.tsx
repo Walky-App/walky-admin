@@ -14,6 +14,42 @@ import { type IJob } from '../../../../interfaces/job'
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { formatToDate, formatToTime, isTodaySameAsTimeStamp, isValidDate } from '../../../../utils/timeUtils'
 
+export const JobDetailBottomComponents = ({
+  timesheets,
+  job,
+  userWorkingInThisJob,
+}: {
+  timesheets: ITimeSheet[] | null
+  job: IJob
+  userWorkingInThisJob: boolean
+}) => {
+  const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
+    if (!timesheets) {
+      return []
+    }
+
+    const allPunches = getAllPunches(timesheets)
+    const sortedPunches = sortPunches(allPunches)
+
+    return createPunchPairsWithTotalTime(sortedPunches)
+  }, [timesheets])
+
+  return (
+    <div className="col-span-1 md:col-span-3">
+      <TabView className="mt-4">
+        <TabPanel header="Timesheet">
+          <section className="mt-4">{timesheetTableTemplate(punchPairsAndTotalTime)}</section>
+        </TabPanel>
+        {userWorkingInThisJob ? (
+          <TabPanel header="Facility Images">
+            <section className="mt-4">{facilityImagesTemplate(job)}</section>
+          </TabPanel>
+        ) : null}
+      </TabView>
+    </div>
+  )
+}
+
 const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[]) => {
   return (
     <>
@@ -63,41 +99,5 @@ const facilityImagesTemplate = (job: IJob) => {
         ))}
       </ul>
     </>
-  )
-}
-
-export const JobDetailBottomComponents = ({
-  timesheets,
-  job,
-  userWorkingInThisJob,
-}: {
-  timesheets: ITimeSheet[] | null
-  job: IJob
-  userWorkingInThisJob: boolean
-}) => {
-  const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
-    if (!timesheets) {
-      return []
-    }
-
-    const allPunches = getAllPunches(timesheets)
-    const sortedPunches = sortPunches(allPunches)
-
-    return createPunchPairsWithTotalTime(sortedPunches)
-  }, [timesheets])
-
-  return (
-    <div className="col-span-1 md:col-span-3">
-      <TabView className="mt-4">
-        <TabPanel header="Timesheet">
-          <section className="mt-4">{timesheetTableTemplate(punchPairsAndTotalTime)}</section>
-        </TabPanel>
-        {userWorkingInThisJob ? (
-          <TabPanel header="Facility Images">
-            <section className="mt-4">{facilityImagesTemplate(job)}</section>
-          </TabPanel>
-        ) : null}
-      </TabView>
-    </div>
   )
 }
