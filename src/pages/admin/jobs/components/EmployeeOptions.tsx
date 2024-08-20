@@ -17,7 +17,7 @@ interface EmployeeOptionsProps {
   setJob: (job: IJob) => void
 }
 
-export const EmployeeOptions = ({ potentialApplicants, shiftId = '', setJob, job, shiftDay }: EmployeeOptionsProps) => {
+export const EmployeeOptions = ({ potentialApplicants, shiftId, setJob, job, shiftDay }: EmployeeOptionsProps) => {
   const { showToast } = useUtils()
   const [applicantId, setApplicantId] = useState<Record<string, string>>({})
 
