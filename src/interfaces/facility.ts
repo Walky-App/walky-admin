@@ -74,6 +74,7 @@ export interface IFacility {
   ]
   score_rating?: number
   dnr?: IDnr[]
+  label?: string
 }
 
 export interface IAddressDetails {

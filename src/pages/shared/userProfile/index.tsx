@@ -7,7 +7,7 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { Chat } from '../../../components/shared/messages/Chat'
 import { useAuth } from '../../../contexts/AuthContext'
-import { type IUser } from '../../../interfaces/User'
+import { type IUserPopulated, type IUser } from '../../../interfaces/User'
 import { type ITrainingData } from '../../../interfaces/training'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -24,7 +24,7 @@ export const UserProfile = () => {
   const [loading, setLoading] = useState(false)
   const [userTraining, setUserTraining] = useState<ITrainingData>({} as ITrainingData)
   const [loggedInUser, setLoggedInUser] = useState<IUser | undefined>(({} as IUser) ?? undefined)
-  const [formUser, setFormUser] = useState<IUser>({
+  const [formUser, setFormUser] = useState<IUserPopulated>({
     _id: '',
     access_token: '',
     active: false,
@@ -44,6 +44,7 @@ export const UserProfile = () => {
     createdAt: '',
     role: '',
     verified: false,
+    companies: [],
     is_approved: false,
   })
 
@@ -60,7 +61,7 @@ export const UserProfile = () => {
       try {
         const response = await requestService({ path: `users/${id ? id : user?._id}` })
         if (response.ok) {
-          const data = (await response.json()) as IUser
+          const data = await response.json()
           setFormUser(data)
 
           const trainingResponse = await requestService({ path: `lms/${id ? id : user?._id}` })
