@@ -50,10 +50,14 @@ export interface IPunchPairsWithData {
   facility_name: React.ReactNode
   facility_timezone: string
   total_time: string
-  worked_time: string
   scheduled_time: string
   difference: React.ReactNode
   punchesWithDetails: IPunchDetails[]
+  shift_id: string
+  shift_day: Date
+  shift_start_time: Date
+  shift_end_time: Date
+  job_id: string
   timesheet_id: string
 }
 
@@ -77,8 +81,17 @@ interface IJobDetails {
   }
 }
 
-export interface ITimesheetWithJobDetails extends ITimeSheet {
+interface IShiftDetailsSlim {
+  shift_id: string
+  shift_day: Date
+  shift_start_time: Date
+  shift_end_time: Date
+  job_id: string
+}
+
+export interface ITimesheetWithJobAndShiftDetails extends ITimeSheet {
   job_details: IJobDetails
+  shift_details: IShiftDetailsSlim
 }
 
 /**
@@ -151,15 +164,88 @@ export const formatDifference = (difference: number): React.ReactNode => {
   return difference > 0 ? <span style={{ color: 'red' }}>+{difference.toFixed(2)}</span> : difference.toFixed(2)
 }
 
+const lunchTimeTemplate = (lunchBreak: number) => {
+  if (lunchBreak) {
+    return <Chip label={`${lunchBreak.toLocaleString()} min`} icon="pi pi-clock" />
+  }
+  return null
+}
+
+const facilityNameTemplate = (jobDetails: IJobDetails, role: string) => {
+  const { facility } = jobDetails
+
+  const facilityButton = (
+    <Button
+      label={facility.name}
+      size="small"
+      severity="secondary"
+      disabled={role === 'employee'}
+      text
+      rounded
+      icon="pi pi-map-marker"
+    />
+  )
+
+  if (facility?.name && facility?._id) {
+    if (role === 'employee') {
+      return facilityButton
+    } else if (role === 'admin') {
+      return <Link to={`/admin/facilities/${facility._id}`}>{facilityButton}</Link>
+    }
+  }
+  return null
+}
+
+const jobTitleTemplate = (jobDetails: IJobDetails, role: string) => {
+  const { title } = jobDetails
+
+  if (title) {
+    return (
+      <Link to={`/${role}/jobs/${jobDetails._id}`}>
+        <Button label={title} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
+      </Link>
+    )
+  }
+  return null
+}
+
 /**
  * Processes an array of punches into a processed timesheet.
  * @param {IPunch[]} punches - An array of punches.
  * @param {string} jobId - The job ID associated with the timesheet.
  * @returns {IPunchPairsWithData} A processed timesheet.
  */
-export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): IPunchPairsWithData {
-  const { punches, _id, job_details } = timesheet
+export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDetails): IPunchPairsWithData {
   const role = roleChecker()
+
+  const { punches, _id, job_details, shift_details } = timesheet
+  const { shift_id, shift_day, shift_start_time, shift_end_time, job_id } = shift_details
+
+  const scheduledHours = job_details.total_hours
+  const lunchHours = job_details.lunch_break / 60
+
+  if (!punches.length) {
+    return {
+      time_stamp: '',
+      day: '',
+      in_time: null,
+      out_time: null,
+      lunch_time: lunchTimeTemplate(job_details.lunch_break),
+      job_title: jobTitleTemplate(job_details, role),
+      facility_name: facilityNameTemplate(job_details, role),
+      facility_timezone: '',
+      total_time: '',
+      scheduled_time: scheduledHours.toFixed(2),
+      difference: '',
+      punchesWithDetails: [],
+      shift_id,
+      shift_day,
+      shift_start_time,
+      shift_end_time,
+      job_id,
+      timesheet_id: _id,
+    }
+  }
 
   const sortedPunches = sortPunches(punches)
 
@@ -217,8 +303,6 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
     })
   }
 
-  const scheduledHours = job_details.total_hours
-  const lunchHours = job_details.lunch_break / 60
   const workedHours = totalWorkedTime / 1000 / 60 / 60
 
   const totalWorkedHours = workedHours - lunchHours
@@ -226,59 +310,24 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobDetails): 
 
   const adjustedWorkedScheduledDifference = adjustForFloatingPointError(workedScheduledDifference)
 
-  const lunchTimeTemplate = () => {
-    if (job_details.lunch_break) {
-      return <Chip label={`${job_details.lunch_break.toLocaleString()} min`} icon="pi pi-clock" />
-    }
-    return null
-  }
-
-  const facilityNameTemplate = () => {
-    const { facility } = job_details
-
-    if (facility?.name && facility?._id) {
-      if (role === 'employee') {
-        return (
-          <Button label={facility.name} size="small" severity="secondary" disabled rounded icon="pi pi-map-marker" />
-        )
-      } else if (role === 'admin') {
-        return (
-          <Link to={`/admin/facilities/${facility._id}`}>
-            <Button label={facility.name} size="small" severity="secondary" rounded outlined icon="pi pi-map-marker" />
-          </Link>
-        )
-      }
-    }
-    return null
-  }
-
-  const jobTitleTemplate = () => {
-    const { title } = job_details
-
-    if (title) {
-      return (
-        <Link to={`/${role}/jobs/${job_details._id}`}>
-          <Button label={title} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
-        </Link>
-      )
-    }
-    return null
-  }
-
   return {
     time_stamp: sortedPunches[0].time_stamp,
     day: format(sortedPunches[0].time_stamp, 'EEE, MMM d'),
     in_time: inTime,
     out_time: outTime,
-    lunch_time: lunchTimeTemplate(),
-    job_title: jobTitleTemplate(),
-    facility_name: facilityNameTemplate(),
+    lunch_time: lunchTimeTemplate(job_details.lunch_break),
+    job_title: jobTitleTemplate(job_details, role),
+    facility_name: facilityNameTemplate(job_details, role),
     facility_timezone: job_details.facility.timezone,
     total_time: totalWorkedHours.toFixed(2),
-    worked_time: totalWorkedHours.toFixed(2),
     scheduled_time: scheduledHours.toFixed(2),
     difference: formatDifference(adjustedWorkedScheduledDifference),
     punchesWithDetails: punchPairs,
+    shift_id,
+    shift_day,
+    shift_start_time,
+    shift_end_time,
+    job_id,
     timesheet_id: _id,
   }
 }
