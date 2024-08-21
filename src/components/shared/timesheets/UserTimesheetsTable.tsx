@@ -23,7 +23,7 @@ import {
   type IAdminUserTimesheetsColumnMeta,
   type IPunchDetails,
   type IPunchPairsWithData,
-  type ITimesheetWithJobDetails,
+  type ITimesheetWithJobAndShiftDetails,
   adjustForFloatingPointError,
 } from './timesheetsUtils'
 
@@ -45,7 +45,7 @@ const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
   { field: 'job_title', header: 'Job Title', sortable: false },
   { field: 'facility_name', header: 'Facility', sortable: false },
   { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
-  { field: 'worked_time', header: 'Total Hours', sortable: false },
+  { field: 'total_time', header: 'Total Hours', sortable: false },
   { field: 'difference', header: 'Difference', sortable: false },
 ]
 
@@ -124,7 +124,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         if (response.status === 204) {
           console.error('No timesheets found')
         } else {
-          const timesheets: ITimesheetWithJobDetails[] = await response.json()
+          const timesheets: ITimesheetWithJobAndShiftDetails[] = await response.json()
 
           const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
             return processPunchPairsWithData(timesheet)
@@ -370,18 +370,23 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
     if (field === 'out_time' && (!rowData[field] || rowData[field] === null)) {
       return rowData['in_time'] && isToday(rowData['in_time']) ? 'Clocked In' : 'Clock Out not recorded'
-    } else if (field === 'total_time' && (!rowData['out_time'] || rowData['out_time'] === null)) {
-      return ''
-    } else {
-      const value = rowData[field]
-      if (Array.isArray(value)) {
-        return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
-      } else if (value instanceof Date) {
-        return formatInTimeZone(value, rowData.facility_timezone, 'hh:mm a (z)')
-      } else {
-        return value
-      }
     }
+
+    if (field === 'total_time' && rowData['out_time'] == null) {
+      return ''
+    }
+
+    const value = rowData[field]
+
+    if (Array.isArray(value)) {
+      return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
+    }
+
+    if (value instanceof Date) {
+      return formatInTimeZone(value, rowData.facility_timezone, 'hh:mm a (z)')
+    }
+
+    return value
   }
 
   const allowExpansion = (rowData: IPunchPairsWithData) => {
