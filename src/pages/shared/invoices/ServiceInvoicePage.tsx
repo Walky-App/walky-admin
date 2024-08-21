@@ -13,9 +13,9 @@ import { TrashIcon } from '@heroicons/react/20/solid'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
-import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 import { DiscountDialog } from './DiscountDialog'
+import { SendInvoiceDialog } from './SendInvoiceDialog'
 
 export const ServiceInvoicePage = () => {
   const [invoice, setInvoice] = useState<IServiceInvoice | null>(null)
@@ -23,7 +23,7 @@ export const ServiceInvoicePage = () => {
   const [note, setNote] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const { showToast } = useUtils()
+  const [sendInvoiceShow, setSendInvoiceShow] = useState(false)
   const { invoiceId } = useParams()
   const role = roleChecker()
 
@@ -125,7 +125,8 @@ export const ServiceInvoicePage = () => {
   }
 
   const handlerSendEmail = async () => {
-    try {
+    setSendInvoiceShow(true)
+    /* try {
       setIsLoading(true)
       const response = await requestService({ path: `invoices/send-email/${invoiceId}`, method: 'POST' })
       if (!response.ok) {
@@ -142,7 +143,7 @@ export const ServiceInvoicePage = () => {
     } catch (error) {
       console.error('Error sending email:', error)
       setIsLoading(false)
-    }
+    } */
   }
 
   const handlerRemoveDiscount = async () => {
@@ -170,6 +171,7 @@ export const ServiceInvoicePage = () => {
   ) : (
     <div className="px-4 sm:px-6 lg:px-24 print:block print:text-xs">
       <DiscountDialog isOpen={isOpen} hidden={setIsOpen} handlerSetDiscount={handlerSetDiscount} />
+      <SendInvoiceDialog visible={sendInvoiceShow} setVisible={setSendInvoiceShow} />
       <div className="my-8 flex items-center justify-between">
         <img className="w</div>-auto h-16" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
         <h1 className="text-base text-xl font-semibold leading-6">
@@ -416,11 +418,11 @@ export const ServiceInvoicePage = () => {
             Authorized.net Transaction Number
             {invoice?.transaction_id != null ? <h2 className="text-base leading-6">{invoice.transaction_id}</h2> : null}
           </div>
-          {role === 'admin' && invoice?.status !== 'paid' ? (
+          {role === 'admin' ? (
             <Button className="mt-6 print:hidden" label="Re-generate" onClick={handlerRegenerateInvoice} />
           ) : null}
 
-          {role === 'admin' && invoice?.status !== 'paid' ? (
+          {role === 'admin' ? (
             <Button className="ml-3 mt-6 print:hidden" label="Charge" onClick={handlerAuthorizeInvoice} />
           ) : null}
 
