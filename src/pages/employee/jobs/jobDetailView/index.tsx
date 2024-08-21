@@ -7,9 +7,9 @@ import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
 
+import { type ITimesheetWithJobAndShiftDetails } from '../../../../components/shared/timesheets/timesheetsUtils'
 import { type IJob, type IJobShiftDay } from '../../../../interfaces/job'
 import { type Shifts } from '../../../../interfaces/shifts'
-import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { roleChecker } from '../../../../utils/roleChecker'
@@ -24,7 +24,7 @@ export const JobDetailView = () => {
   const [, setIsLoading] = useState(true)
   const [, setHasDateIntersection] = useState(false)
   const [jobHasEnded, setJobHasEnded] = useState(false)
-  const [timesheets, setTimesheets] = useState<ITimeSheet[] | null>(null)
+  const [timesheets, setTimesheets] = useState<ITimesheetWithJobAndShiftDetails[] | null>(null)
   const [employeeActive, setEmployeeActive] = useState<boolean>(true)
   const [formattedTimes, setFormattedTimes] = useState<string | null>(null)
 
