@@ -1,12 +1,11 @@
-import { format, set } from 'date-fns'
+import { format, isToday, set } from 'date-fns'
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 
 import { type IJob, type IJobShiftDay } from '../../../interfaces/job'
 import { type ITimeSheet } from '../../../interfaces/timesheet'
-import { isTodaySameAsTimeStamp, isValidDate } from '../../../utils/timeUtils'
-import { type IPunchPairWithTotalTime } from '../timesheets/timesheetsUtils'
+import { type IPunchPairsWithData } from '../timesheets/timesheetsUtils'
 
 export const getLatestTimeSheet = (array?: ITimeSheet[] | null) => {
   if (array?.length == null) {
@@ -71,19 +70,19 @@ export const workingApplicantShiftsDropdownData = (job: IJob, applicantId: strin
   return applicantShifts
 }
 
-export const applicantHasPunchInWithoutPunchOut = (punchPairsAndTotalTime: IPunchPairWithTotalTime[]) => {
+export const applicantHasPunchInWithoutPunchOut = (punchPairsAndTotalTime: IPunchPairsWithData[]) => {
   if (punchPairsAndTotalTime.length === 0) return false
 
-  if (punchPairsAndTotalTime.length > 0 && punchPairsAndTotalTime.some(punchPair => punchPair.punchOut == null))
+  if (punchPairsAndTotalTime.length > 0 && punchPairsAndTotalTime.some(punchPair => punchPair.out_time == null))
     return true
 
   return false
 }
 
-export const applicantHasPunchOut = (punchPairsAndTotalTime: IPunchPairWithTotalTime[]) => {
+export const applicantHasPunchOut = (punchPairsAndTotalTime: IPunchPairsWithData[]) => {
   if (punchPairsAndTotalTime.length === 0) return false
 
-  if (punchPairsAndTotalTime.length > 0 && punchPairsAndTotalTime.some(punchPair => punchPair.punchOut != null))
+  if (punchPairsAndTotalTime.length > 0 && punchPairsAndTotalTime.some(punchPair => punchPair.out_time != null))
     return true
 
   return false
@@ -106,44 +105,49 @@ export const shiftDayAndTimeUTC = (shiftDay: Date, shiftTime: string) => {
   return shiftDayAndTimeUTC
 }
 
-export const applicantTimesheetTableTemplate = (
-  punchPairsAndTotalTime: IPunchPairWithTotalTime[],
-  facilityTimezone: string,
-) => {
+export const applicantTimesheetTableTemplate = (punchPairsAndData: IPunchPairsWithData[], facilityTimezone: string) => {
   return (
     <>
       <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
       <DataTable
-        value={punchPairsAndTotalTime}
+        value={punchPairsAndData}
         stripedRows
         paginator
         rows={7}
         rowsPerPageOptions={[7, 14, 30]}
         emptyMessage="No time data to display">
         <Column
-          field="punchIn.time_stamp"
-          header="Date"
-          body={(rowData: IPunchPairWithTotalTime) =>
-            isValidDate(rowData.punchIn.time_stamp)
-              ? formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'P')
-              : 'No Timestamp'
+          header="Shift Day"
+          body={(rowData: IPunchPairsWithData) =>
+            rowData.shift_day != null ? formatInTimeZone(rowData.shift_day, facilityTimezone, 'PP') : 'No Timestamp'
           }
         />
         <Column
           header="Time In"
-          body={rowData => formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'hh:mm a (z)')}
+          body={(rowData: IPunchPairsWithData) =>
+            rowData.in_time != null
+              ? formatInTimeZone(rowData.in_time, facilityTimezone, 'hh:mm a (z)')
+              : rowData.in_time != null && isToday(rowData.in_time)
+                ? 'Clocked In'
+                : 'Clock In not recorded'
+          }
         />
         <Column
           header="Time Out"
-          body={(rowData: IPunchPairWithTotalTime) =>
-            rowData.punchOut
-              ? formatInTimeZone(rowData.punchOut.time_stamp, facilityTimezone, 'hh:mm a (z)')
-              : isTodaySameAsTimeStamp(rowData.punchIn.time_stamp)
+          body={(rowData: IPunchPairsWithData) =>
+            rowData.out_time != null
+              ? formatInTimeZone(rowData.out_time, facilityTimezone, 'hh:mm a (z)')
+              : rowData.in_time != null && isToday(rowData.in_time)
                 ? 'Clocked In'
                 : 'Clock Out not recorded'
           }
         />
-        <Column header="Total Time" body={(rowData: IPunchPairWithTotalTime) => rowData.totalTime ?? ''} />
+        <Column header="Lunch Break" body={(rowData: IPunchPairsWithData) => rowData.lunch_time} />
+        <Column header="Scheduled Hours" body={(rowData: IPunchPairsWithData) => rowData.scheduled_time ?? ''} />
+        <Column
+          header="Total Hours"
+          body={(rowData: IPunchPairsWithData) => (rowData.in_time && rowData.out_time ? rowData.total_time : '')}
+        />
       </DataTable>
     </>
   )
