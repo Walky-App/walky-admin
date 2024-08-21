@@ -35,7 +35,7 @@ interface ICompanyFormInputs {
   company_state: string
   company_zip: string
   company_country: string
-  facilities: string[]
+  facilities: string[] | IFacility[]
   users: string[]
 }
 

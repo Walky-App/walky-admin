@@ -72,7 +72,7 @@ export const StateSettings = () => {
   }
 
   return (
-    <div data-testId="state-settings">
+    <div data-testid="state-settings">
       <div className="mb-8">
         <div className="text-3xl font-bold">{state} Settings:</div>
       </div>
