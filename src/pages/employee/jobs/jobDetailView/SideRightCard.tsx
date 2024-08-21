@@ -8,6 +8,7 @@ import { Divider } from 'primereact/divider'
 import { GoogleMapComponent } from '../../../../components/shared/GoogleMap'
 import { Feedback } from '../../../../components/shared/dialog/Feedback'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
+import { type ITimesheetWithJobAndShiftDetails } from '../../../../components/shared/timesheets/timesheetsUtils'
 import { type IJobShiftDay, type IJob } from '../../../../interfaces/job'
 import { type ITokenInfo } from '../../../../interfaces/services'
 import { type Shifts } from '../../../../interfaces/shifts'
@@ -29,8 +30,8 @@ export const SideRightCard = ({
 }: {
   role: string
   user: ITokenInfo
-  timesheets: ITimeSheet[] | null
-  setTimesheets: (timesheets: ITimeSheet[] | null) => void
+  timesheets: ITimesheetWithJobAndShiftDetails[] | null
+  setTimesheets: (timesheets: ITimesheetWithJobAndShiftDetails[] | null) => void
   job: IJob
   jobHasEnded: boolean
   setJobHasEnded: (hasEnded: boolean) => void
@@ -131,7 +132,7 @@ export const SideRightCard = ({
       }
 
       if (response.status !== 204) {
-        const data: ITimeSheet[] = await response.json()
+        const data: ITimesheetWithJobAndShiftDetails[] = await response.json()
 
         const lastTimesheetId = getIdTimeSheetForToday()
 
