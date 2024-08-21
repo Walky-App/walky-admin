@@ -70,20 +70,18 @@ export const workingApplicantShiftsDropdownData = (job: IJob, applicantId: strin
   return applicantShifts
 }
 
-export const applicantHasPunchInWithoutPunchOut = (punchPairsAndTotalTime: IPunchPairsWithData[]) => {
-  if (punchPairsAndTotalTime.length === 0) return false
+export const applicantHasPunchInWithoutPunchOut = (punchPairsAndData: IPunchPairsWithData[]) => {
+  if (punchPairsAndData.length === 0) return false
 
-  if (punchPairsAndTotalTime.length > 0 && punchPairsAndTotalTime.some(punchPair => punchPair.out_time == null))
-    return true
+  if (punchPairsAndData.length > 0 && punchPairsAndData.some(punchPair => punchPair.out_time == null)) return true
 
   return false
 }
 
-export const applicantHasPunchOut = (punchPairsAndTotalTime: IPunchPairsWithData[]) => {
-  if (punchPairsAndTotalTime.length === 0) return false
+export const applicantHasPunchOut = (punchPairsAndData: IPunchPairsWithData[]) => {
+  if (punchPairsAndData.length === 0) return false
 
-  if (punchPairsAndTotalTime.length > 0 && punchPairsAndTotalTime.some(punchPair => punchPair.out_time != null))
-    return true
+  if (punchPairsAndData.length > 0 && punchPairsAndData.some(punchPair => punchPair.out_time != null)) return true
 
   return false
 }
