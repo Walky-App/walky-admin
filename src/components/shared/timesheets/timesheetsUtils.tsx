@@ -180,7 +180,6 @@ const facilityNameTemplate = (jobDetails: IJobDetails, role: string) => {
       size="small"
       severity="secondary"
       disabled={role === 'employee'}
-      text
       rounded
       icon="pi pi-map-marker"
     />
