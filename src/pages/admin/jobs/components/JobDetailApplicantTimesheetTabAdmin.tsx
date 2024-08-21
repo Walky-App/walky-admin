@@ -9,6 +9,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import {
+  applicantHasPunchInWithoutPunchOut,
   applicantHasPunchOut,
   applicantTimesheetTableTemplate,
   shiftDayAndTimeUTC,
@@ -109,6 +110,15 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
 
     return processedPunchPairsWithData.filter(punchPair => isEqual(selectedShift?.shift_day, punchPair.shift_day))
   }, [timesheets, selectedUserId, selectedShift])
+
+  useEffect(() => {
+    if (timesheets != null && timesheets.length > 0 && selectedShift) {
+      const isApplicantClockedIn =
+        !applicantHasPunchOut(punchPairsAndData) && applicantHasPunchInWithoutPunchOut(punchPairsAndData)
+
+      setIsClockedIn(isApplicantClockedIn)
+    }
+  }, [punchPairsAndData, selectedShift, timesheets])
 
   const punchInTimeStampUTC = selectedShift?.shift_day
     ? shiftDayAndTimeUTC(selectedShift.shift_day, selectedShift.shift_start_time)
