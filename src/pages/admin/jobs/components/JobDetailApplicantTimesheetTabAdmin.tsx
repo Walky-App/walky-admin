@@ -2,36 +2,32 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { formatInTimeZone } from 'date-fns-tz'
+import { isEqual } from 'date-fns'
 import { Button } from 'primereact/button'
-import { Column } from 'primereact/column'
-import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
 
 import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import { HtInfoTooltip } from '../../../../components/shared/general/HtInfoTooltip'
 import {
-  applicantHasPunchInWithoutPunchOut,
   applicantHasPunchOut,
+  applicantTimesheetTableTemplate,
   shiftDayAndTimeUTC,
   workingApplicantsDropdownData,
   workingApplicantShiftsDropdownData,
 } from '../../../../components/shared/jobDetail/jobDetailUtils'
 import {
-  type IPunchPairWithTotalTime,
-  createPunchPairsWithTotalTime,
-  getAllPunches,
-  sortPunches,
+  type IPunchPairsWithData,
+  type ITimesheetWithJobAndShiftDetails,
+  processPunchPairsWithData,
 } from '../../../../components/shared/timesheets/timesheetsUtils'
 import { type IJob } from '../../../../interfaces/job'
 import { type Shifts } from '../../../../interfaces/shifts'
 import { type ITimeSheet } from '../../../../interfaces/timesheet'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
-import { isTodaySameAsTimeStamp, isValidDate } from '../../../../utils/timeUtils'
 
 export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
-  const [timesheets, setTimesheets] = useState<ITimeSheet[]>([])
+  const [timesheets, setTimesheets] = useState<ITimesheetWithJobAndShiftDetails[]>([])
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>(undefined)
   const [selectedShift, setSelectedShift] = useState<Shifts | null>(null)
   const [isClockInOutLoading, setIsClockInOutLoading] = useState<boolean>(false)
@@ -81,7 +77,7 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
       }
 
       if (response.status === 200) {
-        const data: ITimeSheet[] = await response.json()
+        const data: ITimesheetWithJobAndShiftDetails[] = await response.json()
 
         setTimesheets(data)
       }
@@ -98,34 +94,21 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
     setSelectedShift(null)
   }, [getCurrentJobTimeSheets, selectedUserId])
 
-  const punchPairsAndTotalTime: IPunchPairWithTotalTime[] = useMemo(() => {
+  const punchPairsAndData: IPunchPairsWithData[] = useMemo(() => {
     if (!timesheets || !selectedUserId) {
       return []
     }
 
-    const allPunches = getAllPunches(timesheets)
-    const sortedPunches = sortPunches(allPunches)
-    const punchPairsAndTotalTime = createPunchPairsWithTotalTime(sortedPunches)
+    const processedPunchPairsWithData = timesheets.map(timesheet => {
+      return processPunchPairsWithData(timesheet)
+    })
 
     if (!selectedShift) {
-      return punchPairsAndTotalTime
+      return processedPunchPairsWithData
     }
 
-    return punchPairsAndTotalTime.filter(punchPair => {
-      const shiftDay = new Date(selectedShift?.shift_day)
-      const punchInDay = new Date(punchPair.punchIn.time_stamp)
-      return shiftDay.toDateString() === punchInDay.toDateString()
-    })
+    return processedPunchPairsWithData.filter(punchPair => isEqual(selectedShift?.shift_day, punchPair.shift_day))
   }, [timesheets, selectedUserId, selectedShift])
-
-  useEffect(() => {
-    if (timesheets != null && timesheets.length > 0 && selectedShift) {
-      const isApplicantClockedIn =
-        !applicantHasPunchOut(punchPairsAndTotalTime) && applicantHasPunchInWithoutPunchOut(punchPairsAndTotalTime)
-
-      setIsClockedIn(isApplicantClockedIn)
-    }
-  }, [punchPairsAndTotalTime, selectedShift, timesheets])
 
   const punchInTimeStampUTC = selectedShift?.shift_day
     ? shiftDayAndTimeUTC(selectedShift.shift_day, selectedShift.shift_start_time)
@@ -227,53 +210,13 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
               severity={isClockedIn ? 'warning' : undefined}
               onClick={() => clockInOut(isClockedIn ? 'clock-out' : 'clock-in')}
               loading={isClockInOutLoading}
-              disabled={!selectedShift || applicantHasPunchOut(punchPairsAndTotalTime)}
+              disabled={!selectedShift || applicantHasPunchOut(punchPairsAndData)}
               pt={{ label: { className: 'text-nowrap' } }}
             />
           </div>
         </div>
       </div>
-      <div>{timesheetTableTemplate(punchPairsAndTotalTime, job.facility.timezone)}</div>
+      <div>{applicantTimesheetTableTemplate(punchPairsAndData, job.facility.timezone)}</div>
     </section>
-  )
-}
-
-const timesheetTableTemplate = (punchPairsAndTotalTime: IPunchPairWithTotalTime[], facilityTimezone: string) => {
-  return (
-    <>
-      <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
-      <DataTable
-        value={punchPairsAndTotalTime}
-        stripedRows
-        paginator
-        rows={7}
-        rowsPerPageOptions={[7, 14, 30]}
-        emptyMessage="No time data to display">
-        <Column
-          field="punchIn.time_stamp"
-          header="Date"
-          body={(rowData: IPunchPairWithTotalTime) =>
-            isValidDate(rowData.punchIn.time_stamp)
-              ? formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'P')
-              : 'No Timestamp'
-          }
-        />
-        <Column
-          header="Time In"
-          body={rowData => formatInTimeZone(rowData.punchIn.time_stamp, facilityTimezone, 'hh:mm a (z)')}
-        />
-        <Column
-          header="Time Out"
-          body={(rowData: IPunchPairWithTotalTime) =>
-            rowData.punchOut
-              ? formatInTimeZone(rowData.punchOut.time_stamp, facilityTimezone, 'hh:mm a (z)')
-              : isTodaySameAsTimeStamp(rowData.punchIn.time_stamp)
-                ? 'Clocked In'
-                : 'Clock Out not recorded'
-          }
-        />
-        <Column header="Total Time" body={(rowData: IPunchPairWithTotalTime) => rowData.totalTime ?? ''} />
-      </DataTable>
-    </>
   )
 }
