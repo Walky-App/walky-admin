@@ -6,7 +6,7 @@ import { isAfter, isBefore, isEqual, isToday, isValid } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
-import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
+import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { Toolbar } from 'primereact/toolbar'
@@ -14,17 +14,18 @@ import { Toolbar } from 'primereact/toolbar'
 import { type IToastParameters } from '../../../interfaces/global'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { cn } from '../../../utils/cn'
 import { roleChecker } from '../../../utils/roleChecker'
 import { HtInputLabel } from '../forms/HtInputLabel'
 import {
-  type IPunchPair,
   processPunchPairsWithData,
   type IAdminUserTimesheetsColumnMeta,
-  type IPunchDetails,
   type IPunchPairsWithData,
   type ITimesheetWithJobAndShiftDetails,
   adjustForFloatingPointError,
+  formatDifference,
+  lunchTimeTemplate,
+  jobTitleTemplate,
+  facilityNameTemplate,
 } from './timesheetsUtils'
 
 interface IUserTimesheetsProps {
@@ -37,22 +38,9 @@ interface IPayPeriod {
   end: string
 }
 
-const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
-  { field: 'day', header: 'Day', sortable: false },
-  { field: 'in_time', header: 'First In', sortable: false },
-  { field: 'out_time', header: 'Last Out', sortable: false },
-  { field: 'lunch_time', header: 'Lunch Break', sortable: false },
-  { field: 'job_title', header: 'Job Title', sortable: false },
-  { field: 'facility_name', header: 'Facility', sortable: false },
-  { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
-  { field: 'total_time', header: 'Total Hours', sortable: false },
-  { field: 'difference', header: 'Difference', sortable: false },
-]
-
 export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
-  const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<IPayPeriod>()
 
@@ -66,7 +54,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     setIsLoading(true)
 
     if (!selectedUserId) {
-      console.error('selectedUserId is undefined')
       setIsLoading(false)
       return
     }
@@ -160,16 +147,8 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return [...processedTimeSheets].sort((a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
   }, [processedTimeSheets])
 
-  const cellEditor = (options: ColumnEditorOptions) => {
-    if (options.field === 'in_time' || options.field === 'out_time') {
-      return timeEditor(options)
-    } else {
-      return textEditor(options)
-    }
-  }
-
   const timeEditor = (options: ColumnEditorOptions) => {
-    const { in_time_stamp, out_time_stamp } = options.rowData as IPunchPair
+    const { in_time_stamp, out_time_stamp } = options.rowData as IPunchPairsWithData
 
     let timeStamp: string
     switch (options.field) {
@@ -206,20 +185,9 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     )
   }
 
-  const textEditor = (options: ColumnEditorOptions) => {
-    return (
-      <InputText
-        type="text"
-        value={options.value ?? ''}
-        onChange={e => options.editorCallback!(e.target.value)}
-        className="w-full"
-      />
-    )
-  }
-
   const onCellEditComplete = async (e: ColumnEvent) => {
     const { rowData, newValue, field, value } = e as {
-      rowData: IPunchPair
+      rowData: IPunchPairsWithData
       newValue: Date | string | null
       field: string
       value: Date | string | null
@@ -365,100 +333,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     }
   }
 
-  const getCellValue = (col: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>, rowData: IPunchPairsWithData) => {
-    const field = col.field as keyof IPunchPairsWithData
-
-    if (field === 'out_time' && (!rowData[field] || rowData[field] === null)) {
-      return rowData['in_time'] && isToday(rowData['in_time']) ? 'Clocked In' : 'Clock Out not recorded'
-    }
-
-    if (field === 'total_time' && rowData['out_time'] == null) {
-      return ''
-    }
-
-    const value = rowData[field]
-
-    if (Array.isArray(value)) {
-      return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
-    }
-
-    if (value instanceof Date) {
-      return formatInTimeZone(value, rowData.facility_timezone, 'hh:mm a (z)')
-    }
-
-    return value
-  }
-
-  const allowExpansion = (rowData: IPunchPairsWithData) => {
-    return !rowData['out_time'] || rowData['out_time'] !== null
-  }
-
-  const getEditableProps = (currentUserRole: string) => {
-    if (currentUserRole === 'admin') {
-      return {
-        editor: (options: ColumnEditorOptions) => cellEditor(options),
-        onCellEditComplete: onCellEditComplete,
-      }
-    }
-    return {}
-  }
-
-  const rowExpansionTemplate = (data: IPunchPairsWithData) => {
-    const commonColumnStyle = ''
-    const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
-    const editableCellColumnProps = getEditableProps(currentUserRole)
-    const punchColumns = [
-      {
-        field: 'in_time',
-        header: 'Punch In',
-        body: (rowData: IPunchDetails) =>
-          rowData.in_time ? formatInTimeZone(rowData.in_time, data.facility_timezone, 'hh:mm a (z)') : 'Not recorded',
-      },
-      currentUserRole === 'admin' && {
-        field: 'in_notes',
-        header: 'In Notes',
-        body: (rowData: IPunchDetails) => (rowData.in_notes ? rowData.in_notes : '✎'),
-      },
-      {
-        field: 'out_time',
-        header: 'Punch Out',
-        body: (rowData: IPunchDetails) =>
-          rowData.out_time
-            ? formatInTimeZone(rowData.out_time, data.facility_timezone, 'hh:mm a (z)')
-            : rowData.in_time && isToday(rowData.in_time)
-              ? 'Clocked In'
-              : 'Clock Out not recorded',
-      },
-      currentUserRole === 'admin' && {
-        field: 'out_notes',
-        header: 'Out Notes',
-        body: (rowData: IPunchDetails) => (rowData.out_notes ? rowData.out_notes : '✎'),
-      },
-    ]
-
-    return (
-      <div className="p-4">
-        <h5 className="text-sm font-semibold">Punch Details</h5>
-        <DataTable value={data.punchesWithDetails} editMode="cell">
-          {punchColumns.map(column => {
-            if (typeof column === 'object' && column.body != null) {
-              return (
-                <Column
-                  key={column.field}
-                  className={cn([commonColumnStyle, editableCellColumnStyle])}
-                  field={column.field}
-                  header={column.header}
-                  body={column.body}
-                  {...editableCellColumnProps}
-                />
-              )
-            }
-          })}
-        </DataTable>
-      </div>
-    )
-  }
-
   const totalTimeSum = sortedTimeSheets.reduce((sum, record) => {
     const hours = parseFloat(record.total_time)
     return sum + hours
@@ -486,6 +360,97 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     </div>
   )
 
+  const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
+
+  const textEditor = (options: ColumnEditorOptions) => {
+    return (
+      <InputText
+        type="text"
+        value={options.value ?? ''}
+        onChange={e => options.editorCallback!(e.target.value)}
+        className="w-full"
+      />
+    )
+  }
+
+  const cellEditor = (options: ColumnEditorOptions) => {
+    if (options.field === 'in_time' || options.field === 'out_time') {
+      return timeEditor(options)
+    } else if (options.field === 'in_notes' || options.field === 'out_notes') {
+      return textEditor(options)
+    }
+  }
+
+  const getEditableProps = (currentUserRole: string) => {
+    if (currentUserRole === 'admin') {
+      return {
+        editor: (options: ColumnEditorOptions) => cellEditor(options),
+        onCellEditComplete: onCellEditComplete,
+        className: editableCellColumnStyle,
+      }
+    }
+    return {}
+  }
+
+  const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
+    {
+      field: 'shift_day',
+      header: 'Shift Day',
+      sortable: false,
+      body: rowData => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'PP'),
+    },
+    {
+      field: 'in_time',
+      header: 'In',
+      sortable: false,
+      body: rowData =>
+        rowData.in_time != null
+          ? formatInTimeZone(rowData.in_time, rowData.facility_timezone, 'hh:mm a (z)')
+          : rowData.in_time != null && isToday(rowData.in_time)
+            ? 'Clocked In'
+            : 'Clock In not recorded',
+      ...getEditableProps(currentUserRole),
+    },
+    {
+      field: 'out_time',
+      header: 'Out',
+      sortable: false,
+      body: rowData =>
+        rowData.out_time != null
+          ? formatInTimeZone(rowData.out_time, rowData.facility_timezone, 'hh:mm a (z)')
+          : rowData.in_time != null && isToday(rowData.in_time)
+            ? 'Clocked In'
+            : 'Clock Out not recorded',
+      ...getEditableProps(currentUserRole),
+    },
+    {
+      field: 'lunch_time',
+      header: 'Lunch Break',
+      sortable: false,
+      body: rowData => lunchTimeTemplate(rowData.lunch_time),
+    },
+    {
+      field: 'job_title',
+      header: 'Job Title',
+      sortable: false,
+      body: rowData => jobTitleTemplate(rowData.job_title, rowData.job_id, currentUserRole),
+    },
+    {
+      field: 'facility_name',
+      header: 'Facility',
+      sortable: false,
+      body: rowData => facilityNameTemplate(rowData.facility_name, rowData.facility_id, currentUserRole),
+    },
+    { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
+    { field: 'total_time', header: 'Total Hours', sortable: false },
+    {
+      field: 'difference',
+      header: 'Difference',
+      sortable: false,
+      body: rowData => formatDifference(rowData.difference),
+    },
+  ]
+
   return (
     <>
       {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
@@ -493,6 +458,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       <DataTable
         header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${adjustedWorkedScheduledDifference.toFixed(2)} hours`}
         dataKey="timesheet_id"
+        editMode="cell"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
         size="small"
@@ -501,17 +467,21 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         rowsPerPageOptions={[7, 14, 30, 90]}
         stripedRows
         showGridlines
-        expandedRows={expandedRows}
-        onRowToggle={e => setExpandedRows(e.data)}
-        rowExpansionTemplate={rowExpansionTemplate}
         pt={{
           header: {
             className: 'font-normal text-sm text-gray-500',
           },
         }}>
-        <Column expander={allowExpansion} />
         {cols.map(col => (
-          <Column key={col.field} field={col.field} header={col.header} body={rowData => getCellValue(col, rowData)} />
+          <Column
+            key={col.field}
+            field={col.field}
+            header={col.header}
+            body={col.body}
+            editor={col.editor}
+            className={col.className}
+            onCellEditComplete={col.onCellEditComplete}
+          />
         ))}
       </DataTable>
     </>
