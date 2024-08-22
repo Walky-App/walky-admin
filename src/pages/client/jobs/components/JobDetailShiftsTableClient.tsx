@@ -19,10 +19,7 @@ export const ShiftsTableClient = ({ job }: IShiftTableAdminProps) => {
             <li key={day.shifts_id._id} className="flex items-center justify-between py-4">
               <Fieldset
                 legend={
-                  'Day ' +
-                  (index + 1) +
-                  ' - ' +
-                  formatInTimeZone(new Date(day.day), job.facility.timezone, 'EEEE, MMMM d, yyyy')
+                  'Day ' + (index + 1) + ' - ' + formatInTimeZone(day.day, job.facility.timezone, 'EEEE, MMMM d, yyyy')
                 }
                 toggleable
                 className="w-3/4">
