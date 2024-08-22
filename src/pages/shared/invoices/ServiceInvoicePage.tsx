@@ -171,7 +171,13 @@ export const ServiceInvoicePage = () => {
   ) : (
     <div className="px-4 sm:px-6 lg:px-24 print:block print:text-xs">
       <DiscountDialog isOpen={isOpen} hidden={setIsOpen} handlerSetDiscount={handlerSetDiscount} />
-      <SendInvoiceDialog visible={sendInvoiceShow} setVisible={setSendInvoiceShow} />
+      <SendInvoiceDialog
+        invoiceId={invoiceId}
+        setInvoice={setInvoice}
+        setIsLoading={setIsLoading}
+        setVisible={setSendInvoiceShow}
+        visible={sendInvoiceShow}
+      />
       <div className="my-8 flex items-center justify-between">
         <img className="w</div>-auto h-16" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
         <h1 className="text-base text-xl font-semibold leading-6">
