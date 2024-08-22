@@ -1,4 +1,4 @@
-import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Chip } from 'primereact/chip'
 import { Fieldset } from 'primereact/fieldset'
 
@@ -18,7 +18,9 @@ export const ShiftsTableClient = ({ job }: IShiftTableAdminProps) => {
           return (
             <li key={day.shifts_id._id} className="flex items-center justify-between py-4">
               <Fieldset
-                legend={'Day ' + (index + 1) + ' - ' + format(new Date(day.day), 'EEEE, MMMM d, yyyy')}
+                legend={
+                  'Day ' + (index + 1) + ' - ' + formatInTimeZone(day.day, job.facility.timezone, 'EEEE, MMMM d, yyyy')
+                }
                 toggleable
                 className="w-3/4">
                 {day?.shifts_id?.user_shifts?.map((userShift: UserShiftsPopulate) => {
