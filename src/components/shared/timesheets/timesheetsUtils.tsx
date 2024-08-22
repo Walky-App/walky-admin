@@ -2,57 +2,39 @@ import React from 'react'
 
 import { Link } from 'react-router-dom'
 
-import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
-import { type ColumnEditorOptions } from 'primereact/column'
+import { type ColumnEvent, type ColumnEditorOptions } from 'primereact/column'
 
 import { type IPunch, type ITimeSheet } from '../../../interfaces/timesheet'
-import { roleChecker } from '../../../utils/roleChecker'
 import { convertMillisecondsToReadableTime } from '../../../utils/timeUtils'
 
 export interface IAdminUserTimesheetsColumnMeta<T> {
   field: keyof T
   header: React.ReactNode
   sortable?: boolean
+  body?: (rowData: T) => React.ReactNode
   editor?: (options: ColumnEditorOptions) => React.ReactNode
+  onCellEditComplete?: (e: ColumnEvent) => void
+  className?: string
 }
 
-export interface IPunchPair {
-  day: string
-  in_id: string
-  out_id: string
-  in_time: Date | null
-  out_time: Date | null
-  in_time_stamp: string
-  out_time_stamp: string
-  total_time: string
-  timesheet_id: string
-  facility_timezone: string
-  in_notes?: string
-  out_notes?: string
-}
-
-export interface IPunchDetails {
-  in_time: Date | null
-  out_time: Date | null
-  total_time: string
-  in_notes?: string
-  out_notes?: string
-}
 export interface IPunchPairsWithData {
   time_stamp: string
-  day: string
   in_time: Date | null
   out_time: Date | null
-  lunch_time: React.ReactNode
-  job_title: React.ReactNode
-  facility_name: React.ReactNode
+  in_id: string
+  out_id: string
+  in_time_stamp: string
+  out_time_stamp: string
+  lunch_time: number
+  job_title: string
+  facility_name: string
   facility_timezone: string
+  facility_id: string
   total_time: string
   scheduled_time: string
-  difference: React.ReactNode
-  punchesWithDetails: IPunchDetails[]
+  difference: number
   shift_id: string
   shift_day: Date
   shift_start_time: Date
@@ -164,19 +146,17 @@ export const formatDifference = (difference: number): React.ReactNode => {
   return difference > 0 ? <span style={{ color: 'red' }}>+{difference.toFixed(2)}</span> : difference.toFixed(2)
 }
 
-const lunchTimeTemplate = (lunchBreak: number) => {
+export const lunchTimeTemplate = (lunchBreak: number) => {
   if (lunchBreak) {
     return <Chip label={`${lunchBreak.toLocaleString()} min`} icon="pi pi-clock" />
   }
   return null
 }
 
-const facilityNameTemplate = (jobDetails: IJobDetails, role: string) => {
-  const { facility } = jobDetails
-
+export const facilityNameTemplate = (facilityName: string, id: string, role: string) => {
   const facilityButton = (
     <Button
-      label={facility.name}
+      label={facilityName}
       size="small"
       severity="secondary"
       disabled={role === 'employee'}
@@ -186,23 +166,17 @@ const facilityNameTemplate = (jobDetails: IJobDetails, role: string) => {
     />
   )
 
-  if (facility?.name && facility?._id) {
-    if (role === 'employee') {
-      return facilityButton
-    } else if (role === 'admin') {
-      return <Link to={`/admin/facilities/${facility._id}`}>{facilityButton}</Link>
-    }
+  if (facilityName && id) {
+    return role === 'admin' ? <Link to={`/admin/facilities/${id}`}>{facilityButton}</Link> : facilityButton
   }
   return null
 }
 
-const jobTitleTemplate = (jobDetails: IJobDetails, role: string) => {
-  const { title } = jobDetails
-
-  if (title) {
+export const jobTitleTemplate = (jobTitle: string, id: string, role: string) => {
+  if (jobTitle) {
     return (
-      <Link to={`/${role}/jobs/${jobDetails._id}`}>
-        <Button label={title} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
+      <Link to={`/${role}/jobs/${id}`}>
+        <Button label={jobTitle} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
       </Link>
     )
   }
@@ -216,8 +190,6 @@ const jobTitleTemplate = (jobDetails: IJobDetails, role: string) => {
  * @returns {IPunchPairsWithData} A processed timesheet.
  */
 export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDetails): IPunchPairsWithData {
-  const role = roleChecker()
-
   const { punches, _id, job_details, shift_details } = timesheet
   const { shift_id, shift_day, shift_start_time, shift_end_time, job_id } = shift_details
 
@@ -227,22 +199,25 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
   if (!punches.length) {
     return {
       time_stamp: '',
-      day: '',
       in_time: null,
       out_time: null,
-      lunch_time: lunchTimeTemplate(job_details.lunch_break),
-      job_title: jobTitleTemplate(job_details, role),
-      facility_name: facilityNameTemplate(job_details, role),
-      facility_timezone: '',
+      in_id: '',
+      out_id: '',
+      in_time_stamp: '',
+      out_time_stamp: '',
+      lunch_time: job_details.lunch_break,
+      job_id,
+      job_title: job_details.title,
+      facility_id: job_details.facility._id,
+      facility_name: job_details.facility.name,
+      facility_timezone: job_details.facility.timezone,
       total_time: '',
       scheduled_time: scheduledHours.toFixed(2),
-      difference: '',
-      punchesWithDetails: [],
+      difference: 0,
       shift_id,
       shift_day,
       shift_start_time,
       shift_end_time,
-      job_id,
       timesheet_id: _id,
     }
   }
@@ -254,7 +229,10 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
   let punchOut = null
   let inTime: Date | null = null
   let outTime: Date | null = null
-  const punchPairs: IPunchPair[] = []
+  let inId = ''
+  let outId = ''
+  let inTimeStamp = ''
+  let outTimeStamp = ''
 
   for (const punch of sortedPunches) {
     if (punch.punch_in) {
@@ -267,40 +245,21 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
       punchOut = punch
       const totalTime = Date.parse(punchOut.time_stamp) - Date.parse(punchIn.time_stamp)
       totalWorkedTime += totalTime
+
       outTime = new Date(punchOut.time_stamp)
-      punchPairs.push({
-        day: format(punchOut.time_stamp, 'EEE, MMM d'),
-        in_id: punchIn._id,
-        out_id: punchOut._id,
-        in_time: new Date(punchIn.time_stamp),
-        out_time: new Date(punchOut.time_stamp),
-        in_time_stamp: punchIn.time_stamp,
-        out_time_stamp: punchOut.time_stamp,
-        total_time: (totalTime / 1000 / 60 / 60).toFixed(2),
-        in_notes: punchIn.note,
-        out_notes: punchOut.note,
-        timesheet_id: _id,
-        facility_timezone: job_details.facility.timezone,
-      })
+      inId = punchIn._id
+      outId = punchOut._id
+      inTimeStamp = punchIn.time_stamp
+      outTimeStamp = punchOut.time_stamp
       punchIn = null
     }
   }
 
   if (!outTime && punchIn) {
-    punchPairs.push({
-      day: format(punchIn.time_stamp, 'EEE, MMM d'),
-      in_id: punchIn._id,
-      out_id: '',
-      in_time: new Date(punchIn.time_stamp),
-      out_time: null,
-      in_time_stamp: punchIn.time_stamp,
-      out_time_stamp: '',
-      total_time: '',
-      in_notes: punchIn.note,
-      out_notes: '',
-      timesheet_id: _id,
-      facility_timezone: job_details.facility.timezone,
-    })
+    inId = punchIn._id
+    outId = ''
+    inTimeStamp = punchIn.time_stamp
+    outTimeStamp = ''
   }
 
   const workedHours = totalWorkedTime / 1000 / 60 / 60
@@ -312,22 +271,25 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
 
   return {
     time_stamp: sortedPunches[0].time_stamp,
-    day: format(sortedPunches[0].time_stamp, 'EEE, MMM d'),
     in_time: inTime,
     out_time: outTime,
-    lunch_time: lunchTimeTemplate(job_details.lunch_break),
-    job_title: jobTitleTemplate(job_details, role),
-    facility_name: facilityNameTemplate(job_details, role),
+    in_id: inId,
+    out_id: outId,
+    in_time_stamp: inTimeStamp,
+    out_time_stamp: outTimeStamp,
+    lunch_time: job_details.lunch_break,
+    job_id,
+    job_title: job_details.title,
+    facility_id: job_details.facility._id,
+    facility_name: job_details.facility.name,
     facility_timezone: job_details.facility.timezone,
     total_time: totalWorkedHours.toFixed(2),
     scheduled_time: scheduledHours.toFixed(2),
-    difference: formatDifference(adjustedWorkedScheduledDifference),
-    punchesWithDetails: punchPairs,
+    difference: adjustedWorkedScheduledDifference,
     shift_id,
     shift_day,
     shift_start_time,
     shift_end_time,
-    job_id,
     timesheet_id: _id,
   }
 }
