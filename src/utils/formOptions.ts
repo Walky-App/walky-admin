@@ -135,7 +135,7 @@ export const jobTipsOptions = [
   { label: 'Water is provided', value: 'Water is provided' },
   { label: 'Outdoor sun exposure', value: 'Outdoor sun exposure' },
   { label: 'Must be able to lift 50 lbs', value: 'Must be able to lift 50 lbs' },
-  { label: 'Steeltoe shoes', value: 'Steeltoe shoes' },
-  { label: 'Labcoat Provided', value: 'Labcoat Provided' },
+  { label: 'Steel toe shoes', value: 'Steel toe shoes' },
+  { label: 'Lab coat Provided', value: 'Lab coat Provided' },
   { label: 'Head / Beard net required', value: 'Head / Beard net required' },
 ]
