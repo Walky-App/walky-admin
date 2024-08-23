@@ -1,4 +1,4 @@
-import { format, isToday, set } from 'date-fns'
+import { isToday, set } from 'date-fns'
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
@@ -52,7 +52,7 @@ export const workingApplicantsDropdownData = (job: IJob) => {
 
 export const workingApplicantShiftsDropdownData = (job: IJob, applicantId: string) => {
   const allShiftsData = job.job_days.map((day, index) => ({
-    label: `Day ${index + 1} - ${format(new Date(day.day), 'EEEE, MMMM d, yyyy')}`,
+    label: `Day ${index + 1} - ${formatInTimeZone(day.day, job.facility.timezone, 'EEEE, MMMM d, yyyy')}`,
     value: day.shifts_id,
   }))
 
@@ -62,8 +62,8 @@ export const workingApplicantShiftsDropdownData = (job: IJob, applicantId: strin
   })
 
   applicantShifts.sort((a, b) => {
-    const shiftDayA = new Date(a.value.shift_day).getTime()
-    const shiftDayB = new Date(b.value.shift_day).getTime()
+    const shiftDayA = new Date(b.value.shift_day).getTime()
+    const shiftDayB = new Date(a.value.shift_day).getTime()
     return shiftDayB - shiftDayA
   })
 
@@ -73,7 +73,10 @@ export const workingApplicantShiftsDropdownData = (job: IJob, applicantId: strin
 export const applicantHasPunchInWithoutPunchOut = (punchPairsAndData: IPunchPairsWithData[]) => {
   if (punchPairsAndData.length === 0) return false
 
-  if (punchPairsAndData.length > 0 && punchPairsAndData.some(punchPair => punchPair.out_time == null)) return true
+  const hasPunchIn = punchPairsAndData.some(punchPair => punchPair.in_time != null)
+  const hasPunchOut = punchPairsAndData.some(punchPair => punchPair.out_time != null)
+
+  if (punchPairsAndData.length > 0 && hasPunchIn && !hasPunchOut) return true
 
   return false
 }
@@ -81,7 +84,9 @@ export const applicantHasPunchInWithoutPunchOut = (punchPairsAndData: IPunchPair
 export const applicantHasPunchOut = (punchPairsAndData: IPunchPairsWithData[]) => {
   if (punchPairsAndData.length === 0) return false
 
-  if (punchPairsAndData.length > 0 && punchPairsAndData.some(punchPair => punchPair.out_time != null)) return true
+  const hasPunchOut = punchPairsAndData.some(punchPair => punchPair.out_time != null)
+
+  if (punchPairsAndData.length > 0 && hasPunchOut) return true
 
   return false
 }
@@ -109,6 +114,7 @@ export const applicantTimesheetTableTemplate = (punchPairsAndData: IPunchPairsWi
       <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
       <DataTable
         value={punchPairsAndData}
+        dataKey="shift_id"
         stripedRows
         paginator
         rows={7}
@@ -117,7 +123,9 @@ export const applicantTimesheetTableTemplate = (punchPairsAndData: IPunchPairsWi
         <Column
           header="Shift Day"
           body={(rowData: IPunchPairsWithData) =>
-            rowData.shift_day != null ? formatInTimeZone(rowData.shift_day, facilityTimezone, 'PP') : 'No Timestamp'
+            rowData.shift_day != null
+              ? formatInTimeZone(rowData.shift_day, facilityTimezone, 'EEE, MMM d')
+              : 'No Timestamp'
           }
         />
         <Column
