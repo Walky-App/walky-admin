@@ -3,6 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
 import { type ColumnEditorOptions } from 'primereact/column'
@@ -311,8 +312,12 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
   const adjustedWorkedScheduledDifference = adjustForFloatingPointError(workedScheduledDifference)
 
   return {
+    shift_id,
+    shift_day,
+    shift_start_time,
+    shift_end_time,
     time_stamp: sortedPunches[0].time_stamp,
-    day: format(sortedPunches[0].time_stamp, 'EEE, MMM d'),
+    day: formatInTimeZone(sortedPunches[0].time_stamp, job_details.facility.timezone, 'EEE, MMM d'),
     in_time: inTime,
     out_time: outTime,
     lunch_time: lunchTimeTemplate(job_details.lunch_break),
@@ -323,10 +328,6 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
     scheduled_time: scheduledHours.toFixed(2),
     difference: formatDifference(adjustedWorkedScheduledDifference),
     punchesWithDetails: punchPairs,
-    shift_id,
-    shift_day,
-    shift_start_time,
-    shift_end_time,
     job_id,
     timesheet_id: _id,
   }
