@@ -82,11 +82,15 @@ export const JobDetailApplicantTimesheetTabAdmin = ({ job }: { job: IJob }) => {
 
         setTimesheets(data)
       }
+
+      if (response.status === 204) {
+        setTimesheets([])
+      }
     } catch (error) {
       console.error('Failed to fetch timesheet:', error)
       setTimesheets([])
     }
-  }, [job?._id, selectedUserId])
+  }, [job, selectedUserId])
 
   useEffect(() => {
     if (selectedUserId == null) return

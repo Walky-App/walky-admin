@@ -270,6 +270,10 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
   const adjustedWorkedScheduledDifference = adjustForFloatingPointError(workedScheduledDifference)
 
   return {
+    shift_id,
+    shift_day,
+    shift_start_time,
+    shift_end_time,
     time_stamp: sortedPunches[0].time_stamp,
     in_time: inTime,
     out_time: outTime,
@@ -286,10 +290,6 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
     total_time: totalWorkedHours.toFixed(2),
     scheduled_time: scheduledHours.toFixed(2),
     difference: adjustedWorkedScheduledDifference,
-    shift_id,
-    shift_day,
-    shift_start_time,
-    shift_end_time,
     timesheet_id: _id,
   }
 }

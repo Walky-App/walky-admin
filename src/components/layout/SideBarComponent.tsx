@@ -239,9 +239,9 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                   Found a bug? Let us know so we can fix it. We appreciate your help in improving our platform.
                 </p>
                 <p className="mt-4 text-sm font-semibold leading-6 text-green-600">
-                  Contact us <span aria-hidden="true">&rarr;</span>{' '}
-                  <a href="mailto:bugsx@hemptemps.com" className="hover:underline">
-                    bugsx@hemptemps.com
+                  Contact us <span aria-hidden="true">&rarr;</span>
+                  <a href="mailto:bugs@hemptemps.com" className="hover:underline">
+                    bugs@hemptemps.com
                   </a>
                 </p>
               </div>

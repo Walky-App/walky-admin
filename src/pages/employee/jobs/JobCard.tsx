@@ -103,7 +103,8 @@ export const JobCard = ({ job, handleSaveUnsaveJob, status }: JobListItemProps) 
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                 <div className="text-stone-500">Job Dates</div>
                 <div className="text-black">
-                  {earliestDate?.toLocaleDateString()} - {latestDate?.toLocaleDateString()}
+                  {earliestDate ? formatInTimeZone(earliestDate, job.facility?.timezone, 'P') : null} -
+                  {latestDate ? formatInTimeZone(latestDate, job.facility?.timezone, 'P') : null}
                 </div>
               </div>
               <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">

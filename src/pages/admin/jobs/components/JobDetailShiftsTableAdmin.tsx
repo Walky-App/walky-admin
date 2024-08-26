@@ -1,6 +1,6 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 
-import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
 import { Dialog } from 'primereact/dialog'
@@ -124,7 +124,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                   'Day ' +
                   (index + 1) +
                   ' - ' +
-                  format(new Date(day.day), 'EEEE, MMMM d, yyyy') +
+                  formatInTimeZone(day.day, job.facility.timezone, 'EEEE, MMMM d, yyyy') +
                   ' - ' +
                   'Shifts (' +
                   day?.shifts_id?.user_shifts?.length +
