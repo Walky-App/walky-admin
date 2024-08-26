@@ -1,0 +1,130 @@
+import { useState } from 'react'
+
+import { useNavigate } from 'react-router-dom'
+
+import { isToday, isYesterday } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
+import { Button } from 'primereact/button'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
+import { IconField } from 'primereact/iconfield'
+import { InputIcon } from 'primereact/inputicon'
+import { InputText } from 'primereact/inputtext'
+
+import { type IJob } from '../../../interfaces/job'
+
+export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => {
+  const [globalFilter, setGlobalFilter] = useState<string>('')
+
+  const navigate = useNavigate()
+
+  const handleIsShiftsFilled = (job: IJob) =>
+    job.job_days?.every(jobDay => jobDay.shifts_id?.user_shifts?.length === job.vacancy)
+
+  const rowClassName = (job: IJob) => {
+    if (job.is_active && !handleIsShiftsFilled(job)) {
+      return 'bg-red-100'
+    } else if (job.is_active) {
+      return 'bg-green-100'
+    } else if (!job.is_active) {
+      return 'bg-none'
+    }
+  }
+
+  const getHeader = () => {
+    return (
+      <div className="justify-content-end flex">
+        <IconField iconPosition="left">
+          <InputIcon className="pi pi-search" />
+          <InputText
+            type="search"
+            onInput={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
+            placeholder="Search..."
+          />
+        </IconField>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card text-2xl">
+      <DataTable
+        data-testid="states-detail-view"
+        value={jobs}
+        paginator
+        rows={20}
+        rowsPerPageOptions={[20, 40, 50]}
+        rowClassName={rowClassName}
+        sortOrder={-1}
+        sortField="createdAt"
+        scrollable
+        scrollHeight="calc(100vh - 300px)"
+        frozenWidth="200px"
+        dataKey="_id"
+        className="text-lg"
+        globalFilter={globalFilter}
+        header={getHeader()}
+        resizableColumns
+        showGridlines
+        tableStyle={{ minWidth: '50rem' }}>
+        <Column
+          frozen
+          field="uid"
+          header="#"
+          body={job => <Button text label={job.uid} onClick={() => navigate(`/${role}/jobs/${job._id}`)} />}
+        />
+        <Column field="facility.name" header="Facility" />
+        <Column
+          sortable
+          field="createdAt"
+          header="Created"
+          body={(job: IJob) => {
+            return isToday(job.createdAt)
+              ? 'Today'
+              : isYesterday(job.createdAt)
+                ? 'Yesterday'
+                : formatInTimeZone(job.createdAt, job.facility.timezone, 'MMM d')
+          }}
+        />
+        <Column
+          sortable
+          header="Starts"
+          body={(item: IJob) => {
+            return formatInTimeZone(item.job_dates[0], item.facility.timezone, 'MMM d')
+          }}
+        />
+        <Column
+          header="Ends"
+          body={(item: IJob) =>
+            formatInTimeZone(item.job_dates[item.job_dates.length - 1], item.facility.timezone, 'MMM d')
+          }
+        />
+        <Column field="job_days.length" header="Days" />
+        <Column field="vacancy" header="Shifts" />
+        <Column field="total_hours" header="Hours" />
+        <Column field="is_active" header="Status" sortable body={(d: IJob) => (d.is_active ? 'Active' : 'Pending')} />
+        <Column
+          header="Filled"
+          body={(singleJob: IJob) =>
+            handleIsShiftsFilled(singleJob)
+              ? '✅'
+              : `${singleJob.job_days.reduce((acc, jobDay) => {
+                  if (jobDay?.shifts_id?.user_shifts?.length !== undefined) {
+                    if (
+                      jobDay?.shifts_id?.user_shifts?.length !== undefined
+                        ? jobDay?.shifts_id?.user_shifts?.length < singleJob.vacancy
+                        : false
+                    ) {
+                      return acc + jobDay?.shifts_id?.user_shifts?.length
+                    }
+                  }
+                  return acc
+                }, 0)} ❌`
+          }
+        />
+        <Column field="title" header="Title" />
+        <Column field="created_by" header="Created by" />
+      </DataTable>
+    </div>
+  )
+}
