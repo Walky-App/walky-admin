@@ -176,11 +176,8 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
           }
         }}
         showTime
-        pt={{
-          panel: {
-            className: 'hidden',
-          },
-        }}
+        showOnFocus={false}
+        timeOnly
       />
     )
   }
@@ -216,7 +213,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         showToast({
           severity: 'warn',
           summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+          detail: 'Please use correct format (hh:mm AM/PM)',
         })
         return
       }
@@ -239,7 +236,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         showToast({
           severity: 'warn',
           summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+          detail: 'Please use correct format (hh:mm AM/PM)',
         })
         return
       }
@@ -257,7 +254,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         showToast({
           severity: 'warn',
           summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+          detail: 'Please use correct format (hh:mm AM/PM)',
         })
         return
       }
@@ -266,7 +263,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         showToast({
           severity: 'warn',
           summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
+          detail: 'Please use correct format (hh:mm AM/PM)',
         })
         return
       }
@@ -405,7 +402,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       sortable: false,
       body: rowData =>
         rowData.in_time != null
-          ? formatInTimeZone(rowData.in_time, rowData.facility_timezone, 'hh:mm a (z)')
+          ? formatInTimeZone(rowData.in_time, rowData.facility_timezone, 'hh:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
             ? 'Clocked In'
             : 'Clock In not recorded',
@@ -417,7 +414,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       sortable: false,
       body: rowData =>
         rowData.out_time != null
-          ? formatInTimeZone(rowData.out_time, rowData.facility_timezone, 'hh:mm a (z)')
+          ? formatInTimeZone(rowData.out_time, rowData.facility_timezone, 'hh:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
             ? 'Clocked In'
             : 'Clock Out not recorded',
