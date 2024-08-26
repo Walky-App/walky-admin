@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { formatInTimeZone, format } from 'date-fns-tz'
 import { Button } from 'primereact/button'
+import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Dropdown } from 'primereact/dropdown'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
@@ -146,6 +147,46 @@ export const ServiceOrderPage = () => {
     } catch (error) {
       console.error('Error generating invoice:', error)
     }
+  }
+
+  const accept = async () => {
+    try {
+      const response = await requestService({ path: `jobs/service-orders/${serviceOrder?._id}`, method: 'DELETE' })
+
+      if (response.status === 204) {
+        showToast({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Service Order and all references deleted successfully',
+        })
+        navigate('/admin/jobs/service-orders')
+      } else if (response.ok) {
+        const data = await response.json()
+        showToast({ severity: 'success', summary: 'Success', detail: data.message })
+        navigate('/admin/jobs/service-orders')
+      }
+    } catch (error) {
+      console.error(error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting service order' })
+    }
+  }
+
+  const reject = () => {
+    showToast({ severity: 'warn', summary: 'Rejected', detail: 'You have canceled the service order delete' })
+  }
+
+  const handleDeleteServiceOrderConfirmPopup = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    confirmPopup({
+      target: event.currentTarget as HTMLElement,
+      message:
+        'Deleting this Service Order also removes related User Shifts, Shifts, Time Sheets, Job, and Service Invoice. This action is irreversible. Are you sure you want to proceed?',
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept,
+      reject,
+    })
   }
 
   return isLoading ? (
@@ -416,6 +457,19 @@ export const ServiceOrderPage = () => {
           </div>
           {role === 'admin' && !serviceOrder?.service_invoice_id ? (
             <Button className="mt-6" label="Create Invoice" onClick={handleGenerateInvoice} />
+          ) : null}
+          {role === 'admin' ? (
+            <>
+              <ConfirmPopup />
+              <Button
+                className="ml-2 mt-6"
+                label="Delete Service Order"
+                icon="pi pi-times"
+                severity="danger"
+                pt={{ label: { className: 'text-nowrap' } }}
+                onClick={handleDeleteServiceOrderConfirmPopup}
+              />
+            </>
           ) : null}
         </footer>
       </div>
