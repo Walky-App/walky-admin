@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { format, isToday, isYesterday } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
@@ -102,10 +103,15 @@ export const AdminJobs = () => {
             return isToday(a.createdAt) ? 'Today' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
           }}
         />
-        <Column header="Starts" body={(item: IJob) => new Date(item.job_dates[0]).toLocaleDateString()} />
+        <Column
+          header="Starts"
+          body={(item: IJob) => formatInTimeZone(item.job_dates[0], item.facility.timezone, 'P')}
+        />
         <Column
           header="Ends"
-          body={(item: IJob) => new Date(item.job_dates[item.job_dates.length - 1]).toLocaleDateString()}
+          body={(item: IJob) =>
+            formatInTimeZone(item.job_dates[item.job_dates.length - 1], item.facility.timezone, 'P')
+          }
         />
         <Column field="job_days.length" header="Days" />
         <Column field="vacancy" header="Shifts" />

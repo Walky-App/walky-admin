@@ -360,19 +360,17 @@ export const ShiftsTable = ({
         </thead>
         <tbody className="divide-y divide-gray-200">
           {job.job_days.map((eachShift, index) => {
-            const dateObj = new Date(eachShift.day)
-            const formattedDate = dateObj.toLocaleDateString()
-            const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+            const dayOfWeek = formatInTimeZone(eachShift.day, job.facility.timezone, 'P')
 
             if (!employeeActive) {
-              return handleWhenUserIsNotApproved(eachShift, index, formattedDate, dayOfWeek)
+              return handleWhenUserIsNotApproved(eachShift, index, dayOfWeek, dayOfWeek)
             }
 
-            if (isBefore(dateObj, startOfDay(today))) {
-              return handleShowWhenJobHasEnded(eachShift, index, formattedDate, dayOfWeek)
+            if (isBefore(eachShift.day, startOfDay(today))) {
+              return handleShowWhenJobHasEnded(eachShift, index, dayOfWeek, dayOfWeek)
             }
 
-            return handleShowButtons(eachShift, index, formattedDate, dayOfWeek)
+            return handleShowButtons(eachShift, index, dayOfWeek, dayOfWeek)
           })}
         </tbody>
       </table>

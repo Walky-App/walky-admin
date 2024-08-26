@@ -289,10 +289,14 @@ export const AddEditJobPage = () => {
           isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate }),
         )
 
+        const utcJobDatesInWeek = job_dates_in_week.map(date => {
+          const dateWithoutTime = date.toISOString().split('T')[0]
+          return fromZonedTime(dateWithoutTime, facilityTimezone)
+        })
+
         const requestDataForWeek = {
           ...requestData,
-
-          job_dates: job_dates_in_week,
+          job_dates: utcJobDatesInWeek,
           total_hours: totalHours,
         }
         requestDataForWeeks.push(requestDataForWeek)

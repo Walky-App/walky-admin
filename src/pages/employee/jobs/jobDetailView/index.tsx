@@ -189,7 +189,8 @@ export const JobDetailView = () => {
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
                     <div className="text-stone-500">Job Dates</div>
                     <div className="flex items-center">
-                      {earliestDate?.toLocaleDateString()} &nbsp; - &nbsp; {latestDate?.toLocaleDateString()}
+                      {earliestDate ? formatInTimeZone(earliestDate, job.facility.timezone, 'P') : null} &nbsp; - &nbsp;{' '}
+                      {latestDate ? formatInTimeZone(latestDate, job.facility.timezone, 'P') : null}
                     </div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
