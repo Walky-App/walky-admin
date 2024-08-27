@@ -52,6 +52,8 @@ export const CompanyDetailView = () => {
     </div>
   )
 
+  const isAchClient = selectedCompanyData?.payment_information?.some(payment => payment.payment_method === 'ACH')
+
   return (
     <div>
       <Sidebar
@@ -81,14 +83,16 @@ export const CompanyDetailView = () => {
         <TabPanel header="Details">
           <CompanyDetailForm selectedCompanyData={selectedCompanyData} />
         </TabPanel>
-        <TabPanel header="Credit Cards">
-          {loading ? (
-            <Skeleton height="5rem" />
-          ) : (
-            <PaymentCards selectedCompanyData={selectedCompanyData} cc setSelectedPaymentId={setSelectedPaymentId} />
-          )}
-          <CreditCardView setSelectedCompanyData={setSelectedCompanyData} />
-        </TabPanel>
+        {role === 'admin' || !isAchClient ? (
+          <TabPanel header="Credit Cards">
+            {loading ? (
+              <Skeleton height="5rem" />
+            ) : (
+              <PaymentCards selectedCompanyData={selectedCompanyData} cc setSelectedPaymentId={setSelectedPaymentId} />
+            )}
+            <CreditCardView setSelectedCompanyData={setSelectedCompanyData} />
+          </TabPanel>
+        ) : null}
         <TabPanel header="ACH / Terms">
           {loading ? (
             <Skeleton height="5rem" />
