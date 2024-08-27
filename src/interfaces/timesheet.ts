@@ -5,7 +5,6 @@ export interface IPunch {
   in_range: boolean
   is_success: boolean
   time_stamp: string
-  note: string
 }
 
 export interface ITimeSheet {
@@ -16,4 +15,5 @@ export interface ITimeSheet {
   is_clocked_in: boolean
   punches: IPunch[]
   createdAt: string
+  note?: string
 }
