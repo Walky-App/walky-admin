@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
-import { isAfter, isBefore, isEqual, isToday, isValid } from 'date-fns'
+import { format, isAfter, isBefore, isEqual, isToday, isValid, parse } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
-import { DataTable, type DataTableExpandedRows, type DataTableValueArray } from 'primereact/datatable'
+import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { Toolbar } from 'primereact/toolbar'
@@ -14,17 +14,19 @@ import { Toolbar } from 'primereact/toolbar'
 import { type IToastParameters } from '../../../interfaces/global'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { cn } from '../../../utils/cn'
 import { roleChecker } from '../../../utils/roleChecker'
 import { HtInputLabel } from '../forms/HtInputLabel'
 import {
-  type IPunchPair,
   processPunchPairsWithData,
   type IAdminUserTimesheetsColumnMeta,
-  type IPunchDetails,
   type IPunchPairsWithData,
   type ITimesheetWithJobAndShiftDetails,
   adjustForFloatingPointError,
+  formatDifference,
+  lunchTimeTemplate,
+  jobTitleTemplate,
+  facilityNameTemplate,
+  combineDayAndTimeUTC,
 } from './timesheetsUtils'
 
 interface IUserTimesheetsProps {
@@ -37,22 +39,9 @@ interface IPayPeriod {
   end: string
 }
 
-const cols: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>[] = [
-  { field: 'day', header: 'Day', sortable: false },
-  { field: 'in_time', header: 'First In', sortable: false },
-  { field: 'out_time', header: 'Last Out', sortable: false },
-  { field: 'lunch_time', header: 'Lunch Break', sortable: false },
-  { field: 'job_title', header: 'Job Title', sortable: false },
-  { field: 'facility_name', header: 'Facility', sortable: false },
-  { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
-  { field: 'total_time', header: 'Total Hours', sortable: false },
-  { field: 'difference', header: 'Difference', sortable: false },
-]
-
 export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
-  const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined)
   const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<IPayPeriod>()
 
@@ -66,7 +55,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     setIsLoading(true)
 
     if (!selectedUserId) {
-      console.error('selectedUserId is undefined')
       setIsLoading(false)
       return
     }
@@ -160,66 +148,9 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return [...processedTimeSheets].sort((a, b) => new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
   }, [processedTimeSheets])
 
-  const cellEditor = (options: ColumnEditorOptions) => {
-    if (options.field === 'in_time' || options.field === 'out_time') {
-      return timeEditor(options)
-    } else {
-      return textEditor(options)
-    }
-  }
-
-  const timeEditor = (options: ColumnEditorOptions) => {
-    const { in_time_stamp, out_time_stamp } = options.rowData as IPunchPair
-
-    let timeStamp: string
-    switch (options.field) {
-      case 'out_time':
-        timeStamp = out_time_stamp || in_time_stamp || new Date().toISOString()
-        break
-      default:
-        timeStamp = in_time_stamp || new Date().toISOString()
-        break
-    }
-
-    const cellTimeValue = options.value ?? new Date(timeStamp)
-    const zonedCellTimeValue = toZonedTime(cellTimeValue, options.rowData.facility_timezone)
-
-    return (
-      <Calendar
-        value={zonedCellTimeValue}
-        hourFormat="12"
-        onChange={e => {
-          const newValue = e.value as Date
-          const utcNewValue = fromZonedTime(newValue, options.rowData.facility_timezone)
-          const isValidDate = newValue != null && isValid(utcNewValue)
-          if (isValidDate) {
-            options.editorCallback!(utcNewValue)
-          }
-        }}
-        showTime
-        pt={{
-          panel: {
-            className: 'hidden',
-          },
-        }}
-      />
-    )
-  }
-
-  const textEditor = (options: ColumnEditorOptions) => {
-    return (
-      <InputText
-        type="text"
-        value={options.value ?? ''}
-        onChange={e => options.editorCallback!(e.target.value)}
-        className="w-full"
-      />
-    )
-  }
-
   const onCellEditComplete = async (e: ColumnEvent) => {
     const { rowData, newValue, field, value } = e as {
-      rowData: IPunchPair
+      rowData: IPunchPairsWithData
       newValue: Date | string | null
       field: string
       value: Date | string | null
@@ -243,64 +174,46 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       return true
     }
 
+    const showInvalidDateTimeToast = (summary: string, detail: string) => {
+      showToast({
+        severity: 'warn',
+        summary,
+        detail,
+      })
+    }
+
     try {
       if (newValue == null) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
-        })
+        showInvalidDateTimeToast('Invalid date/time value or no change', 'Please use correct format (h:mma/p)')
         return
       }
 
       const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
       const isNewValueAfterPunchOutTime = rowData.out_time != null && isAfter(newValue, rowData.out_time)
       const isNewValueBeforePunchInTime = rowData.in_time != null && isBefore(newValue, rowData.in_time)
-      const hasPunchOut = rowData.out_time != null
 
-      if (field === 'in_time' && isNewValueAfterPunchOutTime) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value',
-          detail: 'Punch-In must be before existing Punch-Out time',
-        })
-        return
+      if (field === 'in_time') {
+        if (isNewValueAfterPunchOutTime) {
+          showInvalidDateTimeToast('Invalid date/time value', 'Punch-In must be before existing Punch-Out time')
+          return
+        }
+
+        if (isNewValueSameAsInitial) {
+          showInvalidDateTimeToast('Invalid date/time value or no change', 'Please use correct format (h:mma/p)')
+          return
+        }
       }
 
-      if (field === 'in_time' && isNewValueSameAsInitial) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
-        })
-        return
-      }
+      if (field === 'out_time') {
+        if (isNewValueBeforePunchInTime) {
+          showInvalidDateTimeToast('Invalid date/time value', 'Punch-Out must be after existing Punch-In time')
+          return
+        }
 
-      if (field === 'out_time' && isNewValueBeforePunchInTime) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value',
-          detail: 'Punch-Out must be after existing Punch-In time',
-        })
-        return
-      }
-
-      if (field === 'out_time' && isNewValueSameAsInitial && !hasPunchOut) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
-        })
-        return
-      }
-
-      if (field === 'out_time' && isNewValueSameAsInitial) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (mm/dd/yyyy hh:mm AM/PM)',
-        })
-        return
+        if (isNewValueSameAsInitial) {
+          showInvalidDateTimeToast('Invalid date/time value or no change', 'Please use correct format (h:mma/p)')
+          return
+        }
       }
 
       if (field === 'in_time' || field === 'out_time') {
@@ -326,7 +239,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
             detail: formatInTimeZone(newTimeStamp, rowData.facility_timezone, 'hh:mm a (z)'),
           })
         }
-      } else if (field === 'in_notes' || field === 'out_notes') {
+      } else if (field === 'note') {
         if (typeof newValue !== 'string') {
           showToast({
             severity: 'error',
@@ -337,7 +250,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         }
 
         const newNote = newValue
-        const punchId = field === 'in_notes' ? rowData.in_id : rowData.out_id
+        const punchId = field === 'note' ? rowData.in_id : rowData.out_id
         const timeSheetId = rowData.timesheet_id
 
         const body = { punch_id: punchId, note: newNote }
@@ -351,7 +264,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         if (await handleErrorResponse(response)) {
           await handleToastAndFetchTimesheets({
             severity: 'success',
-            summary: newNote ? `${field === 'in_notes' ? 'In' : 'Out'} Note updated:` : 'Note erased successfully',
+            summary: newNote ? `${field === 'note' ? 'In' : 'Out'} Note updated:` : 'Note erased successfully',
             detail: newNote ? `${newNote}` : '',
           })
         }
@@ -363,100 +276,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         detail: error instanceof Error ? error.message : 'An unknown error occurred',
       })
     }
-  }
-
-  const getCellValue = (col: IAdminUserTimesheetsColumnMeta<IPunchPairsWithData>, rowData: IPunchPairsWithData) => {
-    const field = col.field as keyof IPunchPairsWithData
-
-    if (field === 'out_time' && (!rowData[field] || rowData[field] === null)) {
-      return rowData['in_time'] && isToday(rowData['in_time']) ? 'Clocked In' : 'Clock Out not recorded'
-    }
-
-    if (field === 'total_time' && rowData['out_time'] == null) {
-      return ''
-    }
-
-    const value = rowData[field]
-
-    if (Array.isArray(value)) {
-      return value.map((punch: IPunchDetails) => punch[field as keyof IPunchDetails]).join(', ')
-    }
-
-    if (value instanceof Date) {
-      return formatInTimeZone(value, rowData.facility_timezone, 'hh:mm a (z)')
-    }
-
-    return value
-  }
-
-  const allowExpansion = (rowData: IPunchPairsWithData) => {
-    return !rowData['out_time'] || rowData['out_time'] !== null
-  }
-
-  const getEditableProps = (currentUserRole: string) => {
-    if (currentUserRole === 'admin') {
-      return {
-        editor: (options: ColumnEditorOptions) => cellEditor(options),
-        onCellEditComplete: onCellEditComplete,
-      }
-    }
-    return {}
-  }
-
-  const rowExpansionTemplate = (data: IPunchPairsWithData) => {
-    const commonColumnStyle = ''
-    const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
-    const editableCellColumnProps = getEditableProps(currentUserRole)
-    const punchColumns = [
-      {
-        field: 'in_time',
-        header: 'Punch In',
-        body: (rowData: IPunchDetails) =>
-          rowData.in_time ? formatInTimeZone(rowData.in_time, data.facility_timezone, 'hh:mm a (z)') : 'Not recorded',
-      },
-      currentUserRole === 'admin' && {
-        field: 'in_notes',
-        header: 'In Notes',
-        body: (rowData: IPunchDetails) => (rowData.in_notes ? rowData.in_notes : '✎'),
-      },
-      {
-        field: 'out_time',
-        header: 'Punch Out',
-        body: (rowData: IPunchDetails) =>
-          rowData.out_time
-            ? formatInTimeZone(rowData.out_time, data.facility_timezone, 'hh:mm a (z)')
-            : rowData.in_time && isToday(rowData.in_time)
-              ? 'Clocked In'
-              : 'Clock Out not recorded',
-      },
-      currentUserRole === 'admin' && {
-        field: 'out_notes',
-        header: 'Out Notes',
-        body: (rowData: IPunchDetails) => (rowData.out_notes ? rowData.out_notes : '✎'),
-      },
-    ]
-
-    return (
-      <div className="p-4">
-        <h5 className="text-sm font-semibold">Punch Details</h5>
-        <DataTable value={data.punchesWithDetails} editMode="cell">
-          {punchColumns.map(column => {
-            if (typeof column === 'object' && column.body != null) {
-              return (
-                <Column
-                  key={column.field}
-                  className={cn([commonColumnStyle, editableCellColumnStyle])}
-                  field={column.field}
-                  header={column.header}
-                  body={column.body}
-                  {...editableCellColumnProps}
-                />
-              )
-            }
-          })}
-        </DataTable>
-      </div>
-    )
   }
 
   const totalTimeSum = sortedTimeSheets.reduce((sum, record) => {
@@ -486,6 +305,154 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     </div>
   )
 
+  const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
+
+  const timeEditor = (options: ColumnEditorOptions) => {
+    const { in_time_stamp, out_time_stamp } = options.rowData as IPunchPairsWithData
+
+    let timeStamp: string
+    switch (options.field) {
+      case 'out_time':
+        timeStamp = out_time_stamp || in_time_stamp || new Date().toISOString()
+        break
+      default:
+        timeStamp = in_time_stamp || new Date().toISOString()
+        break
+    }
+    const shiftDay = options.rowData.shift_day
+    const cellTimeValue = options.value ?? new Date(timeStamp)
+    const zonedCellTimeValue = toZonedTime(cellTimeValue, options.rowData.facility_timezone)
+
+    const formatDateTime = (date: Date): string => {
+      return format(date, 'h:mmaaaaa')
+    }
+
+    const parseDateTime = (text: string): Date => {
+      const timeFormat = 'hh:mma'
+      const parsedDate = parse(text, timeFormat, shiftDay)
+      return isValid(parsedDate) ? parsedDate : zonedCellTimeValue
+    }
+
+    return (
+      <Calendar
+        value={zonedCellTimeValue}
+        hourFormat="12"
+        onChange={e => {
+          const newValue = e.value as Date
+          const isValidDate = newValue != null && isValid(newValue)
+          if (isValidDate) {
+            const newValueSetOnShiftDay = combineDayAndTimeUTC(shiftDay, newValue.toISOString())
+            const utcNewValue = fromZonedTime(newValueSetOnShiftDay, options.rowData.facility_timezone)
+            options.editorCallback!(utcNewValue)
+          }
+        }}
+        showTime
+        showOnFocus={false}
+        timeOnly
+        formatDateTime={formatDateTime}
+        parseDateTime={parseDateTime}
+      />
+    )
+  }
+
+  const textEditor = (options: ColumnEditorOptions) => {
+    return (
+      <InputText
+        type="text"
+        value={options.value ?? ''}
+        onChange={e => options.editorCallback!(e.target.value)}
+        className="w-full"
+      />
+    )
+  }
+
+  const cellEditor = (options: ColumnEditorOptions) => {
+    if (options.field === 'in_time' || options.field === 'out_time') {
+      return timeEditor(options)
+    } else if (options.field === 'note') {
+      return textEditor(options)
+    }
+  }
+
+  const getEditableProps = (currentUserRole: string) => {
+    if (currentUserRole === 'admin') {
+      return {
+        editor: (options: ColumnEditorOptions) => cellEditor(options),
+        onCellEditComplete: onCellEditComplete,
+        className: editableCellColumnStyle,
+      }
+    }
+    return {}
+  }
+
+  const cols: (IAdminUserTimesheetsColumnMeta<IPunchPairsWithData> | null)[] = [
+    {
+      field: 'shift_day',
+      header: 'Shift Day',
+      sortable: false,
+      body: rowData => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'PP'),
+    },
+    {
+      field: 'in_time',
+      header: 'In',
+      sortable: false,
+      body: rowData =>
+        rowData.in_time != null
+          ? formatInTimeZone(rowData.in_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
+          : rowData.in_time != null && isToday(rowData.in_time)
+            ? 'Clocked In'
+            : 'Clock In not recorded',
+      ...getEditableProps(currentUserRole),
+    },
+    {
+      field: 'out_time',
+      header: 'Out',
+      sortable: false,
+      body: rowData =>
+        rowData.out_time != null
+          ? formatInTimeZone(rowData.out_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
+          : rowData.in_time != null && isToday(rowData.in_time)
+            ? 'Clocked In'
+            : 'Clock Out not recorded',
+      ...getEditableProps(currentUserRole),
+    },
+    {
+      field: 'lunch_time',
+      header: 'Lunch Break',
+      sortable: false,
+      body: rowData => lunchTimeTemplate(rowData.lunch_time),
+    },
+    {
+      field: 'job_title',
+      header: 'Job Title',
+      sortable: false,
+      body: rowData => jobTitleTemplate(rowData.job_title, rowData.job_uid, rowData.job_id, currentUserRole),
+    },
+    {
+      field: 'facility_name',
+      header: 'Facility',
+      sortable: false,
+      body: rowData => facilityNameTemplate(rowData.facility_name, rowData.facility_id, currentUserRole),
+    },
+    currentUserRole === 'admin'
+      ? {
+          field: 'note',
+          header: 'Note',
+          sortable: false,
+          body: (rowData: IPunchPairsWithData) => (rowData.note ? `${rowData.note} ✎` : '✎'),
+          ...getEditableProps(currentUserRole),
+        }
+      : null,
+    { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
+    { field: 'total_time', header: 'Total Hours', sortable: false },
+    {
+      field: 'difference',
+      header: 'Difference',
+      sortable: false,
+      body: rowData => formatDifference(rowData.difference),
+    },
+  ]
+
   return (
     <>
       {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
@@ -493,6 +460,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       <DataTable
         header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${adjustedWorkedScheduledDifference.toFixed(2)} hours`}
         dataKey="timesheet_id"
+        editMode="cell"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
         size="small"
@@ -501,18 +469,25 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         rowsPerPageOptions={[7, 14, 30, 90]}
         stripedRows
         showGridlines
-        expandedRows={expandedRows}
-        onRowToggle={e => setExpandedRows(e.data)}
-        rowExpansionTemplate={rowExpansionTemplate}
         pt={{
           header: {
             className: 'font-normal text-sm text-gray-500',
           },
         }}>
-        <Column expander={allowExpansion} />
-        {cols.map(col => (
-          <Column key={col.field} field={col.field} header={col.header} body={rowData => getCellValue(col, rowData)} />
-        ))}
+        {cols.map(col => {
+          if (!col) return null
+          return (
+            <Column
+              key={col?.field}
+              field={col?.field}
+              header={col?.header}
+              body={col?.body}
+              editor={col?.editor}
+              className={col?.className}
+              onCellEditComplete={col?.onCellEditComplete}
+            />
+          )
+        })}
       </DataTable>
     </>
   )
