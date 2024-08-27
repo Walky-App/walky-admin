@@ -27,8 +27,11 @@ export interface IPunchPairsWithData {
   out_id: string
   in_time_stamp: string
   out_time_stamp: string
+  note: string
   lunch_time: number
   job_title: string
+  job_id: string
+  job_uid: string
   facility_name: string
   facility_timezone: string
   facility_id: string
@@ -39,7 +42,6 @@ export interface IPunchPairsWithData {
   shift_day: Date
   shift_start_time: Date
   shift_end_time: Date
-  job_id: string
   timesheet_id: string
 }
 
@@ -51,6 +53,7 @@ export interface IPunchPairWithTotalTime {
 
 interface IJobDetails {
   _id: string
+  uid: string
   title: string
   start_time: Date
   end_time: Date
@@ -172,11 +175,12 @@ export const facilityNameTemplate = (facilityName: string, id: string, role: str
   return null
 }
 
-export const jobTitleTemplate = (jobTitle: string, id: string, role: string) => {
-  if (jobTitle) {
+export const jobTitleTemplate = (jobTitle: string, uid: string, id: string, role: string) => {
+  if (jobTitle && uid && id) {
+    const jobLabel = `${jobTitle} #${uid}`
     return (
       <Link to={`/${role}/jobs/${id}`}>
-        <Button label={jobTitle} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
+        <Button label={jobLabel} size="small" severity="secondary" rounded icon="pi pi-briefcase" />
       </Link>
     )
   }
@@ -190,7 +194,7 @@ export const jobTitleTemplate = (jobTitle: string, id: string, role: string) => 
  * @returns {IPunchPairsWithData} A processed timesheet.
  */
 export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDetails): IPunchPairsWithData {
-  const { punches, _id, job_details, shift_details } = timesheet
+  const { punches, _id, job_details, shift_details, note } = timesheet
   const { shift_id, shift_day, shift_start_time, shift_end_time, job_id } = shift_details
 
   const scheduledHours = job_details.total_hours
@@ -205,8 +209,10 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
       out_id: '',
       in_time_stamp: '',
       out_time_stamp: '',
+      note: '',
       lunch_time: job_details.lunch_break,
       job_id,
+      job_uid: job_details.uid,
       job_title: job_details.title,
       facility_id: job_details.facility._id,
       facility_name: job_details.facility.name,
@@ -281,8 +287,10 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
     out_id: outId,
     in_time_stamp: inTimeStamp,
     out_time_stamp: outTimeStamp,
+    note: note ?? '',
     lunch_time: job_details.lunch_break,
     job_id,
+    job_uid: job_details.uid,
     job_title: job_details.title,
     facility_id: job_details.facility._id,
     facility_name: job_details.facility.name,
