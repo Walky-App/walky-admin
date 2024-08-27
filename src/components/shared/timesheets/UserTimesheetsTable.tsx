@@ -174,64 +174,46 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       return true
     }
 
+    const showInvalidDateTimeToast = (summary: string, detail: string) => {
+      showToast({
+        severity: 'warn',
+        summary,
+        detail,
+      })
+    }
+
     try {
       if (newValue == null) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (hh:mm AM/PM)',
-        })
+        showInvalidDateTimeToast('Invalid date/time value or no change', 'Please use correct format (h:mma/p)')
         return
       }
 
       const isNewValueSameAsInitial = value != null && isEqual(newValue, value)
       const isNewValueAfterPunchOutTime = rowData.out_time != null && isAfter(newValue, rowData.out_time)
       const isNewValueBeforePunchInTime = rowData.in_time != null && isBefore(newValue, rowData.in_time)
-      const hasPunchOut = rowData.out_time != null
 
-      if (field === 'in_time' && isNewValueAfterPunchOutTime) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value',
-          detail: 'Punch-In must be before existing Punch-Out time',
-        })
-        return
+      if (field === 'in_time') {
+        if (isNewValueAfterPunchOutTime) {
+          showInvalidDateTimeToast('Invalid date/time value', 'Punch-In must be before existing Punch-Out time')
+          return
+        }
+
+        if (isNewValueSameAsInitial) {
+          showInvalidDateTimeToast('Invalid date/time value or no change', 'Please use correct format (h:mma/p)')
+          return
+        }
       }
 
-      if (field === 'in_time' && isNewValueSameAsInitial) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (hh:mm AM/PM)',
-        })
-        return
-      }
+      if (field === 'out_time') {
+        if (isNewValueBeforePunchInTime) {
+          showInvalidDateTimeToast('Invalid date/time value', 'Punch-Out must be after existing Punch-In time')
+          return
+        }
 
-      if (field === 'out_time' && isNewValueBeforePunchInTime) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value',
-          detail: 'Punch-Out must be after existing Punch-In time',
-        })
-        return
-      }
-
-      if (field === 'out_time' && isNewValueSameAsInitial && !hasPunchOut) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (hh:mm AM/PM)',
-        })
-        return
-      }
-
-      if (field === 'out_time' && isNewValueSameAsInitial) {
-        showToast({
-          severity: 'warn',
-          summary: 'Invalid date/time value or no change',
-          detail: 'Please use correct format (hh:mm AM/PM)',
-        })
-        return
+        if (isNewValueSameAsInitial) {
+          showInvalidDateTimeToast('Invalid date/time value or no change', 'Please use correct format (h:mma/p)')
+          return
+        }
       }
 
       if (field === 'in_time' || field === 'out_time') {
