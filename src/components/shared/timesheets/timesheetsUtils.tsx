@@ -2,6 +2,8 @@ import React from 'react'
 
 import { Link } from 'react-router-dom'
 
+import { set } from 'date-fns'
+import { fromZonedTime } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
 import { type ColumnEvent, type ColumnEditorOptions } from 'primereact/column'
@@ -300,4 +302,21 @@ export function processPunchPairsWithData(timesheet: ITimesheetWithJobAndShiftDe
     difference: adjustedWorkedScheduledDifference,
     timesheet_id: _id,
   }
+}
+
+export const combineDayAndTimeUTC = (day: Date, time: string) => {
+  const timeUTC = fromZonedTime(time, 'UTC')
+
+  const hours = timeUTC.getUTCHours()
+  const minutes = timeUTC.getUTCMinutes()
+  const seconds = timeUTC.getUTCSeconds()
+  const milliseconds = timeUTC.getUTCMilliseconds()
+
+  const dayAndTimeUTC = set(day, {
+    hours,
+    minutes,
+    seconds,
+    milliseconds,
+  })
+  return dayAndTimeUTC
 }
