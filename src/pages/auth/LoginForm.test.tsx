@@ -1,9 +1,5 @@
-import { MemoryRouter } from 'react-router-dom'
-
-import '@testing-library/jest-dom'
-import { render, screen, cleanup } from '@testing-library/react'
-
 import { Auth } from '.'
+import { cleanup, render, screen } from '../../utils/test-utils'
 import { LoginForm } from './LoginForm'
 
 describe('Auth Page', () => {
@@ -11,30 +7,18 @@ describe('Auth Page', () => {
     cleanup()
   })
   it('should render auth view', () => {
-    render(
-      <MemoryRouter>
-        <Auth />
-      </MemoryRouter>,
-    )
+    render(<Auth />)
   })
 
   it('should render the login component', async () => {
-    render(
-      <MemoryRouter>
-        <LoginForm setUserForm={() => jest.fn()} />
-      </MemoryRouter>,
-    ).container
+    render(<LoginForm setUserForm={() => jest.fn()} />).container
 
     const loginForm = await screen.findByTestId('login-form')
     expect(loginForm).toBeInTheDocument()
   })
 
   it('should render the email input field', async () => {
-    render(
-      <MemoryRouter>
-        <LoginForm setUserForm={() => jest.fn()} />
-      </MemoryRouter>,
-    )
+    render(<LoginForm setUserForm={() => jest.fn()} />)
 
     const emailInput = await screen.getByPlaceholderText('*Email')
     expect(emailInput).toBeInTheDocument()
