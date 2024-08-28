@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useMemo, useState } from 'react'
 
 import { Link, useParams } from 'react-router-dom'
 
@@ -10,6 +11,7 @@ import { InputTextarea } from 'primereact/inputtextarea'
 
 import { TrashIcon } from '@heroicons/react/20/solid'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
@@ -26,6 +28,7 @@ export const ServiceInvoicePage = () => {
   const [sendInvoiceShow, setSendInvoiceShow] = useState(false)
   const { invoiceId } = useParams()
   const role = roleChecker()
+  const [logs, setLogs] = useState<any[]>([])
 
   useEffect(() => {
     const getinvoice = async () => {
@@ -34,8 +37,9 @@ export const ServiceInvoicePage = () => {
         if (!response.ok) {
           throw new Error('Failed to fetch service order')
         }
-        const fetchedData = await response.json()
-        setInvoice(fetchedData)
+        const { invoice, logs } = await response.json()
+        setInvoice(invoice)
+        setLogs(logs)
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching service order data:', error)
@@ -58,8 +62,9 @@ export const ServiceInvoicePage = () => {
       if (!response.ok) {
         throw new Error('Failed to regenerate invoice')
       }
-      const fetchedData = await response.json()
-      setInvoice(fetchedData)
+      const { invoice, logs } = await response.json()
+      setInvoice(invoice)
+      setLogs(logs)
       setIsLoading(false)
     } catch (error) {
       console.error('Error regenerating invoice:', error)
@@ -74,8 +79,9 @@ export const ServiceInvoicePage = () => {
       if (!response.ok) {
         throw new Error('Failed to authorize invoice')
       }
-      const fetchedData = await response.json()
-      setInvoice(fetchedData)
+      const { invoice, logs } = await response.json()
+      setInvoice(invoice)
+      setLogs(logs)
       setIsLoading(false)
     } catch (error) {
       console.error('Error authorizing invoice:', error)
@@ -94,8 +100,9 @@ export const ServiceInvoicePage = () => {
       if (!response.ok) {
         throw new Error('Failed to apply discount to invoice')
       }
-      const fetchedData = await response.json()
-      setInvoice(fetchedData)
+      const { invoice, logs } = await response.json()
+      setInvoice(invoice)
+      setLogs(logs)
       setIsOpen(false)
       setIsLoading(false)
     } catch (error) {
@@ -115,8 +122,9 @@ export const ServiceInvoicePage = () => {
       if (!response.ok) {
         throw new Error('Failed to send email')
       }
-      const fetchedData = await response.json()
-      setInvoice(fetchedData)
+      const { invoice, logs } = await response.json()
+      setInvoice(invoice)
+      setLogs(logs)
       setIsLoading(false)
     } catch (error) {
       console.error('Error sending email:', error)
@@ -126,24 +134,6 @@ export const ServiceInvoicePage = () => {
 
   const handlerSendEmail = async () => {
     setSendInvoiceShow(true)
-    /* try {
-      setIsLoading(true)
-      const response = await requestService({ path: `invoices/send-email/${invoiceId}`, method: 'POST' })
-      if (!response.ok) {
-        throw new Error('Failed to send email')
-      }
-      const fetchedData = await response.json()
-      setInvoice(fetchedData)
-      showToast({
-        severity: 'success',
-        summary: 'Completed',
-        detail: 'Email sent successfully',
-      })
-      setIsLoading(false)
-    } catch (error) {
-      console.error('Error sending email:', error)
-      setIsLoading(false)
-    } */
   }
 
   const handlerRemoveDiscount = async () => {
@@ -156,8 +146,9 @@ export const ServiceInvoicePage = () => {
       if (!response.ok) {
         throw new Error('Failed to apply discount to invoice')
       }
-      const fetchedData = await response.json()
-      setInvoice(fetchedData)
+      const { invoice, logs } = await response.json()
+      setInvoice(invoice)
+      setLogs(logs)
       setDiscount(0)
       setIsLoading(false)
     } catch (error) {
@@ -165,6 +156,15 @@ export const ServiceInvoicePage = () => {
       setIsLoading(false)
     }
   }
+
+  const memoFacilitiesColumns = useMemo(
+    () => [
+      { Header: 'User', accessor: 'user_id' },
+      { Header: 'Event Type', accessor: 'event_type' },
+      { Header: 'Created At', accessor: 'createdAt' },
+    ],
+    [],
+  )
 
   return isLoading ? (
     <HTLoadingLogo />
@@ -180,7 +180,7 @@ export const ServiceInvoicePage = () => {
       />
       <div className="my-8 flex items-center justify-between">
         <img className="w</div>-auto h-16" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
-        <h1 className="text-base text-xl font-semibold leading-6">
+        <h1 className="text-xl font-semibold leading-6">
           Invoice <br /> #{invoice?.uid}
         </h1>
       </div>
@@ -300,7 +300,7 @@ export const ServiceInvoicePage = () => {
             {invoice?.status !== 'paid' ? (
               <div>
                 {!invoice?.note ? (
-                  <div className="flex flex-col pb-3">
+                  <div className="flex flex-col pb-3 print:hidden">
                     <FloatLabel>
                       <InputTextarea
                         id="note"
@@ -322,7 +322,7 @@ export const ServiceInvoicePage = () => {
               </div>
             ) : null}
           </div>
-          <table className="float-right">
+          <table className="flex flex-col items-end justify-end">
             {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
               <tr>
                 <th scope="row" colSpan={3} className="hidden pl-4 pr-3 pt-6 text-right sm:table-cell sm:pl-0">
@@ -369,26 +369,29 @@ export const ServiceInvoicePage = () => {
                 ${Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
               </td>
             </tr>
-            <tr className="border-t-2">
+            <tr className="flex w-full flex-1 items-center justify-end border-t-2">
               {invoice?.status !== 'paid' ? (
                 <div>
                   {invoice?.details.discount ? (
-                    <>
+                    <div className="flex">
                       <th
                         scope="row"
                         colSpan={3}
-                        className="hidden pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
+                        className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
                         <div className="flex items-center justify-end">
-                          <TrashIcon className="mr-1 h-4 w-4 text-red-600" onClick={handlerRemoveDiscount} />
+                          <TrashIcon
+                            className="mr-1 h-4 w-4 text-red-600 print:hidden"
+                            onClick={handlerRemoveDiscount}
+                          />
                           Discount:
                         </div>
                       </th>
-                      <td className="pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
+                      <td className="w-full pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
                         - ${Number(invoice?.details.discount).toFixed(2)}
                       </td>
-                    </>
+                    </div>
                   ) : (
-                    <>
+                    <div className="flex items-center justify-center print:hidden">
                       <th scope="row" colSpan={3} className="pr-3 pt-4">
                         <InputNumber
                           className="w-full"
@@ -398,10 +401,10 @@ export const ServiceInvoicePage = () => {
                           onChange={e => setDiscount(Number(e.value))}
                         />
                       </th>
-                      <td className="pr-4 pt-4">
+                      <td className=" pt-4">
                         <Button label="Apply" onClick={() => setIsOpen(true)} disabled={discount == 0} />
                       </td>
-                    </>
+                    </div>
                   )}
                 </div>
               ) : null}
@@ -436,6 +439,10 @@ export const ServiceInvoicePage = () => {
             <Button className="ml-3 mt-6 print:hidden" label="Send invoice" onClick={handlerSendEmail} />
           ) : null}
         </footer>
+      </div>
+      <div className="print:hidden">
+        <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
+        <GlobalTable data={logs} columns={memoFacilitiesColumns} />
       </div>
     </div>
   )
