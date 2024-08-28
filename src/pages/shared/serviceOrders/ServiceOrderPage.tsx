@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useMemo, useState } from 'react'
 
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -7,6 +8,7 @@ import { Button } from 'primereact/button'
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Dropdown } from 'primereact/dropdown'
 
+import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/serviceOrder'
@@ -36,6 +38,7 @@ export const ServiceOrderPage = () => {
   const { showToast } = useUtils()
   const navigate = useNavigate()
   const role = roleChecker()
+  const [logs, setLogs] = useState<any[]>([])
 
   useEffect(() => {
     const getServiceOrder = async () => {
@@ -48,6 +51,7 @@ export const ServiceOrderPage = () => {
         setServiceOrderData(fetchedData.service_order)
         setPaymentMethods(fetchedData?.payments_methods)
         setACHPaymentDetails(fetchedData.ach_payment)
+        setLogs(fetchedData.logs)
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching service order data:', error)
@@ -188,6 +192,15 @@ export const ServiceOrderPage = () => {
       reject,
     })
   }
+
+  const memoLogsColumns = useMemo(
+    () => [
+      { Header: 'User', accessor: 'user_id' },
+      { Header: 'Event Type', accessor: 'event_type' },
+      { Header: 'Created At', accessor: 'createdAt' },
+    ],
+    [],
+  )
 
   return isLoading ? (
     <HTLoadingLogo />
@@ -472,6 +485,10 @@ export const ServiceOrderPage = () => {
             </>
           ) : null}
         </footer>
+      </div>
+      <div className="print:hidden">
+        <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
+        {logs && logs.length > 0 ? <GlobalTable data={logs} columns={memoLogsColumns} /> : <p>No activity found</p>}
       </div>
     </div>
   )
