@@ -157,7 +157,7 @@ export const ServiceInvoicePage = () => {
     }
   }
 
-  const memoFacilitiesColumns = useMemo(
+  const memoLogsColumns = useMemo(
     () => [
       { Header: 'User', accessor: 'user_id' },
       { Header: 'Event Type', accessor: 'event_type' },
@@ -442,7 +442,7 @@ export const ServiceInvoicePage = () => {
       </div>
       <div className="print:hidden">
         <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
-        <GlobalTable data={logs} columns={memoFacilitiesColumns} />
+        {logs && logs.length > 0 ? <GlobalTable data={logs} columns={memoLogsColumns} /> : <p>No activity found</p>}
       </div>
     </div>
   )
