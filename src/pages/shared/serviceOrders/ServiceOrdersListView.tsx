@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { isToday, isYesterday, format } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
@@ -130,17 +131,24 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
             />
           )}
         />
+
         <Column
           field="job_id.job_dates[0]"
           header="Job Start Date"
-          body={(serviceOrder: IServiceOrder) => format(new Date(serviceOrder.job_id.job_dates[0]), 'P')}
+          body={(serviceOrder: IServiceOrder) => {
+            const startDate = new Date(serviceOrder.job_id.job_dates[0])
+            const zonedStartDate = toZonedTime(startDate, serviceOrder.facility_id.timezone)
+            return format(zonedStartDate, 'MMM d')
+          }}
         />
         <Column
           field="job_id.job_dates[job_id.job_dates.length - 1]"
           header="Job End Date"
-          body={(serviceOrder: IServiceOrder) =>
-            format(new Date(serviceOrder.job_id.job_dates[serviceOrder.job_id.job_dates.length - 1]), 'P')
-          }
+          body={(serviceOrder: IServiceOrder) => {
+            const endDate = new Date(serviceOrder.job_id.job_dates[serviceOrder.job_id.job_dates.length - 1])
+            const zonedEndDate = toZonedTime(endDate, serviceOrder.facility_id.timezone)
+            return format(zonedEndDate, 'MMM d')
+          }}
         />
         <Column field="job_id.job_dates.length" header="Number of days" />
         <Column
