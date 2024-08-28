@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react'
 
 import { Link, useParams } from 'react-router-dom'
@@ -13,6 +12,7 @@ import { TrashIcon } from '@heroicons/react/20/solid'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { type ILog } from '../../../interfaces/logs'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
@@ -28,7 +28,7 @@ export const ServiceInvoicePage = () => {
   const [sendInvoiceShow, setSendInvoiceShow] = useState(false)
   const { invoiceId } = useParams()
   const role = roleChecker()
-  const [logs, setLogs] = useState<any[]>([])
+  const [logs, setLogs] = useState<ILog[]>([])
 
   useEffect(() => {
     const getinvoice = async () => {
