@@ -100,6 +100,7 @@ import { AllInvoicesListPage } from './pages/shared/invoices/AllInvoicesListPage
 import { ServiceInvoicePage } from './pages/shared/invoices/ServiceInvoicePage'
 import { AllServiceOrdersListPage } from './pages/shared/serviceOrders/AllServiceOrdersListPage'
 import { AuthorizedServiceOrdersListPage } from './pages/shared/serviceOrders/AuthorizedServiceOrdersListPage'
+import { AuthorizedUninvoicedServiceOrdersListPage } from './pages/shared/serviceOrders/AuthorizedUninvoicedServiceOrdersListPage'
 import { PendingServiceOrdersListPage } from './pages/shared/serviceOrders/PendingServiceOrdersListPage'
 import { ServiceOrderPage } from './pages/shared/serviceOrders/ServiceOrderPage'
 import { UserProfile } from './pages/shared/userProfile'
@@ -171,6 +172,10 @@ export const App = () => {
                   <Route element={<AllServiceOrdersListPage />} path="/client/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/client/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/client/jobs/service-orders/authorized" />
+                  <Route
+                    element={<AuthorizedUninvoicedServiceOrdersListPage />}
+                    path="/client/jobs/service-orders/authorized-uninvoiced"
+                  />
                   <Route element={<ServiceInvoicePage />} path="/client/invoices/:invoiceId" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
@@ -236,6 +241,10 @@ export const App = () => {
                   <Route element={<AllServiceOrdersListPage />} path="/admin/jobs/service-orders" />
                   <Route element={<PendingServiceOrdersListPage />} path="/admin/jobs/service-orders/pending" />
                   <Route element={<AuthorizedServiceOrdersListPage />} path="/admin/jobs/service-orders/authorized" />
+                  <Route
+                    element={<AuthorizedUninvoicedServiceOrdersListPage />}
+                    path="/admin/jobs/service-orders/authorized-uninvoiced"
+                  />
                   <Route element={<ServiceInvoicePage />} path="/admin/invoices/:invoiceId" />
                   <Route element={<AllInvoicesListPage />} path="/admin/invoices" />
                   <Route element={<AdminDashboardLearn />} path="/admin/learn" />
