@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react'
 
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -11,6 +10,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
+import { type ILog } from '../../../interfaces/logs'
 import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -38,7 +38,7 @@ export const ServiceOrderPage = () => {
   const { showToast } = useUtils()
   const navigate = useNavigate()
   const role = roleChecker()
-  const [logs, setLogs] = useState<any[]>([])
+  const [logs, setLogs] = useState<ILog[]>([])
 
   useEffect(() => {
     const getServiceOrder = async () => {
