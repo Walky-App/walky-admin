@@ -91,6 +91,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       subLinks: [
         { name: 'Pending', href: '/admin/jobs/service-orders/pending' },
         { name: 'Authorized', href: '/admin/jobs/service-orders/authorized' },
+        { name: 'Uninvoiced', href: '/admin/jobs/service-orders/authorized-uninvoiced' },
       ],
     },
     {
@@ -152,6 +153,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       subLinks: [
         { name: 'Pending', href: '/client/jobs/service-orders/pending' },
         { name: 'Authorized', href: '/client/jobs/service-orders/authorized' },
+        { name: 'Uninvoiced', href: '/client/jobs/service-orders/authorized-uninvoiced' },
       ],
     },
     {
