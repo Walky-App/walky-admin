@@ -288,7 +288,7 @@ export const ServiceInvoicePage = () => {
               <th scope="col" className="py-3.5 pl-4 pr-3 text-left font-semibold">
                 Description
               </th>
-              {role === 'admin' ? (
+              {role === 'client' ? (
                 <th scope="col" className="py-3.5 pl-4 pr-3 text-left font-semibold print:hidden">
                   <span style={{ display: 'flex', alignItems: 'center' }}>
                     Buyout
@@ -327,7 +327,7 @@ export const ServiceInvoicePage = () => {
                     <div className="font-medium">{detail.description}</div>
                   )}
                 </td>
-                {role === 'admin' ? (
+                {role === 'client' ? (
                   <td className="py-5 pl-4 pr-3 text-left sm:table-cell print:hidden">
                     <ConfirmPopup />
                     <Button
