@@ -177,6 +177,7 @@ export const App = () => {
                     path="/client/jobs/service-orders/authorized-uninvoiced"
                   />
                   <Route element={<ServiceInvoicePage />} path="/client/invoices/:invoiceId" />
+                  <Route element={<AllInvoicesListPage />} path="/client/invoices" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
                   <Route element={<CompanyDetailView />} path="/client/companies/:id" />
