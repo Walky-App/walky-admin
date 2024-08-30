@@ -2,7 +2,6 @@ import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom'
 
-import cn from 'classnames'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 
@@ -11,6 +10,7 @@ import { BugAntIcon, ChatBubbleLeftRightIcon, ChevronRightIcon, ComputerDesktopI
 
 import { useAuth } from '../../contexts/AuthContext'
 import { getCurrentUserRole } from '../../utils/UserRole'
+import { cn } from '../../utils/cn'
 import { GetTokenInfo } from '../../utils/tokenUtil'
 import { type INavLink, userLinks } from './Links'
 import { LogosPack } from './LogosPack'
