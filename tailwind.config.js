@@ -1,9 +1,16 @@
 /* eslint-disable */
+import fs from 'fs'
+import postcss from 'postcss'
+import plugin from 'tailwindcss/plugin'
+
 /** @type {import('tailwindcss').Config} */
 
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
+  corePlugins: {
+    preflight: false,
+  },
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     './node_modules/flowbite-react/**/*.js',
@@ -26,5 +33,12 @@ module.exports = {
       ...defaultTheme.screens,
     },
   },
-  plugins: [require('flowbite/plugin'), require('@tailwindcss/forms'), require('@tailwindcss/typography')],
+  plugins: [
+    require('@tailwindcss/typography'),
+    plugin(({ addBase }) => {
+      const styles = postcss.parse(fs.readFileSync(require.resolve('./src/reset.css'), 'utf8'))
+      addBase(styles.nodes)
+    }),
+  ],
+  darkMode: 'selector',
 }
