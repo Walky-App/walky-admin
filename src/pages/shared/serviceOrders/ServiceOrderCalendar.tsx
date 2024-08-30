@@ -154,7 +154,7 @@ export const ServiceOrderCalendar = ({ serviceOrders }: { serviceOrders: IServic
           </time>
         </h1>
         <div className="flex items-center">
-          <div className="relative flex items-center rounded-md bg-white shadow-sm md:items-stretch">
+          <div className="relative flex items-center rounded-md shadow-sm md:items-stretch">
             <button
               type="button"
               onClick={() => {
