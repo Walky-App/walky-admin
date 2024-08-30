@@ -99,6 +99,7 @@ import { CompanyDetailView } from './pages/shared/companyDetailView'
 import { AllInvoicesListPage } from './pages/shared/invoices/AllInvoicesListPage'
 import { ServiceInvoicePage } from './pages/shared/invoices/ServiceInvoicePage'
 import { AllServiceOrdersListPage } from './pages/shared/serviceOrders/AllServiceOrdersListPage'
+import { AuthorizedInvoicedServiceOrdersListPage } from './pages/shared/serviceOrders/AuthorizedInvoicedServiceOrdersListPage'
 import { AuthorizedServiceOrdersListPage } from './pages/shared/serviceOrders/AuthorizedServiceOrdersListPage'
 import { AuthorizedUninvoicedServiceOrdersListPage } from './pages/shared/serviceOrders/AuthorizedUninvoicedServiceOrdersListPage'
 import { PendingServiceOrdersListPage } from './pages/shared/serviceOrders/PendingServiceOrdersListPage'
@@ -176,6 +177,10 @@ export const App = () => {
                     element={<AuthorizedUninvoicedServiceOrdersListPage />}
                     path="/client/jobs/service-orders/authorized-uninvoiced"
                   />
+                  <Route
+                    element={<AuthorizedInvoicedServiceOrdersListPage />}
+                    path="/client/jobs/service-orders/authorized-invoiced"
+                  />
                   <Route element={<ServiceInvoicePage />} path="/client/invoices/:invoiceId" />
                   <Route element={<AdminCompanyListPage />} path="/client/companies" />
                   <Route element={<AdminAddCompany />} path="/client/companies/new" />
@@ -244,6 +249,10 @@ export const App = () => {
                   <Route
                     element={<AuthorizedUninvoicedServiceOrdersListPage />}
                     path="/admin/jobs/service-orders/authorized-uninvoiced"
+                  />
+                  <Route
+                    element={<AuthorizedInvoicedServiceOrdersListPage />}
+                    path="/admin/jobs/service-orders/authorized-invoiced"
                   />
                   <Route element={<ServiceInvoicePage />} path="/admin/invoices/:invoiceId" />
                   <Route element={<AllInvoicesListPage />} path="/admin/invoices" />
