@@ -6,23 +6,23 @@ import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
 import { ServiceOrdersListView } from './ServiceOrdersListView'
 
-export const PendingServiceOrdersListPage = () => {
-  const [pendingServiceOrders, setPendingServiceOrders] = useState<IServiceOrder[]>([])
+export const AuthorizedInvoicedServiceOrdersListPage = () => {
+  const [authorizedInvoicedServiceOrders, setAuthorizedInvoicedServiceOrders] = useState<IServiceOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const role = roleChecker()
 
   useEffect(() => {
-    const getAllPendingServiceOrders = async () => {
+    const getAllAuthorizedInvoicedServiceOrders = async () => {
       try {
         let response
         if (role === 'admin') {
           response = await requestService({
-            path: `jobs/service-orders/pending`,
+            path: `jobs/service-orders/authorized-invoiced`,
             method: 'GET',
           })
         } else if (role === 'client') {
           response = await requestService({
-            path: `jobs/service-orders/pending-by-client-companies`,
+            path: `jobs/service-orders/authorized-invoiced-by-client-companies`,
             method: 'GET',
           })
         }
@@ -32,7 +32,7 @@ export const PendingServiceOrdersListPage = () => {
         }
 
         const allServiceOrders = await response.json()
-        setPendingServiceOrders(allServiceOrders)
+        setAuthorizedInvoicedServiceOrders(allServiceOrders)
       } catch (error) {
         console.error('Error fetching service orders data:', error)
       } finally {
@@ -40,8 +40,12 @@ export const PendingServiceOrdersListPage = () => {
       }
     }
 
-    getAllPendingServiceOrders()
+    getAllAuthorizedInvoicedServiceOrders()
   }, [role])
 
-  return isLoading ? <HTLoadingLogo /> : <ServiceOrdersListView serviceOrders={pendingServiceOrders} role={role} />
+  return isLoading ? (
+    <HTLoadingLogo />
+  ) : (
+    <ServiceOrdersListView serviceOrders={authorizedInvoicedServiceOrders} role={role} />
+  )
 }

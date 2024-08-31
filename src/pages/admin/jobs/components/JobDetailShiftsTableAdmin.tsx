@@ -75,6 +75,29 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
     showToast({ severity: 'success', summary: 'Rejected', detail: 'Shift was not dropped 🙂', life: 3000 })
   }
 
+  const handleSendNotification = async (shiftId: string) => {
+    try {
+      const response = await requestService({
+        path: `shifts/notify-employees-open-shift`,
+        method: 'POST',
+        body: JSON.stringify({ shiftId }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.message)
+      }
+
+      showToast({ severity: 'success', summary: 'Success', detail: 'Notifications successfully sent' })
+    } catch (error) {
+      if (error instanceof Error) {
+        showToast({ severity: 'error', summary: 'Error', detail: error.message })
+      } else {
+        console.error(error)
+      }
+    }
+  }
+
   return (
     <section className="mt-12">
       <Dialog
@@ -121,16 +144,31 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
             <li key={day.shifts_id._id} className="flex items-center justify-between py-4">
               <Fieldset
                 legend={
-                  'Day ' +
-                  (index + 1) +
-                  ' - ' +
-                  formatInTimeZone(day.day, job.facility.timezone, 'EEEE, MMMM d, yyyy') +
-                  ' - ' +
-                  'Shifts (' +
-                  day?.shifts_id?.user_shifts?.length +
-                  '/' +
-                  job?.vacancy +
-                  ')'
+                  <div className="flex items-center justify-between">
+                    <span>
+                      {'Day ' +
+                        (index + 1) +
+                        ' - ' +
+                        formatInTimeZone(day.day, job.facility.timezone, 'EEEE, MMMM d, yyyy') +
+                        ' - ' +
+                        'Shifts (' +
+                        day?.shifts_id?.user_shifts?.length +
+                        '/' +
+                        job?.vacancy +
+                        ')'}
+                    </span>
+                    {day?.shifts_id?.user_shifts && day.shifts_id.user_shifts.length < job?.vacancy ? (
+                      <Button
+                        type="button"
+                        className="ml-2"
+                        onClick={event => {
+                          event.stopPropagation()
+                          handleSendNotification(day.shifts_id._id)
+                        }}>
+                        Send Notifications
+                      </Button>
+                    ) : null}
+                  </div>
                 }
                 toggleable
                 className="w-3/4">
@@ -163,6 +201,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                   )
                 })}
               </Fieldset>
+
               {day?.shifts_id?.user_shifts === undefined ? null : day.shifts_id.user_shifts.length >= job?.vacancy ? (
                 <p className="text-end text-green-500 md:text-start">
                   {'Shift Filled' +
