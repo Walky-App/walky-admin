@@ -14,6 +14,7 @@
     "@nextui-org/chip": "^2.0.25",
     "@react-google-maps/api": "^2.19.3",
     "@react-pdf/renderer": "^3.4.0",
+    "@sentry/react": "^8.27.0",
     "@types/node": "^16.18.74",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
