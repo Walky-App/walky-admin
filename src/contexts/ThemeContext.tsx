@@ -18,7 +18,7 @@ export const ThemeContext = createContext<ThemeContextType | undefined>(undefine
 export const ThemeProvider = ({ initialTheme, children }: Props) => {
   const { changeTheme } = useContext(PrimeReactContext)
   const [theme, setTheme] = useState<string>(initialTheme)
-  const [themeChanged, setThemeChanged] = useState<boolean>(false) // State to track theme change
+  const [themeChanged, setThemeChanged] = useState<boolean>(false)
   const [dark, setDark] = useState(false)
 
   let ranonce = false
