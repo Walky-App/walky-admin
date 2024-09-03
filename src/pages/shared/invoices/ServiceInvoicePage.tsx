@@ -250,11 +250,11 @@ export const ServiceInvoicePage = () => {
           <table className="w-full border-collapse border border-gray-400">
             <thead>
               <tr>
-                <th className="border border-gray-300 bg-gray-100 p-4 text-left">Invoice Status</th>
-                <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility</th>
-                <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility Address</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Invoice Status</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility Address</th>
                 {invoice?.service_order_id ? (
-                  <th className="border border-gray-300 bg-gray-100 p-4 text-left">SO Ref</th>
+                  <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">SO Ref</th>
                 ) : null}
               </tr>
             </thead>

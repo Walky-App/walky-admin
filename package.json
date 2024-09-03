@@ -22,8 +22,6 @@
     "date-fns-tz": "^3.1.3",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "flowbite": "^2.2.1",
-    "flowbite-react": "^0.7.2",
     "primeicons": "^6.0.1",
     "primereact": "^10.6.5",
     "quill": "^1.3.7",
@@ -88,7 +86,6 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
-    "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.4.8",

@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react'
 
-import cn from 'classnames'
 import { Toast } from 'primereact/toast'
 
 import { requestService } from '../../services/requestServiceNew'
+import { cn } from '../../utils/cn'
 
 export const ForgotPassword = () => {
   const [form, setForm] = useState({ email: '' })

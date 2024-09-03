@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-import classNames from 'classnames'
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { InputTextarea } from 'primereact/inputtextarea'
@@ -9,6 +8,7 @@ import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpTex
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
+import { cn } from '../../../utils/cn'
 
 export interface INote {
   _id: string
@@ -83,7 +83,7 @@ export const NotesComponent = ({ ref_id, model, created_by }: INotesComponentPro
               autoResize
               maxLength={500}
               onChange={e => setNewNote(e.target.value)}
-              className={classNames({ 'p-invalid': false }, 'mt-2 w-full')}
+              className={cn({ 'p-invalid': false }, 'mt-2 w-full')}
               autoComplete="off"
             />
             <HtInputHelpText
