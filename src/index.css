@@ -1,3 +1,6 @@
+@import 'primeicons/primeicons.css';
+@import 'quill/dist/quill.core.css';
+
 @layer tailwind-base, primereact, tailwind-utilities;
 
 @layer tailwind-base {
@@ -11,10 +14,12 @@
 
 :root {
   font-size: 15.25px;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  color: var(--text-color);
+  background: var(--surface-ground);
+  font-family: var(--font-family);
 }
