@@ -38,7 +38,11 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
       return 'bg-white'
     }
 
-    if (serviceOrder.service_invoice_id && serviceOrder.status === 'authorized') {
+    if (
+      serviceOrder.status === 'authorized' &&
+      serviceOrder.service_invoice_id &&
+      serviceOrder.service_invoice_id.status === 'paid'
+    ) {
       return 'bg-green-100'
     }
 
