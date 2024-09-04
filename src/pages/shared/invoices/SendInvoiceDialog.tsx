@@ -7,6 +7,7 @@ import { Tag } from 'primereact/tag'
 
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
+import { type ILog } from '../../../interfaces/logs'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
@@ -14,6 +15,7 @@ import { useUtils } from '../../../store/useUtils'
 interface SendInvoiceDialogProps {
   invoiceId: string | undefined
   setInvoice: (invoice: IServiceInvoice | null) => void
+  setLogs: (logs: ILog[]) => void
   setIsLoading(status: boolean): void
   setVisible: (visible: boolean) => void
   visible: boolean
@@ -22,6 +24,7 @@ interface SendInvoiceDialogProps {
 export const SendInvoiceDialog = ({
   invoiceId,
   setInvoice,
+  setLogs,
   setIsLoading,
   setVisible,
   visible,
@@ -78,8 +81,9 @@ export const SendInvoiceDialog = ({
       if (!response.ok) {
         throw new Error('Failed to send email')
       }
-      const fetchedData = await response.json()
-      setInvoice(fetchedData)
+      const { invoice, logs } = await response.json()
+      setInvoice(invoice)
+      setLogs(logs)
       clearStates()
       showToast({
         severity: 'success',
