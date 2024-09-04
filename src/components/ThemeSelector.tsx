@@ -15,8 +15,8 @@ export const ThemeSelector = () => {
       <ToggleButton
         checked={dark}
         onChange={handleToggle}
-        onLabel=""
-        offLabel=""
+        onLabel="Beta"
+        offLabel="Beta"
         onIcon="pi pi-moon"
         offIcon="pi pi-sun"
         className="md:w-14rem w-full"

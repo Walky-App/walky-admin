@@ -35,7 +35,9 @@ export const AdminTimesheetsPage = () => {
   }, [])
 
   const handleDropdownOptions = () => {
-    return usersData.map(applicant => ({ label: applicant.first_name + ' ' + applicant.last_name, value: applicant }))
+    return usersData
+      .sort((a, b) => a.last_name.localeCompare(b.last_name))
+      .map(applicant => ({ label: applicant.first_name + ' ' + applicant.last_name, value: applicant }))
   }
 
   return (
