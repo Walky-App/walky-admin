@@ -50,6 +50,11 @@ export const AllInvoicesListPage = () => {
   const memoServiceOrdersColumns = useMemo(
     () => [
       { Header: 'Status', accessor: 'status' },
+      {
+        Header: 'Payment type',
+        accessor: 'service_order_id.ach_authorized',
+        Cell: ({ value }: { value: boolean }) => (value ? 'ACH' : 'CC'),
+      },
       { Header: 'UID', accessor: 'uid' },
       { Header: 'Company Name', accessor: 'company_id.company_name' },
       { Header: 'Job Title', accessor: 'job_id.title' },
