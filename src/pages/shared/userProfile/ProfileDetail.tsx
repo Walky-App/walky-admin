@@ -1,6 +1,5 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from 'react'
 
-import classNames from 'classnames'
 import { Button } from 'primereact/button'
 import { Checkbox, type CheckboxChangeEvent } from 'primereact/checkbox'
 import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
@@ -15,6 +14,7 @@ import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type IUserPopulated, type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
+import { cn } from '../../../utils/cn'
 import { type INotificationPreference } from '../../../utils/formOptions'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 
@@ -222,7 +222,7 @@ export const ProfileDetail = ({
                 value={formUser.address}
                 setMoreAddressDetails={setMoreAddressDetails}
                 currentAddress={formUser.address ?? ''}
-                classNames={classNames({ 'p-invalid': false }, 'mt-2')}
+                classNames={cn({ 'p-invalid': false }, 'mt-2')}
                 aria-describedby="address-help"
               />
               <HtInputHelpText fieldName="address" helpText="Residential Address ONLY" />

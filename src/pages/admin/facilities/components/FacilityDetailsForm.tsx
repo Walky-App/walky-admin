@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom'
 
-import classNames from 'classnames'
 import { Button } from 'primereact/button'
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Image } from 'primereact/image'
@@ -22,6 +21,7 @@ import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getCurrentUserRole } from '../../../../utils/UserRole'
+import { cn } from '../../../../utils/cn'
 import { jobTitlesOptions } from '../../../../utils/formOptions'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
 import { PolygonMap } from './PolygonMap'
@@ -276,7 +276,7 @@ export const FacilityDetailsForm = ({
                 maxLength={500}
                 value={formData.notes}
                 onChange={e => setFormData(prevState => ({ ...prevState, notes: e.target.value }))}
-                className={classNames({ 'p-invalid': false }, 'w- mt-2')}
+                className={cn({ 'p-invalid': false }, 'w- mt-2')}
                 autoComplete="off"
               />
               <HtInputHelpText
@@ -301,7 +301,7 @@ export const FacilityDetailsForm = ({
                   selectAllLabel="Select All"
                   onChange={e => setFormData(prevState => ({ ...prevState, services: e.value }))}
                   placeholder="Select Services"
-                  className={classNames({ 'p-invalid': false }, 'mt-2 w-full')}
+                  className={cn({ 'p-invalid': false }, 'mt-2 w-full')}
                 />
                 <HtInputHelpText
                   fieldName="services"
