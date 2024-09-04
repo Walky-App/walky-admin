@@ -373,7 +373,7 @@ export const ServiceInvoicePage = () => {
                 </li>
               ))}
             </ul>
-            {invoice?.status !== 'paid' ? (
+            {invoice?.status !== 'paid' && role === 'admin' ? (
               <div>
                 {!invoice?.note ? (
                   <div className="flex flex-col pb-3 print:hidden">
@@ -395,6 +395,12 @@ export const ServiceInvoicePage = () => {
                     <p>{invoice.note}</p>
                   </div>
                 )}
+              </div>
+            ) : null}
+            {role !== 'admin' && invoice?.note ? (
+              <div>
+                <h2 className="mt-2 font-bold">Note:</h2>
+                <p>{invoice.note}</p>
               </div>
             ) : null}
           </div>
@@ -445,46 +451,66 @@ export const ServiceInvoicePage = () => {
                 ${Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
               </td>
             </tr>
-            <tr className="flex w-full flex-1 items-center justify-end border-t-2">
-              {invoice?.status !== 'paid' ? (
-                <div>
-                  {invoice?.details.discount ? (
-                    <div className="flex">
-                      <th
-                        scope="row"
-                        colSpan={3}
-                        className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
-                        <div className="flex items-center justify-end">
-                          <TrashIcon
-                            className="mr-1 h-4 w-4 text-red-600 print:hidden"
-                            onClick={handlerRemoveDiscount}
-                          />
-                          Discount:
-                        </div>
-                      </th>
-                      <td className="w-full pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
-                        - ${Number(invoice?.details.discount).toFixed(2)}
-                      </td>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center print:hidden">
-                      <th scope="row" colSpan={3} className="pr-3 pt-4">
-                        <InputNumber
-                          className="w-full"
-                          prefix="$"
-                          placeholder="Enter Discount"
-                          value={discount}
-                          onChange={e => setDiscount(Number(e.value))}
+            {invoice?.status !== 'paid' && role === 'admin' ? (
+              <tr className="flex w-full flex-1 items-center justify-end border-t-2">
+                {invoice?.details.discount ? (
+                  <div className="flex">
+                    <th
+                      scope="row"
+                      colSpan={3}
+                      className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
+                      <div className="flex items-center justify-end">
+                        <TrashIcon
+                          className="mr-1 h-4 w-4 text-red-600 print:hidden"
+                          onClick={handlerRemoveDiscount}
                         />
-                      </th>
-                      <td className=" pt-4">
-                        <Button label="Apply" onClick={() => setIsOpen(true)} disabled={discount == 0} />
-                      </td>
+                        Discount:
+                      </div>
+                    </th>
+                    <td className="w-full pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
+                      - ${Number(invoice?.details.discount).toFixed(2)}
+                    </td>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center print:hidden">
+                    <th scope="row" colSpan={3} className="pr-3 pt-4">
+                      <InputNumber
+                        className="w-full"
+                        prefix="$"
+                        placeholder="Enter Discount"
+                        value={discount}
+                        onChange={e => setDiscount(Number(e.value))}
+                      />
+                    </th>
+                    <td className=" pt-4">
+                      <Button label="Apply" onClick={() => setIsOpen(true)} disabled={discount == 0} />
+                    </td>
+                  </div>
+                )}
+              </tr>
+            ) : null
+            }
+            {role !== 'admin' && invoice?.details.discount ? (
+              <tr className="flex w-full items-center justify-end border-t-2">
+                <div className="flex">
+                  <th
+                    scope="row"
+                    colSpan={3}
+                    className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
+                    <div className="flex items-center justify-end">
+                      <TrashIcon
+                        className="mr-1 h-4 w-4 text-red-600 print:hidden"
+                        onClick={handlerRemoveDiscount}
+                      />
+                      Discount:
                     </div>
-                  )}
+                  </th>
+                  <td className="w-full pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
+                    - ${Number(invoice?.details.discount).toFixed(2)}
+                  </td>
                 </div>
-              ) : null}
-            </tr>
+              </tr>
+            ) : <tr className="flex w-full items-center justify-end border-t-2" />}
             <tr>
               <th
                 scope="row"
@@ -516,10 +542,12 @@ export const ServiceInvoicePage = () => {
           ) : null}
         </footer>
       </div>
-      <div className="print:hidden">
-        <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
-        {logs && logs.length > 0 ? <GlobalTable data={logs} columns={memoLogsColumns} /> : <p>No activity found</p>}
-      </div>
+      {
+        role === 'admin' ? (<div className="print:hidden">
+          <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
+          {logs && logs.length > 0 ? <GlobalTable data={logs} columns={memoLogsColumns} /> : <p>No activity found</p>}
+        </div>) : null
+      }
     </div>
   )
 }
