@@ -136,7 +136,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       ],
     },
     { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
-    { id: 3, name: 'Invoices', href: '/dashboard/invoices', icon: <FaFileInvoiceDollar />, disabled: true },
+    { id: 3, name: 'Invoices', href: '/client/invoices', icon: <FaFileInvoiceDollar />, disabled: !userIsOnboarded },
     {
       id: 4,
       name: 'Timesheets',
