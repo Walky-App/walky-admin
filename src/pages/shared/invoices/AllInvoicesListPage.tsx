@@ -16,18 +16,10 @@ export const AllInvoicesListPage = () => {
   useEffect(() => {
     const getAllServiceOrders = async () => {
       try {
-        let response
-        if (role === 'admin') {
-          response = await requestService({
-            path: `invoices/list`,
-            method: 'GET',
-          })
-        } else if (role === 'client') {
-          response = await requestService({
-            path: `jobs/service-orders/by-client-companies`,
-            method: 'GET',
-          })
-        }
+        const response = await requestService({
+          path: `invoices/list`,
+          method: 'GET',
+        })
 
         if (!response || !response.ok) {
           throw new Error('Failed to fetch service orders')
