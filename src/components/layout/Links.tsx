@@ -136,17 +136,16 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       ],
     },
     { id: 2, name: 'Contracts', href: '/dashboard/contracts', icon: <FaFileContract />, disabled: true },
-    { id: 3, name: 'Invoices', href: '/client/invoices', icon: <FaFileInvoiceDollar />, disabled: !userIsOnboarded },
     {
-      id: 4,
+      id: 3,
       name: 'Timesheets',
       href: '/dashboard/timesheets',
       icon: <BsFillFileEarmarkSpreadsheetFill />,
       disabled: true,
     },
-    { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
+    { id: 4, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
     {
-      id: 6,
+      id: 5,
       name: 'Service Orders',
       href: '/client/jobs/service-orders',
       icon: <FaBriefcase />,
@@ -158,6 +157,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
         { name: 'Invoiced', href: '/client/jobs/service-orders/authorized-invoiced' },
       ],
     },
+    { id: 6, name: 'Invoices', href: '/client/invoices', icon: <FaFileInvoiceDollar />, disabled: !userIsOnboarded },
     {
       id: 7,
       name: 'Facilities',

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { FacilitiesTable } from '../../../components/shared/Tables/FacilitiesTable'
 import { type IFacility } from '../../../interfaces/facility'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 
 interface IRow {
@@ -51,9 +51,15 @@ export const ClientFacilities = () => {
   useEffect(() => {
     const { _id } = GetTokenInfo()
     const getFacilities = async () => {
-      const allFacilities = await RequestService(`facilities/user/${_id}`)
-
-      setFacilities(allFacilities)
+      try {
+        const response = await requestService({ path: `facilities/user/${_id}` })
+        if (response.ok) {
+          const allFacilities: IFacility[] = await response.json()
+          setFacilities(allFacilities)
+        }
+      } catch (error) {
+        console.error('Error fetching facilities', error)
+      }
     }
 
     getFacilities()
@@ -68,7 +74,12 @@ export const ClientFacilities = () => {
         className="mb-4 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
         Add New Facility
       </button>
-      <FacilitiesTable columns={clientColumns} data={facilities} />
+
+      {facilities.length === 0 ? (
+        <div>No facilities found</div>
+      ) : (
+        <FacilitiesTable columns={clientColumns} data={facilities} />
+      )}
     </>
   )
 }
