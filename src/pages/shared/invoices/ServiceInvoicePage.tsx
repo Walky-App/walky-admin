@@ -251,6 +251,7 @@ export const ServiceInvoicePage = () => {
             <thead>
               <tr>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Invoice Status</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Payment Type</th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility</th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility Address</th>
                 {invoice?.service_order_id ? (
@@ -262,6 +263,9 @@ export const ServiceInvoicePage = () => {
               <tr>
                 <td className="border border-gray-300 p-4">
                   {statusDisplayText[invoice?.status as keyof typeof statusDisplayText] || invoice?.status}
+                </td>
+                <td className="border border-gray-300 p-4">
+                  {invoice?.service_order_id?.ach_authorized ? 'ACH' : 'Credit Card'}
                 </td>
                 <td className="border border-gray-300 p-4">
                   <h3 className="text-base font-semibold leading-6">{invoice?.facility_id.name}</h3>

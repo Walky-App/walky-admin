@@ -42,4 +42,5 @@ export interface IServiceOrder {
   createdAt: Date
   updatedAt: Date
   transaction_id: string
+  ach_authorized: boolean
 }
