@@ -1,6 +1,7 @@
 import { type ICompany } from './company'
 import { type IFacility } from './facility'
 import { type IJob } from './job'
+import { type IServiceOrder } from './serviceOrder'
 import { type StatesSettingsDocument } from './setting'
 
 interface IDetails {
@@ -30,7 +31,7 @@ export interface IServiceInvoice {
   status: string
   created_by: string
   company_id: ICompany
-  service_order_id: string
+  service_order_id: IServiceOrder
   job_id: IJob
   facility_id: IFacility
   profile_id: string

@@ -34,11 +34,22 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
   }
 
   const rowClassName = (serviceOrder: IServiceOrder) => {
+    const endDate = new Date(serviceOrder.job_id.job_dates[serviceOrder.job_id.job_dates.length - 1])
+    const zonedEndDate = toZonedTime(endDate, serviceOrder.facility_id.timezone)
+
+    if (!serviceOrder.service_invoice_id && zonedEndDate < new Date() && serviceOrder.status === 'authorized') {
+      return 'bg-yellow-100'
+    }
+
     if (!serviceOrder.service_invoice_id && serviceOrder.status === 'authorized') {
       return 'bg-white'
     }
 
-    if (serviceOrder.service_invoice_id && serviceOrder.status === 'authorized') {
+    if (
+      serviceOrder.status === 'authorized' &&
+      serviceOrder.service_invoice_id &&
+      serviceOrder.service_invoice_id.status === 'paid'
+    ) {
       return 'bg-green-100'
     }
 

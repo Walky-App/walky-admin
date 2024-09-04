@@ -1,12 +1,10 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 
-import { format, isToday, isYesterday } from 'date-fns'
-
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
+import { ServiceInvoicesListView } from './ServiceInvoicesListView'
 
 export const AllInvoicesListPage = () => {
   const [invoices, setInvoices] = useState<IServiceOrder[]>([])
@@ -25,8 +23,8 @@ export const AllInvoicesListPage = () => {
           throw new Error('Failed to fetch service orders')
         }
 
-        const allServiceOrders = await response.json()
-        setInvoices(allServiceOrders)
+        const allInvoices = await response.json()
+        setInvoices(allInvoices)
       } catch (error) {
         console.error('Error fetching service orders data:', error)
       } finally {
@@ -37,31 +35,5 @@ export const AllInvoicesListPage = () => {
     getAllServiceOrders()
   }, [role])
 
-  const memoServiceOrdersData = useMemo(() => invoices, [invoices])
-
-  const memoServiceOrdersColumns = useMemo(
-    () => [
-      { Header: 'Status', accessor: 'status' },
-      { Header: 'UID', accessor: 'uid' },
-      { Header: 'Company Name', accessor: 'company_id.company_name' },
-      { Header: 'Job Title', accessor: 'job_id.title' },
-      {
-        Header: 'Created',
-        width: 200,
-        accessor: (a: IServiceOrder) => {
-          return isToday(a.createdAt) ? 'Today ⭐️' : isYesterday(a.createdAt) ? 'Yesterday' : format(a.createdAt, 'P')
-        },
-      },
-      { Header: 'Facility ID', accessor: 'facility_id.name' },
-      { Header: 'Created By', accessor: 'created_by' },
-      { Header: 'Total Cost, $', accessor: 'details.total_cost' },
-    ],
-    [],
-  )
-
-  return isLoading ? (
-    <HTLoadingLogo />
-  ) : (
-    <GlobalTable data={memoServiceOrdersData} columns={memoServiceOrdersColumns} allowClick />
-  )
+  return isLoading ? <HTLoadingLogo /> : <ServiceInvoicesListView invoices={invoices} />
 }
