@@ -77,7 +77,7 @@ export const AdminCompanyListPage = () => {
     [],
   )
 
-  return isLoading ? (
+  return isLoading && memoCompaniesData.length > 0 ? (
     <HTLoadingLogo />
   ) : (
     <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} allowClick />
