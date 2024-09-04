@@ -195,7 +195,7 @@ export const JobDetailViewAdmin = () => {
                   <div className="flex items-center gap-2">
                     {job.is_active ? <i className="pi pi-check" /> : <i className="pi pi-times-circle" />}
                     <div className="mt-0.5 flex flex-col gap-1">
-                      <span className="font-medium text-black">{job.is_active ? 'Active' : 'Disabled'}</span>
+                      <span className="font-medium">{job.is_active ? 'Active' : 'Disabled'}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

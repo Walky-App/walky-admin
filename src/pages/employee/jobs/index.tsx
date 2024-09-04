@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 
 import { useMediaQuery } from 'react-responsive'
 
-import classNames from 'classnames'
 import { Button } from 'primereact/button'
 import { Divider } from 'primereact/divider'
 import { SelectButton, type SelectButtonChangeEvent } from 'primereact/selectbutton'
@@ -17,6 +16,7 @@ import { type IJob, type IApplicantWithoutPopulate } from '../../../interfaces/j
 import { requestService } from '../../../services/requestServiceNew'
 import { useJobs } from '../../../store/useJobs'
 import { useUtils } from '../../../store/useUtils'
+import { cn } from '../../../utils/cn'
 import { JobCard } from './JobCard'
 import { DateSearch } from './searchComponents/DateSearch'
 import { JobTypeSearch } from './searchComponents/JobTypeSearch'
@@ -106,7 +106,7 @@ export const EmployeeJobs = () => {
             <AddressAutoComplete
               setMoreAddressDetails={setMoreAddressDetails}
               currentAddress="Address, City, State, Zip Code"
-              classNames={classNames('rounded-br-none rounded-tr-none')}
+              classNames={cn('rounded-br-none rounded-tr-none')}
               inputClasses={{ borderRadius: '5px 0 0 5px ' }}
             />
             <Button

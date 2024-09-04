@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-// import cn from 'classnames'
 import { Button } from 'primereact/button'
 
 import { type ILog } from '../../../interfaces/logs'

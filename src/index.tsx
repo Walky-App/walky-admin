@@ -6,9 +6,6 @@ import { PrimeReactProvider } from 'primereact/api'
 import { App } from './App'
 
 import './index.css'
-import 'primeicons/primeicons.css'
-import './theme/theme.css'
-import 'quill/dist/quill.core.css'
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Failed to find the root element')

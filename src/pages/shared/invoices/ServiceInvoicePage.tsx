@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
+import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputTextarea } from 'primereact/inputtextarea'
@@ -12,9 +13,11 @@ import { TrashIcon } from '@heroicons/react/20/solid'
 
 import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type ILog } from '../../../interfaces/logs'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
+import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 import { DiscountDialog } from './DiscountDialog'
 import { SendInvoiceDialog } from './SendInvoiceDialog'
@@ -27,6 +30,7 @@ export const ServiceInvoicePage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [sendInvoiceShow, setSendInvoiceShow] = useState(false)
   const { invoiceId } = useParams()
+  const { showToast } = useUtils()
   const role = roleChecker()
   const [logs, setLogs] = useState<ILog[]>([])
 
@@ -157,6 +161,48 @@ export const ServiceInvoicePage = () => {
     }
   }
 
+  const handleSendBuyoutNotificationToAdmin =
+    (employeeName: string) => (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+
+      const accept = async () => {
+        try {
+          const response = await requestService({
+            path: `invoices/buyout-employee`,
+            method: 'POST',
+            body: JSON.stringify({ invoiceId, employeeName }),
+          })
+
+          if (response.status === 204) {
+            showToast({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Administrators have been notified of your intention to buyout this employee',
+            })
+          } else if (response.ok) {
+            const data = await response.json()
+            showToast({ severity: 'success', summary: 'Success', detail: data.message })
+          }
+        } catch (error) {
+          console.error(error)
+          showToast({ severity: 'error', summary: 'Error', detail: 'Error notifying administrators' })
+        }
+      }
+
+      const reject = () => {
+        showToast({ severity: 'warn', summary: 'Cancelled', detail: 'Buyout process cancelled' })
+      }
+
+      confirmPopup({
+        target: event.currentTarget as HTMLElement,
+        message: `Do you want to notify administrators about your intention to buyout ${employeeName}?`,
+        icon: 'pi pi-info-circle',
+        defaultFocus: 'reject',
+        acceptClassName: 'p-button-danger',
+        accept,
+        reject,
+      })
+    }
   const memoLogsColumns = useMemo(
     () => [
       { Header: 'User', accessor: 'user_id' },
@@ -204,11 +250,11 @@ export const ServiceInvoicePage = () => {
           <table className="w-full border-collapse border border-gray-400">
             <thead>
               <tr>
-                <th className="border border-gray-300 bg-gray-100 p-4 text-left">Invoice Status</th>
-                <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility</th>
-                <th className="border border-gray-300 bg-gray-100 p-4 text-left">Facility Address</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Invoice Status</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility Address</th>
                 {invoice?.service_order_id ? (
-                  <th className="border border-gray-300 bg-gray-100 p-4 text-left">SO Ref</th>
+                  <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">SO Ref</th>
                 ) : null}
               </tr>
             </thead>
@@ -238,9 +284,20 @@ export const ServiceInvoicePage = () => {
           </colgroup>
           <thead className="border-b border-gray-300">
             <tr>
-              <th scope="col" className="py-3.5 pl-4 pr-3 text-left font-semibold ">
+              <th scope="col" className="py-3.5 pl-4 pr-3 text-left font-semibold">
                 Description
               </th>
+              {role === 'client' ? (
+                <th scope="col" className="py-3.5 pl-4 pr-3 text-left font-semibold print:hidden">
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    Buyout
+                    <HtInfoTooltip
+                      className="ml-2"
+                      message="Select 'Buyout' if you wish to continue working with this individual independently of HempTemps."
+                    />
+                  </span>
+                </th>
+              ) : null}
               <th scope="col" className="py-3.5 pl-4 pr-3 text-left font-semibold sm:table-cell">
                 Activity
               </th>
@@ -269,6 +326,21 @@ export const ServiceInvoicePage = () => {
                     <div className="font-medium">{detail.description}</div>
                   )}
                 </td>
+                {role === 'client' ? (
+                  <td className="py-5 pl-4 pr-3 text-left sm:table-cell print:hidden">
+                    <ConfirmPopup />
+                    <Button
+                      label="Buyout"
+                      className="ml-2"
+                      outlined
+                      size="small"
+                      onClick={event => {
+                        const name = detail.description.split(' ')[0]
+                        handleSendBuyoutNotificationToAdmin(name)(event)
+                      }}
+                    />
+                  </td>
+                ) : null}
                 <td className="py-5 pl-4 pr-3 text-left sm:table-cell">
                   <div className="font-medium">{detail.activity}</div>
                 </td>

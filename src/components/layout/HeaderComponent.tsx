@@ -2,7 +2,6 @@ import { type Dispatch, Fragment, type SetStateAction, useEffect } from 'react'
 
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-import cn from 'classnames'
 import { Avatar } from 'primereact/avatar'
 import { BreadCrumb } from 'primereact/breadcrumb'
 
@@ -13,8 +12,10 @@ import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useAuth } from '../../contexts/AuthContext'
 import { LogoutService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
+import { cn } from '../../utils/cn'
 import { roleChecker } from '../../utils/roleChecker'
 import { GetTokenInfo } from '../../utils/tokenUtil'
+import { ThemeSelector } from '../ThemeSelector'
 import { LogosPack } from './LogosPack'
 
 interface HeaderComponentProps {
@@ -77,7 +78,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
     <>
       <header
         id="header-shell"
-        className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 print:hidden">
+        className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-gray-200 bg-[var(--surface-card)] px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 print:hidden">
         {/* Left hand side header */}
         <div className="flex items-center">
           {/* Mobile logo and sidebar toggle */}
@@ -108,6 +109,8 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
             </button>
           ) : null}
 
+          {role === 'admin' ? <ThemeSelector /> : null}
+
           {/* Profile dropdown */}
           <Menu as="div" className="relative">
             <Menu.Button className="-m-1.5 flex items-center p-1.5">
@@ -122,7 +125,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
               />
               <span className="hidden lg:flex lg:items-center">
                 {user?.first_name != null ? (
-                  <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+                  <span className="ml-4 text-sm font-semibold leading-6" aria-hidden="true">
                     Hi, {user.first_name}
                   </span>
                 ) : null}
