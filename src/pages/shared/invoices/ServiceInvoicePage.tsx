@@ -220,6 +220,7 @@ export const ServiceInvoicePage = () => {
       <SendInvoiceDialog
         invoiceId={invoiceId}
         setInvoice={setInvoice}
+        setLogs={setLogs}
         setIsLoading={setIsLoading}
         setVisible={setSendInvoiceShow}
         visible={sendInvoiceShow}
