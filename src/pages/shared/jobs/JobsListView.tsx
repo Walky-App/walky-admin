@@ -101,7 +101,7 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
             if (filledShifts === totalShifts) {
               return '✅'
             } else if (filledShifts > totalShifts) {
-              return `${filledShifts} / ${totalShifts} ⚠️✅`
+              return `${filledShifts} / ${totalShifts} ✅⚠️`
             } else {
               return `${filledShifts} / ${totalShifts} ❌`
             }
