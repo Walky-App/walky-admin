@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { isToday, isYesterday } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
@@ -19,7 +18,7 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
   const navigate = useNavigate()
 
   const handleIsShiftsFilled = (job: IJob) =>
-    job.job_days?.every(jobDay => jobDay.shifts_id?.user_shifts?.length === job.vacancy)
+    job.job_days?.every(jobDay => (jobDay.shifts_id?.user_shifts?.length || 0) >= job.vacancy)
 
   const rowClassName = (job: IJob) => {
     if (job.is_active && !handleIsShiftsFilled(job)) {
@@ -76,18 +75,6 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
         <Column field="facility.name" header="Facility" />
         <Column
           sortable
-          field="createdAt"
-          header="Created"
-          body={(job: IJob) => {
-            return isToday(job.createdAt)
-              ? 'Today'
-              : isYesterday(job.createdAt)
-                ? 'Yesterday'
-                : formatInTimeZone(job.createdAt, job.facility.timezone, 'MMM d')
-          }}
-        />
-        <Column
-          sortable
           header="Starts"
           body={(item: IJob) => {
             return formatInTimeZone(item.job_dates[0], item.facility.timezone, 'MMM d')
@@ -105,22 +92,20 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
         <Column field="is_active" header="Status" sortable body={(d: IJob) => (d.is_active ? 'Active' : 'Pending')} />
         <Column
           header="Filled"
-          body={(singleJob: IJob) =>
-            handleIsShiftsFilled(singleJob)
-              ? '✅'
-              : `${singleJob.job_days.reduce((acc, jobDay) => {
-                  if (jobDay?.shifts_id?.user_shifts?.length !== undefined) {
-                    if (
-                      jobDay?.shifts_id?.user_shifts?.length !== undefined
-                        ? jobDay?.shifts_id?.user_shifts?.length < singleJob.vacancy
-                        : false
-                    ) {
-                      return acc + jobDay?.shifts_id?.user_shifts?.length
-                    }
-                  }
-                  return acc
-                }, 0)} ❌`
-          }
+          body={(singleJob: IJob) => {
+            const totalShifts = singleJob.vacancy * singleJob.job_days.length
+            const filledShifts = singleJob.job_days.reduce((acc, jobDay) => {
+              return acc + (jobDay?.shifts_id?.user_shifts?.length || 0)
+            }, 0)
+
+            if (filledShifts === totalShifts) {
+              return '✅'
+            } else if (filledShifts > totalShifts) {
+              return `${filledShifts} / ${totalShifts} ✅⚠️`
+            } else {
+              return `${filledShifts} / ${totalShifts} ❌`
+            }
+          }}
         />
         <Column field="title" header="Title" />
         <Column field="created_by" header="Created by" />

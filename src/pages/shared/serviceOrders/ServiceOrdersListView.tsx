@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { isToday, isYesterday, format } from 'date-fns'
+import { format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
@@ -108,18 +108,6 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
         />
         <Column field="status" sortable header="Status" />
         <Column
-          sortable
-          field="createdAt"
-          header="Created"
-          body={(serviceOrder: IServiceOrder) =>
-            isToday(serviceOrder.createdAt)
-              ? 'Today'
-              : isYesterday(serviceOrder.createdAt)
-                ? 'Yesterday'
-                : format(serviceOrder.createdAt, 'P')
-          }
-        />
-        <Column
           field="company_id.company_name"
           header="Company Name"
           body={serviceOrder => (
@@ -161,7 +149,6 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
             return format(zonedEndDate, 'MMM d')
           }}
         />
-        <Column field="job_id.job_dates.length" header="Number of days" />
         <Column
           field="facility_id.name"
           header="Facility Name"
@@ -174,7 +161,6 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
           )}
         />
         <Column field="created_by" header="Created By" />
-        <Column field="details.total_cost" header="Total Cost, $" />
       </DataTable>
     </div>
   )
