@@ -693,30 +693,6 @@ export const ServiceInvoicePage = () => {
                 ${Number(invoice?.details.total_cost).toFixed(2)}
               </td>
             </tr>
-            {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
-              <tr>
-                <th
-                  scope="row"
-                  colSpan={3}
-                  className="hidden pl-4 pr-3 pt-6 text-right font-normal text-gray-500 sm:table-cell sm:pl-0">
-                  Total Overtime Cost
-                </th>
-                <td className="pl-3 pr-4 pt-6 text-right font-normal text-gray-500 sm:pr-0">
-                  ${Number(invoice.details.total_overtime_fees).toFixed(2)}
-                </td>
-              </tr>
-            ) : null}
-            <tr>
-              <th
-                scope="row"
-                colSpan={3}
-                className="hidden py-4 pl-4 pr-3 text-right font-normal text-gray-500 sm:table-cell sm:pl-0">
-                Estimated Total per Hour
-              </th>
-              <td className="py-4 pl-3 pr-4 text-left font-normal text-gray-500 sm:pr-0">
-                ${Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
-              </td>
-            </tr>
           </table>
         </div>
         <footer>
