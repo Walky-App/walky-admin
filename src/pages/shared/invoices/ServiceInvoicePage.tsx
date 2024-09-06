@@ -436,9 +436,7 @@ export const ServiceInvoicePage = () => {
               <th scope="col" className="table-cell py-3.5 pl-4 pr-3 text-left font-semibold">
                 Activity
               </th>
-              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
-                RT
-              </th>
+              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold" />
               <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
                 OT
               </th>
@@ -627,29 +625,31 @@ export const ServiceInvoicePage = () => {
             {invoice?.status !== 'paid' && role === 'admin' ? (
               <tr className="flex w-full flex-1 items-center justify-end border-t-2">
                 {invoice?.details.discount ? (
-                  <div className="flex">
+                  <tr>
                     <th
                       scope="row"
                       colSpan={3}
-                      className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
+                      className="hidden pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
                       <div className="flex items-center justify-end">
                         <TrashIcon className="mr-1 h-4 w-4 text-red-600 print:hidden" onClick={handlerRemoveDiscount} />
-                        Discount:
+                        Discount (Reason: {invoice?.details.discount_reason || 'N/A'}):
                       </div>
                     </th>
-                    <td className="w-full pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
+                    <td className="pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
                       - ${Number(invoice?.details.discount).toFixed(2)}
                     </td>
-                  </div>
+                  </tr>
                 ) : (
                   <div className="flex items-center justify-center print:hidden">
                     <th scope="row" colSpan={3} className="pr-3 pt-4">
                       <InputNumber
                         className="w-full"
+                        locale="en-US"
                         prefix="$"
+                        minFractionDigits={2}
                         placeholder="Enter Discount"
                         value={discount}
-                        onChange={e => setDiscount(Number(e.value))}
+                        onChange={e => e.value !== null && setDiscount(e.value)}
                       />
                     </th>
                     <td className=" pt-4">
