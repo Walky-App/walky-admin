@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import { format } from 'date-fns'
 import { Button } from 'primereact/button'
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup'
+import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputTextarea } from 'primereact/inputtextarea'
@@ -40,6 +41,8 @@ interface IdetailsTarget {
 export const ServiceInvoicePage = () => {
   const [invoice, setInvoice] = useState<IServiceInvoice | null>(null)
   const [discount, setDiscount] = useState<number>(0)
+  const [status, setStatus] = useState(invoice?.status)
+  const [isEditingStatus, setIsEditingStatus] = useState(false)
   const [note, setNote] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -71,6 +74,7 @@ export const ServiceInvoicePage = () => {
         }
         const { invoice, logs } = await response.json()
         setInvoice(invoice)
+        setStatus(invoice.status)
         setLogs(logs)
         setIsLoading(false)
       } catch (error) {
@@ -81,10 +85,41 @@ export const ServiceInvoicePage = () => {
     getinvoice()
   }, [invoiceId])
 
+  const statusOptions = [
+    { label: 'Authorized', value: 'authorized' },
+    { label: 'Pending Payment', value: 'pending_select_payment' },
+    { label: 'Transaction Successful - Invoice Paid', value: 'paid' },
+  ]
+
   const statusDisplayText = {
     authorized: 'Authorized',
     pending_select_payment: 'Pending Payment',
     paid: 'Transaction Successful - Invoice Paid',
+  }
+
+  const handleStatusChange = (e: { value: string }) => {
+    setStatus(e.value)
+  }
+  const handleStatusClick = () => {
+    setIsEditingStatus(true)
+  }
+
+  const handleSave = async () => {
+    try {
+      const response = await requestService({
+        path: `invoices/${invoiceId}/change-status`,
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to update invoice status')
+      }
+      showToast({ severity: 'success', summary: 'Invoice status updated successfully' })
+      setIsEditingStatus(false)
+    } catch (error) {
+      console.error('Error updating invoice status: ', error)
+      showToast({ severity: 'error', summary: 'Failed to update invoice status' })
+    }
   }
 
   const handlerRegenerateInvoice = async () => {
@@ -338,8 +373,27 @@ export const ServiceInvoicePage = () => {
             </thead>
             <tbody>
               <tr>
-                <td className="border border-gray-300 p-4">
-                  {statusDisplayText[invoice?.status as keyof typeof statusDisplayText] || invoice?.status}
+                <td
+                  className={`border border-gray-300 p-4 ${role === 'admin' && !isEditingStatus ? 'hover:text-green-500' : ''}`}
+                  onClick={role === 'admin' && !isEditingStatus ? handleStatusClick : undefined}>
+                  {isEditingStatus ? (
+                    role === 'admin' && invoice?.service_order_id?.ach_authorized ? (
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Dropdown
+                          value={status}
+                          options={statusOptions}
+                          onChange={handleStatusChange}
+                          placeholder={statusDisplayText[status as keyof typeof statusDisplayText] || status}
+                          style={{ marginRight: '10px' }}
+                        />
+                        <Button icon="pi pi-save" onClick={handleSave} />
+                      </div>
+                    ) : (
+                      statusDisplayText[status as keyof typeof statusDisplayText] || status
+                    )
+                  ) : (
+                    statusDisplayText[status as keyof typeof statusDisplayText] || status
+                  )}
                 </td>
                 <td className="border border-gray-300 p-4">
                   {invoice?.service_order_id?.ach_authorized ? 'ACH' : 'Credit Card'}

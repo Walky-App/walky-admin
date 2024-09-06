@@ -23,6 +23,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
   const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
   const [showDialog, setShowDialog] = useState(false)
   const [shiftDropReason, setShiftDropReason] = useState('')
+  const [loadingSendingNotifications, setLoadingSendingNotifications] = useState(false)
   const [employeeShiftInfoToRemove, setEmployeeShiftInfoToRemove] = useState({ shiftId: '', userShiftId: '' })
   const { showToast } = useUtils()
 
@@ -87,7 +88,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
         const data = await response.json()
         throw new Error(data.message)
       }
-
+      setLoadingSendingNotifications(false)
       showToast({ severity: 'success', summary: 'Success', detail: 'Notifications successfully sent' })
     } catch (error) {
       if (error instanceof Error) {
@@ -160,9 +161,11 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                     {day?.shifts_id?.user_shifts && day.shifts_id.user_shifts.length < job?.vacancy ? (
                       <Button
                         type="button"
+                        loading={loadingSendingNotifications}
                         className="ml-2"
                         onClick={event => {
                           event.stopPropagation()
+                          setLoadingSendingNotifications(true)
                           handleSendNotification(day.shifts_id._id)
                         }}>
                         Send Notifications
