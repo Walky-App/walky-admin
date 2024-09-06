@@ -8,6 +8,7 @@ import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputTextarea } from 'primereact/inputtextarea'
+import { classNames } from 'primereact/utils'
 
 import { TrashIcon } from '@heroicons/react/20/solid'
 
@@ -22,6 +23,20 @@ import { roleChecker } from '../../../utils/roleChecker'
 import { DiscountDialog } from './DiscountDialog'
 import { SendInvoiceDialog } from './SendInvoiceDialog'
 
+interface IdetailsTarget {
+  temp_id?: string
+  shifts_days?: Date[]
+  total_worked_hours: number
+  estimated_total_per_hour: number
+  regular_hours: number
+  overtime_hours: number
+  description: string
+  role: string
+  activity: string
+  pay_rate: number
+  amount: number
+}
+
 export const ServiceInvoicePage = () => {
   const [invoice, setInvoice] = useState<IServiceInvoice | null>(null)
   const [discount, setDiscount] = useState<number>(0)
@@ -33,6 +48,19 @@ export const ServiceInvoicePage = () => {
   const { showToast } = useUtils()
   const role = roleChecker()
   const [logs, setLogs] = useState<ILog[]>([])
+  const [detailTarget, setDetailTarget] = useState<IdetailsTarget>({
+    temp_id: '',
+    shifts_days: [],
+    total_worked_hours: 0,
+    estimated_total_per_hour: 0,
+    regular_hours: 0,
+    overtime_hours: 0,
+    description: '',
+    role: '',
+    activity: '',
+    pay_rate: 0,
+    amount: 0,
+  })
 
   useEffect(() => {
     const getinvoice = async () => {
@@ -212,6 +240,54 @@ export const ServiceInvoicePage = () => {
     [],
   )
 
+  const handlerSelectTarget = (details: IdetailsTarget) => {
+    if (detailTarget.temp_id !== details.temp_id) {
+      setDetailTarget(details)
+    }
+  }
+
+  const saveSelectTarget = async () => {
+    try {
+      setIsLoading(true)
+      const body = {
+        detailTarget,
+        invoice_id: invoiceId,
+      }
+      const response = await requestService({
+        path: `invoices/details-temp`,
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to apply discount to invoice')
+      }
+      const { invoice, logs } = await response.json()
+      setInvoice(invoice)
+      setLogs(logs)
+      resetSelectTarget()
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error regenerating invoice:', error)
+      setIsLoading(false)
+    }
+  }
+
+  const resetSelectTarget = () => {
+    setDetailTarget({
+      temp_id: '',
+      shifts_days: [],
+      total_worked_hours: 0,
+      estimated_total_per_hour: 0,
+      regular_hours: 0,
+      overtime_hours: 0,
+      description: '',
+      role: '',
+      activity: '',
+      pay_rate: 0,
+      amount: 0,
+    })
+  }
+
   return isLoading ? (
     <HTLoadingLogo />
   ) : (
@@ -303,16 +379,22 @@ export const ServiceInvoicePage = () => {
                   </span>
                 </th>
               ) : null}
-              <th scope="col" className="py-3.5 pl-4 pr-3 text-left font-semibold sm:table-cell">
+              <th scope="col" className="table-cell py-3.5 pl-4 pr-3 text-left font-semibold">
                 Activity
               </th>
-              <th scope="col" className="hidden px-3 py-3.5 text-right font-semibold sm:table-cell">
-                QTY
+              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
+                RT
               </th>
-              <th scope="col" className="hidden px-3 py-3.5 text-right font-semibold sm:table-cell">
+              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
+                OT
+              </th>
+              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
+                Total
+              </th>
+              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
                 Rate
               </th>
-              <th scope="col" className="hidden px-3 py-3.5 text-right font-semibold sm:table-cell">
+              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
                 Amount
               </th>
             </tr>
@@ -320,7 +402,7 @@ export const ServiceInvoicePage = () => {
           <tbody>
             {invoice?.details.temps_details.map((detail, index) => (
               <tr key={index}>
-                <td className="flex-1 py-5 pl-4 pr-3 sm:table-cell">
+                <td className="table-cell flex-1 py-5 pl-4 pr-3">
                   {role === 'admin' ? (
                     <Link
                       className="cursor-pointer font-medium hover:text-primary"
@@ -332,7 +414,7 @@ export const ServiceInvoicePage = () => {
                   )}
                 </td>
                 {role === 'client' ? (
-                  <td className="py-5 pl-4 pr-3 text-left sm:table-cell print:hidden">
+                  <td className="table-cell py-5 pl-4 pr-3 text-left print:hidden">
                     <ConfirmPopup />
                     <Button
                       label="Buyout"
@@ -346,12 +428,48 @@ export const ServiceInvoicePage = () => {
                     />
                   </td>
                 ) : null}
-                <td className="py-5 pl-4 pr-3 text-left sm:table-cell">
+                <td className="table-cell py-5 pl-4 pr-3 text-left">
                   <div className="font-medium">{detail.activity}</div>
                 </td>
-                <td className="hidden px-3 py-5 text-right sm:table-cell">{detail.total_worked_hours.toFixed(2)}</td>
-                <td className="hidden px-3 py-5 text-right sm:table-cell">${detail.pay_rate}</td>
-                <td className="hidden px-3 py-5 text-right sm:table-cell">${detail.amount.toFixed(2)}</td>
+                <td
+                  className="table-cell px-3 py-5 text-right hover:text-primary"
+                  onClick={() => handlerSelectTarget(detail)}>
+                  {detail.temp_id === detailTarget.temp_id ? (
+                    <InputNumber
+                      inputClassName={classNames('w-20 p-1 text-right')}
+                      locale="en-US"
+                      value={detailTarget.regular_hours}
+                      onValueChange={e => setDetailTarget({ ...detailTarget, regular_hours: e.value as number })}
+                      minFractionDigits={2}
+                    />
+                  ) : (
+                    detail.regular_hours.toFixed(2)
+                  )}
+                </td>
+                <td
+                  className="table-cell px-3 py-5 text-right hover:text-primary"
+                  onClick={() => handlerSelectTarget(detail)}>
+                  {detail.temp_id === detailTarget.temp_id ? (
+                    <InputNumber
+                      inputClassName={classNames('w-20 p-1 text-right')}
+                      locale="en-US"
+                      value={detailTarget.overtime_hours}
+                      onValueChange={e => setDetailTarget({ ...detailTarget, overtime_hours: e.value as number })}
+                      minFractionDigits={2}
+                    />
+                  ) : (
+                    detail.overtime_hours.toFixed(2)
+                  )}
+                </td>
+                <td className="table-cell px-3 py-5 text-right">{detail.total_worked_hours.toFixed(2)}</td>
+                <td className="table-cell px-3 py-5 text-right">${detail.pay_rate}</td>
+                <td className="table-cell px-3 py-5 text-right">${detail.amount.toFixed(2)}</td>
+                {detail.temp_id === detailTarget.temp_id ? (
+                  <td className="table-cell px-3 py-5 text-right">
+                    <Button className="mr-2" onClick={saveSelectTarget} icon="pi pi-save" />
+                    <Button onClick={resetSelectTarget} icon="pi pi-undo" severity="danger" />
+                  </td>
+                ) : null}
               </tr>
             ))}
           </tbody>
@@ -461,10 +579,7 @@ export const ServiceInvoicePage = () => {
                       colSpan={3}
                       className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
                       <div className="flex items-center justify-end">
-                        <TrashIcon
-                          className="mr-1 h-4 w-4 text-red-600 print:hidden"
-                          onClick={handlerRemoveDiscount}
-                        />
+                        <TrashIcon className="mr-1 h-4 w-4 text-red-600 print:hidden" onClick={handlerRemoveDiscount} />
                         Discount:
                       </div>
                     </th>
@@ -489,8 +604,7 @@ export const ServiceInvoicePage = () => {
                   </div>
                 )}
               </tr>
-            ) : null
-            }
+            ) : null}
             {role !== 'admin' && invoice?.details.discount ? (
               <tr className="flex w-full items-center justify-end border-t-2">
                 <div className="flex">
@@ -499,10 +613,7 @@ export const ServiceInvoicePage = () => {
                     colSpan={3}
                     className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
                     <div className="flex items-center justify-end">
-                      <TrashIcon
-                        className="mr-1 h-4 w-4 text-red-600 print:hidden"
-                        onClick={handlerRemoveDiscount}
-                      />
+                      <TrashIcon className="mr-1 h-4 w-4 text-red-600 print:hidden" onClick={handlerRemoveDiscount} />
                       Discount:
                     </div>
                   </th>
@@ -511,7 +622,9 @@ export const ServiceInvoicePage = () => {
                   </td>
                 </div>
               </tr>
-            ) : <tr className="flex w-full items-center justify-end border-t-2" />}
+            ) : (
+              <tr className="flex w-full items-center justify-end border-t-2" />
+            )}
             <tr>
               <th
                 scope="row"
@@ -543,12 +656,12 @@ export const ServiceInvoicePage = () => {
           ) : null}
         </footer>
       </div>
-      {
-        role === 'admin' ? (<div className="print:hidden">
+      {role === 'admin' ? (
+        <div className="print:hidden">
           <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
           {logs && logs.length > 0 ? <GlobalTable data={logs} columns={memoLogsColumns} /> : <p>No activity found</p>}
-        </div>) : null
-      }
+        </div>
+      ) : null}
     </div>
   )
 }
