@@ -437,7 +437,7 @@ export const ServiceInvoicePage = () => {
                 Activity
               </th>
               <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
-                RT
+                QTY
               </th>
               <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
                 OT
@@ -578,16 +578,6 @@ export const ServiceInvoicePage = () => {
             ) : null}
           </div>
           <table className="flex flex-col items-end justify-end">
-            {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
-              <tr>
-                <th scope="row" colSpan={3} className="hidden pl-4 pr-3 pt-6 text-right sm:table-cell sm:pl-0">
-                  Total Overtime Cost
-                </th>
-                <td className="pl-3 pr-4 pt-6 text-right sm:pr-0">
-                  ${Number(invoice.details.total_overtime_fees).toFixed(2)}
-                </td>
-              </tr>
-            ) : null}
             <tr>
               <th scope="row" colSpan={3} className="hidden pl-4 pr-3  text-right font-semibold sm:table-cell sm:pl-0">
                 Subtotal
@@ -616,40 +606,35 @@ export const ServiceInvoicePage = () => {
                 ${Number(invoice?.details.processing_fee).toFixed(2)}
               </td>
             </tr>
-            <tr>
-              <th scope="row" colSpan={3} className="hidden py-4 pl-4 pr-3 text-right sm:table-cell sm:pl-0">
-                Estimated Total per Hour
-              </th>
-              <td className="py-4 pl-3 pr-4 text-left sm:pr-0">
-                ${Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
-              </td>
-            </tr>
+
             {invoice?.status !== 'paid' && role === 'admin' ? (
               <tr className="flex w-full flex-1 items-center justify-end border-t-2">
                 {invoice?.details.discount ? (
-                  <div className="flex">
+                  <tr>
                     <th
                       scope="row"
                       colSpan={3}
-                      className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
+                      className="hidden pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
                       <div className="flex items-center justify-end">
                         <TrashIcon className="mr-1 h-4 w-4 text-red-600 print:hidden" onClick={handlerRemoveDiscount} />
-                        Discount:
+                        Discount (Reason: {invoice?.details.discount_reason || 'N/A'}):
                       </div>
                     </th>
-                    <td className="w-full pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
+                    <td className="pl-3 pr-4 pt-4 text-left font-semibold sm:pr-0">
                       - ${Number(invoice?.details.discount).toFixed(2)}
                     </td>
-                  </div>
+                  </tr>
                 ) : (
                   <div className="flex items-center justify-center print:hidden">
                     <th scope="row" colSpan={3} className="pr-3 pt-4">
                       <InputNumber
                         className="w-full"
+                        locale="en-US"
                         prefix="$"
+                        minFractionDigits={2}
                         placeholder="Enter Discount"
                         value={discount}
-                        onChange={e => setDiscount(Number(e.value))}
+                        onChange={e => e.value !== null && setDiscount(e.value)}
                       />
                     </th>
                     <td className=" pt-4">
@@ -690,6 +675,30 @@ export const ServiceInvoicePage = () => {
                 ${Number(invoice?.details.total_cost).toFixed(2)}
               </td>
             </tr>
+            {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
+              <tr>
+                <th
+                  scope="row"
+                  colSpan={3}
+                  className="hidden pl-4 pr-3 pt-6 text-right font-normal text-gray-500 sm:table-cell sm:pl-0">
+                  Total Overtime Cost
+                </th>
+                <td className="pl-3 pr-4 pt-6 text-right font-normal text-gray-500 sm:pr-0">
+                  ${Number(invoice.details.total_overtime_fees).toFixed(2)}
+                </td>
+              </tr>
+            ) : null}
+            <tr>
+              <th
+                scope="row"
+                colSpan={3}
+                className="hidden py-4 pl-4 pr-3 text-right font-normal text-gray-500 sm:table-cell sm:pl-0">
+                Estimated Total per Hour
+              </th>
+              <td className="py-4 pl-3 pr-4 text-left font-normal text-gray-500 sm:pr-0">
+                ${Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
+              </td>
+            </tr>
           </table>
         </div>
         <footer>
@@ -701,7 +710,7 @@ export const ServiceInvoicePage = () => {
             <Button className="mt-6 print:hidden" label="Re-generate" onClick={handlerRegenerateInvoice} />
           ) : null}
 
-          {role === 'admin' ? (
+          {role === 'admin' && !invoice?.service_order_id?.ach_authorized ? (
             <Button className="ml-3 mt-6 print:hidden" label="Charge" onClick={handlerAuthorizeInvoice} />
           ) : null}
 
