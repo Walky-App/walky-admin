@@ -374,8 +374,8 @@ export const ServiceInvoicePage = () => {
             <tbody>
               <tr>
                 <td
-                  className={`border border-gray-300 p-4 ${isEditingStatus ? '' : 'hover:text-green-500'}`}
-                  onClick={isEditingStatus ? undefined : handleStatusClick}>
+                  className={`border border-gray-300 p-4 ${role === 'admin' && !isEditingStatus ? 'hover:text-green-500' : ''}`}
+                  onClick={role === 'admin' && !isEditingStatus ? handleStatusClick : undefined}>
                   {isEditingStatus ? (
                     role === 'admin' && invoice?.service_order_id?.ach_authorized ? (
                       <div style={{ display: 'flex', alignItems: 'center' }}>
