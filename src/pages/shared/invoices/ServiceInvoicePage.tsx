@@ -436,7 +436,9 @@ export const ServiceInvoicePage = () => {
               <th scope="col" className="table-cell py-3.5 pl-4 pr-3 text-left font-semibold">
                 Activity
               </th>
-              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold" />
+              <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
+                QTY
+              </th>
               <th scope="col" className="table-cell px-3 py-3.5 text-right font-semibold">
                 OT
               </th>
