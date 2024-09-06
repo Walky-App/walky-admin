@@ -1,13 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { format, isToday, isYesterday } from 'date-fns'
-
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type ICompany } from '../../../interfaces/company'
 import { requestService } from '../../../services/requestServiceNew'
-import { formatPhoneNumber } from '../../../utils/dataUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+import { CompanyListView } from './CompanyListView'
 
 export const AdminCompanyListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -40,46 +37,5 @@ export const AdminCompanyListPage = () => {
     getCompanies()
   }, [role])
 
-  const memoCompaniesData = useMemo(() => companies, [companies])
-
-  const memoCompaniesColumns = useMemo(
-    () => [
-      { Header: 'Name', accessor: 'company_name' },
-      {
-        Header: 'DBA',
-        width: '200px',
-        accessor: (company: ICompany) => company.company_dbas?.join(', ') ?? '',
-      },
-      { Header: 'Tax ID', accessor: 'company_tax_id' },
-      {
-        Header: 'Created',
-        width: 200,
-        accessor: (a: ICompany) => {
-          return isToday(a.createdAt as string)
-            ? 'Today'
-            : isYesterday(a.createdAt as string)
-              ? 'Yesterday'
-              : format(a.createdAt as string, 'P')
-        },
-      },
-      {
-        Header: 'Phone',
-        accessor: (company: ICompany) =>
-          company.company_phone_number?.length ? formatPhoneNumber(company.company_phone_number) : '',
-      },
-      { Header: 'Payment Information', accessor: (company: ICompany) => company?.payment_information?.length },
-      { Header: 'Address', accessor: 'company_address' },
-      { Header: 'City', accessor: 'company_city' },
-      { Header: 'State', accessor: 'company_state' },
-      { Header: 'Zip', accessor: 'company_zip' },
-      { Header: 'Facilities', width: '10px', accessor: (company: ICompany) => company.facilities.length },
-    ],
-    [],
-  )
-
-  return isLoading ? (
-    <HTLoadingLogo />
-  ) : (
-    <GlobalTable data={memoCompaniesData} columns={memoCompaniesColumns} allowClick />
-  )
+  return isLoading ? <HTLoadingLogo /> : <CompanyListView companies={companies} role={role} />
 }
