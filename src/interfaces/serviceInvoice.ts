@@ -5,6 +5,7 @@ import { type IServiceOrder } from './serviceOrder'
 import { type StatesSettingsDocument } from './setting'
 
 interface IDetails {
+  discount_reason: string
   temp_pay_rate: number
   number_of_vacancies: number
   number_of_selected_working_days: number
