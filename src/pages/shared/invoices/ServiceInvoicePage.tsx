@@ -710,7 +710,7 @@ export const ServiceInvoicePage = () => {
             <Button className="mt-6 print:hidden" label="Re-generate" onClick={handlerRegenerateInvoice} />
           ) : null}
 
-          {role === 'admin' ? (
+          {role === 'admin' && !invoice?.service_order_id?.ach_authorized ? (
             <Button className="ml-3 mt-6 print:hidden" label="Charge" onClick={handlerAuthorizeInvoice} />
           ) : null}
 
