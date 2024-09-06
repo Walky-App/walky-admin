@@ -530,6 +530,25 @@ export const ServiceInvoicePage = () => {
         </table>
         <div className="mt-12 flex">
           <div className="text-lg sm:flex-auto">
+            <div className="pb-4">
+              <div className="my-2 font-bold">Summary</div>
+              <ul className="text-base">
+                <li className="flex flex-row py-2 text-left">
+                  <div className="pr-2">Total Hour:</div>
+                  {Number(invoice?.details.total_of_all_temps_hours).toFixed(2)}
+                </li>
+                {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
+                  <li className="flex flex-row py-2 text-left">
+                    <div className="pr-2">Overtime Cost (Included in subtotal):</div>$
+                    {Number(invoice.details.total_overtime_fees).toFixed(2)}
+                  </li>
+                ) : null}
+                <li className="flex flex-row py-2 text-left">
+                  <div className="pr-2">Estimated Total per Hour:</div>$
+                  {Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
+                </li>
+              </ul>
+            </div>
             <h2 className="mt-2 font-bold ">
               For {invoice?.job_id.title} job{' '}
               <Link
@@ -577,17 +596,7 @@ export const ServiceInvoicePage = () => {
               </div>
             ) : null}
           </div>
-          <table className="flex flex-col items-end justify-end">
-            {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
-              <tr>
-                <th scope="row" colSpan={3} className="hidden pl-4 pr-3 pt-6 text-right sm:table-cell sm:pl-0">
-                  Total Overtime Cost
-                </th>
-                <td className="pl-3 pr-4 pt-6 text-right sm:pr-0">
-                  ${Number(invoice.details.total_overtime_fees).toFixed(2)}
-                </td>
-              </tr>
-            ) : null}
+          <table className="flex flex-col items-end">
             <tr>
               <th scope="row" colSpan={3} className="hidden pl-4 pr-3  text-right font-semibold sm:table-cell sm:pl-0">
                 Subtotal
@@ -609,19 +618,11 @@ export const ServiceInvoicePage = () => {
               <td className="pl-3 pr-4 pt-4 text-left sm:pr-0">${Number(invoice?.details.our_fee).toFixed(2)}</td>
             </tr>
             <tr>
-              <th scope="row" colSpan={3} className="hidden pl-4 pr-3 pt-4 text-right sm:table-cell sm:pl-0">
+              <th scope="row" colSpan={3} className="hidden py-4 pl-4 pr-3 text-right sm:table-cell sm:pl-0">
                 Processing Fee
               </th>
-              <td className="pl-3 pr-4 pt-4 text-left sm:pr-0">
-                ${Number(invoice?.details.processing_fee).toFixed(2)}
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" colSpan={3} className="hidden py-4 pl-4 pr-3 text-right sm:table-cell sm:pl-0">
-                Estimated Total per Hour
-              </th>
               <td className="py-4 pl-3 pr-4 text-left sm:pr-0">
-                ${Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
+                ${Number(invoice?.details.processing_fee).toFixed(2)}
               </td>
             </tr>
             {invoice?.status !== 'paid' && role === 'admin' ? (
