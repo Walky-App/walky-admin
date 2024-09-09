@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 
-import { Dropdown } from 'primereact/dropdown'
+import { Button } from 'primereact/button'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
+import { IconField } from 'primereact/iconfield'
+import { InputIcon } from 'primereact/inputicon'
+import { InputText } from 'primereact/inputtext'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
-import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { UserTimesheetsTable } from '../../../components/shared/timesheets/UserTimesheetsTable'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
@@ -13,6 +16,7 @@ export const AdminTimesheetsPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedUser, setSelectedUser] = useState<IUser>()
   const [usersData, setUsersData] = useState<IUser[]>([])
+  const [globalFilter, setGlobalFilter] = useState<string>('')
 
   useEffect(() => {
     setIsLoading(true)
@@ -40,28 +44,59 @@ export const AdminTimesheetsPage = () => {
       .map(applicant => ({ label: applicant.first_name + ' ' + applicant.last_name, value: applicant }))
   }
 
+  const getHeader = () => {
+    return (
+      <div className="justify-content-end flex">
+        <IconField iconPosition="left">
+          <InputIcon className="pi pi-search" />
+          <InputText
+            type="search"
+            onInput={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
+            placeholder="Search..."
+          />
+        </IconField>
+      </div>
+    )
+  }
+
   return (
     <div>
       {isLoading ? (
         <HTLoadingLogo />
       ) : (
         <div>
-          <HtInfoTooltip message="ONLY Approved Employees are listed here">
-            <HtInputLabel htmlFor="applicant_dropdown" labelText="ONLY Approved Employees:" />
-          </HtInfoTooltip>
-          <div className="p-inputgroup w-1/3">
-            <Dropdown
-              value={selectedUser}
-              name="applicant_dropdown"
-              placeholder="Select an applicant"
-              onChange={event => setSelectedUser(event.value)}
-              options={handleDropdownOptions()}
-              filter
-            />
-          </div>
+          <small>ONLY Approved Employees: ${usersData.length}</small>
         </div>
       )}
-      <UserTimesheetsTable selectedUserId={selectedUser?._id ?? ''} />
+      <div className="flex">
+        <DataTable
+          header={getHeader()}
+          dataKey="_id"
+          editMode="cell"
+          value={handleDropdownOptions()}
+          emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
+          size="small"
+          paginator
+          rows={50}
+          globalFilter={globalFilter}
+          stripedRows
+          scrollable
+          scrollHeight="calc(100vh - 300px)"
+          showGridlines
+          pt={{
+            header: {
+              className: 'font-normal text-sm text-gray-500',
+            },
+          }}>
+          <Column
+            field="label"
+            header="Name"
+            sortable={false}
+            body={rowData => <Button text label={rowData.label} onClick={() => setSelectedUser(rowData.value)} />}
+          />
+        </DataTable>
+        <UserTimesheetsTable selectedUserId={selectedUser?._id ?? ''} />
+      </div>
     </div>
   )
 }

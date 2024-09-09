@@ -81,6 +81,11 @@ export interface ITimesheetWithJobAndShiftDetails extends ITimeSheet {
   shift_details: IShiftDetailsSlim
 }
 
+export interface ITimesheetWithJobAndShiftDetailsAndPunches {
+  timesheetsResults: ITimesheetWithJobAndShiftDetails[]
+  jobsInDateRange: IJobDetails[]
+}
+
 /**
  * Flattens an array of timesheets into an array of punches.
  * @param {ITimeSheet[]} timesheets - An array of timesheets.
