@@ -360,7 +360,7 @@ export const ShiftsTable = ({
         </thead>
         <tbody className="divide-y divide-gray-200">
           {job.job_days.map((eachShift, index) => {
-            const dayOfWeek = formatInTimeZone(eachShift.day, job.facility.timezone, 'P')
+            const dayOfWeek = formatInTimeZone(eachShift.day, job.facility.timezone, 'P (EEEE)')
 
             if (!employeeActive) {
               return handleWhenUserIsNotApproved(eachShift, index, dayOfWeek, dayOfWeek)
