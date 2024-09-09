@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { type IServiceOrder } from '../../../interfaces/serviceOrder'
+import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
 import { roleChecker } from '../../../utils/roleChecker'
 import { ServiceInvoicesListView } from './ServiceInvoicesListView'
 
 export const AllInvoicesListPage = () => {
-  const [invoices, setInvoices] = useState<IServiceOrder[]>([])
+  const [invoices, setInvoices] = useState<IServiceInvoice[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const role = roleChecker()
 

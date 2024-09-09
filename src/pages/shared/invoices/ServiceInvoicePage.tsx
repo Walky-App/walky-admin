@@ -87,7 +87,6 @@ export const ServiceInvoicePage = () => {
 
   const statusOptions = [
     { label: 'Authorized', value: 'authorized' },
-    { label: 'Pending Payment', value: 'pending_select_payment' },
     { label: 'Transaction Successful - Invoice Paid', value: 'paid' },
   ]
 
