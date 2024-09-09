@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { formatInTimeZone } from 'date-fns-tz'
+// import { formatInTimeZone } from 'date-fns-tz'
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
 
@@ -17,12 +17,13 @@ import { type IJob } from '../../../interfaces/job'
 import { type ILog } from '../../../interfaces/logs'
 import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
-import { IShift } from '../../employee/jobs/MyJobs'
+import { type IShift } from '../../employee/jobs/MyJobs'
 import { DashboardActivity } from './DashboardActivity'
 import { DashboardFacilityTable } from './DashboardFacilityTable'
-import { DashboardOpenShifts } from './DashboardOpenShifts'
+
+// import { DashboardOpenShifts } from './DashboardOpenShifts'
 // import { DashboardReleasesList } from './DashboardReleasesList'
-import { DashboardUserTable } from './DashboardUserTable'
+// import { DashboardUserTable } from './DashboardUserTable'
 
 export interface ITransaction {
   id: number
@@ -99,7 +100,7 @@ export const AdminDashboard = () => {
 
   return (
     <main>
-      {/* <DashboardHeader>
+      <DashboardHeader>
         <div className="md:flex md:items-center md:justify-between md:space-x-5">
           <div className="flex items-start space-x-5">
             <div className="flex-shrink-0">
@@ -141,14 +142,14 @@ export const AdminDashboard = () => {
             />
           </div>
         </div>
-      </DashboardHeader> */}
+      </DashboardHeader>
 
-      <DashboardOpenShifts openShifts={dashboardData?.open_shifts} />
+      {/* <DashboardOpenShifts openShifts={dashboardData?.open_shifts} /> */}
 
       {dashboardData ? (
         <div className="mt-8 md:flex">
           <div>
-            {dashboardData?.open_shifts.map(shift => {
+            {/* {dashboardData?.open_shifts.map(shift => {
               return (
                 <div key={shift._id}>
                   {shift.job_id?.facility?.timezone
@@ -158,7 +159,7 @@ export const AdminDashboard = () => {
                   <Button label={shift.job_id.uid} link onClick={() => navigate(`/admin/jobs/${shift.job_id._id}`)} />
                 </div>
               )
-            })}
+            })} */}
 
             {/* <DashboardUserTable data={dashboardData?.disabled_users ?? []} /> */}
             <hr />
