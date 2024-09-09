@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { type KeyboardEvent, useEffect, useMemo, useState } from 'react'
 
 import { Link, useParams } from 'react-router-dom'
 
@@ -8,6 +8,7 @@ import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputNumber } from 'primereact/inputnumber'
+import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { classNames } from 'primereact/utils'
 
@@ -64,6 +65,7 @@ export const ServiceInvoicePage = () => {
     pay_rate: 0,
     amount: 0,
   })
+  const [quickbooksId, setQuickbooksId] = useState<string>('')
 
   useEffect(() => {
     const getinvoice = async () => {
@@ -322,6 +324,29 @@ export const ServiceInvoicePage = () => {
     })
   }
 
+  const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && quickbooksId !== '') {
+      try {
+        setIsLoading(true)
+        const response = await requestService({
+          path: `invoices/quickbooks/${invoiceId}`,
+          method: 'PATCH',
+          body: JSON.stringify({ quickbooksId }),
+        })
+        if (!response.ok) {
+          throw new Error('Failed to authorize invoice')
+        }
+        const { invoice, logs } = await response.json()
+        setInvoice(invoice)
+        setLogs(logs)
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error authorizing invoice:', error)
+        setIsLoading(false)
+      }
+    }
+  }
+
   return isLoading ? (
     <HTLoadingLogo />
   ) : (
@@ -363,6 +388,10 @@ export const ServiceInvoicePage = () => {
               <tr>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Invoice Status</th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Payment Type</th>
+                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left print:hidden">
+                  {' '}
+                  Quickbooks Id
+                </th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility</th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility Address</th>
                 {invoice?.service_order_id ? (
@@ -396,6 +425,18 @@ export const ServiceInvoicePage = () => {
                 </td>
                 <td className="border border-gray-300 p-4">
                   {invoice?.service_order_id?.ach_authorized ? 'ACH' : 'Credit Card'}
+                </td>
+                <td className="border border-gray-300 p-4 print:hidden">
+                  {invoice?.quickbooks_id ? (
+                    <h3 className="text-base leading-6">{invoice?.quickbooks_id}</h3>
+                  ) : (
+                    <InputText
+                      placeholder="Quickbooks Id"
+                      value={invoice?.quickbooks_id}
+                      onChange={e => setQuickbooksId(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                    />
+                  )}
                 </td>
                 <td className="border border-gray-300 p-4">
                   <h3 className="text-base font-semibold leading-6">{invoice?.facility_id.name}</h3>
