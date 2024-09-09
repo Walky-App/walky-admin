@@ -112,9 +112,9 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         if (response.status === 204) {
           console.error('No timesheets found')
         } else {
-          const timesheets: ITimesheetWithJobAndShiftDetails[] = await response.json()
+          const data = await response.json()
 
-          const punchPairsAndData: IPunchPairsWithData[] = timesheets.map(timesheet => {
+          const punchPairsAndData = data.timesheetsResults.map((timesheet: ITimesheetWithJobAndShiftDetails) => {
             return processPunchPairsWithData(timesheet)
           })
 
@@ -279,8 +279,9 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }
 
   const totalTimeSum = sortedTimeSheets.reduce((sum, record) => {
-    const hours = parseFloat(record.total_time)
-    return sum + hours
+    const hours = typeof record.total_time === 'number' ? parseFloat(record.total_time) : Number(record.total_time)
+    const result = sum + hours
+    return result
   }, 0)
 
   const scheduledTimeSum = sortedTimeSheets.reduce((sum, record) => {
@@ -293,7 +294,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const payPeriodSelectorContent = (
     <div className="flex flex-col items-baseline gap-y-2">
-      <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" className="text-base" />
+      <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" />
       <Dropdown
         id="pay-period-dropdown"
         value={selectedPayPeriod}
@@ -385,24 +386,47 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return {}
   }
 
+  const dropdownEditor = (options: ColumnEditorOptions) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={options.rowData.job_title}
+        onChange={e => options.editorCallback!(e.value)}
+        placeholder="Select a job"
+        className="w-full"
+      />
+    )
+  }
+
+  const getEditableDropdownProps = (currentUserRole: string) => {
+    if (currentUserRole === 'admin') {
+      return {
+        editor: (options: ColumnEditorOptions) => dropdownEditor(options),
+        onCellEditComplete: onCellEditComplete,
+        className: editableCellColumnStyle,
+      }
+    }
+    return {}
+  }
+
   const cols: (IAdminUserTimesheetsColumnMeta<IPunchPairsWithData> | null)[] = [
     {
       field: 'shift_day',
       header: 'Shift Day',
       sortable: false,
-      body: rowData => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'PP'),
+      body: rowData => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'MMM d'),
     },
     {
       field: 'in_time',
       header: 'In',
       sortable: false,
+      ...getEditableProps(currentUserRole),
       body: rowData =>
         rowData.in_time != null
           ? formatInTimeZone(rowData.in_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
             ? 'Clocked In'
-            : 'Clock In not recorded',
-      ...getEditableProps(currentUserRole),
+            : '',
     },
     {
       field: 'out_time',
@@ -413,7 +437,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
           ? formatInTimeZone(rowData.out_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
             ? 'Clocked In'
-            : 'Clock Out not recorded',
+            : '',
       ...getEditableProps(currentUserRole),
     },
     {
@@ -424,9 +448,10 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     },
     {
       field: 'job_title',
-      header: 'Job Title',
+      header: 'Job',
       sortable: false,
       body: rowData => jobTitleTemplate(rowData.job_title, rowData.job_uid, rowData.job_id, currentUserRole),
+      ...getEditableDropdownProps(currentUserRole),
     },
     {
       field: 'facility_name',
@@ -454,7 +479,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   ]
 
   return (
-    <>
+    <div className="flex flex-col">
       {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
 
       <DataTable
@@ -489,6 +514,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
           )
         })}
       </DataTable>
-    </>
+    </div>
   )
 }

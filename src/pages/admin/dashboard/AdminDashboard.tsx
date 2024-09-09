@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
+// import { formatInTimeZone } from 'date-fns-tz'
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
 
@@ -16,10 +17,13 @@ import { type IJob } from '../../../interfaces/job'
 import { type ILog } from '../../../interfaces/logs'
 import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { type IShift } from '../../employee/jobs/MyJobs'
 import { DashboardActivity } from './DashboardActivity'
 import { DashboardFacilityTable } from './DashboardFacilityTable'
+
+// import { DashboardOpenShifts } from './DashboardOpenShifts'
 // import { DashboardReleasesList } from './DashboardReleasesList'
-import { DashboardUserTable } from './DashboardUserTable'
+// import { DashboardUserTable } from './DashboardUserTable'
 
 export interface ITransaction {
   id: number
@@ -40,6 +44,7 @@ interface IDashboardData {
   disabled_users: IUser[]
   disabled_facilities: IFacility[]
   disabled_jobs: IJob[]
+  open_shifts: IShift[]
 }
 
 export const AdminDashboard = () => {
@@ -139,10 +144,24 @@ export const AdminDashboard = () => {
         </div>
       </DashboardHeader>
 
+      {/* <DashboardOpenShifts openShifts={dashboardData?.open_shifts} /> */}
+
       {dashboardData ? (
         <div className="mt-8 md:flex">
           <div>
-            <DashboardUserTable data={dashboardData?.disabled_users ?? []} />
+            {/* {dashboardData?.open_shifts.map(shift => {
+              return (
+                <div key={shift._id}>
+                  {shift.job_id?.facility?.timezone
+                    ? formatInTimeZone(shift.shift_day, shift.job_id?.facility?.timezone, 'EEE, MMM d')
+                    : null}
+
+                  <Button label={shift.job_id.uid} link onClick={() => navigate(`/admin/jobs/${shift.job_id._id}`)} />
+                </div>
+              )
+            })} */}
+
+            {/* <DashboardUserTable data={dashboardData?.disabled_users ?? []} /> */}
             <hr />
             <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} />
             <hr />
