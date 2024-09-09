@@ -75,7 +75,8 @@ import { AdminDetailsUnit } from './pages/admin/HTU/AdminDetailsUnit'
 import { AdminModulesLearn } from './pages/admin/HTU/AdminModulesLearn'
 import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
-import { AdminJobs } from './pages/admin/jobs'
+import { AdminJobs } from './pages/admin/jobs/AdminJobs'
+import { AdminJobsPastWeek } from './pages/admin/jobs/AdminJobsPastWeek'
 import { JobDetailViewAdmin } from './pages/admin/jobs/JobDetailViewAdmin'
 
 import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
@@ -250,6 +251,7 @@ export const App = () => {
                     <Route element={<AdminFacilityLicenses />} path="/admin/facilities/:facilityId/licenses" />
                     <Route element={<AdminFacilityDNR />} path="/admin/facilities/:facilityId/dnr" />
                     <Route element={<AdminJobs />} path="/admin/jobs" />
+                    <Route element={<AdminJobsPastWeek />} path="/admin/jobs/past-week" />
                     <Route element={<AddEditJobPage />} path="/admin/jobs/new" />
                     <Route element={<JobDetailViewAdmin />} path="/admin/jobs/:id" />
                     <Route element={<AddEditJobPage />} path="/admin/jobs/:id/edit" />

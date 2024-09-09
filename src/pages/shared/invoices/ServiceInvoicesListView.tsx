@@ -12,13 +12,18 @@ import { InputIcon } from 'primereact/inputicon'
 import { InputText } from 'primereact/inputtext'
 
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
-import { type IServiceOrder } from '../../../interfaces/serviceOrder'
 import { roleChecker } from '../../../utils/roleChecker'
 
-export const ServiceInvoicesListView = ({ invoices }: { invoices: IServiceOrder[] }) => {
+export const ServiceInvoicesListView = ({ invoices }: { invoices: IServiceInvoice[] }) => {
   const [globalFilter, setGlobalFilter] = useState<string>('')
   const navigate = useNavigate()
   const role = roleChecker()
+
+  const rowClassName = (invoice: IServiceInvoice) => {
+    if (invoice.status === 'paid') {
+      return 'bg-green-100'
+    }
+  }
 
   const getHeader = () => {
     return (
@@ -43,6 +48,7 @@ export const ServiceInvoicesListView = ({ invoices }: { invoices: IServiceOrder[
         rows={20}
         rowsPerPageOptions={[20, 40, 50]}
         sortOrder={-1}
+        rowClassName={rowClassName}
         sortField="createdAt"
         scrollable
         scrollHeight="calc(100vh - 300px)"
