@@ -8,8 +8,6 @@ import { InputIcon } from 'primereact/inputicon'
 import { InputText } from 'primereact/inputtext'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
-import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { UserTimesheetsTable } from '../../../components/shared/timesheets/UserTimesheetsTable'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
@@ -67,9 +65,7 @@ export const AdminTimesheetsPage = () => {
         <HTLoadingLogo />
       ) : (
         <div>
-          <HtInfoTooltip message="ONLY Approved Employees are listed here">
-            <HtInputLabel htmlFor="applicant_dropdown" labelText={`ONLY Approved Employees: ${usersData.length}`} />
-          </HtInfoTooltip>
+          <small>ONLY Approved Employees: ${usersData.length}</small>
         </div>
       )}
       <div className="flex">
