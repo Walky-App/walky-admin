@@ -10,6 +10,22 @@ import { ForgotPassword } from './ForgotPasswordForm'
 import { LoginForm } from './LoginForm'
 import { Signup } from './SignupForm'
 
+export const loginHeroImages = [
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/1.png',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/10.jpg',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/12.jpg',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/13.jpg',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/2.png',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/3.png',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/8.png',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/14.png',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/15.png',
+  'https://hemptemps-prod.s3.amazonaws.com/web-images/20.png',
+]
+
 export const Auth = () => {
   const [userForm, setUserForm] = useState('Login')
   const [heroImage, setHeroImage] = useState<string>('')
@@ -18,24 +34,9 @@ export const Auth = () => {
   useMemo(() => {
     const getImages = async () => {
       try {
-        const allImages = [
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/1.png',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/10.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/12.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/13.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/2.png',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/3.png',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/8.png',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/14.png',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/15.png',
-          'https://hemptemps-prod.s3.amazonaws.com/web-images/20.png',
-        ]
-        const randomIndex = Math.floor(Math.random() * allImages.length)
+        const randomIndex = Math.floor(Math.random() * loginHeroImages.length)
 
-        setHeroImage(allImages[randomIndex])
+        setHeroImage(loginHeroImages[randomIndex])
       } catch (error) {
         console.error('Error fetching images:', error)
       }
@@ -97,7 +98,12 @@ export const Auth = () => {
         </footer>
       </div>
       <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
-        <img src={heroImage} alt="" className="absolute inset-0 hidden h-full object-cover sm:block" />
+        <img
+          data-testid="hero-image"
+          src={heroImage}
+          alt="Hemp Temps"
+          className="absolute inset-0 hidden h-full object-cover sm:block"
+        />
       </div>
     </section>
   )

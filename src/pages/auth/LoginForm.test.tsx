@@ -6,8 +6,18 @@ describe('Auth Page', () => {
   afterEach(() => {
     cleanup()
   })
+
   it('should render auth view', () => {
     render(<Auth />)
+  })
+
+  it('should match snapshot', () => {
+    const { asFragment, container } = render(<Auth />)
+
+    const imageComponent = container.querySelector('[data-testid="hero-image"]')
+    imageComponent?.setAttribute('src', 'https://hemptemps-prod.s3.amazonaws.com/web-images/mock-image.png')
+
+    expect(asFragment()).toMatchSnapshot()
   })
 
   it('should render the login component', async () => {
