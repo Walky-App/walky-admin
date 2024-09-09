@@ -279,8 +279,9 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
   }
 
   const totalTimeSum = sortedTimeSheets.reduce((sum, record) => {
-    const hours = parseFloat(record.total_time)
-    return sum + hours
+    const hours = typeof record.total_time === 'number' ? parseFloat(record.total_time) : Number(record.total_time)
+    const result = sum + hours
+    return result
   }, 0)
 
   const scheduledTimeSum = sortedTimeSheets.reduce((sum, record) => {
