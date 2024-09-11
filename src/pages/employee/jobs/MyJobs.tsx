@@ -15,6 +15,18 @@ interface ViewOption {
   icon: string
   value: string
 }
+export interface IUserFirstAndLastName {
+  _id: string
+  first_name: string
+  last_name: string
+}
+export interface IChangeHistory {
+  date: string
+  user_id: IUserFirstAndLastName
+  action: string
+  reason: string
+  _id: string
+}
 
 export interface IShift {
   _id: string
@@ -30,6 +42,7 @@ export interface IShift {
   shift_start_time: string
   shift_end_time: string
   createdAt: string
+  change_history?: IChangeHistory[]
 }
 
 const viewOptions: ViewOption[] = [

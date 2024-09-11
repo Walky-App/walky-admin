@@ -1,6 +1,7 @@
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { type IJob } from '../../../../interfaces/job'
+import { DroppedShiftsByJob } from './DroppedShiftsByJob'
 import { JobDetailApplicantTimesheetTabAdmin } from './JobDetailApplicantTimesheetTabAdmin'
 
 export const JobDetailBottomAdmin = ({ job }: { job: IJob }) => {
@@ -11,6 +12,9 @@ export const JobDetailBottomAdmin = ({ job }: { job: IJob }) => {
           <JobDetailApplicantTimesheetTabAdmin job={job} />
         </TabPanel>
         <TabPanel header="Facility Images">{facilityImagesTemplate(job)}</TabPanel>
+        <TabPanel header="Dropped Shifts">
+          <DroppedShiftsByJob jobId={job._id} />
+        </TabPanel>
       </TabView>
     </div>
   )
