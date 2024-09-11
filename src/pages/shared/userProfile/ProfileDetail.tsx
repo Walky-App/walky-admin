@@ -97,11 +97,11 @@ export const ProfileDetail = ({
           <div className="flex flex-col justify-between">
             <div>
               <div className="flex">
-                <h2 className="mr-2 text-base font-semibold leading-7 text-gray-900">Avatar</h2>
+                <h2 className="mr-2 font-semibold leading-7">Avatar</h2>
                 <HtInfoTooltip message="This is the image that will be displayed on your profile." />
               </div>
               <div>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
+                <p className="mt-1 text-sm leading-6">
                   This image will be displayed publicly so be mindful of what you share.
                 </p>
               </div>
@@ -115,7 +115,7 @@ export const ProfileDetail = ({
                 icon="pi pi-lock"
                 onClick={handlePasswordReset}
               />
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm">
                 You will get an email with <br /> instructions on how to reset your password.
               </p>
             </div>
@@ -127,8 +127,8 @@ export const ProfileDetail = ({
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 py-12 sm:gap-y-10 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Use a permanent address where you can receive mail.</p>
+            <h2 className=" font-semibold leading-7">Personal Information</h2>
+            <p className="mt-1 text-sm leading-6">Use a permanent address where you can receive mail.</p>
           </div>
 
           <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
@@ -206,8 +206,8 @@ export const ProfileDetail = ({
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Address</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
+            <h2 className=" font-semibold leading-7">Address</h2>
+            <p className="mt-1 text-sm leading-6">
               Please type in the address and choose from the dropdown to select the correct address.
             </p>
           </div>
@@ -248,8 +248,8 @@ export const ProfileDetail = ({
           <>
             <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b pb-12 sm:gap-y-10 md:grid-cols-3">
               <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">User Statuses</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
+                <h2 className=" font-semibold leading-7">User Statuses</h2>
+                <p className="mt-1 text-sm leading-6">
                   Please provide information about your business so that we can verify you on the platform.
                 </p>
               </div>
@@ -304,10 +304,8 @@ export const ProfileDetail = ({
             {(roleTxt(formUser.role) === 'Client' && formUser?.companies?.length) ?? 0 > 0 ? (
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                 <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Organizational Structure</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Company / Facilities that Client is associated with.
-                  </p>
+                  <h2 className=" font-semibold leading-7">Organizational Structure</h2>
+                  <p className="mt-1 text-sm leading-6">Company / Facilities that Client is associated with.</p>
                 </div>
 
                 <div className="max-w-2xl space-y-10 md:col-span-2">
@@ -338,15 +336,15 @@ export const ProfileDetail = ({
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
+            <h2 className=" font-semibold leading-7">Notifications</h2>
+            <p className="mt-1 text-sm leading-6">
               We'll always let you know about important changes, but you pick what else you want to hear about.
             </p>
           </div>
 
           <div className="max-w-2xl space-y-10 md:col-span-2">
             <fieldset>
-              <legend className="text-sm font-semibold leading-6 text-gray-900">By Email / SMS</legend>
+              <legend className="text-sm font-semibold leading-6">By Email / SMS</legend>
               <div className="mt-6 space-y-6">
                 <div className="relative flex gap-x-3">
                   <div className="flex h-6 items-center">
@@ -358,10 +356,10 @@ export const ProfileDetail = ({
                     />
                   </div>
                   <div className="text-sm leading-6">
-                    <label htmlFor="notification_email" className="font-medium text-gray-900">
+                    <label htmlFor="notification_email" className="font-medium">
                       Email Notifications
                     </label>
-                    <p className="text-gray-500">Get notified when someones posts a comment on a posting.</p>
+                    <p>Get notified when someones posts a comment on a posting.</p>
                   </div>
                 </div>
                 <div className="relative flex gap-x-3">
@@ -374,10 +372,10 @@ export const ProfileDetail = ({
                     />
                   </div>
                   <div className="text-sm leading-6">
-                    <label htmlFor="notification_sms" className="font-medium text-gray-900">
+                    <label htmlFor="notification_sms" className="font-medium">
                       SMS Push Notifications
                     </label>
-                    <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
+                    <p>Get notified when a candidate applies for a job.</p>
                   </div>
                 </div>
               </div>

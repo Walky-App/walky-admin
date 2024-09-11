@@ -12,6 +12,7 @@ import { InputIcon } from 'primereact/inputicon'
 import { InputText } from 'primereact/inputtext'
 
 import { type IServiceOrder } from '../../../interfaces/serviceOrder'
+import { exportToExcelTable } from '../../../utils/primeReactUtils'
 
 export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: IServiceOrder[]; role: string }) => {
   const [globalFilter, setGlobalFilter] = useState<string>('')
@@ -38,11 +39,11 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
     const zonedEndDate = toZonedTime(endDate, serviceOrder.facility_id.timezone)
 
     if (!serviceOrder.service_invoice_id && zonedEndDate < new Date() && serviceOrder.status === 'authorized') {
-      return 'bg-yellow-100'
+      return 'bg-yellow-100 text-black'
     }
 
     if (!serviceOrder.service_invoice_id && serviceOrder.status === 'authorized') {
-      return 'bg-white'
+      return 'bg-white text-black'
     }
 
     if (
@@ -50,19 +51,30 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
       serviceOrder.service_invoice_id &&
       serviceOrder.service_invoice_id.status === 'paid'
     ) {
-      return 'bg-green-100'
+      return 'bg-green-100 text-black'
     }
 
     if (serviceOrder.status === 'pending_select_payment') {
-      return 'bg-red-100'
+      return 'bg-red-100 text-black'
     }
   }
+
+  const paginatorRight = (
+    <Button
+      type="button"
+      icon="pi pi-download"
+      text
+      onClick={() => exportToExcelTable(serviceOrders, 'service-orders')}
+    />
+  )
 
   return (
     <div className="card text-2xl">
       <DataTable
         value={serviceOrders}
         paginator
+        paginatorLeft={`Total ${serviceOrders.length} Service Orders`}
+        paginatorRight={paginatorRight}
         rows={20}
         rowsPerPageOptions={[20, 40, 50]}
         rowClassName={rowClassName}

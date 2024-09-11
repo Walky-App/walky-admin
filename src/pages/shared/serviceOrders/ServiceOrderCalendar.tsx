@@ -240,7 +240,7 @@ export const ServiceOrderCalendar = ({ serviceOrders }: { serviceOrders: IServic
                             <Link to={`${event.service_order_id}`} className="group flex">
                               <Button size="small" link raised className="flex w-full flex-col items-start">
                                 <p className="text-left text-gray-900   group-hover:underline">
-                                  <p className="mb-2 border-b-2 border-gray-900/10 font-bold ">JOB #{event.uid}</p>
+                                  <p className="mb-2 border-b-2 border-gray-900/10 font-bold">JOB #{event.uid}</p>
                                   <p>{event.facility_id?.name}</p>
                                   <p className="flex items-center">
                                     <i className="pi pi-briefcase mr-2" /> <span>{event.name}</span>{' '}

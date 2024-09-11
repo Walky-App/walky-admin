@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -7,7 +7,6 @@ import { Button } from 'primereact/button'
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Dropdown } from 'primereact/dropdown'
 
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { type ILog } from '../../../interfaces/logs'
@@ -15,6 +14,7 @@ import { type IPaymentMethod, type IServiceOrder } from '../../../interfaces/ser
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+import { LogsActivityTable } from '../../LogsActivityTable'
 
 interface AchPaymentDetails {
   ach_account_name: string
@@ -193,15 +193,6 @@ export const ServiceOrderPage = () => {
     })
   }
 
-  const memoLogsColumns = useMemo(
-    () => [
-      { Header: 'User', accessor: 'user_id' },
-      { Header: 'Event Type', accessor: 'event_type' },
-      { Header: 'Created At', accessor: 'createdAt' },
-    ],
-    [],
-  )
-
   return isLoading ? (
     <HTLoadingLogo />
   ) : (
@@ -242,11 +233,11 @@ export const ServiceOrderPage = () => {
           <table className="w-full border-collapse border border-gray-400">
             <thead>
               <tr>
-                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">SO Status</th>
-                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility</th>
-                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility Address</th>
+                <th className="border border-gray-300 p-4 text-left">SO Status</th>
+                <th className="border border-gray-300 p-4 text-left">Facility</th>
+                <th className="border border-gray-300 p-4 text-left">Facility Address</th>
                 {serviceOrder?.service_invoice_id ? (
-                  <th className="border border-gray-300 bg-gray-100 p-4 text-left">Invoice Ref</th>
+                  <th className="border border-gray-300 p-4 text-left">Invoice Ref</th>
                 ) : null}
               </tr>
             </thead>
@@ -486,10 +477,7 @@ export const ServiceOrderPage = () => {
           ) : null}
         </footer>
       </div>
-      <div className="print:hidden">
-        <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
-        {logs && logs.length > 0 ? <GlobalTable data={logs} columns={memoLogsColumns} /> : <p>No activity found</p>}
-      </div>
+      <LogsActivityTable data={logs} />
     </div>
   )
 }

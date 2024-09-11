@@ -160,7 +160,7 @@ export const JobDetailView = () => {
                         <>
                           <div className="flex items-center">
                             <i className="pi pi-building" />
-                            <h2 className="ml-2 text-xl ">{job.facility.name}</h2>
+                            <h2 className="ml-2 text-xl">{job.facility.name}</h2>
                           </div>
 
                           <div className="flex items-center">

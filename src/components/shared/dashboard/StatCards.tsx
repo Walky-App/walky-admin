@@ -29,7 +29,7 @@ const Card = ({ name, amount, href, icon: Icon }: CardProps) => {
   const navigate = useNavigate()
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow ">
+    <div className="overflow-hidden rounded-lg bg-white shadow">
       <div className="">
         <div className="flex items-center">
           <div className="ml-5 w-0 flex-1">

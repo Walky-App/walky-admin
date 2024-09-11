@@ -145,19 +145,19 @@ export const Learn = () => {
                 <div className="m-3 grid grid-cols-2 gap-3 text-stone-500">
                   <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                     <span>Courses Completed</span>
-                    <span className="text-xl font-semibold text-black ">{getCategoryCompleted}</span>
+                    <span className="text-xl font-semibold text-black">{getCategoryCompleted}</span>
                   </div>
                   <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                     <span>Modules Completed</span>
-                    <span className="text-xl font-semibold text-black ">{getModuleCompleted}</span>
+                    <span className="text-xl font-semibold text-black">{getModuleCompleted}</span>
                   </div>
                   <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                     <span>Modules In Progress</span>
-                    <span className="text-xl font-semibold text-black ">{getModuleInProgress}</span>
+                    <span className="text-xl font-semibold text-black">{getModuleInProgress}</span>
                   </div>
                   <div className="flex h-auto flex-col gap-3 rounded-2xl border border-zinc-100 bg-neutral-100 p-3 sm:h-32">
                     <span>Certificate Earns</span>
-                    <span className="text-xl font-semibold text-black ">{getCertification}</span>
+                    <span className="text-xl font-semibold text-black">{getCertification}</span>
                   </div>
                 </div>
               </Card>

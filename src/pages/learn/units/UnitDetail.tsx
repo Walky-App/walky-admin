@@ -76,7 +76,7 @@ export const UnitDetail = () => {
               <VideoPlayer url={unit.url_video} captions={unit.url_captions} title={unit.title} />
             </div>
           ) : null}
-          <div className="flex h-auto flex-col ">{unit ? <UnitDetailsCard unit={unit} /> : null}</div>
+          <div className="flex h-auto flex-col">{unit ? <UnitDetailsCard unit={unit} /> : null}</div>
         </div>
 
         {/*right content*/}

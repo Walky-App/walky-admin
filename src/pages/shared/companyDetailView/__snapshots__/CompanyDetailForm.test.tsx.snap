@@ -55,7 +55,7 @@ exports[`CompanyDetailForm should match snapshot 1`] = `
                 data-pr-tooltip="A corporate name is the legal name of a corporation."
               />
               <label
-                class="block text-sm font-medium leading-6 text-gray-900"
+                class="block text-sm font-medium leading-6"
                 for="company_name"
               >
                 <span
@@ -90,7 +90,7 @@ exports[`CompanyDetailForm should match snapshot 1`] = `
                 data-pr-tooltip="Doing Business As (DBA) is also known as a trade name, fictitious business name, or assumed business name."
               />
               <label
-                class="block text-sm font-medium leading-6 text-gray-900"
+                class="block text-sm font-medium leading-6"
                 for="company_dbas"
               >
                 Company DBAs
@@ -125,7 +125,7 @@ exports[`CompanyDetailForm should match snapshot 1`] = `
                 data-pr-tooltip="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes."
               />
               <label
-                class="block text-sm font-medium leading-6 text-gray-900"
+                class="block text-sm font-medium leading-6"
                 for="company_tax_id"
               >
                 Tax ID
@@ -156,7 +156,7 @@ exports[`CompanyDetailForm should match snapshot 1`] = `
                 data-pr-tooltip="The phone number of the company. This is the number that administrators would call if they have questions or need to contact you."
               />
               <label
-                class="block text-sm font-medium leading-6 text-gray-900"
+                class="block text-sm font-medium leading-6"
                 for="company_phone_number"
               >
                 <span
@@ -192,7 +192,7 @@ exports[`CompanyDetailForm should match snapshot 1`] = `
                 data-pr-tooltip="Legal address of the company."
               />
               <label
-                class="block text-sm font-medium leading-6 text-gray-900"
+                class="block text-sm font-medium leading-6"
                 for="company_address"
               >
                 <span
@@ -246,7 +246,7 @@ exports[`CompanyDetailForm should match snapshot 1`] = `
                 data-pr-tooltip="All facilities related to this company"
               />
               <label
-                class="block text-sm font-medium leading-6 text-gray-900"
+                class="block text-sm font-medium leading-6"
                 for="facilities"
               >
                 Facilities
