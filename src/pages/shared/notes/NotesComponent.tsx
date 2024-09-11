@@ -71,8 +71,8 @@ export const NotesComponent = ({ ref_id, model, created_by }: INotesComponentPro
     <>
       <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-b border-gray-900/10 pb-12 md:grid-cols-3 md:gap-y-10">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Add Internal Notes</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">Previously added notes about this user.</p>
+          <h2 className="text-base font-semibold leading-7">Add Internal Notes</h2>
+          <p className="mt-1 text-sm leading-6">Previously added notes about this user.</p>
         </div>
 
         <div className="max-w-2xl space-y-2 md:col-span-2">
@@ -96,13 +96,13 @@ export const NotesComponent = ({ ref_id, model, created_by }: INotesComponentPro
       </div>
       <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-5 pb-12 md:grid-cols-3 md:gap-y-10">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Existing Notes</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">Previously added notes about this user.</p>
+          <h2 className="text-base font-semibold leading-7">Existing Notes</h2>
+          <p className="mt-1 text-sm leading-6">Previously added notes about this user.</p>
         </div>
         <div className="md:col-span-2">
           {notes?.length === 0 ? (
             <div>
-              <h2 className="text-3xl font-semibold text-gray-900">No internal notes found</h2>
+              <h2 className="text-3xl font-semibold">No internal notes found</h2>
               <p className="mt-1 text-sm text-gray-500">Add a new note to the facility</p>
             </div>
           ) : (
@@ -112,15 +112,13 @@ export const NotesComponent = ({ ref_id, model, created_by }: INotesComponentPro
                   <table className="w-full divide-y divide-gray-300">
                     <thead>
                       <tr>
-                        <th
-                          scope="col"
-                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold  sm:pl-0">
                           Note
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold">
                           Created By
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold">
                           Created At
                         </th>
                       </tr>
@@ -130,7 +128,7 @@ export const NotesComponent = ({ ref_id, model, created_by }: INotesComponentPro
                         return (
                           <tr key={singleNote._id}>
                             <td
-                              className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                              className="py-4 pl-4 pr-3 text-sm font-medium  sm:pl-0"
                               style={{ wordWrap: 'break-word', maxWidth: '250px' }}>
                               {singleNote.note}
                             </td>

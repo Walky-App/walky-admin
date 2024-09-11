@@ -31,7 +31,7 @@ export const CategoryCompletedDialog = ({ visible, setVisible, categoryId, nextS
               <h2 className="text-2xl font-bold text-black sm:text-3xl">
                 Congratulations, you completed the category!
               </h2>
-              <div className=" items-center gap-4 ">
+              <div className=" items-center gap-4">
                 <p className="text-sm font-normal leading-tight text-black sm:text-base">
                   {' '}
                   We will be happy to accompany you in this learning process.

@@ -21,8 +21,6 @@ import {
   type IAdminUserTimesheetsColumnMeta,
   type IPunchPairsWithData,
   type ITimesheetWithJobAndShiftDetails,
-  adjustForFloatingPointError,
-  formatDifference,
   lunchTimeTemplate,
   jobTitleTemplate,
   facilityNameTemplate,
@@ -289,9 +287,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return sum + hours
   }, 0)
 
-  const workedScheduledDifference = totalTimeSum - scheduledTimeSum
-  const adjustedWorkedScheduledDifference = adjustForFloatingPointError(workedScheduledDifference)
-
   const payPeriodSelectorContent = (
     <div className="flex flex-col items-baseline gap-y-2">
       <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" />
@@ -468,13 +463,12 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
           ...getEditableProps(currentUserRole),
         }
       : null,
-    { field: 'scheduled_time', header: 'Scheduled Hours', sortable: false },
-    { field: 'total_time', header: 'Total Hours', sortable: false },
+    { field: 'total_time', header: 'Total Hours', sortable: false, className: 'text-red-400' },
     {
-      field: 'difference',
-      header: 'Difference',
+      field: 'scheduled_time',
+      header: 'Scheduled Hours',
       sortable: false,
-      body: rowData => formatDifference(rowData.difference),
+      body: rowData => (rowData.scheduled_time ? rowData.scheduled_time : 'test'),
     },
   ]
 
@@ -483,15 +477,13 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
 
       <DataTable
-        header={`Scheduled ${scheduledTimeSum.toFixed(2)} | Total ${totalTimeSum.toFixed(2)} | Difference ${adjustedWorkedScheduledDifference.toFixed(2)} hours`}
+        header={`Total ${totalTimeSum.toFixed(2)} | Scheduled ${scheduledTimeSum.toFixed(2)}`}
         dataKey="timesheet_id"
         editMode="cell"
         value={sortedTimeSheets}
         emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
         size="small"
-        paginator
         rows={14}
-        rowsPerPageOptions={[7, 14, 30, 90]}
         stripedRows
         showGridlines
         pt={{
@@ -514,6 +506,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
           )
         })}
       </DataTable>
+      <h2 className="mt-5 text-right text-2xl font-bold">Total Hrs {totalTimeSum.toFixed(2)}</h2>
     </div>
   )
 }

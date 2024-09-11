@@ -160,7 +160,7 @@ export const SignupClientInvited = () => {
   }
 
   return (
-    <div className="flex items-center justify-center ">
+    <div className="flex items-center justify-center">
       <form onSubmit={handleOnSubmit} className="mx-auto px-8 md:max-w-md">
         <div className="bg-white px-6 sm:py-12 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">

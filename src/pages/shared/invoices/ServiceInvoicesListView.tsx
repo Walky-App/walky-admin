@@ -12,6 +12,7 @@ import { InputIcon } from 'primereact/inputicon'
 import { InputText } from 'primereact/inputtext'
 
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
+import { exportToExcelTable } from '../../../utils/primeReactUtils'
 import { roleChecker } from '../../../utils/roleChecker'
 
 export const ServiceInvoicesListView = ({ invoices }: { invoices: IServiceInvoice[] }) => {
@@ -21,7 +22,7 @@ export const ServiceInvoicesListView = ({ invoices }: { invoices: IServiceInvoic
 
   const rowClassName = (invoice: IServiceInvoice) => {
     if (invoice.status === 'paid') {
-      return 'bg-green-100'
+      return 'bg-green-100 bg-opacity-50'
     }
   }
 
@@ -40,11 +41,17 @@ export const ServiceInvoicesListView = ({ invoices }: { invoices: IServiceInvoic
     )
   }
 
+  const paginatorRight = (
+    <Button type="button" icon="pi pi-download" text onClick={() => exportToExcelTable(invoices, 'invoices')} />
+  )
+
   return (
     <div className="card text-2xl">
       <DataTable
         value={invoices}
         paginator
+        paginatorLeft={`Total ${invoices.length} invoices`}
+        paginatorRight={paginatorRight}
         rows={20}
         rowsPerPageOptions={[20, 40, 50]}
         sortOrder={-1}

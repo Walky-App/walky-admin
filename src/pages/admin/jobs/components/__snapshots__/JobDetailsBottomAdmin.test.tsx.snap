@@ -138,7 +138,7 @@ exports[`JobDetailBottomAdmin should match snapshot 1`] = `
                     data-pr-tooltip="Select an applicant to view their timesheet"
                   />
                   <label
-                    class="block text-sm font-medium leading-6 text-gray-900"
+                    class="block text-sm font-medium leading-6"
                     for="applicant_dropdown"
                   >
                     Applicant:
@@ -234,7 +234,7 @@ exports[`JobDetailBottomAdmin should match snapshot 1`] = `
                     data-pr-tooltip="Select a shift to view and/or clock in/out for the selected applicant"
                   />
                   <label
-                    class="block text-sm font-medium leading-6 text-gray-900"
+                    class="block text-sm font-medium leading-6"
                     for="applicant_shift_dropdown"
                   >
                     Shift:

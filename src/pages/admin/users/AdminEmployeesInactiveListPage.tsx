@@ -1,20 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { format, isToday, isYesterday } from 'date-fns'
-
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
-
-interface IRow {
-  row: { original: IUser }
-  value: string
-}
-
-const Avatar = ({ src, alt = 'avatar' }: { src: string; alt?: string }) => (
-  <img src={src} alt={alt} className="h-32 w-32 object-cover" />
-)
+import { UserListTable } from './components/UserListTable'
 
 export const AdminEmployeeInactiveListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -40,84 +29,5 @@ export const AdminEmployeeInactiveListPage = () => {
     getActiveEmployees()
   }, [])
 
-  const memoUsersData = useMemo(() => usersData, [usersData])
-
-  const memoUsersColumns = useMemo(
-    () => [
-      {
-        Header: 'Avatar',
-        width: '300px',
-        height: '200px',
-        Cell: ({ row, value }: IRow) => {
-          const avatarUrl = row.original.avatar ?? ''
-          return (
-            <div className="flex items-center gap-2">
-              {avatarUrl ? (
-                <Avatar src={avatarUrl} alt={`${value}'s Avatar`} />
-              ) : (
-                <Avatar src="/assets/photos/no-photo-found.jpg" alt={`${value}'s Avatar`} />
-              )}
-              <div>{value}</div>
-            </div>
-          )
-        },
-      },
-      { Header: 'F-Name', accessor: 'first_name', width: 200 },
-      { Header: 'L-Name', accessor: 'last_name', width: 200 },
-      {
-        Header: 'Approved',
-        width: 100,
-        accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
-      },
-      {
-        Header: 'Joined',
-        width: 200,
-        accessor: (a: IUser) => {
-          return isToday(a.createdAt as string)
-            ? 'Today ⭐️'
-            : isYesterday(a.createdAt as string)
-              ? 'Yesterday'
-              : format(a.createdAt as string, 'P')
-        },
-      },
-
-      {
-        Header: 'Onboarded',
-        width: 100,
-        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
-      },
-      {
-        Header: 'Docs',
-        width: 100,
-        text: 'center',
-        accessor: (d: IUser) => d.documents?.length,
-      },
-      {
-        Header: 'HTU-Certs',
-        width: 150,
-        accessor: (d: IUser) => d.student_record?.categories?.filter(cat => cat?.is_completed === true).length,
-      },
-      { Header: 'WPS', accessor: user => (user.wps_training ? format(user.wps_training, 'P') : null), width: 400 },
-
-      {
-        Header: 'Supervisor',
-        width: 100,
-        accessor: (d: IUser) => (d.is_shift_supervisor ? 'Yes' : 'No'),
-      },
-      { Header: 'Email', accessor: 'email', width: 300 },
-      { Header: 'City', accessor: 'city', width: 300 },
-      { Header: 'Zip', accessor: 'zip' },
-      { Header: 'ST', accessor: 'state', width: 20 },
-    ],
-    [],
-  )
-
-  return isLoading ? (
-    <HTLoadingLogo />
-  ) : (
-    <>
-      <h1 className="font-bold">{usersData.length} Employees</h1>
-      <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
-    </>
-  )
+  return isLoading ? <HTLoadingLogo /> : <UserListTable data={usersData} userType="Users" />
 }

@@ -113,7 +113,7 @@ export const EmployeeJobPreferencesForm = ({ step, setStep }: StepProps) => {
                 name="job_preferences"
                 render={({ field, fieldState }) => (
                   <>
-                    <HtInfoTooltip message="Please select the type of jobs you are interested in. ">
+                    <HtInfoTooltip message="Please select the type of jobs you are interested in.">
                       <HtInputLabel htmlFor={field.name} labelText="Preferred Jobs:" />
                     </HtInfoTooltip>
                     <MultiSelect

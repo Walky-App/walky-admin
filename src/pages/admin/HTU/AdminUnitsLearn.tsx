@@ -72,7 +72,7 @@ export const AdminUnitsLearn = () => {
             )}
           </div>
           <div className="m-6 flex flex-1 flex-col justify-center gap-3">
-            <div className="flex basis-1/3 flex-wrap ">
+            <div className="flex basis-1/3 flex-wrap">
               <Badge color="gray">
                 <p className="font-normal text-stone-500">{category?.title}</p>
               </Badge>
@@ -102,7 +102,7 @@ export const AdminUnitsLearn = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-5 gap-6">
-        <div className="col-span-2 ">
+        <div className="col-span-2">
           <div className="flex h-auto flex-col rounded-2xl border border-zinc-100 bg-white">
             <button
               className="flex flex-row justify-center rounded-t-2xl border bg-gray-300 p-3 hover:bg-gray-200 hover:shadow-md"
@@ -129,7 +129,7 @@ export const AdminUnitsLearn = () => {
         </div>
 
         {/*right content*/}
-        <div className="col-span-3 ">
+        <div className="col-span-3">
           {unit ? (
             <div className=" h-auto border border-zinc-100 bg-white">
               <TabView ref={tabRef}>
@@ -168,7 +168,7 @@ export const AdminUnitsLearn = () => {
                             <div className="flex basis-1/3 flex-row">
                               <div className=" font-semibold leading-6 text-gray-900">{question.header}</div>
                             </div>
-                            <div className="ml-4 ">
+                            <div className="ml-4">
                               <div
                                 className={cn('gap-2', { 'text-green-600': question.answer === question.options[0] })}>
                                 <span className="mr-2 font-bold">A)</span>

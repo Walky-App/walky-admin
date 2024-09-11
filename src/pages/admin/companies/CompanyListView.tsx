@@ -12,6 +12,7 @@ import { InputText } from 'primereact/inputtext'
 
 import { type ICompany } from '../../../interfaces/company'
 import { formatPhoneNumber } from '../../../utils/dataUtils'
+import { exportToExcelTable } from '../../../utils/primeReactUtils'
 
 export const CompanyListView = ({ companies, role }: { companies: ICompany[]; role: string }) => {
   const [globalFilter, setGlobalFilter] = useState<string>('')
@@ -32,13 +33,19 @@ export const CompanyListView = ({ companies, role }: { companies: ICompany[]; ro
     )
   }
 
+  const paginatorRight = (
+    <Button type="button" icon="pi pi-download" text onClick={() => exportToExcelTable(companies, 'companies')} />
+  )
+
   return (
     <div className="card text-2xl">
       <DataTable
         value={companies}
         paginator
-        rows={20}
-        rowsPerPageOptions={[20, 40, 50]}
+        paginatorLeft={`Total ${companies.length} Companies`}
+        paginatorRight={paginatorRight}
+        rows={30}
+        rowsPerPageOptions={[30, 40, 50]}
         sortOrder={-1}
         sortField="createdAt"
         scrollable

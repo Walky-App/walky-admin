@@ -178,7 +178,7 @@ export const Assessment = () => {
             })}
           </div>
 
-          <div className="flex justify-between gap-2 sm:justify-end ">
+          <div className="flex justify-between gap-2 sm:justify-end">
             <Button
               onClick={() => handlerPreviousQuestion()}
               disabled={indexQuestion === 0}
