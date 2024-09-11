@@ -32,7 +32,7 @@ export const DroppedShiftsByJob = ({ jobId }: { jobId: string }) => {
   }, [jobId])
 
   return (
-    <div className="card rounded-lg bg-white p-6 shadow">
+    <div className="card rounded-l p-6 shadow">
       {!loading ? (
         droppedShifts.length > 0 ? (
           <DataTable value={droppedShifts} className="w-full">
@@ -55,24 +55,24 @@ export const DroppedShiftsByJob = ({ jobId }: { jobId: string }) => {
 
                   return (
                     <Link to={`/admin/users/employees/${history.user_id._id}`} key={index}>
-                      <div className="my-4 space-y-2 border-b-2 border-t-2 border-gray-200 pb-4 pt-4 transition-colors duration-200 hover:bg-gray-100">
+                      <div className="my-4 space-y-2 border-b-2 border-t-2 border-gray-200 pb-4 pt-4 transition-colors duration-200 hover:bg-gray-300 hover:bg-opacity-50">
                         <div className="grid grid-cols-2 gap-4">
-                          <p className="font-bold text-gray-700">
+                          <p className="font-bold">
                             Full Name:&nbsp;
-                            <span className="font-normal text-gray-600">{`${history.user_id.first_name} ${history.user_id.last_name}`}</span>
+                            <span className="font-normal">{`${history.user_id.first_name} ${history.user_id.last_name}`}</span>
                           </p>
-                          <p className="font-bold text-gray-700">
+                          <p className="font-bold">
                             Dropped By:&nbsp;
-                            <span className="font-normal text-gray-600">
+                            <span className="font-normal">
                               {history.action === 'dropped by user' ? 'Employee himself/herself' : 'Admin'}
                             </span>
                           </p>
-                          <p className="font-bold text-gray-700">
-                            When was dropped: <span className="font-normal text-gray-600">{formattedDate}</span>
+                          <p className="font-bold">
+                            When was dropped: <span className="font-normal">{formattedDate}</span>
                           </p>
                           {history.reason ? (
-                            <p className="col-span-2 font-bold text-gray-700">
-                              Reason: <span className="font-normal text-gray-600">{history.reason}</span>
+                            <p className="col-span-2 font-bold">
+                              Reason: <span className="font-normal">{history.reason}</span>
                             </p>
                           ) : null}
                         </div>
@@ -84,7 +84,7 @@ export const DroppedShiftsByJob = ({ jobId }: { jobId: string }) => {
             />
           </DataTable>
         ) : (
-          <h2 className="text-2xl font-bold text-gray-700">No Dropped Shifts!</h2>
+          <h2 className="text-2xl font-bold">No Dropped Shifts!</h2>
         )
       ) : (
         <HTLoadingLogo />
