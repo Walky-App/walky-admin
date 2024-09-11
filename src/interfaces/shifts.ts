@@ -18,6 +18,7 @@ export interface UserShiftsPopulate extends Documents {
   user_id: IUser
   timesheet_id: string
   notes: string
+  is_supervisor: boolean
   bonus: number
 }
 
