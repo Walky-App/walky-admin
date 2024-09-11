@@ -52,7 +52,7 @@ export const JobDetailBottomComponents = ({
 const facilityImagesTemplate = (job: IJob) => {
   return (
     <>
-      <h2 className="text-base font-semibold leading-6 text-gray-900">Facility Images</h2>
+      <h2 className="text-base font-semibold leading-6">Facility Images</h2>
       <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
         {job?.facility?.images?.map(image => (
           <li key={image._id} className="relative">
