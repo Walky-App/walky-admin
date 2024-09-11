@@ -35,6 +35,7 @@ export interface IServiceInvoice {
   service_order_id: IServiceOrder
   job_id: IJob
   facility_id: IFacility
+  quickbooks_id: string
   profile_id: string
   note: string
   createdAt: Date
