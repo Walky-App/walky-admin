@@ -51,6 +51,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll=false",
+    "test-coverage": "npm run test -- --coverage",
     "test-watch": "react-scripts test",
     "format": "npx prettier . --write",
     "format:check": "npx prettier . --check",

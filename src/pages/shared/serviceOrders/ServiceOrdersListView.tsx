@@ -144,8 +144,9 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
         />
 
         <Column
-          field="job_id.job_dates[0]"
+          field="job_id.job_dates"
           header="Job Start Date"
+          sortable
           body={(serviceOrder: IServiceOrder) => {
             const startDate = new Date(serviceOrder.job_id.job_dates[0])
             const zonedStartDate = toZonedTime(startDate, serviceOrder.facility_id.timezone)
