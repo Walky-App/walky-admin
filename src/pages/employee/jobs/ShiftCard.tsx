@@ -28,7 +28,7 @@ export const ShiftCard = ({ shift, status }: JobListItemProps) => {
               <span className="pi pi-users" />
               <p className="ml-1 text-stone-500">1 of {shift.job_id.vacancy} Shifts</p>
             </div>
-            <div className="flex flex-row space-x-2 ">
+            <div className="flex flex-row space-x-2">
               {status === 'saved' ? <Tag value="Saved" rounded icon="pi pi-folder" severity="info" /> : null}
               {status === 'active' ? <Tag value="Enrolled" rounded icon="pi pi-check" severity="success" /> : null}
               {status === 'dropped' ? <Tag value="Dropped" rounded icon="pi pi-times" severity="danger" /> : null}

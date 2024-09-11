@@ -216,7 +216,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
       <BreadCrumb
         model={breadCrumbs}
         home={{ icon: 'pi pi-home p-mr-2', url: `/${role}/dashboard` }}
-        className="border-none capitalize lg:hidden"
+        className="border-none capitalize lg:hidden print:hidden"
       />
     </>
   )

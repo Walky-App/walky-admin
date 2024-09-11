@@ -141,7 +141,7 @@ export const CategoryCards = ({
                       onClick={() => handlerSetCategory(category, isDisabled)}
                       aria-hidden="true">
                       <h3 className="mt-3 text-xl font-semibold text-black md:mt-0">{category.title}</h3>
-                      <p className="text-ellipsis text-stone-500 ">{category.description}</p>
+                      <p className="text-ellipsis text-stone-500">{category.description}</p>
                     </div>
                     {isAdmin ? (
                       <div className="m-3 flex flex-col items-center gap-y-5 p-3">

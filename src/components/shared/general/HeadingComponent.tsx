@@ -24,7 +24,7 @@ export const HeadingComponent = ({ title, selectedOptions, search = false, actio
         <label className="sr-only" htmlFor="search-header">
           Search
         </label>
-        <div className="flex rounded-md ">
+        <div className="flex rounded-md">
           {selectedOptions ? (
             actionButton ? (
               <>

@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import { useEffect, useState } from 'react'
 
 import { Link, useParams } from 'react-router-dom'
 
-import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup'
 import { Dropdown } from 'primereact/dropdown'
@@ -13,7 +16,6 @@ import { classNames } from 'primereact/utils'
 
 import { TrashIcon } from '@heroicons/react/20/solid'
 
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type ILog } from '../../../interfaces/logs'
@@ -21,6 +23,7 @@ import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker } from '../../../utils/roleChecker'
+import { LogsActivityTable } from '../../LogsActivityTable'
 import { DiscountDialog } from './DiscountDialog'
 import { SendInvoiceDialog } from './SendInvoiceDialog'
 
@@ -265,14 +268,6 @@ export const ServiceInvoicePage = () => {
         reject,
       })
     }
-  const memoLogsColumns = useMemo(
-    () => [
-      { Header: 'User', accessor: 'user_id' },
-      { Header: 'Event Type', accessor: 'event_type' },
-      { Header: 'Created At', accessor: 'createdAt' },
-    ],
-    [],
-  )
 
   const handlerSelectTarget = (details: IdetailsTarget) => {
     if (detailTarget.temp_id !== details.temp_id) {
@@ -366,7 +361,7 @@ export const ServiceInvoicePage = () => {
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility</th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility Address</th>
                 {invoice?.service_order_id ? (
-                  <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">SO Ref</th>
+                  <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">SO#</th>
                 ) : null}
               </tr>
             </thead>
@@ -485,7 +480,7 @@ export const ServiceInvoicePage = () => {
                   <div className="font-medium">{detail.activity}</div>
                 </td>
                 <td
-                  className="table-cell px-3 py-5 text-right hover:text-primary"
+                  className="table-cell cursor-pointer px-3 py-5 text-right hover:text-primary"
                   onClick={() => handlerSelectTarget(detail)}>
                   {detail.temp_id === detailTarget.temp_id ? (
                     <InputNumber
@@ -529,41 +524,59 @@ export const ServiceInvoicePage = () => {
         </table>
         <div className="mt-12 flex">
           <div className="text-lg sm:flex-auto">
-            <div className="pb-4">
-              <div className="my-2 font-bold">Summary</div>
-              <ul className="text-base">
-                <li className="flex flex-row py-2 text-left">
-                  <div className="pr-2">Total Hour:</div>
-                  {Number(invoice?.details.total_of_all_temps_hours).toFixed(2)}
-                </li>
-                {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
-                  <li className="flex flex-row py-2 text-left">
-                    <div className="pr-2">Overtime Cost (Included in subtotal):</div>$
-                    {Number(invoice.details.total_overtime_fees).toFixed(2)}
-                  </li>
-                ) : null}
-                <li className="flex flex-row py-2 text-left">
-                  <div className="pr-2">Estimated Total per Hour:</div>$
-                  {Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
-                </li>
-              </ul>
-            </div>
-            <h2 className="mt-2 font-bold ">
-              For {invoice?.job_id.title} job{' '}
-              <Link
-                className="cursor-pointer hover:text-primary"
-                to={role === 'admin' ? `/admin/jobs/${invoice?.job_id._id}` : `/client/jobs/${invoice?.job_id._id}`}>
-                #{invoice?.job_id.uid}
-              </Link>{' '}
-              on:
-            </h2>
-            <ul>
-              {invoice?.job_id.job_dates.map(date => (
-                <li key={date} className="mt-4">
-                  {format(new Date(date), 'PPPP')}
-                </li>
-              ))}
-            </ul>
+            <table className="mb-7 w-2/3 border-collapse border">
+              <thead>
+                <tr>
+                  <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">
+                    <h2 className="font-bold">
+                      For Job: Id&nbsp;
+                      <Link
+                        className="cursor-pointer underline hover:text-primary"
+                        to={
+                          role === 'admin'
+                            ? `/admin/jobs/${invoice?.job_id._id}`
+                            : `/client/jobs/${invoice?.job_id._id}`
+                        }>
+                        #{invoice?.job_id.uid}
+                      </Link>
+                    </h2>
+                  </th>
+                  <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Summary</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-gray-300 p-4">
+                    <ul>
+                      {invoice?.job_id.job_dates.map(date => (
+                        <li key={date} className="mt-4">
+                          {formatInTimeZone(date, invoice.facility_id.timezone, 'EEE, MMM dd, yyyy')}
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-300 p-4">
+                    <ul className="text-base">
+                      <li className="flex flex-row text-left">
+                        <div className="pr-2">Total Hour:</div>
+                        {Number(invoice?.details.total_of_all_temps_hours).toFixed(2)}
+                      </li>
+                      {invoice?.details?.total_overtime_fees && invoice.details.total_overtime_fees > 0 ? (
+                        <li className="flex flex-row py-2 text-left">
+                          <div className="pr-2">Overtime Cost (Included in subtotal):</div>$
+                          {Number(invoice.details.total_overtime_fees).toFixed(2)}
+                        </li>
+                      ) : null}
+                      <li className="flex flex-row text-left">
+                        <div className="pr-2">Estimated Total per Hour:</div>$
+                        {Number(invoice?.details.estimated_total_per_hour).toFixed(2)}
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
             {invoice?.status !== 'paid' && role === 'admin' ? (
               <div>
                 {!invoice?.note ? (
@@ -624,16 +637,21 @@ export const ServiceInvoicePage = () => {
                 ${Number(invoice?.details.processing_fee).toFixed(2)}
               </td>
             </tr>
-            {invoice?.status !== 'paid' && role === 'admin' ? (
+            {role === 'admin' ? (
               <tr className="flex w-full flex-1 items-center justify-end border-t-2">
-                {invoice?.details.discount ? (
+                {invoice?.details.discount ?? 0 ? (
                   <tr>
                     <th
                       scope="row"
                       colSpan={3}
                       className="hidden pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
-                      <div className="flex items-center justify-end">
-                        <TrashIcon className="mr-1 h-4 w-4 text-red-600 print:hidden" onClick={handlerRemoveDiscount} />
+                      <div className="flex items-center">
+                        {invoice?.status !== 'paid' ? (
+                          <TrashIcon
+                            className="mr-1 h-4 w-4 text-red-600 print:hidden"
+                            onClick={handlerRemoveDiscount}
+                          />
+                        ) : null}
                         Discount (Reason: {invoice?.details.discount_reason || 'N/A'}):
                       </div>
                     </th>
@@ -647,8 +665,8 @@ export const ServiceInvoicePage = () => {
                       <InputNumber
                         className="w-full"
                         locale="en-US"
-                        prefix="$"
                         minFractionDigits={2}
+                        maxFractionDigits={2}
                         placeholder="Enter Discount"
                         value={discount}
                         onChange={e => e.value !== null && setDiscount(e.value)}
@@ -667,7 +685,7 @@ export const ServiceInvoicePage = () => {
                   <th
                     scope="row"
                     colSpan={3}
-                    className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0 ">
+                    className="hidden w-full pl-4 pr-3 pt-4 text-right font-semibold sm:table-cell sm:pl-0">
                     <div className="flex items-center justify-end">
                       <TrashIcon className="mr-1 h-4 w-4 text-red-600 print:hidden" onClick={handlerRemoveDiscount} />
                       Discount:
@@ -696,8 +714,9 @@ export const ServiceInvoicePage = () => {
         </div>
         <footer>
           <div>
-            Authorized.net Transaction Number
-            {invoice?.transaction_id != null ? <h2 className="text-base leading-6">{invoice.transaction_id}</h2> : null}
+            {invoice?.transaction_id != null ? (
+              <h2 className="text-base leading-6"> Authorized.net Transaction Number - {invoice.transaction_id}</h2>
+            ) : null}
           </div>
           {role === 'admin' ? (
             <Button className="mt-6 print:hidden" label="Re-generate" onClick={handlerRegenerateInvoice} />
@@ -712,12 +731,7 @@ export const ServiceInvoicePage = () => {
           ) : null}
         </footer>
       </div>
-      {role === 'admin' ? (
-        <div className="print:hidden">
-          <h1 className="my-6 border-t border-gray-200 py-2 text-xl font-bold">Activity </h1>
-          {logs && logs.length > 0 ? <GlobalTable data={logs} columns={memoLogsColumns} /> : <p>No activity found</p>}
-        </div>
-      ) : null}
+      {role === 'admin' ? <LogsActivityTable data={logs} /> : null}
     </div>
   )
 }

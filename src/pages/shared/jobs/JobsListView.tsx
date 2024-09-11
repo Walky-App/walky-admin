@@ -11,6 +11,7 @@ import { InputIcon } from 'primereact/inputicon'
 import { InputText } from 'primereact/inputtext'
 
 import { type IJob } from '../../../interfaces/job'
+import { exportToExcelTable } from '../../../utils/primeReactUtils'
 
 export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => {
   const [globalFilter, setGlobalFilter] = useState<string>('')
@@ -22,9 +23,9 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
 
   const rowClassName = (job: IJob) => {
     if (job.is_active && !handleIsShiftsFilled(job)) {
-      return 'bg-red-100'
+      return 'bg-red-100 text-gray-700'
     } else if (job.is_active) {
-      return 'bg-green-100'
+      return 'bg-green-100 text-gray-700 '
     } else if (!job.is_active) {
       return 'bg-none'
     }
@@ -44,6 +45,10 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
       </div>
     )
   }
+
+  const paginatorRight = (
+    <Button type="button" icon="pi pi-download" text onClick={() => exportToExcelTable(jobs, 'jobs')} />
+  )
 
   return (
     <div className="card text-2xl">
@@ -65,6 +70,8 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
         header={getHeader()}
         resizableColumns
         showGridlines
+        paginatorLeft={`Total ${jobs.length} jobs`}
+        paginatorRight={paginatorRight}
         tableStyle={{ minWidth: '50rem' }}>
         <Column
           frozen
@@ -75,6 +82,7 @@ export const JobsListView = ({ jobs, role }: { jobs: IJob[]; role: string }) => 
         <Column field="facility.name" header="Facility" />
         <Column
           sortable
+          field="job_dates[0]"
           header="Starts"
           body={(item: IJob) => {
             return formatInTimeZone(item.job_dates[0], item.facility.timezone, 'MMM d')

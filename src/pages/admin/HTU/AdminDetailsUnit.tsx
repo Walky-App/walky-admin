@@ -200,7 +200,7 @@ export const AdminDetailsUnit = () => {
                           className="flex w-0 flex-1 cursor-pointer items-center justify-center p-2 transition-colors duration-300 ease-in-out hover:bg-green-100"
                           onClick={() => handlerSectionEdit(section)}
                           type="button">
-                          <PencilSquareIcon aria-hidden="true" className="h-5 w-5 text-gray-400 " />
+                          <PencilSquareIcon aria-hidden="true" className="h-5 w-5 text-gray-400" />
                           Edit
                         </button>
                         <button

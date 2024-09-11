@@ -86,7 +86,7 @@ export const Units = () => {
           </div>
           <div className="m-3 flex flex-1 flex-row gap-3">
             <div className="flex flex-1 flex-col justify-evenly">
-              <div className="flex basis-1/3 flex-wrap ">
+              <div className="flex basis-1/3 flex-wrap">
                 <Badge color="gray">
                   <p className="text-xs font-normal text-stone-500">{module?.category?.title}</p>
                 </Badge>

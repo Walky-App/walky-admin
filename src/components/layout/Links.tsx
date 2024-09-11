@@ -48,8 +48,8 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       icon: <FaUserGroup />,
       subLinks: [
         { name: 'Active & Approved', href: '/admin/users/employees/active' },
-        { name: 'Inactive ', href: '/admin/users/employees/inactive' },
         { name: 'Timesheets ', href: '/admin/users/employees/timesheets' },
+        { name: 'Inactive ', href: '/admin/users/employees/inactive' },
       ],
     },
     {

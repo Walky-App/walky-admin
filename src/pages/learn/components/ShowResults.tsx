@@ -18,9 +18,9 @@ export const ShowResultsDialog = ({ visible, setVisible }: ShowResultsDialogProp
           <div>
             <CheckCircleIcon className="h-20 w-20 text-green-600" />
           </div>
-          <div className="text-3xl font-semibold ">Passed Assessment</div>
+          <div className="text-3xl font-semibold">Passed Assessment</div>
           <div className="text-sm font-semibold text-gray-500">The result of your evaluation is the following:</div>
-          <div className="my-3 flex gap-5 ">
+          <div className="my-3 flex gap-5">
             <div className="w-22 flex flex-1 flex-col items-center rounded-xl bg-gray-100 p-3">
               <p className="text-gray-500">Correct</p>
               <p className="font-bold">{currentUnit.correct_questions}</p>
