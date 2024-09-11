@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup'
 import { Divider } from 'primereact/divider'
 import { Skeleton } from 'primereact/skeleton'
 
@@ -34,6 +35,50 @@ export const JobDetailViewAdmin = () => {
   if (job) {
     const dateTimes = job.job_dates.map(dateString => new Date(dateString).getTime())
     ;[earliestDate, latestDate] = [new Date(Math.min(...dateTimes)), new Date(Math.max(...dateTimes))]
+  }
+
+  const handleJobStatus = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    const message = job?.is_active
+      ? 'Are you sure you want to close this job? This action will not allow employees to search for this job and apply for its shifts.'
+      : 'Are you sure you want to open this job? This action will allow employees to search for this job and apply for its shifts.'
+    confirmPopup({
+      target: event.currentTarget as HTMLElement,
+      message: message,
+      icon: 'pi pi-info-circle',
+      defaultFocus: 'reject',
+      acceptClassName: 'p-button-danger',
+      accept,
+      reject,
+    })
+  }
+
+  const accept = async () => {
+    try {
+      const requestData = { is_active: !job?.is_active }
+      const response = await requestService({
+        path: `jobs/${job?._id}/status`,
+        method: 'PATCH',
+        body: JSON.stringify(requestData),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setJob(data)
+        setJobHasEnded(!data.is_active)
+        showToast({ severity: 'success', summary: 'Success', detail: 'Job status updated successfully' })
+      } else if (response.status === 400) {
+        const data = await response.json()
+        showToast({ severity: 'error', summary: 'Error', detail: data.message })
+      }
+    } catch (error) {
+      console.error(error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error updating the job status' })
+    }
+  }
+
+  const reject = () => {
+    showToast({ severity: 'warn', summary: 'Cancelled', detail: 'You have cancelled closing the job' })
   }
 
   useEffect(() => {
@@ -99,26 +144,6 @@ export const JobDetailViewAdmin = () => {
     return { isTodayShift: false, message: 'No shifts available.' }
   }
 
-  const handleJobStatus = async (summary: string, detail: string) => {
-    try {
-      const requestData = { is_active: !job?.is_active, is_completed: !job?.is_completed }
-      const response = await requestService({
-        path: `jobs/${job?._id}/status`,
-        method: 'PATCH',
-        body: JSON.stringify(requestData),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setJob(data)
-        setJobHasEnded(!data.is_active)
-        showToast({ severity: 'success', summary: summary, detail: detail })
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   return (
     <div>
       {/* <BreadCrumbs/> */}
@@ -140,17 +165,15 @@ export const JobDetailViewAdmin = () => {
                     </div>
                     <div>
                       {!job?.is_active ? (
-                        <Button
-                          label="Reopen Job"
-                          severity="secondary"
-                          onClick={() => handleJobStatus('Job Reopened', 'Job has been reopened')}
-                        />
+                        <>
+                          <ConfirmPopup />
+                          <Button label="Reopen Job" severity="secondary" onClick={handleJobStatus} />
+                        </>
                       ) : (
-                        <Button
-                          label="Close Job"
-                          severity="danger"
-                          onClick={() => handleJobStatus('Job Closed', 'Job has been closed')}
-                        />
+                        <>
+                          <ConfirmPopup />
+                          <Button label="Close Job" severity="danger" onClick={handleJobStatus} />
+                        </>
                       )}
                     </div>
                   </div>
@@ -205,7 +228,9 @@ export const JobDetailViewAdmin = () => {
                       <i className="pi pi-calendar-times" />
                     )}
                     <div className="mt-0.5 flex flex-col gap-1">
-                      <span className="font-medium text-black">{job.is_completed === false ? 'Live' : 'Archived'}</span>
+                      <span className="font-medium text-black">
+                        {job.is_completed === false ? 'In Progress' : 'Completed'}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -258,7 +283,7 @@ export const JobDetailViewAdmin = () => {
                     {formattedTimes}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                    <div className="text-stone-500">Lunch Breaks</div>
+                    <div className="text-stone-500">Lunch Break</div>
                     <div>{job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}</div>
                   </div>
                   <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">

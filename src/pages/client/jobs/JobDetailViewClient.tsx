@@ -201,7 +201,7 @@ export const JobDetailViewClient = () => {
                   {formattedTimes}
                 </div>
                 <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
-                  <div className="text-stone-500">Lunch Breaks</div>
+                  <div className="text-stone-500">Lunch Break</div>
                   <div>{job.lunch_break === 0 ? 'No' : job.lunch_break + ' Minutes'}</div>
                 </div>
                 <div className="flex flex-col items-start justify-start gap-1 border-l-[1px] border-zinc-100 pl-3">
