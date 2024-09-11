@@ -138,7 +138,7 @@ export const QuestionDialog = ({
               <label className="block font-medium leading-6 text-gray-900 " htmlFor="title">
                 Question text
               </label>
-              <div className="mt-2 flex ">
+              <div className="mt-2 flex">
                 <InputText
                   className="flex flex-1"
                   id="question_text"

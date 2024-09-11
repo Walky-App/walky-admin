@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { format, isToday, isYesterday } from 'date-fns'
-
-import { GlobalTable } from '../../../components/shared/GlobalTable'
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
+import { UserListTable } from './components/UserListTable'
 
 export const AdminUserClientsListPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -31,53 +29,5 @@ export const AdminUserClientsListPage = () => {
     getActiveClients()
   }, [])
 
-  const memoUsersData = useMemo(() => usersData, [usersData])
-
-  const memoUsersColumns = useMemo(
-    () => [
-      { Header: 'First Name', accessor: 'first_name' },
-      { Header: 'Last Name', accessor: 'last_name' },
-      {
-        Header: 'Approved',
-        width: 100,
-        accessor: (d: IUser) => (d.is_approved ? '✅' : '❌') ?? 'N/A',
-      },
-      {
-        Header: 'Joined',
-        width: 200,
-        accessor: (a: IUser) => {
-          return isToday(a.createdAt as string)
-            ? 'Today ⭐️'
-            : isYesterday(a.createdAt as string)
-              ? 'Yesterday'
-              : format(a.createdAt as string, 'P')
-        },
-      },
-      {
-        Header: 'Onboarded',
-        width: 100,
-        accessor: (d: IUser) => (d.onboarding?.completed ? '✅' : '❌'),
-      },
-      { Header: 'Email', accessor: 'email', width: 250 },
-      {
-        Header: 'Companies',
-        accessor: (client: IUser) => {
-          if (!client?.companies?.length) return 'n/a'
-          return client?.companies?.map(company => (typeof company === 'object' ? company.company_name : '')).join(', ')
-        },
-        width: 250,
-      },
-      { Header: 'State', accessor: 'state' },
-    ],
-    [],
-  )
-
-  return isLoading ? (
-    <HTLoadingLogo />
-  ) : (
-    <>
-      <div className="text-right" />
-      <GlobalTable data={memoUsersData} columns={memoUsersColumns} allowClick />
-    </>
-  )
+  return isLoading ? <HTLoadingLogo /> : <UserListTable data={usersData} userType="Clients" />
 }

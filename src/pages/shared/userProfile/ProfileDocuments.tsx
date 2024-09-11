@@ -90,11 +90,11 @@ export const ProfileDocuments = ({
     <div className="my-8">
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Badges and Credentials</h2>
-          <div className="text-balance text-sm leading-6 text-gray-600 [&>p]:mt-4">
+          <h2 className="text-base font-semibold leading-7">Badges and Credentials</h2>
+          <div className="text-balance text-sm leading-6 [&>p]:mt-4">
             <p>Please upload your State-issued Badge or Background Check.</p>
             <p>If you do not have a badge or a background check click on your state for more information:</p>
-            <ul className="ml-1 space-y-2 [&>li]:mt-1 [&>li]:text-balance [&>li]:text-sm [&>li]:leading-6 [&>li]:text-gray-600 [&>li]:underline">
+            <ul className="ml-1 space-y-2 [&>li]:mt-1 [&>li]:text-balance [&>li]:text-sm [&>li]:leading-6 [&>li]:underline">
               <li>
                 <a
                   href="https://sbg.colorado.gov/sites/sbg/files/documents/DR%208517e%20Emp%20App%2010-2022_0.pdf"
@@ -126,7 +126,7 @@ export const ProfileDocuments = ({
                       target="_blank"
                       href={document.url}
                       key={index}
-                      className="px-5 py-1.5 text-sm font-semibold leading-6 text-gray-900 underline hover:text-gray-500">
+                      className="px-5 py-1.5 text-sm font-semibold leading-6  underline hover:text-gray-500">
                       {document.key.split('/').pop()}
                     </a>
                   ))}

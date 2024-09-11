@@ -65,7 +65,7 @@ export const AdminTimesheetsPage = () => {
         <HTLoadingLogo />
       ) : (
         <div>
-          <small>ONLY Approved Employees: ${usersData.length}</small>
+          <small>Approved Employees: {usersData.length}</small>
         </div>
       )}
       <div className="flex">

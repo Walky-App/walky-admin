@@ -165,7 +165,7 @@ const FeedbackEmployee = ({ submitFeedback, userId, ratingStars }: FeedbackEmplo
   }, [ratingStars])
 
   return (
-    <div className="mt-3 flex flex-1 flex-col gap-3 ">
+    <div className="mt-3 flex flex-1 flex-col gap-3">
       <div className="flex flex-col justify-center">
         <div className="flex flex-col items-center justify-start gap-2 md:flex-row">
           <span className="text-lg">Performance</span>

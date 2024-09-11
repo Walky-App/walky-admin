@@ -64,7 +64,7 @@ export default function SalesProfile() {
 
   return (
     <>
-      <div className="mb-12 w-full border-b border-gray-200 pb-5 ">
+      <div className="mb-12 w-full border-b border-gray-200 pb-5">
         <h3 className="text-base font-semibold leading-6 text-gray-900">Your Profile Details</h3>
       </div>
 
