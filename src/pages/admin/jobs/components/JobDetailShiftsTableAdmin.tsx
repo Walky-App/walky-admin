@@ -4,6 +4,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { Button } from 'primereact/button'
 import { Chip } from 'primereact/chip'
 import { Dialog } from 'primereact/dialog'
+import { Divider } from 'primereact/divider'
 import { Fieldset } from 'primereact/fieldset'
 import { InputTextarea } from 'primereact/inputtextarea'
 
@@ -11,6 +12,7 @@ import { type IJobShiftDay, type IApplicant, type IJob } from '../../../../inter
 import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
+import { cn } from '../../../../utils/cn'
 import { roleChecker } from '../../../../utils/roleChecker'
 import { EmployeeOptions } from './EmployeeOptions'
 
@@ -24,7 +26,11 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
   const [showDialog, setShowDialog] = useState(false)
   const [shiftDropReason, setShiftDropReason] = useState('')
   const [loadingSendingNotifications, setLoadingSendingNotifications] = useState(false)
-  const [employeeShiftInfoToRemove, setEmployeeShiftInfoToRemove] = useState({ shiftId: '', userShiftId: '' })
+  const [employeeShiftInfoToRemove, setEmployeeShiftInfoToRemove] = useState({
+    shiftId: '',
+    userShiftId: '',
+    is_supervisor: false,
+  })
   const { showToast } = useUtils()
 
   const role = roleChecker()
@@ -62,7 +68,31 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
           detail: 'Employee has been removed from the shift',
         })
         setShowDialog(false)
-        setEmployeeShiftInfoToRemove({ shiftId: '', userShiftId: '' })
+        setEmployeeShiftInfoToRemove({ shiftId: '', userShiftId: '', is_supervisor: false })
+        setShiftDropReason('')
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const setSupervisor = async (userShiftId: string) => {
+    try {
+      const response = await requestService({
+        path: `shifts/set-supervisor`,
+        method: 'PATCH',
+        body: JSON.stringify({ userShiftId, is_supervisor: !employeeShiftInfoToRemove.is_supervisor }),
+      })
+      const data = await response.json()
+      if (response.ok) {
+        setJob(data)
+        showToast({
+          severity: 'success',
+          summary: 'Employee update',
+          detail: 'Employee has been updated as supervisor',
+        })
+        setShowDialog(false)
+        setEmployeeShiftInfoToRemove({ shiftId: '', userShiftId: '', is_supervisor: false })
         setShiftDropReason('')
       }
     } catch (error) {
@@ -102,7 +132,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
   return (
     <section className="mt-12">
       <Dialog
-        header="Drop Shift?"
+        header="Shift adjustments"
         visible={showDialog}
         draggable={false}
         className="w-full md:w-1/2"
@@ -123,18 +153,34 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
             />
           </div>
         )}>
-        <div className="m-0">
-          <h2 className="mb-8 text-lg font-medium">Sure you want to drop this user?</h2>
-          <h3 className="text-xl font-medium text-red-600">Reason for dropping the user from shift</h3>
-          <InputTextarea
-            placeholder="Type in the reason for dropping the user from the shift"
-            required
-            rows={5}
-            cols={50}
-            className="text-lg"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setShiftDropReason(e.target.value)}
-            value={shiftDropReason}
-          />
+        <div className="flex flex-col">
+          <div className="m-0">
+            <h2 className="mb-8 text-lg font-medium">Role assignment</h2>
+            <Button
+              severity={employeeShiftInfoToRemove.is_supervisor ? 'danger' : 'success'}
+              label={
+                employeeShiftInfoToRemove.is_supervisor
+                  ? 'Remove supervisor rol for this shift '
+                  : 'Set supervisor for this shift'
+              }
+              onClick={() => setSupervisor(employeeShiftInfoToRemove.userShiftId)}
+            />
+          </div>
+          <Divider />
+          <div className="m-0">
+            <h1 className="mb-2 text-2xl font-medium">Drop Shift?</h1>
+            <h2 className="mb-8 text-lg font-medium">Sure you want to drop this user?</h2>
+            <h3 className="text-xl font-medium text-red-600">Reason for dropping the user from shift</h3>
+            <InputTextarea
+              placeholder="Type in the reason for dropping the user from the shift"
+              required
+              rows={5}
+              cols={50}
+              className="text-lg"
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setShiftDropReason(e.target.value)}
+              value={shiftDropReason}
+            />
+          </div>
         </div>
       </Dialog>
 
@@ -192,11 +238,17 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                         />
                       )}
                       label={userShift.user_id.first_name + ' ' + userShift.user_id.last_name}
-                      className="mr-10 mt-2 bg-green-600 pl-1 pr-7 text-white hover:cursor-pointer hover:bg-red-600 hover:font-medium"
+                      className={cn(
+                        'mr-10 mt-2 bg-green-600 pl-1 pr-7 text-white hover:cursor-pointer hover:bg-red-600 hover:font-medium',
+                        {
+                          'bg-purple-500': userShift.is_supervisor,
+                        },
+                      )}
                       onClick={() => {
                         setEmployeeShiftInfoToRemove({
                           shiftId: day.shifts_id._id,
                           userShiftId: userShift._id,
+                          is_supervisor: userShift.is_supervisor,
                         })
                         setShowDialog(true)
                       }}
