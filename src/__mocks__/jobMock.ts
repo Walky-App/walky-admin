@@ -1,0 +1,58 @@
+import { type IUser } from '../interfaces/User'
+import { type IFacility } from '../interfaces/facility'
+import { type IJob, type IJobShiftDay, type IRestriction, type IFeedback, type IDnr } from '../interfaces/job'
+
+export const jobMock: IJob = {
+  _id: '66bf8bc2907a582955d1b0c1',
+  uid: '2408711',
+  created_by: 'shannon@hemptemps.com',
+  facility: {} as IFacility,
+  title: 'Trimmer',
+  start_time: '2024-08-16T12:30:00.000+00:00',
+  end_time: '2024-08-16T21:00:00.000+00:00',
+  total_hours: 8,
+  lunch_break: 30,
+  job_days: [] as IJobShiftDay[],
+  job_dates: [
+    '2024-08-19T06:00:00.000+00:00',
+    '2024-08-20T06:00:00.000+00:00',
+    '2024-08-21T06:00:00.000+00:00',
+    '2024-08-22T06:00:00.000+00:00',
+    '2024-08-23T06:00:00.000+00:00',
+  ],
+  job_tips: ['Parking Onsite', 'Parking on Street'],
+  vacancy: 10,
+  hourly_rate: 19,
+  applicants: [
+    {
+      user: {} as IUser,
+      is_approved: false,
+      is_working: false,
+      _id: '66bf9e8f2fe241f8e7b433e7',
+      first_name: 'John',
+      last_name: 'Doe',
+      rejection_reason: '',
+    },
+    {
+      user: {} as IUser,
+      is_approved: false,
+      is_working: false,
+      _id: '66bf9f012fe241f8e7b43edd',
+      first_name: 'Jane',
+      last_name: 'Doe',
+      rejection_reason: 'Some weird reason',
+    },
+  ],
+  saved_by: [],
+  dnr: [] as IDnr[],
+  is_completed: true,
+  is_full: false,
+  is_active: true,
+  feedback: [] as IFeedback[],
+  clock_in_restriction: [] as IRestriction[],
+  clock_out_restriction: [] as IRestriction[],
+  distance: 0,
+  createdAt: new Date('2024-08-16T17:26:26.729+00:00'),
+  updatedAt: new Date('2024-08-24T06:00:09.550+00:00'),
+  applicants_feedback_ids: [],
+}
