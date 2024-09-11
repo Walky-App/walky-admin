@@ -228,15 +228,13 @@ export const JobDetailViewAdmin = () => {
                       <i className="pi pi-calendar-times" />
                     )}
                     <div className="mt-0.5 flex flex-col gap-1">
-                      <span className="font-medium text-black">
-                        {job.is_completed === false ? 'In Progress' : 'Completed'}
-                      </span>
+                      <span className="font-medium">{job.is_completed === false ? 'In Progress' : 'Completed'}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {job.is_full === false ? <i className="pi pi-briefcase" /> : <i className="pi pi-ban" />}
                     <div className="mt-0.5 flex flex-col gap-1">
-                      <span className="font-medium text-black">{job.is_full === false ? 'Open' : 'Full'}</span>
+                      <span className="font-medium">{job.is_full === false ? 'Open' : 'Full'}</span>
                     </div>
                   </div>
 
@@ -245,7 +243,7 @@ export const JobDetailViewAdmin = () => {
                       <div>
                         <HtInfoTooltip message="These facility arrival notes will help the employee find the destination faster." />
                       </div>
-                      <span className="text-base font-medium text-black">
+                      <span className="text-base font-medium">
                         Arrival notes:{' '}
                         <span className="font-normal">{job.facility.notes ? job.facility.notes : '(N/A)'}</span>
                       </span>
@@ -257,7 +255,7 @@ export const JobDetailViewAdmin = () => {
                       <div>
                         <HtInfoTooltip message="These tips will help employee better prepare for the job." />
                       </div>
-                      <span className="text-base font-medium text-black">Job Tips:</span>
+                      <span className="text-base font-medium">Job Tips:</span>
 
                       {job.job_tips.map((tip, index) => (
                         <span key={tip}>
