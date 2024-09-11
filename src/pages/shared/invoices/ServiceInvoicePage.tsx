@@ -95,14 +95,32 @@ export const ServiceInvoicePage = () => {
   const statusDisplayText = {
     authorized: 'Authorized',
     pending_select_payment: 'Pending Payment',
+    authorizedPendingCapture: 'Authorized Pending Capture',
+    capturedPendingSettlement: 'Transaction Successful - Captured Pending Settlement',
     paid: 'Transaction Successful - Invoice Paid',
   }
 
   const handleStatusChange = (e: { value: string }) => {
     setStatus(e.value)
   }
-  const handleStatusClick = () => {
-    setIsEditingStatus(true)
+  const handleStatusClick = async () => {
+    if (invoice?.service_order_id?.ach_authorized) {
+      setIsEditingStatus(true)
+    } else {
+      try {
+        setIsLoading(true)
+        const response = await requestService({ path: `invoices/refresh-authorize/${invoiceId}`, method: 'GET' })
+        if (!response.ok) {
+          throw new Error('Failed to regenerate invoice')
+        }
+        const { invoice } = await response.json()
+        setStatus(invoice.status)
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error regenerating invoice:', error)
+        setIsLoading(false)
+      }
+    }
   }
 
   const handleSave = async () => {
