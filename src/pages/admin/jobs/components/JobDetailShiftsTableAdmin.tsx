@@ -138,7 +138,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
         </div>
       </Dialog>
 
-      <h2 className="text-base font-semibold leading-6 text-gray-900">Schedule ({job?.job_dates?.length} days)</h2>
+      <h2 className="text-base font-semibold leading-6">Schedule ({job?.job_dates?.length} days)</h2>
       <ol className="mt-2 text-base leading-6 ">
         {job?.job_days.map((day: IJobShiftDay, index: number) => {
           return (
