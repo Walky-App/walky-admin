@@ -44,7 +44,7 @@ export interface IServiceInvoice {
 }
 
 export interface EmployeeShift {
-  temp_id?: string
+  temp_id: string
   shifts_days?: Date[]
   total_worked_hours: number
   estimated_total_per_hour: number
