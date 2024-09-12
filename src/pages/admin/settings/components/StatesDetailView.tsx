@@ -95,12 +95,12 @@ export const StatesDetailView = ({
     <div className="space-y-12">
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 pt-12 md:grid-cols-3">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">General settings</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">configuration for the entire application</p>
+          <h2 className="text-base font-semibold leading-7">General settings</h2>
+          <p className="mt-1 text-sm leading-6">configuration for the entire application</p>
         </div>
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
           <div className="sm:col-span-3">
-            <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="first_name" className="block text-sm font-medium leading-6">
               Minimum wage
             </label>
             <InputNumber
@@ -117,7 +117,7 @@ export const StatesDetailView = ({
             />
           </div>
           <div className="sm:col-span-3">
-            <label htmlFor="supervisor_fee" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="supervisor_fee" className="block text-sm font-medium leading-6">
               Supervisor Fee
             </label>
             <InputNumber
@@ -134,7 +134,7 @@ export const StatesDetailView = ({
             />
           </div>
           <div className="sm:col-span-3">
-            <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="first_name" className="block text-sm font-medium leading-6">
               Licenses required
             </label>
             <ToggleButton
@@ -146,7 +146,7 @@ export const StatesDetailView = ({
             />
           </div>
           <div className="sm:col-span-3">
-            <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="first_name" className="block text-sm font-medium leading-6">
               Limit work hours per week
             </label>
             <InputNumber
@@ -161,8 +161,8 @@ export const StatesDetailView = ({
 
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Admin Cost</h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
+          <h2 className="text-base font-semibold leading-7">Admin Cost</h2>
+          <p className="mt-1 text-sm leading-6">
             Total Admin cost is <strong>{sumAdminCost}%</strong>
           </p>
         </div>
@@ -186,11 +186,11 @@ export const StatesDetailView = ({
       </div>
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Fees Manager</h2>
+          <h2 className="text-base font-semibold leading-7">Fees Manager</h2>
         </div>
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
           <div className="col-span-3">
-            <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="our_fees" className="block text-sm font-medium leading-6">
               Our fees
             </label>
             <InputNumber
@@ -205,7 +205,7 @@ export const StatesDetailView = ({
             />
           </div>
           <div className="col-span-3">
-            <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="our_fees" className="block text-sm font-medium leading-6">
               Processing fees
             </label>
             <InputNumber
@@ -223,11 +223,11 @@ export const StatesDetailView = ({
       </div>
       <div className="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-3">
         <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Overtime</h2>
+          <h2 className="text-base font-semibold leading-7">Overtime</h2>
         </div>
         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
           <div className="col-span-3">
-            <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="our_fees" className="block text-sm font-medium leading-6">
               Holidays rate
             </label>
             <InputNumber
@@ -246,7 +246,7 @@ export const StatesDetailView = ({
             />
           </div>
           <div className="col-span-3">
-            <label htmlFor="our_fees" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="our_fees" className="block text-sm font-medium leading-6">
               Overtime rate
             </label>
             <InputNumber
@@ -265,7 +265,7 @@ export const StatesDetailView = ({
             />
           </div>
           <div className="sm:col-span-3">
-            <label htmlFor="first_name" className="block text-sm font-medium leading-6 text-gray-900">
+            <label htmlFor="first_name" className="block text-sm font-medium leading-6">
               Minimum hours for overtime
             </label>
             <InputNumber

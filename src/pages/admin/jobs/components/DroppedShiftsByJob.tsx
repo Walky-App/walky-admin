@@ -64,7 +64,7 @@ export const DroppedShiftsByJob = ({ jobId }: { jobId: string }) => {
                           <p className="font-bold">
                             Dropped By:&nbsp;
                             <span className="font-normal">
-                              {history.action === 'dropped by user' ? 'Employee himself/herself' : 'Admin'}
+                              {history.action === 'dropped employee' ? 'Employee' : 'Admin'}
                             </span>
                           </p>
                           <p className="font-bold">
