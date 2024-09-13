@@ -353,7 +353,7 @@ exports[`JobDetailBottomAdmin should match snapshot 1`] = `
             </div>
             <div>
               <h2
-                class="text-base font-semibold leading-6 text-gray-900"
+                class="text-base font-semibold leading-6"
               >
                 Timesheet
               </h2>
