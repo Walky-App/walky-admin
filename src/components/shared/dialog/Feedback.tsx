@@ -29,15 +29,15 @@ interface FeedbackProps {
   isOpen: boolean
   objectId: string
   hidden: (value: boolean) => void
-  job_id?: string
+  jobId: string
 }
 
-export const Feedback = ({ isOpen = false, hidden, objectId, job_id }: FeedbackProps) => {
+export const Feedback = ({ isOpen = false, hidden, objectId, jobId }: FeedbackProps) => {
   const { user } = useAuth()
   const { showToast } = useUtils()
 
   const submitFeedback = async (feedback: Feedback) => {
-    const objectFeedback = job_id ? { ...feedback, job_id } : feedback
+    const objectFeedback = jobId ? { ...feedback, job_id: jobId } : feedback
     const response = await requestService({ path: 'feedback', method: 'POST', body: JSON.stringify(objectFeedback) })
 
     if (!response.ok) {
@@ -50,6 +50,10 @@ export const Feedback = ({ isOpen = false, hidden, objectId, job_id }: FeedbackP
   }
 
   const [ratingStars, setRatingStars] = useState<number>(0)
+
+  useEffect(() => {
+    setRatingStars(0)
+  }, [isOpen])
 
   const headerFeedback = () => {
     return (
