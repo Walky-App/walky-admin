@@ -29,7 +29,7 @@ const Card = ({ name, amount, href, icon: Icon }: CardProps) => {
   const navigate = useNavigate()
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow">
+    <div className="overflow-hidden rounded-lg shadow">
       <div className="">
         <div className="flex items-center">
           <div className="ml-5 w-0 flex-1">
@@ -39,13 +39,13 @@ const Card = ({ name, amount, href, icon: Icon }: CardProps) => {
                 <div className="mr-3 flex-shrink-0">
                   <Icon className="h-6 w-6 text-gray-400" aria-hidden="true" />
                 </div>
-                <div className="text-lg font-medium text-gray-900">{amount}</div>
+                <div className="text-lg font-medium">{amount}</div>
               </dd>
             </dl>
           </div>
         </div>
       </div>
-      <div className="bg-gray-50 px-5 py-3">
+      <div className="px-5 py-3">
         <Button label="View All" link size="small" onClick={() => navigate(href)} className="p-0" />
       </div>
     </div>

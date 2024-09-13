@@ -40,15 +40,15 @@ export const DashboardActivity = ({ data }: { data: ILog[] }) => {
                 </div>
               </>
             ) : ( */}
-            <div className="relative flex h-6 w-6 flex-none items-center justify-center bg-white">
+            <div className="relative flex h-6 w-6 flex-none items-center justify-center">
               {/* {activityItem.type === 'paid' ? (
                   <CheckCircleIcon className="h-6 w-6 text-indigo-600" aria-hidden="true" />
                 ) : (
                   <div className="h-1.5 w-1.5 rounded-full bg-gray-100 ring-1 ring-gray-300" />
                 )} */}
             </div>
-            <p className="flex-auto py-0.5 text-xs leading-5 text-gray-500">
-              <span className="font-medium text-gray-900">{activityItem.user_id}</span> {activityItem.event_type} -{' '}
+            <p className="flex-auto py-0.5 text-xs leading-5">
+              <span className="font-medium">{activityItem.user_id}</span> {activityItem.event_type} -{' '}
               {activityItem.model} {activityItem.item_id}
             </p>
             <time dateTime={activityItem.createdAt} className="flex-none py-0.5 text-xs leading-5 text-gray-500">

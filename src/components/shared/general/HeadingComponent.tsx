@@ -19,7 +19,7 @@ interface Props {
 export const HeadingComponent = ({ title, selectedOptions, search = false, actionButton, disableButton }: Props) => {
   return (
     <div className="mb-4 border-b border-gray-200 pb-5 sm:mb-10 sm:flex sm:items-center sm:justify-between">
-      <h3 className="text-base font-semibold leading-6 text-gray-900">{title}</h3>
+      <h3 className="text-base font-semibold leading-6">{title}</h3>
       <div className="mt-3 sm:ml-4 sm:mt-0">
         <label className="sr-only" htmlFor="search-header">
           Search

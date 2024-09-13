@@ -116,7 +116,7 @@ export const AdminDashboard = () => {
               </div>
             </div>
             <div className="pt-1.5">
-              <h1 className="text-2xl font-bold text-gray-900">Welcome Back, {user?.first_name}</h1>
+              <h1 className="text-2xl font-bold">Welcome Back, {user?.first_name}</h1>
               <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:gap-x-6">
                 <div className="mt-2 flex items-center text-sm text-gray-500">
                   <BuildingOfficeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
@@ -168,7 +168,7 @@ export const AdminDashboard = () => {
             {/* <DashboardReleasesList /> */}
           </div>
           <div className="mx-auto sm:px-6 lg:px-8">
-            <h2 className="text-lg font-medium leading-6 text-gray-900">Active Records</h2>
+            <h2 className="text-lg font-medium leading-6">Active Records</h2>
             <div className="mt-2 grid grid-cols-1">
               <StatCards cards={statCardsData} />
               <DashboardActivity data={dashboardData?.logs ?? []} />
