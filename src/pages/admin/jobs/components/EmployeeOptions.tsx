@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
@@ -8,18 +8,37 @@ import { PlusIcon } from '@heroicons/react/20/solid'
 import { type IJobShiftDay, type IApplicant, type IJob } from '../../../../interfaces/job'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
 
 interface EmployeeOptionsProps {
   job: IJob
   shiftDay: IJobShiftDay
-  potentialApplicants: IApplicant[]
   shiftId: string
   setJob: (job: IJob) => void
 }
 
-export const EmployeeOptions = ({ potentialApplicants, shiftId, setJob, job, shiftDay }: EmployeeOptionsProps) => {
+export const EmployeeOptions = ({ shiftId, setJob, job, shiftDay }: EmployeeOptionsProps) => {
   const { showToast } = useUtils()
   const [applicantId, setApplicantId] = useState<Record<string, string>>({})
+  const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
+  const role = roleChecker()
+
+  useEffect(() => {
+    const getPotentialApplicantsPerShift = async () => {
+      try {
+        const response = await requestService({ path: `shifts/with-available-employees/${shiftId}` })
+        if (response.status === 200) {
+          const jsonResponse = await response.json()
+          setPotentialApplicants(jsonResponse)
+        }
+      } catch (error) {
+        console.error('Error fetching potential applicants', error)
+      }
+    }
+    if (role === 'admin') {
+      getPotentialApplicantsPerShift()
+    }
+  }, [shiftId, role])
 
   const addEmployeeShift = async () => {
     try {
