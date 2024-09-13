@@ -16,8 +16,10 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { classNames } from 'primereact/utils'
 
 import { TrashIcon } from '@heroicons/react/20/solid'
+import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type ILog } from '../../../interfaces/logs'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
@@ -69,6 +71,33 @@ export const ServiceInvoicePage = () => {
     amount: 0,
   })
   const [quickbooksId, setQuickbooksId] = useState<string>('')
+  const [isOpenFeedback, setIsOpenFeedback] = useState<boolean>(false)
+  const [objectId, setObjectId] = useState<string>('')
+  const [jobId, setJobId] = useState<string>('')
+
+  const handleFeedback = (id: string, job_id: string) => {
+    setObjectId(id)
+    setJobId(job_id)
+    setIsOpenFeedback(true)
+  }
+
+  useEffect(() => {
+    if (!isOpenFeedback && objectId !== '') {
+      setInvoice(prevInvoice => {
+        if (prevInvoice) {
+          return {
+            ...prevInvoice,
+            job_id: {
+              ...prevInvoice.job_id,
+              applicants_feedback_ids: [...prevInvoice.job_id.applicants_feedback_ids, objectId],
+            },
+          }
+        }
+        return prevInvoice
+      })
+    }
+    setObjectId('')
+  }, [isOpenFeedback, objectId])
 
   useEffect(() => {
     const getinvoice = async () => {
@@ -373,6 +402,7 @@ export const ServiceInvoicePage = () => {
         setVisible={setSendInvoiceShow}
         visible={sendInvoiceShow}
       />
+      <Feedback isOpen={isOpenFeedback} hidden={setIsOpenFeedback} objectId={objectId} jobId={jobId} />
       <div className="my-8 flex items-center justify-between">
         <img className="w</div>-auto h-16" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
         <h1 className="text-xl font-semibold leading-6">
@@ -517,7 +547,16 @@ export const ServiceInvoicePage = () => {
                       {detail.description}
                     </Link>
                   ) : (
-                    <div className="font-medium">{detail.description}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium">{detail.description}</div>
+                      {invoice.job_id.applicants_feedback_ids.some(feedback => feedback === detail.temp_id) ? null : (
+                        <Button
+                          className="min-h-5 min-w-5 p-1 print:hidden"
+                          onClick={() => handleFeedback(detail.temp_id, invoice.job_id._id)}>
+                          <ChatBubbleLeftEllipsisIcon className="h-5 w-5" />
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </td>
                 {role === 'client' ? (
