@@ -22,7 +22,7 @@ interface IShiftTableAdminProps {
 }
 
 export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
-  const [potentialApplicants, setPotentialApplicants] = useState<IApplicant[]>([])
+  const [, setPotentialApplicants] = useState<IApplicant[]>([])
   const [showDialog, setShowDialog] = useState(false)
   const [shiftDropReason, setShiftDropReason] = useState('')
   const [loadingSendingNotifications, setLoadingSendingNotifications] = useState(false)
@@ -265,13 +265,7 @@ export const ShiftsTableAdmin = ({ job, setJob }: IShiftTableAdminProps) => {
                       : '')}
                 </p>
               ) : null}
-              <EmployeeOptions
-                shiftDay={day}
-                job={job}
-                potentialApplicants={potentialApplicants}
-                shiftId={day.shifts_id._id}
-                setJob={setJob}
-              />
+              <EmployeeOptions shiftDay={day} job={job} shiftId={day.shifts_id._id} setJob={setJob} />
             </li>
           )
         })}
