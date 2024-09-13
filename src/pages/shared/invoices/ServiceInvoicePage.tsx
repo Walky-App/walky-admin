@@ -16,8 +16,10 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { classNames } from 'primereact/utils'
 
 import { TrashIcon } from '@heroicons/react/20/solid'
+import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
+import { Feedback } from '../../../components/shared/dialog/Feedback'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
 import { type ILog } from '../../../interfaces/logs'
 import { type IServiceInvoice } from '../../../interfaces/serviceInvoice'
@@ -70,6 +72,32 @@ export const ServiceInvoicePage = () => {
     amount: 0,
   })
   const [quickbooksId, setQuickbooksId] = useState<string>('')
+  const [isOpenFeedback, setIsOpenFeedback] = useState<boolean>(false)
+  const [objectId, setObjectId] = useState<string>('')
+  const [jobId, setJobId] = useState<string>('')
+
+  const handleFeedback = (id: string, job_id: string) => {
+    setObjectId(id)
+    setJobId(job_id)
+    setIsOpenFeedback(true)
+  }
+
+  useEffect(() => {
+    if (!isOpenFeedback && objectId !== '') {
+      setInvoice(prevInvoice => {
+        if (prevInvoice) {
+          return {
+            ...prevInvoice,
+            job_id: {
+              ...prevInvoice.job_id,
+              applicants_feedback_ids: [...prevInvoice.job_id.applicants_feedback_ids, objectId],
+            },
+          }
+        }
+        return prevInvoice
+      })
+    }
+  }, [isOpenFeedback, objectId])
 
   useEffect(() => {
     const getinvoice = async () => {
@@ -290,7 +318,7 @@ export const ServiceInvoicePage = () => {
 
       confirmPopup({
         target: event.currentTarget as HTMLElement,
-        message: `Do you want to notify administrators about your intention to buyout ${employeeName}?`,
+        message: `Do you want to notify administrators about your intention to ${employeeName} purchase employee contract?`,
         icon: 'pi pi-info-circle',
         defaultFocus: 'reject',
         acceptClassName: 'p-button-danger',
@@ -383,6 +411,7 @@ export const ServiceInvoicePage = () => {
         setVisible={setSendInvoiceShow}
         visible={sendInvoiceShow}
       />
+      <Feedback isOpen={isOpenFeedback} hidden={setIsOpenFeedback} objectId={objectId} jobId={jobId} />
       <div className="my-8 flex items-center justify-between">
         <img className="w</div>-auto h-16" src="/assets/logos/logo-horizontal-cropped.png" alt="HempTemps Logo" />
         <h1 className="text-xl font-semibold leading-6">
@@ -411,10 +440,11 @@ export const ServiceInvoicePage = () => {
               <tr>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Invoice Status</th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Payment Type</th>
-                <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left print:hidden">
-                  {' '}
-                  Quickbooks Id
-                </th>
+                {role === 'admin' ? (
+                  <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left print:hidden">
+                    Quickbooks Id
+                  </th>
+                ) : null}
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility</th>
                 <th className="border border-gray-300 bg-[var(--surface-card)] p-4 text-left">Facility Address</th>
                 {invoice?.service_order_id ? (
@@ -449,18 +479,20 @@ export const ServiceInvoicePage = () => {
                 <td className="border border-gray-300 p-4">
                   {invoice?.service_order_id?.ach_authorized ? 'ACH' : 'Credit Card'}
                 </td>
-                <td className="border border-gray-300 p-4 print:hidden">
-                  {invoice?.quickbooks_id ? (
-                    <h3 className="text-base leading-6">{invoice?.quickbooks_id}</h3>
-                  ) : (
-                    <InputText
-                      placeholder="Quickbooks Id"
-                      value={invoice?.quickbooks_id}
-                      onChange={e => setQuickbooksId(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                    />
-                  )}
-                </td>
+                {role === 'admin' ? (
+                  <td className="border border-gray-300 p-4 print:hidden">
+                    {invoice?.quickbooks_id ? (
+                      <h3 className="text-base leading-6">{invoice?.quickbooks_id}</h3>
+                    ) : (
+                      <InputText
+                        placeholder="Quickbooks Id"
+                        value={invoice?.quickbooks_id}
+                        onChange={e => setQuickbooksId(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                      />
+                    )}
+                  </td>
+                ) : null}
                 <td className="border border-gray-300 p-4">
                   <h3 className="text-base font-semibold leading-6">{invoice?.facility_id.name}</h3>
                 </td>
@@ -527,19 +559,31 @@ export const ServiceInvoicePage = () => {
                       {detail.description}
                     </Link>
                   ) : (
-                    <div className="font-medium">{detail.description}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium">{detail.description}</div>
+                      {invoice.job_id.applicants_feedback_ids.some(feedback => feedback === detail.temp_id) ? null : (
+                        <Button
+                          className="min-h-5 min-w-5 p-1 print:hidden"
+                          onClick={() => handleFeedback(detail.temp_id, invoice.job_id._id)}>
+                          <ChatBubbleLeftEllipsisIcon className="h-5 w-5" />
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </td>
                 {role === 'client' ? (
                   <td className="table-cell py-5 pl-4 pr-3 text-left print:hidden">
-                    <ConfirmPopup />
+                    <ConfirmPopup className="shadow-sm" />
                     <Button
-                      label="Buyout"
+                      label="Hire"
                       className="ml-2"
                       outlined
                       size="small"
                       onClick={event => {
-                        const name = detail.description.split(' ')[0]
+                        const name = detail.description
+                          .replace(/Supervisor/g, '')
+                          .trim()
+                          .split(' ')[0]
                         handleSendBuyoutNotificationToAdmin(name)(event)
                       }}
                     />
@@ -548,36 +592,44 @@ export const ServiceInvoicePage = () => {
                 <td className="table-cell py-5 pl-4 pr-3 text-left">
                   <div className="font-medium">{detail.activity}</div>
                 </td>
-                <td
-                  className="table-cell cursor-pointer px-3 py-5 text-right hover:text-primary"
-                  onClick={() => handlerSelectTarget(detail)}>
-                  {detail.temp_id === detailTarget.temp_id ? (
-                    <InputNumber
-                      inputClassName={classNames('w-20 p-1 text-right')}
-                      locale="en-US"
-                      value={detailTarget.regular_hours}
-                      onValueChange={e => setDetailTarget({ ...detailTarget, regular_hours: e.value as number })}
-                      minFractionDigits={2}
-                    />
-                  ) : (
-                    detail.regular_hours.toFixed(2)
-                  )}
-                </td>
-                <td
-                  className="table-cell px-3 py-5 text-right hover:text-primary"
-                  onClick={() => handlerSelectTarget(detail)}>
-                  {detail.temp_id === detailTarget.temp_id ? (
-                    <InputNumber
-                      inputClassName={classNames('w-20 p-1 text-right')}
-                      locale="en-US"
-                      value={detailTarget.overtime_hours}
-                      onValueChange={e => setDetailTarget({ ...detailTarget, overtime_hours: e.value as number })}
-                      minFractionDigits={2}
-                    />
-                  ) : (
-                    detail.overtime_hours.toFixed(2)
-                  )}
-                </td>
+                {role === 'admin' ? (
+                  <td
+                    className="table-cell cursor-pointer px-3 py-5 text-right hover:text-primary"
+                    onClick={() => handlerSelectTarget(detail)}>
+                    {detail.temp_id === detailTarget.temp_id ? (
+                      <InputNumber
+                        inputClassName={classNames('w-20 p-1 text-right')}
+                        locale="en-US"
+                        value={detailTarget.regular_hours}
+                        onValueChange={e => setDetailTarget({ ...detailTarget, regular_hours: e.value as number })}
+                        minFractionDigits={2}
+                      />
+                    ) : (
+                      detail.regular_hours.toFixed(2)
+                    )}
+                  </td>
+                ) : (
+                  <td className="table-cell px-3 py-5 text-right ">{detail.regular_hours.toFixed(2)}</td>
+                )}
+                {role === 'admin' ? (
+                  <td
+                    className="table-cell px-3 py-5 text-right hover:text-primary"
+                    onClick={() => handlerSelectTarget(detail)}>
+                    {detail.temp_id === detailTarget.temp_id ? (
+                      <InputNumber
+                        inputClassName={classNames('w-20 p-1 text-right')}
+                        locale="en-US"
+                        value={detailTarget.overtime_hours}
+                        onValueChange={e => setDetailTarget({ ...detailTarget, overtime_hours: e.value as number })}
+                        minFractionDigits={2}
+                      />
+                    ) : (
+                      detail.overtime_hours.toFixed(2)
+                    )}
+                  </td>
+                ) : (
+                  <td className="table-cell px-3 py-5 text-right">{detail.overtime_hours.toFixed(2)}</td>
+                )}
                 <td className="table-cell px-3 py-5 text-right">{detail.total_worked_hours.toFixed(2)}</td>
                 <td className="table-cell px-3 py-5 text-right">${detail.pay_rate}</td>
                 <td className="table-cell px-3 py-5 text-right">${detail.amount.toFixed(2)}</td>

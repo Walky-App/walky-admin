@@ -402,7 +402,7 @@ export const SideRightCard = ({
           ) : null}
         </div>
       </Card>
-      <Feedback isOpen={openFeedback} hidden={setOpenFeedback} objectId={idFeedback} job_id={job._id} />
+      <Feedback isOpen={openFeedback} hidden={setOpenFeedback} objectId={idFeedback} jobId={job._id} />
     </>
   )
 }

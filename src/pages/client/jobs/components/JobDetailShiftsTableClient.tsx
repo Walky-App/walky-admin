@@ -4,6 +4,7 @@ import { Fieldset } from 'primereact/fieldset'
 
 import { type IJobShiftDay, type IJob } from '../../../../interfaces/job'
 import { type UserShiftsPopulate } from '../../../../interfaces/shifts'
+import { cn } from '../../../../utils/cn'
 
 interface IShiftTableAdminProps {
   job: IJob
@@ -40,7 +41,9 @@ export const ShiftsTableClient = ({ job }: IShiftTableAdminProps) => {
                         />
                       )}
                       label={userShift.user_id.first_name + ' ' + userShift.user_id.last_name[0]}
-                      className="mr-10 mt-2 bg-green-600 pl-1 pr-7 text-white"
+                      className={cn('mr-10 mt-2 bg-green-600 pl-1 pr-7 text-white', {
+                        'bg-purple-500': userShift.is_supervisor,
+                      })}
                     />
                   )
                 })}
