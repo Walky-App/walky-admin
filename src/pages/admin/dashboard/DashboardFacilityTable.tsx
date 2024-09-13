@@ -11,12 +11,8 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
         <div className="flex">
           <BuildingLibraryIcon className="mr-4 h-7 w-7 flex-shrink-0 text-gray-400" aria-hidden="true" />
           <div>
-            <h3 className="text-xl font-semibold leading-6 text-gray-900">
-              {data.length} - Facilities Pending Approval
-            </h3>
-            <p className="mt-2 text-sm text-gray-700">
-              A list of all the facilities that are currently pending approval.
-            </p>
+            <h3 className="text-xl font-semibold leading-6">{data.length} - Facilities Pending Approval</h3>
+            <p className="mt-2 text-sm">A list of all the facilities that are currently pending approval.</p>
           </div>
         </div>
       </div>
@@ -26,19 +22,19 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
             <table className="min-w-full divide-y divide-gray-300">
               <thead>
                 <tr>
-                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold sm:pl-0">
                     Name
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold">
                     Registered on
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold">
                     Jobs
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold">
                     Licenses
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold">
                     Status
                   </th>
                   <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
@@ -46,7 +42,7 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody className="divide-y divide-gray-200">
                 {data.map(facility => (
                   <tr key={facility._id}>
                     <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
@@ -61,19 +57,19 @@ export const DashboardFacilityTable = ({ data }: { data: IFacility[] }) => {
                           />
                         </div>
                         <div className="ml-4">
-                          <div className="font-medium text-gray-900">{facility.name}</div>
+                          <div className="font-medium">{facility.name}</div>
                           <div className="mt-1 text-gray-500">{facility.address}</div>
                         </div>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{new Date(facility?.createdAt ?? '').toLocaleString()}</div>
+                      <div>{new Date(facility?.createdAt ?? '').toLocaleString()}</div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{facility.jobs ? facility.jobs.length : 0}</div>
+                      <div>{facility.jobs ? facility.jobs.length : 0}</div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{facility.licenses ? facility.licenses.length : 0}</div>
+                      <div>{facility.licenses ? facility.licenses.length : 0}</div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                       <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-green-600/20">

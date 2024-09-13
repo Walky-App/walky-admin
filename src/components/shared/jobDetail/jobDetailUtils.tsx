@@ -111,7 +111,7 @@ export const shiftDayAndTimeUTC = (shiftDay: Date, shiftTime: string) => {
 export const applicantTimesheetTableTemplate = (punchPairsAndData: IPunchPairsWithData[], facilityTimezone: string) => {
   return (
     <>
-      <h2 className="text-base font-semibold leading-6 text-gray-900">Timesheet</h2>
+      <h2 className="text-base font-semibold leading-6">Timesheet</h2>
       <DataTable
         value={punchPairsAndData}
         dataKey="shift_id"
