@@ -77,6 +77,11 @@ export const ServiceInvoicesListView = ({ invoices }: { invoices: IServiceInvoic
         />
         <Column field="status" header="Status" />
         <Column
+          field="quickbooks_id"
+          header="QuickBooks ID"
+          body={invoice => (invoice.quickbooks_id ? invoice.quickbooks_id : '🚫 No ID')}
+        />
+        <Column
           field="service_order_id.ach_authorized"
           header="Payment type"
           body={invoice => (invoice.service_order_id.ach_authorized ? 'ACH' : 'CC')}
