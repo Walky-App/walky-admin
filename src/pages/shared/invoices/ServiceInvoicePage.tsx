@@ -52,6 +52,7 @@ export const ServiceInvoicePage = () => {
   const [note, setNote] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isChargeButtonLoading, setIsChargeButtonLoading] = useState(false)
   const [sendInvoiceShow, setSendInvoiceShow] = useState(false)
   const { invoiceId } = useParams()
   const { showToast } = useUtils()
@@ -192,6 +193,7 @@ export const ServiceInvoicePage = () => {
   const handlerAuthorizeInvoice = async () => {
     try {
       setIsLoading(true)
+      setIsChargeButtonLoading(true)
       const response = await requestService({ path: `invoices/authorize/${invoiceId}`, method: 'POST' })
       if (!response.ok) {
         throw new Error('Failed to authorize invoice')
@@ -200,9 +202,17 @@ export const ServiceInvoicePage = () => {
       setInvoice(invoice)
       setLogs(logs)
       setIsLoading(false)
+      setIsChargeButtonLoading(false)
+
+      showToast({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Invoice charged successfully',
+      })
     } catch (error) {
       console.error('Error authorizing invoice:', error)
       setIsLoading(false)
+      setIsChargeButtonLoading(false)
     }
   }
 
@@ -826,7 +836,7 @@ export const ServiceInvoicePage = () => {
         <footer>
           <div>
             {invoice?.transaction_id != null ? (
-              <h2 className="text-base leading-6"> Authorized.net Transaction Number - {invoice.transaction_id}</h2>
+              <h2 className="text-base leading-6"> Authorize.net Transaction Number - {invoice.transaction_id}</h2>
             ) : null}
           </div>
           {role === 'admin' ? (
@@ -834,7 +844,13 @@ export const ServiceInvoicePage = () => {
           ) : null}
 
           {role === 'admin' && !invoice?.service_order_id?.ach_authorized ? (
-            <Button className="ml-3 mt-6 print:hidden" label="Charge" onClick={handlerAuthorizeInvoice} />
+            <Button
+              disabled={invoice?.status === 'paid'}
+              loading={isChargeButtonLoading}
+              className="ml-3 mt-6 print:hidden"
+              label="Charge"
+              onClick={handlerAuthorizeInvoice}
+            />
           ) : null}
 
           {role === 'admin' ? (
