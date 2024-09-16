@@ -43,7 +43,7 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
     }
 
     if (!serviceOrder.service_invoice_id && serviceOrder.status === 'authorized') {
-      return 'bg-white text-black'
+      return 'text-black'
     }
 
     if (
@@ -119,6 +119,20 @@ export const ServiceOrdersListView = ({ serviceOrders, role }: { serviceOrders: 
           }
         />
         <Column field="status" sortable header="Status" />
+        <Column
+          field="ach_authorized"
+          sortable
+          header="Payment Type"
+          body={serviceOrder => {
+            if (serviceOrder.ach_authorized) {
+              return 'ACH'
+            } else if (serviceOrder.transaction_id) {
+              return 'CC'
+            } else {
+              return ''
+            }
+          }}
+        />
         <Column
           field="company_id.company_name"
           header="Company Name"
