@@ -35,7 +35,7 @@ export const ChangelogApiPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl font-bold">Changelog</h1>
+      <h1 className="mb-4 text-2xl font-bold">Changelog (API)</h1>
       <ul className="space-y-2">
         {changelog.map(commit => (
           <li key={commit.hash} className="rounded border p-2">
