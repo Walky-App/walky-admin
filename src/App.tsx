@@ -97,6 +97,7 @@ import { JobDetailView } from './pages/employee/jobs/jobDetailView'
 import { EmployeeMessages } from './pages/employee/messages/EmployeeMessages'
 import { EmployeeOnboarding } from './pages/employee/onboarding/EmployeeOnboardingPage'
 import { EmployeeTimesheets } from './pages/employee/timesheets/EmployeeTimesheetsPage'
+import { ChangelogApiPage } from './pages/shared/changeLog/changeLogApi'
 import { CompanyDetailView } from './pages/shared/companyDetailView'
 import { AllInvoicesListPage } from './pages/shared/invoices/AllInvoicesListPage'
 import { ServiceInvoicePage } from './pages/shared/invoices/ServiceInvoicePage'
@@ -297,6 +298,7 @@ export const App = () => {
                     <Route element={<Products />} path="/admin/products" />
                     <Route element={<ProductCategories />} path="/admin/products/categories" />
                     <Route element={<ProductDetail />} path="/admin/products/:id" />
+                    <Route element={<ChangelogApiPage />} path="/admin/changelog/api" />
                   </Route>
                 </Route>
               </Route>
