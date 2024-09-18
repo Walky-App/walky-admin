@@ -1,50 +1,53 @@
 import React, { useEffect, useState } from 'react'
 
+import ReactMarkdown from 'react-markdown'
+
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { requestService } from '../../../services/requestServiceNew'
 
-interface Commit {
-  date: string
-  message: string
-  hash: string
-}
-
-export const ChangelogApiPage = () => {
+export const ChangelogAppPage = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [changelog, setChangelog] = useState<Commit[]>([])
+  const [changelog, setChangelog] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    setIsLoading(true)
-    const fetchChangelog = async () => {
+    const fetchChangelogApp = async () => {
       try {
-        const response = await requestService({ path: 'changelog/api' })
-        if (!response.ok) throw new Error('Failed to fetch changelog')
-        const commits: Commit[] = await response.json()
-        setChangelog(commits)
+        const response = await fetch('/CHANGELOG.md')
+        if (!response.ok) {
+          throw new Error(`Failed to fetch changelog: ${response.status} ${response.statusText}`)
+        }
+        const text = await response.text()
+        if (text.trim() === '') {
+          throw new Error('Changelog is empty')
+        }
+        setChangelog(text)
+        setError(null)
       } catch (error) {
-        console.error('Error fetching changelog', error)
+        console.error('Error fetching changelog:', error)
+        setError(error instanceof Error ? error.message : 'An unknown error occurred')
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchChangelog()
+    fetchChangelogApp()
   }, [])
 
   if (isLoading) return <HTLoadingLogo />
 
+  if (error) {
+    return (
+      <div className="p-4">
+        <h1 className="mb-4 text-2xl font-bold">App Changelog</h1>
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    )
+  }
+
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl font-bold">Changelog</h1>
-      <ul className="space-y-2">
-        {changelog.map(commit => (
-          <li key={commit.hash} className="rounded border p-2">
-            <p className="font-semibold">{commit.date}</p>
-            <p>{commit.message}</p>
-            <p className="text-sm text-gray-500">Commit: {commit.hash.substring(0, 7)}</p>
-          </li>
-        ))}
-      </ul>
+      <h1 className="mb-4 text-2xl font-bold">App Changelog</h1>
+      {changelog ? <ReactMarkdown>{changelog}</ReactMarkdown> : <p>No changelog data available.</p>}
     </div>
   )
 }
