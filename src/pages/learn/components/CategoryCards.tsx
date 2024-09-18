@@ -85,10 +85,12 @@ export const CategoryCards = ({
     }
   }
 
-  const completionMap: CompletedInfo = record.categories.reduce((acc: CompletedInfo, category: CategoryRecords) => {
-    acc[category.category] = category.is_completed
-    return acc
-  }, {})
+  const completionMap: CompletedInfo = Array.isArray(record.categories)
+    ? record.categories.reduce((acc: CompletedInfo, category: CategoryRecords) => {
+        acc[category.category] = category.is_completed
+        return acc
+      }, {})
+    : {}
 
   const isCategoryDisabled = (index: number) => {
     if (index === 0) return false
