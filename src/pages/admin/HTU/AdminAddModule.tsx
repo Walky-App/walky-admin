@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type Category } from '../../../interfaces/category'
 import { type SelectedOptionInterface } from '../../../interfaces/global'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { FormModule } from './components/FormModule'
 
 export const AdminAddModule = () => {
@@ -17,7 +17,8 @@ export const AdminAddModule = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response: Category[] = await RequestService('categories')
+      const request = await requestService({ path: 'categories' })
+      const response: Category[] = await request.json()
       if (response.length !== 0) {
         const categoriesMap = response.map(object => {
           return {
