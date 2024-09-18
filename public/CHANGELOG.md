@@ -1,4 +1,8 @@
 ### 2024-09-18
+- **Message:** updated changelog app and api routes
+- **Commit:** 0ef6e183
+
+### 2024-09-18
 - **Message:** updated changelog and generateChangelog.js
 - **Commit:** 3915f91e
 
