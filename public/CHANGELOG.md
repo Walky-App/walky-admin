@@ -1,4 +1,8 @@
 ### 2024-09-18
+- **Message:** updated changelog and generateChangelog.js
+- **Commit:** 3915f91e
+
+### 2024-09-18
 - **Message:** updating formatting of changelog app
 - **Commit:** 7f6f8525
 

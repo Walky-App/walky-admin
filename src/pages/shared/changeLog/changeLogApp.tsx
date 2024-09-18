@@ -38,7 +38,7 @@ export const ChangelogAppPage = () => {
   if (error) {
     return (
       <div className="p-4">
-        <h1 className="mb-4 text-2xl font-bold">Changelog</h1>
+        <h1 className="mb-4 text-2xl font-bold">App Changelog</h1>
         <p className="text-red-500">Error: {error}</p>
       </div>
     )
