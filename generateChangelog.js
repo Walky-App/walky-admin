@@ -10,9 +10,14 @@ try {
   const gitLog = execSync(
     'git log --pretty=format:"### %ad%n- **Message:** %s%n- **Commit:** %h%n" --date=short',
   ).toString()
-  const changelogPath = path.join(__dirname, 'CHANGELOG.md')
+
+  const changelogPath = path.join(__dirname, 'public', 'CHANGELOG.md')
+
+  if (!fs.existsSync(path.dirname(changelogPath))) {
+    fs.mkdirSync(path.dirname(changelogPath), { recursive: true })
+  }
+
   fs.writeFileSync(changelogPath, gitLog)
 } catch (error) {
-  // eslint-disable-next-line no-undef
-  console.error('Error while generating changelog:', error)
+  throw new Error(`Error generating changelog: ${error.message}`)
 }

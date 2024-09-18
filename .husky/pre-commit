@@ -11,9 +11,9 @@ npm run test
 npm run generate-changelog
 
 # Add the updated changelog to the commit if it has changed
-if git diff --exit-code CHANGELOG.md; then
+if git diff --exit-code public/CHANGELOG.md; then
   echo "Changelog not modified"
 else
   echo "Changelog has been modified, adding to commit"
-  git add CHANGELOG.md
+  git add public/CHANGELOG.md
 fi
