@@ -8,7 +8,7 @@ import { useAdmin } from '../../../contexts/AdminContext'
 import { type Category } from '../../../interfaces/category'
 import { type SelectedOptionInterface } from '../../../interfaces/global'
 import { type Module } from '../../../interfaces/module'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { secondsToTimeDescription } from '../../../utils/functionUtils'
 
 export const AdminModulesLearn = () => {
@@ -44,11 +44,13 @@ export const AdminModulesLearn = () => {
   ]
 
   const fetchData = async () => {
-    const responseModule: Module[] = await RequestService('modules')
+    const requestModule = await requestService({ path: 'modules' })
+    const responseModule: Module[] = await requestModule.json()
     if (responseModule.length !== 0) {
       setModules(responseModule)
     }
-    const responseCategory: Category[] = await RequestService('categories')
+    const requestCategory = await requestService({ path: 'categories' })
+    const responseCategory: Category[] = await requestCategory.json()
     if (responseCategory.length !== 0) {
       const categoriesMap = responseCategory.map(object => {
         return {
