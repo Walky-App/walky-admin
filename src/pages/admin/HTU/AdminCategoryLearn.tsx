@@ -7,7 +7,7 @@ import { EmptyState } from '../../../components/shared/general/EmptyState'
 import { HeadingComponent } from '../../../components/shared/general/HeadingComponent'
 import { type Category } from '../../../interfaces/category'
 import { type FilterInterface, type SelectedOptionInterface } from '../../../interfaces/global'
-import { RequestService } from '../../../services/RequestService'
+import { requestService } from '../../../services/requestServiceNew'
 import { CategoryCards } from '../../learn/components/CategoryCards'
 
 export const AdminCategoryLearn = () => {
@@ -32,7 +32,8 @@ export const AdminCategoryLearn = () => {
   ]
 
   const fetchData = async () => {
-    const response: Category[] = await RequestService('categories')
+    const request = await requestService({ path: 'categories' })
+    const response: Category[] = await request.json()
     if (response.length !== 0) {
       setCategories(response)
     }
