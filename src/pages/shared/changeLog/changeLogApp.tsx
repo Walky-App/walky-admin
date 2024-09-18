@@ -46,7 +46,7 @@ export const ChangelogAppPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl font-bold">Changelog</h1>
+      <h1 className="mb-4 text-2xl font-bold">App Changelog</h1>
       {changelog ? <ReactMarkdown>{changelog}</ReactMarkdown> : <p>No changelog data available.</p>}
     </div>
   )
