@@ -119,13 +119,10 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     { id: 8, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
     {
       id: 8,
-      name: 'API Changelog',
-      href: '/admin/changelog/api',
+      name: 'App Changelog',
+      href: '/admin/changelog/app',
       icon: <IoMdCog />,
-      subLinks: [
-        { name: 'API Changelog', href: '/admin/changelog/api' },
-        { name: 'App Changelog', href: '/admin/changelog/app' },
-      ],
+      subLinks: [{ name: 'API Changelog', href: '/admin/changelog/api' }],
     },
     // {
     //   id: 1,
