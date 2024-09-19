@@ -8,9 +8,9 @@ import { InputIcon } from 'primereact/inputicon'
 import { InputText } from 'primereact/inputtext'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { UserTimesheetsTable } from '../../../components/shared/timesheets/UserTimesheetsTable'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
+import { AdminEmployeeTimesheetTable } from './components/AdminEmployeeTimesheetTable'
 
 export const AdminTimesheetsPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -89,7 +89,7 @@ export const AdminTimesheetsPage = () => {
           body={rowData => <Button text label={rowData.label} onClick={() => setSelectedUser(rowData.value)} />}
         />
       </DataTable>
-      <UserTimesheetsTable selectedUser={selectedUser ?? ({} as IUser)} />
+      <AdminEmployeeTimesheetTable selectedUser={selectedUser ?? ({} as IUser)} />
     </div>
   )
 }

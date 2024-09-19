@@ -9,13 +9,7 @@ import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 
-import { type IUser } from '../../../interfaces/User'
-import { type IToastParameters } from '../../../interfaces/global'
-import { type IPayPeriod } from '../../../interfaces/timesheet'
-import { requestService } from '../../../services/requestServiceNew'
-import { useUtils } from '../../../store/useUtils'
-import { roleChecker } from '../../../utils/roleChecker'
-import { HtInputLabel } from '../forms/HtInputLabel'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import {
   processPunchPairsWithData,
   type IAdminUserTimesheetsColumnMeta,
@@ -25,9 +19,15 @@ import {
   jobTitleTemplate,
   facilityNameTemplate,
   combineDayAndTimeUTC,
-} from './timesheetsUtils'
+} from '../../../../components/shared/timesheets/timesheetsUtils'
+import { type IUser } from '../../../../interfaces/User'
+import { type IToastParameters } from '../../../../interfaces/global'
+import { type IPayPeriod } from '../../../../interfaces/timesheet'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
 
-export const UserTimesheetsTable = ({ selectedUser = undefined }: { selectedUser: IUser | undefined }) => {
+export const AdminEmployeeTimesheetTable = ({ selectedUser = undefined }: { selectedUser: IUser | undefined }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
@@ -374,14 +374,14 @@ export const UserTimesheetsTable = ({ selectedUser = undefined }: { selectedUser
       field: 'shift_day',
       header: 'Shift Day',
       sortable: false,
-      body: rowData => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'MMM d'),
+      body: (rowData: IPunchPairsWithData) => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'MMM d'),
     },
     {
       field: 'in_time',
       header: 'In',
       sortable: false,
       ...getEditableProps(currentUserRole),
-      body: rowData =>
+      body: (rowData: IPunchPairsWithData) =>
         rowData.in_time != null
           ? formatInTimeZone(rowData.in_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
@@ -392,7 +392,7 @@ export const UserTimesheetsTable = ({ selectedUser = undefined }: { selectedUser
       field: 'out_time',
       header: 'Out',
       sortable: false,
-      body: rowData =>
+      body: (rowData: IPunchPairsWithData) =>
         rowData.out_time != null
           ? formatInTimeZone(rowData.out_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
@@ -404,20 +404,22 @@ export const UserTimesheetsTable = ({ selectedUser = undefined }: { selectedUser
       field: 'lunch_time',
       header: 'Lunch Break',
       sortable: false,
-      body: rowData => lunchTimeTemplate(rowData.lunch_time),
+      body: (rowData: IPunchPairsWithData) => lunchTimeTemplate(rowData.lunch_time),
     },
     {
       field: 'job_title',
       header: 'Job',
       sortable: false,
-      body: rowData => jobTitleTemplate(rowData.job_title, rowData.job_uid, rowData.job_id, currentUserRole),
+      body: (rowData: IPunchPairsWithData) =>
+        jobTitleTemplate(rowData.job_title, rowData.job_uid, rowData.job_id, currentUserRole),
       ...getEditableDropdownProps(currentUserRole),
     },
     {
       field: 'facility_name',
       header: 'Facility',
       sortable: false,
-      body: rowData => facilityNameTemplate(rowData.facility_name, rowData.facility_id, currentUserRole),
+      body: (rowData: IPunchPairsWithData) =>
+        facilityNameTemplate(rowData.facility_name, rowData.facility_id, currentUserRole),
     },
     currentUserRole === 'admin'
       ? {
@@ -433,7 +435,7 @@ export const UserTimesheetsTable = ({ selectedUser = undefined }: { selectedUser
       field: 'scheduled_time',
       header: 'Scheduled Hours',
       sortable: false,
-      body: rowData => (rowData.scheduled_time ? rowData.scheduled_time : 'test'),
+      body: (rowData: IPunchPairsWithData) => (rowData.scheduled_time ? rowData.scheduled_time : 'test'),
     },
   ]
 

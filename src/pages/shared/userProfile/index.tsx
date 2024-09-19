@@ -6,7 +6,6 @@ import { TabPanel, TabView } from 'primereact/tabview'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { Chat } from '../../../components/shared/messages/Chat'
-import { UserTimesheetsTable } from '../../../components/shared/timesheets/UserTimesheetsTable'
 import { useAuth } from '../../../contexts/AuthContext'
 import { type IUserPopulated, type IUser } from '../../../interfaces/User'
 import { type ITrainingData } from '../../../interfaces/training'
@@ -14,6 +13,8 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { AdminEmployeeTimesheetTable } from '../../admin/users/components/AdminEmployeeTimesheetTable'
+import { EmployeeTimesheetTable } from '../../employee/components/EmployeeTimesheetTable'
 import { EmployeeMyJobs } from '../../employee/jobs/MyJobs'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
@@ -137,7 +138,11 @@ export const UserProfile = () => {
         ) : null}
         {notShowTabForClient() ?? role === 'admin' ? (
           <TabPanel header="TimeSheets">
-            <UserTimesheetsTable selectedUser={formUser} />
+            {role === 'admin' ? (
+              <AdminEmployeeTimesheetTable selectedUser={formUser} />
+            ) : (
+              <EmployeeTimesheetTable userData={formUser} />
+            )}
           </TabPanel>
         ) : null}
         {role === 'admin' ? (
