@@ -59,44 +59,37 @@ export const AdminTimesheetsPage = () => {
     )
   }
 
-  return (
-    <div>
-      {isLoading ? (
-        <HTLoadingLogo />
-      ) : (
-        <div>
-          <small>Approved Employees: {usersData.length}</small>
-        </div>
-      )}
-      <div className="flex">
-        <DataTable
-          header={getHeader()}
-          dataKey="_id"
-          editMode="cell"
-          value={handleDropdownOptions()}
-          emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
-          size="small"
-          paginator
-          rows={50}
-          globalFilter={globalFilter}
-          stripedRows
-          scrollable
-          scrollHeight="calc(100vh - 300px)"
-          showGridlines
-          pt={{
-            header: {
-              className: 'font-normal text-sm text-gray-500',
-            },
-          }}>
-          <Column
-            field="label"
-            header="Name"
-            sortable={false}
-            body={rowData => <Button text label={rowData.label} onClick={() => setSelectedUser(rowData.value)} />}
-          />
-        </DataTable>
-        <UserTimesheetsTable selectedUserId={selectedUser?._id ?? ''} />
-      </div>
+  return isLoading ? (
+    <HTLoadingLogo />
+  ) : (
+    <div className="flex">
+      <DataTable
+        header={getHeader()}
+        dataKey="_id"
+        editMode="cell"
+        value={handleDropdownOptions()}
+        emptyMessage={isLoading ? 'Loading...' : 'No timesheets found'}
+        size="small"
+        paginator
+        rows={50}
+        globalFilter={globalFilter}
+        stripedRows
+        scrollable
+        scrollHeight="calc(100vh - 300px)"
+        showGridlines
+        pt={{
+          header: {
+            className: 'font-normal text-sm text-gray-500',
+          },
+        }}>
+        <Column
+          field="label"
+          header={usersData.length + ' Employees'}
+          sortable={false}
+          body={rowData => <Button text label={rowData.label} onClick={() => setSelectedUser(rowData.value)} />}
+        />
+      </DataTable>
+      <UserTimesheetsTable selectedUser={selectedUser ?? ({} as IUser)} />
     </div>
   )
 }

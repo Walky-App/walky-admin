@@ -6,6 +6,7 @@ import { TabPanel, TabView } from 'primereact/tabview'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
 import { Chat } from '../../../components/shared/messages/Chat'
+import { UserTimesheetsTable } from '../../../components/shared/timesheets/UserTimesheetsTable'
 import { useAuth } from '../../../contexts/AuthContext'
 import { type IUserPopulated, type IUser } from '../../../interfaces/User'
 import { type ITrainingData } from '../../../interfaces/training'
@@ -17,7 +18,6 @@ import { EmployeeMyJobs } from '../../employee/jobs/MyJobs'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
 import { ProfileNotes } from './ProfileNotes'
-import { ProfileTimesheets } from './ProfileTimesheets'
 import { ProfileTraining } from './ProfileTraining'
 
 export const UserProfile = () => {
@@ -137,7 +137,7 @@ export const UserProfile = () => {
         ) : null}
         {notShowTabForClient() ?? role === 'admin' ? (
           <TabPanel header="TimeSheets">
-            <ProfileTimesheets userId={formUser._id} />
+            <UserTimesheetsTable selectedUser={formUser} />
           </TabPanel>
         ) : null}
         {role === 'admin' ? (
