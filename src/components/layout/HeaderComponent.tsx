@@ -109,7 +109,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
             </button>
           ) : null}
 
-          {role === 'admin' ? <ThemeSelector /> : null}
+          <ThemeSelector />
 
           {/* Profile dropdown */}
           <Menu as="div" className="relative">
