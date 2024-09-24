@@ -17,3 +17,13 @@ export interface ITimeSheet {
   createdAt: string
   note?: string
 }
+
+export interface IUserTimesheetsProps {
+  selectedUserId: string
+}
+
+export interface IPayPeriod {
+  label: string
+  start: string
+  end: string
+}

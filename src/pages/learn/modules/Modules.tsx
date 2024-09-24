@@ -60,7 +60,7 @@ export const Modules = () => {
 
           {/*right content*/}
           <div className="order-1 col-span-4 md:col-span-1">
-            <div className="h-auto rounded-2xl border border-zinc-100 bg-white p-4">
+            <div className="h-auto rounded-2xl border border-zinc-100 p-4">
               <div className="m-3 text-left text-2xl">Evaluate your skills with assessments</div>
               <div className="m-3 pb-2 text-left">
                 Get content recommendations in a specialized course by taking a targeted skills assessment.
@@ -70,19 +70,19 @@ export const Modules = () => {
                   <div className="relative mr-2 h-5 w-5">
                     <CheckIcon />
                   </div>
-                  <div className="font-medium text-black">Pick a module</div>
+                  <div className="font-medium ">Pick a module</div>
                 </div>
                 <div className="flex">
                   <div className="relative mr-2 h-5 w-5">
                     <CheckIcon />
                   </div>
-                  <div className="font-medium text-black">Assess your skills</div>
+                  <div className="font-medium ">Assess your skills</div>
                 </div>
                 <div className="flex">
                   <div className="relative mr-2 h-5 w-5">
                     <CheckIcon />
                   </div>
-                  <div className="font-medium text-black">Review your results</div>
+                  <div className="font-medium ">Review your results</div>
                 </div>
               </div>
             </div>

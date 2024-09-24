@@ -1,21 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useMediaQuery } from 'react-responsive'
-
 import { format, isAfter, isBefore, isEqual, isToday, isValid, parse } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
+import { Avatar } from 'primereact/avatar'
 import { Calendar } from 'primereact/calendar'
 import { Column, type ColumnEditorOptions, type ColumnEvent } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
-import { Toolbar } from 'primereact/toolbar'
 
-import { type IToastParameters } from '../../../interfaces/global'
-import { requestService } from '../../../services/requestServiceNew'
-import { useUtils } from '../../../store/useUtils'
-import { roleChecker } from '../../../utils/roleChecker'
-import { HtInputLabel } from '../forms/HtInputLabel'
+import { HtInputLabel } from '../../../../components/shared/forms/HtInputLabel'
 import {
   processPunchPairsWithData,
   type IAdminUserTimesheetsColumnMeta,
@@ -25,19 +19,15 @@ import {
   jobTitleTemplate,
   facilityNameTemplate,
   combineDayAndTimeUTC,
-} from './timesheetsUtils'
+} from '../../../../components/shared/timesheets/timesheetsUtils'
+import { type IUser } from '../../../../interfaces/User'
+import { type IToastParameters } from '../../../../interfaces/global'
+import { type IPayPeriod } from '../../../../interfaces/timesheet'
+import { requestService } from '../../../../services/requestServiceNew'
+import { useUtils } from '../../../../store/useUtils'
+import { roleChecker } from '../../../../utils/roleChecker'
 
-interface IUserTimesheetsProps {
-  selectedUserId: string
-}
-
-interface IPayPeriod {
-  label: string
-  start: string
-  end: string
-}
-
-export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUserId }) => {
+export const AdminEmployeeTimesheetTable = ({ selectedUser = undefined }: { selectedUser: IUser | undefined }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [processedTimeSheets, setProcessedTimeSheets] = useState<IPunchPairsWithData[]>([])
   const [payPeriods, setPayPeriods] = useState([] as IPayPeriod[])
@@ -47,17 +37,10 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
 
   const currentUserRole = roleChecker()
 
-  const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
-
   const fetchPayPeriodsByEmployee = useCallback(async () => {
     setIsLoading(true)
 
-    if (!selectedUserId) {
-      setIsLoading(false)
-      return
-    }
-
-    const pathString = `timesheets/employee/${selectedUserId}/pay-periods`
+    const pathString = `timesheets/employee/${selectedUser?._id}/pay-periods`
     const noPayPeriodsObject = { label: 'No pay periods found', start: '', end: '' } as IPayPeriod
 
     try {
@@ -83,22 +66,18 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     } finally {
       setIsLoading(false)
     }
-  }, [selectedUserId])
+  }, [selectedUser])
 
   const fetchTimesheets = useCallback(
     async (selectedPayPeriod: IPayPeriod) => {
       setIsLoading(true)
 
-      if (!selectedUserId) {
-        console.error('selectedUserId is undefined')
-        return
-      }
       setProcessedTimeSheets([])
 
       const selectedPayPeriodStart = selectedPayPeriod?.start
       const selectedPayPeriodEnd = selectedPayPeriod?.end
 
-      const pathString = `timesheets/employee/${selectedUserId}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
+      const pathString = `timesheets/employee/${selectedUser?._id}/pay-period?start=${selectedPayPeriodStart}&end=${selectedPayPeriodEnd}`
 
       try {
         const response = await requestService({ path: pathString })
@@ -124,7 +103,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
         setIsLoading(false)
       }
     },
-    [selectedUserId],
+    [selectedUser],
   )
 
   useEffect(() => {
@@ -287,20 +266,6 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
     return sum + hours
   }, 0)
 
-  const payPeriodSelectorContent = (
-    <div className="flex flex-col items-baseline gap-y-2">
-      <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" />
-      <Dropdown
-        id="pay-period-dropdown"
-        value={selectedPayPeriod}
-        options={payPeriods}
-        onChange={e => setSelectedPayPeriod(e.value)}
-        placeholder="Select a pay period"
-        className="w-60"
-      />
-    </div>
-  )
-
   const editableCellColumnStyle = currentUserRole === 'admin' ? 'cursor-pointer hover:text-primary' : ''
 
   const timeEditor = (options: ColumnEditorOptions) => {
@@ -409,14 +374,14 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       field: 'shift_day',
       header: 'Shift Day',
       sortable: false,
-      body: rowData => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'MMM d'),
+      body: (rowData: IPunchPairsWithData) => formatInTimeZone(rowData.shift_day, rowData.facility_timezone, 'MMM d'),
     },
     {
       field: 'in_time',
       header: 'In',
       sortable: false,
       ...getEditableProps(currentUserRole),
-      body: rowData =>
+      body: (rowData: IPunchPairsWithData) =>
         rowData.in_time != null
           ? formatInTimeZone(rowData.in_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
@@ -427,7 +392,7 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       field: 'out_time',
       header: 'Out',
       sortable: false,
-      body: rowData =>
+      body: (rowData: IPunchPairsWithData) =>
         rowData.out_time != null
           ? formatInTimeZone(rowData.out_time, rowData.facility_timezone, 'h:mmaaaaa (z)')
           : rowData.in_time != null && isToday(rowData.in_time)
@@ -439,20 +404,22 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       field: 'lunch_time',
       header: 'Lunch Break',
       sortable: false,
-      body: rowData => lunchTimeTemplate(rowData.lunch_time),
+      body: (rowData: IPunchPairsWithData) => lunchTimeTemplate(rowData.lunch_time),
     },
     {
       field: 'job_title',
       header: 'Job',
       sortable: false,
-      body: rowData => jobTitleTemplate(rowData.job_title, rowData.job_uid, rowData.job_id, currentUserRole),
+      body: (rowData: IPunchPairsWithData) =>
+        jobTitleTemplate(rowData.job_title, rowData.job_uid, rowData.job_id, currentUserRole),
       ...getEditableDropdownProps(currentUserRole),
     },
     {
       field: 'facility_name',
       header: 'Facility',
       sortable: false,
-      body: rowData => facilityNameTemplate(rowData.facility_name, rowData.facility_id, currentUserRole),
+      body: (rowData: IPunchPairsWithData) =>
+        facilityNameTemplate(rowData.facility_name, rowData.facility_id, currentUserRole),
     },
     currentUserRole === 'admin'
       ? {
@@ -468,13 +435,40 @@ export const UserTimesheetsTable: React.FC<IUserTimesheetsProps> = ({ selectedUs
       field: 'scheduled_time',
       header: 'Scheduled Hours',
       sortable: false,
-      body: rowData => (rowData.scheduled_time ? rowData.scheduled_time : 'test'),
+      body: (rowData: IPunchPairsWithData) => (rowData.scheduled_time ? rowData.scheduled_time : 'test'),
     },
   ]
 
   return (
     <div className="flex flex-col">
-      {isMobile ? <Toolbar start={payPeriodSelectorContent} /> : <Toolbar end={payPeriodSelectorContent} />}
+      <div className="flex w-full justify-between">
+        {selectedUser?.first_name ? (
+          <div className="flex items-center pl-8">
+            <Avatar
+              label={selectedUser ? selectedUser?.first_name : ''}
+              image={selectedUser?.avatar}
+              size="xlarge"
+              shape="circle"
+              pt={{ image: { className: 'object-cover' } }}
+            />
+            <h1 className="pl-4 text-xl font-bold leading-3">
+              {selectedUser?.first_name + ' ' + selectedUser.last_name}
+            </h1>
+          </div>
+        ) : null}
+
+        <div className="flex flex-col items-baseline gap-y-2">
+          <HtInputLabel htmlFor="pay-period-dropdown" labelText="Pay Period" />
+          <Dropdown
+            id="pay-period-dropdown"
+            value={selectedPayPeriod}
+            options={payPeriods}
+            onChange={e => setSelectedPayPeriod(e.value)}
+            placeholder="Select a pay period"
+            className="w-60"
+          />
+        </div>
+      </div>
 
       <DataTable
         header={`Total ${totalTimeSum.toFixed(2)} | Scheduled ${scheduledTimeSum.toFixed(2)}`}
