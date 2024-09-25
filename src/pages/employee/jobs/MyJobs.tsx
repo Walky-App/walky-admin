@@ -42,6 +42,8 @@ export interface IShift {
   shift_start_time: string
   shift_end_time: string
   createdAt: string
+  user_shifts?: string[]
+  vacancy_limit?: number
   change_history?: IChangeHistory[]
 }
 
