@@ -1,70 +1,22 @@
-### 2024-09-18
-- **Message:** updated changelog app and api routes
-- **Commit:** 0ef6e183
+### 2024-09-25
+- **Message:**   cleaned up dashboard
+- **Commit:** fa14bc44
 
-### 2024-09-18
-- **Message:** updated changelog and generateChangelog.js
-- **Commit:** 3915f91e
+### 2024-09-25
+- **Message:**   finalized shifts weekly view
+- **Commit:** e4307b9d
 
-### 2024-09-18
-- **Message:** updating formatting of changelog app
-- **Commit:** 7f6f8525
+### 2024-09-24
+- **Message:**   wip open shifts view
+- **Commit:** c54e841a
 
-### 2024-09-18
-- **Message:** implemented changelog app generation
-- **Commit:** 303a99ee
+### 2024-09-19
+- **Message:**   updated file names for admin and shared
+- **Commit:** 8811d64e
 
-### 2024-09-18
-- **Message:** Update changelog generation to use root directory
-- **Commit:** c039db57
-
-### 2024-09-16
-- **Message:** Merge pull request #765 from Hemptemps-com/chore/add-payment-type-to-service-order-list
-- **Commit:** 5039807a
-
-### 2024-09-16
-- **Message:** Merge pull request #763 from Hemptemps-com/hotfix/employee-wps-training
-- **Commit:** ec2851b0
-
-### 2024-09-16
-- **Message:** Merge pull request #762 from Hemptemps-com/feature/changelog-page-for-api
-- **Commit:** 3537ed41
-
-### 2024-09-16
-- **Message:** added payment type column to service order lists
-- **Commit:** eb7d3af9
-
-### 2024-09-16
-- **Message:** fix: type error occurring when employee with no wps training date enters training tab inside employee profile
-- **Commit:** ced8d91f
-
-### 2024-09-16
-- **Message:** updated Links
-- **Commit:** 5651023d
-
-### 2024-09-16
-- **Message:** adjusted changelog for API
-- **Commit:** 904d9c45
-
-### 2024-09-16
-- **Message:** implemented changelog API, added routes and components to fetch and display API logs
-- **Commit:** 4c541f0c
-
-### 2024-09-13
-- **Message:** Merge pull request #758 from Hemptemps-com/chore/charge-invoice-toast
-- **Commit:** 0ec5e972
-
-### 2024-09-13
-- **Message:** added quickbooks ID column to service invoices list
-- **Commit:** e3956bff
-
-### 2024-09-13
-- **Message:** Merge branch 'staging' into chore/charge-invoice-toast
-- **Commit:** 8858ff8a
-
-### 2024-09-13
-- **Message:** disabling charge button for invoice and showing toast message upon successful authorization
-- **Commit:** 619ea696
+### 2024-09-19
+- **Message:**   updated and simplified timesheet views for admins and employees
+- **Commit:** a295a848
 
 ### 2024-09-13
 - **Message:** Merge pull request #757 from Hemptemps-com/chore/invoice-page
