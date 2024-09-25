@@ -1,4 +1,8 @@
 ### 2024-09-25
+- **Message:**   resolved merge conflicts
+- **Commit:** 7d927517
+
+### 2024-09-25
 - **Message:**   cleaned up dashboard
 - **Commit:** fa14bc44
 
@@ -10,6 +14,10 @@
 - **Message:**   wip open shifts view
 - **Commit:** c54e841a
 
+### 2024-09-23
+- **Message:** Merge pull request #781 from Hemptemps-com/feature/admin-timesheet-now-with-employee-names
+- **Commit:** deb02a76
+
 ### 2024-09-19
 - **Message:**   updated file names for admin and shared
 - **Commit:** 8811d64e
@@ -17,6 +25,106 @@
 ### 2024-09-19
 - **Message:**   updated and simplified timesheet views for admins and employees
 - **Commit:** a295a848
+
+### 2024-09-18
+- **Message:** Merge pull request #776 from Hemptemps-com/feature/changelog-for-app
+- **Commit:** 64a493dc
+
+### 2024-09-18
+- **Message:** Merge pull request #773 from Hemptemps-com/772-typeerror-load-failed
+- **Commit:** 8b8b9d36
+
+### 2024-09-18
+- **Message:** Merge pull request #771 from Hemptemps-com/770-typeerror-undefined-is-not-an-object-evaluating-tpercentagea_assessment
+- **Commit:** b05e6b7d
+
+### 2024-09-18
+- **Message:** Merge pull request #769 from Hemptemps-com/768-typeerror-cannot-read-properties-of-undefined-reading-reduce
+- **Commit:** 38a55b55
+
+### 2024-09-18
+- **Message:** updated wording for chagenlogApp
+- **Commit:** 3dbf9f1f
+
+### 2024-09-18
+- **Message:** updated changelog app and api routes
+- **Commit:** 0ef6e183
+
+### 2024-09-18
+- **Message:** updated changelog and generateChangelog.js
+- **Commit:** 3915f91e
+
+### 2024-09-18
+- **Message:** updating formatting of changelog app
+- **Commit:** 7f6f8525
+
+### 2024-09-18
+- **Message:** implemented changelog app generation
+- **Commit:** 303a99ee
+
+### 2024-09-18
+- **Message:** Update changelog generation to use root directory
+- **Commit:** c039db57
+
+### 2024-09-18
+- **Message:** Refactor API requests to use new requestService in AdminAddModule, AdminCategoryLearn, AdminModulesLearn, and Learn components
+- **Commit:** b95929f2
+
+### 2024-09-18
+- **Message:** Fix: type error in AssessmentResponse component
+- **Commit:** 37f90458
+
+### 2024-09-18
+- **Message:** fix: completionMap logic in CategoryCards component
+- **Commit:** bf5b0d08
+
+### 2024-09-16
+- **Message:** Merge pull request #765 from Hemptemps-com/chore/add-payment-type-to-service-order-list
+- **Commit:** 5039807a
+
+### 2024-09-16
+- **Message:** Merge pull request #763 from Hemptemps-com/hotfix/employee-wps-training
+- **Commit:** ec2851b0
+
+### 2024-09-16
+- **Message:** Merge pull request #762 from Hemptemps-com/feature/changelog-page-for-api
+- **Commit:** 3537ed41
+
+### 2024-09-16
+- **Message:** added payment type column to service order lists
+- **Commit:** eb7d3af9
+
+### 2024-09-16
+- **Message:** fix: type error occurring when employee with no wps training date enters training tab inside employee profile
+- **Commit:** ced8d91f
+
+### 2024-09-16
+- **Message:** updated Links
+- **Commit:** 5651023d
+
+### 2024-09-16
+- **Message:** adjusted changelog for API
+- **Commit:** 904d9c45
+
+### 2024-09-16
+- **Message:** implemented changelog API, added routes and components to fetch and display API logs
+- **Commit:** 4c541f0c
+
+### 2024-09-13
+- **Message:** Merge pull request #758 from Hemptemps-com/chore/charge-invoice-toast
+- **Commit:** 0ec5e972
+
+### 2024-09-13
+- **Message:** added quickbooks ID column to service invoices list
+- **Commit:** e3956bff
+
+### 2024-09-13
+- **Message:** Merge branch 'staging' into chore/charge-invoice-toast
+- **Commit:** 8858ff8a
+
+### 2024-09-13
+- **Message:** disabling charge button for invoice and showing toast message upon successful authorization
+- **Commit:** 619ea696
 
 ### 2024-09-13
 - **Message:** Merge pull request #757 from Hemptemps-com/chore/invoice-page
