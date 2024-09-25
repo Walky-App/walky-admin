@@ -29,7 +29,9 @@ export const ProfileTraining = ({
         <div className="sm:col-span-3">
           <HtInputLabel htmlFor="wps_training" asterisk labelText="WPS Training date" />
           {role === 'employee' ? (
-            <h2> {formUser.wps_training?.toDateString()}</h2>
+            <h2>
+              {formUser.wps_training ? new Date(formUser.wps_training).toDateString() : 'No training date available'}
+            </h2>
           ) : (
             <div className="card justify-content-center flex">
               <Calendar

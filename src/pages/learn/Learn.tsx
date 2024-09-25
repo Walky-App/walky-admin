@@ -9,7 +9,7 @@ import { BreadCrumbs } from '../../components/shared/BreadCrumbs'
 import { HeadingComponent } from '../../components/shared/general/HeadingComponent'
 import type { Category } from '../../interfaces/category'
 import type { FilterInterface } from '../../interfaces/global'
-import { RequestService } from '../../services/RequestService'
+import { requestService } from '../../services/requestServiceNew'
 import { useLearn } from '../../store/useLearn'
 import { CategoryCards } from './components/CategoryCards'
 
@@ -21,11 +21,13 @@ export const Learn = () => {
   const { setRecord } = useLearn()
 
   const fetchData = async () => {
-    const response: Category[] = await RequestService('categories')
+    const request = await requestService({ path: 'categories' })
+    const response: Category[] = await request.json()
     if (response.length !== 0) {
       setCategories(response)
     }
-    const responseLms = await RequestService('lms')
+    const requestLms = await requestService({ path: 'lms' })
+    const responseLms = await requestLms.json()
     if (responseLms.length !== 0) {
       setRecord(responseLms)
     }

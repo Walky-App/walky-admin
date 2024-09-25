@@ -72,8 +72,11 @@ export const AssessmentResponse = ({ validatorResponse, nextStep, categoryId }: 
             </div>
             <div className="text-3xl font-semibold">Don't give up!</div>
             <div className="text-sm font-semibold text-gray-500">
-              Your have score <span className="text-red-600">{validatorResponse.percentagea_assessment}%</span> in this
-              assessment.
+              Your have score{' '}
+              <span className="text-red-600">
+                {validatorResponse.percentagea_assessment ? validatorResponse.percentagea_assessment : 0}%
+              </span>{' '}
+              in this assessment.
             </div>
             <div className="text-sm font-semibold text-gray-500">
               The minimum score for this evaluation is{' '}
