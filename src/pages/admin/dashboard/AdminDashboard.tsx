@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import { Avatar } from 'primereact/avatar'
 import { Button } from 'primereact/button'
 
-import { BriefcaseIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid'
+// import { BriefcaseIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 import { BuildingOfficeIcon } from '@heroicons/react/20/solid'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { type IStatCard, DashboardHeader, StatCards } from '../../../components/shared/dashboard'
+import { DashboardHeader } from '../../../components/shared/dashboard'
 import { type IUser } from '../../../interfaces/User'
 import { type IFacility } from '../../../interfaces/facility'
 import { type IJob } from '../../../interfaces/job'
@@ -18,10 +18,11 @@ import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { type IShift } from '../../employee/jobs/MyJobs'
 import { WeeklyOpenShiftsTable } from '../jobs/components/WeeklyOpenShiftsTable'
-import { DashboardActivity } from './DashboardActivity'
-import { DashboardFacilityTable } from './DashboardFacilityTable'
-import { DashboardReleasesList } from './DashboardReleasesList'
-import { DashboardUserTable } from './DashboardUserTable'
+
+// import { DashboardActivity } from './DashboardActivity'
+// import { DashboardFacilityTable } from './DashboardFacilityTable'
+// import { DashboardReleasesList } from './DashboardReleasesList'
+// import { DashboardUserTable } from './DashboardUserTable'
 
 // import { BarChart } from './components/BarChart'
 
@@ -105,16 +106,16 @@ export const AdminDashboard = () => {
     fetchOpenShifts()
   }, [])
 
-  const statCardsData: IStatCard[] = [
-    { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: dashboardData?.users_count },
-    {
-      name: 'Facilities',
-      href: '/admin/facilities',
-      icon: InformationCircleIcon,
-      amount: dashboardData?.facilities_count,
-    },
-    { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon, amount: dashboardData?.jobs_count },
-  ]
+  // const statCardsData: IStatCard[] = [
+  //   { name: 'Users', href: '/admin/users', icon: UserCircleIcon, amount: dashboardData?.users_count },
+  //   {
+  //     name: 'Facilities',
+  //     href: '/admin/facilities',
+  //     icon: InformationCircleIcon,
+  //     amount: dashboardData?.facilities_count,
+  //   },
+  //   { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon, amount: dashboardData?.jobs_count },
+  // ]
 
   return (
     <main className="mb-5">
@@ -162,8 +163,7 @@ export const AdminDashboard = () => {
         </div>
       </DashboardHeader>
 
-      <div className="flex w-full">
-        <WeeklyOpenShiftsTable data={openShifts} width="w-1/2" />
+      {/* <div className="flex w-full">
         <div className="mx-auto sm:px-6 lg:px-8">
           <h2 className="text-lg font-medium leading-6">Active Records</h2>
           <div className="mt-2 grid grid-cols-1">
@@ -171,16 +171,17 @@ export const AdminDashboard = () => {
             <DashboardActivity data={dashboardData?.logs ?? []} />
           </div>
         </div>
-      </div>
+      </div> */}
+      <WeeklyOpenShiftsTable data={openShifts} width="w-full" />
 
       {dashboardData ? (
         <div className="mt-8 md:flex">
           <div>
-            <DashboardUserTable data={dashboardData?.disabled_users ?? []} />
+            {/* <DashboardUserTable data={dashboardData?.disabled_users ?? []} /> */}
             <hr />
-            <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} />
+            {/* <DashboardFacilityTable data={dashboardData?.disabled_facilities ?? []} /> */}
             <hr />
-            <DashboardReleasesList />
+            {/* <DashboardReleasesList /> */}
           </div>
         </div>
       ) : (
