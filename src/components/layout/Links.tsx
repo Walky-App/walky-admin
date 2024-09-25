@@ -72,6 +72,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       href: '/admin/jobs',
       icon: <FaBriefcase />,
       subLinks: [
+        { name: 'Active Week', href: '/admin/jobs/week' },
         { name: 'Past Week Jobs', href: '/admin/jobs/past-week' },
         { name: 'Add Job', href: '/admin/jobs/new' },
       ],
