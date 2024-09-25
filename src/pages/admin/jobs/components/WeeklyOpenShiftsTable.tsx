@@ -26,7 +26,7 @@ export const WeeklyOpenShiftsTable = ({ data, width = 'w-1/2' }: { data: IDay[];
   return (
     <div className={width}>
       <header className="flex flex-none items-center justify-between border-b border-gray-200 px-6 py-4">
-        <h1 className="text-base font-semibold leading-6">{new Date().toLocaleString('default', { month: 'long' })}</h1>
+        <h1 className="text-base font-semibold leading-6">This Week</h1>
       </header>
       <div ref={container} className="isolate flex flex-auto flex-col overflow-auto">
         <div className="flex flex-none flex-col sm:max-w-none">
@@ -34,7 +34,7 @@ export const WeeklyOpenShiftsTable = ({ data, width = 'w-1/2' }: { data: IDay[];
             <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 sm:grid">
               {data?.map((day: IDay) => {
                 return (
-                  <div key={day.day}>
+                  <div key={day.day} className="flex flex-col justify-start">
                     <div className="flex items-center justify-center border-b-2 ">
                       <h2
                         className={cn(
@@ -64,11 +64,13 @@ export const WeeklyOpenShiftsTable = ({ data, width = 'w-1/2' }: { data: IDay[];
                                 <li key={shift._id}>
                                   <a
                                     href={`/admin/jobs/${shift.job_id._id}`}
-                                    className="mx-1 my-2 flex flex-col overflow-y-auto rounded-lg p-2 text-xs leading-5"
+                                    className="mx-1 my-2 flex flex-col overflow-y-auto rounded-lg p-2 text-xs leading-5 text-slate-800"
                                     style={{ backgroundColor: jobColor }}>
                                     <p className="font-semibold ">
                                       {!jobFilled() ? <span className="font-bold">❌ </span> : null}
-                                      {shift.job_id.facility.name}
+                                      {shift.job_id.facility.name} -{' '}
+                                      {shift.user_shifts !== undefined ? shift.user_shifts.length : 0} /{' '}
+                                      {shift.vacancy_limit}
                                     </p>
                                     <p className=" group-hover:text-blue-700">
                                       <time dateTime="2022-01-12T06:00"> #{shift.job_id.uid}</time>
@@ -79,6 +81,10 @@ export const WeeklyOpenShiftsTable = ({ data, width = 'w-1/2' }: { data: IDay[];
                             })
                         : null}
                     </ol>
+                    <div className="mt-5 pl-5 font-bold">
+                      Jobs {day.shifts.length} - Shifts 
+                      {day.shifts.reduce((total, shift) => total + (shift.job_id.vacancy || 0), 0)}
+                    </div>
                   </div>
                 )
               })}
