@@ -8,8 +8,10 @@ import {
   FaUserGraduate,
   FaDollarSign,
 } from 'react-icons/fa'
+import { FaBullhorn } from 'react-icons/fa'
 import { FaUserGroup } from 'react-icons/fa6'
 import { HiSearchCircle, HiDocumentReport } from 'react-icons/hi'
+import { HiOutlineClipboardList } from 'react-icons/hi'
 import { IoMdCog, IoMdMail } from 'react-icons/io'
 import { MdOutlineAccessTimeFilled, MdSchool } from 'react-icons/md'
 
@@ -117,11 +119,12 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     },
 
     { id: 8, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
+    { id: 9, name: 'Announcements', href: '/admin/announcements', icon: <FaBullhorn /> },
     {
-      id: 8,
+      id: 10,
       name: 'App Changelog',
       href: '/admin/changelog/app',
-      icon: <IoMdCog />,
+      icon: <HiOutlineClipboardList />,
       subLinks: [{ name: 'API Changelog', href: '/admin/changelog/api' }],
     },
     // {
@@ -130,7 +133,7 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     //   href: '/admin/messages',
     //   icon: <IoMdMail />,
     // },
-    { id: 9, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
+    { id: 11, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
   ]
 
   const clientLinks: INavLink[] = [
