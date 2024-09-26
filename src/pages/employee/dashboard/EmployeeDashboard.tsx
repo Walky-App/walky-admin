@@ -12,6 +12,7 @@ import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { cn } from '../../../utils/cn'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import UserAnnouncements from '../../shared/announcementsPanel/userAnnouncements'
 
 export type Status = string
 
@@ -123,6 +124,7 @@ export const EmployeeDashboard = () => {
         </DashboardHeader>
 
         <div className="mx-auto max-w-7xl  sm:px-6 sm:py-12 lg:px-8">
+          <UserAnnouncements />
           <div className="relative isolate mb-12 overflow-hidden bg-gray-900 px-6 pt-16 shadow-2xl sm:rounded-3xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
             <svg
               viewBox="0 0 1024 1024"

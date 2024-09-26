@@ -5,7 +5,7 @@ interface IRecipientFilters {
   roles: string[]
 }
 export interface IAnnouncement {
-  id: string
+  _id: string
   title: string
   message: string
   recipients: IUser['_id'][]

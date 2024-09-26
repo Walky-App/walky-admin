@@ -1,3 +1,7 @@
+### 2024-09-26
+- **Message:** configured admin announcements page to properly render html inside messages column
+- **Commit:** f115661e
+
 ### 2024-09-18
 - **Message:** updated wording for chagenlogApp
 - **Commit:** 3dbf9f1f
