@@ -1,4 +1,8 @@
 ### 2024-09-18
+- **Message:** updated wording for chagenlogApp
+- **Commit:** 3dbf9f1f
+
+### 2024-09-18
 - **Message:** updated changelog app and api routes
 - **Commit:** 0ef6e183
 
