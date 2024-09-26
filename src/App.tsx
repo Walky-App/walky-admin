@@ -77,6 +77,7 @@ import { AdminUnitsLearn } from './pages/admin/HTU/AdminUnitsLearn'
 
 import { AdminJobs } from './pages/admin/jobs/AdminJobs'
 import { AdminJobsPastWeek } from './pages/admin/jobs/AdminJobsPastWeek'
+import { AdminOpenShifsWeek } from './pages/admin/jobs/AdminOpenShiftsWeek'
 import { JobDetailViewAdmin } from './pages/admin/jobs/JobDetailViewAdmin'
 
 import { AdminAnnouncementsPage } from './pages/admin/announcements/AdminAnnouncementsPage'
@@ -269,6 +270,7 @@ export const App = () => {
                     <Route element={<AllServiceOrdersListPage />} path="/admin/jobs/service-orders" />
                     <Route element={<PendingServiceOrdersListPage />} path="/admin/jobs/service-orders/pending" />
                     <Route element={<AuthorizedServiceOrdersListPage />} path="/admin/jobs/service-orders/authorized" />
+                    <Route element={<AdminOpenShifsWeek />} path="/admin/jobs/week" />
                     <Route
                       element={<AuthorizedUninvoicedServiceOrdersListPage />}
                       path="/admin/jobs/service-orders/authorized-uninvoiced"

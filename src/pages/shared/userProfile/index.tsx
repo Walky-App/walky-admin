@@ -13,11 +13,12 @@ import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
+import { AdminEmployeeTimesheetTable } from '../../admin/users/components/AdminEmployeeTimesheetTable'
+import { EmployeeTimesheetTable } from '../../employee/components/EmployeeTimesheetTable'
 import { EmployeeMyJobs } from '../../employee/jobs/MyJobs'
 import { ProfileDetail } from './ProfileDetail'
 import { ProfileDocuments } from './ProfileDocuments'
 import { ProfileNotes } from './ProfileNotes'
-import { ProfileTimesheets } from './ProfileTimesheets'
 import { ProfileTraining } from './ProfileTraining'
 
 export const UserProfile = () => {
@@ -137,7 +138,11 @@ export const UserProfile = () => {
         ) : null}
         {notShowTabForClient() ?? role === 'admin' ? (
           <TabPanel header="TimeSheets">
-            <ProfileTimesheets userId={formUser._id} />
+            {role === 'admin' ? (
+              <AdminEmployeeTimesheetTable selectedUser={formUser} />
+            ) : (
+              <EmployeeTimesheetTable userData={formUser} />
+            )}
           </TabPanel>
         ) : null}
         {role === 'admin' ? (
