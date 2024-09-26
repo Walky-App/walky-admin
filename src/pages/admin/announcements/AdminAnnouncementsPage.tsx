@@ -1,7 +1,9 @@
+/* eslint-disable react/no-danger */
 import { useEffect, useState, useCallback } from 'react'
 
 import { Controller, useForm, type FieldErrors } from 'react-hook-form'
 
+import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Editor, type EditorTextChangeEvent } from 'primereact/editor'
@@ -124,6 +126,26 @@ export const AdminAnnouncementsPage = () => {
     }
   }
 
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await requestService({
+        path: `announcements/delete/${id}`,
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        showToast({ severity: 'success', summary: 'Success', detail: 'Announcement deleted successfully' })
+        fetchAnnouncements()
+      } else {
+        console.error('Failed to delete announcement')
+        showToast({ severity: 'error', summary: 'Error', detail: 'Failed to delete announcement' })
+      }
+    } catch (error) {
+      console.error('Error deleting announcement', error)
+      showToast({ severity: 'error', summary: 'Error', detail: 'Error deleting announcement' })
+    }
+  }
+
   const renderRecipientFilters = (rowData: IAnnouncement) => {
     const { recipient_filters } = rowData
     const { states, roles } = recipient_filters
@@ -140,8 +162,17 @@ export const AdminAnnouncementsPage = () => {
   }
 
   const renderMessage = (rowData: IAnnouncement) => {
-    // eslint-disable-next-line react/no-danger
-    return <div dangerouslySetInnerHTML={{ __html: rowData.message }} />
+    return (
+      <div className="max-w-xs whitespace-pre-wrap break-words">
+        <div dangerouslySetInnerHTML={{ __html: rowData.message }} />
+      </div>
+    )
+  }
+
+  const renderActions = (rowData: IAnnouncement) => {
+    return (
+      <Button label="Delete" icon="pi pi-trash" className="p-button-danger" onClick={() => handleDelete(rowData._id)} />
+    )
   }
 
   return isLoading ? (
@@ -219,11 +250,7 @@ export const AdminAnnouncementsPage = () => {
         <div className="card">
           <Editor headerTemplate={header} onTextChange={handleTextChange} value={content} />
           <div className="mt-2 flex justify-end gap-2">
-            <button
-              className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500"
-              type="submit">
-              Post
-            </button>
+            <Button label="Post" icon="pi pi-check" className="p-button-success" type="submit" />
           </div>
         </div>
       </form>
@@ -248,6 +275,7 @@ export const AdminAnnouncementsPage = () => {
           <Column field="title" header="Title" />
           <Column field="message" header="Message" body={renderMessage} />
           <Column field="recipient_filters" header="Recipient Filters" body={renderRecipientFilters} />
+          <Column header="Actions" body={renderActions} />
         </DataTable>
       </div>
     </div>
