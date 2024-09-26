@@ -1,4 +1,8 @@
 ### 2024-09-26
+- **Message:** added delete functionality to admin announcemets
+- **Commit:** 3f5f7197
+
+### 2024-09-26
 - **Message:** configured admin announcements page to properly render html inside messages column
 - **Commit:** f115661e
 

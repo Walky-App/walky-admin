@@ -68,28 +68,26 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
                     )}
                   </div>
                   <div className="m-3 flex flex-1 flex-col justify-center gap-3">
-                    <div className="text-xl font-semibold text-black">{module.title}</div>
+                    <div className="text-xl font-semibold">{module.title}</div>
                     <div className="inline-flex h-5 w-full items-center justify-start gap-2">
                       <div className="flex items-center justify-start gap-1">
                         <ClockIcon className="h-5" />
-                        <div className="flex h-5 items-center font-medium text-black">
+                        <div className="flex h-5 items-center font-medium">
                           {secondsToTimeDescription(module.total_time)}
                         </div>
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
                         <NewspaperIcon className="h-5" />
-                        <div className="flex h-5 items-center font-medium text-black">
-                          {module.units?.length} Videos
-                        </div>
+                        <div className="flex h-5 items-center font-medium">{module.units?.length} Videos</div>
                       </div>
                       <div className="h-1 w-1 rounded-full bg-stone-500" />
                       <div className="flex items-center justify-start gap-1">
                         <BriefcaseIcon className="h-5" />
-                        <div className="flex h-5 items-center font-medium text-black">{module.level}</div>
+                        <div className="flex h-5 items-center font-medium">{module.level}</div>
                       </div>
                     </div>
-                    <div className="line-clamp-2 h-12 text-stone-500">{module.description}</div>
+                    <div className="line-clamp-2 h-12">{module.description}</div>
                   </div>
                   <div className="m-8 flex-col items-center md:m-3">
                     Videos Completed
@@ -106,15 +104,15 @@ export const ModuleCards = ({ module, filter = '', isLoading = true }: ModuleCar
           ) : (
             <div>
               <div className="flex h-96 flex-col items-center justify-center">
-                <div className="text-2xl font-semibold text-black">No modules found</div>
-                <div className=" text-stone-500">We are working on the modules for you, coming soon</div>
+                <div className="text-2xl font-semibold">No modules found</div>
+                <div className="">We are working on the modules for you, coming soon</div>
               </div>
             </div>
           )}
         </div>
       ) : (
         <div className="flex h-96 flex-col items-center justify-center">
-          <div className="text-2xl font-semibold text-black">Loading ...</div>
+          <div className="text-2xl font-semibold">Loading ...</div>
         </div>
       )}
     </div>

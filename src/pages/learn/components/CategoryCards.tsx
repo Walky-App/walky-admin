@@ -85,10 +85,12 @@ export const CategoryCards = ({
     }
   }
 
-  const completionMap: CompletedInfo = record.categories.reduce((acc: CompletedInfo, category: CategoryRecords) => {
-    acc[category.category] = category.is_completed
-    return acc
-  }, {})
+  const completionMap: CompletedInfo = Array.isArray(record.categories)
+    ? record.categories.reduce((acc: CompletedInfo, category: CategoryRecords) => {
+        acc[category.category] = category.is_completed
+        return acc
+      }, {})
+    : {}
 
   const isCategoryDisabled = (index: number) => {
     if (index === 0) return false
@@ -116,7 +118,7 @@ export const CategoryCards = ({
               return (
                 <Card
                   className={cn({
-                    'bg-gray-300 opacity-50': isDisabled,
+                    ' opacity-50': isDisabled,
                     'cursor-pointer transition-shadow duration-300 ease-in-out hover:shadow-lg': !isDisabled,
                   })}
                   key={category._id}
@@ -133,14 +135,14 @@ export const CategoryCards = ({
                           src={category.image}
                         />
                       ) : (
-                        <div className="h-24 w-24 rounded-xl bg-neutral-200" />
+                        <div className="h-24 w-24 rounded-xl " />
                       )}
                     </div>
                     <div
                       className="flex-1 md:mx-8"
                       onClick={() => handlerSetCategory(category, isDisabled)}
                       aria-hidden="true">
-                      <h3 className="mt-3 text-xl font-semibold text-black md:mt-0">{category.title}</h3>
+                      <h3 className="mt-3 text-xl font-semibold md:mt-0">{category.title}</h3>
                       <p className="text-ellipsis text-stone-500">{category.description}</p>
                     </div>
                     {isAdmin ? (
@@ -165,7 +167,7 @@ export const CategoryCards = ({
                             category.modules_number !== 0 &&
                             (categoryProgress(category._id) / category.modules_number) * 100 !== 100 ? (
                               <div className="flex items-center justify-start gap-2">
-                                <div className="pr-2 text-right text-black">
+                                <div className="pr-2 text-right">
                                   {categoryProgress(category._id) !== 0 && category.modules_number !== 0
                                     ? (categoryProgress(category._id) / category.modules_number) * 100
                                     : 0}
@@ -197,7 +199,7 @@ export const CategoryCards = ({
             })
           ) : (
             <div className="flex h-96 flex-col items-center justify-center">
-              <div className="text-2xl font-semibold text-black">Your search - did not match any categories</div>
+              <div className="text-2xl font-semibold">Your search - did not match any categories</div>
             </div>
           )}
         </div>

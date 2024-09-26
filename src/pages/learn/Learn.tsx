@@ -9,7 +9,7 @@ import { BreadCrumbs } from '../../components/shared/BreadCrumbs'
 import { HeadingComponent } from '../../components/shared/general/HeadingComponent'
 import type { Category } from '../../interfaces/category'
 import type { FilterInterface } from '../../interfaces/global'
-import { RequestService } from '../../services/RequestService'
+import { requestService } from '../../services/requestServiceNew'
 import { useLearn } from '../../store/useLearn'
 import { CategoryCards } from './components/CategoryCards'
 
@@ -21,11 +21,13 @@ export const Learn = () => {
   const { setRecord } = useLearn()
 
   const fetchData = async () => {
-    const response: Category[] = await RequestService('categories')
+    const request = await requestService({ path: 'categories' })
+    const response: Category[] = await request.json()
     if (response.length !== 0) {
       setCategories(response)
     }
-    const responseLms = await RequestService('lms')
+    const requestLms = await requestService({ path: 'lms' })
+    const responseLms = await requestLms.json()
     if (responseLms.length !== 0) {
       setRecord(responseLms)
     }
@@ -65,7 +67,7 @@ export const Learn = () => {
     <div>
       <BreadCrumbs pages={pages} />
       <div className="w-full sm:overflow-x-hidden">
-        <div className="border-1 mb-4 rounded-xl bg-gray-100 pb-2 shadow-md">
+        <div className="border-1 mb-4 rounded-xl pb-2 shadow-md">
           <div>
             <img
               alt=""
@@ -84,12 +86,12 @@ export const Learn = () => {
               </div>
               <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                 <div className="mt-6 min-w-0 flex-1 sm:hidden md:block">
-                  <h1 className="truncate text-2xl font-bold text-gray-900">Hemp Temps University</h1>
+                  <h1 className="truncate text-2xl font-bold">Hemp Temps University</h1>
                 </div>
               </div>
             </div>
             <div className="mt-6 hidden min-w-0 flex-1 sm:block md:hidden">
-              <h1 className="truncate text-2xl font-bold text-gray-900">Hemp Temps University</h1>
+              <h1 className="truncate text-2xl font-bold">Hemp Temps University</h1>
             </div>
           </div>
         </div>
@@ -102,7 +104,7 @@ export const Learn = () => {
           </div>
 
           {/*right content*/}
-          <div className="order-1 col-span-4  md:col-span-1">
+          <div className="order-1 col-span-4 md:col-span-1">
             <div className="card justify-content-center flex">
               <Card
                 title="Free Training Required (WPS)"
