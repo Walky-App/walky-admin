@@ -82,7 +82,7 @@ export const WeeklyOpenShiftsTable = ({ data, width = 'w-1/2' }: { data: IDay[];
                         : null}
                     </ol>
                     <div className="mt-5 pl-5 font-bold">
-                      Jobs {day.shifts.length} - Shifts 
+                      Jobs {day.shifts.length} - Shifts
                       {day.shifts.reduce((total, shift) => total + (shift.job_id.vacancy || 0), 0)}
                     </div>
                   </div>

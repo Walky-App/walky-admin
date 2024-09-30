@@ -80,6 +80,7 @@ import { AdminJobsPastWeek } from './pages/admin/jobs/AdminJobsPastWeek'
 import { AdminOpenShifsWeek } from './pages/admin/jobs/AdminOpenShiftsWeek'
 import { JobDetailViewAdmin } from './pages/admin/jobs/JobDetailViewAdmin'
 
+import { AdminAnnouncementsPage } from './pages/admin/announcements/AdminAnnouncementsPage'
 import { AdminAddCompany } from './pages/admin/companies/AdminAddCompany'
 import { AdminCompanyListPage } from './pages/admin/companies/AdminCompanyListPage'
 import { AdminMessages } from './pages/admin/messages'
@@ -303,6 +304,7 @@ export const App = () => {
                     <Route element={<ProductDetail />} path="/admin/products/:id" />
                     <Route element={<ChangelogApiPage />} path="/admin/changelog/api" />
                     <Route element={<ChangelogAppPage />} path="/admin/changelog/app" />
+                    <Route element={<AdminAnnouncementsPage />} path="/admin/announcements" />
                   </Route>
                 </Route>
               </Route>
