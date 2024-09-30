@@ -1,46 +1,10 @@
-### 2024-09-25
-- **Message:**   resolved merge conflicts
-- **Commit:** 7d927517
+### 2024-09-26
+- **Message:** added delete functionality to admin announcemets
+- **Commit:** 3f5f7197
 
-### 2024-09-25
-- **Message:**   cleaned up dashboard
-- **Commit:** fa14bc44
-
-### 2024-09-25
-- **Message:**   finalized shifts weekly view
-- **Commit:** e4307b9d
-
-### 2024-09-24
-- **Message:**   wip open shifts view
-- **Commit:** c54e841a
-
-### 2024-09-23
-- **Message:** Merge pull request #781 from Hemptemps-com/feature/admin-timesheet-now-with-employee-names
-- **Commit:** deb02a76
-
-### 2024-09-19
-- **Message:**   updated file names for admin and shared
-- **Commit:** 8811d64e
-
-### 2024-09-19
-- **Message:**   updated and simplified timesheet views for admins and employees
-- **Commit:** a295a848
-
-### 2024-09-18
-- **Message:** Merge pull request #776 from Hemptemps-com/feature/changelog-for-app
-- **Commit:** 64a493dc
-
-### 2024-09-18
-- **Message:** Merge pull request #773 from Hemptemps-com/772-typeerror-load-failed
-- **Commit:** 8b8b9d36
-
-### 2024-09-18
-- **Message:** Merge pull request #771 from Hemptemps-com/770-typeerror-undefined-is-not-an-object-evaluating-tpercentagea_assessment
-- **Commit:** b05e6b7d
-
-### 2024-09-18
-- **Message:** Merge pull request #769 from Hemptemps-com/768-typeerror-cannot-read-properties-of-undefined-reading-reduce
-- **Commit:** 38a55b55
+### 2024-09-26
+- **Message:** configured admin announcements page to properly render html inside messages column
+- **Commit:** f115661e
 
 ### 2024-09-18
 - **Message:** updated wording for chagenlogApp
@@ -65,18 +29,6 @@
 ### 2024-09-18
 - **Message:** Update changelog generation to use root directory
 - **Commit:** c039db57
-
-### 2024-09-18
-- **Message:** Refactor API requests to use new requestService in AdminAddModule, AdminCategoryLearn, AdminModulesLearn, and Learn components
-- **Commit:** b95929f2
-
-### 2024-09-18
-- **Message:** Fix: type error in AssessmentResponse component
-- **Commit:** 37f90458
-
-### 2024-09-18
-- **Message:** fix: completionMap logic in CategoryCards component
-- **Commit:** bf5b0d08
 
 ### 2024-09-16
 - **Message:** Merge pull request #765 from Hemptemps-com/chore/add-payment-type-to-service-order-list
