@@ -1,6 +1,6 @@
 {
-  "name": "hemptemps-app",
-  "version": "1.1.0",
+  "name": "walky-admin",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "dependencies": {

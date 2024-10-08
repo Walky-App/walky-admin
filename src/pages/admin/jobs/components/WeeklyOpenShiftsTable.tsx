@@ -15,10 +15,20 @@ export const WeeklyOpenShiftsTable = ({ data, width = 'w-1/2' }: { data: IDay[];
   const containerNav = useRef(null)
 
   function getRandomLightColor(): string {
-    const hue = Math.floor(Math.random() * 36) * 10 // Step size of 10 degrees
-    const saturation = Math.floor(Math.random() * 20) + 90 // 80% to 100%
-    const lightness = Math.floor(Math.random() * 20) + 75 // 70% to 90%
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`
+    const baseColor = '#17803d'
+    const alpha = Math.random().toFixed(2) // Opacity between 0 and 1
+
+    // Convert hex to RGB
+    const hexToRgb = (hex: string) => {
+      const bigint = parseInt(hex.slice(1), 16)
+      const r = (bigint >> 70) & 255
+      const g = (bigint >> 8) & 255
+      const b = bigint & 255
+      return `${r}, ${g}, ${b}`
+    }
+
+    const rgb = hexToRgb(baseColor)
+    return `rgba(${rgb}, ${alpha})`
   }
 
   const jobColorMapping: Record<string, string> = {}
@@ -61,10 +71,10 @@ export const WeeklyOpenShiftsTable = ({ data, width = 'w-1/2' }: { data: IDay[];
                               }
 
                               return (
-                                <li key={shift._id}>
+                                <li key={shift._id} className="rounded-lg hover:bg-red-300">
                                   <a
                                     href={`/admin/jobs/${shift.job_id._id}`}
-                                    className="mx-1 my-2 flex flex-col overflow-y-auto rounded-lg p-2 text-xs leading-5 text-slate-800"
+                                    className="mx-1 my-2 flex flex-col overflow-y-auto rounded-lg p-2 text-sm leading-5 "
                                     style={{ backgroundColor: jobColor }}>
                                     <p className="font-semibold ">
                                       {!jobFilled() ? <span className="font-bold">❌ </span> : null}

@@ -18,6 +18,7 @@ import { requestService } from '../../../services/requestServiceNew'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import { type IShift } from '../../employee/jobs/MyJobs'
 import { WeeklyOpenShiftsTable } from '../jobs/components/WeeklyOpenShiftsTable'
+import { SummaryHeader } from './components/SummaryHeader'
 
 // import { DashboardActivity } from './DashboardActivity'
 // import { DashboardFacilityTable } from './DashboardFacilityTable'
@@ -119,49 +120,9 @@ export const AdminDashboard = () => {
 
   return (
     <main className="mb-5">
-      <DashboardHeader>
-        <div className="md:flex md:items-center md:justify-between md:space-x-5">
-          <div className="flex items-start space-x-5">
-            <div className="flex-shrink-0">
-              <div className="relative">
-                <Avatar
-                  label={user?.first_name[0]}
-                  image={avatar}
-                  size="large"
-                  shape="circle"
-                  pt={{ image: { className: 'object-cover' } }}
-                  className="h-16 w-16"
-                />
-              </div>
-            </div>
-            <div className="pt-1.5">
-              <h1 className="text-2xl font-bold">Welcome Back, {user?.first_name}</h1>
-              <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:gap-x-6">
-                <div className="mt-2 flex items-center text-sm text-gray-500">
-                  <BuildingOfficeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                  {user?.email}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="justify mt-6 flex flex-col-reverse space-y-4 space-y-reverse md:flex-row md:justify-end md:gap-x-3 md:space-y-0 md:space-x-reverse lg:mt-0">
-            <Button
-              label="Facilities"
-              severity="secondary"
-              outlined
-              size="small"
-              onClick={() => navigate('/admin/facilities')}
-              pt={{ label: { className: 'text-nowrap' } }}
-            />
-            <Button
-              label="Jobs"
-              size="small"
-              onClick={() => navigate('/admin/jobs')}
-              pt={{ label: { className: 'text-nowrap' } }}
-            />
-          </div>
-        </div>
-      </DashboardHeader>
+      {user ? <DashboardHeader userData={user} /> : null}
+      
+      <SummaryHeader />
 
       {/* <div className="flex w-full">
         <div className="mx-auto sm:px-6 lg:px-8">

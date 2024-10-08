@@ -6,7 +6,7 @@ export const ThemeSelector = () => {
   const { dark, handleChangeTheme } = useTheme()
 
   const handleToggle = () => {
-    const newTheme = dark ? 'ht-light' : 'ht-dark'
+    const newTheme = dark ? 'walky-light' : 'walky-dark'
     handleChangeTheme(newTheme)
   }
 

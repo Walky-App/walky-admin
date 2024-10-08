@@ -67,62 +67,8 @@ export const ClientDashboard = () => {
   return (
     <div className="min-h-full">
       <main className="flex-1 pb-8">
-        <DashboardHeader>
-          <div className="md:flex md:items-center md:justify-between md:space-x-5">
-            <div className="flex items-start space-x-5">
-              <div className="flex-shrink-0">
-                <div className="relative">
-                  <Avatar
-                    label={user?.first_name[0]}
-                    image={avatar}
-                    size="large"
-                    shape="circle"
-                    pt={{ image: { className: 'object-cover' } }}
-                    className="h-16 w-16"
-                  />
-                </div>
-              </div>
-              <div className="pt-1.5" data-aos="fade-down" data-aos-duration="1000">
-                <h1 className="text-2xl font-bold text-gray-900">Welcome Back, {user?.first_name}</h1>
-                <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:gap-x-6">
-                  <div className="mt-2 flex items-center text-sm text-gray-500">
-                    <BuildingOfficeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                    {user?.email}
-                  </div>
-                  <div className="mt-2 flex items-center text-sm text-gray-500">
-                    <CheckCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400" aria-hidden="true" />
-                    Verified account
-                  </div>
-                  <div className="mt-2 flex items-center text-sm text-gray-500">
-                    <CheckCircleIcon
-                      className={cn(
-                        onboarding?.completed ?? false ? 'text-green-400' : 'text-gray-400',
-                        'mr-1.5 h-5 w-5 flex-shrink-0',
-                      )}
-                    />
-                    Onboarding Complete
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="justify mt-6 flex flex-col-reverse space-y-4 space-y-reverse md:flex-row md:justify-end md:gap-x-3 md:space-y-0 md:space-x-reverse lg:mt-0">
-              <Button
-                label="Facilities"
-                severity="secondary"
-                outlined
-                size="small"
-                onClick={() => navigate('/client/facilities')}
-                pt={{ label: { className: 'text-nowrap' } }}
-              />
-              <Button
-                label="My Jobs"
-                size="small"
-                onClick={() => navigate('/client/jobs')}
-                pt={{ label: { className: 'text-nowrap' } }}
-              />
-            </div>
-          </div>
-        </DashboardHeader>
+        {user ? <DashboardHeader userData={user} /> : null}
+
         <div className="mx-auto max-w-7xl  sm:px-6 sm:py-12 lg:px-8">
           <UserAnnouncements />
           <div
