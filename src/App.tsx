@@ -118,7 +118,7 @@ const sales_role = process.env.REACT_APP_SALES_ROLE as string
 
 export const App = () => {
   return (
-    <ThemeProvider initialTheme="ht-light">
+    <ThemeProvider initialTheme="walky-light">
       <AuthProvider>
         <AdminProvider>
           <BrowserRouter>
