@@ -1,0 +1,19 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run lint-staged
+npx lint-staged
+
+# Run tests
+npm run test
+
+# Generate changelog
+npm run generate-changelog
+
+# Add the updated changelog to the commit if it has changed
+if git diff --exit-code public/CHANGELOG.md; then
+  echo "Changelog not modified"
+else
+  echo "Changelog has been modified, adding to commit"
+  git add public/CHANGELOG.md
+fi

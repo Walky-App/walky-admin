@@ -1,0 +1,226 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Auth Page should match snapshot 1`] = `
+<DocumentFragment>
+  <section
+    class="flex h-full min-h-screen items-center justify-center sm:mb-8 md:mb-0 lg:items-center"
+    data-testid="auth-section"
+  >
+    <div
+      class="gap-10 md:basis-1/2"
+    >
+      <div
+        class="w-full px-4 sm:px-0"
+      >
+        <div
+          class="flex justify-center"
+        >
+          <img
+            alt="Hemp Temps logo"
+            class="sm:w-full xl:px-12"
+            src="/assets/logos/logo-horizontal-cropped.png"
+          />
+        </div>
+        <form
+          class="mb-6 ml-auto mr-auto max-w-md space-y-4 px-4 sm:px-0"
+          data-testid="login-form"
+        >
+          <div
+            class="mx-auto max-w-lg text-center"
+          />
+          <div>
+            <label
+              class="sr-only"
+              for="email"
+            >
+              Email
+            </label>
+            <div
+              class="relative"
+            >
+              <input
+                class="w-full rounded-lg border-zinc-200 p-4 shadow-sm  focus:border-green-500 focus:ring-green-500 p-inputtext p-component"
+                data-pc-name="inputtext"
+                data-pc-section="root"
+                name="email"
+                placeholder="*Email"
+                required=""
+                type="email"
+              />
+              <span
+                class="absolute inset-y-0 end-0 grid place-content-center px-4"
+              >
+                <svg
+                  class="h-4 w-4 text-zinc-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+          <div
+            class="w-full p-password p-component p-inputwrapper p-input-icon-right"
+            data-pc-name="password"
+            data-pc-section="root"
+          >
+            <div
+              class="p-icon-field p-icon-field-right w-full"
+              data-pc-name="iconfield"
+              data-pc-section="root"
+            >
+              <span
+                class="p-input-icon"
+                data-pc-name="inputicon"
+                data-pc-section="root"
+              >
+                <svg
+                  aria-checked="true"
+                  aria-hidden="true"
+                  aria-label="Show Password"
+                  class="p-icon p-password-show-icon"
+                  data-pc-section="showicon"
+                  fill="none"
+                  height="14"
+                  role="switch"
+                  tabindex="0"
+                  viewBox="0 0 14 14"
+                  width="14"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M0.0535499 7.25213C0.208567 7.59162 2.40413 12.4 7 12.4C11.5959 12.4 13.7914 7.59162 13.9465 7.25213C13.9487 7.2471 13.9506 7.24304 13.952 7.24001C13.9837 7.16396 14 7.08239 14 7.00001C14 6.91762 13.9837 6.83605 13.952 6.76001C13.9506 6.75697 13.9487 6.75292 13.9465 6.74788C13.7914 6.4084 11.5959 1.60001 7 1.60001C2.40413 1.60001 0.208567 6.40839 0.0535499 6.74788C0.0512519 6.75292 0.0494023 6.75697 0.048 6.76001C0.0163137 6.83605 0 6.91762 0 7.00001C0 7.08239 0.0163137 7.16396 0.048 7.24001C0.0494023 7.24304 0.0512519 7.2471 0.0535499 7.25213ZM7 11.2C3.664 11.2 1.736 7.92001 1.264 7.00001C1.736 6.08001 3.664 2.80001 7 2.80001C10.336 2.80001 12.264 6.08001 12.736 7.00001C12.264 7.92001 10.336 11.2 7 11.2ZM5.55551 9.16182C5.98308 9.44751 6.48576 9.6 7 9.6C7.68891 9.59789 8.349 9.32328 8.83614 8.83614C9.32328 8.349 9.59789 7.68891 9.59999 7C9.59999 6.48576 9.44751 5.98308 9.16182 5.55551C8.87612 5.12794 8.47006 4.7947 7.99497 4.59791C7.51988 4.40112 6.99711 4.34963 6.49276 4.44995C5.98841 4.55027 5.52513 4.7979 5.16152 5.16152C4.7979 5.52513 4.55027 5.98841 4.44995 6.49276C4.34963 6.99711 4.40112 7.51988 4.59791 7.99497C4.7947 8.47006 5.12794 8.87612 5.55551 9.16182ZM6.2222 5.83594C6.45243 5.6821 6.7231 5.6 7 5.6C7.37065 5.6021 7.72553 5.75027 7.98762 6.01237C8.24972 6.27446 8.39789 6.62934 8.4 7C8.4 7.27689 8.31789 7.54756 8.16405 7.77779C8.01022 8.00802 7.79157 8.18746 7.53575 8.29343C7.27994 8.39939 6.99844 8.42711 6.72687 8.37309C6.4553 8.31908 6.20584 8.18574 6.01005 7.98994C5.81425 7.79415 5.68091 7.54469 5.6269 7.27312C5.57288 7.00155 5.6006 6.72006 5.70656 6.46424C5.81253 6.20842 5.99197 5.98977 6.2222 5.83594Z"
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <input
+                class="p-password-input w-full rounded-lg border-zinc-200 p-4 shadow-sm focus:border-green-500 focus:ring-green-500 p-inputtext p-component"
+                data-pc-name="inputtext"
+                data-pc-section="root"
+                id="password"
+                placeholder="*Password"
+                type="password"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="w-full text-right"
+            style="margin-top: 0px;"
+          >
+            <button
+              class="text-xs text-zinc-500 underline hover:text-green-700"
+              tabindex="-1"
+              type="button"
+            >
+              Forgot your password?
+            </button>
+          </div>
+          <button
+            aria-label="Login"
+            class="w-full false p-button p-component"
+            data-pc-name="button"
+            data-pc-section="root"
+            type="submit"
+          >
+            <span
+              class="p-button-label p-c"
+              data-pc-section="label"
+            >
+              Login
+            </span>
+          </button>
+        </form>
+        <div
+          class="mr-center flex flex-col items-center justify-center gap-2"
+        >
+          <div>
+            <div
+              class="relative"
+            >
+              <div
+                aria-hidden="true"
+                class="absolute inset-0 flex items-center"
+              >
+                <div
+                  class="w-full border-t border-gray-300"
+                />
+              </div>
+              <div
+                class="relative flex justify-center"
+              >
+                <span
+                  class="bg-white px-2 text-sm text-gray-500"
+                >
+                  OR
+                </span>
+              </div>
+            </div>
+            <button
+              class="font-medium underline hover:text-green-700 p-button p-component p-button-text"
+              data-pc-name="button"
+              data-pc-section="root"
+            >
+              Sign up
+            </button>
+          </div>
+          <div
+            class=" text-zinc-500"
+          />
+        </div>
+      </div>
+      <footer
+        aria-labelledby="footer-heading"
+        class="py-6"
+      >
+        <div
+          class="text-center text-xs text-gray-500 md:items-center md:justify-center"
+        >
+          <p
+            class=""
+          >
+            Copyright © 2024 Hemp Temps
+          </p>
+          <p
+            class="my-1"
+          >
+            <a
+              class="underline"
+              href="https://hemptemps.com/terms-and-conditions/"
+              target="_blank"
+            >
+              Terms and Conditions
+            </a>
+          </p>
+          <small
+            class="text-[10px] font-extralight"
+          >
+            v1.1.0
+          </small>
+        </div>
+      </footer>
+    </div>
+    <div
+      class="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2"
+    >
+      <img
+        alt="Hemp Temps"
+        class="absolute inset-0 hidden h-full object-cover sm:block"
+        data-testid="hero-image"
+        src="https://hemptemps-prod.s3.amazonaws.com/web-images/mock-image.png"
+      />
+    </div>
+  </section>
+</DocumentFragment>
+`;

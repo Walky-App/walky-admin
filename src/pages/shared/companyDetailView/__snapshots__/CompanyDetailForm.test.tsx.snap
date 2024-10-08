@@ -1,0 +1,341 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CompanyDetailForm should match snapshot 1`] = `
+<DocumentFragment>
+  <form
+    class="p-fluid"
+  >
+    <div
+      class="space-y-4 sm:space-y-12"
+    >
+      <div
+        class="grid grid-cols-1 gap-x-8 py-12 sm:gap-y-10 md:grid-cols-3"
+      >
+        <div>
+          <h2
+            class="text-base font-semibold leading-7 text-gray-900"
+          >
+            Company Information
+          </h2>
+          <p
+            class="mt-1 text-sm leading-6 text-gray-600"
+          >
+            Please take a moment to provide the essential information for the company.
+          </p>
+          <p
+            class="mt-1 text-sm leading-6 text-gray-600"
+          >
+            <span
+              style="color: red;"
+            >
+              *
+            </span>
+             indicates a required field.
+          </p>
+          <br />
+          <br />
+          Created by: donnie-client-2@hemptemps.com on 08/26/2024
+          <p />
+        </div>
+        <div
+          class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2"
+        >
+          <div
+            class="sm:col-span-3"
+          >
+            <div
+              class="flex flex-row items-center gap-x-2"
+            >
+              <i
+                class="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg lg:text-sm"
+                data-pr-at="left top-5"
+                data-pr-classname="text-sm text-wrap"
+                data-pr-my="left bottom"
+                data-pr-position="top"
+                data-pr-tooltip="A corporate name is the legal name of a corporation."
+              />
+              <label
+                class="block text-sm font-medium leading-6"
+                for="company_name"
+              >
+                <span
+                  style="color: red;"
+                >
+                  * 
+                </span>
+                Company Name
+              </label>
+            </div>
+            <input
+              class="mt-2 p-inputtext p-component p-filled"
+              data-pc-name="inputtext"
+              data-pc-section="root"
+              id="company_name"
+              name="company_name"
+              value="Fake company for mocking purposes"
+            />
+          </div>
+          <div
+            class="sm:col-span-3"
+          >
+            <div
+              class="flex flex-row items-center gap-x-2"
+            >
+              <i
+                class="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg lg:text-sm"
+                data-pr-at="left top-5"
+                data-pr-classname="text-sm text-wrap"
+                data-pr-my="left bottom"
+                data-pr-position="top"
+                data-pr-tooltip="Doing Business As (DBA) is also known as a trade name, fictitious business name, or assumed business name."
+              />
+              <label
+                class="block text-sm font-medium leading-6"
+                for="company_dbas"
+              >
+                Company DBAs
+              </label>
+            </div>
+            <input
+              aria-describedby="company_dbas-help"
+              class="mt-2 p-inputtext p-component p-filled"
+              data-pc-name="inputtext"
+              data-pc-section="root"
+              id="company_dbas"
+              value="Dank Flowers"
+            />
+            <small
+              id="company_dbas-help"
+            >
+              Enter DBAs separated by a comma: dba1, dba2, dba3
+            </small>
+          </div>
+          <div
+            class="sm:col-span-3"
+          >
+            <div
+              class="flex flex-row items-center gap-x-2"
+            >
+              <i
+                class="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg lg:text-sm"
+                data-pr-at="left top-5"
+                data-pr-classname="text-sm text-wrap"
+                data-pr-my="left bottom"
+                data-pr-position="top"
+                data-pr-tooltip="A Tax Identification Number (TIN) in the United States is a unique identifier assigned to individuals and businesses for tax purposes."
+              />
+              <label
+                class="block text-sm font-medium leading-6"
+                for="company_tax_id"
+              >
+                Tax ID
+              </label>
+            </div>
+            <input
+              autocomplete="off"
+              class="mt-2 p-inputmask p-inputtext p-component p-filled"
+              data-pc-name="inputtext"
+              data-pc-section="root"
+              id="company_tax_id"
+              name="company_tax_id"
+              type="text"
+            />
+          </div>
+          <div
+            class="sm:col-span-3"
+          >
+            <div
+              class="flex flex-row items-center gap-x-2"
+            >
+              <i
+                class="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg lg:text-sm"
+                data-pr-at="left top-5"
+                data-pr-classname="text-sm text-wrap"
+                data-pr-my="left bottom"
+                data-pr-position="top"
+                data-pr-tooltip="The phone number of the company. This is the number that administrators would call if they have questions or need to contact you."
+              />
+              <label
+                class="block text-sm font-medium leading-6"
+                for="company_phone_number"
+              >
+                <span
+                  style="color: red;"
+                >
+                  * 
+                </span>
+                Company Phone Number
+              </label>
+            </div>
+            <input
+              autocomplete="off"
+              class="mt-2 p-inputmask p-inputtext p-component p-filled"
+              data-pc-name="inputtext"
+              data-pc-section="root"
+              id="company_phone_number"
+              name="company_phone_number"
+              type="text"
+            />
+          </div>
+          <div
+            class="sm:col-span-6"
+          >
+            <div
+              class="flex flex-row items-center gap-x-2"
+            >
+              <i
+                class="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg lg:text-sm"
+                data-pr-at="left top-5"
+                data-pr-classname="text-sm text-wrap"
+                data-pr-my="left bottom"
+                data-pr-position="top"
+                data-pr-tooltip="Legal address of the company."
+              />
+              <label
+                class="block text-sm font-medium leading-6"
+                for="company_address"
+              >
+                <span
+                  style="color: red;"
+                >
+                  * 
+                </span>
+                Company Address
+              </label>
+            </div>
+            <span
+              autocomplete="off"
+              class="mt-2 p-autocomplete p-component p-inputwrapper p-inputwrapper-filled"
+              data-pc-name="autocomplete"
+              data-pc-section="root"
+              id="pr_id_2"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                autocomplete="off"
+                class="p-autocomplete-input p-inputtext p-component p-filled"
+                data-pc-name="inputtext"
+                data-pc-section="root"
+                name="address"
+                placeholder="2608 McHenry Avenue, Modesto, CA, USA"
+                role="combobox"
+                type="text"
+                value="2608 McHenry Avenue, Modesto, CA, USA"
+              />
+            </span>
+            <small
+              id="company_address-help"
+            >
+              Only Commercial Address
+            </small>
+          </div>
+          <div
+            class="sm:col-span-6"
+          >
+            <div
+              class="flex flex-row items-center gap-x-2"
+            >
+              <i
+                class="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge cursor-pointer text-lg lg:text-sm"
+                data-pr-at="left top-5"
+                data-pr-classname="text-sm text-wrap"
+                data-pr-my="left bottom"
+                data-pr-position="top"
+                data-pr-tooltip="All facilities related to this company"
+              />
+              <label
+                class="block text-sm font-medium leading-6"
+                for="facilities"
+              >
+                Facilities
+              </label>
+            </div>
+            <div
+              class="mt-2 p-multiselect p-component p-inputwrapper p-multiselect-chip"
+              data-pc-name="multiselect"
+              data-pc-section="root"
+              id="facilities"
+            >
+              <div
+                class="p-hidden-accessible"
+                data-p-hidden-accessible="true"
+                data-pc-section="hiddeninputwrapper"
+              >
+                <input
+                  aria-expanded="false"
+                  data-pc-section="input"
+                  name="facilities"
+                  readonly=""
+                  role="combobox"
+                  tabindex="0"
+                  type="text"
+                />
+              </div>
+              <div
+                class="p-multiselect-label-container"
+                data-pc-section="labelcontainer"
+              >
+                <div
+                  class="p-multiselect-label p-placeholder"
+                  data-pc-section="label"
+                >
+                  Select Services
+                </div>
+              </div>
+              <div
+                class="p-multiselect-trigger"
+                data-pc-section="trigger"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="p-icon p-multiselect-trigger-icon p-c"
+                  data-pc-section="triggericon"
+                  fill="none"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  width="14"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M7.01744 10.398C6.91269 10.3985 6.8089 10.378 6.71215 10.3379C6.61541 10.2977 6.52766 10.2386 6.45405 10.1641L1.13907 4.84913C1.03306 4.69404 0.985221 4.5065 1.00399 4.31958C1.02276 4.13266 1.10693 3.95838 1.24166 3.82747C1.37639 3.69655 1.55301 3.61742 1.74039 3.60402C1.92777 3.59062 2.11386 3.64382 2.26584 3.75424L7.01744 8.47394L11.769 3.75424C11.9189 3.65709 12.097 3.61306 12.2748 3.62921C12.4527 3.64535 12.6199 3.72073 12.7498 3.84328C12.8797 3.96582 12.9647 4.12842 12.9912 4.30502C13.0177 4.48162 12.9841 4.662 12.8958 4.81724L7.58083 10.1322C7.50996 10.2125 7.42344 10.2775 7.32656 10.3232C7.22968 10.3689 7.12449 10.3944 7.01744 10.398Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+            </div>
+            <small
+              id="facilities-help"
+            >
+              All facilities which this company owns.
+            </small>
+          </div>
+          <div
+            class="flex gap-2 sm:col-span-6"
+          >
+            <button
+              aria-label="Update Company"
+              class="p-button p-component"
+              data-pc-name="button"
+              data-pc-section="root"
+              type="submit"
+            >
+              <span
+                class="p-button-icon p-c p-button-icon-left pi pi-save"
+                data-pc-section="icon"
+              />
+              <span
+                class="p-button-label p-c text-nowrap"
+                data-pc-section="label"
+              >
+                Update Company
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;

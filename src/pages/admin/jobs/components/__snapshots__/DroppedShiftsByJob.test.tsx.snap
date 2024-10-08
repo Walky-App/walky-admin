@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dropped Shift By Job Component should match snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="card rounded-l p-6 shadow"
+  >
+    <div
+      class="flex items-center justify-center"
+    >
+      <img
+        alt="Hemp Temps Loading"
+        class="h-64"
+        src="/assets/ht-loading.gif"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
