@@ -1,35 +1,23 @@
 import { useState, useMemo } from 'react'
 
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 
-import packageJson from '../../../package.json'
+// import packageJson from '../../../package.json'
 import { LogosPack } from '../../components/layout/LogosPack'
 import { ForgotPassword } from './ForgotPasswordForm'
 import { LoginForm } from './LoginForm'
 import { Signup } from './SignupForm'
 
 export const loginHeroImages = [
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/1.png',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/10.jpg',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/12.jpg',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/13.jpg',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/2.png',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/3.png',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/5.jpg',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/6.jpg',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/7.jpg',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/8.png',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/14.png',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/15.png',
-  'https://hemptemps-prod.s3.amazonaws.com/web-images/20.png',
+  'https://assets.teenvogue.com/photos/5d94f8bf3ef0d3000964e4fa/16:9/w_2560%2Cc_limit/00-story-college-minimum-wage.jpg',
 ]
 
 export const Auth = () => {
   const [userForm, setUserForm] = useState('Login')
   const [heroImage, setHeroImage] = useState<string>('')
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   useMemo(() => {
     const getImages = async () => {
@@ -63,13 +51,13 @@ export const Auth = () => {
                   <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-gray-300" />
                   </div>
-                  <div className="relative flex justify-center">
+                  {/* <div className="relative flex justify-center">
                     <span className="bg-white px-2 text-sm text-gray-500">OR</span>
-                  </div>
+                  </div> */}
                 </div>
-                <Button text className="font-medium underline hover:text-green-700" onClick={() => navigate('/signup')}>
+                {/* <Button text className="font-medium underline hover:text-green-700" onClick={() => navigate('/signup')}>
                   Sign up
-                </Button>
+                </Button> */}
               </div>
             ) : null}
 
@@ -85,7 +73,7 @@ export const Auth = () => {
             </div>
           </div>
         </div>
-        <footer className="py-6" aria-labelledby="footer-heading">
+        {/* <footer className="py-6" aria-labelledby="footer-heading">
           <div className="text-center text-xs text-gray-500 md:items-center md:justify-center">
             <p className="">Copyright © {new Date().getFullYear()} Hemp Temps</p>
             <p className="my-1">
@@ -95,7 +83,7 @@ export const Auth = () => {
             </p>
             <small className="text-[10px] font-extralight">v{packageJson.version}</small>
           </div>
-        </footer>
+        </footer> */}
       </div>
       <div className="relative hidden w-full sm:h-96 lg:block lg:h-screen lg:basis-1/2">
         <img
