@@ -44,7 +44,7 @@ export const DashboardHeader = ({ userData }: { userData: IUser }) => {
               <div className="mt-2 flex items-center">
                 <CheckCircleIcon
                   className={cn(
-                    userData.onboarding?.completed ?? false ?? 'text-green-600',
+                    userData.is_onboarded ?? false ?? 'text-green-600',
                     'mr-1.5 h-5 w-5 flex-shrink-0',
                   )}
                 />
@@ -52,7 +52,7 @@ export const DashboardHeader = ({ userData }: { userData: IUser }) => {
               </div>
               <div className="mt-2 flex items-center">
                 <CheckCircleIcon
-                  className={cn(userData?.is_approved ?? false ?? 'text-green-600', 'mr-1.5 h-5 w-5 flex-shrink-0')}
+                  className={cn(userData?.is_active ?? false ?? 'text-green-600', 'mr-1.5 h-5 w-5 flex-shrink-0')}
                 />
                 Profile Approved
               </div>

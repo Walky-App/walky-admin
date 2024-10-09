@@ -3,7 +3,7 @@ import { requestService } from './requestServiceNew'
 
 export const LoginService = async (body: LoginData) => {
   try {
-    const response = await requestService({ path: 'auth/login', method: 'POST', body: JSON.stringify(body) })
+    const response = await requestService({ path: 'login', method: 'POST', body: JSON.stringify(body) })
 
     if (response.ok) {
       const data = await response.json()
@@ -15,7 +15,7 @@ export const LoginService = async (body: LoginData) => {
 }
 
 export const LogoutService = async () => {
-  localStorage.removeItem('ht_usr')
+  localStorage.removeItem('walky_usr')
   localStorage.clear()
   return true
 }

@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
-
 import AOS from 'aos'
-import { Avatar } from 'primereact/avatar'
-import { Button } from 'primereact/button'
-
-import { BuildingOfficeIcon, CheckCircleIcon } from '@heroicons/react/20/solid'
 
 import { DashboardHeader } from '../../../components/shared/dashboard'
 import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
-import { cn } from '../../../utils/cn'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
 import UserAnnouncements from '../../shared/announcementsPanel/userAnnouncements'
 
@@ -33,12 +26,7 @@ export interface ITransaction {
 export const ClientDashboard = () => {
   const [user, setUser] = useState<IUser | null>(null)
 
-  const navigate = useNavigate()
-  const { _id, onboarding, avatar } = GetTokenInfo()
-
-  useEffect(() => {
-    if (!(onboarding?.completed ?? false)) navigate('/client/onboarding')
-  }, [navigate, onboarding?.completed])
+  const { _id } = GetTokenInfo()
 
   useEffect(() => {
     const fetchUser = async () => {

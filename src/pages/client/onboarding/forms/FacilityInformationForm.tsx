@@ -22,13 +22,12 @@ import { useUtils } from '../../../../store/useUtils'
 import { facilityContactRoles, jobTitlesOptions } from '../../../../utils/formOptions'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { clientOnboardingSteps } from '../ClientOnboardingPage'
+// import { clientOnboardingSteps } from '../ClientOnboardingPage'
 import {
   type StepProps,
   FormDataContext,
-  type IClientOnboardingFormInputs,
-  type IOnboardingUpdateInfo,
-  useUpdateOnboardingStatus,
+  type IClientOnboardingFormInputs, // type IOnboardingUpdateInfo,
+  // useUpdateOnboardingStatus,
 } from '../clientOnboardingUtils'
 
 export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
@@ -41,14 +40,14 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
 
   const { showToast } = useUtils()
 
-  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
+  // const { updateOnboardingStatus } = useUpdateOnboardingStatus()
 
-  const updateOnboardingInfo: IOnboardingUpdateInfo = {
-    step_number: 2,
-    description: clientOnboardingSteps[1].label ?? 'Facility Information',
-    type: 'client',
-    completed: false,
-  }
+  // const updateOnboardingInfo: IOnboardingUpdateInfo = {
+  //   step_number: 2,
+  //   description: clientOnboardingSteps[1].label ?? 'Facility Information',
+  //   type: 'client',
+  //   completed: false,
+  // }
 
   const formValues = formData != null ? formData : defaultValues
 
@@ -196,7 +195,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           const updatedFacilityId = updatedFacilityData._id
           setFormData(prev => ({ ...prev, ...updatedFacilityData, facilities: [updatedFacilityId] }))
 
-          await updateOnboardingStatus(updateOnboardingInfo)
+          // await updateOnboardingStatus(updateOnboardingInfo)
 
           setTimeout(() => {
             setStep(step + 1)
@@ -222,7 +221,7 @@ export const FacilityInformationForm = ({ step, setStep }: StepProps) => {
           const createdFacilityId = createdFacilityData._id
           setFormData(prev => ({ ...prev, ...createdFacilityData, facilities: [createdFacilityId] }))
 
-          await updateOnboardingStatus(updateOnboardingInfo)
+          // await updateOnboardingStatus()
 
           setTimeout(() => {
             setStep(step + 1)

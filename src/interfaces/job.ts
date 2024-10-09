@@ -4,14 +4,14 @@ import { type Shifts } from './shifts'
 
 export interface IApplicantWithoutPopulate {
   user: IUser | string
-  is_approved: boolean
+  is_active: boolean
   is_working: boolean
   _id: string
 }
 
 export interface IApplicant {
   user: IUser
-  is_approved: boolean
+  is_active: boolean
   is_working: boolean
   rejection_reason: string
   _id: string

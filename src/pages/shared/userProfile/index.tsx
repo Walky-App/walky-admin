@@ -5,27 +5,22 @@ import { useParams } from 'react-router-dom'
 import { TabPanel, TabView } from 'primereact/tabview'
 
 import { HTLoadingLogo } from '../../../components/shared/HTLoadingLogo'
-import { Chat } from '../../../components/shared/messages/Chat'
+// import { Chat } from '../../../components/shared/messages/Chat'
 import { useAuth } from '../../../contexts/AuthContext'
-import { type IUserPopulated, type IUser } from '../../../interfaces/User'
-import { type ITrainingData } from '../../../interfaces/training'
+// import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 import { GetTokenInfo } from '../../../utils/tokenUtil'
-import { AdminEmployeeTimesheetTable } from '../../admin/users/components/AdminEmployeeTimesheetTable'
-import { EmployeeTimesheetTable } from '../../employee/components/EmployeeTimesheetTable'
-import { EmployeeMyJobs } from '../../employee/jobs/MyJobs'
-import { ProfileDetail } from './ProfileDetail'
-import { ProfileDocuments } from './ProfileDocuments'
-import { ProfileNotes } from './ProfileNotes'
-import { ProfileTraining } from './ProfileTraining'
+// import { ProfileDetail } from './ProfileDetail'
+// import { ProfileDocuments } from './ProfileDocuments'
+
+// import { ProfileNotes } from './ProfileNotes'
 
 export const UserProfile = () => {
   const [loading, setLoading] = useState(false)
-  const [userTraining, setUserTraining] = useState<ITrainingData>({} as ITrainingData)
-  const [loggedInUser, setLoggedInUser] = useState<IUser | undefined>(({} as IUser) ?? undefined)
-  const [formUser, setFormUser] = useState<IUserPopulated>({
+  // const [, setLoggedInUser] = useState<IUser | undefined>(() ?? undefined)
+  const [formUser, setFormUser] = useState({
     _id: '',
     access_token: '',
     active: false,
@@ -46,7 +41,7 @@ export const UserProfile = () => {
     role: '',
     verified: false,
     companies: [],
-    is_approved: false,
+    is_active: false,
   })
 
   const { user } = useAuth()
@@ -65,16 +60,10 @@ export const UserProfile = () => {
           const data = await response.json()
           setFormUser(data)
 
-          const trainingResponse = await requestService({ path: `lms/${id ? id : user?._id}` })
-          if (trainingResponse.ok) {
-            const trainingData = (await trainingResponse.json()) as ITrainingData
-            setUserTraining(trainingData)
-          }
-
           const loggedInUser = await requestService({ path: `users/${loggedInuser_id}` })
           if (loggedInUser.ok) {
-            const loggedInUserData = (await loggedInUser.json()) as IUser
-            setLoggedInUser(loggedInUserData)
+            // const loggedInUserData = (await loggedInUser.json()) as IUser
+            // setLoggedInUser(loggedInUserData)
           }
         }
       } catch (error) {
@@ -87,22 +76,22 @@ export const UserProfile = () => {
     getUser()
   }, [id, loggedInuser_id, showToast, user])
 
-  const handleSubmit = async (): Promise<void> => {
-    try {
-      const response = await requestService({
-        path: `users/${formUser?._id}`,
-        method: 'PATCH',
-        body: JSON.stringify(formUser),
-      })
-      if (response.ok) {
-        const data = await response.json()
-        showToast({ severity: 'success', summary: 'Success', detail: 'User updated' })
-        setFormUser(data)
-      }
-    } catch (error) {
-      console.error('Error updating user:', error)
-    }
-  }
+  // const handleSubmit = async (): Promise<void> => {
+  //   try {
+  //     const response = await requestService({
+  //       path: `users/${formUser?._id}`,
+  //       method: 'PATCH',
+  //       body: JSON.stringify(formUser),
+  //     })
+  //     if (response.ok) {
+  //       const data = await response.json()
+  //       showToast({ severity: 'success', summary: 'Success', detail: 'User updated' })
+  //       setFormUser(data)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error updating user:', error)
+  //   }
+  // }
 
   const notShowTabForClient = () => role !== 'client' && roleTxt(formUser.role) !== 'Client'
 
@@ -118,48 +107,18 @@ export const UserProfile = () => {
       </div>
       <TabView>
         <TabPanel header="User Detail">
-          <ProfileDetail formUser={formUser} setFormUser={setFormUser} updateUser={handleSubmit} />
+          {/* <ProfileDetail formUser={formUser} setFormUser={setFormUser} updateUser={handleSubmit} /> */}
         </TabPanel>
         {notShowTabForClient() ? (
           <TabPanel header="Documents">
-            <ProfileDocuments formUser={formUser} setFormUser={setFormUser} />
+            {/* <ProfileDocuments formUser={formUser} setFormUser={setFormUser} /> */}
           </TabPanel>
         ) : null}
-        {notShowTabForClient() ? (
-          <TabPanel header="Training">
-            <ProfileTraining
-              userTraining={userTraining}
-              formUser={formUser}
-              setFormUser={setFormUser}
-              role={role}
-              updateUser={handleSubmit}
-            />
-          </TabPanel>
-        ) : null}
-        {notShowTabForClient() ?? role === 'admin' ? (
-          <TabPanel header="TimeSheets">
-            {role === 'admin' ? (
-              <AdminEmployeeTimesheetTable selectedUser={formUser} />
-            ) : (
-              <EmployeeTimesheetTable userData={formUser} />
-            )}
-          </TabPanel>
-        ) : null}
+
         {role === 'admin' ? (
-          <TabPanel header="Notes">
-            <ProfileNotes formUser={formUser} loggedInUser={loggedInUser} />
-          </TabPanel>
+          <TabPanel header="Notes">{/* <ProfileNotes formUser={formUser} loggedInUser={loggedInUser} /> */}</TabPanel>
         ) : null}
-        {role === 'admin' ? (
-          <TabPanel header="Messages">
-            <Chat formUser={formUser} />
-          </TabPanel>
-        ) : null}
-        {notShowTabForClient() ?? role === 'admin' ? (
-          <TabPanel header="Shifts">
-            <EmployeeMyJobs id={formUser._id} />
-          </TabPanel>
-        ) : null}
+        {role === 'admin' ? <TabPanel header="Messages">{/* <Chat formUser={formUser} /> */}</TabPanel> : null}
       </TabView>
     </div>
   )

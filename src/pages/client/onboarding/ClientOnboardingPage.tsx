@@ -56,16 +56,6 @@ export const ClientOnboarding = () => {
   const userToken = GetTokenInfo()
   const userId = userToken._id
 
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (userToken?.onboarding?.completed ?? false) {
-      navigate('/client/dashboard')
-    } else {
-      setActiveIndex(userToken?.onboarding?.step_number ?? 0)
-    }
-  }, [navigate, userToken?.onboarding?.completed, userToken?.onboarding?.step_number])
-
   const getUserData = useCallback(async () => {
     try {
       const response = await requestService({ path: `users/${userId}` })
@@ -283,7 +273,6 @@ export const ClientOnboarding = () => {
 
   const onboardingSteps = [
     <Fragment key="step1">
-      {userToken?.onboarding?.step_number == null ? <WelcomeDialog visible={visible} setVisible={setVisible} /> : null}
       <CompanyInformationForm step={activeIndex} setStep={setActiveIndex} />
     </Fragment>,
     <FacilityInformationForm key="step2" step={activeIndex} setStep={setActiveIndex} />,

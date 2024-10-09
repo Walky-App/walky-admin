@@ -38,14 +38,15 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
       name: 'Users',
       href: '/admin/users',
       icon: <FaUserGroup />,
-      subLinks: [
-        { name: 'Clients', href: '/admin/users/clients' },
-        { name: 'Invite User', href: '/admin/users/invite' },
-      ],
+      // subLinks: [
+      //   { name: 'Clients', href: '/admin/users/clients' },
+      //   { name: 'Invite User', href: '/admin/users/invite' },
+      // ],
     },
     {
       id: 2,
-      name: 'Employees',
+      name: 'Students',
+      disabled: true,
       href: '/admin/users/employees',
       icon: <FaUserGroup />,
       subLinks: [
@@ -56,41 +57,23 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     },
     {
       id: 3,
-      name: 'Companies',
+      disabled: true,
+      name: 'Schools',
       href: '/admin/companies',
       icon: <FaBusinessTime />,
       subLinks: [{ name: 'New Company', href: '/admin/companies/new' }],
     },
-    {
-      id: 4,
-      name: 'Facilities',
-      href: '/admin/facilities',
-      icon: <FaBuilding />,
-      subLinks: [{ name: 'Add Facility', href: '/admin/facilities/new' }],
-    },
-    {
-      id: 5,
-      name: 'Jobs',
-      href: '/admin/jobs',
-      icon: <FaBriefcase />,
-      subLinks: [
-        { name: 'Active Week', href: '/admin/jobs/week' },
-        { name: 'Past Week Jobs', href: '/admin/jobs/past-week' },
-        { name: 'Add Job', href: '/admin/jobs/new' },
-      ],
-    },
+    // {
+    //   id: 4,
+    //   disabled: true,
+    //   name: 'Facilities',
+    //   href: '/admin/facilities',
+    //   icon: <FaBuilding />,
+    //   subLinks: [{ name: 'Add Facility', href: '/admin/facilities/new' }],
+    // },
     {
       id: 6,
-      name: 'HTU',
-      href: '/admin/learn',
-      icon: <FaUserGraduate />,
-      subLinks: [
-        { name: 'Categories', href: '/admin/learn/categories' },
-        { name: 'Modules', href: '/admin/learn/modules' },
-      ],
-    },
-    {
-      id: 6,
+      disabled: true,
       name: 'Service Orders',
       href: '/admin/jobs/service-orders',
       icon: <FaBriefcase />,
@@ -104,37 +87,28 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     {
       id: 6.2,
       name: 'Invoices',
+      disabled: true,
       href: '/admin/invoices',
       icon: <FaDollarSign />,
     },
-    {
-      id: 7,
-      name: 'Products',
-      href: '/admin/products',
-      icon: <MdSchool />,
-      disabled: true,
-      subLinks: [
-        { name: 'New Product', href: '/admin/products', disabled: true },
-        { name: 'Categories', href: '/admin/products', disabled: true },
-      ],
-    },
 
-    { id: 8, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
-    { id: 9, name: 'Announcements', href: '/admin/announcements', icon: <FaBullhorn /> },
+    { id: 8, disabled: true, name: 'Settings', href: '/admin/settings', icon: <IoMdCog /> },
+    { id: 9, disabled: true, name: 'Announcements', href: '/admin/announcements', icon: <FaBullhorn /> },
     {
       id: 10,
+      disabled: true,
       name: 'App Changelog',
       href: '/admin/changelog/app',
       icon: <HiOutlineClipboardList />,
       subLinks: [{ name: 'API Changelog', href: '/admin/changelog/api' }],
     },
-    // {
-    //   id: 1,
-    //   name: 'Messages (Beta)',
-    //   href: '/admin/messages',
-    //   icon: <IoMdMail />,
-    // },
-    { id: 11, name: 'Orders', href: '/admin/orders', icon: <MdSchool />, disabled: true },
+    {
+      id: 1,
+      disabled: true,
+      name: 'Messages (Beta)',
+      href: '/admin/messages',
+      icon: <IoMdMail />,
+    },
   ]
 
   const clientLinks: INavLink[] = [
@@ -209,18 +183,8 @@ export const userLinks = (userIsOnboarded: boolean, role: string) => {
     { id: 7, name: 'Settings', href: '/employee/settings', icon: <IoMdCog />, disabled: true },
   ]
 
-  const salesLinks: INavLink[] = [
-    { id: 1, name: 'Facilities', href: `/sales/facilities/`, icon: <FaBuilding /> },
-    { id: 2, name: 'Products', href: '/sales/products', disabled: true, icon: <MdSchool /> },
-    { id: 3, name: 'Orders', href: '/sales/orders', icon: <MdSchool />, disabled: true },
-    { id: 4, name: 'Learn', href: '/learn', icon: <MdSchool /> },
-    { id: 5, name: 'Reports', href: '/dashboard/reports', icon: <HiDocumentReport />, disabled: true },
-    // { id: 6, name: 'Messages', href: '/sales/messages', icon: <IoMdMail /> },
-  ]
-
   if (role === 'admin') return adminLinks
   if (role === 'client') return clientLinks
   if (role === 'employee') return employeeLinks
-  if (role === 'sales') return salesLinks
   return []
 }

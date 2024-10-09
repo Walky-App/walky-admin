@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Image } from 'primereact/image'
 
-import { clientOnboardingSteps } from '../ClientOnboardingPage'
-import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../clientOnboardingUtils'
+// import { clientOnboardingSteps } from '../ClientOnboardingPage'
+// import { type IOnboardingUpdateInfo, useUpdateOnboardingStatus } from '../clientOnboardingUtils'
 
 interface FinishedOnboardingDialogProps {
   visible: boolean
@@ -13,21 +13,21 @@ interface FinishedOnboardingDialogProps {
 }
 
 export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardingDialogProps) => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
-  const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
+  // const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
 
-  const updatedOnboardingInfo: IOnboardingUpdateInfo = {
-    step_number: 4,
-    description: clientOnboardingSteps[3].label ?? 'Terms and Conditions',
-    type: 'client',
-    completed: true,
-  }
+  // const updatedOnboardingInfo: IOnboardingUpdateInfo = {
+  //   step_number: 4,
+  //   description: clientOnboardingSteps[3].label ?? 'Terms and Conditions',
+  //   type: 'client',
+  //   completed: true,
+  // }
   const onSubmit = async () => {
-    const success = await updateOnboardingStatus(updatedOnboardingInfo)
-    if (success === true) {
-      navigate('/client/dashboard')
-    }
+    // const success = await updateOnboardingStatus(updatedOnboardingInfo)
+    // if (success === true) {
+    //   navigate('/client/dashboard')
+    // }
   }
 
   return (
@@ -54,7 +54,7 @@ export const FinishOnboardingDialog = ({ visible, setVisible }: FinishedOnboardi
               </div>
             </div>
             <div className="mx-auto">
-              <Button label="Continue" loading={isLoading} onClick={onSubmit} />
+              {/* <Button label="Continue" loading={isLoading} onClick={onSubmit} /> */}
             </div>
           </div>
         }

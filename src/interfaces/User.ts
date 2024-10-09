@@ -1,6 +1,4 @@
 /* eslint-disable filename-rules/match */
-import { type ICompanyWithFacilities, type ICompany } from './company'
-import { type ProgressHTU } from './htu'
 
 export interface IOnboardingStep {
   step_number: number
@@ -25,42 +23,44 @@ export interface IUserInternalNote {
 export interface IUser {
   _id: string
   access_token: string
-  active: boolean
-  createdAt: string
+  avatar: string
+  avatar_url: string
+  birthday: Date
+  campuses: string[]
+  correctPassword: (candidatePassword: string, userPassword: string) => Promise<boolean>
+  createdAt: Date
   email: string
   first_name: string
+  interests: string[]
+  is_active: boolean
+  is_onboarded: boolean
+  is_parent: boolean
+  is_profile_complete: boolean
+  is_verified: boolean
+  languages: string[]
   last_name: string
+  location: {
+    type: string
+    coordinates: [number, number]
+  }
+  middle_name: string
+  otp: number
+  password: string | undefined
+  password_confirmed: string | undefined
+  password_reset: boolean
+  password_changed_at: Date
+  peers: string[]
+  peers_pending: string[]
+  peers_blocked: string[]
+  is_dog_owner: boolean
+  title: string
+  phone_number: string
+  profile_bio: string
+  push_notification_token: string
+  relationship_status: string
   role: string
-  state: string
-  updated_at?: string
-  experience_level?: string
-  verified: boolean
-  internal_notes?: IUserInternalNote[]
-  isOnboarded?: boolean
-  is_approved: boolean
-  onboarding?: IOnboardingStep
-  onboarding_notificationsSent?: boolean
-  job_preferences?: string[]
-  address?: string
-  avatar?: string
-  birth_date?: Date
-  city?: string
-  country?: string
-  gender?: string
-  middle_name?: string
-  preferred_name?: string
-  notifications?: string[]
-  phone_number?: string
-  role_id?: string
-  zip?: string
-  documents?: IUserDocument[]
-  student_record?: ProgressHTU
-  score_rating?: number
-  is_shift_supervisor?: boolean
-  wps_training?: Date
-  companies?: string[] | ICompany[]
-}
-
-export interface IUserPopulated extends IUser {
-  companies: ICompanyWithFacilities[]
+  school_id: string
+  study_main: string
+  study_secondary: string
+  unread_notifications_count: number
 }

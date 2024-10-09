@@ -1,21 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, type Dispatch, type SetStateAction } from 'react'
 
 import { Button } from 'primereact/button'
-import { Checkbox, type CheckboxChangeEvent } from 'primereact/checkbox'
+// import { Checkbox, type CheckboxChangeEvent } from 'primereact/checkbox'
 import { InputMask, type InputMaskChangeEvent } from 'primereact/inputmask'
 import { InputText } from 'primereact/inputtext'
-import { OrganizationChart } from 'primereact/organizationchart'
 
-import { AddressAutoComplete, type IAddressAutoComplete } from '../../../components/shared/forms/AddressAutoComplete'
-import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
+// import { OrganizationChart } from 'primereact/organizationchart'
+import {
+  // AddressAutoComplete,
+  type IAddressAutoComplete,
+} from '../../../components/shared/forms/AddressAutoComplete'
+// import { HtInputHelpText } from '../../../components/shared/forms/HtInputHelpText'
 import { HtInputLabel } from '../../../components/shared/forms/HtInputLabel'
 import { UploadAvatar } from '../../../components/shared/forms/UploadAvatar'
 import { HtInfoTooltip } from '../../../components/shared/general/HtInfoTooltip'
-import { type IUserPopulated, type IUser } from '../../../interfaces/User'
+import { type IUser } from '../../../interfaces/User'
 import { requestService } from '../../../services/requestServiceNew'
 import { useUtils } from '../../../store/useUtils'
-import { cn } from '../../../utils/cn'
-import { type INotificationPreference } from '../../../utils/formOptions'
+// import { cn } from '../../../utils/cn'
+// import { type INotificationPreference } from '../../../utils/formOptions'
 import { roleChecker, roleTxt } from '../../../utils/roleChecker'
 
 export const ProfileDetail = ({
@@ -23,8 +27,8 @@ export const ProfileDetail = ({
   setFormUser,
   updateUser,
 }: {
-  formUser: IUserPopulated
-  setFormUser: Dispatch<SetStateAction<IUserPopulated>>
+  formUser: IUser
+  setFormUser: Dispatch<SetStateAction<IUser>>
   updateUser: React.FormEventHandler<HTMLFormElement>
 }) => {
   const [moreAddressDetails, setMoreAddressDetails] = useState<IAddressAutoComplete>()
@@ -34,7 +38,7 @@ export const ProfileDetail = ({
 
   useEffect(() => {
     if (moreAddressDetails) {
-      setFormUser(prevState => ({
+      setFormUser((prevState: any) => ({
         ...prevState,
         country: moreAddressDetails.country ?? '',
         state: moreAddressDetails.state ?? '',
@@ -68,26 +72,12 @@ export const ProfileDetail = ({
 
   const handleFormUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target as HTMLInputElement
-    setFormUser(prevState => ({ ...prevState, [name]: value }))
+    setFormUser((prevState: any) => ({ ...prevState, [name]: value }))
   }
 
   const handleFormUpdateNumber = (e: InputMaskChangeEvent) => {
     const { name, value } = e.target
-    setFormUser(prevState => ({ ...prevState, [name]: value }))
-  }
-
-  const handleNotificationPreferenceChange = (e: CheckboxChangeEvent, type: INotificationPreference) => {
-    if (e.checked ?? false) {
-      setFormUser(prevState => ({
-        ...prevState,
-        notifications: [...(prevState?.notifications ?? []), type],
-      }))
-    } else {
-      setFormUser(prevState => ({
-        ...prevState,
-        notifications: prevState?.notifications?.filter(pref => pref !== type),
-      }))
-    }
+    setFormUser((prevState: any) => ({ ...prevState, [name]: value }))
   }
 
   return formUser?.role ? (
@@ -204,49 +194,9 @@ export const ProfileDetail = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-gray-900/10 pb-12 sm:gap-y-10 md:grid-cols-3">
-          <div>
-            <h2 className=" font-semibold leading-7">Address</h2>
-            <p className="mt-1 text-sm leading-6">
-              Please type in the address and choose from the dropdown to select the correct address.
-            </p>
-          </div>
-
-          <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 md:col-span-2">
-            <div className="sm:col-span-6">
-              <HtInfoTooltip message="This is the physical address where you get your mail.">
-                <HtInputLabel htmlFor="address" labelText="Address" />
-              </HtInfoTooltip>
-              <AddressAutoComplete
-                controlled
-                value={formUser.address}
-                setMoreAddressDetails={setMoreAddressDetails}
-                currentAddress={formUser.address ?? ''}
-                classNames={cn({ 'p-invalid': false }, 'mt-2')}
-                aria-describedby="address-help"
-              />
-              <HtInputHelpText fieldName="address" helpText="Residential Address ONLY" />
-              <div className="mt-4">
-                <p className="mt-1 text-sm leading-6">
-                  <strong>State:</strong> {formUser.state}
-                </p>
-                <p className="mt-1 text-sm leading-6">
-                  <strong>Zip:</strong> {formUser.zip}
-                </p>
-                <p className="mt-1 text-sm leading-6">
-                  <strong>City:</strong> {formUser.city}
-                </p>
-                <p className="mt-1 text-sm leading-6">
-                  <strong>Address:</strong> {formUser.address}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {role === 'admin' ? (
           <>
-            <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b pb-12 sm:gap-y-10 md:grid-cols-3">
+            {/* <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b pb-12 sm:gap-y-10 md:grid-cols-3">
               <div>
                 <h2 className=" font-semibold leading-7">User Statuses</h2>
                 <p className="mt-1 text-sm leading-6">
@@ -273,35 +223,28 @@ export const ProfileDetail = ({
                     onChange={e =>
                       setFormUser({
                         ...formUser,
-                        onboarding: {
-                          ...formUser.onboarding,
-                          completed: e.checked ?? false,
-                          step_number: formUser.onboarding?.step_number ?? 0,
-                          description: formUser.onboarding?.description ?? '',
-                          type: formUser.onboarding?.type ?? '',
-                        },
                       })
                     }
-                    checked={formUser.onboarding?.completed ?? false}
+                    checked={formUser.is_onboarded ?? false}
                   />
                 </div>
                 <div>
-                  <HtInputLabel htmlFor="is_approved" labelText="Approved / Verified" />
+                  <HtInputLabel htmlFor="is_active" labelText="Approved / Verified" />
                   <Checkbox
-                    inputId="is_approved"
-                    name="is_approved"
+                    inputId="is_active"
+                    name="is_active"
                     onChange={e =>
                       setFormUser({
                         ...formUser,
-                        is_approved: e.checked ?? false,
+                        is_active: e.checked ?? false,
                       })
                     }
-                    checked={formUser.is_approved ?? false}
+                    checked={formUser.is_active ?? false}
                   />
                 </div>
               </div>
-            </div>
-            {(roleTxt(formUser.role) === 'Client' && formUser?.companies?.length) ?? 0 > 0 ? (
+            </div> */}
+            {/* {(roleTxt(formUser.role) === 'Client' && formUser?.companies?.length) ?? 0 > 0 ? (
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                 <div>
                   <h2 className=" font-semibold leading-7">Organizational Structure</h2>
@@ -313,11 +256,11 @@ export const ProfileDetail = ({
                     <div className="mt-6 space-y-6">
                       {typeof formUser.companies === 'object' ? (
                         <OrganizationChart
-                          value={formUser?.companies?.map(company => {
+                          value={formUser?.companies?.map((company: any) => {
                             return {
                               label: company?.company_name,
                               expanded: true,
-                              children: company?.facilities?.map(facility => {
+                              children: company?.facilities?.map((facility: any) => {
                                 return {
                                   label: facility?.name,
                                 }
@@ -330,7 +273,7 @@ export const ProfileDetail = ({
                   </fieldset>
                 </div>
               </div>
-            ) : null}
+            ) : null} */}
           </>
         ) : null}
 
@@ -348,12 +291,12 @@ export const ProfileDetail = ({
               <div className="mt-6 space-y-6">
                 <div className="relative flex gap-x-3">
                   <div className="flex h-6 items-center">
-                    <Checkbox
+                    {/* <Checkbox
                       inputId="notification_email"
                       name="notifications.email"
                       onChange={e => handleNotificationPreferenceChange(e, 'notification_email')}
                       checked={formUser?.notifications?.includes('notification_email') ?? false ? true : false}
-                    />
+                    /> */}
                   </div>
                   <div className="text-sm leading-6">
                     <label htmlFor="notification_email" className="font-medium">
@@ -364,12 +307,12 @@ export const ProfileDetail = ({
                 </div>
                 <div className="relative flex gap-x-3">
                   <div className="flex h-6 items-center">
-                    <Checkbox
+                    {/* <Checkbox
                       inputId="notification_sms"
                       name="notifications.sms"
                       onChange={e => handleNotificationPreferenceChange(e, 'notification_sms')}
                       checked={formUser?.notifications?.includes('notification_sms') ?? false ? true : false}
-                    />
+                    /> */}
                   </div>
                   <div className="text-sm leading-6">
                     <label htmlFor="notification_sms" className="font-medium">

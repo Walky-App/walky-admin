@@ -23,7 +23,7 @@ interface IACHAddPaymentFormData {
   ach_routing_number: string
   ach_bank_name: string
   ach_account_name: string
-  ach_is_approved: boolean
+  ach_is_active: boolean
   isDefault: boolean
   facilities?: string[]
 }
@@ -39,7 +39,7 @@ export const ACHAddPayment = ({
     ach_routing_number: '',
     ach_bank_name: '',
     ach_account_name: '',
-    ach_is_approved: false,
+    ach_is_active: false,
     isDefault: true,
     facilities: [],
   })
@@ -86,7 +86,7 @@ export const ACHAddPayment = ({
           ach_routing_number: '',
           ach_bank_name: '',
           ach_account_name: '',
-          ach_is_approved: false,
+          ach_is_active: false,
           isDefault: true,
           facilities: [],
         })
@@ -240,12 +240,12 @@ export const ACHAddPayment = ({
               <span className="underline underline-offset-2">Please accept the terms below:</span>
               <div className="flex items-center gap-3">
                 <Checkbox
-                  inputId="ach_is_approved"
-                  name="ach_is_approved"
-                  onChange={e => handleCheckboxChange(e, 'ach_is_approved')}
-                  checked={formData.ach_is_approved}
+                  inputId="ach_is_active"
+                  name="ach_is_active"
+                  onChange={e => handleCheckboxChange(e, 'ach_is_active')}
+                  checked={formData.ach_is_active}
                 />
-                <label htmlFor="ach_is_approved">
+                <label htmlFor="ach_is_active">
                   "I approve this ACH payment method to be used for future payments"
                 </label>
               </div>
@@ -254,7 +254,7 @@ export const ACHAddPayment = ({
                   type="submit"
                   size="large"
                   label="Add ACH Payment Method"
-                  disabled={!isCheckImageUploaded || !formData.ach_is_approved}
+                  disabled={!isCheckImageUploaded || !formData.ach_is_active}
                   loading={loading}
                 />
               </div>

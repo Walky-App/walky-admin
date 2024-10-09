@@ -287,73 +287,54 @@ export const useUpdateOnboardingStatus = () => {
 
   const { showToast } = useUtils()
 
-  const updateOnboardingStatus = useCallback(
-    async (onboardingInfo: IOnboardingUpdateInfo) => {
-      setIsLoading(true)
-      const userToken = GetTokenInfo()
-      const userId = userToken?._id
+  const updateOnboardingStatus = useCallback(async () => {
+    setIsLoading(true)
+    const userToken = GetTokenInfo()
+    const userId = userToken?._id
 
-      if (userId != null) {
-        try {
-          const response = await requestService({ path: `users/${userId}` })
+    if (userId != null) {
+      try {
+        const response = await requestService({ path: `users/${userId}` })
 
-          if (!response.ok) {
-            throw new Error('User not found')
-          }
-
-          const userFound: IUser = await response.json()
-
-          const updatedUserObject: IUser = {
-            ...userFound,
-            onboarding: {
-              ...userFound.onboarding,
-              step_number: onboardingInfo.step_number,
-              description: onboardingInfo.description,
-              type: onboardingInfo.type,
-              completed: onboardingInfo.completed,
-            },
-          }
-
-          const updateResponse = await requestService({
-            path: `users/${userId}`,
-            method: 'PATCH',
-            body: JSON.stringify(updatedUserObject),
-          })
-
-          if (!updateResponse.ok) {
-            throw new Error('Failed to update user')
-          }
-
-          const updatedUser: IUser = await updateResponse.json()
-
-          const updatedUserData: ITokenInfo = {
-            ...userToken,
-            onboarding: {
-              ...updatedUser.onboarding,
-              step_number: onboardingInfo.step_number,
-              description: onboardingInfo.description,
-              type: onboardingInfo.type,
-              completed: onboardingInfo.completed,
-            },
-          }
-          SetToken(updatedUserData)
-          return true
-        } catch (error) {
-          console.error('Error updating user:', error)
-          showToast({
-            severity: 'error',
-            summary: 'Error saving changes',
-            detail: `Information could not be updated.`,
-            life: 2000,
-          })
-          return false
-        } finally {
-          setIsLoading(false)
+        if (!response.ok) {
+          throw new Error('User not found')
         }
+
+        const userFound: IUser = await response.json()
+
+        const updatedUserObject: IUser = {
+          ...userFound,
+        }
+
+        const updateResponse = await requestService({
+          path: `users/${userId}`,
+          method: 'PATCH',
+          body: JSON.stringify(updatedUserObject),
+        })
+
+        if (!updateResponse.ok) {
+          throw new Error('Failed to update user')
+        }
+
+        const updatedUserData: ITokenInfo = {
+          ...userToken,
+        }
+        SetToken(updatedUserData)
+        return true
+      } catch (error) {
+        console.error('Error updating user:', error)
+        showToast({
+          severity: 'error',
+          summary: 'Error saving changes',
+          detail: `Information could not be updated.`,
+          life: 2000,
+        })
+        return false
+      } finally {
+        setIsLoading(false)
       }
-    },
-    [showToast],
-  )
+    }
+  }, [showToast])
 
   return { updateOnboardingStatus, isLoading }
 }

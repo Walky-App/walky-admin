@@ -31,7 +31,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [profilePath, setProfilePath] = useState<string>('')
 
   useEffect(() => {
-    const ls_data: ITokenInfo = JSON.parse(localStorage.getItem('ht_usr') as string)
+    const ls_data: ITokenInfo = JSON.parse(localStorage.getItem('walky_usr') as string)
     if (ls_data != null && ls_data.role) {
       setUser(ls_data as IUser)
     }

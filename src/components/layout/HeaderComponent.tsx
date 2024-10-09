@@ -14,7 +14,6 @@ import { LogoutService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
 import { cn } from '../../utils/cn'
 import { roleChecker } from '../../utils/roleChecker'
-import { GetTokenInfo } from '../../utils/tokenUtil'
 import { ThemeSelector } from '../ThemeSelector'
 import { LogosPack } from './LogosPack'
 
@@ -31,10 +30,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
   const { user, profilePath } = useAuth()
   const { avatarImageUrl, setAvatarImageUrl } = useUtils()
   const role = roleChecker()
-  const tokenInfo = GetTokenInfo()
   const location = useLocation()
-
-  const userIsOnboarded = tokenInfo?.onboarding?.completed
 
   const userNavigation: UserNavigationItem[] = [{ name: 'My Profile', href: profilePath }]
 
@@ -116,13 +112,13 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
             <Menu.Button className="-m-1.5 flex items-center p-1.5">
               <span className="sr-only">Open user menu</span>
               <span className="sr-only">Open user menu</span>
-              <Avatar
+              {/* <Avatar
                 label={user?.first_name[0]}
                 image={user?.avatar}
                 size="normal"
                 shape="circle"
                 pt={{ image: { className: 'object-cover' } }}
-              />
+              /> */}
               <span className="hidden lg:flex lg:items-center">
                 {user?.first_name != null ? (
                   <span className="ml-4 text-sm font-semibold leading-6" aria-hidden="true">
@@ -176,7 +172,7 @@ export const HeaderComponent = ({ setSidebarOpen }: HeaderComponentProps) => {
           </button>
         </div>
       </header>
-      {!userIsOnboarded && role !== 'admin' ? (
+      {role !== 'admin' ? (
         <div className="rounded-md bg-yellow-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">

@@ -17,13 +17,12 @@ import { type IFacility } from '../../../../interfaces/facility'
 import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { GetTokenInfo } from '../../../../utils/tokenUtil'
-import { clientOnboardingSteps } from '../ClientOnboardingPage'
+// import { clientOnboardingSteps } from '../ClientOnboardingPage'
 import {
   type StepProps,
   FormDataContext,
   type IClientOnboardingFormInputs,
-  useUpdateOnboardingStatus,
-  type IOnboardingUpdateInfo,
+  // useUpdateOnboardingStatus, // type IOnboardingUpdateInfo,
 } from '../clientOnboardingUtils'
 
 export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
@@ -35,21 +34,20 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
 
   const { showToast } = useUtils()
 
-  const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
+  // const { updateOnboardingStatus, isLoading } = useUpdateOnboardingStatus()
 
-  const updateOnboardingInfo: IOnboardingUpdateInfo = {
-    step_number: 3,
-    description: clientOnboardingSteps[2].label ?? 'Documents and Images',
-    type: 'client',
-    completed: false,
-  }
+  // const updateOnboardingInfo: IOnboardingUpdateInfo = {
+  //   step_number: 3,
+  //   description: clientOnboardingSteps[2].label ?? 'Documents and Images',
+  //   type: 'client',
+  //   completed: false,
+  // }
 
   const handleSaveButton = async () => {
-    const success = await updateOnboardingStatus(updateOnboardingInfo)
-
-    if (success === true) {
-      setStep(step + 1)
-    }
+    // const success = await updateOnboardingStatus(updateOnboardingInfo)
+    // if (success === true) {
+    //   setStep(step + 1)
+    // }
   }
 
   const handleBeforeSend = (event: FileUploadBeforeSendEvent) => {
@@ -305,7 +303,7 @@ export const DocumentsAndImagesUploadForm = ({ step, setStep }: StepProps) => {
         <Button
           label={formData?.licenses?.length || formData?.images?.length ? 'Save & Continue' : 'Skip for now'}
           onClick={handleSaveButton}
-          loading={isLoading}
+          // loading={isLoading}
         />
       </div>
     </>

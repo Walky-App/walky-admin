@@ -30,13 +30,8 @@ export interface ITransaction {
 
 export const EmployeeDashboard = () => {
   const [user, setUser] = useState<IUser | null>(null)
-  const navigate = useNavigate()
 
-  const { _id, onboarding, avatar } = GetTokenInfo()
-
-  useEffect(() => {
-    if (!(onboarding?.completed ?? false)) navigate('/employee/onboarding')
-  }, [onboarding?.completed, navigate])
+  const { _id } = GetTokenInfo()
 
   useEffect(() => {
     const fetchUser = async () => {

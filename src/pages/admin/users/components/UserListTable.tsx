@@ -85,27 +85,18 @@ export const UserListTable = ({ data, userType }: { data: IUser[]; userType: str
           )}
         />
         <Column
-          field="is_approved"
+          field="is_active"
           sortable
           header="Approved"
-          body={(user: IUser) => (user?.is_approved ? '✅' : '❌')}
+          body={(user: IUser) => (user?.is_active ? '✅' : '❌')}
         />
         <Column
           field="onboarding.completed"
           sortable
           header="Onboarded"
-          body={(user: IUser) => (user?.onboarding?.completed ? '✅' : '❌')}
+          body={(user: IUser) => (user?.is_onboarded ? '✅' : '❌')}
         />
-        <Column
-          field="user"
-          header="HTU Certs"
-          body={(user: IUser) =>
-            user?.student_record?.categories?.filter(cat => cat?.is_completed === true).length ? '✅' : '❌'
-          }
-        />
-        <Column field="wps_training" sortable header="WPS" body={(user: IUser) => (user.wps_training ? '✅' : '❌')} />
-        <Column field="documents" sortable header="Docs" body={(user: IUser) => (user.documents ? '✅' : '❌')} />
-        <Column field="active" sortable header="Active" body={(user: IUser) => (user.active ? '✅' : '❌')} />
+      
         <Column field="city" header="City" />
         <Column field="state" header="State" />
         <Column

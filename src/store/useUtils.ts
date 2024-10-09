@@ -55,10 +55,10 @@ export const useUtils = create<State>(set => ({
     set({ removeToastCallback: callback })
   },
   setAvatarImageUrl: (value: string) => {
-    const ht_usr = JSON.parse(localStorage.getItem('ht_usr') || '{}')
-    if (ht_usr.avatar === undefined) {
-      ht_usr.avatar = value
-      localStorage.setItem('ht_usr', JSON.stringify(ht_usr))
+    const walky_usr = JSON.parse(localStorage.getItem('walky_usr') || '{}')
+    if (walky_usr.avatar === undefined) {
+      walky_usr.avatar = value
+      localStorage.setItem('walky_usr', JSON.stringify(walky_usr))
     }
     set({ avatarImageUrl: value })
   },

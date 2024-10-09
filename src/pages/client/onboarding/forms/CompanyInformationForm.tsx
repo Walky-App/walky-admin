@@ -16,14 +16,13 @@ import { requestService } from '../../../../services/requestServiceNew'
 import { useUtils } from '../../../../store/useUtils'
 import { getFormErrorMessage } from '../../../../utils/formUtils'
 import { requiredFieldsNoticeText } from '../../../../utils/formUtils'
-import { clientOnboardingSteps } from '../ClientOnboardingPage'
+// import { clientOnboardingSteps } from '../ClientOnboardingPage'
 import {
   type StepProps,
   FormDataContext,
   type IClientOnboardingFormInputs,
-  createCompanyFormData,
-  useUpdateOnboardingStatus,
-  type IOnboardingUpdateInfo,
+  createCompanyFormData, // useUpdateOnboardingStatus,
+  // type IOnboardingUpdateInfo,
 } from '../clientOnboardingUtils'
 
 export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
@@ -34,14 +33,14 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
 
   const { showToast } = useUtils()
 
-  const { updateOnboardingStatus } = useUpdateOnboardingStatus()
+  // const { updateOnboardingStatus } = useUpdateOnboardingStatus()
 
-  const updateOnboardingInfo: IOnboardingUpdateInfo = {
-    step_number: 1,
-    description: clientOnboardingSteps[0].label ?? 'Company Information',
-    type: 'client',
-    completed: false,
-  }
+  // const updateOnboardingInfo: IOnboardingUpdateInfo = {
+  //   step_number: 1,
+  //   description: clientOnboardingSteps[0].label ?? 'Company Information',
+  //   type: 'client',
+  //   completed: false,
+  // }
 
   const formValues = formData != null ? formData : defaultValues
 
@@ -128,7 +127,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
               company_id: companyFormData._id ?? '',
             }))
 
-            await updateOnboardingStatus(updateOnboardingInfo)
+            // await updateOnboardingStatus(updateOnboardingInfo)
 
             setTimeout(() => {
               setStep(step + 1)
@@ -168,7 +167,7 @@ export const CompanyInformationForm = ({ step, setStep }: StepProps) => {
             company_id: companyFormData._id ?? '',
           }))
 
-          await updateOnboardingStatus(updateOnboardingInfo)
+          // await updateOnboardingStatus(updateOnboardingInfo)
 
           setTimeout(() => {
             setStep(step + 1)

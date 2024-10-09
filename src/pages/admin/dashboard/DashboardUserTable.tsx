@@ -86,7 +86,7 @@ export const DashboardUserTable = ({ data }: { data: IUser[] }) => {
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                       <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-green-600/20">
-                        Onboarding Step {person?.onboarding?.step_number}
+                        Onboarding Step {person?.is_onboarded}
                       </span>
                     </td>
                     {/* <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{person.role}</td> */}

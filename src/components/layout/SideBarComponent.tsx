@@ -11,7 +11,6 @@ import { BugAntIcon, ChatBubbleLeftRightIcon, ChevronRightIcon, ComputerDesktopI
 import { useAuth } from '../../contexts/AuthContext'
 import { getCurrentUserRole } from '../../utils/UserRole'
 import { cn } from '../../utils/cn'
-import { GetTokenInfo } from '../../utils/tokenUtil'
 import { type INavLink, userLinks } from './Links'
 import { LogosPack } from './LogosPack'
 
@@ -23,7 +22,6 @@ interface SidebarComponentProps {
 export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarComponentProps) => {
   const [visible, setVisible] = useState(false)
   const [links, setLinks] = useState<INavLink[]>([])
-  const [onboardingCompleted, setOnboardingCompleted] = useState(false)
 
   const location = useLocation()
   const { user } = useAuth()
@@ -32,13 +30,12 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
   const navigate = useNavigate()
 
   useEffect(() => {
-    const tokenInfo = GetTokenInfo()
-    const userIsOnboarded = tokenInfo?.onboarding?.completed
-    setOnboardingCompleted(userIsOnboarded ?? false)
+    // const tokenInfo = GetTokenInfo()
+    // setOnboardingCompleted(userIsOnboarded ?? false)
 
-    const links = userIsOnboarded === true ? userLinks(userIsOnboarded, role) : userLinks(false, role)
-    setLinks(links)
-  }, [location, role])
+    const roleBasedLinks = userLinks(true, role)
+    setLinks(roleBasedLinks)
+  }, [location, role, links])
 
   return (
     <div
@@ -128,14 +125,6 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
                 )
               })}
               <li>
-                {role === 'admin' ? (
-                  <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
-                ) : onboardingCompleted ? (
-                  <div className="text-xs font-semibold leading-6 text-gray-400">Coming Soon</div>
-                ) : (
-                  <div className="text-xs font-semibold leading-6 text-gray-400">Available After Onboarding</div>
-                )}
-
                 <ul className="-mx-2 mt-2 space-y-1">
                   {user?.role
                     ? links?.map(link => {
@@ -172,6 +161,7 @@ export const SidebarComponent = ({ sidebarOpen, setSidebarOpen }: SidebarCompone
       </nav>
 
       <Button
+        disabled
         label="Need Help?"
         link
         iconPos="right"

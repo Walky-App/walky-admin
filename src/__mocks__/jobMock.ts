@@ -26,7 +26,7 @@ export const jobMock: IJob = {
   applicants: [
     {
       user: {} as IUser,
-      is_approved: false,
+      is_active: false,
       is_working: false,
       _id: '66bf9e8f2fe241f8e7b433e7',
       first_name: 'John',
@@ -35,7 +35,7 @@ export const jobMock: IJob = {
     },
     {
       user: {} as IUser,
-      is_approved: false,
+      is_active: false,
       is_working: false,
       _id: '66bf9f012fe241f8e7b43edd',
       first_name: 'Jane',

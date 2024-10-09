@@ -38,7 +38,7 @@ export const SignupClientInvited = () => {
     notifications: [],
     terms: { is_accepted: false, accepted_at: new Date(), ip_address: '' },
     role: employee_role,
-    onboarding: { completed: true, step_number: 5, description: 'Invited by admin', type: 'client' },
+    // onboarding: { completed: true, step_number: 5, description: 'Invited by admin', type: 'client' },
   })
   const [visible, setVisible] = useState(true)
 

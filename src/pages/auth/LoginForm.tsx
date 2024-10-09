@@ -13,7 +13,7 @@ import { type ITokenInfo } from '../../interfaces/services'
 import { LoginService } from '../../services/authService'
 import { useUtils } from '../../store/useUtils'
 import { roleChecker } from '../../utils/roleChecker'
-import { GetTokenInfo, SetToken } from '../../utils/tokenUtil'
+import { SetToken } from '../../utils/tokenUtil'
 
 export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => void }) => {
   const [error, setError] = useState<Error>()
@@ -21,14 +21,13 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
   const [value, setValue] = useState<string>('')
   const { setAvatarImageUrl } = useUtils()
 
-  const location = useLocation()
+  // const location = useLocation()
 
-  const params = new URLSearchParams(location.search)
-  const redirectPath = params.get('redirect')
+  // const params = new URLSearchParams(location.search)
+  // const redirectPath = params.get('redirect')
 
-  const { setUser } = useAuth()
+  // const { setUser } = useAuth()
   const navigate = useNavigate()
-  const tokenInfo = GetTokenInfo()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -47,53 +46,48 @@ export const LoginForm = ({ setUserForm }: { setUserForm: (value: string) => voi
         setLoading(false)
         return setError(new Error('Email/Password invalid'))
       } else {
-        const { access_token, user }: ILoginData = data
-        if (user && access_token) {
+        const { access_token, _id, first_name, role, avatar_url }: ILoginData = data
+        if (_id && access_token) {
           const data: ITokenInfo = {
-            first_name: user.first_name,
-            _id: user._id,
-            role: user.role,
+            first_name: first_name,
+            _id: _id,
+            role: role,
             access_token: access_token,
-            state: user.state,
-            avatar: user.avatar,
-            onboarding: user.onboarding,
+            avatar: avatar_url,
           }
 
           SetToken(data)
-          setUser({ ...user, access_token: access_token, onboarding: user.onboarding })
-          setAvatarImageUrl(user.avatar as string)
-          if (redirectPath) {
-            navigate(redirectPath, { replace: true })
-          } else {
-            switch (roleChecker()) {
-              case 'admin':
-                navigate('/admin/dashboard')
-                break
-              case 'client':
-                if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
-                  navigate('/client/onboarding')
-                } else {
-                  navigate('/client/dashboard')
-                }
-                break
-              case 'employee':
-                if (tokenInfo.onboarding?.completed === false || tokenInfo.onboarding === undefined) {
-                  navigate('/employee/onboarding')
-                } else {
-                  navigate('/employee/dashboard')
-                }
-                break
-              case 'sales':
-                navigate('/sales/dashboard')
-                break
-              default:
-                navigate('/login')
-            }
+          // setUser({ access_token: access_token })
+          setAvatarImageUrl(avatar_url as string)
+          // if (redirectPath) {
+          //   navigate(redirectPath, { replace: true })
+          // } else {
+          switch (roleChecker()) {
+            case 'admin':
+              navigate('/admin/dashboard')
+              break
+            case 'client':
+              // if (tokenInfo.=== false || tokenInfo.onboarding === undefined) {
+              // navigate('/client/onboarding')
+              // } else {
+              // navigate('/client/dashboard')
+              // }
+              break
+            case 'employee':
+              // if (tokenInfo.is_onboarded?.completed === false || tokenInfo.onboarding === undefined) {
+              // navigate('/employee/onboarding')
+              // } else {
+              // navigate('/employee/dashboard')
+              // }
+              break
+            default:
+              navigate('/login')
           }
-        } else {
-          setError(data.message)
-          setLoading(false)
         }
+        // } else {
+        //   setError(data.message)
+        //   setLoading(false)
+        // }
       }
     } catch (error) {
       console.error(error)
