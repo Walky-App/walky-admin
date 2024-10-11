@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [ "VZKG9CT2CC.com.walkyapp.development", "VZKG9CT2CC.com.walkyapp.prod", "VZKG9CT2CC.com.walkyapp.staging" ],
+        "components": [
+          {
+            "/": "/*"
+          }
+        ]
+      }
+    ]
+  } 
+}
