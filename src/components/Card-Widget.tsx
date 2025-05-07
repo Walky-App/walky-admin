@@ -2,58 +2,22 @@ import CIcon from '@coreui/icons-react'
 import { cilArrowTop, cilOptions } from '@coreui/icons'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 
-import { 
-  CCard, 
-  CCardBody, 
-  CCardTitle, 
-  CCardText, 
-  CRow, //C
-  CCol, //C
-  CTabContent, 
-  CTabPane, 
-  CNav, 
-  CNavItem, 
-  CNavLink,
-  CCardHeader,
-  CBadge,
-  CButton,
-  CDropdownItem, //C
-  CDropdown, //C
-  CDropdownMenu, //C
-  CDropdownToggle, //C
-  CWidgetStatsA //C
-} from '@coreui/react' //C
-import { useState } from 'react'
-import './App.css'
+import {
+  CCol,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+  CRow,
+  CWidgetStatsA,
+} from '@coreui/react'
 
-// Import example components
-import ExampleAdminLayout from './components/ExampleAdminLayout'
-import BasicForm from './components/examples/BasicForm'
-import DataTable from './components/examples/DataTable'
-import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
-
-
-function App() {
-  const [activeKey, setActiveKey] = useState(1)
-
+export const WidgetStatsAExample = () => {
   return (
-    
-    <ExampleAdminLayout>
-      <BreadcrumbDividersExample />
-      <div className="mb-4 d-sm-flex justify-content-between align-items-center">
-        <div>
-          
-          
-        </div>
-        <div className="mt-3 mt-sm-0">
-          
-        </div>
-      </div>
-
     <CRow>
-      <CCol sm={6} lg={3}>
+      <CCol sm={6}>
         <CWidgetStatsA
-          className="mb-4 px-0 py-0"
+          className="mb-4"
           color="primary"
           value={
             <>
@@ -63,11 +27,7 @@ function App() {
               </span>
             </>
           }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Walks</span>
-            </div>
-          }     
+          title="Surprise"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -141,9 +101,9 @@ function App() {
           }
         />
       </CCol>
-      <CCol sm={6} lg={3}>
+      <CCol sm={6}>
         <CWidgetStatsA
-          className="mb-4 px-0 py-0"
+          className="mb-4"
           color="info"
           value={
             <>
@@ -153,11 +113,7 @@ function App() {
               </span>
             </>
           }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Surprise</span>
-            </div>
-          }     
+          title="Walks"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -230,9 +186,9 @@ function App() {
           }
         />
       </CCol>
-      <CCol sm={6}lg={3}>
+      <CCol sm={6}>
         <CWidgetStatsA
-          className="mb-4 px-0 py-0"
+          className="mb-4"
           color="warning"
           value={
             <>
@@ -242,11 +198,7 @@ function App() {
               </span>
             </>
           }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Walks</span>
-            </div>
-          } 
+          title="Events"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -307,9 +259,9 @@ function App() {
           }
         />
       </CCol>
-      <CCol sm={6} lg={3}>
+      <CCol sm={6}>
         <CWidgetStatsA
-          className="mb-4 px-0 py-0"
+          className="mb-4"
           color="danger"
           value={
             <>
@@ -319,11 +271,7 @@ function App() {
               </span>
             </>
           }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Surprise</span>
-            </div>
-          }          
+          title="Ideas"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -403,98 +351,5 @@ function App() {
         />
       </CCol>
     </CRow>
-
-      <CCard className="mb-4">
-        <CCardHeader className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Example Components</h5>
-          <CBadge color="primary" shape="rounded-pill">CoreUI</CBadge>
-        </CCardHeader>
-        <CCardBody>
-          <CCardText className="mb-3">
-            Below are example components to help you get started with CoreUI. Switch between tabs to view different examples.
-          </CCardText>
-          
-          <CNav variant="tabs" className="mt-2" role="tablist">
-            <CNavItem role="presentation">
-              <CNavLink
-                active={activeKey === 1}
-                component="button"
-                role="tab"
-                aria-controls="table-tab-pane"
-                aria-selected={activeKey === 1}
-                onClick={() => setActiveKey(1)}
-              >
-                <i className="fa fa-table me-2"></i>
-                Data Table Example
-              </CNavLink>
-            </CNavItem>
-            <CNavItem role="presentation">
-              <CNavLink
-                active={activeKey === 2}
-                component="button"
-                role="tab"
-                aria-controls="form-tab-pane"
-                aria-selected={activeKey === 2}
-                onClick={() => setActiveKey(2)}
-              >
-                <i className="fa fa-edit me-2"></i>
-                Form Example
-              </CNavLink>
-            </CNavItem>
-          </CNav>
-          
-          <CTabContent>
-            <CTabPane role="tabpanel" aria-labelledby="table-tab" visible={activeKey === 1}>
-              <div className="pt-3">
-                <DataTable />
-              </div>
-            </CTabPane>
-            
-            <CTabPane role="tabpanel" aria-labelledby="form-tab" visible={activeKey === 2}>
-              <div className="pt-3">
-                <BasicForm />
-              </div>
-            </CTabPane>
-          </CTabContent>
-        </CCardBody>
-      </CCard>
-      
-      <CRow className="mt-4">
-        <CCol>
-          <CCard className="bg-light border-0">
-            <CCardBody className="p-4">
-              <div className="d-flex align-items-center mb-3">
-                <div className="bg-info p-3 me-3 text-white rounded">
-                  <i className="fa fa-info-circle fa-2x"></i>
-                </div>
-                <CCardTitle className="mb-0 h4">Quick Tips for Junior Developers</CCardTitle>
-              </div>
-              <CCardText>
-                <ul className="text-start ps-0 list-unstyled">
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Check the README.md file for detailed instructions
-                  </li>
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Refer to <a href="https://coreui.io/react/docs/" target="_blank" rel="noopener noreferrer">CoreUI documentation</a> for components
-                  </li>
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Explore the example components in the codebase under src/components/examples
-                  </li>
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Use browser developer tools (F12) to inspect elements and debug issues
-                  </li>
-                </ul>
-              </CCardText>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </ExampleAdminLayout>
   )
 }
-
-export default App
