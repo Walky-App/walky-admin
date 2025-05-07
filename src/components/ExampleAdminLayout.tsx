@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react'
 
 //// imported - lauren
@@ -10,12 +11,17 @@ import {
   CNavGroup,
 } from '@coreui/react'
 // ^^^
+=======
+import React from 'react';
+import { Topbar } from './Topbar'
+>>>>>>> e8f4245fa4b9718fe634a4bc6e63b55284991c64
 
 type Props = {
   children: React.ReactNode
 }
 function ExampleAdminLayout({ children }: Props) {
   return (
+<<<<<<< HEAD
     <div className="d-flex flex-column min-vh-100 bg-light">
       {/* Header */}
       <header className="header py-3 px-4 shadow-sm bg-white">
@@ -48,6 +54,11 @@ function ExampleAdminLayout({ children }: Props) {
         </div>
       </header>
 
+=======
+    <div className="d-flex flex-column vh-100 bg-light">
+      <Topbar/>
+      
+>>>>>>> e8f4245fa4b9718fe634a4bc6e63b55284991c64
       <div className="d-flex flex-grow-1">
 
 
