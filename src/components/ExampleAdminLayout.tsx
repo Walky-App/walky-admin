@@ -9,7 +9,7 @@ type Props = {
  */
 function ExampleAdminLayout({ children }: Props) {
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
+    <div className="d-flex flex-column min-vh-200 bg-light">
       {/* Header */}
       <header className="header py-3 px-4 shadow-sm bg-white">
         <div className="container-fluid d-flex justify-content-between align-items-center">
