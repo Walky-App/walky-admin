@@ -1,4 +1,3 @@
-import React from 'react'
 import { CIcon } from '@coreui/icons-react'
 import * as icon from '@coreui/icons'
 import { CAvatar, CNavbar, CContainer } from '@coreui/react'
