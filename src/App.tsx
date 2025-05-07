@@ -13,6 +13,8 @@ import {
   CCardHeader,
   CBadge,
   CButton
+  
+
 } from '@coreui/react'
 import { useState } from 'react'
 import './App.css'
@@ -21,21 +23,23 @@ import './App.css'
 import ExampleAdminLayout from './components/ExampleAdminLayout'
 import BasicForm from './components/examples/BasicForm'
 import DataTable from './components/examples/DataTable'
+import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
+
 
 function App() {
   const [activeKey, setActiveKey] = useState(1)
 
   return (
+    
     <ExampleAdminLayout>
+      <BreadcrumbDividersExample />
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
         <div>
-          <h2 className="mb-0">Dashboard</h2>
-          <p className="text-muted mb-0">Welcome to Walky Admin Panel</p>
+          
+          
         </div>
         <div className="mt-3 mt-sm-0">
-          <CButton color="primary">
-            <i className="fa fa-plus-circle me-1"></i> New Project
-          </CButton>
+          
         </div>
       </div>
 
