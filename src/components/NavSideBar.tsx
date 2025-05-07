@@ -1,18 +1,12 @@
-import React from 'react'
 import {
-  CBadge,
   CSidebar,
-  CSidebarBrand,
   CSidebarHeader,
   CSidebarNav,
-  CSidebarToggler,
   CNavGroup,
   CNavItem,
   CNavTitle,
 } from '@coreui/react'
 
-import CIcon from '@coreui/icons-react'
-import { cilCloudDownload, cilLayers, cilPuzzle, cilSpeedometer } from '@coreui/icons'
 
 // Default Sidebar
 // NavSideBar.tsx
