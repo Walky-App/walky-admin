@@ -1,8 +1,7 @@
+
 import React from 'react';
 import { Topbar } from './Topbar'
-import { Sidebar } from './NavSideBar'
-//// imported - lauren
-
+import { Sidebar } from './NavSideBar';
 
 type Props = {
   children: React.ReactNode
@@ -16,7 +15,7 @@ function ExampleAdminLayout({ children }: Props) {
 
         <Sidebar/>
 
-        {/* Main Content Area */}
+      {/* Main Content Area */}
         <div className="content flex-grow-1 p-4" style={{ overflowY: 'auto' }}>
           {children}
         </div>
