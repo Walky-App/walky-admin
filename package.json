@@ -9,13 +9,14 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "prepare": "husky",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "type-check": "tsc -b"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix",
-      "tsc-files --noEmit"
-    ]
+      "eslint --fix"
+    ],
+    "**/*.{ts,tsx}": "bash -c 'npm run type-check'"
   },
   "dependencies": {
     "@coreui/chartjs": "^3.1.2",
