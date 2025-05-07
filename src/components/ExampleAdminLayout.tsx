@@ -1,4 +1,5 @@
 import React from 'react';
+import { Topbar } from './Topbar'
 
 type Props = {
   children: React.ReactNode;
@@ -9,31 +10,8 @@ type Props = {
  */
 function ExampleAdminLayout({ children }: Props) {
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
-      {/* Header */}
-      <header className="header py-3 px-4 shadow-sm bg-white">
-        <div className="container-fluid d-flex justify-content-between align-items-center">
-          <div className="header-brand">
-            <h4 className="m-0 fw-bold text-primary">Walky Admin</h4>
-          </div>
-          <div className="header-nav d-flex align-items-center">
-            <div className="mx-3 text-muted">
-              <i className="fa fa-bell"></i>
-            </div>
-            <div className="mx-3 text-muted">
-              <i className="fa fa-cog"></i>
-            </div>
-            <div className="dropdown ms-2">
-              <button className="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button">
-                <div className="me-2 rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '30px', height: '30px' }}>
-                  A
-                </div>
-                <span>Admin</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="d-flex flex-column vh-100 bg-light">
+      <Topbar/>
       
       <div className="d-flex flex-grow-1">
         {/* Sidebar */}
