@@ -320,8 +320,8 @@ function App() {
           title={
             <div className="text-start ps-0">
               <span className="text-white">Surprise</span>
-            </div>
-          }          
+            </div>          
+          }
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">

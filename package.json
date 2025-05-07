@@ -16,7 +16,7 @@
     "*.{ts,tsx}": [
       "eslint --fix"
     ],
-    "**/*.{ts,tsx}": "bash -c 'npm run type-check'"
+    "src/**/*.{ts,tsx}": ["tsc-files --noEmit"]
   },
   "dependencies": {
     "@coreui/chartjs": "^3.1.2",
