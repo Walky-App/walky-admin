@@ -4,6 +4,7 @@ import { CChartBar, CChartLine } from "@coreui/react-chartjs";
 import { CButton, CButtonGroup } from "@coreui/react";
 import { cilCloudDownload } from "@coreui/icons";
 
+
 import {
   CCard,
   CCardBody,
@@ -16,7 +17,6 @@ import {
   CDropdownToggle, //C
   CWidgetStatsA, //C
 } from "@coreui/react"; //C
-import { useState } from "react";
 import "./App.css";
 
 // Import example components
@@ -25,7 +25,6 @@ import { BreadcrumbDividersExample } from "./components/examples/BreadCrumbs";
 import MainChart from "./components/MainChart";
 
 function App() {
-  const [activeKey, setActiveKey] = useState(1);
   return (
     <ExampleAdminLayout>
       <BreadcrumbDividersExample />
