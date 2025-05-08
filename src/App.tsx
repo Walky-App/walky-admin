@@ -1,6 +1,7 @@
 import CIcon from '@coreui/icons-react'
 import { cilArrowTop, cilOptions } from '@coreui/icons'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
+import { useTheme } from './hooks/useTheme'
 
 import { 
   CCard, 
@@ -34,6 +35,82 @@ import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
 
 function App() {
   const [activeKey, setActiveKey] = useState(1)
+  const { theme } = useTheme()
+
+  // Chart color customization based on theme
+  const chartOptions = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+      y: {
+        min: 30,
+        max: 89,
+        display: false,
+        grid: {
+          display: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+    },
+    elements: {
+      line: {
+        borderWidth: 1,
+        tension: 0.4,
+        borderColor: theme.colors.chartLine,
+      },
+      point: {
+        radius: 4,
+        hitRadius: 10,
+        hoverRadius: 4,
+        backgroundColor: theme.colors.chartPoint,
+      },
+    },
+  }
+
+  // Additional options for bar charts
+  const barChartOptions = {
+    ...chartOptions,
+    scales: {
+      ...chartOptions.scales,
+      x: {
+        grid: {
+          display: false,
+          drawTicks: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+      y: {
+        grid: {
+          display: false,
+          drawTicks: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+    },
+  }
+
   return (
     
     <ExampleAdminLayout>
@@ -64,7 +141,7 @@ function App() {
           title={
             <div className="text-start ps-0">
               <span className="text-white">Walks</span>
-            </div>
+            </div>     
           }     
           action={
             <CDropdown alignment="end">
@@ -89,52 +166,13 @@ function App() {
                   {
                     label: 'My First dataset',
                     backgroundColor: 'transparent',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    pointBackgroundColor: '#5856d6',
+                    borderColor: theme.colors.chartLine,
+                    pointBackgroundColor: theme.colors.primary,
                     data: [65, 59, 84, 84, 51, 55, 40],
                   },
                 ],
               }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    min: 30,
-                    max: 89,
-                    display: false,
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 1,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 4,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
+              options={chartOptions}
             />
           }
         />
@@ -154,7 +192,7 @@ function App() {
           title={
             <div className="text-start ps-0">
               <span className="text-white">Surprise</span>
-            </div>
+            </div>     
           }     
           action={
             <CDropdown alignment="end">
@@ -179,51 +217,13 @@ function App() {
                   {
                     label: 'My First dataset',
                     backgroundColor: 'transparent',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    pointBackgroundColor: '#39f',
+                    borderColor: theme.colors.chartLine,
+                    pointBackgroundColor: theme.colors.info,
                     data: [1, 18, 9, 17, 34, 22, 11],
                   },
                 ],
               }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    min: -9,
-                    max: 39,
-                    display: false,
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 1,
-                  },
-                  point: {
-                    radius: 4,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
+              options={chartOptions}
             />
           }
         />
@@ -243,7 +243,7 @@ function App() {
           title={
             <div className="text-start ps-0">
               <span className="text-white">Walks</span>
-            </div>
+            </div> 
           } 
           action={
             <CDropdown alignment="end">
@@ -267,40 +267,14 @@ function App() {
                 datasets: [
                   {
                     label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
+                    backgroundColor: `${theme.colors.warning}33`,
+                    borderColor: theme.colors.chartLine,
                     data: [78, 81, 80, 45, 34, 12, 40],
                     fill: true,
                   },
                 ],
               }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    display: false,
-                  },
-                  y: {
-                    display: false,
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 2,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 0,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
+              options={chartOptions}
             />
           }
         />
@@ -361,41 +335,14 @@ function App() {
                 datasets: [
                   {
                     label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
+                    backgroundColor: `${theme.colors.danger}33`,
+                    borderColor: theme.colors.chartLine,
                     data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
                     barPercentage: 0.6,
                   },
                 ],
               }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
+              options={barChartOptions}
             />
           }
         />
