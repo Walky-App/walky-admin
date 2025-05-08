@@ -11,9 +11,7 @@ import {
   CNavItem, 
   CNavLink,
   CCardHeader,
-  CBadge,
-  CButton
-  
+  CBadge  
 
 } from '@coreui/react'
 import { useState } from 'react'
@@ -25,7 +23,6 @@ import './App.css'
 import ExampleAdminLayout from './components/ExampleAdminLayout'
 import BasicForm from './components/examples/BasicForm'
 import DataTable from './components/examples/DataTable'
-import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
 
 
 
