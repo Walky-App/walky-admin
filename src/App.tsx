@@ -38,6 +38,10 @@ function App() {
   const { theme } = useTheme()
 
   // Chart color customization based on theme
+  const isLightMode = !theme.isDark;
+  const whiteOrThemeLine = isLightMode ? '#ffffff' : theme.colors.chartLine;
+
+
   const chartOptions = {
     plugins: {
       legend: {
@@ -72,22 +76,20 @@ function App() {
       line: {
         borderWidth: 1,
         tension: 0.4,
-        borderColor: theme.colors.chartLine,
+        borderColor: whiteOrThemeLine,
       },
       point: {
         radius: 4,
         hitRadius: 10,
         hoverRadius: 4,
-        backgroundColor: theme.colors.chartPoint,
+        backgroundColor: '#ffffff',
       },
     },
   }
-
   // Additional options for bar charts
   const barChartOptions = {
     ...chartOptions,
     scales: {
-      ...chartOptions.scales,
       x: {
         grid: {
           display: false,
@@ -95,7 +97,7 @@ function App() {
         },
         ticks: {
           display: false,
-          color: theme.colors.chartLine,
+          color: whiteOrThemeLine,
         },
       },
       y: {
@@ -105,8 +107,13 @@ function App() {
         },
         ticks: {
           display: false,
-          color: theme.colors.chartLine,
+          color: whiteOrThemeLine,
         },
+      },
+    },
+    elements: {
+      bar: {
+        borderColor: whiteOrThemeLine,
       },
     },
   }
@@ -166,8 +173,8 @@ function App() {
                   {
                     label: 'My First dataset',
                     backgroundColor: 'transparent',
-                    borderColor: theme.colors.chartLine,
-                    pointBackgroundColor: theme.colors.primary,
+                    borderColor: whiteOrThemeLine,
+                    pointBackgroundColor: whiteOrThemeLine,
                     data: [65, 59, 84, 84, 51, 55, 40],
                   },
                 ],
@@ -217,8 +224,8 @@ function App() {
                   {
                     label: 'My First dataset',
                     backgroundColor: 'transparent',
-                    borderColor: theme.colors.chartLine,
-                    pointBackgroundColor: theme.colors.info,
+                    borderColor: whiteOrThemeLine,
+                    pointBackgroundColor: whiteOrThemeLine,
                     data: [1, 18, 9, 17, 34, 22, 11],
                   },
                 ],
@@ -268,7 +275,7 @@ function App() {
                   {
                     label: 'My First dataset',
                     backgroundColor: `${theme.colors.warning}33`,
-                    borderColor: theme.colors.chartLine,
+                    borderColor: whiteOrThemeLine,
                     data: [78, 81, 80, 45, 34, 12, 40],
                     fill: true,
                   },
@@ -336,7 +343,7 @@ function App() {
                   {
                     label: 'My First dataset',
                     backgroundColor: `${theme.colors.danger}33`,
-                    borderColor: theme.colors.chartLine,
+                    borderColor: whiteOrThemeLine,
                     data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
                     barPercentage: 0.6,
                   },
