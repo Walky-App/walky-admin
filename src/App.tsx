@@ -19,11 +19,15 @@ import {
 import { useState } from 'react'
 import './App.css'
 
+
+
 // Import example components
 import ExampleAdminLayout from './components/ExampleAdminLayout'
 import BasicForm from './components/examples/BasicForm'
 import DataTable from './components/examples/DataTable'
 import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
+
+
 
 
 function App() {
@@ -32,7 +36,10 @@ function App() {
   return (
     
     <ExampleAdminLayout>
-      <BreadcrumbDividersExample />
+      
+
+      
+      
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
         <div>
           
