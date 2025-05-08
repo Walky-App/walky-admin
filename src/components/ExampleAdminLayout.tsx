@@ -1,4 +1,5 @@
 import React from 'react';
+import { BreadcrumbDividersExample } from './examples/BreadCrumbs';
 
 type Props = {
   children: React.ReactNode;
@@ -9,35 +10,10 @@ type Props = {
  */
 function ExampleAdminLayout({ children }: Props) {
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
-      {/* Header */}
-      <header className="header py-3 px-4 shadow-sm bg-white">
-        <div className="container-fluid d-flex justify-content-between align-items-center">
-          <div className="header-brand">
-            <h4 className="m-0 fw-bold text-primary">Walky Admin</h4>
-          </div>
-          <div className="header-nav d-flex align-items-center">
-            <div className="mx-3 text-muted">
-              <i className="fa fa-bell"></i>
-            </div>
-            <div className="mx-3 text-muted">
-              <i className="fa fa-cog"></i>
-            </div>
-            <div className="dropdown ms-2">
-              <button className="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button">
-                <div className="me-2 rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '30px', height: '30px' }}>
-                  A
-                </div>
-                <span>Admin</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-      
-      <div className="d-flex flex-grow-1">
+    
+      <div className="d-flex" style={{ minHeight: '100vh' }}>
         {/* Sidebar */}
-        <div className="sidebar bg-dark text-white" style={{ width: '250px', minHeight: '100%' }}>
+        <div className="sidebar bg-dark text-white" style={{ width: '230px', minHeight: '100vh' }}>
           <div className="p-3 border-bottom border-secondary">
             <h5 className="text-light m-0">Navigation</h5>
           </div>
@@ -81,20 +57,49 @@ function ExampleAdminLayout({ children }: Props) {
             </div>
           </div>
         </div>
+        <div className="d-flex flex-column min-vh-100 bg-light">
+      {/* Header */}
+      <header className="header py-3 px-4 shadow-sm bg-white">
+        <div className="container-fluid d-flex justify-content-between align-items-center">
         
-        {/* Main Content Area */}
-        <div className="content flex-grow-1 p-4" style={{ overflowY: 'auto' }}>
-          {children}
+          <div className="header-brand">
+            
+          </div>
+
+          <div className="header-nav d-flex align-items-center">
+            <div className="mx-3 text-muted">
+              <i className="fa fa-bell"></i>
+            </div>
+            <div className="mx-3 text-muted">
+              <i className="fa fa-cog"></i>
+            </div>
+            <div className="dropdown ms-2">
+              <button className="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button">
+                <div className="me-2 rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '30px', height: '30px' }}>
+                  A
+                </div>
+                <span>Admin</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      {/* Footer */}
-      <footer className="footer py-3 bg-white border-top">
-        <div className="container-fluid text-center">
-          <span className="text-muted small">Walky Admin © 2023 | Built with CoreUI</span>
-        </div>
-      </footer>
-    </div>
+      </header>
+      <div className="bg-white p-3 shadow-sm w-100 px-4" style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
+  <BreadcrumbDividersExample />
+</div>
+
+        
+        {/* Main content */}
+    <main className="flex-grow-1 px-4 pt-3 pb-5 bg-light" style={{ overflowY: 'auto' }}>
+      {children}
+    </main>
+
+    {/* Footer */}
+    <footer className="py-3 bg-white border-top">
+      <div className="text-center text-muted small">Walky Admin © 2023 | Built with CoreUI</div>
+    </footer>
+  </div>
+</div>
   );
 }
 
