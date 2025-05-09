@@ -57,7 +57,8 @@ function ExampleAdminLayout({ children }: Props) {
             </div>
           </div>
         </div>
-        <div className="d-flex flex-column min-vh-100 bg-light">
+        <div className="d-flex flex-column flex-grow-1 bg-light">
+
       {/* Header */}
       <header className="header py-3 px-4 shadow-sm bg-white">
         <div className="container-fluid d-flex justify-content-between align-items-center">
@@ -90,7 +91,7 @@ function ExampleAdminLayout({ children }: Props) {
 
         
         {/* Main content */}
-    <main className="flex-grow-1 px-4 pt-3 pb-5 bg-light" style={{ overflowY: 'auto' }}>
+    <main className="d-flex flex-column flex-grow-1 bg-light px-4 pt-3 pb-2" style={{ overflowY: 'auto' }}>
       {children}
     </main>
 
