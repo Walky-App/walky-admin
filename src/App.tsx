@@ -366,7 +366,7 @@ function App() {
                 color: theme.colors.secondary,
                }}
             >
-              January - July 2023
+              January - July 2025
             </div>
           </div>
           <div className="d-flex align-items-center">
