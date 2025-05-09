@@ -405,38 +405,43 @@ function App() {
       </CCard>
       
       <CRow className="mt-4">
-        <CCol>
-          <CCard className="bg-light border-0">
-            <CCardBody className="p-4">
-              <div className="d-flex align-items-center mb-3">
-                <div className="bg-info p-3 me-3 text-white rounded">
-                  <i className="fa fa-info-circle fa-2x"></i>
-                </div>
-                <CCardTitle className="mb-0 h4">Quick Tips for Junior Developers</CCardTitle>
-              </div>
-              <CCardText>
-                <ul className="text-start ps-0 list-unstyled">
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Check the README.md file for detailed instructions
-                  </li>
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Refer to <a href="https://coreui.io/react/docs/" target="_blank" rel="noopener noreferrer">CoreUI documentation</a> for components
-                  </li>
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Explore the example components in the codebase under src/components/examples
-                  </li>
-                  <li className="mb-2 d-flex align-items-center">
-                    <i className="fa fa-check-circle text-success me-2"></i> 
-                    Use browser developer tools (F12) to inspect elements and debug issues
-                  </li>
-                </ul>
-              </CCardText>
-            </CCardBody>
-          </CCard>
-        </CCol>
+      <CCol>
+  <CCard className="bg-light border-0">
+    <CCardBody className="p-4">
+      <div className="d-flex align-items-center mb-3">
+        <div className="bg-info p-3 me-3 text-white rounded">
+          <i className="fa fa-info-circle fa-2x"></i>
+        </div>
+        <CCardTitle className="mb-0 h4">Quick Tips for Junior Developers</CCardTitle>
+      </div>
+
+      {/* Corrected: separate text from the list */}
+      <CCardText>
+        Here are some tips to help you:
+      </CCardText>
+
+      <ul className="text-start ps-0 list-unstyled">
+        <li className="mb-2 d-flex align-items-center">
+          <i className="fa fa-check-circle text-success me-2"></i> 
+          Check the README.md file for detailed instructions
+        </li>
+        <li className="mb-2 d-flex align-items-center">
+          <i className="fa fa-check-circle text-success me-2"></i> 
+          Refer to <a href="https://coreui.io/react/docs/" target="_blank" rel="noopener noreferrer">CoreUI documentation</a> for components
+        </li>
+        <li className="mb-2 d-flex align-items-center">
+          <i className="fa fa-check-circle text-success me-2"></i> 
+          Explore the example components in the codebase under src/components/examples
+        </li>
+        <li className="mb-2 d-flex align-items-center">
+          <i className="fa fa-check-circle text-success me-2"></i> 
+          Use browser developer tools (F12) to inspect elements and debug issues
+        </li>
+      </ul>
+    </CCardBody>
+  </CCard>
+</CCol>
+
       </CRow>
     </ExampleAdminLayout>
   )
