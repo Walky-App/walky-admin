@@ -41,7 +41,7 @@ const lightColors: ThemeColors = {
   chartLine: 'rgb(255, 255, 255)',
   graphLine: 'rgb(15, 143, 222)',
   chartPoint: '#5856d6',
-  chartLineBackground: 'rgba(15, 143, 222, 0.37)',
+  chartLineBackground: 'rgba(15, 143, 222, 0.36)',
 };
 
 // Dark theme colors
