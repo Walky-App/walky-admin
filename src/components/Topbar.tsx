@@ -1,14 +1,21 @@
 import { CIcon } from '@coreui/icons-react'
-import * as icon from '@coreui/icons'
+import { cilHamburgerMenu, cilBell, cilEnvelopeOpen, cilListRich, cilSun, cilMoon } from '@coreui/icons'
 import { CAvatar, CNavbar, CContainer, CButton } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
 import React, { useState } from 'react'
 
-export const Topbar = () => {
+type TopbarProps = {
+  onToggleSidebar: () => void;
+};
+
+export const Topbar = ({ onToggleSidebar }: TopbarProps) => {
   const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme.isDark;
-  const iconColor = isDarkMode ? '#f8f9fa' : '#212529';
+
   const [hovered, setHovered] = useState<string | null>(null);
+  const [themeHovered, setThemeHovered] = useState(false);
+
+  const iconColor = isDarkMode? '#f8f9fa' : '#212529';
 
   const iconBtnStyle: React.CSSProperties = {
     backgroundColor: 'transparent',
@@ -28,37 +35,37 @@ export const Topbar = () => {
     backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
   };
 
-  const [themeHovered, setThemeHovered] = useState(false);
-
-  const renderIconButton = (id: string, iconName: any, label: string) => (
-    <button
-      key={id}
-      style={hovered === id ? iconBtnHoverStyle : iconBtnStyle}
-      onMouseEnter={() => setHovered(id)}
-      onMouseLeave={() => setHovered(null)}
-      aria-label={label}
-    >
-      <CIcon icon={iconName} size="lg" style={{ color: iconColor }} />
-    </button>
-  );
-
   return (
-    <CNavbar className="shadow-sm px-4">
+    <CNavbar className="shadow-sm px-4" style={{ backgroundColor: theme.colors.cardBg }}>
       <CContainer fluid>
-      <div className="d-flex w-100 justify-content-between align-items-center">
+        <div className="d-flex w-100 justify-content-between align-items-center">
 
-          {/* Left-side icons */}
-          <div>
-            {renderIconButton('menu', icon.cilHamburgerMenu, 'Menu')}
-          </div>
+          {/* Hamburger Button */}
+          <button
+            onClick={onToggleSidebar}
+            style={hovered === 'menu' ? iconBtnHoverStyle : iconBtnStyle}
+            onMouseEnter={() => setHovered('menu')}
+            onMouseLeave={() => setHovered(null)}
+            aria-label="Toggle Sidebar"
+          >
+            <CIcon icon={cilHamburgerMenu} size="lg" style={{ color: iconColor }} />
+          </button>
 
-          {/* Right-side icons */}
+          {/* Right-side Icons */}
           <div className="d-flex align-items-center" style={{ gap: '1.5rem' }}>
-            {renderIconButton('bell', icon.cilBell, 'Notifications')}
-            {renderIconButton('envelope', icon.cilEnvelopeOpen, 'Messages')}
-            {renderIconButton('list', icon.cilListRich, 'Tasks')}
+            {[{ id: 'bell', icon: cilBell }, { id: 'envelope', icon: cilEnvelopeOpen }, { id: 'list', icon: cilListRich }].map(({ id, icon }) => (
+              <button
+                key={id}
+                style={hovered === id ? iconBtnHoverStyle : iconBtnStyle}
+                onMouseEnter={() => setHovered(id)}
+                onMouseLeave={() => setHovered(null)}
+                aria-label={id}
+              >
+                <CIcon icon={icon} size="lg" style={{ color: iconColor }} />
+              </button>
+            ))}
 
-            {/* Theme toggle */}
+            {/* Theme Toggle */}
             <div
               className="d-flex align-items-center px-3"
               style={{
@@ -66,29 +73,23 @@ export const Topbar = () => {
                 borderRight: `1px solid var(--app-borderColor)`,
                 height: '32px',
                 backgroundColor: themeHovered
-                ? isDarkMode
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(0, 0, 0, 0.1)'
+                  ? isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
                   : 'transparent',
                 borderRadius: '6px',
                 transition: 'background-color 0.2s ease',
                 cursor: 'pointer',
               }}
-               onMouseEnter={() => setThemeHovered(true)}
-               onMouseLeave={() => setThemeHovered(false)}
+              onMouseEnter={() => setThemeHovered(true)}
+              onMouseLeave={() => setThemeHovered(false)}
             >
               <CButton
                 color="link"
                 className="p-0"
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
-                 style={{ color: iconColor }}
+                style={{ color: iconColor }}
               >
-                <CIcon
-                  icon={theme.isDark ? icon.cilSun : icon.cilMoon}
-                  size="lg"
-                  style={{ color: iconColor }}
-                />
+                <CIcon icon={isDarkMode ? cilSun : cilMoon} size="lg" />
               </CButton>
             </div>
 
@@ -98,5 +99,5 @@ export const Topbar = () => {
         </div>
       </CContainer>
     </CNavbar>
-  )
-}
+  );
+};
