@@ -15,6 +15,8 @@ export interface ThemeColors {
   textMuted: string;
   chartLine: string;
   chartPoint: string;
+  chartLineBackground: string;
+  graphLine: string;
 }
 
 // Define complete theme interface
@@ -34,27 +36,31 @@ const lightColors: ThemeColors = {
   success: '#2eb85c',
   info: '#39f',
   warning: '#f9b115',
-  danger: '#e55353',
+  danger: 'rgb(253, 120, 120)',
   textMuted: '#6c757d',
-  chartLine: 'rgba(0, 0, 0, 0.55)',
+  chartLine: 'rgb(255, 255, 255)',
+  graphLine: 'rgb(15, 143, 222)',
   chartPoint: '#5856d6',
+  chartLineBackground: 'rgba(15, 143, 222, 0.37)',
 };
 
 // Dark theme colors
 const darkColors: ThemeColors = {
   bodyBg: '#1e2125',
   bodyColor: '#e1e5eb',
-  cardBg: '#2c3034',
+  cardBg: '#212631',
   borderColor: '#495057',
   primary: '#4e5ec7',
   secondary: '#a6aab2',
   success: '#3dd273',
   info: '#4dabf7',
   warning: '#fbc43d',
-  danger: '#ea7979',
+  danger: 'rgb(253, 120, 120)',
   textMuted: '#adb5bd',
-  chartLine: 'rgba(255, 255, 255, 0.55)',
+  chartLine: 'rgb(255, 255, 255)',
+  graphLine: 'rgb(15, 143, 222)',
   chartPoint: '#7c7bff',
+  chartLineBackground: 'rgba(15, 143, 222, 0.37)',
 };
 
 // Theme getter function

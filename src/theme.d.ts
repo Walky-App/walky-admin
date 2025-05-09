@@ -13,6 +13,8 @@ export interface ThemeColors {
     textMuted: string;
     chartLine: string;
     chartPoint: string;
+    chartLineBackground: string;
+    graphLine: string;
 }
 export interface AppTheme {
     colors: ThemeColors;
