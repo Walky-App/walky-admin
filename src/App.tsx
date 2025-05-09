@@ -1,40 +1,31 @@
 import CIcon from '@coreui/icons-react'
 import { cilArrowTop, cilOptions } from '@coreui/icons'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
+import { CButton, CButtonGroup } from "@coreui/react"
+import { cilCloudDownload } from "@coreui/icons"
 import { useTheme } from './hooks/useTheme'
 
 import { 
   CCard, 
   CCardBody, 
-  CCardTitle, 
-  CCardText, 
   CRow, //C
   CCol, //C
-  CTabContent, 
-  CTabPane, 
-  CNav, 
-  CNavItem, 
-  CNavLink,
   CCardHeader,
-  CBadge,
   CDropdownItem, //C
   CDropdown, //C
   CDropdownMenu, //C
   CDropdownToggle, //C
   CWidgetStatsA //C
 } from '@coreui/react' //C
-import { useState } from 'react'
 import './App.css'
 
 // Import example components
 import ExampleAdminLayout from './components/ExampleAdminLayout'
-import BasicForm from './components/examples/BasicForm'
-import DataTable from './components/examples/DataTable'
 import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
+import MainChart from "./components/MainChart.tsx";
 
 
 function App() {
-  const [activeKey, setActiveKey] = useState(1)
   const { theme } = useTheme()
 
   // Chart color customization based on theme
@@ -191,7 +182,7 @@ function App() {
           }
           title={
             <div className="text-start ps-0">
-              <span className="text-white">Surprise</span>
+              <span className="text-white">Events</span>
             </div>     
           }     
           action={
@@ -242,7 +233,7 @@ function App() {
           }
           title={
             <div className="text-start ps-0">
-              <span className="text-white">Walks</span>
+              <span className="text-white">Ideas</span>
             </div> 
           } 
           action={
@@ -335,7 +326,7 @@ function App() {
                 datasets: [
                   {
                     label: 'My First dataset',
-                    backgroundColor: `${theme.colors.danger}33`,
+                    backgroundColor: theme.colors.danger,
                     borderColor: theme.colors.chartLine,
                     data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
                     barPercentage: 0.6,
@@ -348,101 +339,57 @@ function App() {
         />
       </CCol>
     </CRow>
-
-      <CCard className="mb-4">
-        <CCardHeader className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Example Components</h5>
-          <CBadge color="primary" shape="rounded-pill">CoreUI</CBadge>
+    <CCard className="mb-4"
+      style={{
+        backgroundColor: theme.colors.cardBg,
+        borderRadius: '12px',
+        padding: '24px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      }}>
+        <CCardHeader className="d-flex justify-content-between align-items-center border-0 py-0 px-3">
+          <div>
+            <h5
+              className="mb-1"
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 500,
+                fontSize: '24px',
+              }}
+            >
+              Active Users
+            </h5>
+            <div
+              style={{ 
+                fontFamily: "Inter, sans-serif",
+                fontSize: '12px',
+                marginLeft: '-30px',
+                color: theme.colors.secondary,
+               }}
+            >
+              January - July 2023
+            </div>
+          </div>
+          <div className="d-flex align-items-center">
+            <CButtonGroup role="group">
+              <CButton color="outline-secondary" size="sm">
+                Day
+              </CButton>
+              <CButton color="dark" size="sm">
+                Week
+              </CButton>
+              <CButton color="outline-secondary" size="sm">
+                Month
+              </CButton>
+            </CButtonGroup>
+            <CButton color="primary" size="sm" className="ms-2">
+              <CIcon icon={cilCloudDownload} />
+            </CButton>
+          </div>
         </CCardHeader>
-        <CCardBody>
-          <CCardText className="mb-3">
-            Below are example components to help you get started with CoreUI. Switch between tabs to view different examples.
-          </CCardText>
-          
-          <CNav variant="tabs" className="mt-2" role="tablist">
-            <CNavItem role="presentation">
-              <CNavLink
-                active={activeKey === 1}
-                component="button"
-                role="tab"
-                aria-controls="table-tab-pane"
-                aria-selected={activeKey === 1}
-                onClick={() => setActiveKey(1)}
-              >
-                <i className="fa fa-table me-2"></i>
-                Data Table Example
-              </CNavLink>
-            </CNavItem>
-            <CNavItem role="presentation">
-              <CNavLink
-                active={activeKey === 2}
-                component="button"
-                role="tab"
-                aria-controls="form-tab-pane"
-                aria-selected={activeKey === 2}
-                onClick={() => setActiveKey(2)}
-              >
-                <i className="fa fa-edit me-2"></i>
-                Form Example
-              </CNavLink>
-            </CNavItem>
-          </CNav>
-          
-          <CTabContent>
-            <CTabPane role="tabpanel" aria-labelledby="table-tab" visible={activeKey === 1}>
-              <div className="pt-3">
-                <DataTable />
-              </div>
-            </CTabPane>
-            
-            <CTabPane role="tabpanel" aria-labelledby="form-tab" visible={activeKey === 2}>
-              <div className="pt-3">
-                <BasicForm />
-              </div>
-            </CTabPane>
-          </CTabContent>
+        <CCardBody className="p-0">
+          <MainChart />
         </CCardBody>
       </CCard>
-      
-      <CRow className="mt-4">
-      <CCol>
-  <CCard className="bg-light border-0">
-    <CCardBody className="p-4">
-      <div className="d-flex align-items-center mb-3">
-        <div className="bg-info p-3 me-3 text-white rounded">
-          <i className="fa fa-info-circle fa-2x"></i>
-        </div>
-        <CCardTitle className="mb-0 h4">Quick Tips for Junior Developers</CCardTitle>
-      </div>
-
-      {/* Corrected: separate text from the list */}
-      <CCardText>
-        Here are some tips to help you:
-      </CCardText>
-
-      <ul className="text-start ps-0 list-unstyled">
-        <li className="mb-2 d-flex align-items-center">
-          <i className="fa fa-check-circle text-success me-2"></i> 
-          Check the README.md file for detailed instructions
-        </li>
-        <li className="mb-2 d-flex align-items-center">
-          <i className="fa fa-check-circle text-success me-2"></i> 
-          Refer to <a href="https://coreui.io/react/docs/" target="_blank" rel="noopener noreferrer">CoreUI documentation</a> for components
-        </li>
-        <li className="mb-2 d-flex align-items-center">
-          <i className="fa fa-check-circle text-success me-2"></i> 
-          Explore the example components in the codebase under src/components/examples
-        </li>
-        <li className="mb-2 d-flex align-items-center">
-          <i className="fa fa-check-circle text-success me-2"></i> 
-          Use browser developer tools (F12) to inspect elements and debug issues
-        </li>
-      </ul>
-    </CCardBody>
-  </CCard>
-</CCol>
-
-      </CRow>
     </ExampleAdminLayout>
   )
 }
