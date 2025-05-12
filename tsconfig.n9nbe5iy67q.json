@@ -1,0 +1,21 @@
+{
+  "files": [
+    "/Users/meagan/Documents/Walky/walky-admin/src/App.tsx",
+    "/Users/meagan/Documents/Walky/walky-admin/src/components/MainChart.d.ts",
+    "/Users/meagan/Documents/Walky/walky-admin/src/components/MainChart.tsx",
+    "/Users/meagan/Documents/Walky/walky-admin/src/theme.d.ts",
+    "/Users/meagan/Documents/Walky/walky-admin/src/theme.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "include": []
+}
