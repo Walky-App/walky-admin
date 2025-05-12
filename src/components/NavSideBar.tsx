@@ -7,6 +7,7 @@ import {
   CNavTitle,
   CCloseButton,
 } from '@coreui/react';
+import { Link } from 'react-router-dom';
 
 
 type SidebarProps = { 
@@ -48,7 +49,9 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
       <CSidebarNav>
         <CNavItem href="#" active className="px-3 py-2">Dashboard</CNavItem>
         <CNavTitle className="text-white-50 px-3">PAGES</CNavTitle>
-        <CNavGroup toggler="Students" className="px-3 py-2" />
+        <CNavItem className="px-3 py-2">
+          <Link to="/students" className="nav-link">Students</Link>
+          </CNavItem>
         <CNavGroup toggler="Engagement" className="px-3 py-2" />
         <CNavGroup toggler="Review" className="px-3 py-2" />
         <CNavGroup toggler="My Walky" className="px-3 py-2">
