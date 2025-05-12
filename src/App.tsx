@@ -4,6 +4,10 @@ import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import { CButton, CButtonGroup } from "@coreui/react"
 import { cilCloudDownload } from "@coreui/icons"
 import { useTheme } from './hooks/useTheme'
+import { Routes, Route } from 'react-router-dom';
+import Students from './pages/Students';
+import { AppTheme } from './theme';
+
 
 import { 
   CCard, 
@@ -24,88 +28,16 @@ import ExampleAdminLayout from './components/ExampleAdminLayout'
 import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
 import MainChart from "./components/MainChart.tsx";
 
+type DashboardProps = {
+  theme: AppTheme;
+  chartOptions: object;
+  barChartOptions: object;
+};
 
-function App() {
-  const { theme } = useTheme()
-
-  // Chart color customization based on theme
-  const chartOptions = {
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-      y: {
-        min: 30,
-        max: 89,
-        display: false,
-        grid: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-    },
-    elements: {
-      line: {
-        borderWidth: 1,
-        tension: 0.4,
-        borderColor: theme.colors.chartLine,
-      },
-      point: {
-        radius: 4,
-        hitRadius: 10,
-        hoverRadius: 4,
-        backgroundColor: theme.colors.chartPoint,
-      },
-    },
-  }
-
-  // Additional options for bar charts
-  const barChartOptions = {
-    ...chartOptions,
-    scales: {
-      ...chartOptions.scales,
-      x: {
-        grid: {
-          display: false,
-          drawTicks: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-      y: {
-        grid: {
-          display: false,
-          drawTicks: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-    },
-  }
-
+const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
   return (
-    
-    <ExampleAdminLayout>
-      <BreadcrumbDividersExample />
+    <>
+    <BreadcrumbDividersExample />
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
         <div>
           
@@ -390,8 +322,99 @@ function App() {
           <MainChart />
         </CCardBody>
       </CCard>
-    </ExampleAdminLayout>
+    </>
   )
+}
+
+function App() {
+  const { theme } = useTheme()
+
+  // Chart color customization based on theme
+  const chartOptions = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+      y: {
+        min: 30,
+        max: 89,
+        display: false,
+        grid: {
+          display: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+    },
+    elements: {
+      line: {
+        borderWidth: 1,
+        tension: 0.4,
+        borderColor: theme.colors.chartLine,
+      },
+      point: {
+        radius: 4,
+        hitRadius: 10,
+        hoverRadius: 4,
+        backgroundColor: theme.colors.chartPoint,
+      },
+    },
+  }
+
+  // Additional options for bar charts
+  const barChartOptions = {
+    ...chartOptions,
+    scales: {
+      ...chartOptions.scales,
+      x: {
+        grid: {
+          display: false,
+          drawTicks: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+      y: {
+        grid: {
+          display: false,
+          drawTicks: false,
+        },
+        ticks: {
+          display: false,
+          color: theme.colors.chartLine,
+        },
+      },
+    },
+  }
+
+  return (
+    <ExampleAdminLayout>
+      {}
+      <Routes>
+        <Route
+          path="/"
+          element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />}
+        />
+        <Route path="/students" element={<Students />} />
+      </Routes>
+    </ExampleAdminLayout>
+  );
 }
 
 export default App
