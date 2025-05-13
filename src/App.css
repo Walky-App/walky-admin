@@ -100,3 +100,8 @@
     transition: margin-left 0.3s ease;
   }
 }
+
+.left-align th, 
+.left-align td {
+  text-align: left;
+}

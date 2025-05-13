@@ -1,11 +1,10 @@
-
+import StudentTable from '../components/StudentTable';
 
 const Students = () => {
     return (
-      <div style={{ padding: '2rem' }}>
-        <h1>Students Page</h1>
-        <p>Add content in this page</p>
-      </div>
+      <div className="container mt-4">
+      <StudentTable />
+    </div>
     );
   };
   
