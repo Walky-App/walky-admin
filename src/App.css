@@ -101,3 +101,9 @@
   }
 
 }
+
+.left-align th, 
+.left-align td {
+  text-align: left;
+}
+
