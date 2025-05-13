@@ -6,6 +6,11 @@ import { cilCloudDownload } from "@coreui/icons"
 import { useTheme } from './hooks/useTheme'
 import { Routes, Route } from 'react-router-dom';
 import Students from './pages/Students';
+import Engagement from './pages/Engagement'; 
+import Review from './pages/Review';
+import Mywalky from './pages/Mywalky';
+import Compliance from './pages/Compliance';
+import Settings from './pages/Settings';
 import { AppTheme } from './theme';
 
 import { 
@@ -413,6 +418,11 @@ function App() {
           element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />}
         />
         <Route path="/students" element={<Students />} />
+        <Route path="/engagement" element={<Engagement />} />
+        <Route path="/review" element={<Review />} />
+        <Route path="/mywalky" element={<Mywalky />} />
+        <Route path="/compliance" element={<Compliance />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </ExampleAdminLayout>
   );
