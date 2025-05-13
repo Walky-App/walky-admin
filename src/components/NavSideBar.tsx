@@ -7,7 +7,7 @@ import {
   CNavTitle,
   CCloseButton,
 } from '@coreui/react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 
 type SidebarProps = { 
@@ -21,9 +21,6 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
   const handleClose = () => {
     onVisibleChange(false);
   };
-
-  // Only render the sidebar if it's visible (for mobile) or always render it for desktop
-  
 
   return (
     <CSidebar
@@ -47,20 +44,66 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
       </CSidebarHeader>
 
       <CSidebarNav>
-        <CNavItem href="#" active className="px-3 py-2">Dashboard</CNavItem>
-        <CNavTitle className="text-white-50 px-3">PAGES</CNavTitle>
-        <CNavItem className="px-3 py-2">
-          <Link to="/students" className="nav-link">Students</Link>
-          </CNavItem>
-        <CNavGroup toggler="Engagement" className="px-3 py-2" />
-        <CNavGroup toggler="Review" className="px-3 py-2" />
-        <CNavGroup toggler="My Walky" className="px-3 py-2">
-          <CNavItem href="#" className="ms-4 px-3 py-1">My Walky Item 1</CNavItem>
-          <CNavItem href="#" className="ms-4 px-3 py-1">My Walky Item 2</CNavItem>
-        </CNavGroup>
-        <CNavItem href="#" className="px-3 py-2">Compliance</CNavItem>
-        <CNavItem href="#" className="px-3 py-2">Settings</CNavItem>
-      </CSidebarNav>
+  {/* Dashboard */}
+  <CNavItem className="px-3 py-2"> 
+    <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+      Dashboard
+    </NavLink>
+  </CNavItem>
+
+  <CNavTitle className="text-white-50 px-3" style={{ textAlign: 'left' }}>
+  PAGES
+</CNavTitle>
+
+  {/* Students */}
+  <CNavItem className="px-3 py-2">
+    <NavLink to="/students" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+      Students
+    </NavLink>
+  </CNavItem>
+
+  {/* Engagement */}
+  <CNavItem className="px-3 py-2">
+    <NavLink to="/engagement" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+      Engagement
+    </NavLink>
+  </CNavItem>
+
+  {/* Review */}
+  <CNavItem className="px-3 py-2">
+    <NavLink to="/review" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+      Review
+    </NavLink>
+  </CNavItem>
+
+  {/* My Walky */}
+  <CNavGroup toggler="My Walky" className="px-3 py-2">
+    <CNavItem className="ms-4 px-3 py-1">
+      <NavLink to="/walky/item1" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+        My Walky Item 1
+      </NavLink>
+    </CNavItem>
+    <CNavItem className="ms-4 px-3 py-1">
+      <NavLink to="/walky/item2" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+        My Walky Item 2
+      </NavLink>
+    </CNavItem>
+  </CNavGroup>
+
+  {/* Compliance - */}
+  <CNavItem className="px-3 py-2">
+    <NavLink to="/compliance" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+      Compliance
+    </NavLink>
+  </CNavItem>
+
+  {/* Settings - only once */}
+  <CNavItem className="px-3 py-2">
+    <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+      Settings
+    </NavLink>
+  </CNavItem>
+</CSidebarNav>
     </CSidebar>
   );
 };
