@@ -83,6 +83,31 @@ function ExampleAdminLayout({ children }: Props) {
               </button>
             </div>
           </div>
+        <div className="d-flex flex-column min-vh-100 bg-light">
+      {/* Header */}
+      <header className="header py-3 px-4 shadow-sm bg-white">
+        <div className="container-fluid d-flex justify-content-between align-items-center">
+        
+          <div className="header-brand">
+            
+          </div>
+
+          <div className="header-nav d-flex align-items-center">
+            <div className="mx-3 text-muted">
+              <i className="fa fa-bell"></i>
+            </div>
+            <div className="mx-3 text-muted">
+              <i className="fa fa-cog"></i>
+            </div>
+            <div className="dropdown ms-2">
+              <button className="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button">
+                <div className="me-2 rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '30px', height: '30px' }}>
+                  A
+                </div>
+                <span>Admin</span>
+              </button>
+            </div>
+          </div>
         </div>
       </header>
       <div className="bg-white p-3 shadow-sm w-100 px-4" style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
@@ -92,6 +117,23 @@ function ExampleAdminLayout({ children }: Props) {
         
         {/* Main content */}
     <main className="d-flex flex-column flex-grow-1 bg-light px-4 pt-3 pb-2" style={{ overflowY: 'auto' }}>
+      {children}
+    </main>
+
+    {/* Footer */}
+    <footer className="py-3 bg-white border-top">
+      <div className="text-center text-muted small">Walky Admin © 2023 | Built with CoreUI</div>
+    </footer>
+  </div>
+</div>
+      </header>
+      <div className="bg-white p-3 shadow-sm w-100 px-4" style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
+  <BreadcrumbDividersExample />
+</div>
+
+        
+        {/* Main content */}
+    <main className="flex-grow-1 px-4 pt-3 pb-5 bg-light" style={{ overflowY: 'auto' }}>
       {children}
     </main>
 
