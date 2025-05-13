@@ -8,7 +8,6 @@ import { Routes, Route } from 'react-router-dom';
 import Students from './pages/Students';
 import { AppTheme } from './theme';
 
-
 import { 
   CCard, 
   CCardBody, 
@@ -328,6 +327,8 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
 
 function App() {
   const { theme } = useTheme()
+
+  
 
   // Chart color customization based on theme
   const chartOptions = {
