@@ -1,9 +1,7 @@
 import * as icon from '@coreui/icons'
 import { CCol, CRow } from '@coreui/react'
-import InfoStatWidget from '../components/InfoStatWidget' 
-
-
-
+import InfoStatWidget from '../components/InfoStatWidget'
+import StudentTable from '../components/StudentTable';
 
 const Students = () => {
   const widgets = [
@@ -22,6 +20,7 @@ const Students = () => {
           </CCol>
         ))}
       </CRow>
+      <StudentTable />
     </div>
   )
 }
