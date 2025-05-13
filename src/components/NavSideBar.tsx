@@ -51,7 +51,9 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
     </NavLink>
   </CNavItem>
 
-  <CNavTitle className="text-white-50 px-3">PAGES</CNavTitle>
+  <CNavTitle className="text-white-50 px-3" style={{ textAlign: 'left' }}>
+  PAGES
+</CNavTitle>
 
   {/* Students */}
   <CNavItem className="px-3 py-2">
