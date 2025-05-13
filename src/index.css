@@ -290,3 +290,4 @@ button:focus-visible {
 body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
+

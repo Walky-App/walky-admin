@@ -1,6 +1,9 @@
 import * as icon from '@coreui/icons'
 import { CCol, CRow } from '@coreui/react'
-import InfoStatWidget from '../components/InfoStatWidget' // Adjust path as needed
+import InfoStatWidget from '../components/InfoStatWidget' 
+
+
+
 
 const Students = () => {
   const widgets = [
