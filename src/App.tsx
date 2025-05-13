@@ -37,7 +37,15 @@ function App() {
 
       
       
-
+      <div className="mb-4 d-sm-flex justify-content-between align-items-center">
+        <div>
+          
+          
+        </div>
+        <div className="mt-3 mt-sm-0">
+          
+        </div>
+      </div>
 
       <CRow className="mb-4">
         <CCol sm={6} xl={3}>

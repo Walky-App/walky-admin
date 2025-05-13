@@ -1,0 +1,24 @@
+{
+  "files": [
+    "/Users/meagan/Documents/Walky/walky-admin/src/App.tsx",
+    "/Users/meagan/Documents/Walky/walky-admin/src/components/ExampleAdminLayout.tsx",
+    "/Users/meagan/Documents/Walky/walky-admin/src/components/NavSideBar.d.ts",
+    "/Users/meagan/Documents/Walky/walky-admin/src/components/NavSideBar.tsx",
+    "/Users/meagan/Documents/Walky/walky-admin/src/components/Topbar.d.ts",
+    "/Users/meagan/Documents/Walky/walky-admin/src/components/Topbar.tsx",
+    "/Users/meagan/Documents/Walky/walky-admin/src/hooks/useMediaQuery.d.ts",
+    "/Users/meagan/Documents/Walky/walky-admin/src/hooks/useMediaQuery.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "include": []
+}
