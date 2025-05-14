@@ -3,31 +3,43 @@ import { cilArrowTop, cilOptions } from '@coreui/icons'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import { CButton, CButtonGroup } from "@coreui/react"
 import { cilCloudDownload } from "@coreui/icons"
-import { useTheme } from './hooks/useTheme'
-import { Routes, Route } from 'react-router-dom';
-import Students from './pages/Students';
-import Engagement from './pages/Engagement'; 
-import Review from './pages/Review';
-import Mywalky from './pages/Mywalky';
-import Compliance from './pages/Compliance';
-import Settings from './pages/Settings';
-import { AppTheme } from './theme';
 
 import { 
   CCard, 
   CCardBody, 
-  CRow, //C
-  CCol, //C
+  CRow, 
+  CCol, 
   CCardHeader,
-  CDropdownItem, //C
-  CDropdown, //C
-  CDropdownMenu, //C
-  CDropdownToggle, //C
-  CWidgetStatsA //C
-} from '@coreui/react' //C
+  CDropdownItem, 
+  CDropdown, 
+  CDropdownMenu, 
+  CDropdownToggle, 
+  CWidgetStatsA 
+} from '@coreui/react' 
+
 import './App.css'
 
-// Import example components
+import React, { useState, ReactElement } from 'react'
+
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation
+} from 'react-router-dom'
+
+
+
+import { useTheme } from './hooks/useTheme'
+import Students from './pages/Students'
+import Engagement from './pages/Engagement'
+import Review from './pages/Review'
+import Mywalky from './pages/Mywalky'
+import Compliance from './pages/Compliance'
+import Settings from './pages/Settings'
+import Login from './pages/Login'
+import { AppTheme } from './theme'
+
 import ExampleAdminLayout from './components/ExampleAdminLayout'
 import MainChart from "./components/MainChart.tsx";
 
@@ -321,10 +333,12 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
 
 function App() {
   const { theme } = useTheme()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  console.log("💡 Logged in:", isLoggedIn); // ✅ DEBUG: See login state in browser console
 
   
 
-  // Chart color customization based on theme
+  
   const chartOptions = {
     plugins: {
       legend: {
@@ -370,7 +384,6 @@ function App() {
     },
   }
 
-  // Additional options for bar charts
   const barChartOptions = {
     ...chartOptions,
     scales: {
@@ -398,23 +411,39 @@ function App() {
     },
   }
 
-  return (
-    <ExampleAdminLayout>
-      {}
-      <Routes>
-        <Route
-          path="/"
-          element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />}
-        />
-        <Route path="/students" element={<Students />} />
-        <Route path="/engagement" element={<Engagement />} />
-        <Route path="/review" element={<Review />} />
-        <Route path="/mywalky" element={<Mywalky />} />
-        <Route path="/compliance" element={<Compliance />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
-    </ExampleAdminLayout>
-  );
-}
+  const PrivateRoute = ({ children }: { children: ReactElement }) => {
+    const location = useLocation()
+    return isLoggedIn
+      ? children
+      : <Navigate to="/login" state={{ from: location }} replace />
+  }
 
-export default App
+  return (
+    <Routes>
+      {/* ✅ Login route (still public) */}
+      <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+  
+      {/* ✅ Protected routes inside admin layout */}
+      <Route
+        path="*"
+        element={
+          <PrivateRoute>
+            <ExampleAdminLayout>
+              <Routes>
+                <Route path="/" element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />} />
+                <Route path="/students" element={<Students />} />
+                <Route path="/engagement" element={<Engagement />} />
+                <Route path="/review" element={<Review />} />
+                <Route path="/mywalky" element={<Mywalky />} />
+                <Route path="/compliance" element={<Compliance />} />
+                <Route path="/settings" element={<Settings />} />
+              </Routes>
+            </ExampleAdminLayout>
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  )  
+  }
+  
+  export default App
