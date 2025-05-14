@@ -41,7 +41,6 @@ import Login from './pages/Login'
 import { AppTheme } from './theme'
 
 import ExampleAdminLayout from './components/ExampleAdminLayout'
-import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
 import MainChart from "./components/MainChart.tsx";
 
 type DashboardProps = {
@@ -52,18 +51,8 @@ type DashboardProps = {
 
 const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
   return (
+    
     <>
-    <BreadcrumbDividersExample />
-      <div className="mb-4 d-sm-flex justify-content-between align-items-center">
-        <div>
-          
-          
-        </div>
-        <div className="mt-3 mt-sm-0">
-          
-        </div>
-      </div>
-
     <CRow>
       <CCol sm={6} lg={3}>
         <CWidgetStatsA

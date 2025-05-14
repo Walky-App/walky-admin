@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from './NavSideBar';
 import { Topbar } from './Topbar';
 import { useTheme } from '../hooks/useTheme';
+import { BreadcrumbDividersExample } from './examples/BreadCrumbs';
+
 
 type Props = { children: React.ReactNode };
 
@@ -38,7 +40,10 @@ function ExampleAdminLayout({ children }: Props) {
   return (
     <div className="d-flex flex-column vh-100" style={{ backgroundColor: theme.colors.bodyBg }}>
       <Topbar onToggleSidebar={toggleSidebar} />
+      
       <div className="d-flex flex-grow-1">
+        
+        
         {/* Only render sidebar if it should be visible */}
         <Sidebar 
           visible={sidebarVisible} 
@@ -52,15 +57,42 @@ function ExampleAdminLayout({ children }: Props) {
         onClick={() => setSidebarVisible(false)}
       />
       )}
-        <main 
-          className="flex-grow-1 p-4" 
-          style={{ 
-            overflowY: 'auto',
-            marginLeft: isMobile ? 0 : (sidebarVisible ? 0 : 0) // Add margin if needed
-          }}
-        >
-          {children}
-        </main>
+
+     
+  <div className=" d-sm-flex justify-content-between align-items-center mt-0"></div>
+      
+<main className="d-flex flex-column flex-grow-1 bg-light px-4 pt-0 pb-2"
+  style={{
+    overflowY: 'auto',
+    marginLeft: isMobile ? 0 : '250px', // 👈 Push content to the right of the sidebar
+    transition: 'margin-left 0.3s ease', // optional smoothness
+  }}>
+
+ {/*old content */}
+       <div className="bg-white px-3 py-2 mb-3 border " 
+       style={{
+      margin: '0 -1.5rem',
+      paddingLeft: '1.5rem',
+      paddingRight: '1.5rem',
+      paddingBottom: '0',
+    }}>
+    <BreadcrumbDividersExample />
+  </div>
+
+ 
+  <div className=" d-sm-flex justify-content-between align-items-center mt-0">
+    
+
+    <div className="d-sm-flex justify-content-between align-items-center">
+    <h2 className="mb-0">Dashboard</h2>
+  </div>
+    <div className="mt-3 mt-sm-0">
+      {/* Add actions/buttons if needed */}
+    </div>
+  </div>
+  {children}
+</main>
+
       </div>
       <footer className="footer py-3 border-top text-center">
         <span className="small">Walky Admin © 2023 | Built with CoreUI</span>
