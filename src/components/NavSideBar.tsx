@@ -25,14 +25,17 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
   return (
     <CSidebar
       className="border-end text-white flex-shrink-0"
-      style={{ 
-        backgroundColor: '#1e1e2f',
-        transition: 'transform 0.3s ease',
-        transform: visible ? 'translateX(0)' : 'translateX(-100%)',
-        position: isMobile ? 'fixed' : 'relative',
-        height: '100%',
-        zIndex: 1030,
-      }}
+  style={{ 
+    backgroundColor: '#1e1e2f',
+    transition: 'transform 0.3s ease',
+    transform: visible ? 'translateX(0)' : 'translateX(-100%)',
+    position: 'fixed', // ✅ always fixed
+    top: 0,            // ✅ start from top
+    left: 0,
+    height: '100vh',   // ✅ full height
+    width: '250px',    // or whatever matches your design
+    zIndex: 1030,
+  }}
       visible={visible}
       
     >
