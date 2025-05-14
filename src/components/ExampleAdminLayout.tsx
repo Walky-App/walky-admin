@@ -39,7 +39,9 @@ function ExampleAdminLayout({ children }: Props) {
 
   return (
     <div className="d-flex flex-column vh-100" style={{ backgroundColor: theme.colors.bodyBg }}>
-      <Topbar onToggleSidebar={toggleSidebar} />
+      <Topbar onToggleSidebar={toggleSidebar}
+              isMobile={isMobile}
+              sidebarVisible={sidebarVisible}/>
       
       <div className="d-flex flex-grow-1">
         
@@ -61,12 +63,15 @@ function ExampleAdminLayout({ children }: Props) {
      
   <div className=" d-sm-flex justify-content-between align-items-center mt-0"></div>
       
-<main className="d-flex flex-column flex-grow-1 bg-light px-4 pt-0 pb-2"
+  <main
+  className="d-flex flex-column flex-grow-1 bg-light px-4 pt-0 pb-2"
   style={{
+    marginTop: '56px',
+    marginLeft: !isMobile && sidebarVisible ? '250px' : 0, // 👈 Push right of sidebar
+    transition: 'margin-left 0.3s ease',
     overflowY: 'auto',
-    marginLeft: isMobile ? 0 : '250px', // 👈 Push content to the right of the sidebar
-    transition: 'margin-left 0.3s ease', // optional smoothness
-  }}>
+  }}
+>
 
  {/*old content */}
        <div className="bg-white px-3 py-2 mb-3 border " 
