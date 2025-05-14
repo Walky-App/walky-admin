@@ -19,7 +19,7 @@ import {
 
 import './App.css'
 
-import React, { useState, ReactElement } from 'react'
+import { useState, ReactElement } from 'react'
 
 import {
   Routes,
