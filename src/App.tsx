@@ -3,44 +3,33 @@ import { cilArrowTop, cilOptions } from '@coreui/icons'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import { CButton, CButtonGroup } from "@coreui/react"
 import { cilCloudDownload } from "@coreui/icons"
+import { useTheme } from './hooks/useTheme'
+import { Routes, Route } from 'react-router-dom';
+import Students from './pages/Students';
+import Engagement from './pages/Engagement'; 
+import Review from './pages/Review';
+import Mywalky from './pages/Mywalky';
+import Compliance from './pages/Compliance';
+import Settings from './pages/Settings';
+import { AppTheme } from './theme';
 
 import { 
   CCard, 
   CCardBody, 
-  CRow, 
-  CCol, 
+  CRow, //C
+  CCol, //C
   CCardHeader,
-  CDropdownItem, 
-  CDropdown, 
-  CDropdownMenu, 
-  CDropdownToggle, 
-  CWidgetStatsA 
-} from '@coreui/react' 
-
+  CDropdownItem, //C
+  CDropdown, //C
+  CDropdownMenu, //C
+  CDropdownToggle, //C
+  CWidgetStatsA //C
+} from '@coreui/react' //C
 import './App.css'
 
-import { useState, ReactElement } from 'react'
-
-import {
-  Routes,
-  Route,
-  Navigate,
-  useLocation
-} from 'react-router-dom'
-
-
-
-import { useTheme } from './hooks/useTheme'
-import Students from './pages/Students'
-import Engagement from './pages/Engagement'
-import Review from './pages/Review'
-import Mywalky from './pages/Mywalky'
-import Compliance from './pages/Compliance'
-import Settings from './pages/Settings'
-import Login from './pages/Login'
-import { AppTheme } from './theme'
-
+// Import example components
 import ExampleAdminLayout from './components/ExampleAdminLayout'
+import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
 import MainChart from "./components/MainChart.tsx";
 
 type DashboardProps = {
@@ -51,8 +40,18 @@ type DashboardProps = {
 
 const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
   return (
-    
     <>
+    <BreadcrumbDividersExample />
+      <div className="mb-4 d-sm-flex justify-content-between align-items-center">
+        <div>
+          
+          
+        </div>
+        <div className="mt-3 mt-sm-0">
+          
+        </div>
+      </div>
+
     <CRow>
       <CCol sm={6} lg={3}>
         <CWidgetStatsA
@@ -333,12 +332,10 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
 
 function App() {
   const { theme } = useTheme()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  console.log("💡 Logged in:", isLoggedIn); // ✅ DEBUG: See login state in browser console
 
   
 
-  
+  // Chart color customization based on theme
   const chartOptions = {
     plugins: {
       legend: {
@@ -384,6 +381,7 @@ function App() {
     },
   }
 
+  // Additional options for bar charts
   const barChartOptions = {
     ...chartOptions,
     scales: {
@@ -411,39 +409,23 @@ function App() {
     },
   }
 
-  const PrivateRoute = ({ children }: { children: ReactElement }) => {
-    const location = useLocation()
-    return isLoggedIn
-      ? children
-      : <Navigate to="/login" state={{ from: location }} replace />
-  }
-
   return (
-    <Routes>
-      {/* ✅ Login route (still public) */}
-      <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
-  
-      {/* ✅ Protected routes inside admin layout */}
-      <Route
-        path="*"
-        element={
-          <PrivateRoute>
-            <ExampleAdminLayout>
-              <Routes>
-                <Route path="/" element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />} />
-                <Route path="/students" element={<Students />} />
-                <Route path="/engagement" element={<Engagement />} />
-                <Route path="/review" element={<Review />} />
-                <Route path="/mywalky" element={<Mywalky />} />
-                <Route path="/compliance" element={<Compliance />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
-            </ExampleAdminLayout>
-          </PrivateRoute>
-        }
-      />
-    </Routes>
-  )  
-  }
-  
-  export default App
+    <ExampleAdminLayout>
+      {}
+      <Routes>
+        <Route
+          path="/"
+          element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />}
+        />
+        <Route path="/students" element={<Students />} />
+        <Route path="/engagement" element={<Engagement />} />
+        <Route path="/review" element={<Review theme={theme}/>} />
+        <Route path="/mywalky" element={<Mywalky />} />
+        <Route path="/compliance" element={<Compliance />} />
+        <Route path="/settings" element={<Settings />} />
+      </Routes>
+    </ExampleAdminLayout>
+  );
+}
+
+export default App

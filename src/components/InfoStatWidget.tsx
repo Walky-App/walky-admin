@@ -19,9 +19,9 @@ const InfoStatWidget: React.FC<InfoStatWidgetProps> = ({ icon, value, label, too
     content={tooltip}
     placement="bottom"
     style={{
-      '--cui-tooltip-bg': theme.isDark ? '#f8f9fa' : '#000',
-      '--cui-tooltip-color': theme.isDark ? '#212529' : '#fff',
-      '--cui-tooltip-border-color': theme.isDark ? '#adb5bd' : '#000',
+      '--cui-tooltip-bg': theme.isDark ? '#f8f9fa' : '#f8f9fa',
+      '--cui-tooltip-color': theme.isDark ? '#212529' : '#212529',
+      '--cui-tooltip-border-color': theme.isDark ? '#adb5bd' : '#adb5bd',
     } as React.CSSProperties}>
       <div
         className="d-flex rounded border overflow-hidden"
