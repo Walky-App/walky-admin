@@ -29,7 +29,7 @@ const Login = ({ onLogin }: LoginProps) => {
         flexDirection: 'column',
         alignItems: 'center',
         color: 'white',
-        zIndex: 9999,
+        zIndex: 999,
         padding: '2rem 1rem',
         boxSizing: 'border-box',
       }}
