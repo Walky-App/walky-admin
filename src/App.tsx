@@ -39,12 +39,12 @@ import Mywalky from './pages/Mywalky'
 import Compliance from './pages/Compliance'
 import Settings from './pages/Settings'
 import CreateAccount from './pages/CreateAccount'  
-import Login from './pages/Login'
 import { AppTheme } from './theme'
 
 import ExampleAdminLayout from './components/ExampleAdminLayout'
 import MainChart from "./components/MainChart.tsx";
 import API from './API/index.ts'
+import Login from './pages/Login.tsx'
 
 type DashboardProps = {
   theme: AppTheme;
