@@ -12,20 +12,36 @@ import {
 import { CChartLine } from "@coreui/react-chartjs";
 import { AppTheme } from "../theme";
 import { Chart as ChartJS, TooltipModel } from 'chart.js';
-
-
+import { useEffect } from 'react';
 
 type DashboardProps = {
   theme: AppTheme;
 };
 
 const Review = ({ theme }: DashboardProps) => {
+  // Add CSS to hide default Chart.js tooltips
+  useEffect(() => {
+    // Create a style element
+    const style = document.createElement('style');
+    style.textContent = `
+      .chartjs-tooltip {
+        display: none !important;
+      }
+    `;
+    // Add the style to the document head
+    document.head.appendChild(style);
+
+    // Clean up function to remove the style when component unmounts
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   const tooltipPlugin = {
     id: "customTooltip",
     afterDraw: (chart: ChartJS) => {
       const tooltipModel = chart.tooltip as TooltipModel<'line'>;
     
-
       let tooltipEl = document.getElementById("chartjs-tooltip");
       if (!tooltipEl) {
         tooltipEl = document.createElement("div");
@@ -113,8 +129,14 @@ const Review = ({ theme }: DashboardProps) => {
                   plugins: {
                     legend: { display: false },
                     tooltip: {
-                      enabled: false, // Completely disable native tooltips
+                      enabled: false,
                     },
+                    title: {
+                      display: false
+                    },
+                    subtitle: {
+                      display: false
+                    }
                   },
                   interaction: {
                     mode: "index",
@@ -122,12 +144,28 @@ const Review = ({ theme }: DashboardProps) => {
                   },
                   maintainAspectRatio: false,
                   scales: {
-                    x: { grid: { display: false }, ticks: { display: false } },
-                    y: { display: false, grid: { display: false }, ticks: { display: false } },
+                    x: { 
+                      display: false,
+                      grid: { display: false },
+                      ticks: { display: false }
+                    },
+                    y: { 
+                      display: false,
+                      grid: { display: false },
+                      ticks: { display: false }
+                    },
                   },
                   elements: {
                     line: { borderWidth: 1, tension: 0.4 },
                     point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
+                  },
+                  // Disable all animations to prevent label flash
+                  animation: false,
+                  // Additional options to prevent labels
+                  layout: {
+                    padding: {
+                      bottom: 10 // Add some padding to clear the area where labels appear
+                    }
                   },
                 }}
                 plugins={[tooltipPlugin]}
@@ -141,3 +179,4 @@ const Review = ({ theme }: DashboardProps) => {
 };
 
 export default Review;
+
