@@ -38,6 +38,7 @@ import Review from './pages/Review'
 import Mywalky from './pages/Mywalky'
 import Compliance from './pages/Compliance'
 import Settings from './pages/Settings'
+import CreateAccount from './pages/CreateAccount'  
 import Login from './pages/Login'
 import { AppTheme } from './theme'
 
@@ -486,6 +487,7 @@ function App() {
     <Routes>
       {/* ✅ Login route (still public) */}
       <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+      <Route path="/create-account" element={<CreateAccount />} />
   
       {/* ✅ Protected routes inside admin layout */}
       <Route
