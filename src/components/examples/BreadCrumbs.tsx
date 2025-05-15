@@ -1,5 +1,4 @@
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react';
-import { Breadcrumb } from 'react-bootstrap';
 import { useLocation, Link } from 'react-router-dom';
 
 export function BreadcrumbDividersExample() {
@@ -40,4 +39,4 @@ export function BreadcrumbDividersExample() {
   );
 }
 
-export default Breadcrumb
+export default CBreadcrumb
