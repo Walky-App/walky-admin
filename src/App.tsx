@@ -29,24 +29,21 @@ import {
 
 //Project Hooks and Theme
 import { useTheme } from './hooks/useTheme'
+
+import Students from './pages/Students.tsx'
+import Engagement from './pages/Engagement.tsx'
+import Review from './pages/Review.tsx'
+import Mywalky from './pages/Mywalky.tsx'
+import Compliance from './pages/Compliance.tsx'
+import Settings from './pages/Settings.tsx'
+import CreateAccount from './pages/CreateAccount.tsx'  
 import { AppTheme } from './theme'
 
-//Pages
-import Students from './pages/Students'
-import Engagement from './pages/Engagement'
-import Review from './pages/Review'
-import Mywalky from './pages/Mywalky'
-import Compliance from './pages/Compliance'
-import Settings from './pages/Settings'
-import CreateAccount from './pages/CreateAccount'  
-import Login from './pages/Login.tsx'
+import ExampleAdminLayout from './components/ExampleAdminLayout.tsx'
 
 //Styles
 import './App.css'
 
-//Components
-import ExampleAdminLayout from './components/ExampleAdminLayout'
-//import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
 import MainChart from "./components/MainChart.tsx";
 
 //Chart.js Types
@@ -54,6 +51,7 @@ import { Chart as ChartJS, TooltipModel } from 'chart.js';
 
 //API
 import API from './API/index.ts'
+import Login from './pages/Login.tsx'
 
 type DashboardProps = {
   theme: AppTheme;
