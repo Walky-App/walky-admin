@@ -32,16 +32,16 @@ import {
 
 
 import { useTheme } from './hooks/useTheme'
-import Students from './pages/Students'
-import Engagement from './pages/Engagement'
-import Review from './pages/Review'
-import Mywalky from './pages/Mywalky'
-import Compliance from './pages/Compliance'
-import Settings from './pages/Settings'
-import CreateAccount from './pages/CreateAccount'  
+import Students from './pages/Students.tsx'
+import Engagement from './pages/Engagement.tsx'
+import Review from './pages/Review.tsx'
+import Mywalky from './pages/Mywalky.tsx'
+import Compliance from './pages/Compliance.tsx'
+import Settings from './pages/Settings.tsx'
+import CreateAccount from './pages/CreateAccount.tsx'  
 import { AppTheme } from './theme'
 
-import ExampleAdminLayout from './components/ExampleAdminLayout'
+import ExampleAdminLayout from './components/ExampleAdminLayout.tsx'
 import MainChart from "./components/MainChart.tsx";
 import API from './API/index.ts'
 import Login from './pages/Login.tsx'
