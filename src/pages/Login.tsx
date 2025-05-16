@@ -19,7 +19,6 @@ const Login = ({ onLogin }: LoginProps) => {
     onLogin()
     navigate('/')
   }
-
   return (
     <div
       style={{
