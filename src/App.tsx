@@ -13,6 +13,7 @@ import Compliance from './pages/Compliance';
 import Settings from './pages/Settings';
 import { AppTheme } from './theme';
 
+
 import { 
   CCard, 
   CCardBody, 
@@ -27,12 +28,31 @@ import {
 } from '@coreui/react' 
 import './App.css'
 
-// Import example components
+import { useState, ReactElement, useEffect } from 'react'
+
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation
+} from 'react-router-dom'
+
+import { useTheme } from './hooks/useTheme'
+import Students from './pages/Students'
+import Engagement from './pages/Engagement'
+import Review from './pages/Review'
+import Mywalky from './pages/Mywalky'
+import Compliance from './pages/Compliance'
+import Settings from './pages/Settings'
+import CreateAccount from './pages/CreateAccount'  
+import { AppTheme } from './theme'
 import ExampleAdminLayout from './components/ExampleAdminLayout'
 import { BreadcrumbDividersExample } from './components/examples/BreadCrumbs'
 import MainChart from "./components/MainChart.tsx";
 import { useEffect } from 'react'
 import { Chart as ChartJS, TooltipModel } from 'chart.js';
+import API from './API/index.ts'
+import Login from './pages/Login.tsx'
 
 type DashboardProps = {
   theme: AppTheme;
@@ -106,6 +126,48 @@ const Dashboard = ({theme} : DashboardProps) => {
   return (
     <>
     <BreadcrumbDividersExample />
+
+type WidgetData = {
+  value: number | string;
+  percentChange: number;
+  chartData: number[];
+};
+
+const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
+
+  const [walks, setWalks] = useState<WidgetData | null>(null);
+  const [events, setEvents] = useState<WidgetData | null>(null);
+  const [ideas, setIdeas] = useState<WidgetData | null>(null);
+  const [surprise, setSurprise] = useState<WidgetData | null>(null);
+
+  useEffect(() => {
+    const fetchWidgets = async () => {
+      try {
+        const [walksRes, eventsRes, ideasRes, surpriseRes] = await Promise.all([
+          API.get('/api/v1/walks'),
+          API.get('/api/v1/events'),
+          API.get('/api/v1/ideas'),
+          API.get('/api/v1/surprise'),
+        ]);
+  
+        setWalks(walksRes.data);
+        setEvents(eventsRes.data);
+        setIdeas(ideasRes.data);
+        setSurprise(surpriseRes.data);
+      } catch (err) {
+        console.error('Failed to fetch one or more widgets:', err);
+      }
+    };
+  
+    fetchWidgets();
+  }, []);
+  
+
+
+  return (
+    <>
+    
+
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
         <div>
           
@@ -122,12 +184,18 @@ const Dashboard = ({theme} : DashboardProps) => {
           className="mb-4"
           color="primary"
           value={
-            <>
-              283{' '}
-              <span className="fs-6 fw-normal">
-                (40.9% <CIcon icon={cilArrowTop} />)
-              </span>
-            </>
+            
+            walks ? (
+              <>
+                {walks.value}{' '}
+                <span className="fs-6 fw-normal">
+                  ({walks.percentChange}% <CIcon icon={cilArrowTop} />)
+                </span>
+              </>
+            ) : (
+              'Loading...'
+            )
+
           }
           title="Walks"
           action={
@@ -151,11 +219,13 @@ const Dashboard = ({theme} : DashboardProps) => {
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                 datasets: [
                   {
-                    label: 'My First dataset',
+                    label: 'Walks',
                     backgroundColor: 'transparent',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    pointBackgroundColor: '#5856d6',
-                    data: [65, 59, 84, 84, 51, 55, 40],
+
+                    borderColor: theme.colors.chartLine,
+                    pointBackgroundColor: theme.colors.primary,
+                    data: walks?.chartData || [],
+
                   },
                 ],
               }}
@@ -212,12 +282,18 @@ const Dashboard = ({theme} : DashboardProps) => {
           className="mb-4"
           color="info"
           value={
-            <>
-              187{' '}
-              <span className="fs-6 fw-normal">
-                (40.9% <CIcon icon={cilArrowTop} />)
-              </span>
-            </>
+
+            events ? (
+              <>
+                {events.value}{' '}
+                <span className="fs-6 fw-normal">
+                  ({events.percentChange}% <CIcon icon={cilArrowTop} />)
+                </span>
+              </>
+            ) : (
+              'Loading...'
+            )
+
           }
           title="Events"
           action={
@@ -241,11 +317,13 @@ const Dashboard = ({theme} : DashboardProps) => {
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                 datasets: [
                   {
-                    label: 'My First dataset',
+                    label: 'Events',
                     backgroundColor: 'transparent',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    pointBackgroundColor: '#39f',
-                    data: [1, 18, 9, 17, 34, 22, 11],
+
+                    borderColor: theme.colors.chartLine,
+                    pointBackgroundColor: theme.colors.info,
+                    data: events?.chartData || [],
+
                   },
                 ],
               }}
@@ -302,12 +380,17 @@ const Dashboard = ({theme} : DashboardProps) => {
           className="mb-4"
           color="warning"
           value={
-            <>
-              192{' '}
-              <span className="fs-6 fw-normal">
-                (40%<CIcon icon={cilArrowTop} />)
-              </span>
-            </>
+
+            ideas ? (
+              <>
+                {ideas.value}{' '}
+                <span className="fs-6 fw-normal">
+                  ({ideas.percentChange}% <CIcon icon={cilArrowTop} />)
+                </span>
+              </>
+            ) : (
+              'Loading...'
+            )
           }
           title="Ideas"
           action={
@@ -331,10 +414,11 @@ const Dashboard = ({theme} : DashboardProps) => {
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                 datasets: [
                   {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40],
+                    label: 'Ideas',
+                    backgroundColor: `${theme.colors.warning}33`,
+                    borderColor: theme.colors.chartLine,
+                    data: ideas?.chartData || [],
+
                     fill: true,
                   },
                 ],
@@ -391,12 +475,16 @@ const Dashboard = ({theme} : DashboardProps) => {
           className="mb-4 px-0 py-0"
           color="danger"
           value={
-            <>
-              192{' '}
-              <span className="fs-6 fw-normal">
-                (0% <CIcon icon={cilArrowTop} />)
-              </span>
-            </>
+            surprise ? (
+              <>
+                {surprise.value}{' '}
+                <span className="fs-6 fw-normal">
+                  ({surprise.percentChange}% <CIcon icon={cilArrowTop} />)
+                </span>
+              </>
+            ) : (
+              'Loading...'
+            )
           }
           title={
             <div className="text-start ps-0">
@@ -441,10 +529,10 @@ const Dashboard = ({theme} : DashboardProps) => {
                 ],
                 datasets: [
                   {
-                    label: 'My First dataset',
+                    label: 'Surprise',
                     backgroundColor: theme.colors.danger,
                     borderColor: theme.colors.chartLine,
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
+                    data: surprise?.chartData || [],
                     barPercentage: 0.6,
                   },
                 ],
@@ -629,22 +717,33 @@ function App() {
   // }
 
   return (
-    <ExampleAdminLayout>
-      {}
-      <Routes>
-        <Route
-          path="/"
-          element={<Dashboard theme={theme} />}
-        />
-        <Route path="/students" element={<Students />} />
-        <Route path="/engagement" element={<Engagement />} />
-        <Route path="/review" element={<Review theme={theme}/>} />
-        <Route path="/mywalky" element={<Mywalky />} />
-        <Route path="/compliance" element={<Compliance />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
-    </ExampleAdminLayout>
-  );
-}
 
-export default App
+    <Routes>
+      {/* ✅ Login route (still public) */}
+      <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+      <Route path="/create-account" element={<CreateAccount />} />
+  
+      {/* ✅ Protected routes inside admin layout */}
+      <Route
+        path="*"
+        element={
+          <PrivateRoute>
+            <ExampleAdminLayout>
+              <Routes>
+                <Route path="/" element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />} />
+                <Route path="/students" element={<Students />} />
+                <Route path="/engagement" element={<Engagement />} />
+                <Route path="/review" element={<Review theme={theme} />} />
+                <Route path="/mywalky" element={<Mywalky />} />
+                <Route path="/compliance" element={<Compliance />} />
+                <Route path="/settings" element={<Settings />} />
+              </Routes>
+            </ExampleAdminLayout>
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  )  
+  }
+  
+  export default App
