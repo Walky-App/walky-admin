@@ -51,6 +51,7 @@ import { Chart as ChartJS, TooltipModel } from 'chart.js';
 
 //API
 import API from './API/index.ts'
+import Login from './pages/Login.tsx'
 
 type DashboardProps = {
   theme: AppTheme;
