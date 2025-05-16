@@ -291,3 +291,6 @@ body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--breadcrumb-divider-color, inherit);
+}
