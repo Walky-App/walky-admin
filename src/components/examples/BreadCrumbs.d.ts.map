@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 {"version":3,"file":"BreadCrumbs.d.ts","sourceRoot":"","sources":["BreadCrumbs.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAmB,MAAM,eAAe,CAAC;AAG7D,wBAAgB,yBAAyB,4CAoCxC;AAED,eAAe,WAAW,CAAA"}
-=======
-{"version":3,"file":"BreadCrumbs.d.ts","sourceRoot":"","sources":["BreadCrumbs.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAmB,MAAM,eAAe,CAAC;AAI7D,wBAAgB,yBAAyB,4CAoCxC;AAED,eAAe,WAAW,CAAA"}
->>>>>>> 44f00d27f98908f53f66bc4666daa21b2ff6462a

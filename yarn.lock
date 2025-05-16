@@ -774,7 +774,7 @@
 
 "@types/chart.js@^4.0.1":
   version "4.0.1"
-  resolved "https://registry.npmjs.org/@types/chart.js/-/chart.js-4.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/@types/chart.js/-/chart.js-4.0.1.tgz#fcc303637b5759e9cab9ae39c3a3f1e9dc1077b1"
   integrity sha512-OwXJ6Eg14eFpCsTG6sljiGnvVpit5R9rapG7nwDnQlljsdplVIOYVuCSwy07IduCtihrOwvOnbhXKLyp3nvPcw==
   dependencies:
     chart.js "*"
@@ -964,7 +964,7 @@ asynckit@^0.4.0:
 
 axios@^1.9.0:
   version "1.9.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.9.0.tgz"
   integrity sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==
   dependencies:
     follow-redirects "^1.15.6"
