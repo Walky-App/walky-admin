@@ -3,6 +3,7 @@ import { Sidebar } from './NavSideBar.tsx';
 import { Topbar } from './Topbar.tsx';
 import { useTheme } from '../hooks/useTheme';
 import { BreadcrumbDividersExample } from './examples/BreadCrumbs.tsx';
+import { useLocation } from 'react-router-dom';
 
 
 type Props = { children: React.ReactNode };
@@ -11,6 +12,7 @@ function ExampleAdminLayout({ children }: Props) {
   const { theme } = useTheme();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
 
   // Toggle sidebar manually (for button clicks)
   const toggleSidebar = () => {
@@ -35,7 +37,11 @@ function ExampleAdminLayout({ children }: Props) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);  // ✅ Important: no dependencies
   
-  
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarVisible(false);
+    }
+  }, [location]);
  
   return (
     <div className="d-flex flex-column vh-100" style={{ backgroundColor: theme.colors.bodyBg }}>
