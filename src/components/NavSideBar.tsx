@@ -25,19 +25,21 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
   return (
     <CSidebar
   className="border-end text-white flex-shrink-0"
-  style={{ 
+  style={{
     backgroundColor: '#1e1e2f',
     transition: 'transform 0.3s ease',
     transform: visible ? 'translateX(0)' : 'translateX(-100%)',
     position: 'fixed',
-    top: 0,                // 👈 At very top
+    top: 0,
     left: 0,
-    height: '100vh',       // 👈 Full screen height
+    height: '100vh',
     width: '250px',
     zIndex: 1040,
+    pointerEvents: visible ? 'auto' : 'none', // 👈 prevents "ghost touches"
   }}
-  visible={visible}
+  visible={visible} // ✅ important
 >
+
 
       <CSidebarHeader className="d-flex justify-content-between align-items-center px-3 py-2">
         <div className="text-white fw-bold">Walky Admin</div>
