@@ -6,7 +6,7 @@ import StudentTable from '../components/StudentTable';
 const Students = () => {
     const widgets = [
         { icon: icon.cilPeople, value: '1,283', label: 'Total Students', tooltip: 'Amount of Students' },
-        { icon: icon.cilBirthdayCake, value: '22', label: 'Average Age', tooltip: 'Mean age of students' },
+        { icon: icon.cilBirthdayCake, value: '22', label: 'Average Age', tooltip: 'Mean age of all students' },
         { icon: icon.cilLanguage, value: '37', label: 'Languages', tooltip: 'The number of different spoken languages' },
         { icon: icon.cilPushchair, value: '111', label: 'Parents', tooltip: 'Students who are parents' },
     ];
