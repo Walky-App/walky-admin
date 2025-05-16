@@ -4,7 +4,6 @@ import { getStyle } from '@coreui/utils'
 import { useTheme } from '../hooks/useTheme'
 import { Chart, TooltipModel } from 'chart.js'
 
-
 const MainChart = () => {
   const chartRef = useRef<Chart | null>(null);
   const { theme } = useTheme()
@@ -72,13 +71,13 @@ if (chart.options.scales?.y?.ticks) {
 }
 
 if (chart.data.datasets[0]) {
-  chart.data.datasets[0].borderColor = theme.colors.graphLine;
-  chart.data.datasets[0].backgroundColor = theme.colors.chartPoint;
+  chart.data.datasets[0].borderColor = 'rgba(0, 123, 255, 1)';
+  chart.data.datasets[0].backgroundColor = 'rgba(0, 123, 255, 0.08)'; // Light blue fill
 }
 
 if (chart.data.datasets[1]) {
-  chart.data.datasets[1].borderColor = theme.colors.success;
-  chart.data.datasets[1].backgroundColor = theme.colors.success;
+  chart.data.datasets[1].borderColor = 'rgba(40, 167, 69, 1)';
+  chart.data.datasets[1].backgroundColor = 'transparent'; // No fill
 }
 
 chart.update();
@@ -98,24 +97,25 @@ setTimeout(updateChartColors, 50);
       data={{
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         datasets: [
-            {
-              label: 'Traffic',
-              data: [70, 105, 120, 110, 165, 95, 85],
-              borderColor: theme.colors.borderColor,
-              backgroundColor: theme.colors.chartLineBackground,
-              fill: 'start',
-              tension: 0.4,
-              pointBackgroundColor: theme.colors.chartPoint,
-            },
-            {
-                label: 'Conversion',
-                data: [140, 160, 180, 120, 170, 130, 100],
-                borderColor: theme.colors.borderColor,
-                tension: 0.4,
-                pointBackgroundColor: getStyle('--cui-success'),
-              }
-              
-          ]          
+          {
+            label: 'Traffic',
+            data: [70, 105, 120, 110, 165, 95, 85],
+            borderColor: 'rgba(0, 123, 255, 1)',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)', 
+            fill: true, 
+            tension: 0.4,
+            pointRadius: 0,
+          },
+          {
+            label: 'Conversion',
+            data: [140, 160, 180, 120, 170, 130, 100],
+            borderColor: 'rgba(40, 167, 69, 1)', 
+            backgroundColor: 'transparent', 
+            fill: false,
+            tension: 0.4,
+            pointRadius: 0,
+          }
+        ]
       }}
       options={{
         responsive: true,
@@ -153,6 +153,14 @@ setTimeout(updateChartColors, 50);
             bottom: 0 //ensure graph is touching bottom of widget
           }
         },
+        elements: {
+          line: {
+            borderWidth: 2, 
+          },
+          point: {
+            radius: 0, 
+          },
+        },
       }}
       plugins={[tooltipPlugin]}
 
@@ -161,4 +169,3 @@ setTimeout(updateChartColors, 50);
 }
 
 export default MainChart
-

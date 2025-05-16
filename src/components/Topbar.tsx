@@ -6,9 +6,11 @@ import React, { useState } from 'react'
 
 type TopbarProps = {
   onToggleSidebar: () => void;
+  isMobile: boolean;
+  sidebarVisible: boolean;
 };
 
-export const Topbar = ({ onToggleSidebar }: TopbarProps) => {
+export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProps) => {
   const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme.isDark;
 
@@ -36,7 +38,19 @@ export const Topbar = ({ onToggleSidebar }: TopbarProps) => {
   };
 
   return (
-    <CNavbar className="shadow-sm px-4" style={{ backgroundColor: theme.colors.cardBg }}>
+    <CNavbar
+  className="shadow-sm px-4"
+  style={{
+    backgroundColor: theme.colors.cardBg,
+    height: '56px',
+    position: 'fixed',
+    top: 0,
+    left: !isMobile && sidebarVisible ? '250px' : 0, 
+    right: 0,
+    zIndex: 1050,
+    transition: 'left 0.3s ease',
+  }}
+>
       <CContainer fluid>
         <div className="d-flex w-100 justify-content-between align-items-center">
 
