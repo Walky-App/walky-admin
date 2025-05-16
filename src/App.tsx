@@ -1,37 +1,35 @@
+//Icon/Components
 import CIcon from '@coreui/icons-react'
-import { cilArrowTop, cilOptions } from '@coreui/icons'
-import { CChartBar, CChartLine } from '@coreui/react-chartjs'
-import { CButton, CButtonGroup } from "@coreui/react"
-import { cilCloudDownload } from "@coreui/icons"
-
-
-import { 
+import { cilArrowTop, cilOptions, cilCloudDownload } from '@coreui/icons'
+import {
+  CButton,
+  CButtonGroup,
   CCard, 
   CCardBody, 
-  CRow, 
-  CCol, 
   CCardHeader,
+  CRow,
+  CCol, 
   CDropdownItem, 
   CDropdown, 
   CDropdownMenu, 
   CDropdownToggle, 
   CWidgetStatsA 
 } from '@coreui/react' 
+import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 
-import './App.css'
+import { useState, useEffect, JSX } from 'react'
 
-import { useState, ReactElement, useEffect } from 'react'
-
+//React Routes
 import {
   Routes,
   Route,
   Navigate,
-  useLocation
+  // useLocation
 } from 'react-router-dom'
 
-
-
+//Project Hooks and Theme
 import { useTheme } from './hooks/useTheme'
+
 import Students from './pages/Students.tsx'
 import Engagement from './pages/Engagement.tsx'
 import Review from './pages/Review.tsx'
@@ -42,14 +40,22 @@ import CreateAccount from './pages/CreateAccount.tsx'
 import { AppTheme } from './theme'
 
 import ExampleAdminLayout from './components/ExampleAdminLayout.tsx'
+
+//Styles
+import './App.css'
+
 import MainChart from "./components/MainChart.tsx";
+
+//Chart.js Types
+import { Chart as ChartJS, TooltipModel } from 'chart.js';
+
+//API
 import API from './API/index.ts'
-import Login from './pages/Login.tsx'
 
 type DashboardProps = {
   theme: AppTheme;
-  chartOptions: object;
-  barChartOptions: object;
+  // chartOptions: object;
+  // barChartOptions: object;
 };
 
 type WidgetData = {
@@ -58,39 +64,100 @@ type WidgetData = {
   chartData: number[];
 };
 
-const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
+const Dashboard = ({theme} : DashboardProps) => {
+
 
   const [walks, setWalks] = useState<WidgetData | null>(null);
   const [events, setEvents] = useState<WidgetData | null>(null);
   const [ideas, setIdeas] = useState<WidgetData | null>(null);
   const [surprise, setSurprise] = useState<WidgetData | null>(null);
-
-  useEffect(() => {
-    const fetchWidgets = async () => {
-      try {
-        const [walksRes, eventsRes, ideasRes, surpriseRes] = await Promise.all([
-          API.get('/api/v1/walks'),
-          API.get('/api/v1/events'),
-          API.get('/api/v1/ideas'),
-          API.get('/api/v1/surprise'),
-        ]);
+    // Add CSS to hide default Chart.js tooltips
+    useEffect(() => {
+      // Create a style element
+      const style = document.createElement('style');
+      
+      style.textContent = `
+        .chartjs-tooltip {
+          display: none !important;
+        }
+      `;
+      // Add the style to the document head
+      document.head.appendChild(style);
   
-        setWalks(walksRes.data);
-        setEvents(eventsRes.data);
-        setIdeas(ideasRes.data);
-        setSurprise(surpriseRes.data);
-      } catch (err) {
-        console.error('Failed to fetch one or more widgets:', err);
-      }
+      // Clean up function to remove the style when component unmounts
+      return () => {
+        document.head.removeChild(style);
+      };
+    }, []);
+    
+    useEffect(() => {
+      const fetchWidgets = async () => {
+        try {
+          const [walksRes, eventsRes, ideasRes, surpriseRes] = await Promise.all([
+            API.get('/api/v1/walks'),
+            API.get('/api/v1/events'),
+            API.get('/api/v1/ideas'),
+            API.get('/api/v1/surprise'),
+          ]);
+    
+          setWalks(walksRes.data);
+          setEvents(eventsRes.data);
+          setIdeas(ideasRes.data);
+          setSurprise(surpriseRes.data);
+        } catch (err) {
+          console.error('Failed to fetch one or more widgets:', err);
+        }
+      };
+    
+      fetchWidgets();
+    }, []);
+
+    const tooltipPlugin = {
+      id: "customTooltip",
+      afterDraw: (chart: ChartJS) => {
+        const tooltipModel = chart.tooltip as TooltipModel<'line'>;
+      
+        let tooltipEl = document.getElementById("chartjs-tooltip");
+        if (!tooltipEl) {
+          tooltipEl = document.createElement("div");
+          tooltipEl.id = "chartjs-tooltip";
+          tooltipEl.style.position = "absolute";
+          tooltipEl.style.padding = "8px 12px";
+          tooltipEl.style.borderRadius = "6px";
+          tooltipEl.style.pointerEvents = "none";
+          tooltipEl.style.transition = "all 0.1s ease";
+          tooltipEl.style.fontFamily = "Inter, sans-serif";
+          tooltipEl.style.fontSize = "12px";
+          document.body.appendChild(tooltipEl);
+        }
+  
+        tooltipEl.style.background = theme.isDark
+          ? "rgba(255, 255, 255, 0.7)"
+          : "rgba(4, 4, 4, 0.75)";
+        tooltipEl.style.color = theme.isDark ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)";
+  
+        if (tooltipModel.opacity === 0) {
+          tooltipEl.style.opacity = "0";
+          return;
+        }
+  
+        if (tooltipModel.dataPoints) {
+          const dataPoint = tooltipModel.dataPoints[0];
+          const hoveredMonth = dataPoint.label;
+          const value = dataPoint.raw;
+  
+          tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Walks this month: ${value}`;
+        }
+  
+        const position = chart.canvas.getBoundingClientRect();
+        tooltipEl.style.opacity = "1";
+        tooltipEl.style.left = `${position.left + window.pageXOffset + tooltipModel.caretX}px`;
+        tooltipEl.style.top = `${position.top + window.pageYOffset + tooltipModel.caretY}px`;
+      },
     };
-  
-    fetchWidgets();
-  }, []);
-  
-
-
   return (
     <>
+
     
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
         <div>
@@ -104,8 +171,8 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
 
     <CRow>
       <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4 px-0 py-0"
+      <CWidgetStatsA
+          className="mb-4"
           color="primary"
           value={
             walks ? (
@@ -119,21 +186,17 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
               'Loading...'
             )
           }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Walks</span>
-            </div>     
-          }     
+          title="Walks"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
                 <CIcon icon={cilOptions} className="text-white" />
               </CDropdownToggle>
               <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
+              <CDropdownItem>Daily Walks</CDropdownItem>
+                  <CDropdownItem>Weekly Walks</CDropdownItem>
+                  <CDropdownItem>Monthly Walks</CDropdownItem>
+                  <CDropdownItem disabled>Download CSV</CDropdownItem>
               </CDropdownMenu>
             </CDropdown>
           }
@@ -153,14 +216,57 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
                   },
                 ],
               }}
-              options={chartOptions}
+              options={{
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    enabled: false,
+                  },
+                  title: {
+                    display: false
+                  },
+                  subtitle: {
+                    display: false
+                  }
+                },
+                interaction: {
+                  mode: "index",
+                  intersect: false,
+                },
+                maintainAspectRatio: false,
+                scales: {
+                  x: { 
+                    display: false,
+                    grid: { display: false },
+                    ticks: { display: false }
+                  },
+                  y: { 
+                    display: false,
+                    grid: { display: false },
+                    ticks: { display: false }
+                  },
+                },
+                elements: {
+                  line: { borderWidth: 1, tension: 0.4 },
+                  point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
+                },
+                // Disable all animations to prevent label flash
+                animation: false,
+                // Additional options to prevent labels
+                layout: {
+                  padding: {
+                    bottom: 10 // Add some padding to clear the area where labels appear
+                  }
+                },
+              }}
+              plugins={[tooltipPlugin]}
             />
           }
         />
       </CCol>
       <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4 px-0 py-0"
+      <CWidgetStatsA
+          className="mb-4"
           color="info"
           value={
             events ? (
@@ -174,11 +280,7 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
               'Loading...'
             )
           }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Events</span>
-            </div>     
-          }     
+          title="Events"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -208,14 +310,57 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
                   },
                 ],
               }}
-              options={chartOptions}
+              options={{
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    enabled: false,
+                  },
+                  title: {
+                    display: false
+                  },
+                  subtitle: {
+                    display: false
+                  }
+                },
+                interaction: {
+                  mode: "index",
+                  intersect: false,
+                },
+                maintainAspectRatio: false,
+                scales: {
+                  x: { 
+                    display: false,
+                    grid: { display: false },
+                    ticks: { display: false }
+                  },
+                  y: { 
+                    display: false,
+                    grid: { display: false },
+                    ticks: { display: false }
+                  },
+                },
+                elements: {
+                  line: { borderWidth: 1, tension: 0.4 },
+                  point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
+                },
+                // Disable all animations to prevent label flash
+                animation: false,
+                // Additional options to prevent labels
+                layout: {
+                  padding: {
+                    bottom: 10 // Add some padding to clear the area where labels appear
+                  }
+                },
+              }}
+              plugins={[tooltipPlugin]}
             />
           }
         />
       </CCol>
       <CCol sm={6}lg={3}>
-        <CWidgetStatsA
-          className="mb-4 px-0 py-0"
+      <CWidgetStatsA
+          className="mb-4"
           color="warning"
           value={
             ideas ? (
@@ -229,11 +374,7 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
               'Loading...'
             )
           }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Ideas</span>
-            </div> 
-          } 
+          title="Ideas"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -263,7 +404,49 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
                   },
                 ],
               }}
-              options={chartOptions}
+              options={{
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    enabled: false,
+                  },
+                title: {
+                  display: false
+                },
+                subtitle:{
+                  display:false
+                }
+                },
+                interaction: {
+                  mode: "index",
+                  intersect: false,
+                },
+                maintainAspectRatio: false,
+                scales: {
+                  x: {
+                    display: false,
+                    grid: { display: false },
+                    ticks: { display: false }
+                  },
+                  y: {
+                    display: false,
+                    grid: { display: false },
+                    ticks: { display: false }
+                  },
+                },
+                elements: {
+                  line: {
+                    borderWidth: 2,
+                    tension: 0.4,
+                  },
+                  point: {
+                    radius: 0,
+                    hitRadius: 10,
+                    hoverRadius: 4,
+                  },
+                },
+              }}
+              plugins={[tooltipPlugin]}
             />
           }
         />
@@ -335,7 +518,46 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
                   },
                 ],
               }}
-              options={barChartOptions}
+              options={{
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                },
+                scales: {
+                  x: {
+                    grid: {
+                      display: false,
+                      drawTicks: false,
+                    },
+                    ticks: {
+                      display: false,
+                    },
+                  },
+                  y: {
+                    grid: {
+                      display: false,
+                      drawTicks: false,
+                    },
+                    ticks: {
+                      display: false,
+                    },
+                  },
+                },
+                elements: {
+                  line: { borderWidth: 1, tension: 0.4 },
+                  point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
+                },
+                animation: false,
+                layout: {
+                  padding: {
+                    bottom: 0 //ensure graph is touching bottom of widget
+                  }
+                },
+              }}
+              plugins={[tooltipPlugin]}
+
             />
           }
         />
@@ -364,7 +586,7 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
               style={{ 
                 fontFamily: "Inter, sans-serif",
                 fontSize: '12px',
-                marginLeft: '-30px',
+                marginLeft: '0px',
                 color: theme.colors.secondary,
                }}
             >
@@ -399,89 +621,83 @@ const Dashboard = ({theme, chartOptions, barChartOptions} : DashboardProps) => {
 function App() {
   const { theme } = useTheme()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  console.log("💡 Logged in:", isLoggedIn); // ✅ DEBUG: See login state in browser console
 
-  
+  const PrivateRoute = ({ children }: { children: JSX.Element }) => { // ⬅️ PrivateRoute defined here
+    return isLoggedIn ? children : <Navigate to="/login" />;
+  };
+  // Chart color customization based on theme
+  // const chartOptions = {
+  //   plugins: {
+  //     legend: {
+  //       display: false,
+  //     },
+  //   },
+  //   maintainAspectRatio: false,
+  //   scales: {
+  //     x: {
+  //       grid: {
+  //         display: false,
+  //       },
+  //       ticks: {
+  //         display: false,
+  //         color: theme.colors.chartLine,
+  //       },
+  //     },
+  //     y: {
+  //       min: 30,
+  //       max: 89,
+  //       display: false,
+  //       grid: {
+  //         display: false,
+  //       },
+  //       ticks: {
+  //         display: false,
+  //         color: theme.colors.chartLine,
+  //       },
+  //     },
+  //   },
+  //   elements: {
+  //     line: {
+  //       borderWidth: 1,
+  //       tension: 0.4,
+  //       borderColor: theme.colors.chartLine,
+  //     },
+  //     point: {
+  //       radius: 4,
+  //       hitRadius: 10,
+  //       hoverRadius: 4,
+  //       backgroundColor: theme.colors.chartPoint,
+  //     },
+  //   },
+  // }
 
-  
-  const chartOptions = {
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-      y: {
-        min: 30,
-        max: 89,
-        display: false,
-        grid: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-    },
-    elements: {
-      line: {
-        borderWidth: 1,
-        tension: 0.4,
-        borderColor: theme.colors.chartLine,
-      },
-      point: {
-        radius: 4,
-        hitRadius: 10,
-        hoverRadius: 4,
-        backgroundColor: theme.colors.chartPoint,
-      },
-    },
-  }
-
-  const barChartOptions = {
-    ...chartOptions,
-    scales: {
-      ...chartOptions.scales,
-      x: {
-        grid: {
-          display: false,
-          drawTicks: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-      y: {
-        grid: {
-          display: false,
-          drawTicks: false,
-        },
-        ticks: {
-          display: false,
-          color: theme.colors.chartLine,
-        },
-      },
-    },
-  }
-
-  const PrivateRoute = ({ children }: { children: ReactElement }) => {
-    const location = useLocation()
-    return isLoggedIn
-      ? children
-      : <Navigate to="/login" state={{ from: location }} replace />
-  }
+  // Additional options for bar charts
+  // const barChartOptions = {
+  //   ...chartOptions,
+  //   scales: {
+  //     ...chartOptions.scales,
+  //     x: {
+  //       grid: {
+  //         display: false,
+  //         drawTicks: false,
+  //       },
+  //       ticks: {
+  //         display: false,
+  //         color: theme.colors.chartLine,
+  //       },
+  //     },
+  //     y: {
+  //       grid: {
+  //         display: false,
+  //         drawTicks: false,
+  //       },
+  //       ticks: {
+  //         display: false,
+  //         color: theme.colors.chartLine,
+  //       },
+  //     },
+  //   },
+  // }
 
   return (
     <Routes>
@@ -496,10 +712,10 @@ function App() {
           <PrivateRoute>
             <ExampleAdminLayout>
               <Routes>
-                <Route path="/" element={<Dashboard theme={theme} chartOptions={chartOptions} barChartOptions={barChartOptions} />} />
+                <Route path="/" element={<Dashboard theme={theme}/>} />
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
-                <Route path="/review" element={<Review />} />
+                <Route path="/review" element={<Review theme={theme} />} />
                 <Route path="/mywalky" element={<Mywalky />} />
                 <Route path="/compliance" element={<Compliance />} />
                 <Route path="/settings" element={<Settings />} />

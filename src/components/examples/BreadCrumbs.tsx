@@ -1,5 +1,4 @@
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react';
-
 import { useLocation, Link } from 'react-router-dom';
 
 export function BreadcrumbDividersExample() {
