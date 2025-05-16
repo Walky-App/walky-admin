@@ -1,7 +1,7 @@
 import * as icon from '@coreui/icons'
 import { CCol, CRow } from '@coreui/react'
-import InfoStatWidget from '../components/InfoStatWidget'
-import StudentTable from '../components/StudentTable';
+import InfoStatWidget from '../components/InfoStatWidget.tsx'
+import StudentTable from '../components/StudentTable.tsx';
 
 const Students = () => {
   const widgets = [
@@ -10,7 +10,7 @@ const Students = () => {
     { icon: icon.cilLanguage, value: '37', label: 'Languages', tooltip: 'The number of different spoken languages' },
     { icon: icon.cilPushchair, value: '111', label: 'Parents', tooltip: 'Students who are parents' },
   ]
-
+  
   return (
     <div style={{ padding: '2rem' }}>
       <CRow>

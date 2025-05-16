@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Sidebar } from './NavSideBar';
-import { Topbar } from './Topbar';
+import { Sidebar } from './NavSideBar.tsx';
+import { Topbar } from './Topbar.tsx';
 import { useTheme } from '../hooks/useTheme';
-import { BreadcrumbDividersExample } from './examples/BreadCrumbs';
+import { BreadcrumbDividersExample } from './examples/BreadCrumbs.tsx';
 
 
 type Props = { children: React.ReactNode };
@@ -36,7 +36,7 @@ function ExampleAdminLayout({ children }: Props) {
   }, []);  // ✅ Important: no dependencies
   
   
-
+ 
   return (
     <div className="d-flex flex-column vh-100" style={{ backgroundColor: theme.colors.bodyBg }}>
       <Topbar onToggleSidebar={toggleSidebar}
