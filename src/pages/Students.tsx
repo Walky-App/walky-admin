@@ -6,10 +6,10 @@ import API from '../API'
 import { useState, useEffect } from 'react'
 
 const Students = () => {
-  const [totalStudents, setTotalStudents] = useState<string | number>('—')
+  // const [totalStudents, setTotalStudents] = useState<string | number>('—')
   const [averageAge, setAverageAge] = useState<string | number>('—')
-  const [languages, setLanguages] = useState<string | number>('—')
-  const [parents, setParents] = useState<string | number>('—')
+  // const [languages, setLanguages] = useState<string | number>('—')
+  // const [parents, setParents] = useState<string | number>('—')
 
   useEffect(() => {
 
@@ -66,10 +66,10 @@ const Students = () => {
   }, [])
 
   const widgets = [
-    { icon: icon.cilPeople, value: totalStudents, label: 'Total Students', tooltip: 'Amount of Students' },
+    // { icon: icon.cilPeople, value: totalStudents, label: 'Total Students', tooltip: 'Amount of Students' },
     { icon: icon.cilBirthdayCake, value: averageAge, label: 'Average Age', tooltip: 'Mean age of all students' },
-    { icon: icon.cilLanguage, value: languages, label: 'Languages', tooltip: 'The number of different spoken languages' },
-    { icon: icon.cilPushchair, value: parents, label: 'Parents', tooltip: 'Students who are parents' },
+    // { icon: icon.cilLanguage, value: languages, label: 'Languages', tooltip: 'The number of different spoken languages' },
+    // { icon: icon.cilPushchair, value: parents, label: 'Parents', tooltip: 'Students who are parents' },
   ]
 
   return (
