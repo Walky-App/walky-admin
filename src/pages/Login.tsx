@@ -1,6 +1,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+
 //login page
 type LoginProps = {
   onLogin: () => void;
@@ -25,7 +26,7 @@ const Login = ({ onLogin }: LoginProps) => {
   return (
     <div
       style={{
-        display: "flex",             
+        display: "flex",
         height: "100vh",
         width: "100vw",
       }}
@@ -163,8 +164,22 @@ const Login = ({ onLogin }: LoginProps) => {
           >
             Continue
           </button>
+
+          {/* 👇 Added hyperlink to create account */}
+          <div style={{ marginTop: "0.5rem" }}>
+            <span style={{ color: "#cbd5e1", fontSize: "0.9rem" }}>
+              Don’t have an account?{" "}
+              <Link
+                to="/create-account"
+                style={{ color: "#3b82f6", textDecoration: "underline" }}
+              >
+                Create one
+              </Link>
+            </span>
+          </div>
         </div>
       </div>
+
       <div
         style={{
           flex: 1,
