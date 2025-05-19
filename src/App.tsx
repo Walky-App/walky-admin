@@ -59,19 +59,51 @@ type DashboardProps = {
   // barChartOptions: object;
 };
 
-type WidgetData = {
-  value: number | string;
+type BaseWidgetData = {
   percentChange: number;
   chartData: number[];
 };
 
+type WalksData = {
+  totalWalksCreated: number;
+  chartData?: number[];
+  percentChange?: number;
+};
+
+type EventsData = {
+  day: {
+    totalEventEngagement: number;
+    percentChange: number | null;
+  };
+  week: {
+    totalEventEngagement: number;
+    percentChange: number;
+  };
+  month: {
+    totalEventEngagement: number;
+    percentChange: number;
+  };
+  allTime: {
+    totalEventEngagement: number;
+  };
+  chartData?: number[];
+};
+
+type IdeasData = BaseWidgetData & {
+  totalIdeasCreated?: number; // Made optional
+  value?: number | string; // Added alternate property
+};
+
+type SurpriseData = BaseWidgetData & {
+  value: number | string;
+};
 const Dashboard = ({theme} : DashboardProps) => {
 
 
-  const [walks, setWalks] = useState<WidgetData | null>(null);
-  const [events, setEvents] = useState<WidgetData | null>(null);
-  const [ideas, setIdeas] = useState<WidgetData | null>(null);
-  const [surprise, setSurprise] = useState<WidgetData | null>(null);
+    const [walks, setWalks] = useState<WalksData | null>(null);
+    const [events, setEvents] = useState<EventsData | null>(null);
+    const [ideas, setIdeas] = useState<IdeasData | null>(null);
+    const [surprise, setSurprise] = useState<SurpriseData | null>(null);
     // Add CSS to hide default Chart.js tooltips
     useEffect(() => {
       // Create a style element
@@ -94,7 +126,7 @@ const Dashboard = ({theme} : DashboardProps) => {
     useEffect(() => {
     const getIdeasData = async () => {
       try {
-        const ideasData = await API.get('/ideas/count'); // FIXED: Added leading slash
+        const ideasData = await API.get('/ideas/count');
         
         if (ideasData) {
           setIdeas(ideasData.data);
@@ -106,10 +138,16 @@ const Dashboard = ({theme} : DashboardProps) => {
 
     const getEventsData = async () => {
       try {
-        const eventsData = await API.get('/events/eventEngagement-count');
-
-        if (eventsData) {
-          setEvents(eventsData.data);
+        const response = await API.get('/events/eventEngagement-count');
+        
+        if (response && response.data) {
+          // Add chartData since it's not in the API response
+          const eventsData = {
+            ...response.data,
+            chartData: [20, 40, 60, 80, 100, 120, response.data.allTime.totalEventEngagement]
+          };
+          
+          setEvents(eventsData);
         }
       } catch (err) {
         console.error('❌ Failed to fetch events data:', err);
@@ -118,10 +156,27 @@ const Dashboard = ({theme} : DashboardProps) => {
 
     const getWalksData = async () => {
       try {
-        const walksData = await API.get('/walks/count');
+        const response = await API.get('/walks/count');
         
-        if (walksData) {
-          setWalks(walksData.data);
+        if (response && response.data) {
+          const totalWalks = response.data.totalWalksCreated;
+          
+          // Create synthetic chart data and add percentChange
+          const walksData = {
+            ...response.data,
+            percentChange: 5.2, //These are dummy values, will get replaced when endpoint is done.
+            chartData: [
+              Math.round(totalWalks * 0.4),
+              Math.round(totalWalks * 0.5),
+              Math.round(totalWalks * 0.6),
+              Math.round(totalWalks * 0.7),
+              Math.round(totalWalks * 0.8),
+              Math.round(totalWalks * 0.9),
+              totalWalks
+            ]
+          };
+          
+          setWalks(walksData);
         }
       } catch (err) {
         console.error('❌ Failed to fetch walks data:', err);
@@ -220,7 +275,7 @@ const Dashboard = ({theme} : DashboardProps) => {
           value={
             walks ? (
               <>
-                {walks.value}{' '}
+                {walks.totalWalksCreated}{' '}
                 <span className="fs-6 fw-normal">
                   ({walks.percentChange}% <CIcon icon={cilArrowTop} />)
                 </span>
@@ -316,7 +371,7 @@ const Dashboard = ({theme} : DashboardProps) => {
               <>
                 {events.allTime.totalEventEngagement}{' '}
                 <span className="fs-6 fw-normal">
-                  ({events.percentChange}% <CIcon icon={cilArrowTop} />)
+                  ({events.month.percentChange}% <CIcon icon={cilArrowTop} />)
                 </span>
               </>
             ) : (
