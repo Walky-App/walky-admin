@@ -6,6 +6,16 @@ import { BreadcrumbDividersExample } from './examples/BreadCrumbs.tsx';
 import { useLocation } from 'react-router-dom';
 
 
+const pageTitles: Record<string, string> = {
+  '/': "Dashboard",
+  '/students': 'Students',
+  '/engagement': 'Engagement',
+  '/review': 'Review',
+  '/mywalky': 'My Walky',
+  '/compliance': 'Compliance',
+  '/settings': 'Settings',
+};
+
 type Props = { children: React.ReactNode };
 
 function ExampleAdminLayout({ children }: Props) {
@@ -70,23 +80,30 @@ function ExampleAdminLayout({ children }: Props) {
   <div className=" d-sm-flex justify-content-between align-items-center mt-0"></div>
       
   <main
-  className="d-flex flex-column flex-grow-1 bg-light px-4 pt-0 pb-2"
+  className="d-flex flex-column flex-grow-1 px-4 pt-0 pb-2"
   style={{
+    backgroundColor: theme.colors.bodyBg,
+    color: theme.colors.bodyColor,
     marginTop: '56px',
-    marginLeft: !isMobile && sidebarVisible ? '250px' : 0, // 👈 Push right of sidebar
+    marginLeft: !isMobile && sidebarVisible ? '250px' : 0,
     transition: 'margin-left 0.3s ease',
     overflowY: 'auto',
   }}
 >
 
  {/*old content */}
-       <div className="bg-white px-3 py-2 mb-3 border " 
-       style={{
-      margin: '0 -1.5rem',
-      paddingLeft: '1.5rem',
-      paddingRight: '1.5rem',
-      paddingBottom: '0',
-    }}>
+ <div
+  className="px-3 py-2 mb-3"
+  style={{
+    backgroundColor: theme.colors.cardBg,
+    color: theme.colors.bodyColor,
+    border: `1px solid ${theme.colors.borderColor}`,
+    margin: '0 -1.5rem',
+    paddingLeft: '1.5rem',
+    paddingRight: '1.5rem',
+    paddingBottom: '0',
+  }}
+>
     <BreadcrumbDividersExample />
   </div>
 
@@ -95,7 +112,7 @@ function ExampleAdminLayout({ children }: Props) {
     
 
     <div className="d-sm-flex justify-content-between align-items-center">
-    <h2 className="mb-0">Dashboard</h2>
+    <h2 className="mb-0">{pageTitles[location.pathname]}</h2>
   </div>
     <div className="mt-3 mt-sm-0">
       {/* Add actions/buttons if needed */}
