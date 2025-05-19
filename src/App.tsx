@@ -1,6 +1,6 @@
 //Icon/Components
 import CIcon from '@coreui/icons-react'
-import { cilArrowTop, cilOptions, cilCloudDownload } from '@coreui/icons'
+import { cilArrowTop,cilCloudDownload } from '@coreui/icons'
 import {
   CButton,
   CButtonGroup,
@@ -9,10 +9,10 @@ import {
   CCardHeader,
   CRow,
   CCol, 
-  CDropdownItem, 
-  CDropdown, 
-  CDropdownMenu, 
-  CDropdownToggle, 
+  // CDropdownItem, 
+  // CDropdown, 
+  // CDropdownMenu, 
+  // CDropdownToggle, 
   CWidgetStatsA 
 } from '@coreui/react' 
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
@@ -285,19 +285,18 @@ const Dashboard = ({theme} : DashboardProps) => {
             )
           }
           title="Walks"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-white" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-              <CDropdownItem>Daily Walks</CDropdownItem>
-                  <CDropdownItem>Weekly Walks</CDropdownItem>
-                  <CDropdownItem>Monthly Walks</CDropdownItem>
-                  <CDropdownItem disabled>Download CSV</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
+          //       <CIcon icon={cilOptions} className="text-white" />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //     <CDropdownItem>Daily Walks</CDropdownItem>
+          //         <CDropdownItem>Weekly Walks</CDropdownItem>
+          //         <CDropdownItem>Monthly Walks</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartLine
               className="mt-3 mx-3"
@@ -379,19 +378,19 @@ const Dashboard = ({theme} : DashboardProps) => {
             )
           }
           title="Events"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-white" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
+          //       <CIcon icon={cilOptions} className="text-white" />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //       <CDropdownItem>Action</CDropdownItem>
+          //       <CDropdownItem>Another action</CDropdownItem>
+          //       <CDropdownItem>Something else here...</CDropdownItem>
+          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartLine
               className="mt-3 mx-3"
@@ -473,19 +472,19 @@ const Dashboard = ({theme} : DashboardProps) => {
             )
           }
           title="Ideas"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-white" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
+          //       <CIcon icon={cilOptions} className="text-white" />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //       <CDropdownItem>Action</CDropdownItem>
+          //       <CDropdownItem>Another action</CDropdownItem>
+          //       <CDropdownItem>Something else here...</CDropdownItem>
+          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartLine
               className="mt-3"
@@ -570,19 +569,19 @@ const Dashboard = ({theme} : DashboardProps) => {
               <span className="text-white">Surprise</span>
             </div>          
           }
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-white" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
+          //       <CIcon icon={cilOptions} className="text-white" />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //       <CDropdownItem>Action</CDropdownItem>
+          //       <CDropdownItem>Another action</CDropdownItem>
+          //       <CDropdownItem>Something else here...</CDropdownItem>
+          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartBar
               className="mt-3 mx-3"
