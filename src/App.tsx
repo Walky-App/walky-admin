@@ -92,26 +92,68 @@ const Dashboard = ({theme} : DashboardProps) => {
     }, []);
     
     useEffect(() => {
-      const fetchWidgets = async () => {
-        try {
-          const [walksRes, eventsRes, ideasRes, surpriseRes] = await Promise.all([
-            API.get('/api/v1/walks'),
-            API.get('/api/v1/events'),
-            API.get('/api/v1/ideas'),
-            API.get('/api/v1/surprise'),
-          ]);
-    
-          setWalks(walksRes.data);
-          setEvents(eventsRes.data);
-          setIdeas(ideasRes.data);
-          setSurprise(surpriseRes.data);
-        } catch (err) {
-          console.error('Failed to fetch one or more widgets:', err);
+    const getIdeasData = async () => {
+      try {
+        const ideasData = await API.get('/ideas/count'); // FIXED: Added leading slash
+        
+        if (ideasData) {
+          setIdeas(ideasData.data);
         }
-      };
-    
-      fetchWidgets();
-    }, []);
+      } catch (err) {
+        console.error('❌ Failed to fetch ideas data:', err);
+      }
+    };
+
+    const getEventsData = async () => {
+      try {
+        const eventsData = await API.get('/events/eventEngagement-count');
+
+        if (eventsData) {
+          setEvents(eventsData.data);
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch events data:', err);
+      }
+    };
+
+    const getWalksData = async () => {
+      try {
+        const walksData = await API.get('/walks/count');
+        
+        if (walksData) {
+          setWalks(walksData.data);
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch walks data:', err);
+      }
+    };
+
+    // Placeholder for surprise data
+    const getSurpriseData = async () => {
+      try {
+        // If you have a surprise endpoint, uncomment and modify this:
+        // const surpriseData = await API.get('/your-surprise-endpoint');
+        // if (surpriseData && surpriseData.data) {
+        //   setSurprise(surpriseData.data);
+        // }
+        
+        // For now, set placeholder data
+        setSurprise({
+          value: 'Coming Soon',
+          percentChange: 0,
+          chartData: [10, 15, 20, 25, 30, 35, 40]
+        });
+      } catch (err) {
+        console.error('❌ Failed to fetch surprise data:', err);
+      }
+    };
+
+    // Execute all API calls
+    getWalksData();
+    getEventsData();
+    getIdeasData();
+    getSurpriseData();
+  }, []);
 
     const tooltipPlugin = {
       id: "customTooltip",
@@ -272,7 +314,7 @@ const Dashboard = ({theme} : DashboardProps) => {
           value={
             events ? (
               <>
-                {events.value}{' '}
+                {events.allTime.totalEventEngagement}{' '}
                 <span className="fs-6 fw-normal">
                   ({events.percentChange}% <CIcon icon={cilArrowTop} />)
                 </span>
@@ -366,7 +408,7 @@ const Dashboard = ({theme} : DashboardProps) => {
           value={
             ideas ? (
               <>
-                {ideas.value}{' '}
+                {ideas.totalIdeasCreated}{' '}
                 <span className="fs-6 fw-normal">
                   ({ideas.percentChange}% <CIcon icon={cilArrowTop} />)
                 </span>
