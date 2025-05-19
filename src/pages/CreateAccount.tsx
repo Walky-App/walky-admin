@@ -5,6 +5,12 @@ import { Eye, EyeOff } from 'lucide-react';
 const CreateAccount = () => {
   console.log("✅ CreateAccount component rendered");
 
+  const [isHovered, setIsHovered] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [isContinueHovered, setIsContinueHovered] = useState(false);
+  const [isContinueActive, setIsContinueActive] = useState(false);
+
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +40,7 @@ const CreateAccount = () => {
       {/* Logo */}
       <div style={{ marginTop: '2rem' }}>
         <img
-          src="/walky-logo.png"
+          src="/Walky Logo_Duotone.svg"
           alt="Walky Logo"
           style={{ width: '120px', marginBottom: '1rem' }}
         />
@@ -110,17 +116,29 @@ const CreateAccount = () => {
         {/* Continue Button */}
         <button
           onClick={handleSignUp}
+          onMouseEnter={() => setIsContinueHovered(true)}
+          onMouseLeave={() => {
+            setIsContinueHovered(false);
+            setIsContinueActive(false);
+          }}
+          onMouseDown={() => setIsContinueActive(true)}
+          onMouseUp={() => setIsContinueActive(false)}
           style={{
             width: '100%',
             padding: '0.75rem',
-            backgroundColor: '#6366f1',
             color: 'white',
             border: 'none',
             borderRadius: '10px',
             fontSize: '1rem',
             fontWeight: 'bold',
             cursor: 'pointer',
-            marginBottom: '1rem',
+            marginBottom: '1.25rem',
+            backgroundColor: isContinueActive
+            ? "#5856D5" // Darker when clicked
+            : isContinueHovered
+            ? "#5b54f6" // Slightly darker on hover
+            : "#6366f1", // Light default purple
+            transition: "background-color 0.2s ease",
           }}
         >
           Continue
@@ -134,17 +152,31 @@ const CreateAccount = () => {
         </div>
 
         {/* Google Sign-On */}
+        
         <button
+        onClick={() => console.log("Google button clicked")}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setIsActive(false);
+        }}
+        onMouseDown={() => setIsActive(true)}
+        onMouseUp={() => setIsActive(false)}
           style={{
             width: '100%',
             padding: '0.75rem',
-            backgroundColor: '#1e293b',
             color: '#cbd5e1',
             border: '1px solid #475569',
             borderRadius: '10px',
             fontSize: '1rem',
             marginBottom: '1rem',
             cursor: 'pointer',
+            backgroundColor: isActive
+            ? "#374151" // Darker when clicked
+            : isHovered
+            ? "#3f4957" // Slightly darker on hover
+            : "transparent", // Default transparent
+            transition: "background-color 0.2s ease",
           }}
         >
           Sign on with Google
@@ -166,11 +198,11 @@ const CreateAccount = () => {
           }}
         >
           By creating an account, you agree to the&nbsp;
-          <a href="#" style={{ color: 'white', textDecoration: 'underline' }}>
+          <a href="https://walkyapp.com/terms-conditions/" style={{ color: '#ffffff', textDecoration: 'underline' }}>
             Terms of Service
           </a>
           &nbsp;and&nbsp;
-          <a href="#" style={{ color: 'white', textDecoration: 'underline' }}>
+          <a href="https://walkyapp.com/privacy/" style={{ color: '#ffffff', textDecoration: 'underline' }}>
             Privacy Policy
           </a>.
         </p>
