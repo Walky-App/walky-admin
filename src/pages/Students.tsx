@@ -1,7 +1,7 @@
 import * as icon from '@coreui/icons'
 import { CCol, CRow } from '@coreui/react'
-import InfoStatWidget from '../components/InfoStatWidget.tsx'
-import StudentTable from '../components/StudentTable.tsx'
+import InfoStatWidget from '../components/InfoStatWidget'
+import StudentTable from '../components/StudentTable'
 import API from '../API/'
 import { useState, useEffect } from 'react'
 
