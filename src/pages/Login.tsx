@@ -1,27 +1,55 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import API from '../API'
 //login page
 type LoginProps = {
   onLogin: () => void;
 };
+
 
 const Login = ({ onLogin }: LoginProps) => {
   const navigate = useNavigate();
 
   const [isContinueHovered, setIsContinueHovered] = useState(false);
   const [isContinueActive, setIsContinueActive] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("irosi002@fiu.edu");
+  const [password, setPassword] = useState("walkwalk321");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    console.log("Logging in with:", { email, password });
-    onLogin();
-    navigate("/");
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setLoginError(true);
+      return;
+    }
+  
+    console.log("Attempting login with:", email, password);
+    console.log("Full URL:", API.defaults.baseURL + '/api/login');
+  
+    try {
+      const response = await API.post('/login', {
+        email,
+        password,
+      });
+  
+      const token = response?.data?.access_token;
+  
+      if (token) {
+        localStorage.setItem('token', token);
+        onLogin();
+        navigate('/');
+      } else {
+        throw new Error("Token not found in response.");
+      }
+    } catch (error: any) {
+      console.error("❌ Login failed:", error?.response?.data || error.message || error);
+      setLoginError(true);
+    }
   };
-
+  
+  
   return (
     <div
       style={{
@@ -69,54 +97,51 @@ const Login = ({ onLogin }: LoginProps) => {
             </label>
             <input
               type="email"
-              placeholder="Email address"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                marginBottom: "1.25rem",
-                borderRadius: "10px",
-                border: "1px solid #555",
-                backgroundColor: "#1c1e26",
-                color: "white",
-                fontSize: "1rem",
-              }}
-            />
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setLoginError(false); // 👈 reset error on typing
+            }}
+            className={`form-control ${loginError ? 'is-invalid' : ''}`}
+            placeholder="Email address"
+          />
+          {loginError && (
+            <div className="invalid-feedback">Invalid email or password.</div>
+          )}
+
 
             <label style={{ display: "block", marginBottom: "0.5rem" }}>
               Password
             </label>
             <div style={{ position: "relative", marginBottom: "1.25rem" }}>
-              <input
-                type={showPassword ? "text" : "password"}
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setLoginError(false); // 👈 reset error on typing
+              }}
+                className={`form-control ${loginError ? 'is-invalid' : ''}`}
                 placeholder="********"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  paddingRight: "2.5rem",
-                  borderRadius: "10px",
-                  border: "1px solid #555",
-                  backgroundColor: "#1c1e26",
-                  color: "white",
-                  fontSize: "1rem",
-                }}
-              />
+            />
+            {loginError && (
+              <div className="invalid-feedback">Invalid email or password.</div>
+            )}
+
               <div
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "0.75rem",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                  color: "#94a3b8",
-                }}
-                title={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                top: loginError ? "30%" : '50%', 
+                right: loginError ? "2.25rem" : "0.75rem",  // 👈 shift left if error
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                color: "#94a3b8",
+                zIndex: 2, // make sure it's on top
+              }}
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </div>
             </div>
           </div>
