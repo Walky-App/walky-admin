@@ -1,7 +1,11 @@
 import { CSSProperties } from 'react';
+import { Color } from 'react-bootstrap/esm/types';
+
 
 // Define theme interface
 export interface ThemeColors {
+  border: string | undefined;
+  text: Color | undefined;
   bodyBg: string;
   bodyColor: string;
   cardBg: string;
@@ -42,6 +46,8 @@ const lightColors: ThemeColors = {
   graphLine: 'rgb(15, 143, 222)',
   chartPoint: '#5856d6',
   chartLineBackground: 'rgba(15, 143, 222, 0.36)',
+  border: undefined,
+  text: undefined
 };
 
 // Dark theme colors
@@ -61,6 +67,8 @@ const darkColors: ThemeColors = {
   graphLine: 'rgb(15, 143, 222)',
   chartPoint: '#7c7bff',
   chartLineBackground: 'rgba(15, 143, 222, 0.37)',
+  border: undefined,
+  text: undefined
 };
 
 // Theme getter function

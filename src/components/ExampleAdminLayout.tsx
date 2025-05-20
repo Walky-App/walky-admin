@@ -3,16 +3,32 @@ import { Sidebar } from './NavSideBar';
 import { Topbar } from './Topbar';
 import { useTheme } from '../hooks/useTheme';
 import { BreadcrumbDividersExample } from './examples/BreadCrumbs';
+import { CHeader } from '@coreui/react';
+import { useLocation } from 'react-router-dom';
+
+
+const pageTitles: Record<string, string> = {
+  '/': 'Dashboard',
+  '/students': 'Students',
+  '/engagement': 'Engagement',
+  '/review': 'Review',
+  '/mywalky': 'My Walky',
+  '/compliance': 'Compliance',
+  '/settings': 'Settings',
+};
+
+
 
 
 type Props = { children: React.ReactNode };
 
 function ExampleAdminLayout({ children }: Props) {
   const { theme } = useTheme();
+  const location = useLocation();
+  const pageTitle = pageTitles[location.pathname] || 'Page';
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Toggle sidebar manually (for button clicks)
   const toggleSidebar = () => {
     setSidebarVisible(prev => !prev);
   };
@@ -21,80 +37,98 @@ function ExampleAdminLayout({ children }: Props) {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-  
-      if (mobile) {
-        setSidebarVisible(false);
-      } else {
-        setSidebarVisible(true);
-      }
+      setSidebarVisible(!mobile);
     };
-  
+
     window.addEventListener('resize', handleResize);
-    handleResize();  // Run once on mount
-  
+    handleResize();
     return () => window.removeEventListener('resize', handleResize);
-  }, []);  // ✅ Important: no dependencies
-  
-  
+  }, []);
 
   return (
-    <div className="d-flex flex-column vh-100" style={{ backgroundColor: theme.colors.bodyBg }}>
-      <Topbar onToggleSidebar={toggleSidebar} />
+    <div
+      className="d-flex flex-column vh-100"
+      style={{ backgroundColor: theme.colors.bodyBg, color: theme.colors.text }}
+    >
+
       
-      <div className="d-flex flex-grow-1">
-        
-        
-        {/* Only render sidebar if it should be visible */}
-        <Sidebar 
-          visible={sidebarVisible} 
-          onVisibleChange={setSidebarVisible} 
-          isMobile={isMobile}
-        />
-
-      {isMobile && sidebarVisible && (
-      <div
-        className="sidebar-overlay active"
-        onClick={() => setSidebarVisible(false)}
-      />
-      )}
-
      
-  <div className=" d-sm-flex justify-content-between align-items-center mt-0"></div>
-      
-<main className="d-flex flex-column flex-grow-1 bg-light px-4 pt-0 pb-2"
-  style={{
-    overflowY: 'auto',
-    marginLeft: isMobile ? 0 : '250px', // 👈 Push content to the right of the sidebar
-    transition: 'margin-left 0.3s ease', // optional smoothness
-  }}>
 
- {/*old content */}
-       <div className="bg-white px-3 py-2 mb-3 border " 
-       style={{
-      margin: '0 -1.5rem',
-      paddingLeft: '1.5rem',
-      paddingRight: '1.5rem',
-      paddingBottom: '0',
-    }}>
-    <BreadcrumbDividersExample />
-  </div>
 
- 
-  <div className=" d-sm-flex justify-content-between align-items-center mt-0">
+
+      {/* Sidebar + Main Section */}
+<div className="d-flex flex-grow-1">
+  {/* Sidebar */}
+  <Sidebar
+    visible={sidebarVisible}
+    onVisibleChange={setSidebarVisible}
+    isMobile={isMobile}
+  />
+
+  {isMobile && sidebarVisible && (
+    <div
+      className="sidebar-overlay active"
+      onClick={() => setSidebarVisible(false)}
+    />
+  )}
+
+  {/* Main area */}
+  <div className="d-flex flex-column flex-grow-1" style={{ backgroundColor: theme.colors.bodyBg }}>
+    {/* Topbar - move it OUTSIDE of <main> */}
+    <Topbar onToggleSidebar={toggleSidebar} />
     
 
-    <div className="d-sm-flex justify-content-between align-items-center">
-    <h2 className="mb-0">Dashboard</h2>
-  </div>
-    <div className="mt-3 mt-sm-0">
-      {/* Add actions/buttons if needed */}
-    </div>
-  </div>
-  {children}
-</main>
+    {/* Main content */}
+    <main
+      className="d-flex flex-column flex-grow-1"
+      style={{
+        backgroundColor: theme.colors.bodyBg,
+        color: theme.colors.text,
+        overflowY: 'auto',
+        padding: '1.5rem',
+      }}
+    >
+      {/* Gray separator line */}
+      <div style={{ height: '1px', backgroundColor: '#e0e0e0', width: '100%' }} />
 
+      {/* Breadcrumb header */}
+      <CHeader
+        className="px-4 py-2 border-bottom"
+        style={{
+          backgroundColor: theme.colors.cardBg,
+          borderBottom: `1px solid ${theme.colors.border}`,
+          margin: '-1.5rem',
+          paddingLeft: '1.5rem',
+          paddingRight: '1.5rem',
+          paddingBottom: '0',
+        }}
+      >
+        <BreadcrumbDividersExample />
+      </CHeader>
+
+      {/* Page Title */}
+      <div className="d-sm-flex justify-content-between align-items-center mt-4 mb-3">
+        <h2 className="mb-0" style={{ color: theme.colors.text }}>
+          {pageTitle}
+        </h2>
       </div>
-      <footer className="footer py-3 border-top text-center">
+
+      {children}
+    </main>
+  </div>
+</div>
+
+        
+
+      {/* Footer */}
+      <footer
+        className="footer py-3 border-top text-center"
+        style={{
+          backgroundColor: theme.colors.cardBg,
+          color: theme.colors.text,
+          borderTop: `1px solid ${theme.colors.border}`,
+        }}
+      >
         <span className="small">Walky Admin © 2023 | Built with CoreUI</span>
       </footer>
     </div>

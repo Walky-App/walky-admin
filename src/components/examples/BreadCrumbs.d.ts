@@ -1,4 +1,3 @@
-import { Breadcrumb } from 'react-bootstrap';
 export declare function BreadcrumbDividersExample(): import("react/jsx-runtime").JSX.Element;
-export default Breadcrumb;
+export default BreadcrumbDividersExample;
 //# sourceMappingURL=BreadCrumbs.d.ts.map

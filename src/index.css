@@ -291,3 +291,14 @@ body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
+.dark-theme .breadcrumb-item,
+.dark-theme .breadcrumb-item a,
+.dark-theme .breadcrumb-item span,
+.dark-theme .breadcrumb-item.active 
+
+
+.page-title {
+  color: var(--app-text);
+  transition: color 0.3s ease;
+}
+

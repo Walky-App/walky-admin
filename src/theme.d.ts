@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
 export interface ThemeColors {
+    
     bodyBg: string;
     bodyColor: string;
     cardBg: string;

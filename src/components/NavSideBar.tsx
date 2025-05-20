@@ -5,9 +5,9 @@ import {
   CNavGroup,
   CNavItem,
   CNavTitle,
-  CCloseButton,
 } from '@coreui/react';
 import { NavLink } from 'react-router-dom';
+import logo from '../assets/walkylogo.png';
 
 
 type SidebarProps = { 
@@ -16,34 +16,36 @@ type SidebarProps = {
   isMobile?: boolean;
 };
 
-export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarProps) => {  
+export const Sidebar = ({ visible, isMobile = false }: SidebarProps) => {  
   // Handle close button click
-  const handleClose = () => {
-    onVisibleChange(false);
-  };
 
   return (
     <CSidebar
       className="border-end text-white flex-shrink-0"
-  style={{ 
+  style={{
     backgroundColor: '#1e1e2f',
+    width: isMobile ? '250px' : '250px',  // ← Set width
     transition: 'transform 0.3s ease',
     transform: visible ? 'translateX(0)' : 'translateX(-100%)',
-    position: 'fixed', // ✅ always fixed
-    top: 0,            // ✅ start from top
-    left: 0,
-    height: '100vh',   // ✅ full height
-    width: '250px',    // or whatever matches your design
+    position: isMobile ? 'fixed' : 'relative', // ← Only fixed on mobile
+    height: '100vh',
     zIndex: 1030,
   }}
       visible={visible}
       
     >
       <CSidebarHeader className="d-flex justify-content-between align-items-center px-3 py-2">
-        <div className="text-white fw-bold">Walky Admin</div>
-        {isMobile && (
-          <CCloseButton onClick={handleClose} />
-        )}
+        <div className="d-flex align-items-center px-3 py-4">
+  <img
+    src={logo}
+    alt="Walky Logo"
+    style={{
+      maxHeight: '50px',
+      marginLeft: '50px'
+    }}
+  />
+  
+</div>
       </CSidebarHeader>
 
       <CSidebarNav>

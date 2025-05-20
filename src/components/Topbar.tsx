@@ -3,7 +3,7 @@ import { cilHamburgerMenu, cilBell, cilEnvelopeOpen, cilListRich, cilSun, cilMoo
 import { CAvatar, CNavbar, CContainer, CButton } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
 import React, { useState } from 'react'
-
+import profilePic from '../assets/fiu-panther-logo (2).png';
 type TopbarProps = {
   onToggleSidebar: () => void;
 };
@@ -94,7 +94,7 @@ export const Topbar = ({ onToggleSidebar }: TopbarProps) => {
             </div>
 
             {/* Avatar */}
-            <CAvatar src={'/images/avatars/1.jpg'} size="lg" />
+            <CAvatar src={profilePic} size="lg" />
           </div>
         </div>
       </CContainer>
