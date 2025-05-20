@@ -17,6 +17,7 @@
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "outDir": "./dist/types",
+    "rootDir": ".",
     "jsx": "react-jsx",
 
     /* Linting */

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from 'react'
 import {
   CTable,
   CTableBody,
@@ -10,127 +10,138 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
-} from "@coreui/react";
+} from '@coreui/react'
+import API from '../API/'
 
-const studentData = [
-  {
-    id: "67236617",
-    name: "Gal Gordon",
-    email: "gal@walkyu.edu",
-    joined: "Oct 31, 2024",
-    lastUpdate: "May 10, 2025",
-  },
-  {
-    id: "67236618",
-    name: "Danielle Newman",
-    email: "danielle@walkyu.edu",
-    joined: "Nov 1, 2024",
-    lastUpdate: "May 10, 2025",
-  },
-  {
-    id: "67236619",
-    name: "Jeremiah Newman",
-    email: "jeremiah@walkyu.edu",
-    joined: "Nov 4, 2024",
-    lastUpdate: "May 9, 2025",
-  },
-  {
-    id: "67236620",
-    name: "Glenda Oliveira",
-    email: "glenda@walkyu.edu",
-    joined: "Nov 3, 2024",
-    lastUpdate: "May 9, 2025",
-  },
-  {
-    id: "67236621",
-    name: "Thauane Mayrink",
-    email: "thauane@walkyu.edu",
-    joined: "Dec 12, 2024",
-    lastUpdate: "May 9, 2025",
-  },
-  {
-    id: "67236622",
-    name: "Oleksii Vasylenko",
-    email: "oleksii@walkyu.edu",
-    joined: "Dec 31, 2024",
-    lastUpdate: "May 9, 2025",
-  },
-  {
-    id: "67236623",
-    name: "Joanna Pak",
-    email: "joanna@walkyu.edu",
-    joined: "Jan 15, 2025",
-    lastUpdate: "May 9, 2025",
-  },
-];
+interface Student {
+  id: string
+  name: string
+  email: string
+  joined: string
+  lastUpdate: string
+}
 
 const StudentTable = () => {
-        const [flaggedUsers, setFlaggedUsers] = useState<string[]>([]);
-      
-        const handleToggleFlagUser = (id: string) => {
-          setFlaggedUsers((prev) =>
-            prev.includes(id) ? prev.filter((userId) => userId !== id) : [...prev, id]
-          );
-        };
+  const [students, setStudents] = useState<Student[]>([])
+  const [flaggedUsers, setFlaggedUsers] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const res = await API.get<{
+          users: {
+            _id: string
+            first_name: string
+            last_name: string
+            email: string
+            createdAt: string
+            updatedAt: string
+          }[]
+        }>('/users/?fields=_id,first_name,last_name,email,createdAt,updatedAt')
+  
+        const transformed = res.data.users.map((user) => ({
+          id: user._id,
+          name: `${user.first_name} ${user.last_name}`,
+          email: user.email,
+          joined: user.createdAt,
+          lastUpdate: user.updatedAt,
+        }))
+  
+        setStudents(transformed)
+      } catch (err) {
+        console.error('❌ Failed to fetch student data:', err)
+      }
+    }
+  
+    fetchStudents()
+  }, [])
+  
+  
+
+  const handleToggleFlagUser = (id: string) => {
+    setFlaggedUsers((prev) =>
+      prev.includes(id)
+        ? prev.filter((userId) => userId !== id)
+        : [...prev, id]
+    )
+  }
+
   return (
     <div
-  style={{
-    border: '1px solid #dee2e6', 
-    borderRadius: '8px',  
-    padding: '0',  
-    overflow: 'hidden', 
-  }}
->
-    <CTable hover responsive className="left-align">
-      <CTableHead>
-        <CTableRow>
-          <CTableHeaderCell scope="col">ID</CTableHeaderCell>
-          <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-          <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-          <CTableHeaderCell scope="col">Joined</CTableHeaderCell>
-          <CTableHeaderCell scope="col">Last Update</CTableHeaderCell>
-          <CTableHeaderCell scope="col"></CTableHeaderCell>
-        </CTableRow>
-      </CTableHead>
-      <CTableBody>
-        {studentData.map((student) => (
-          <CTableRow key={student.id}
-          color={flaggedUsers.includes(student.id) ? "danger" : undefined}>
-            <CTableHeaderCell scope="row">{student.id}</CTableHeaderCell>
-            <CTableDataCell>{student.name}</CTableDataCell>
-            <CTableDataCell>{student.email}</CTableDataCell>
-            <CTableDataCell>{student.joined}</CTableDataCell>
-            <CTableDataCell>{student.lastUpdate}</CTableDataCell>
-            <CTableDataCell>
-              <CDropdown alignment="end">
-                <CDropdownToggle
-                  color="dark"
-                  variant="ghost"
-                  caret={false}
-                  style={{
-                    backgroundColor: "transparent",
-                    border: "none",
-                    boxShadow: "none",
-                    padding: 0,
-                  }}
-                >
-                  ⋮ {/* Unicode for vertical three dots */}
-                </CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem>Send email</CDropdownItem>
-                  <CDropdownItem onClick={() => handleToggleFlagUser(student.id)}>
-                    {flaggedUsers.includes(student.id) ? "Unflag user" : "Flag user"}</CDropdownItem>
-                  <CDropdownItem>Request edit</CDropdownItem>
-                  <CDropdownItem>Request to delete</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-            </CTableDataCell>
+      style={{
+        border: '1px solid #dee2e6',
+        borderRadius: '8px',
+        padding: '0',
+        overflow: 'hidden',
+      }}
+    >
+      <CTable hover responsive className="left-align">
+        <CTableHead>
+          <CTableRow>
+            <CTableHeaderCell scope="col">ID</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Joined</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Last Update</CTableHeaderCell>
+            <CTableHeaderCell scope="col"></CTableHeaderCell>
           </CTableRow>
-        ))}
-      </CTableBody>
-    </CTable>
+        </CTableHead>
+        <CTableBody>
+          {students.map((student) => (
+            <CTableRow
+              key={student.id}
+              color={flaggedUsers.includes(student.id) ? 'danger' : undefined}
+            >
+              <CTableHeaderCell scope="row">{student.id}</CTableHeaderCell>
+              <CTableDataCell>{student.name}</CTableDataCell>
+              <CTableDataCell>{student.email}</CTableDataCell>
+              <CTableDataCell>
+                {new Date(student.joined).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </CTableDataCell>
+              <CTableDataCell>
+                {new Date(student.lastUpdate).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </CTableDataCell>
+              <CTableDataCell>
+                <CDropdown alignment="end">
+                  <CDropdownToggle
+                    color="dark"
+                    variant="ghost"
+                    caret={false}
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      boxShadow: 'none',
+                      padding: 0,
+                    }}
+                  >
+                    ⋮
+                  </CDropdownToggle>
+                  <CDropdownMenu>
+                    <CDropdownItem>Send email</CDropdownItem>
+                    <CDropdownItem onClick={() => handleToggleFlagUser(student.id)}>
+                      {flaggedUsers.includes(student.id)
+                        ? 'Unflag user'
+                        : 'Flag user'}
+                    </CDropdownItem>
+                    <CDropdownItem>Request edit</CDropdownItem>
+                    <CDropdownItem>Request to delete</CDropdownItem>
+                  </CDropdownMenu>
+                </CDropdown>
+              </CTableDataCell>
+            </CTableRow>
+          ))}
+        </CTableBody>
+      </CTable>
     </div>
-  );
-};
+  )
+}
 
-export default StudentTable;
+export default StudentTable

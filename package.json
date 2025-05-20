@@ -10,14 +10,12 @@
     "preview": "vite preview",
     "prepare": "husky",
     "tsc": "tsc",
-    "type-check": "tsc -b"
+    "type-check": "tsc -b",
+    "clean": "./clean-build.sh"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix"
-    ],
-    "src/**/*.{ts,tsx}": [
-      "tsc-files --noEmit"
+      "bash -c \"./clean-build.sh && node --max-old-space-size=4096 ./node_modules/.bin/eslint --fix\""
     ]
   },
   "dependencies": {
