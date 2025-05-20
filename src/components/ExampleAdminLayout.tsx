@@ -51,7 +51,7 @@ function ExampleAdminLayout({ children }: Props) {
     if (isMobile) {
       setSidebarVisible(false);
     }
-  }, [location]);
+  }, [location, isMobile]);
  
   return (
     <div className="d-flex flex-column vh-100" style={{ backgroundColor: theme.colors.bodyBg }}>
