@@ -41,6 +41,7 @@ const Login = ({ onLogin }: LoginProps) => {
       } else {
         throw new Error("Token not found in response.");
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("❌ Login failed:", error?.response?.data || error.message || error);
       setLoginError(true);
