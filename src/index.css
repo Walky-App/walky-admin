@@ -294,3 +294,29 @@ body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table
 .breadcrumb-item + .breadcrumb-item::before {
   color: var(--breadcrumb-divider-color, inherit);
 }
+
+[data-coreui-theme="dark"] .dropdown-menu {
+  background-color: var(--cui-dropdown-bg);
+  color: var(--cui-dropdown-color);
+  border-color: var(--cui-dropdown-border-color);
+}
+
+[data-coreui-theme="dark"] .dropdown-item {
+  color: var(--cui-dropdown-color) !important;
+}
+
+[data-coreui-theme="dark"] .dropdown-item:hover {
+  background-color: var(--cui-btn-hover-bg);
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] ::placeholder {
+  color: #a9b1bd !important; /* light gray for contrast */
+  opacity: 1; /* show at full strength */
+}
+
+[data-coreui-theme="dark"] .form-control {
+  border: 1px solid var(--cui-border-color);
+  background-color: var(--cui-input-bg);
+  color: var(--cui-input-color);
+}
