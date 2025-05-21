@@ -1,4 +1,3 @@
-//Icon/Components
 import CIcon from '@coreui/icons-react'
 import { cilArrowTop,cilCloudDownload } from '@coreui/icons'
 import {
@@ -62,45 +61,56 @@ type BaseWidgetData = {
 };
 
 type WalksData = {
-  totalWalksCreated: number;
-  chartData?: number[];
-  percentChange?: number;
+  value: number; 
+  percentChange: number;
+  chartData: number[];
+  monthLabels?: string[];
 };
 
 type EventsData = {
-  day: {
-    totalEventEngagement: number;
-    percentChange: number | null;
-  };
-  week: {
-    totalEventEngagement: number;
-    percentChange: number;
-  };
-  month: {
-    totalEventEngagement: number;
-    percentChange: number;
-  };
-  allTime: {
-    totalEventEngagement: number;
-  };
-  chartData?: number[];
+  value: number;  // Total sum of events
+  percentChange: number;
+  chartData: number[];
+  monthLabels?: string[];
+  timeFrame?: string;
 };
 
-type IdeasData = BaseWidgetData & {
-  totalIdeasCreated?: number; // Made optional
-  value?: number | string; // Added alternate property
+type IdeasData = {
+  value: number;
+  percentChange: number;
+  chartData: number[];
+  monthLabels?: string[];
 };
 
 type SurpriseData = BaseWidgetData & {
   value: number | string;
 };
+
+// API Response Interfaces
+interface IdeaMonthData {
+  month: string;
+  year: string;
+  count: number;
+}
+
+interface EventMonthData {
+  month: string;
+  totalCount: number;
+}
+
+interface WalkMonthData {
+  month: string;
+  year: string;
+  count: number;
+  date?: string;
+}
+
 const Dashboard = ({theme} : DashboardProps) => {
-
-
     const [walks, setWalks] = useState<WalksData | null>(null);
     const [events, setEvents] = useState<EventsData | null>(null);
     const [ideas, setIdeas] = useState<IdeasData | null>(null);
     const [surprise, setSurprise] = useState<SurpriseData | null>(null);
+    
     // Add CSS to hide default Chart.js tooltips
     useEffect(() => {
       // Create a style element
@@ -121,91 +131,165 @@ const Dashboard = ({theme} : DashboardProps) => {
     }, []);
     
     useEffect(() => {
-    const getIdeasData = async () => {
-      try {
-        const ideasData = await API.get('/ideas/count');
-        
-        if (ideasData) {
-          setIdeas(ideasData.data);
-        }
-      } catch (err) {
-        console.error('❌ Failed to fetch ideas data:', err);
-      }
-    };
-
-    const getEventsData = async () => {
-      try {
-        const response = await API.get('/events/eventEngagement-count');
-        
-        if (response && response.data) {
-          // Add chartData since it's not in the API response
-          const eventsData = {
-            ...response.data,
-            chartData: [20, 40, 60, 80, 100, 120, response.data.allTime.totalEventEngagement]
-          };
+      const getIdeasData = async () => {
+        try {
+          const response = await API.get('/ideas/count?groupBy=month');
           
-          setEvents(eventsData);
+          if (response?.data?.monthlyData) {
+            const monthlyData = response.data.monthlyData as IdeaMonthData[];
+            
+            // Extract the counts for the chart with proper type annotation
+            const chartData = monthlyData.map((month: IdeaMonthData) => month.count);
+            
+            // Calculate the total sum of ideas
+            const totalIdeas = chartData.reduce((sum, count) => sum + count, 0);
+            
+            // Calculate percentage change between the last two months
+            let percentChange = 0;
+            if (monthlyData.length >= 2) {
+              const lastMonth = monthlyData[monthlyData.length - 1].count;
+              const previousMonth = monthlyData[monthlyData.length - 2].count;
+              
+              if (previousMonth > 0) {
+                percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
+              } else if (lastMonth > 0) {
+                percentChange = 100; // If previous month was 0 and current month has data
+              }
+            }
+            
+            const ideasData = {
+              value: totalIdeas,
+              percentChange,
+              chartData,
+              monthLabels: monthlyData.map((month: IdeaMonthData) => `${month.month.substring(0, 3)} ${month.year}`)
+            };
+            
+            setIdeas(ideasData);
+          }
+        } catch (err) {
+          console.error('❌ Failed to fetch ideas data:', err);
         }
-      } catch (err) {
-        console.error('❌ Failed to fetch events data:', err);
-      }
-    };
+      };
 
-    const getWalksData = async () => {
-      try {
-        const response = await API.get('/walks/count');
-        
-        if (response && response.data) {
-          const totalWalks = response.data.totalWalksCreated;
+      const getEventsData = async () => {
+        try {
+          const response = await API.get('/events/eventEngagement-count?timeFrame=last6months');
           
-          // Create synthetic chart data and add percentChange
-          const walksData = {
-            ...response.data,
-            percentChange: 5.2, //These are dummy values, will get replaced when endpoint is done.
-            chartData: [
-              Math.round(totalWalks * 0.4),
-              Math.round(totalWalks * 0.5),
-              Math.round(totalWalks * 0.6),
-              Math.round(totalWalks * 0.7),
-              Math.round(totalWalks * 0.8),
-              Math.round(totalWalks * 0.9),
-              totalWalks
-            ]
-          };
-          
-          setWalks(walksData);
+          if (response?.data?.data) {
+            // The data array contains monthly data
+            const monthlyData = response.data.data as EventMonthData[];
+            
+            // Extract the counts for the chart with proper type annotation
+            const chartData = monthlyData.map((item: EventMonthData) => item.totalCount);
+            
+            // Calculate the total sum of events
+            const totalEvents = chartData.reduce((sum, count) => sum + count, 0);
+            
+            // Calculate percentage change between the last two months
+            let percentChange = 0;
+            if (monthlyData.length >= 2) {
+              const lastMonth = monthlyData[monthlyData.length - 1].totalCount;
+              const previousMonth = monthlyData[monthlyData.length - 2].totalCount;
+              
+              if (previousMonth > 0) {
+                percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
+              } else if (lastMonth > 0) {
+                percentChange = 100; // If previous month was 0 and current month has data
+              }
+            }
+            
+            // Format month labels
+            const monthLabels = monthlyData.map((item: EventMonthData) => {
+              const parts = item.month.split(' ');
+              return parts[0].substring(0, 3) + ' ' + parts[1];  // Format as "Nov 2024"
+            });
+            
+            const eventsData = {
+              value: totalEvents,
+              percentChange,
+              chartData,
+              monthLabels,
+              timeFrame: response.data.timeFrame
+            };
+            
+            setEvents(eventsData);
+          }
+        } catch (err) {
+          console.error('❌ Failed to fetch events data:', err);
         }
-      } catch (err) {
-        console.error('❌ Failed to fetch walks data:', err);
-      }
-    };
+      };
 
-    // Placeholder for surprise data
-    const getSurpriseData = async () => {
-      try {
-        // If you have a surprise endpoint, uncomment and modify this:
-        // const surpriseData = await API.get('/your-surprise-endpoint');
-        // if (surpriseData && surpriseData.data) {
-        //   setSurprise(surpriseData.data);
-        // }
-        
-        // For now, set placeholder data
-        setSurprise({
-          value: 'Coming Soon',
-          percentChange: 0,
-          chartData: [10, 15, 20, 25, 30, 35, 40]
-        });
-      } catch (err) {
-        console.error('❌ Failed to fetch surprise data:', err);
-      }
-    };
+      const getWalksData = async () => {
+        try {
+          // Use the groupBy=month parameter to get monthly data
+          const response = await API.get('/walks/count?groupBy=month');
+          
+          if (response?.data?.monthlyData) {
+            // Get the last 6 months of data (or fewer if less data is available)
+            const monthlyData = response.data.monthlyData as WalkMonthData[];
+            const last6MonthsData = monthlyData.slice(Math.max(0, monthlyData.length - 6));
+            
+            // Extract the counts for the chart with proper type annotation
+            const chartData = last6MonthsData.map((month: WalkMonthData) => month.count);
+            
+            // Calculate the total sum of walks over the past 6 months
+            const totalWalks = chartData.reduce((sum, count) => sum + count, 0);
+            
+            // Calculate percentage change between the last two months
+            let percentChange = 0;
+            if (last6MonthsData.length >= 2) {
+              const lastMonth = last6MonthsData[last6MonthsData.length - 1].count;
+              const previousMonth = last6MonthsData[last6MonthsData.length - 2].count;
+              
+              if (previousMonth > 0) {
+                percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
+              } else if (lastMonth > 0) {
+                percentChange = 100; // If previous month was 0 and current month has data
+              }
+            }
+            
+            const walksData = {
+              value: totalWalks,
+              percentChange,
+              chartData,
+              monthLabels: last6MonthsData.map((month: WalkMonthData) => 
+                `${month.month.substring(0, 3)} ${month.year}`
+              )
+            };
+            
+            setWalks(walksData);
+          }
+        } catch (err) {
+          console.error('❌ Failed to fetch walks data:', err);
+        }
+      };
 
-    // Execute all API calls
-    getWalksData();
-    getEventsData();
-    getIdeasData();
-    getSurpriseData();
-  }, []);
+      // Placeholder for surprise data
+      const getSurpriseData = async () => {
+        try {
+          // If you have a surprise endpoint, uncomment and modify this:
+          // const surpriseData = await API.get('/your-surprise-endpoint');
+          // if (surpriseData && surpriseData.data) {
+          //   setSurprise(surpriseData.data);
+          // }
+          
+          // For now, set placeholder data
+          setSurprise({
+            value: 'Coming Soon',
+            percentChange: 0,
+            chartData: [10, 15, 20, 25, 30, 35, 40]
+          });
+        } catch (err) {
+          console.error('❌ Failed to fetch surprise data:', err);
+        }
+      };
+
+      // Execute all API calls
+      getWalksData();
+      getEventsData();
+      getIdeasData();
+      getSurpriseData();
+    }, []);
 
     const tooltipPlugin = {
       id: "customTooltip",
@@ -240,8 +324,21 @@ const Dashboard = ({theme} : DashboardProps) => {
           const dataPoint = tooltipModel.dataPoints[0];
           const hoveredMonth = dataPoint.label;
           const value = dataPoint.raw;
-  
-          tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Walks this month: ${value}`;
+          
+          // Determine which dataset this is from based on chart ID or label
+          const datasetLabel = dataPoint.dataset.label || '';
+          
+          if (datasetLabel === 'Events') {
+            tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Events this month: ${value}`;
+          } else if (datasetLabel === 'Walks') {
+            tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Walks this month: ${value}`;
+          } else if (datasetLabel === 'Ideas') {
+            tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Ideas this month: ${value}`;
+          } else if (datasetLabel === 'Surprise') {
+            tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Value: ${value}`;
+          } else {
+            tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Value: ${value}`;
+          }
         }
   
         const position = chart.canvas.getBoundingClientRect();
@@ -250,464 +347,402 @@ const Dashboard = ({theme} : DashboardProps) => {
         tooltipEl.style.top = `${position.top + window.pageYOffset + tooltipModel.caretY}px`;
       },
     };
+
   return (
     <>
-
-    
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
-        <div>
-          
-          
-        </div>
-        <div className="mt-3 mt-sm-0">
-          
-        </div>
+        <div></div>
+        <div className="mt-3 mt-sm-0"></div>
       </div>
 
-    <CRow>
-      <CCol sm={6} lg={3}>
-      <CWidgetStatsA
-          className="mb-4"
-          color="primary"
-          value={
-            walks ? (
-              <>
-                {walks.totalWalksCreated}{' '}
-                <span className="fs-6 fw-normal">
-                  ({walks.percentChange}% <CIcon icon={cilArrowTop} />)
-                </span>
-              </>
-            ) : (
-              'Loading...'
-            )
-          }
-          title="Walks"
-          // action={
-          //   <CDropdown alignment="end">
-          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
-          //       <CIcon icon={cilOptions} className="text-white" />
-          //     </CDropdownToggle>
-          //     <CDropdownMenu>
-          //     <CDropdownItem>Daily Walks</CDropdownItem>
-          //         <CDropdownItem>Weekly Walks</CDropdownItem>
-          //         <CDropdownItem>Monthly Walks</CDropdownItem>
-          //     </CDropdownMenu>
-          //   </CDropdown>
-          // }
-          chart={
-            <CChartLine
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                    label: 'Walks',
-                    backgroundColor: 'transparent',
-                    borderColor: theme.colors.chartLine,
-                    pointBackgroundColor: theme.colors.primary,
-                    data: walks?.chartData || [],
+      <CRow>
+        <CCol sm={6} lg={3}>
+          <CWidgetStatsA
+            className="mb-4"
+            color="primary"
+            value={
+              walks ? (
+                <>
+                  {walks.value}{' '}
+                  <span className="fs-6 fw-normal">
+                    ({walks.percentChange}% <CIcon icon={cilArrowTop} />)
+                  </span>
+                </>
+              ) : (
+                'Loading...'
+              )
+            }
+            title="Walks"
+            chart={
+              <CChartLine
+                className="mt-3 mx-3"
+                style={{ height: '70px' }}
+                data={{
+                  labels: walks?.monthLabels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                  datasets: [
+                    {
+                      label: 'Walks',
+                      backgroundColor: 'transparent',
+                      borderColor: theme.colors.chartLine,
+                      pointBackgroundColor: theme.colors.primary,
+                      data: walks?.chartData || [],
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      enabled: false,
+                    },
+                    title: {
+                      display: false
+                    },
+                    subtitle: {
+                      display: false
+                    }
                   },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: { display: false },
-                  tooltip: {
-                    enabled: false,
+                  interaction: {
+                    mode: "index",
+                    intersect: false,
                   },
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: { 
+                      display: false,
+                      grid: { display: false },
+                      ticks: { display: false }
+                    },
+                    y: { 
+                      display: false,
+                      grid: { display: false },
+                      ticks: { display: false }
+                    },
+                  },
+                  elements: {
+                    line: { borderWidth: 1, tension: 0.4 },
+                    point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
+                  },
+                  animation: false,
+                  layout: {
+                    padding: {
+                      bottom: 10
+                    }
+                  },
+                }}
+                plugins={[tooltipPlugin]}
+              />
+            }
+          />
+        </CCol>
+        <CCol sm={6} lg={3}>
+          <CWidgetStatsA
+            className="mb-4"
+            color="info"
+            value={
+              events ? (
+                <>
+                  {events.value}{' '}
+                  <span className="fs-6 fw-normal">
+                    ({events.percentChange}% <CIcon icon={cilArrowTop} />)
+                  </span>
+                </>
+              ) : (
+                'Loading...'
+              )
+            }
+            title="Events"
+            chart={
+              <CChartLine
+                className="mt-3 mx-3"
+                style={{ height: '70px' }}
+                data={{
+                  labels: events?.monthLabels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                  datasets: [
+                    {
+                      label: 'Events',
+                      backgroundColor: 'transparent',
+                      borderColor: theme.colors.chartLine,
+                      pointBackgroundColor: theme.colors.info,
+                      data: events?.chartData || [],
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      enabled: false,
+                    },
+                    title: {
+                      display: false
+                    },
+                    subtitle: {
+                      display: false
+                    }
+                  },
+                  interaction: {
+                    mode: "index",
+                    intersect: false,
+                  },
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: { 
+                      display: false,
+                      grid: { display: false },
+                      ticks: { display: false }
+                    },
+                    y: { 
+                      display: false,
+                      grid: { display: false },
+                      ticks: { display: false }
+                    },
+                  },
+                  elements: {
+                    line: { borderWidth: 1, tension: 0.4 },
+                    point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
+                  },
+                  animation: false,
+                  layout: {
+                    padding: {
+                      bottom: 10
+                    }
+                  },
+                }}
+                plugins={[tooltipPlugin]}
+              />
+            }
+          />
+        </CCol>
+        <CCol sm={6}lg={3}>
+          <CWidgetStatsA
+            className="mb-4"
+            color="warning"
+            value={
+              ideas ? (
+                <>
+                  {ideas.value}{' '}
+                  <span className="fs-6 fw-normal">
+                    ({ideas.percentChange}% <CIcon icon={cilArrowTop} />)
+                  </span>
+                </>
+              ) : (
+                'Loading...'
+              )
+            }
+            title="Ideas"
+            chart={
+              <CChartLine
+                className="mt-3"
+                style={{ height: '70px' }}
+                data={{
+                  labels: ideas?.monthLabels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                  datasets: [
+                    {
+                      label: 'Ideas',
+                      backgroundColor: `${theme.colors.warning}33`,
+                      borderColor: theme.colors.chartLine,
+                      data: ideas?.chartData || [],
+                      fill: true,
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      enabled: false,
+                    },
                   title: {
                     display: false
                   },
-                  subtitle: {
-                    display: false
+                  subtitle:{
+                    display:false
                   }
-                },
-                interaction: {
-                  mode: "index",
-                  intersect: false,
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: { 
-                    display: false,
-                    grid: { display: false },
-                    ticks: { display: false }
                   },
-                  y: { 
-                    display: false,
-                    grid: { display: false },
-                    ticks: { display: false }
+                  interaction: {
+                    mode: "index",
+                    intersect: false,
                   },
-                },
-                elements: {
-                  line: { borderWidth: 1, tension: 0.4 },
-                  point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
-                },
-                // Disable all animations to prevent label flash
-                animation: false,
-                // Additional options to prevent labels
-                layout: {
-                  padding: {
-                    bottom: 10 // Add some padding to clear the area where labels appear
-                  }
-                },
-              }}
-              plugins={[tooltipPlugin]}
-            />
-          }
-        />
-      </CCol>
-      <CCol sm={6} lg={3}>
-      <CWidgetStatsA
-          className="mb-4"
-          color="info"
-          value={
-            events ? (
-              <>
-                {events.allTime.totalEventEngagement}{' '}
-                <span className="fs-6 fw-normal">
-                  ({events.month.percentChange}% <CIcon icon={cilArrowTop} />)
-                </span>
-              </>
-            ) : (
-              'Loading...'
-            )
-          }
-          title="Events"
-          // action={
-          //   <CDropdown alignment="end">
-          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
-          //       <CIcon icon={cilOptions} className="text-white" />
-          //     </CDropdownToggle>
-          //     <CDropdownMenu>
-          //       <CDropdownItem>Action</CDropdownItem>
-          //       <CDropdownItem>Another action</CDropdownItem>
-          //       <CDropdownItem>Something else here...</CDropdownItem>
-          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
-          //     </CDropdownMenu>
-          //   </CDropdown>
-          // }
-          chart={
-            <CChartLine
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                    label: 'Events',
-                    backgroundColor: 'transparent',
-                    borderColor: theme.colors.chartLine,
-                    pointBackgroundColor: theme.colors.info,
-                    data: events?.chartData || [],
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: { display: false },
-                  tooltip: {
-                    enabled: false,
-                  },
-                  title: {
-                    display: false
-                  },
-                  subtitle: {
-                    display: false
-                  }
-                },
-                interaction: {
-                  mode: "index",
-                  intersect: false,
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: { 
-                    display: false,
-                    grid: { display: false },
-                    ticks: { display: false }
-                  },
-                  y: { 
-                    display: false,
-                    grid: { display: false },
-                    ticks: { display: false }
-                  },
-                },
-                elements: {
-                  line: { borderWidth: 1, tension: 0.4 },
-                  point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
-                },
-                // Disable all animations to prevent label flash
-                animation: false,
-                // Additional options to prevent labels
-                layout: {
-                  padding: {
-                    bottom: 10 // Add some padding to clear the area where labels appear
-                  }
-                },
-              }}
-              plugins={[tooltipPlugin]}
-            />
-          }
-        />
-      </CCol>
-      <CCol sm={6}lg={3}>
-      <CWidgetStatsA
-          className="mb-4"
-          color="warning"
-          value={
-            ideas ? (
-              <>
-                {ideas.totalIdeasCreated}{' '}
-                <span className="fs-6 fw-normal">
-                  ({ideas.percentChange}% <CIcon icon={cilArrowTop} />)
-                </span>
-              </>
-            ) : (
-              'Loading...'
-            )
-          }
-          title="Ideas"
-          // action={
-          //   <CDropdown alignment="end">
-          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
-          //       <CIcon icon={cilOptions} className="text-white" />
-          //     </CDropdownToggle>
-          //     <CDropdownMenu>
-          //       <CDropdownItem>Action</CDropdownItem>
-          //       <CDropdownItem>Another action</CDropdownItem>
-          //       <CDropdownItem>Something else here...</CDropdownItem>
-          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
-          //     </CDropdownMenu>
-          //   </CDropdown>
-          // }
-          chart={
-            <CChartLine
-              className="mt-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                    label: 'Ideas',
-                    backgroundColor: `${theme.colors.warning}33`,
-                    borderColor: theme.colors.chartLine,
-                    data: ideas?.chartData || [],
-                    fill: true,
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: { display: false },
-                  tooltip: {
-                    enabled: false,
-                  },
-                title: {
-                  display: false
-                },
-                subtitle:{
-                  display:false
-                }
-                },
-                interaction: {
-                  mode: "index",
-                  intersect: false,
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    display: false,
-                    grid: { display: false },
-                    ticks: { display: false }
-                  },
-                  y: {
-                    display: false,
-                    grid: { display: false },
-                    ticks: { display: false }
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 2,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 0,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
-              plugins={[tooltipPlugin]}
-            />
-          }
-        />
-      </CCol>
-      <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4 px-0 py-0"
-          color="danger"
-          value={
-            surprise ? (
-              <>
-                {surprise.value}{' '}
-                <span className="fs-6 fw-normal">
-                  ({surprise.percentChange}% <CIcon icon={cilArrowTop} />)
-                </span>
-              </>
-            ) : (
-              'Loading...'
-            )
-          }
-          title={
-            <div className="text-start ps-0">
-              <span className="text-white">Surprise</span>
-            </div>          
-          }
-          // action={
-          //   <CDropdown alignment="end">
-          //     <CDropdownToggle color="transparent" caret={false} className="p-0">
-          //       <CIcon icon={cilOptions} className="text-white" />
-          //     </CDropdownToggle>
-          //     <CDropdownMenu>
-          //       <CDropdownItem>Action</CDropdownItem>
-          //       <CDropdownItem>Another action</CDropdownItem>
-          //       <CDropdownItem>Something else here...</CDropdownItem>
-          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
-          //     </CDropdownMenu>
-          //   </CDropdown>
-          // }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'Surprise',
-                    backgroundColor: theme.colors.danger,
-                    borderColor: theme.colors.chartLine,
-                    data: surprise?.chartData || [],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
                       display: false,
-                      drawTicks: false,
+                      grid: { display: false },
+                      ticks: { display: false }
                     },
-                    ticks: {
+                    y: {
+                      display: false,
+                      grid: { display: false },
+                      ticks: { display: false }
+                    },
+                  },
+                  elements: {
+                    line: {
+                      borderWidth: 2,
+                      tension: 0.4,
+                    },
+                    point: {
+                      radius: 0,
+                      hitRadius: 10,
+                      hoverRadius: 4,
+                    },
+                  },
+                }}
+                plugins={[tooltipPlugin]}
+              />
+            }
+          />
+        </CCol>
+        <CCol sm={6} lg={3}>
+          <CWidgetStatsA
+            className="mb-4 px-0 py-0"
+            color="danger"
+            value={
+              surprise ? (
+                <>
+                  {surprise.value}{' '}
+                  <span className="fs-6 fw-normal">
+                    ({surprise.percentChange}% <CIcon icon={cilArrowTop} />)
+                  </span>
+                </>
+              ) : (
+                'Loading...'
+              )
+            }
+            title={
+              <div className="text-start ps-0">
+                <span className="text-white">Surprise</span>
+              </div>          
+            }
+            chart={
+              <CChartBar
+                className="mt-3 mx-3"
+                style={{ height: '70px' }}
+                data={{
+                  labels: [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                  ],
+                  datasets: [
+                    {
+                      label: 'Surprise',
+                      backgroundColor: theme.colors.danger,
+                      borderColor: theme.colors.chartLine,
+                      data: surprise?.chartData || [],
+                      barPercentage: 0.6,
+                    },
+                  ],
+                }}
+                options={{
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
                       display: false,
                     },
                   },
-                  y: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
+                  scales: {
+                    x: {
+                      grid: {
+                        display: false,
+                        drawTicks: false,
+                      },
+                      ticks: {
+                        display: false,
+                      },
                     },
-                    ticks: {
-                      display: false,
+                    y: {
+                      grid: {
+                        display: false,
+                        drawTicks: false,
+                      },
+                      ticks: {
+                        display: false,
+                      },
                     },
                   },
-                },
-                elements: {
-                  line: { borderWidth: 1, tension: 0.4 },
-                  point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
-                },
-                animation: false,
-                layout: {
-                  padding: {
-                    bottom: 0 //ensure graph is touching bottom of widget
-                  }
-                },
-              }}
-              plugins={[tooltipPlugin]}
-
-            />
-          }
-        />
-      </CCol>
-    </CRow>
-    <CCard className="mb-4"
-      style={{
-        backgroundColor: theme.colors.cardBg,
-        borderRadius: '12px',
-        padding: '24px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      }}>
-        <CCardHeader className="d-flex justify-content-between align-items-center border-0 py-0 px-3">
-          <div>
-            <h5
-              className="mb-1"
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 500,
-                fontSize: '24px',
-              }}
-            >
-              Active Users
-            </h5>
-            <div
-              style={{ 
-                fontFamily: "Inter, sans-serif",
-                fontSize: '12px',
-                marginLeft: '0px',
-                color: theme.colors.secondary,
-               }}
-            >
-              January - July 2025
+                  elements: {
+                    line: { borderWidth: 1, tension: 0.4 },
+                    point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
+                  },
+                  animation: false,
+                  layout: {
+                    padding: {
+                      bottom: 0 //ensure graph is touching bottom of widget
+                    }
+                  },
+                }}
+                plugins={[tooltipPlugin]}
+              />
+            }
+          />
+        </CCol>
+      </CRow>
+      <CCard className="mb-4"
+        style={{
+          backgroundColor: theme.colors.cardBg,
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        }}>
+          <CCardHeader className="d-flex justify-content-between align-items-center border-0 py-0 px-3">
+            <div>
+              <h5
+                className="mb-1"
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: 500,
+                  fontSize: '24px',
+                }}
+              >
+                Active Users
+              </h5>
+              <div
+                style={{ 
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: '12px',
+                  marginLeft: '0px',
+                  color: theme.colors.secondary,
+                 }}
+              >
+                January - July 2025
+              </div>
             </div>
-          </div>
-          <div className="d-flex align-items-center">
-            <CButtonGroup role="group">
-              <CButton color="outline-secondary" size="sm">
-                Day
+            <div className="d-flex align-items-center">
+              <CButtonGroup role="group">
+                <CButton color="outline-secondary" size="sm">
+                  Day
+                </CButton>
+                <CButton color="dark" size="sm">
+                  Week
+                </CButton>
+                <CButton color="outline-secondary" size="sm">
+                  Month
+                </CButton>
+              </CButtonGroup>
+              <CButton color="primary" size="sm" className="ms-2">
+                <CIcon icon={cilCloudDownload} />
               </CButton>
-              <CButton color="dark" size="sm">
-                Week
-              </CButton>
-              <CButton color="outline-secondary" size="sm">
-                Month
-              </CButton>
-            </CButtonGroup>
-            <CButton color="primary" size="sm" className="ms-2">
-              <CIcon icon={cilCloudDownload} />
-            </CButton>
-          </div>
-        </CCardHeader>
-        <CCardBody className="p-0">
-          <MainChart />
-        </CCardBody>
-      </CCard>
+            </div>
+          </CCardHeader>
+          <CCardBody className="p-0">
+            <MainChart />
+          </CCardBody>
+        </CCard>
     </>
   )
 }
@@ -716,93 +751,20 @@ function App() {
   const { theme } = useTheme()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  const PrivateRoute = ({ children }: { children: JSX.Element }) => { // ⬅️ PrivateRoute defined here
+  const PrivateRoute = ({ children }: { children: JSX.Element }) => { 
     return isLoggedIn ? children : <Navigate to="/login" />;
   };
-  // Chart color customization based on theme
-  // const chartOptions = {
-  //   plugins: {
-  //     legend: {
-  //       display: false,
-  //     },
-  //   },
-  //   maintainAspectRatio: false,
-  //   scales: {
-  //     x: {
-  //       grid: {
-  //         display: false,
-  //       },
-  //       ticks: {
-  //         display: false,
-  //         color: theme.colors.chartLine,
-  //       },
-  //     },
-  //     y: {
-  //       min: 30,
-  //       max: 89,
-  //       display: false,
-  //       grid: {
-  //         display: false,
-  //       },
-  //       ticks: {
-  //         display: false,
-  //         color: theme.colors.chartLine,
-  //       },
-  //     },
-  //   },
-  //   elements: {
-  //     line: {
-  //       borderWidth: 1,
-  //       tension: 0.4,
-  //       borderColor: theme.colors.chartLine,
-  //     },
-  //     point: {
-  //       radius: 4,
-  //       hitRadius: 10,
-  //       hoverRadius: 4,
-  //       backgroundColor: theme.colors.chartPoint,
-  //     },
-  //   },
-  // }
-
-  // Additional options for bar charts
-  // const barChartOptions = {
-  //   ...chartOptions,
-  //   scales: {
-  //     ...chartOptions.scales,
-  //     x: {
-  //       grid: {
-  //         display: false,
-  //         drawTicks: false,
-  //       },
-  //       ticks: {
-  //         display: false,
-  //         color: theme.colors.chartLine,
-  //       },
-  //     },
-  //     y: {
-  //       grid: {
-  //         display: false,
-  //         drawTicks: false,
-  //       },
-  //       ticks: {
-  //         display: false,
-  //         color: theme.colors.chartLine,
-  //       },
-  //     },
-  //   },
-  // }
 
   return (
     <Routes>
-      {/* ✅ Login route (still public) */}
+      {/* Login route (still public) */}
       <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
 
   
-      {/* ✅ Protected routes inside admin layout */}
+      {/* Protected routes inside admin layout */}
       <Route
         path="*"
         element={
@@ -820,6 +782,6 @@ function App() {
       />
     </Routes>
   )  
-  }
+}
   
-  export default App
+export default App
