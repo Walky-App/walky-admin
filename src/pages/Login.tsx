@@ -2,6 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import API from '../API'
+
 //login page
 type LoginProps = {
   onLogin: () => void;
@@ -15,8 +16,8 @@ const Login = ({ onLogin }: LoginProps) => {
   const [isContinueActive, setIsContinueActive] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  const [email, setEmail] = useState("irosi002@fiu.edu");
-  const [password, setPassword] = useState("walkwalk321");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
@@ -24,9 +25,6 @@ const Login = ({ onLogin }: LoginProps) => {
       setLoginError(true);
       return;
     }
-  
-    console.log("Attempting login with:", email, password);
-    console.log("Full URL:", API.defaults.baseURL + '/api/login');
   
     try {
       const response = await API.post('/login', {
@@ -43,6 +41,7 @@ const Login = ({ onLogin }: LoginProps) => {
       } else {
         throw new Error("Token not found in response.");
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("❌ Login failed:", error?.response?.data || error.message || error);
       setLoginError(true);
