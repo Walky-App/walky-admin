@@ -36,9 +36,10 @@ import Review from './pages/Review.tsx'
 import Mywalky from './pages/Mywalky.tsx'
 import  Compliance  from './pages/Compliance.tsx'
 import Settings from './pages/Settings.tsx'
-import CreateAccount from './pages/CreateAccount.tsx'  
+import CreateAccount from './pages/CreateAccount.tsx'
+import  ForgotPassword  from './pages/ForgotPassword.tsx'  
 import { AppTheme } from './theme'
-
+import VerifyCode from './pages/VerifyCode.tsx'
 import ExampleAdminLayout from './components/ExampleAdminLayout.tsx'
 
 //Styles
@@ -801,6 +802,9 @@ function App() {
       {/* ✅ Login route (still public) */}
       <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
       <Route path="/create-account" element={<CreateAccount />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/verify-code" element={<VerifyCode />} />
+
   
       {/* ✅ Protected routes inside admin layout */}
       <Route
