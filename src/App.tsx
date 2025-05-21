@@ -24,7 +24,6 @@ import {
   Routes,
   Route,
   Navigate,
-  // useLocation
 } from 'react-router-dom'
 
 //Project Hooks and Theme
