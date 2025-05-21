@@ -2,7 +2,6 @@ import {
   CSidebar,
   CSidebarHeader,
   CSidebarNav,
-  CNavGroup,
   CNavItem,
   CNavTitle,
   CCloseButton,
@@ -81,33 +80,6 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
     </NavLink>
   </CNavItem>
 
-  {/* My Walky */}
-  <CNavGroup toggler="My Walky" className="px-3 py-2">
-    <CNavItem className="ms-4 px-3 py-1">
-      <NavLink to="/walky/item1" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-        My Walky Item 1
-      </NavLink>
-    </CNavItem>
-    <CNavItem className="ms-4 px-3 py-1">
-      <NavLink to="/walky/item2" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-        My Walky Item 2
-      </NavLink>
-    </CNavItem>
-  </CNavGroup>
-
-  {/* Compliance - */}
-  <CNavItem className="px-3 py-2">
-    <NavLink to="/compliance" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-      Compliance
-    </NavLink>
-  </CNavItem>
-
-  {/* Settings - only once */}
-  <CNavItem className="px-3 py-2">
-    <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-      Settings
-    </NavLink>
-  </CNavItem>
 </CSidebarNav>
     </CSidebar>
   );
