@@ -17,7 +17,7 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
   const [hovered, setHovered] = useState<string | null>(null);
   const [themeHovered, setThemeHovered] = useState(false);
 
-  const iconColor = isDarkMode? '#f8f9fa' : '#212529';
+  const iconColor = isDarkMode ? '#f8f9fa' : '#212529';
 
   const iconBtnStyle: React.CSSProperties = {
     backgroundColor: 'transparent',
@@ -39,18 +39,18 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
 
   return (
     <CNavbar
-  className="shadow-sm px-4"
-  style={{
-    backgroundColor: theme.colors.cardBg,
-    height: '56px',
-    position: 'fixed',
-    top: 0,
-    left: !isMobile && sidebarVisible ? '250px' : 0, 
-    right: 0,
-    zIndex: 1050,
-    transition: 'left 0.3s ease',
-  }}
->
+      className="shadow-sm px-4"
+      style={{
+        backgroundColor: theme.colors.cardBg,
+        height: '56px',
+        position: 'fixed',
+        top: 0,
+        left: !isMobile && sidebarVisible ? '250px' : 0,
+        right: 0,
+        zIndex: 1050,
+        transition: 'left 0.3s ease',
+      }}
+    >
       <CContainer fluid>
         <div className="d-flex w-100 justify-content-between align-items-center">
 
@@ -95,7 +95,14 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
             </div>
 
             {/* Avatar */}
-            <CAvatar src={'/images/avatars/1.jpg'} size="lg" />
+            <div title="FIU Logo">
+              <CAvatar
+                src="/fiu-logo.png"
+                size="lg"
+                style={{ width: "35px" }}
+              />
+            </div>
+
           </div>
         </div>
       </CContainer>
