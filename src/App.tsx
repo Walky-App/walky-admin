@@ -32,9 +32,6 @@ import { useTheme } from './hooks/useTheme'
 import Students from './pages/Students.tsx'
 import Engagement from './pages/Engagement.tsx'
 import Review from './pages/Review.tsx'
-import Mywalky from './pages/Mywalky.tsx'
-import Compliance from './pages/Compliance.tsx'
-import Settings from './pages/Settings.tsx'
 import CreateAccount from './pages/CreateAccount.tsx'  
 import { AppTheme } from './theme'
 
@@ -775,9 +772,6 @@ function App() {
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
                 <Route path="/review" element={<Review theme={theme} />} />
-                <Route path="/mywalky" element={<Mywalky />} />
-                <Route path="/compliance" element={<Compliance />} />
-                <Route path="/settings" element={<Settings />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
