@@ -4,9 +4,10 @@ import {
   CSidebarNav,
   CNavItem,
   CNavTitle,
-  CCloseButton,
 } from '@coreui/react';
 import { NavLink } from 'react-router-dom';
+import walkyLogo from '../assets/walkylogo.png'; 
+
 
 
 type SidebarProps = { 
@@ -15,11 +16,8 @@ type SidebarProps = {
   isMobile?: boolean;
 };
 
-export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarProps) => {  
+export const Sidebar = ({ visible }: SidebarProps) => {  
   // Handle close button click
-  const handleClose = () => {
-    onVisibleChange(false);
-  };
 
   return (
     <CSidebar
@@ -40,12 +38,14 @@ export const Sidebar = ({ visible, onVisibleChange, isMobile = false }: SidebarP
 >
 
 
-      <CSidebarHeader className="d-flex justify-content-between align-items-center px-3 py-2">
-        <div className="text-white fw-bold">Walky Admin</div>
-        {isMobile && (
-          <CCloseButton onClick={handleClose} />
-        )}
-      </CSidebarHeader>
+      <CSidebarHeader className="d-flex justify-content-center align-items-center py-3">
+  <img
+    src={walkyLogo}
+    alt="Walky Logo"
+    style={{ maxHeight: '40px', objectFit: 'contain' }}
+  />
+</CSidebarHeader>
+
 
       <CSidebarNav>
   {/* Dashboard */}

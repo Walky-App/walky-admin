@@ -3,6 +3,7 @@ import { cilHamburgerMenu, cilSun, cilMoon } from '@coreui/icons'
 import { CAvatar, CNavbar, CContainer, CButton } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
 import React, { useState } from 'react'
+import profilePic from '../assets/fiu-logo.png';
 
 type TopbarProps = {
   onToggleSidebar: () => void;
@@ -95,7 +96,7 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
             </div>
 
             {/* Avatar */}
-            <CAvatar src={'/images/avatars/1.jpg'} size="lg" />
+            <CAvatar src={profilePic} size="lg" />
           </div>
         </div>
       </CContainer>
