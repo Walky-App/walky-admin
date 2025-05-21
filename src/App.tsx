@@ -814,9 +814,6 @@ function App() {
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
                 <Route path="/review" element={<Review theme={theme} />} />
-                <Route path="/mywalky" element={<Mywalky />} />
-                <Route path="/compliance" element={<Compliance />} />
-                <Route path="/settings" element={<Settings />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
