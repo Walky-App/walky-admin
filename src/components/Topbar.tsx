@@ -1,5 +1,5 @@
 import { CIcon } from '@coreui/icons-react'
-import { cilHamburgerMenu, cilBell, cilEnvelopeOpen, cilListRich, cilSun, cilMoon } from '@coreui/icons'
+import { cilHamburgerMenu, cilSun, cilMoon } from '@coreui/icons'
 import { CAvatar, CNavbar, CContainer, CButton } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
 import React, { useState } from 'react'
@@ -67,29 +67,16 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
 
           {/* Right-side Icons */}
           <div className="d-flex align-items-center" style={{ gap: '1.5rem' }}>
-            {[{ id: 'bell', icon: cilBell }, { id: 'envelope', icon: cilEnvelopeOpen }, { id: 'list', icon: cilListRich }].map(({ id, icon }) => (
-              <button
-                key={id}
-                style={hovered === id ? iconBtnHoverStyle : iconBtnStyle}
-                onMouseEnter={() => setHovered(id)}
-                onMouseLeave={() => setHovered(null)}
-                aria-label={id}
-              >
-                <CIcon icon={icon} size="lg" style={{ color: iconColor }} />
-              </button>
-            ))}
-
             {/* Theme Toggle */}
             <div
               className="d-flex align-items-center px-3"
               style={{
-                borderLeft: `1px solid var(--app-borderColor)`,
                 borderRight: `1px solid var(--app-borderColor)`,
                 height: '32px',
                 backgroundColor: themeHovered
                   ? isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
                   : 'transparent',
-                borderRadius: '6px',
+                borderRadius: '0px',
                 transition: 'background-color 0.2s ease',
                 cursor: 'pointer',
               }}
@@ -103,7 +90,7 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
                 aria-label="Toggle theme"
                 style={{ color: iconColor }}
               >
-                <CIcon icon={isDarkMode ? cilSun : cilMoon} size="lg" />
+                <CIcon icon={isDarkMode ? cilMoon : cilSun} size="lg" />
               </CButton>
             </div>
 
