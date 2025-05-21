@@ -1,5 +1,5 @@
 import { CIcon } from '@coreui/icons-react'
-import { cilHamburgerMenu, cilBell, cilEnvelopeOpen, cilListRich, cilSun, cilMoon } from '@coreui/icons'
+import { cilHamburgerMenu, cilSun, cilMoon } from '@coreui/icons'
 import { CAvatar, CNavbar, CContainer, CButton } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
 import React, { useState } from 'react'
@@ -17,7 +17,7 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
   const [hovered, setHovered] = useState<string | null>(null);
   const [themeHovered, setThemeHovered] = useState(false);
 
-  const iconColor = isDarkMode? '#f8f9fa' : '#212529';
+  const iconColor = isDarkMode ? '#f8f9fa' : '#212529';
 
   const iconBtnStyle: React.CSSProperties = {
     backgroundColor: 'transparent',
@@ -39,18 +39,18 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
 
   return (
     <CNavbar
-  className="shadow-sm px-4"
-  style={{
-    backgroundColor: theme.colors.cardBg,
-    height: '56px',
-    position: 'fixed',
-    top: 0,
-    left: !isMobile && sidebarVisible ? '250px' : 0, 
-    right: 0,
-    zIndex: 1050,
-    transition: 'left 0.3s ease',
-  }}
->
+      className="shadow-sm px-4"
+      style={{
+        backgroundColor: theme.colors.cardBg,
+        height: '56px',
+        position: 'fixed',
+        top: 0,
+        left: !isMobile && sidebarVisible ? '250px' : 0,
+        right: 0,
+        zIndex: 1050,
+        transition: 'left 0.3s ease',
+      }}
+    >
       <CContainer fluid>
         <div className="d-flex w-100 justify-content-between align-items-center">
 
@@ -67,29 +67,16 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
 
           {/* Right-side Icons */}
           <div className="d-flex align-items-center" style={{ gap: '1.5rem' }}>
-            {[{ id: 'bell', icon: cilBell }, { id: 'envelope', icon: cilEnvelopeOpen }, { id: 'list', icon: cilListRich }].map(({ id, icon }) => (
-              <button
-                key={id}
-                style={hovered === id ? iconBtnHoverStyle : iconBtnStyle}
-                onMouseEnter={() => setHovered(id)}
-                onMouseLeave={() => setHovered(null)}
-                aria-label={id}
-              >
-                <CIcon icon={icon} size="lg" style={{ color: iconColor }} />
-              </button>
-            ))}
-
             {/* Theme Toggle */}
             <div
               className="d-flex align-items-center px-3"
               style={{
-                borderLeft: `1px solid var(--app-borderColor)`,
                 borderRight: `1px solid var(--app-borderColor)`,
                 height: '32px',
                 backgroundColor: themeHovered
                   ? isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
                   : 'transparent',
-                borderRadius: '6px',
+                borderRadius: '0px',
                 transition: 'background-color 0.2s ease',
                 cursor: 'pointer',
               }}
@@ -103,12 +90,19 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
                 aria-label="Toggle theme"
                 style={{ color: iconColor }}
               >
-                <CIcon icon={isDarkMode ? cilSun : cilMoon} size="lg" />
+                <CIcon icon={isDarkMode ? cilMoon : cilSun} size="lg" />
               </CButton>
             </div>
 
             {/* Avatar */}
-            <CAvatar src={'/images/avatars/1.jpg'} size="lg" />
+            <div title="FIU Logo">
+              <CAvatar
+                src="/fiu-logo.png"
+                size="lg"
+                style={{ width: "35px" }}
+              />
+            </div>
+
           </div>
         </div>
       </CContainer>
