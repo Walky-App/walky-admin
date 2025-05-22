@@ -200,7 +200,7 @@ const Login = ({ onLogin }: LoginProps) => {
         }}
       >
         <img
-          src="/Container.png"
+          src="/Heroscreen.png"
           alt="Welcome Visual"
           style={{
             maxWidth: "90%",
