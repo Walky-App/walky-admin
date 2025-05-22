@@ -104,7 +104,7 @@ const Engagement = () => {
   return (
     <div style={{ padding: '2rem' }}>
 
-      <Section title="Realtime" color="#6f42c1">
+      <Section title="Walks" color="#6f42c1">
         <Widget title="Total Walks" value="128" progressValue={90} barColor="#6f42c1" icon={cilCompass} />
         <Widget title="Pending" value="23" progressValue={50} barColor="#6f42c1" icon={cilCompass} />
         <Widget title="Active" value="6" progressValue={60} barColor="#6f42c1" icon={cilCompass} />
