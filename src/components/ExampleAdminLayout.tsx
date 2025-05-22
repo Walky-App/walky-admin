@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 const pageTitles: Record<string, string> = {
   "/": "Dashboard",
   "/students": "Students",
-  "/engagement": "Engagement",
+  "/engagement": "Real Time",
   "/review": "Review",
   "/mywalky": "My Walky",
   "/compliance": "Compliance",
@@ -129,7 +129,13 @@ function ExampleAdminLayout({ children }: Props) {
           {children}
         </main>
       </div>
-      <footer className="footer py-3 border-top text-center">
+      <footer
+        className="footer py-3 border-top text-center d-flex justify-content-center"
+        style={{
+          backgroundColor: theme.colors.cardBg,
+          color: theme.colors.bodyColor,
+        }}
+      >
         <span className="small">Walky Admin © 2023 | Built with CoreUI</span>
       </footer>
     </div>
