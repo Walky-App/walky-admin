@@ -9,7 +9,7 @@ export function BreadcrumbDividersExample() {
 
   return (
     <CBreadcrumb
-  className="mb-3"
+  className="mb-1"
   style={{
     '--cui-breadcrumb-divider': `'/'`,
     '--breadcrumb-divider-color': theme.colors.bodyColor,
