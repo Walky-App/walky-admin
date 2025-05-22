@@ -3,10 +3,8 @@ import CIcon from '@coreui/icons-react'
 import { cilCompass, cilCalendar, cilLightbulb } from '@coreui/icons'
 import { CTooltip } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
+
 import { useTooltipStyle } from '../hooks/useTooltipStyle'
-
-
-
 
 // Widget Component
 const Widget = ({
@@ -24,15 +22,15 @@ const Widget = ({
   barColor: string
   icon: string | string[]
 }) => {
+
   const { theme } = useTheme()
   useTooltipStyle(theme.isDark)
-
 
   const widgetContent = (
     <div
       style={{
         width: '160px',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: isDark ? '#2a2d36' : '#f8f9fa',
         borderRadius: '8px',
         padding: '1rem 1rem 1.25rem',
         height: '140px',
@@ -46,7 +44,7 @@ const Widget = ({
         icon={icon}
         height={28}
         style={{
-          color: '#444',
+          color: isDark ? '#d1d5db' : '#000',
           position: 'absolute',
           top: '0.75rem',
           right: '0.75rem',
@@ -54,8 +52,8 @@ const Widget = ({
       />
 
       <div style={{ paddingTop: '1.5rem' }}>
-        <strong style={{ fontSize: '1.2rem', color: '#000' }}>{value}</strong>
-        <div style={{ color: '#6c757d', fontSize: '0.9rem' }}>{title}</div>
+        <strong style={{ fontSize: '1.2rem', color: isDark ? '#d1d5db' : '#000' }}>{value}</strong>
+        <div style={{ color: isDark ? '#d1d5db' : '#6c757d', fontSize: '0.9rem' }}>{title}</div>
       </div>
 
       <div
@@ -108,30 +106,41 @@ const Section = ({
       marginBottom: '2rem',
       width: 'fit-content', 
       maxWidth: '100%',        
+}) => {
+  const { theme } = useTheme();
+  const isDark = theme.isDark;
 
-    }}
-  >
-    <h5 style={{ color: 'white', marginBottom: '1rem' }}>{title}</h5>
+  return (
     <div
-  style={{
-    display: 'flex',
-    flexWrap: 'wrap',
-    rowGap: '1rem',
-    columnGap: '0.75rem',
-    justifyContent: 'flex-start'
-    
-  }}
->
-      {children}
+      style={{
+        backgroundColor: color,
+        padding: '1rem',
+        borderRadius: '6px',
+        marginBottom: '2rem',
+        width: 'fit-content',
+        maxWidth: '100%',
+      }}
+    >
+      <h5 style={{ color: isDark ? '#e5e7eb' : 'white', marginBottom: '1rem' }}>{title}</h5>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          rowGap: '1rem',
+          columnGap: '0.75rem',
+          justifyContent: 'flex-start',
+        }}
+      >
+        {children}
+      </div>
     </div>
-  </div>
-)
+  );
+};
 
 // Main Page
 const Engagement = () => {
   return (
     <div style={{ padding: '2rem' }}>
-
       <Section title="Walks" color="#6f42c1">
         <Widget title="Total Walks" tooltip="Number of total walks recorded" value="128" progressValue={90} barColor="#6f42c1" icon={cilCompass} />
         <Widget title="Pending" value="23" progressValue={50} barColor="#6f42c1" icon={cilCompass} />
@@ -141,7 +150,7 @@ const Engagement = () => {
       </Section>
 
       <Section title="Events" color="#42a5f5">
-        <Widget title="Total Events" tooltip="Number of total events created"  value="128" progressValue={90} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget title="Total Events" tooltip="Number of total events created" value="128" progressValue={90} barColor="#42a5f5" icon={cilCalendar} />
         <Widget title="Outdoor" value="23" progressValue={50} barColor="#42a5f5" icon={cilCalendar} />
         <Widget title="Indoor" value="6" progressValue={60} barColor="#42a5f5" icon={cilCalendar} />
         <Widget title="Public" value="98" progressValue={100} barColor="#42a5f5" icon={cilCalendar} />
@@ -149,13 +158,13 @@ const Engagement = () => {
       </Section>
 
       <Section title="Ideas" color="#f0ad4e">
-        <Widget title="Total Ideas" tooltip="Number of total ideas created"  value="128" progressValue={90} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget title="Total Ideas" tooltip="Number of total ideas created" value="128" progressValue={90} barColor="#f0ad4e" icon={cilLightbulb} />
         <Widget title="Active" value="23" progressValue={50} barColor="#f0ad4e" icon={cilLightbulb} />
         <Widget title="Inactive" value="6" progressValue={60} barColor="#f0ad4e" icon={cilLightbulb} />
         <Widget title="Collaborated" value="98" progressValue={100} barColor="#f0ad4e" icon={cilLightbulb} />
       </Section>
     </div>
-  )
-}
+  );
+};
 
-export default Engagement
+export default Engagement;

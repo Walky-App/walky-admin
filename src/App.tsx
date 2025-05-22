@@ -1,5 +1,5 @@
 import CIcon from '@coreui/icons-react'
-import { cilArrowTop,cilCloudDownload } from '@coreui/icons'
+import { cilArrowTop,cilCloudDownload, cilArrowBottom, cilArrowRight } from '@coreui/icons'
 import {
   CButton,
   CButtonGroup,
@@ -12,7 +12,7 @@ import {
   // CDropdown, 
   // CDropdownMenu, 
   // CDropdownToggle, 
-  CWidgetStatsA 
+  CWidgetStatsA ,
 } from '@coreui/react' 
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 
@@ -348,6 +348,13 @@ const Dashboard = ({theme} : DashboardProps) => {
       },
     };
 
+    const getTrendIcon = (percent: number) => {
+      if (percent > 0) return cilArrowTop
+      if (percent < 0) return cilArrowBottom
+      return cilArrowRight // neutral case
+    }
+    
+
   return (
     <>
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
@@ -365,7 +372,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {walks.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({walks.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({walks.percentChange}% <CIcon icon={getTrendIcon(walks.percentChange)}/>)
                   </span>
                 </>
               ) : (
@@ -444,7 +451,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {events.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({events.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({events.percentChange}% <CIcon icon={getTrendIcon(events.percentChange)} />)
                   </span>
                 </>
               ) : (
@@ -523,7 +530,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {ideas.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({ideas.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({ideas.percentChange}% <CIcon icon={getTrendIcon(ideas.percentChange)} />)
                   </span>
                 </>
               ) : (
@@ -603,7 +610,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {surprise.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({surprise.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({surprise.percentChange}% <CIcon icon={getTrendIcon(surprise.percentChange)} />)
                   </span>
                 </>
               ) : (
@@ -740,8 +747,45 @@ const Dashboard = ({theme} : DashboardProps) => {
             </div>
           </CCardHeader>
           <CCardBody className="p-0">
-            <MainChart />
-          </CCardBody>
+  {/* Chart */}
+  <div style={{ padding: '0 24px' }}>
+    <MainChart />
+  </div>
+
+  {/* Footer: full width, no side padding */}
+  <div
+    style={{
+      backgroundColor: theme.isDark ? '#2a2d32' : '#f3f4f6',
+      borderTop: '1px solid #d8dbe0',
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '60px',
+      padding: '24px ',
+      width: '100%',
+      borderBottomLeftRadius: '12px',
+      borderBottomRightRadius: '12px',
+    }}
+  >
+    <div style={{ textAlign: 'center' }}>
+      <div className="fw-semibold" style={{ fontSize: '16px', color: theme.isDark ? '#fff' : '#343a40' }}>
+        Visits
+      </div>
+      <div style={{ fontSize: '14px', color: theme.isDark ? '#adb5bd' : '#4f5d73' }}>29.703 Users (40%)</div>
+      <div style={{ height: '4px', background: '#2eb85c', width: '60px', margin: '6px auto 0', borderRadius: '2px' }} />
+    </div>
+
+    <div style={{ textAlign: 'center' }}>
+      <div className="fw-semibold" style={{ fontSize: '16px', color: theme.isDark ? '#fff' : '#343a40' }}>
+        Unique
+      </div>
+      <div style={{ fontSize: '14px', color: theme.isDark ? '#adb5bd' : '#4f5d73' }}>24.093 Users (20%)</div>
+      <div style={{ height: '4px', background: '#3399ff', width: '60px', margin: '6px auto 0', borderRadius: '2px' }} />
+    </div>
+  </div>
+</CCardBody>
+
+
+
         </CCard>
     </>
   )
