@@ -8,11 +8,8 @@ import { useLocation } from "react-router-dom";
 const pageTitles: Record<string, string> = {
   "/": "Dashboard",
   "/students": "Students",
-  "/engagement": "Real Time",
+  "/engagement": "Engagement",
   "/review": "Review",
-  "/mywalky": "My Walky",
-  "/compliance": "Compliance",
-  "/settings": "Settings",
 };
 
 type Props = { children: React.ReactNode };
@@ -84,7 +81,9 @@ function ExampleAdminLayout({ children }: Props) {
           className="d-flex flex-column flex-grow-1 px-4 pt-0 pb-2"
           style={{
             backgroundColor:
-              location.pathname === "/review" ? "#FFF9EE" : theme.colors.bodyBg,
+            location.pathname === "/review" && !theme.isDark
+              ? "#FFF9EE"
+              : theme.colors.bodyBg,
             color: theme.colors.bodyColor,
             marginTop: "56px",
             marginLeft: !isMobile && sidebarVisible ? "250px" : 0,
@@ -112,12 +111,6 @@ function ExampleAdminLayout({ children }: Props) {
             <div className="d-sm-flex justify-content-between align-items-center">
               <h2
                 className="mb-0"
-                style={{
-                  color:
-                    location.pathname === "/review"
-                      ? "#000"
-                      : theme.colors.bodyColor,
-                }}
               >
                 {pageTitles[location.pathname]}
               </h2>
