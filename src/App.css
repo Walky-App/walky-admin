@@ -1,9 +1,9 @@
-/* #root {
+#root {
   max-width: 2000px;
   margin: 0 auto;
   padding: 0;
   text-align: center;
-} */
+}
 
 .logo {
   height: 6em;
@@ -94,17 +94,23 @@
     width: 256px; /* Adjust width as needed */
     flex-shrink: 0;
   }
-  
-  /* Main content adjusts when sidebar is shown/hidden */
-  /* main {
-    transition: margin-left 0.3s ease;
-  } */
 
 }
 
 .left-align th, 
 .left-align td {
   text-align: left;
+}
+
+/* Light Mode Hover */
+.custom-table-hover tbody tr:hover {
+  background-color: #F3F4F7 !important;
+  cursor: pointer;
+}
+
+/* Dark Mode Hover — Slightly Darker */
+body.dark-mode .custom-table-hover tbody tr:hover {
+  background-color: #181819 !important;
 }
 
 

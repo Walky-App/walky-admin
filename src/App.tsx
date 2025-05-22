@@ -749,6 +749,10 @@ const Dashboard = ({theme} : DashboardProps) => {
 
 function App() {
   const { theme } = useTheme()
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode', theme.isDark);
+  }, [theme.isDark]);
+  
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const PrivateRoute = ({ children }: { children: JSX.Element }) => { 
@@ -774,7 +778,7 @@ function App() {
                 <Route path="/" element={<Dashboard theme={theme}/>} />
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
-                <Route path="/review" element={<Review theme={theme} />} />
+                <Route path="/review" element={<Review />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
