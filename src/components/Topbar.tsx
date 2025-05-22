@@ -1,8 +1,11 @@
 import { CIcon } from '@coreui/icons-react'
 import { cilHamburgerMenu, cilSun, cilMoon } from '@coreui/icons'
-import { CAvatar, CNavbar, CContainer, CButton } from '@coreui/react'
+import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem,CAvatar, CNavbar, CContainer, CButton } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
 import React, { useState } from 'react'
+import { cilAccountLogout } from '@coreui/icons'
+import { useNavigate } from 'react-router-dom'
+
 
 type TopbarProps = {
   onToggleSidebar: () => void;
@@ -36,6 +39,8 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
     ...iconBtnStyle,
     backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
   };
+
+  const navigate = useNavigate()
 
   return (
     <CNavbar
@@ -93,15 +98,29 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
                 <CIcon icon={isDarkMode ? cilMoon : cilSun} size="lg" />
               </CButton>
             </div>
-
-            {/* Avatar */}
-            <div title="FIU Logo">
-              <CAvatar
-                src="/fiu-logo.png"
-                size="lg"
-                style={{ width: "35px" }}
-              />
-            </div>
+            <CDropdown variant="nav-item" className="d-flex align-items-center">
+  <CDropdownToggle
+    caret={false}
+    className="p-0 border-0 bg-transparent"
+  >
+    <CAvatar
+      src="/fiu-logo.png"
+      size="lg"
+      style={{ width: '35px' }}
+    />
+  </CDropdownToggle>
+  <CDropdownMenu>
+    <CDropdownItem
+      onClick={() => {
+        localStorage.removeItem('token')
+        navigate('/login')
+      }}
+    >
+      <CIcon icon={cilAccountLogout} className="me-2" />
+      Logout
+    </CDropdownItem>
+  </CDropdownMenu>
+</CDropdown>
 
           </div>
         </div>
