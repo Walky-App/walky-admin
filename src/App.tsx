@@ -1,5 +1,5 @@
 import CIcon from '@coreui/icons-react'
-import { cilArrowTop,cilCloudDownload } from '@coreui/icons'
+import { cilArrowTop,cilCloudDownload, cilArrowBottom, cilArrowRight } from '@coreui/icons'
 import {
   CButton,
   CButtonGroup,
@@ -348,6 +348,13 @@ const Dashboard = ({theme} : DashboardProps) => {
       },
     };
 
+    const getTrendIcon = (percent: number) => {
+      if (percent > 0) return cilArrowTop
+      if (percent < 0) return cilArrowBottom
+      return cilArrowRight // neutral case
+    }
+    
+
   return (
     <>
       <div className="mb-4 d-sm-flex justify-content-between align-items-center">
@@ -365,7 +372,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {walks.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({walks.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({walks.percentChange}% <CIcon icon={getTrendIcon(walks.percentChange)}/>)
                   </span>
                 </>
               ) : (
@@ -444,7 +451,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {events.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({events.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({events.percentChange}% <CIcon icon={getTrendIcon(events.percentChange)} />)
                   </span>
                 </>
               ) : (
@@ -523,7 +530,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {ideas.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({ideas.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({ideas.percentChange}% <CIcon icon={getTrendIcon(ideas.percentChange)} />)
                   </span>
                 </>
               ) : (
@@ -603,7 +610,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 <>
                   {surprise.value}{' '}
                   <span className="fs-6 fw-normal">
-                    ({surprise.percentChange}% <CIcon icon={cilArrowTop} />)
+                    ({surprise.percentChange}% <CIcon icon={getTrendIcon(surprise.percentChange)} />)
                   </span>
                 </>
               ) : (
