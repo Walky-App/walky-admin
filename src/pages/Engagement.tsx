@@ -87,13 +87,13 @@ const Section = ({
   >
     <h5 style={{ color: 'white', marginBottom: '1rem' }}>{title}</h5>
     <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        flexWrap: 'nowrap',
-        gap: '0.75rem',
-      }}
-    >
+  style={{
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
+    gap: '2.5rem',
+  }}
+>
       {children}
     </div>
   </div>
@@ -125,7 +125,6 @@ const Engagement = () => {
         <Widget title="Active" value="23" progressValue={50} barColor="#f0ad4e" icon={cilLightbulb} />
         <Widget title="Inactive" value="6" progressValue={60} barColor="#f0ad4e" icon={cilLightbulb} />
         <Widget title="Collaborated" value="98" progressValue={100} barColor="#f0ad4e" icon={cilLightbulb} />
-        <Widget title="Private" value="14" progressValue={30} barColor="#f0ad4e" icon={cilLightbulb} />
       </Section>
     </div>
   )
