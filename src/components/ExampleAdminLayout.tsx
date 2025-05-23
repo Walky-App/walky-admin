@@ -83,8 +83,9 @@ function ExampleAdminLayout({ children }: Props) {
         <main
           className="d-flex flex-column flex-grow-1 px-4 pt-0 pb-2"
           style={{
-            backgroundColor:
-              location.pathname === "/review" ? "#FFF9EE" : theme.colors.bodyBg,
+            backgroundColor: location.pathname === "/review"
+              ? 'var(--review-bg)'
+              : theme.colors.bodyBg,
             color: theme.colors.bodyColor,
             marginTop: "56px",
             marginLeft: !isMobile && sidebarVisible ? "250px" : 0,
@@ -110,17 +111,14 @@ function ExampleAdminLayout({ children }: Props) {
 
           <div className=" d-sm-flex justify-content-between align-items-center mt-0">
             <div className="d-sm-flex justify-content-between align-items-center">
-              <h2
-                className="mb-0"
-                style={{
-                  color:
-                    location.pathname === "/review"
-                      ? "#000"
-                      : theme.colors.bodyColor,
-                }}
-              >
-                {pageTitles[location.pathname]}
-              </h2>
+            <h2
+              className="mb-0"
+              style={{
+                color: theme.colors.bodyColor,
+              }}
+            >
+              {pageTitles[location.pathname]}
+            </h2>
             </div>
             <div className="mt-3 mt-sm-0">
               {/* Add actions/buttons if needed */}
