@@ -1,5 +1,6 @@
+import { useState, useEffect, ReactElement } from 'react'
 import CIcon from '@coreui/icons-react'
-import { cilArrowTop,cilCloudDownload, cilArrowBottom, cilArrowRight } from '@coreui/icons'
+import { cilArrowTop, cilCloudDownload, cilArrowBottom, cilArrowRight } from '@coreui/icons'
 import {
   CButton,
   CButtonGroup,
@@ -8,51 +9,35 @@ import {
   CCardHeader,
   CRow,
   CCol, 
-  // CDropdownItem, 
-  // CDropdown, 
-  // CDropdownMenu, 
-  // CDropdownToggle, 
-  CWidgetStatsA ,
+  CWidgetStatsA 
 } from '@coreui/react' 
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 
-import { useState, useEffect, JSX } from 'react'
-
-//React Routes
 import {
   Routes,
   Route,
   Navigate,
 } from 'react-router-dom'
 
-//Project Hooks and Theme
 import { useTheme } from './hooks/useTheme'
-
-import Students from './pages/Students.tsx'
-import Engagement from './pages/Engagement.tsx'
-import Review from './pages/Review.tsx'
-import CreateAccount from './pages/CreateAccount.tsx'
-import  ForgotPassword  from './pages/ForgotPassword.tsx'  
+import Students from './pages/Students'
+import Engagement from './pages/Engagement'
+import Review from './pages/Review'
+import CreateAccount from './pages/CreateAccount'
+import ForgotPassword from './pages/ForgotPassword'  
 import { AppTheme } from './theme'
-import VerifyCode from './pages/VerifyCode.tsx'
-import ExampleAdminLayout from './components/ExampleAdminLayout.tsx'
+import VerifyCode from './pages/VerifyCode'
+import ExampleAdminLayout from './components/ExampleAdminLayout'
 
-//Styles
 import './App.css'
+import MainChart from './components/MainChart'
 
-import MainChart from "./components/MainChart.tsx";
-
-//Chart.js Types
-import { Chart as ChartJS, TooltipModel } from 'chart.js';
-
-//API
-import API from './API/index.ts'
-import Login from './pages/Login.tsx'
+import { Chart as ChartJS, TooltipModel } from 'chart.js'
+import API from './API/index'
+import Login from './pages/Login'
 
 type DashboardProps = {
   theme: AppTheme;
-  // chartOptions: object;
-  // barChartOptions: object;
 };
 
 type BaseWidgetData = {
@@ -60,6 +45,20 @@ type BaseWidgetData = {
   chartData: number[];
 };
 
+interface MonthlyActiveUsersData {
+  monthlyData: Array<{
+    month?: string;
+    label?: string;
+    year?: number;
+    count: number;
+  }>;
+  chartData: number[];
+  chartLabels: string[];
+  totalActiveUsers: number;
+  last24HoursActiveUsers: number;
+  period: string;        // Add these two properties
+  since: string;         // that exist in your actual data
+}
 type WalksData = {
   value: number; 
   percentChange: number;
@@ -98,11 +97,11 @@ interface EventMonthData {
   totalCount: number;
 }
 
-interface WalkMonthData {
-  month: string;
-  year: string;
-  count: number;
-  date?: string;
+// API Response structure for walks endpoint
+interface WalksApiResponse {
+  chartData?: number[];
+  chartLabels?: string[];
+  totalWalksCreated?: number;
 }
 
 const Dashboard = ({theme} : DashboardProps) => {
@@ -110,6 +109,15 @@ const Dashboard = ({theme} : DashboardProps) => {
     const [events, setEvents] = useState<EventsData | null>(null);
     const [ideas, setIdeas] = useState<IdeasData | null>(null);
     const [surprise, setSurprise] = useState<SurpriseData | null>(null);
+    const [activeUsers, setActiveUsers] = useState<MonthlyActiveUsersData | null>(null);
+    const [activePeriod, setActivePeriod] = useState<'day' | 'week' | 'month'>('month');
+
+    // Helper function to handle period changes
+    const handlePeriodChange = (period: 'day' | 'week' | 'month') => {
+      setActivePeriod(period);
+      getActiveUsersData(period);
+      getWalksData(period);
+    };
     
     // Add CSS to hide default Chart.js tooltips
     useEffect(() => {
@@ -130,170 +138,199 @@ const Dashboard = ({theme} : DashboardProps) => {
       };
     }, []);
     
-    useEffect(() => {
-      const getIdeasData = async () => {
-        try {
-          const response = await API.get('/ideas/count?groupBy=month');
-          
-          if (response?.data?.monthlyData) {
-            const monthlyData = response.data.monthlyData as IdeaMonthData[];
-            
-            // Extract the counts for the chart with proper type annotation
-            const chartData = monthlyData.map((month: IdeaMonthData) => month.count);
-            
-            // Calculate the total sum of ideas
-            const totalIdeas = chartData.reduce((sum, count) => sum + count, 0);
-            
-            // Calculate percentage change between the last two months
-            let percentChange = 0;
-            if (monthlyData.length >= 2) {
-              const lastMonth = monthlyData[monthlyData.length - 1].count;
-              const previousMonth = monthlyData[monthlyData.length - 2].count;
-              
-              if (previousMonth > 0) {
-                percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
-              } else if (lastMonth > 0) {
-                percentChange = 100; // If previous month was 0 and current month has data
-              }
-            }
-            
-            const ideasData = {
-              value: totalIdeas,
-              percentChange,
-              chartData,
-              monthLabels: monthlyData.map((month: IdeaMonthData) => `${month.month.substring(0, 3)} ${month.year}`)
-            };
-            
-            setIdeas(ideasData);
-          }
-        } catch (err) {
-          console.error('❌ Failed to fetch ideas data:', err);
+    // Function to get active users data
+    const getActiveUsersData = async (period: 'day' | 'week' | 'month' = 'month') => {
+      try {
+        console.log(`🔍 Fetching ${period} active users data...`);
+        const response = await API.get(`/users/monthly-active?period=${period}`);
+        console.log('✅ Monthly active users response:', response.data);
+        
+        if (response && response.data) {
+          setActiveUsers(response.data as MonthlyActiveUsersData);
         }
-      };
+      } catch (err) {
+        console.error('❌ Failed to fetch monthly active users data:', err);
+        setActiveUsers(null);
+      }
+    };
 
-      const getEventsData = async () => {
-        try {
-          const response = await API.get('/events/eventEngagement-count?timeFrame=last6months');
+    // Function to get walks data - modified to use the direct API response
+    const getWalksData = async (period: 'day' | 'week' | 'month' = 'month') => {
+      try {
+        // Make API call to get the data for the selected period
+        const response = await API.get(`/walks/count?groupBy=${period}`);
+        
+        if (response?.data) {
+          const apiData = response.data as WalksApiResponse;
           
-          if (response?.data?.data) {
-            // The data array contains monthly data
-            const monthlyData = response.data.data as EventMonthData[];
+          // Add safety checks for API response properties
+          const chartData = Array.isArray(apiData.chartData) ? [...apiData.chartData] : [];
+          const chartLabels = Array.isArray(apiData.chartLabels) ? apiData.chartLabels : [];
+          
+          const last6MonthsData = chartData.slice(-6); // Get last 6 months
+          const totalWalks = apiData.totalWalksCreated ?? last6MonthsData.reduce((sum, count) => sum + count, 0);
+          
+          // Get growth percentage - calculate ourselves if not provided
+          let percentChange = 0;
+          if (chartData.length >= 2) {
+            const lastMonth = chartData[chartData.length - 1] ?? 0;
+            const previousMonth = chartData[chartData.length - 2] ?? 0;
             
-            // Extract the counts for the chart with proper type annotation
-            const chartData = monthlyData.map((item: EventMonthData) => item.totalCount);
-            
-            // Calculate the total sum of events
-            const totalEvents = chartData.reduce((sum, count) => sum + count, 0);
-            
-            // Calculate percentage change between the last two months
-            let percentChange = 0;
-            if (monthlyData.length >= 2) {
-              const lastMonth = monthlyData[monthlyData.length - 1].totalCount;
-              const previousMonth = monthlyData[monthlyData.length - 2].totalCount;
-              
-              if (previousMonth > 0) {
-                percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
-              } else if (lastMonth > 0) {
-                percentChange = 100; // If previous month was 0 and current month has data
-              }
+            if (previousMonth > 0) {
+              percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
+            } else if (lastMonth > 0) {
+              percentChange = 100; // If previous month was 0 and current month has data
             }
-            
-            // Format month labels
-            const monthLabels = monthlyData.map((item: EventMonthData) => {
-              const parts = item.month.split(' ');
-              return parts[0].substring(0, 3) + ' ' + parts[1];  // Format as "Nov 2024"
-            });
-            
-            const eventsData = {
-              value: totalEvents,
-              percentChange,
-              chartData,
-              monthLabels,
-              timeFrame: response.data.timeFrame
-            };
-            
-            setEvents(eventsData);
           }
-        } catch (err) {
-          console.error('❌ Failed to fetch events data:', err);
-        }
-      };
-
-      const getWalksData = async () => {
-        try {
-          // Use the groupBy=month parameter to get monthly data
-          const response = await API.get('/walks/count?groupBy=month');
           
-          if (response?.data?.monthlyData) {
-            // Get the last 6 months of data (or fewer if less data is available)
-            const monthlyData = response.data.monthlyData as WalkMonthData[];
-            const last6MonthsData = monthlyData.slice(Math.max(0, monthlyData.length - 6));
+          // Build the walks data object
+          const walksData = {
+            value: totalWalks,
+            percentChange,
+            chartData: last6MonthsData,
+            monthLabels: chartLabels.slice(-6) // Get last 6 month labels
+          };
+          
+          console.log('Walks data:', walksData);
+          setWalks(walksData);
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch walks data:', err);
+        // Set default data on error
+        setWalks({
+          value: 0,
+          percentChange: 0,
+          chartData: [],
+          monthLabels: []
+        });
+      }
+    };
+    
+    // Function to get ideas data
+    const getIdeasData = async () => {
+      try {
+        const response = await API.get('/ideas/count?groupBy=month');
+        
+        if (response?.data?.monthlyData) {
+          const monthlyData = response.data.monthlyData as IdeaMonthData[];
+          
+          // Extract the counts for the chart with proper type annotation
+          const chartData = monthlyData.map((month: IdeaMonthData) => month.count);
+          
+          // Calculate the total sum of ideas
+          const totalIdeas = chartData.reduce((sum, count) => sum + count, 0);
+          
+          // Calculate percentage change between the last two months
+          let percentChange = 0;
+          if (monthlyData.length >= 2) {
+            const lastMonth = monthlyData[monthlyData.length - 1].count;
+            const previousMonth = monthlyData[monthlyData.length - 2].count;
             
-            // Extract the counts for the chart with proper type annotation
-            const chartData = last6MonthsData.map((month: WalkMonthData) => month.count);
-            
-            // Calculate the total sum of walks over the past 6 months
-            const totalWalks = chartData.reduce((sum, count) => sum + count, 0);
-            
-            // Calculate percentage change between the last two months
-            let percentChange = 0;
-            if (last6MonthsData.length >= 2) {
-              const lastMonth = last6MonthsData[last6MonthsData.length - 1].count;
-              const previousMonth = last6MonthsData[last6MonthsData.length - 2].count;
-              
-              if (previousMonth > 0) {
-                percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
-              } else if (lastMonth > 0) {
-                percentChange = 100; // If previous month was 0 and current month has data
-              }
+            if (previousMonth > 0) {
+              percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
+            } else if (lastMonth > 0) {
+              percentChange = 100; // If previous month was 0 and current month has data
             }
-            
-            const walksData = {
-              value: totalWalks,
-              percentChange,
-              chartData,
-              monthLabels: last6MonthsData.map((month: WalkMonthData) => 
-                `${month.month.substring(0, 3)} ${month.year}`
-              )
-            };
-            
-            setWalks(walksData);
           }
-        } catch (err) {
-          console.error('❌ Failed to fetch walks data:', err);
-        }
-      };
-
-      // Placeholder for surprise data
-      const getSurpriseData = async () => {
-        try {
-          // If you have a surprise endpoint, uncomment and modify this:
-          // const surpriseData = await API.get('/your-surprise-endpoint');
-          // if (surpriseData && surpriseData.data) {
-          //   setSurprise(surpriseData.data);
-          // }
           
-          // For now, set placeholder data
-          setSurprise({
-            value: 'Coming Soon',
-            percentChange: 0,
-            chartData: [10, 15, 20, 25, 30, 35, 40]
+          const ideasData = {
+            value: totalIdeas,
+            percentChange,
+            chartData,
+            monthLabels: monthlyData.map((month: IdeaMonthData) => `${month.month.substring(0, 3)} ${month.year}`)
+          };
+          
+          setIdeas(ideasData);
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch ideas data:', err);
+      }
+    };
+
+    // Function to get events data
+    const getEventsData = async () => {
+      try {
+        const response = await API.get('/events/eventEngagement-count?timeFrame=last6months');
+        
+        if (response?.data?.data) {
+          // The data array contains monthly data
+          const monthlyData = response.data.data as EventMonthData[];
+          
+          // Extract the counts for the chart with proper type annotation
+          const chartData = monthlyData.map((item: EventMonthData) => item.totalCount);
+          
+          // Calculate the total sum of events
+          const totalEvents = chartData.reduce((sum, count) => sum + count, 0);
+          
+          // Calculate percentage change between the last two months
+          let percentChange = 0;
+          if (monthlyData.length >= 2) {
+            const lastMonth = monthlyData[monthlyData.length - 1].totalCount;
+            const previousMonth = monthlyData[monthlyData.length - 2].totalCount;
+            
+            if (previousMonth > 0) {
+              percentChange = Number((((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2));
+            } else if (lastMonth > 0) {
+              percentChange = 100; // If previous month was 0 and current month has data
+            }
+          }
+          
+          // Format month labels
+          const monthLabels = monthlyData.map((item: EventMonthData) => {
+            const parts = item.month.split(' ');
+            return parts[0].substring(0, 3) + ' ' + parts[1];  // Format as "Nov 2024"
           });
-        } catch (err) {
-          console.error('❌ Failed to fetch surprise data:', err);
+          
+          const eventsData = {
+            value: totalEvents,
+            percentChange,
+            chartData,
+            monthLabels,
+            timeFrame: response.data.timeFrame
+          };
+          
+          setEvents(eventsData);
         }
-      };
+      } catch (err) {
+        console.error('❌ Failed to fetch events data:', err);
+      }
+    };
 
-      // Execute all API calls
-      getWalksData();
+    // Placeholder for surprise data
+    const getSurpriseData = async () => {
+      try {
+        // If you have a surprise endpoint, uncomment and modify this:
+        // const surpriseData = await API.get('/your-surprise-endpoint');
+        // if (surpriseData && surpriseData.data) {
+        //   setSurprise(surpriseData.data);
+        // }
+        
+        // For now, set placeholder data
+        setSurprise({
+          value: 'Coming Soon',
+          percentChange: 0,
+          chartData: [10, 15, 20, 25, 30, 35, 40]
+        });
+      } catch (err) {
+        console.error('❌ Failed to fetch surprise data:', err);
+      }
+    };
+
+    // Initialize API calls
+    useEffect(() => {
+      console.log('Dashboard component mounted or period changed:', activePeriod);
+      getWalksData(activePeriod);
       getEventsData();
       getIdeasData();
       getSurpriseData();
-    }, []);
+      getActiveUsersData(activePeriod);
+    }, [activePeriod]); // Added activePeriod to dependency array
 
+    // Fix the tooltipPlugin to properly handle potential null references
     const tooltipPlugin = {
       id: "customTooltip",
       afterDraw: (chart: ChartJS) => {
+        if (!chart.tooltip) return;
         const tooltipModel = chart.tooltip as TooltipModel<'line'>;
       
         let tooltipEl = document.getElementById("chartjs-tooltip");
@@ -319,10 +356,10 @@ const Dashboard = ({theme} : DashboardProps) => {
           tooltipEl.style.opacity = "0";
           return;
         }
-  
-        if (tooltipModel.dataPoints) {
+
+        if (tooltipModel.dataPoints && tooltipModel.dataPoints.length > 0) {
           const dataPoint = tooltipModel.dataPoints[0];
-          const hoveredMonth = dataPoint.label;
+          const hoveredMonth = dataPoint.label || '';
           const value = dataPoint.raw;
           
           // Determine which dataset this is from based on chart ID or label
@@ -348,10 +385,11 @@ const Dashboard = ({theme} : DashboardProps) => {
       },
     };
 
-    const getTrendIcon = (percent: number) => {
+    const getTrendIcon = (percent: number | undefined) => {
+      if (percent === undefined || percent === null || percent === 0) return cilArrowRight
       if (percent > 0) return cilArrowTop
       if (percent < 0) return cilArrowBottom
-      return cilArrowRight // neutral case
+      return cilArrowRight
     }
     
 
@@ -379,7 +417,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                 'Loading...'
               )
             }
-            title="Walks"
+            title="Walks (Last 6 Months)"
             chart={
               <CChartLine
                 className="mt-3 mx-3"
@@ -521,7 +559,7 @@ const Dashboard = ({theme} : DashboardProps) => {
             }
           />
         </CCol>
-        <CCol sm={6}lg={3}>
+        <CCol sm={6} lg={3}>
           <CWidgetStatsA
             className="mb-4"
             color="warning"
@@ -700,12 +738,12 @@ const Dashboard = ({theme} : DashboardProps) => {
         </CCol>
       </CRow>
       <CCard className="mb-4"
-        style={{
-          backgroundColor: theme.colors.cardBg,
-          borderRadius: '12px',
-          padding: '24px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        }}>
+          style={{
+            backgroundColor: theme.colors.cardBg,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          }}>
           <CCardHeader className="d-flex justify-content-between align-items-center border-0 py-0 px-3">
             <div>
               <h5
@@ -716,7 +754,7 @@ const Dashboard = ({theme} : DashboardProps) => {
                   fontSize: '24px',
                 }}
               >
-                Active Users
+                Active Users & Walks
               </h5>
               <div
                 style={{ 
@@ -724,72 +762,53 @@ const Dashboard = ({theme} : DashboardProps) => {
                   fontSize: '12px',
                   marginLeft: '0px',
                   color: theme.colors.secondary,
-                 }}
+                }}
               >
-                January - July 2025
+                {activeUsers 
+                  ? `Active Users: ${activeUsers.totalActiveUsers} (Last 24h: ${activeUsers.last24HoursActiveUsers}) | Walks: ${walks?.value || 0}`
+                  : 'January - July 2025'}
               </div>
             </div>
             <div className="d-flex align-items-center">
               <CButtonGroup role="group">
-                <CButton color="outline-secondary" size="sm">
+                <CButton 
+                  color={activePeriod === 'day' ? 'dark' : 'outline-secondary'} 
+                  size="sm"
+                  onClick={() => handlePeriodChange('day')}
+                >
                   Day
                 </CButton>
-                <CButton color="dark" size="sm">
+                <CButton 
+                  color={activePeriod === 'week' ? 'dark' : 'outline-secondary'} 
+                  size="sm"
+                  onClick={() => handlePeriodChange('week')}
+                >
                   Week
                 </CButton>
-                <CButton color="outline-secondary" size="sm">
+                <CButton 
+                  color={activePeriod === 'month' ? 'dark' : 'outline-secondary'} 
+                  size="sm"
+                  onClick={() => handlePeriodChange('month')}
+                >
                   Month
                 </CButton>
               </CButtonGroup>
-              <CButton color="primary" size="sm" className="ms-2">
+              <CButton color="primary" size="sm" className="ms-2" onClick={() => {
+                getActiveUsersData(activePeriod);
+                getWalksData(activePeriod);
+              }}>
                 <CIcon icon={cilCloudDownload} />
               </CButton>
             </div>
           </CCardHeader>
           <CCardBody className="p-0">
-  {/* Chart */}
-  <div style={{ padding: '0 24px' }}>
-    <MainChart />
-  </div>
-
-  {/* Footer: full width, no side padding */}
-  <div
-    style={{
-      backgroundColor: theme.isDark ? '#2a2d32' : '#f3f4f6',
-      borderTop: '1px solid #d8dbe0',
-      display: 'flex',
-      justifyContent: 'center',
-      gap: '60px',
-      padding: '24px ',
-      width: '100%',
-      borderBottomLeftRadius: '12px',
-      borderBottomRightRadius: '12px',
-    }}
-  >
-    <div style={{ textAlign: 'center' }}>
-      <div className="fw-semibold" style={{ fontSize: '16px', color: theme.isDark ? '#fff' : '#343a40' }}>
-        Visits
-      </div>
-      <div style={{ fontSize: '14px', color: theme.isDark ? '#adb5bd' : '#4f5d73' }}>29.703 Users (40%)</div>
-      <div style={{ height: '4px', background: '#2eb85c', width: '60px', margin: '6px auto 0', borderRadius: '2px' }} />
-    </div>
-
-    <div style={{ textAlign: 'center' }}>
-      <div className="fw-semibold" style={{ fontSize: '16px', color: theme.isDark ? '#fff' : '#343a40' }}>
-        Unique
-      </div>
-      <div style={{ fontSize: '14px', color: theme.isDark ? '#adb5bd' : '#4f5d73' }}>24.093 Users (20%)</div>
-      <div style={{ height: '4px', background: '#3399ff', width: '60px', margin: '6px auto 0', borderRadius: '2px' }} />
-    </div>
-  </div>
-</CCardBody>
-
-
-
+            {/* Pass both activeUsers and walks data to the MainChart component */}
+            <MainChart activeUsers={activeUsers}  walks={walks} />
+          </CCardBody>
         </CCard>
-    </>
-  )
-}
+      </>
+    )
+  }
 
 function App() {
   const { theme } = useTheme()
@@ -798,34 +817,10 @@ function App() {
   }, [theme.isDark]);
   
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  
-  // Check for existing token on component mount
-  useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    console.log("App initialization - Token check:", 
-      sessionStorage.getItem('token') ? "sessionStorage: OK" : "sessionStorage: No token"
-    );
-    if (token) {
-      console.log("Setting isLoggedIn to true");
-      setIsLoggedIn(true);
-    } else {
-      console.log("No token found in storage, user is not logged in");
-    }
-    setIsLoading(false);
-  }, []);
 
-  const PrivateRoute = ({ children }: { children: JSX.Element }) => { 
-    if (isLoading) {
-      return <div>Loading...</div>;
-    }
+  const PrivateRoute = ({ children }: { children: ReactElement }) => { 
     return isLoggedIn ? children : <Navigate to="/login" />;
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <Routes>
       {/* Login route (still public) */}
@@ -834,7 +829,6 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
 
-  
       {/* Protected routes inside admin layout */}
       <Route
         path="*"
@@ -846,7 +840,6 @@ function App() {
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
                 <Route path="/review" element={<Review />} />
-              
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
