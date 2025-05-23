@@ -3,6 +3,8 @@ import CIcon from '@coreui/icons-react'
 import { cilCompass, cilCalendar, cilLightbulb } from '@coreui/icons'
 import { CTooltip } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
+import { getToolTip } from '../hooks/useToolTip';
+
 
 // Widget Component
 const Widget = ({
@@ -20,8 +22,9 @@ const Widget = ({
   barColor: string
   icon: string | string[]
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme.isDark;
+
+  const { theme } = useTheme()
+  const isDark = theme.isDark
 
   const widgetContent = (
     <div
@@ -74,7 +77,15 @@ const Widget = ({
     </div>
   );
 
-  return tooltip ? <CTooltip content={tooltip}>{widgetContent}</CTooltip> : widgetContent;
+  return tooltip ? (
+    <CTooltip content={tooltip} style={getToolTip(isDark)}>
+      {widgetContent}
+    </CTooltip>
+  ) : (
+    widgetContent
+  );
+  
+  
 };
 
 // Section Component
@@ -116,6 +127,7 @@ const Section = ({
     </div>
   );
 };
+
 
 // Main Page
 const Engagement = () => {

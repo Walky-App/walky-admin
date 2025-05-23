@@ -83,7 +83,7 @@ const ReviewTable = () => {
             <CTableRow key={student.id}>
               <CTableHeaderCell scope="row">{student.id}</CTableHeaderCell>
               <CTableDataCell>{student.name}</CTableDataCell>
-              <CTableDataCell>{student.reason}</CTableDataCell>
+              <CTableDataCell>{student.reason || '-'}</CTableDataCell>
               <CTableDataCell>
                 {new Date(student.joined).toLocaleDateString(undefined, {
                   month: "short",
