@@ -94,7 +94,6 @@ const MainChart = ({ activeUsers, walks }: MainChartProps) => {
         tooltipEl.style.opacity = '0';
         return;
       }
-
       if (tooltipModel.dataPoints && tooltipModel.dataPoints.length > 0) {
         const dataPoint = tooltipModel.dataPoints[0];
         const hoveredMonth = dataPoint.label;
@@ -123,7 +122,6 @@ const MainChart = ({ activeUsers, walks }: MainChartProps) => {
     const updateChartColors = () => {
       if (!chartRef.current) return;
       const chart = chartRef.current;
-
       if (chart.options.scales?.x?.grid) {
         chart.options.scales.x.grid.color = `${theme.colors.borderColor}33`;
         chart.options.scales.x.grid.borderColor = `${theme.colors.borderColor}33`;

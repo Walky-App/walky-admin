@@ -21,10 +21,6 @@ const Login = ({ onLogin }: LoginProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
-  onLogin();
-  navigate('/');
-  return;
-
     if (!email || !password) {
       setLoginError(true);
       return;
@@ -39,7 +35,7 @@ const Login = ({ onLogin }: LoginProps) => {
       const token = response?.data?.access_token;
   
       if (token) {
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
         onLogin();
         navigate('/');
       } else {

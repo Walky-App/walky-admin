@@ -59,7 +59,6 @@ interface MonthlyActiveUsersData {
   period: string;        // Add these two properties
   since: string;         // that exist in your actual data
 }
-
 type WalksData = {
   value: number; 
   percentChange: number;
@@ -332,7 +331,6 @@ const Dashboard = ({theme} : DashboardProps) => {
       id: "customTooltip",
       afterDraw: (chart: ChartJS) => {
         if (!chart.tooltip) return;
-        
         const tooltipModel = chart.tooltip as TooltipModel<'line'>;
       
         let tooltipEl = document.getElementById("chartjs-tooltip");
@@ -358,7 +356,7 @@ const Dashboard = ({theme} : DashboardProps) => {
           tooltipEl.style.opacity = "0";
           return;
         }
-  
+
         if (tooltipModel.dataPoints && tooltipModel.dataPoints.length > 0) {
           const dataPoint = tooltipModel.dataPoints[0];
           const hoveredMonth = dataPoint.label || '';
@@ -823,7 +821,6 @@ function App() {
   const PrivateRoute = ({ children }: { children: ReactElement }) => { 
     return isLoggedIn ? children : <Navigate to="/login" />;
   };
-
   return (
     <Routes>
       {/* Login route (still public) */}
