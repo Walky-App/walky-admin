@@ -798,10 +798,33 @@ function App() {
   }, [theme.isDark]);
   
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // Check for existing token on component mount
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    console.log("App initialization - Token check:", 
+      sessionStorage.getItem('token') ? "sessionStorage: OK" : "sessionStorage: No token"
+    );
+    if (token) {
+      console.log("Setting isLoggedIn to true");
+      setIsLoggedIn(true);
+    } else {
+      console.log("No token found in storage, user is not logged in");
+    }
+    setIsLoading(false);
+  }, []);
 
   const PrivateRoute = ({ children }: { children: JSX.Element }) => { 
+    if (isLoading) {
+      return <div>Loading...</div>;
+    }
     return isLoggedIn ? children : <Navigate to="/login" />;
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Routes>
@@ -823,6 +846,7 @@ function App() {
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
                 <Route path="/review" element={<Review />} />
+              
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>

@@ -112,8 +112,8 @@ export const Topbar = ({ onToggleSidebar, isMobile, sidebarVisible }: TopbarProp
   <CDropdownMenu>
     <CDropdownItem
       onClick={() => {
-        localStorage.removeItem('token')
-        navigate('/login')
+        sessionStorage.removeItem('token');
+        navigate('/login');
       }}
     >
       <CIcon icon={cilAccountLogout} className="me-2" />
