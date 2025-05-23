@@ -46,7 +46,7 @@ type BaseWidgetData = {
 };
 
 interface MonthlyActiveUsersData {
-  monthlyData?: Array<{
+  monthlyData: Array<{
     month?: string;
     label?: string;
     year?: number;
@@ -56,6 +56,8 @@ interface MonthlyActiveUsersData {
   chartLabels: string[];
   totalActiveUsers: number;
   last24HoursActiveUsers: number;
+  period: string;        // Add these two properties
+  since: string;         // that exist in your actual data
 }
 
 type WalksData = {
@@ -803,7 +805,7 @@ const Dashboard = ({theme} : DashboardProps) => {
           </CCardHeader>
           <CCardBody className="p-0">
             {/* Pass both activeUsers and walks data to the MainChart component */}
-            <MainChart activeUsers={activeUsers} walks={walks} />
+            <MainChart activeUsers={activeUsers}  walks={walks} />
           </CCardBody>
         </CCard>
       </>

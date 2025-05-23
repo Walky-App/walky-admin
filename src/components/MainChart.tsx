@@ -15,6 +15,8 @@ interface MonthlyActiveUsersData {
   chartLabels: string[];
   totalActiveUsers: number;
   last24HoursActiveUsers: number;
+  period: string;        // Add these two properties
+  since: string;         // that exist in your actual data
 }
 
 interface WalksData {
