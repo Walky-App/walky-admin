@@ -31,11 +31,16 @@ import { useTheme } from './hooks/useTheme'
 import Students from './pages/Students.tsx'
 import Engagement from './pages/Engagement.tsx'
 import Review from './pages/Review.tsx'
+import Settings from './pages/Settings.tsx'
 import CreateAccount from './pages/CreateAccount.tsx'
 import  ForgotPassword  from './pages/ForgotPassword.tsx'  
 import { AppTheme } from './theme'
 import VerifyCode from './pages/VerifyCode.tsx'
 import ExampleAdminLayout from './components/ExampleAdminLayout.tsx'
+import CampusBoundary from './pages/CampusBoundary'
+import Campuses from './pages/Campuses'
+import CampusDetails from './pages/CampusDetails'
+import CampusView from './pages/CampusView'
 
 //Styles
 import './App.css'
@@ -798,6 +803,14 @@ function App() {
   }, [theme.isDark]);
   
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  
+  // Check for existing token on component mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const PrivateRoute = ({ children }: { children: JSX.Element }) => { 
     return isLoggedIn ? children : <Navigate to="/login" />;
@@ -823,6 +836,13 @@ function App() {
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
                 <Route path="/review" element={<Review />} />
+                <Route path="/campuses" element={<Campuses />} />
+                <Route path="/campus-details/:id" element={<CampusDetails />} />
+                <Route path="/campus-details" element={<CampusDetails />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/campus-boundary" element={<CampusBoundary />} />
+                <Route path="/campus-view/:id" element={<CampusView />} />
+                <Route path="/campus-view" element={<CampusView />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>

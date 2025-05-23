@@ -16,8 +16,8 @@ const Login = ({ onLogin }: LoginProps) => {
   const [isContinueActive, setIsContinueActive] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("gal@walkyapp.com");
+  const [password, setPassword] = useState("123123123");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
@@ -35,6 +35,7 @@ const Login = ({ onLogin }: LoginProps) => {
       const token = response?.data?.access_token;
   
       if (token) {
+        // Store token in localStorage
         localStorage.setItem('token', token);
         onLogin();
         navigate('/');

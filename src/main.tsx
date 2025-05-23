@@ -7,6 +7,7 @@ import '@coreui/coreui/dist/css/coreui.min.css'
 
 // Import custom styles
 import './index.css'
+import './components/ThemeComponents.css'
 import App from './App.tsx'
 import { ThemeProvider } from './components/ThemeProvider'
 

@@ -12,6 +12,9 @@ const pageTitles: Record<string, string> = {
   "/review": "Review",
   "/mywalky": "My Walky",
   "/compliance": "Compliance",
+  "/campuses": "Campuses",
+  "/campus-details": "Campus Details",
+  "/campus-view": "Campus View",
   "/settings": "Settings",
 };
 

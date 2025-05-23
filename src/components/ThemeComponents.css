@@ -1,0 +1,70 @@
+/* Dark mode specific styling for components */
+
+/* Input component */
+.dark-theme-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(78, 94, 199, 0.25) !important;
+}
+
+.dark-theme-input::placeholder {
+  color: rgba(225, 229, 235, 0.5) !important;
+  opacity: 1;
+}
+
+/* Select component */
+.dark-theme-select:focus {
+  box-shadow: 0 0 0 0.25rem rgba(78, 94, 199, 0.25) !important;
+}
+
+/* Make sure dropdown options are visible in dark mode */
+[data-coreui-theme="dark"] select option {
+  background-color: var(--cui-dropdown-bg);
+  color: var(--cui-dropdown-color);
+}
+
+[data-coreui-theme="dark"] select optgroup {
+  background-color: var(--cui-dropdown-bg);
+  color: var(--cui-dropdown-color);
+  font-weight: bold;
+}
+
+/* Image upload component */
+.image-upload-card.dark-theme-card {
+  background-color: var(--cui-card-bg);
+}
+
+.image-upload-card.dark-theme-card.dragging {
+  border-color: var(--app-primary) !important;
+  background-color: rgba(78, 94, 199, 0.05);
+}
+
+/* Form styling in dark mode */
+[data-coreui-theme="dark"] .form-label {
+  color: var(--cui-body-color);
+}
+
+[data-coreui-theme="dark"] .required-label:after {
+  content: "*";
+  color: var(--cui-danger);
+  margin-left: 0.25rem;
+}
+
+[data-coreui-theme="dark"] .form-text {
+  color: var(--cui-dropdown-color);
+  opacity: 0.8;
+}
+
+/* Fix placeholder contrast in dark mode */
+[data-coreui-theme="dark"] input::placeholder,
+[data-coreui-theme="dark"] textarea::placeholder,
+[data-coreui-theme="dark"] select::placeholder {
+  color: rgba(225, 229, 235, 0.5) !important;
+  opacity: 1;
+}
+
+/* Improve focus state for all form components in dark mode */
+[data-coreui-theme="dark"] .form-control:focus,
+[data-coreui-theme="dark"] .form-select:focus,
+[data-coreui-theme="dark"] .form-check-input:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 0.25rem rgba(78, 94, 199, 0.25);
+} 
