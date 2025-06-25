@@ -17,9 +17,9 @@ import {
   CTabPane
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilMap, cilPencil } from '@coreui/icons';
+import { cilCode, cilPencil, cilCloudDownload, cilExternalLink } from '@coreui/icons';
 import { Geofence, GeofenceFormData } from '../types/geofence';
-import GeofenceMapFree from './GeofenceMapFree';
+import { geofenceService } from '../services/geofenceService';
 
 interface GeofenceInlineFormProps {
   onSubmit: (data: GeofenceFormData) => void;
@@ -34,6 +34,7 @@ interface FormErrors {
   latitude?: string;
   longitude?: string;
   radius?: string;
+  geojson?: string;
 }
 
 const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({ 
@@ -54,7 +55,8 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
-  const [activeTab, setActiveTab] = useState<'form' | 'map'>('form');
+  const [activeTab, setActiveTab] = useState<'form' | 'json'>('form');
+  const [geojsonInput, setGeojsonInput] = useState<string>('');
 
   useEffect(() => {
     if (geofence) {
@@ -132,22 +134,114 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
     }
   };
 
-  const handleMapLocationChange = (lat: number, lng: number, radius?: number, polygon?: Array<{ lat: number; lng: number }>, type?: 'radius' | 'polygon') => {
-    setFormData(prev => ({
-      ...prev,
-      latitude: lat,
-      longitude: lng,
-      radius: type === 'radius' ? (radius || prev.radius) : prev.radius,
-      polygon: type === 'polygon' ? polygon : prev.polygon,
-      type: type || prev.type
-    }));
-    
-    setErrors(prev => ({
-      ...prev,
-      latitude: undefined,
-      longitude: undefined,
-      radius: undefined
-    }));
+  const handleGeojsonInputChange = (value: string) => {
+    setGeojsonInput(value);
+    setErrors(prev => ({ ...prev, geojson: undefined }));
+  };
+
+  const parseGeojsonInput = () => {
+    if (!geojsonInput.trim()) {
+      setErrors(prev => ({ ...prev, geojson: 'GeoJSON data is required' }));
+      return false;
+    }
+
+    try {
+      const parsed = JSON.parse(geojsonInput);
+      
+      if (parsed.type === 'Feature') {
+        const feature = parsed;
+        if (feature.geometry.type === 'Point') {
+          const [lng, lat] = feature.geometry.coordinates;
+          const radius = feature.properties?.radius || 100;
+          setFormData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            radius: radius,
+            type: 'radius',
+            name: feature.properties?.name || prev.name,
+            description: feature.properties?.description || prev.description
+          }));
+        } else if (feature.geometry.type === 'Polygon') {
+          const coordinates = feature.geometry.coordinates[0];
+          const polygon = coordinates.map(([lng, lat]: number[]) => ({ lat, lng }));
+          const centerLat = polygon.reduce((sum: number, p: { lat: number; lng: number }) => sum + p.lat, 0) / polygon.length;
+          const centerLng = polygon.reduce((sum: number, p: { lat: number; lng: number }) => sum + p.lng, 0) / polygon.length;
+          
+          setFormData(prev => ({
+            ...prev,
+            latitude: centerLat,
+            longitude: centerLng,
+            polygon: polygon,
+            type: 'polygon',
+            name: feature.properties?.name || prev.name,
+            description: feature.properties?.description || prev.description
+          }));
+        }
+        return true;
+      } else {
+        setErrors(prev => ({ ...prev, geojson: 'Invalid GeoJSON format. Expected a Feature object.' }));
+        return false;
+      }
+    } catch {
+      setErrors(prev => ({ ...prev, geojson: 'Invalid JSON format' }));
+      return false;
+    }
+  };
+
+  const exportToGeojson = async () => {
+    if (!formData.name || !formData.description) {
+      setErrors(prev => ({ ...prev, name: !formData.name ? 'Name is required for export' : undefined, description: !formData.description ? 'Description is required for export' : undefined }));
+      return;
+    }
+
+    const tempGeofence: Geofence = {
+      id: 'temp',
+      ...formData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      const geojson = await geofenceService.exportSingleGeoJSON(tempGeofence);
+      const jsonString = JSON.stringify(geojson, null, 2);
+      
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${formData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_geofence.geojson`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
+  };
+
+  const openInGeojsonIo = async () => {
+    if (!formData.name || !formData.description) {
+      setErrors(prev => ({ ...prev, name: !formData.name ? 'Name is required' : undefined, description: !formData.description ? 'Description is required' : undefined }));
+      return;
+    }
+
+    const tempGeofence: Geofence = {
+      id: 'temp',
+      ...formData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      const geojson = await geofenceService.exportSingleGeoJSON(tempGeofence);
+      const jsonString = JSON.stringify(geojson);
+      const encodedData = encodeURIComponent(jsonString);
+      const url = `https://geojson.io/#data=data:application/json,${encodedData}`;
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Failed to open in geojson.io:', error);
+    }
   };
 
   return (
@@ -165,12 +259,12 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
         </CNavItem>
         <CNavItem>
           <CNavLink 
-            active={activeTab === 'map'} 
-            onClick={() => setActiveTab('map')}
+            active={activeTab === 'json'} 
+            onClick={() => setActiveTab('json')}
             style={{ cursor: 'pointer' }}
           >
-            <CIcon icon={cilMap} className="me-2" />
-            Map Selection
+            <CIcon icon={cilCode} className="me-2" />
+            GeoJSON Import/Export
           </CNavLink>
         </CNavItem>
       </CNav>
@@ -303,34 +397,87 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
           )}
         </CTabPane>
         
-        <CTabPane visible={activeTab === 'map'}>
+        <CTabPane visible={activeTab === 'json'}>
           <CRow className="mb-3">
             <CCol>
               <CAlert color="info" className="mb-3">
-                <strong>Instructions:</strong> 
-                {formData.type === 'radius' 
-                  ? 'Click on the map to set the geofence center. Adjust radius using the field above.'
-                  : 'Search for locations with boundaries to auto-create polygons, or click on the map to manually draw polygon vertices.'
-                }
+                <strong>GeoJSON Workflow:</strong> Import GeoJSON data to populate the form, or export current form data as GeoJSON for use with external tools like geojson.io.
               </CAlert>
-              <GeofenceMapFree
-                latitude={formData.latitude}
-                longitude={formData.longitude}
-                radius={formData.radius}
-                polygon={formData.polygon}
-                type={formData.type}
-                onLocationChange={handleMapLocationChange}
-              />
             </CCol>
           </CRow>
+          
           <CRow className="mb-3">
-            <CCol>
-              <CFormLabel>Selected Coordinates</CFormLabel>
-              <div className="form-control-plaintext">
-                <code>{formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}</code>
-                {formData.type === 'polygon' && formData.polygon && formData.polygon.length > 0 && (
-                  <><br/><small className="text-muted">Polygon: {formData.polygon.length} vertices</small></>
-                )}
+            <CCol md={6}>
+              <CFormLabel htmlFor="geojson-import">Import GeoJSON</CFormLabel>
+              <CFormTextarea
+                id="geojson-import"
+                rows={8}
+                value={geojsonInput}
+                onChange={(e) => handleGeojsonInputChange(e.target.value)}
+                invalid={!!errors.geojson}
+                placeholder='Paste GeoJSON Feature here, e.g.:
+{
+  "type": "Feature",
+  "properties": {
+    "name": "Campus Area",
+    "description": "Main campus geofence"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-80.1918, 25.7617]
+  }
+}'
+              />
+              {errors.geojson && (
+                <div className="invalid-feedback d-block">{errors.geojson}</div>
+              )}
+              <div className="mt-2">
+                <CButton 
+                  color="primary" 
+                  size="sm" 
+                  onClick={parseGeojsonInput}
+                  disabled={!geojsonInput.trim()}
+                >
+                  Import to Form
+                </CButton>
+              </div>
+            </CCol>
+            
+            <CCol md={6}>
+              <CFormLabel>Export Current Data</CFormLabel>
+              <div className="d-grid gap-2">
+                <CButton 
+                  color="success" 
+                  variant="outline"
+                  onClick={exportToGeojson}
+                  disabled={!formData.name || !formData.description}
+                >
+                  <CIcon icon={cilCloudDownload} className="me-2" />
+                  Download GeoJSON
+                </CButton>
+                
+                <CButton 
+                  color="info" 
+                  variant="outline"
+                  onClick={openInGeojsonIo}
+                  disabled={!formData.name || !formData.description}
+                >
+                  <CIcon icon={cilExternalLink} className="me-2" />
+                  Open in geojson.io
+                </CButton>
+              </div>
+              
+              <div className="mt-3">
+                <CFormLabel>Current Coordinates</CFormLabel>
+                <div className="form-control-plaintext">
+                  <code>{formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}</code>
+                  {formData.type === 'radius' && (
+                    <><br/><small className="text-muted">Radius: {formData.radius}m</small></>
+                  )}
+                  {formData.type === 'polygon' && formData.polygon && formData.polygon.length > 0 && (
+                    <><br/><small className="text-muted">Polygon: {formData.polygon.length} vertices</small></>
+                  )}
+                </div>
               </div>
             </CCol>
           </CRow>
