@@ -54,7 +54,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         </CNavItem>
 
         <CNavTitle className="text-white-50 px-3" style={{ textAlign: 'left' }}>
-          PAGES
+          CAMPUS
         </CNavTitle>
 
         {/* Students */}
@@ -75,6 +75,17 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink to="/review" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Review
+          </NavLink>
+        </CNavItem>
+
+        <CNavTitle className="text-white-50 px-3" style={{ textAlign: 'left' }}>
+          ADMIN
+        </CNavTitle>
+
+        {/* Campuses */}
+        <CNavItem className="px-3 py-2">
+          <NavLink to="/campuses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            Campuses
           </NavLink>
         </CNavItem>
 

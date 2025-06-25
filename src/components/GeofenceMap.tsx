@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import { CAlert, CRow, CCol } from '@coreui/react';
+import { CAlert, CRow, CCol, CFormInput, CFormLabel, CInputGroup, CInputGroupText } from '@coreui/react';
 
 interface GeofenceMapProps {
   latitude: number;
@@ -33,6 +33,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<SearchOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [localRadius, setLocalRadius] = useState<string>(radius.toString());
   const mapRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -61,7 +62,8 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     if (!readonly && geofenceCircle.getEditable()) {
       geofenceCircle.addListener('radius_changed', () => {
         if (geofenceCircle) {
-          const newRadius = geofenceCircle.getRadius();
+          const newRadius = Math.round(geofenceCircle.getRadius());
+          setLocalRadius(newRadius.toString());
           onLocationChange(latitude, longitude, newRadius);
         }
       });
@@ -70,7 +72,8 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
         if (geofenceCircle) {
           const center = geofenceCircle.getCenter();
           if (center) {
-            onLocationChange(center.lat(), center.lng(), radius);
+            const currentRadius = Math.round(geofenceCircle.getRadius());
+            onLocationChange(center.lat(), center.lng(), currentRadius);
           }
         }
       });
@@ -153,6 +156,18 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     }
   }, [onLocationChange, radius]);
 
+  const handleRadiusChange = useCallback((value: string) => {
+    setLocalRadius(value);
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue) && numericValue >= 10 && numericValue <= 10000) {
+      onLocationChange(latitude, longitude, numericValue);
+    }
+  }, [latitude, longitude, onLocationChange]);
+
+  useEffect(() => {
+    setLocalRadius(radius.toString());
+  }, [radius]);
+
   useEffect(() => {
     const checkGoogleMaps = () => {
       if (window.google?.maps) {
@@ -167,6 +182,10 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+      }
+      if (geofenceCircle) {
+        geofenceCircle.setMap(null);
+        geofenceCircle = null;
       }
     };
   }, [initMap]);
@@ -203,7 +222,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
         <CCol>
           <CAlert color="info" className="mb-3">
             <strong>Instructions:</strong> Search for a location below or click directly on the map to set the geofence center. 
-            {!readonly && " You can drag the circle to move it or resize it by dragging the edge."}
+            {!readonly && " You can drag the circle to move it or resize it by dragging the edge, or manually adjust the radius below."}
           </CAlert>
           
           <AsyncTypeahead
@@ -223,6 +242,28 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
             )}
             className="mb-3"
           />
+          
+          {!readonly && (
+            <div className="mb-3">
+              <CFormLabel htmlFor="radius-input">Geofence Radius</CFormLabel>
+              <CInputGroup>
+                <CFormInput
+                  id="radius-input"
+                  type="number"
+                  min="10"
+                  max="10000"
+                  step="10"
+                  value={localRadius}
+                  onChange={(e) => handleRadiusChange(e.target.value)}
+                  placeholder="Enter radius in meters"
+                />
+                <CInputGroupText>meters</CInputGroupText>
+              </CInputGroup>
+              <small className="text-muted">
+                Minimum: 10m, Maximum: 10,000m (10km)
+              </small>
+            </div>
+          )}
         </CCol>
       </CRow>
       

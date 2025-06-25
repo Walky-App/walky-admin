@@ -24,6 +24,7 @@ import Students from './pages/Students'
 import Engagement from './pages/Engagement'
 import Review from './pages/Review'
 import Geofences from './pages/Geofences'
+import Campuses from './pages/Campuses'
 import CreateAccount from './pages/CreateAccount'
 import ForgotPassword from './pages/ForgotPassword'  
 import { AppTheme } from './theme'
@@ -850,7 +851,7 @@ function App() {
     document.body.classList.toggle('dark-mode', theme.isDark);
   }, [theme.isDark]);
   
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
 
   const PrivateRoute = ({ children }: { children: ReactElement }) => { 
     return isLoggedIn ? children : <Navigate to="/login" />;
@@ -875,6 +876,7 @@ function App() {
                 <Route path="/engagement" element={<Engagement />} />
                 <Route path="/review" element={<Review />} />
                 <Route path="/geofences" element={<Geofences />} />
+                <Route path="/campuses" element={<Campuses />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
