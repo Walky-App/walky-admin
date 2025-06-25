@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import { CAlert, CRow, CCol, CFormInput, CFormLabel, CInputGroup, CInputGroupText, CFormSelect } from '@coreui/react';
+import { CAlert, CRow, CCol, CFormInput, CFormLabel, CInputGroup, CInputGroupText, CFormSelect, CButton } from '@coreui/react';
 
 interface GeofenceMapProps {
   latitude: number;
@@ -22,9 +22,10 @@ interface SearchOption {
   };
 }
 
-let map: google.maps.Map;
+let map: google.maps.Map | null = null;
 let geofenceCircle: google.maps.Circle | null = null;
 let geofencePolygon: google.maps.Polygon | null = null;
+let polygonVertices: Array<{ lat: number; lng: number }> = [];
 
 const GeofenceMap: React.FC<GeofenceMapProps> = ({
   latitude,
@@ -52,6 +53,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       geofencePolygon.setMap(null);
       geofencePolygon = null;
     }
+    polygonVertices = [];
   }, []);
 
   const drawGeofenceCircle = useCallback(() => {
@@ -101,6 +103,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     if (!map || !polygonCoords || polygonCoords.length < 3) return;
 
     clearGeofenceShapes();
+    polygonVertices = [...polygonCoords];
 
     geofencePolygon = new window.google.maps.Polygon({
       paths: polygonCoords,
@@ -130,6 +133,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
               const vertex = path.getAt(i);
               newPolygon.push({ lat: vertex.lat(), lng: vertex.lng() });
             }
+            polygonVertices = [...newPolygon];
             const center = bounds.getCenter();
             onLocationChange(center.lat(), center.lng(), undefined, newPolygon, 'polygon');
           }
@@ -161,6 +165,17 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
           const lng = event.latLng.lng();
           if (geofenceType === 'radius') {
             onLocationChange(lat, lng, radius, undefined, 'radius');
+          } else if (geofenceType === 'polygon') {
+            polygonVertices.push({ lat, lng });
+            if (polygonVertices.length >= 3) {
+              const center = polygonVertices.reduce((acc, vertex) => ({
+                lat: acc.lat + vertex.lat,
+                lng: acc.lng + vertex.lng
+              }), { lat: 0, lng: 0 });
+              center.lat /= polygonVertices.length;
+              center.lng /= polygonVertices.length;
+              onLocationChange(center.lat, center.lng, undefined, [...polygonVertices], 'polygon');
+            }
           }
         }
       });
@@ -260,18 +275,18 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     setLocalRadius(value);
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue) && numericValue >= 10 && numericValue <= 10000) {
-      onLocationChange(latitude, longitude, numericValue, undefined, 'radius');
-      
       if (geofenceCircle && !readonly) {
         geofenceCircle.setRadius(numericValue);
       }
+      onLocationChange(latitude, longitude, numericValue, undefined, 'radius');
     }
   }, [latitude, longitude, onLocationChange, readonly]);
 
   const handleTypeChange = useCallback((newType: 'radius' | 'polygon') => {
     setGeofenceType(newType);
+    clearGeofenceShapes();
     onLocationChange(latitude, longitude, newType === 'radius' ? radius : undefined, newType === 'polygon' ? polygon : undefined, newType);
-  }, [latitude, longitude, radius, polygon, onLocationChange]);
+  }, [latitude, longitude, radius, polygon, onLocationChange, clearGeofenceShapes]);
 
   useEffect(() => {
     setLocalRadius(radius.toString());
@@ -282,15 +297,41 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
   }, [type]);
 
   useEffect(() => {
-    const checkGoogleMaps = () => {
+    const loadGoogleMaps = () => {
       if (window.google?.maps) {
         initMap();
-      } else {
-        setTimeout(checkGoogleMaps, 100);
+        return;
       }
+
+      if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+        const checkGoogleMaps = () => {
+          if (window.google?.maps) {
+            initMap();
+          } else {
+            setTimeout(checkGoogleMaps, 100);
+          }
+        };
+        checkGoogleMaps();
+        return;
+      }
+
+      const script = document.createElement('script');
+      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        if (window.google?.maps) {
+          initMap();
+        }
+      };
+      script.onerror = () => {
+        console.error('Failed to load Google Maps API');
+      };
+      document.head.appendChild(script);
     };
     
-    checkGoogleMaps();
+    loadGoogleMaps();
 
     return () => {
       if (timeoutRef.current) {
@@ -306,7 +347,13 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     } else if (geofenceType === 'polygon' && polygon && polygon.length > 0) {
       drawGeofencePolygon(polygon);
     }
-  }, [geofenceType, drawGeofenceCircle, drawGeofencePolygon, polygon]);
+  }, [geofenceType, drawGeofencePolygon, polygon]);
+
+  useEffect(() => {
+    if (geofenceType === 'radius' && geofenceCircle && radius) {
+      geofenceCircle.setRadius(radius);
+    }
+  }, [radius, geofenceType]);
 
   if (!window.google?.maps) {
     return (
@@ -398,8 +445,24 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
           {!readonly && geofenceType === 'polygon' && (
             <div className="mb-3">
               <CAlert color="warning">
-                <strong>Polygon Mode:</strong> Search for a location with boundaries to automatically create a polygon, or manually draw one by clicking points on the map.
+                <strong>Polygon Mode:</strong> Search for a location with boundaries to automatically create a polygon, or manually draw one by clicking points on the map. You need at least 3 points to create a polygon.
+                {polygonVertices.length > 0 && (
+                  <><br/><small>Current vertices: {polygonVertices.length} {polygonVertices.length >= 3 ? '✓' : `(need ${3 - polygonVertices.length} more)`}</small></>
+                )}
               </CAlert>
+              {polygonVertices.length > 0 && (
+                <CButton 
+                  color="secondary" 
+                  size="sm" 
+                  onClick={() => {
+                    clearGeofenceShapes();
+                    onLocationChange(latitude, longitude, undefined, [], 'polygon');
+                  }}
+                  className="mb-2"
+                >
+                  Clear Polygon
+                </CButton>
+              )}
             </div>
           )}
         </CCol>
