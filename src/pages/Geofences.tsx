@@ -32,7 +32,7 @@ const Geofences: React.FC = () => {
       const total = data.length;
       const active = data.filter(g => g.status === 'active').length;
       const inactive = data.filter(g => g.status === 'inactive').length;
-      const avgRadius = total > 0 ? Math.round(data.reduce((sum, g) => sum + g.radius, 0) / total) : 0;
+      const avgRadius = total > 0 ? Math.round(data.reduce((sum, g) => sum + (g.radius || 0), 0) / total) : 0;
       
       setStats({ total, active, inactive, avgRadius });
     } catch (error) {

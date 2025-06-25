@@ -8,6 +8,7 @@ const mockGeofences: Geofence[] = [
     latitude: 25.7617,
     longitude: -80.1918,
     radius: 500,
+    type: 'radius',
     status: 'active',
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z'
@@ -19,6 +20,7 @@ const mockGeofences: Geofence[] = [
     latitude: 25.7580,
     longitude: -80.1920,
     radius: 200,
+    type: 'radius',
     status: 'active',
     createdAt: '2024-01-20T14:30:00Z',
     updatedAt: '2024-01-20T14:30:00Z'
@@ -30,6 +32,7 @@ const mockGeofences: Geofence[] = [
     latitude: 25.7600,
     longitude: -80.1900,
     radius: 150,
+    type: 'radius',
     status: 'inactive',
     createdAt: '2024-02-01T09:15:00Z',
     updatedAt: '2024-02-10T16:45:00Z'
@@ -41,6 +44,7 @@ const mockGeofences: Geofence[] = [
     latitude: 25.7640,
     longitude: -80.1880,
     radius: 300,
+    type: 'radius',
     status: 'active',
     createdAt: '2024-02-15T11:20:00Z',
     updatedAt: '2024-02-15T11:20:00Z'
