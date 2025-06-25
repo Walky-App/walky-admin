@@ -1,4 +1,4 @@
-import { Geofence, GeofenceFormData } from '../types/geofence';
+import { Geofence, GeofenceFormData, GeoJSONFeature, GeoJSONFeatureCollection } from '../types/geofence';
 
 const mockGeofences: Geofence[] = [
   {
@@ -129,5 +129,50 @@ export const geofenceService = {
     const index = mockGeofences.findIndex(g => g.id === id);
     if (index === -1) throw new Error('Geofence not found');
     mockGeofences.splice(index, 1);
+  },
+
+  exportGeoJSON: async (geofences: Geofence[]): Promise<GeoJSONFeatureCollection> => {
+    const features: GeoJSONFeature[] = geofences.map(geofence => {
+      const feature: GeoJSONFeature = {
+        type: 'Feature',
+        properties: {
+          id: geofence.id,
+          name: geofence.name,
+          description: geofence.description,
+          status: geofence.status,
+          campusId: geofence.campusId,
+          createdAt: geofence.createdAt,
+          updatedAt: geofence.updatedAt
+        },
+        geometry: geofence.type === 'radius' 
+          ? {
+              type: 'Point',
+              coordinates: [geofence.longitude, geofence.latitude]
+            }
+          : {
+              type: 'Polygon',
+              coordinates: [geofence.polygon?.map(p => [p.lng, p.lat]) || []]
+            }
+      };
+      
+      if (geofence.type === 'radius' && geofence.radius) {
+        feature.properties = {
+          ...feature.properties,
+          radius: geofence.radius
+        } as typeof feature.properties & { radius: number };
+      }
+      
+      return feature;
+    });
+
+    return {
+      type: 'FeatureCollection',
+      features
+    };
+  },
+
+  exportSingleGeoJSON: async (geofence: Geofence): Promise<GeoJSONFeature> => {
+    const collection = await geofenceService.exportGeoJSON([geofence]);
+    return collection.features[0];
   }
 };

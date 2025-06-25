@@ -24,3 +24,25 @@ export interface GeofenceFormData {
   status: 'active' | 'inactive';
   campusId: string;
 }
+
+export interface GeoJSONFeature {
+  type: 'Feature';
+  properties: {
+    id: string;
+    name: string;
+    description: string;
+    status: string;
+    campusId: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  geometry: {
+    type: 'Point' | 'Polygon';
+    coordinates: number[] | number[][][];
+  };
+}
+
+export interface GeoJSONFeatureCollection {
+  type: 'FeatureCollection';
+  features: GeoJSONFeature[];
+}

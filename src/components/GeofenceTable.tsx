@@ -11,7 +11,7 @@ import {
   CSpinner
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilPencil, cilTrash } from '@coreui/icons';
+import { cilPencil, cilTrash, cilCloudDownload } from '@coreui/icons';
 
 import { Geofence } from '../types/geofence';
 import { geofenceService } from '../services/geofenceService';
@@ -56,6 +56,42 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
     }
   }, [campusId]);
 
+  const handleExportGeoJSON = async (geofence: Geofence) => {
+    try {
+      const geoJSON = await geofenceService.exportSingleGeoJSON(geofence);
+      const blob = new Blob([JSON.stringify(geoJSON, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${geofence.name.replace(/\s+/g, '_')}_geofence.geojson`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export GeoJSON:', error);
+      alert('Failed to export GeoJSON. Please try again.');
+    }
+  };
+
+  const handleExportAllGeoJSON = async () => {
+    try {
+      const geoJSON = await geofenceService.exportGeoJSON(geofences);
+      const blob = new Blob([JSON.stringify(geoJSON, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `geofences_collection.geojson`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export GeoJSON:', error);
+      alert('Failed to export GeoJSON. Please try again.');
+    }
+  };
+
   useEffect(() => {
     fetchGeofences();
   }, [refreshTrigger, fetchGeofences]);
@@ -90,6 +126,20 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
         overflow: 'hidden',
       }}
     >
+      {geofences.length > 0 && (
+        <div className="p-3 border-bottom d-flex justify-content-end">
+          <CButton
+            color="info"
+            size="sm"
+            onClick={handleExportAllGeoJSON}
+            className="d-flex align-items-center gap-1"
+          >
+            <CIcon icon={cilCloudDownload} size="sm" />
+            Export All as GeoJSON
+          </CButton>
+        </div>
+      )}
+      
       <CTable hover responsive>
         <CTableHead>
           <CTableRow>
@@ -156,14 +206,25 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
                     variant="outline"
                     size="sm"
                     onClick={() => onEdit(geofence)}
+                    title="Edit geofence"
                   >
                     <CIcon icon={cilPencil} size="sm" />
+                  </CButton>
+                  <CButton
+                    color="success"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleExportGeoJSON(geofence)}
+                    title="Export as GeoJSON"
+                  >
+                    <CIcon icon={cilCloudDownload} size="sm" />
                   </CButton>
                   <CButton
                     color="danger"
                     variant="outline"
                     size="sm"
                     onClick={() => handleDeleteGeofence(geofence.id)}
+                    title="Delete geofence"
                   >
                     <CIcon icon={cilTrash} size="sm" />
                   </CButton>
