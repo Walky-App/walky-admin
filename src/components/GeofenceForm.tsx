@@ -14,9 +14,17 @@ import {
   CCol,
   CFormLabel,
   CSpinner,
-  CAlert
+  CAlert,
+  CNav,
+  CNavItem,
+  CNavLink,
+  CTabContent,
+  CTabPane
 } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import { cilMap, cilPencil } from '@coreui/icons';
 import { Geofence, GeofenceFormData } from '../types/geofence';
+import GeofenceMap from './GeofenceMap';
 
 interface GeofenceFormProps {
   visible: boolean;
@@ -51,6 +59,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
+  const [activeTab, setActiveTab] = useState<'form' | 'map'>('form');
 
   useEffect(() => {
     if (geofence) {
@@ -123,8 +132,24 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
     }
   };
 
+  const handleMapLocationChange = (lat: number, lng: number, radius: number) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+      radius: radius
+    }));
+    
+    setErrors(prev => ({
+      ...prev,
+      latitude: undefined,
+      longitude: undefined,
+      radius: undefined
+    }));
+  };
+
   return (
-    <CModal visible={visible} onClose={onClose} size="lg">
+    <CModal visible={visible} onClose={onClose} size="xl">
       <CModalHeader>
         <CModalTitle>
           {geofence ? 'Edit Geofence' : 'Create New Geofence'}
@@ -133,106 +158,173 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
       
       <CForm onSubmit={handleSubmit}>
         <CModalBody>
-          <CRow className="mb-3">
-            <CCol md={6}>
-              <CFormLabel htmlFor="name">Name *</CFormLabel>
-              <CFormInput
-                id="name"
-                type="text"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                invalid={!!errors.name}
-                placeholder="Enter geofence name"
-              />
-              {errors.name && (
-                <div className="invalid-feedback d-block">{errors.name}</div>
-              )}
-            </CCol>
-            
-            <CCol md={6}>
-              <CFormLabel htmlFor="status">Status</CFormLabel>
-              <CFormSelect
-                id="status"
-                value={formData.status}
-                onChange={(e) => handleInputChange('status', e.target.value as 'active' | 'inactive')}
+          <CNav variant="tabs" className="mb-3">
+            <CNavItem>
+              <CNavLink 
+                active={activeTab === 'form'} 
+                onClick={() => setActiveTab('form')}
+                style={{ cursor: 'pointer' }}
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </CFormSelect>
-            </CCol>
-          </CRow>
+                <CIcon icon={cilPencil} className="me-2" />
+                Form Entry
+              </CNavLink>
+            </CNavItem>
+            <CNavItem>
+              <CNavLink 
+                active={activeTab === 'map'} 
+                onClick={() => setActiveTab('map')}
+                style={{ cursor: 'pointer' }}
+              >
+                <CIcon icon={cilMap} className="me-2" />
+                Map Selection
+              </CNavLink>
+            </CNavItem>
+          </CNav>
 
-          <CRow className="mb-3">
-            <CCol>
-              <CFormLabel htmlFor="description">Description *</CFormLabel>
-              <CFormTextarea
-                id="description"
-                rows={3}
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                invalid={!!errors.description}
-                placeholder="Enter geofence description"
-              />
-              {errors.description && (
-                <div className="invalid-feedback d-block">{errors.description}</div>
-              )}
-            </CCol>
-          </CRow>
+          <CTabContent>
+            <CTabPane visible={activeTab === 'form'}>
+              <CRow className="mb-3">
+                <CCol md={6}>
+                  <CFormLabel htmlFor="name">Name *</CFormLabel>
+                  <CFormInput
+                    id="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    invalid={!!errors.name}
+                    placeholder="Enter geofence name"
+                  />
+                  {errors.name && (
+                    <div className="invalid-feedback d-block">{errors.name}</div>
+                  )}
+                </CCol>
+                
+                <CCol md={6}>
+                  <CFormLabel htmlFor="status">Status</CFormLabel>
+                  <CFormSelect
+                    id="status"
+                    value={formData.status}
+                    onChange={(e) => handleInputChange('status', e.target.value as 'active' | 'inactive')}
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </CFormSelect>
+                </CCol>
+              </CRow>
 
-          <CRow className="mb-3">
-            <CCol md={4}>
-              <CFormLabel htmlFor="latitude">Latitude *</CFormLabel>
-              <CFormInput
-                id="latitude"
-                type="number"
-                step="any"
-                value={formData.latitude}
-                onChange={(e) => handleInputChange('latitude', parseFloat(e.target.value) || 0)}
-                invalid={!!errors.latitude}
-                placeholder="25.7617"
-              />
-              {errors.latitude && (
-                <div className="invalid-feedback d-block">{errors.latitude}</div>
-              )}
-            </CCol>
+              <CRow className="mb-3">
+                <CCol>
+                  <CFormLabel htmlFor="description">Description *</CFormLabel>
+                  <CFormTextarea
+                    id="description"
+                    rows={3}
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    invalid={!!errors.description}
+                    placeholder="Enter geofence description"
+                  />
+                  {errors.description && (
+                    <div className="invalid-feedback d-block">{errors.description}</div>
+                  )}
+                </CCol>
+              </CRow>
+
+              <CRow className="mb-3">
+                <CCol md={4}>
+                  <CFormLabel htmlFor="latitude">Latitude *</CFormLabel>
+                  <CFormInput
+                    id="latitude"
+                    type="number"
+                    step="any"
+                    value={formData.latitude}
+                    onChange={(e) => handleInputChange('latitude', parseFloat(e.target.value) || 0)}
+                    invalid={!!errors.latitude}
+                    placeholder="25.7617"
+                  />
+                  {errors.latitude && (
+                    <div className="invalid-feedback d-block">{errors.latitude}</div>
+                  )}
+                </CCol>
+                
+                <CCol md={4}>
+                  <CFormLabel htmlFor="longitude">Longitude *</CFormLabel>
+                  <CFormInput
+                    id="longitude"
+                    type="number"
+                    step="any"
+                    value={formData.longitude}
+                    onChange={(e) => handleInputChange('longitude', parseFloat(e.target.value) || 0)}
+                    invalid={!!errors.longitude}
+                    placeholder="-80.1918"
+                  />
+                  {errors.longitude && (
+                    <div className="invalid-feedback d-block">{errors.longitude}</div>
+                  )}
+                </CCol>
+                
+                <CCol md={4}>
+                  <CFormLabel htmlFor="radius">Radius (meters) *</CFormLabel>
+                  <CFormInput
+                    id="radius"
+                    type="number"
+                    min="1"
+                    max="10000"
+                    value={formData.radius}
+                    onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
+                    invalid={!!errors.radius}
+                    placeholder="100"
+                  />
+                  {errors.radius && (
+                    <div className="invalid-feedback d-block">{errors.radius}</div>
+                  )}
+                </CCol>
+              </CRow>
+
+              <CAlert color="info" className="mb-0">
+                <strong>Tip:</strong> Use decimal degrees for coordinates. For example, FIU main campus is approximately at 25.7617, -80.1918.
+              </CAlert>
+            </CTabPane>
             
-            <CCol md={4}>
-              <CFormLabel htmlFor="longitude">Longitude *</CFormLabel>
-              <CFormInput
-                id="longitude"
-                type="number"
-                step="any"
-                value={formData.longitude}
-                onChange={(e) => handleInputChange('longitude', parseFloat(e.target.value) || 0)}
-                invalid={!!errors.longitude}
-                placeholder="-80.1918"
-              />
-              {errors.longitude && (
-                <div className="invalid-feedback d-block">{errors.longitude}</div>
-              )}
-            </CCol>
-            
-            <CCol md={4}>
-              <CFormLabel htmlFor="radius">Radius (meters) *</CFormLabel>
-              <CFormInput
-                id="radius"
-                type="number"
-                min="1"
-                max="10000"
-                value={formData.radius}
-                onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
-                invalid={!!errors.radius}
-                placeholder="100"
-              />
-              {errors.radius && (
-                <div className="invalid-feedback d-block">{errors.radius}</div>
-              )}
-            </CCol>
-          </CRow>
-
-          <CAlert color="info" className="mb-0">
-            <strong>Tip:</strong> Use decimal degrees for coordinates. For example, FIU main campus is approximately at 25.7617, -80.1918.
-          </CAlert>
+            <CTabPane visible={activeTab === 'map'}>
+              <CRow className="mb-3">
+                <CCol>
+                  <CAlert color="info" className="mb-3">
+                    <strong>Instructions:</strong> Click on the map to set the geofence center. Use the radius field below to adjust the size.
+                  </CAlert>
+                  <GeofenceMap
+                    latitude={formData.latitude}
+                    longitude={formData.longitude}
+                    radius={formData.radius}
+                    onLocationChange={handleMapLocationChange}
+                  />
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CCol md={6}>
+                  <CFormLabel htmlFor="map-radius">Radius (meters) *</CFormLabel>
+                  <CFormInput
+                    id="map-radius"
+                    type="number"
+                    min="1"
+                    max="10000"
+                    value={formData.radius}
+                    onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
+                    invalid={!!errors.radius}
+                    placeholder="100"
+                  />
+                  {errors.radius && (
+                    <div className="invalid-feedback d-block">{errors.radius}</div>
+                  )}
+                </CCol>
+                <CCol md={6}>
+                  <CFormLabel>Selected Coordinates</CFormLabel>
+                  <div className="form-control-plaintext">
+                    <code>{formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}</code>
+                  </div>
+                </CCol>
+              </CRow>
+            </CTabPane>
+          </CTabContent>
         </CModalBody>
         
         <CModalFooter>
