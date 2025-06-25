@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import { CAlert, CRow, CCol, CFormInput, CFormLabel, CInputGroup, CInputGroupText, CFormSelect, CButton } from '@coreui/react';
+import { CAlert, CRow, CCol, CButton } from '@coreui/react';
 
 interface GeofenceMapProps {
   latitude: number;
@@ -39,7 +39,6 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<SearchOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [localRadius, setLocalRadius] = useState<string>(radius.toString());
   const [geofenceType, setGeofenceType] = useState<'radius' | 'polygon'>(type);
   const mapRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -79,7 +78,6 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       geofenceCircle.addListener('radius_changed', () => {
         if (geofenceCircle) {
           const newRadius = Math.round(geofenceCircle.getRadius());
-          setLocalRadius(newRadius.toString());
           const center = geofenceCircle.getCenter();
           if (center) {
             onLocationChange(center.lat(), center.lng(), newRadius, undefined, 'radius');
@@ -271,26 +269,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     }
   }, [onLocationChange, radius, geofenceType, renderCoordinates]);
 
-  const handleRadiusChange = useCallback((value: string) => {
-    setLocalRadius(value);
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue) && numericValue >= 10 && numericValue <= 10000) {
-      if (geofenceCircle && !readonly) {
-        geofenceCircle.setRadius(numericValue);
-      }
-      onLocationChange(latitude, longitude, numericValue, undefined, 'radius');
-    }
-  }, [latitude, longitude, onLocationChange, readonly]);
 
-  const handleTypeChange = useCallback((newType: 'radius' | 'polygon') => {
-    setGeofenceType(newType);
-    clearGeofenceShapes();
-    onLocationChange(latitude, longitude, newType === 'radius' ? radius : undefined, newType === 'polygon' ? polygon : undefined, newType);
-  }, [latitude, longitude, radius, polygon, onLocationChange, clearGeofenceShapes]);
-
-  useEffect(() => {
-    setLocalRadius(radius.toString());
-  }, [radius]);
 
   useEffect(() => {
     setGeofenceType(type);
@@ -316,7 +295,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       }
 
       const script = document.createElement('script');
-      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyAumxyJ5Z1j-_X1EHUSy8GCRr21zDPzSHs';
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
       script.async = true;
       script.defer = true;
@@ -387,19 +366,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
             {!readonly && geofenceType === 'polygon' && " Search for places to auto-create areas."}
           </CAlert>
           
-          {!readonly && (
-            <div className="mb-3">
-              <CFormLabel htmlFor="geofence-type">Geofence Type</CFormLabel>
-              <CFormSelect
-                id="geofence-type"
-                value={geofenceType}
-                onChange={(e) => handleTypeChange(e.target.value as 'radius' | 'polygon')}
-              >
-                <option value="radius">Circle</option>
-                <option value="polygon">Area</option>
-              </CFormSelect>
-            </div>
-          )}
+
           
           <AsyncTypeahead
             id="location-search"
@@ -419,27 +386,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
             className="mb-3"
           />
           
-          {!readonly && geofenceType === 'radius' && (
-            <div className="mb-3">
-              <CFormLabel htmlFor="radius-input">Geofence Radius</CFormLabel>
-              <CInputGroup>
-                <CFormInput
-                  id="radius-input"
-                  type="number"
-                  min="10"
-                  max="10000"
-                  step="10"
-                  value={localRadius}
-                  onChange={(e) => handleRadiusChange(e.target.value)}
-                  placeholder="Enter radius in meters"
-                />
-                <CInputGroupText>meters</CInputGroupText>
-              </CInputGroup>
-              <small className="text-muted">
-                Minimum: 10m, Maximum: 10,000m (10km)
-              </small>
-            </div>
-          )}
+
           
           {!readonly && geofenceType === 'polygon' && (
             <div className="mb-3">
@@ -470,7 +417,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       <div 
         ref={mapRef}
         style={{ 
-          height: '400px', 
+          height: '300px', 
           width: '100%', 
           borderRadius: '8px', 
           border: '1px solid #dee2e6'

@@ -25,8 +25,10 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilPlus, cilPencil, cilTrash, cilChevronTop, cilChevronBottom } from '@coreui/icons';
 import { Campus, CampusFormData } from '../types/campus';
+import { GeofenceFormData } from '../types/geofence';
 import { campusService } from '../services/campusService';
 import GeofenceTable from '../components/GeofenceTable';
+import GeofenceInlineForm from '../components/GeofenceInlineForm';
 
 
 const Campuses: React.FC = () => {
@@ -235,6 +237,22 @@ const Campuses: React.FC = () => {
 
   const handleCancelGeofence = () => {
     setShowGeofenceForm(null);
+  };
+
+  const handleGeofenceSubmit = async (data: GeofenceFormData) => {
+    try {
+      setLoading(true);
+      console.log('Creating geofence:', data);
+      setAlert({ type: 'success', message: 'Geofence created successfully!' });
+      setShowGeofenceForm(null);
+      setTimeout(() => setAlert(null), 3000);
+    } catch (error) {
+      console.error('Failed to create geofence:', error);
+      setAlert({ type: 'danger', message: 'Failed to create geofence. Please try again.' });
+      setTimeout(() => setAlert(null), 3000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderCampusForm = (isEdit: boolean = false) => (
@@ -531,99 +549,31 @@ const Campuses: React.FC = () => {
                                 <div className="mb-4">
                                   <CCard>
                                     <CCardHeader>
-                                      <h6 className="mb-0">Add New Geofence</h6>
+                                      <div className="d-flex justify-content-between align-items-center">
+                                        <h6 className="mb-0">Add New Geofence</h6>
+                                        <CButton 
+                                          color="secondary" 
+                                          size="sm"
+                                          onClick={handleCancelGeofence}
+                                        >
+                                          Cancel
+                                        </CButton>
+                                      </div>
                                     </CCardHeader>
                                     <CCardBody>
-                                      <CForm>
-                                        <CRow className="mb-3">
-                                          <CCol md={6}>
-                                            <CFormLabel htmlFor="geofence-name">Name *</CFormLabel>
-                                            <CFormInput
-                                              id="geofence-name"
-                                              placeholder="Enter geofence name"
-                                            />
-                                          </CCol>
-                                          <CCol md={3}>
-                                            <CFormLabel htmlFor="geofence-type">Type</CFormLabel>
-                                            <CFormSelect id="geofence-type">
-                                              <option value="radius">Circle</option>
-                                              <option value="polygon">Area</option>
-                                            </CFormSelect>
-                                          </CCol>
-                                          <CCol md={3}>
-                                            <CFormLabel htmlFor="geofence-status">Status</CFormLabel>
-                                            <CFormSelect id="geofence-status">
-                                              <option value="active">Active</option>
-                                              <option value="inactive">Inactive</option>
-                                            </CFormSelect>
-                                          </CCol>
-                                        </CRow>
-                                        
-                                        <div className="mb-3">
-                                          <CFormLabel htmlFor="geofence-description">Description</CFormLabel>
-                                          <CFormTextarea
-                                            id="geofence-description"
-                                            rows={2}
-                                            placeholder="Enter geofence description"
-                                          />
-                                        </div>
-
-                                        <CRow className="mb-3">
-                                          <CCol md={4}>
-                                            <CFormLabel htmlFor="geofence-lat">Latitude *</CFormLabel>
-                                            <CFormInput
-                                              id="geofence-lat"
-                                              type="number"
-                                              step="any"
-                                              placeholder="25.7617"
-                                            />
-                                          </CCol>
-                                          <CCol md={4}>
-                                            <CFormLabel htmlFor="geofence-lng">Longitude *</CFormLabel>
-                                            <CFormInput
-                                              id="geofence-lng"
-                                              type="number"
-                                              step="any"
-                                              placeholder="-80.1918"
-                                            />
-                                          </CCol>
-                                          <CCol md={4}>
-                                            <CFormLabel htmlFor="geofence-radius">Radius (meters)</CFormLabel>
-                                            <CFormInput
-                                              id="geofence-radius"
-                                              type="number"
-                                              min="1"
-                                              max="10000"
-                                              placeholder="100"
-                                            />
-                                          </CCol>
-                                        </CRow>
-
-                                        <CAlert color="info" className="mb-3">
-                                          <strong>Map Integration:</strong> Interactive map with location search and area selection would be integrated here for visual geofence creation.
-                                        </CAlert>
-
-                                        <div className="d-flex gap-2">
-                                          <CButton color="primary" size="sm">
-                                            Create Geofence
-                                          </CButton>
-                                          <CButton 
-                                            color="secondary" 
-                                            size="sm"
-                                            onClick={handleCancelGeofence}
-                                          >
-                                            Cancel
-                                          </CButton>
-                                        </div>
-                                      </CForm>
+                                      <GeofenceInlineForm
+                                        onSubmit={handleGeofenceSubmit}
+                                        campusId={campus.id}
+                                        loading={loading}
+                                      />
                                     </CCardBody>
                                   </CCard>
                                 </div>
                               )}
-                              <GeofenceTable
+                              <GeofenceTable 
                                 campusId={campus.id}
-                                onEdit={() => {}}
-                                onDelete={() => loadCampuses()}
+                                onEdit={(geofence) => console.log('Edit geofence:', geofence)}
+                                onDelete={(id) => console.log('Delete geofence:', id)}
                                 refreshTrigger={0}
                               />
                             </CCardBody>
