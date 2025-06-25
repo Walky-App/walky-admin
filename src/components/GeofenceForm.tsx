@@ -52,8 +52,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
   const [formData, setFormData] = useState<GeofenceFormData>({
     name: '',
     description: '',
-    latitude: 0,
-    longitude: 0,
+    latitude: 25.7617,
+    longitude: -80.1918,
     radius: 100,
     status: 'active'
   });
@@ -75,8 +75,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
       setFormData({
         name: '',
         description: '',
-        latitude: 0,
-        longitude: 0,
+        latitude: 25.7617,
+        longitude: -80.1918,
         radius: 100,
         status: 'active'
       });
