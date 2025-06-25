@@ -106,7 +106,9 @@ export const geofenceService = {
 
   createForCampus: async (campusId: string, data: Omit<GeofenceFormData, 'campusId'>): Promise<Geofence> => {
     const formData = { ...data, campusId };
-    return geofenceService.create(formData);
+    const result = await geofenceService.create(formData);
+    
+    return result;
   },
   
   update: async (id: string, data: Partial<GeofenceFormData>): Promise<Geofence> => {

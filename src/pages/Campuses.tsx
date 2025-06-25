@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CCard,
   CCardBody,
@@ -12,13 +12,40 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CBadge
+  CBadge,
+  CAlert
 } from '@coreui/react';
 import CampusGeofenceModal from '../components/CampusGeofenceModal';
+import CampusForm from '../components/CampusForm';
+import { Campus, CampusFormData } from '../types/campus';
+import { campusService } from '../services/campusService';
 
 const Campuses: React.FC = () => {
   const [selectedCampus, setSelectedCampus] = useState<{ id: string; name: string } | null>(null);
   const [showGeofenceModal, setShowGeofenceModal] = useState(false);
+  const [showCampusForm, setShowCampusForm] = useState(false);
+  const [editingCampus, setEditingCampus] = useState<Campus | null>(null);
+  const [campuses, setCampuses] = useState<Campus[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
+
+  useEffect(() => {
+    loadCampuses();
+  }, []);
+
+  const loadCampuses = async () => {
+    try {
+      setLoading(true);
+      const data = await campusService.getAll();
+      setCampuses(data);
+    } catch (error) {
+      console.error('Failed to load campuses:', error);
+      setAlert({ type: 'danger', message: 'Failed to load campuses. Please try again.' });
+      setTimeout(() => setAlert(null), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleManageGeofences = (campus: { id: string; name: string }) => {
     setSelectedCampus(campus);
@@ -29,24 +56,67 @@ const Campuses: React.FC = () => {
     setShowGeofenceModal(false);
     setSelectedCampus(null);
   };
-  const campuses = [
-    {
-      id: '1',
-      name: 'FIU Main Campus',
-      location: 'Miami, FL',
-      address: '11200 SW 8th St, Miami, FL 33199',
-      status: 'active',
-      geofenceCount: 3
-    },
-    {
-      id: '2',
-      name: 'FIU Biscayne Bay Campus',
-      location: 'North Miami, FL',
-      address: '3000 NE 151st St, North Miami, FL 33181',
-      status: 'active',
-      geofenceCount: 2
+
+  const handleAddCampus = () => {
+    setEditingCampus(null);
+    setShowCampusForm(true);
+  };
+
+  const handleEditCampus = (campus: Campus) => {
+    setEditingCampus(campus);
+    setShowCampusForm(true);
+  };
+
+  const handleDeleteCampus = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this campus? This will also delete all associated geofences.')) {
+      return;
     }
-  ];
+
+    try {
+      setLoading(true);
+      await campusService.delete(id);
+      await loadCampuses();
+      setAlert({ type: 'success', message: 'Campus deleted successfully!' });
+      setTimeout(() => setAlert(null), 3000);
+    } catch (error) {
+      console.error('Failed to delete campus:', error);
+      setAlert({ type: 'danger', message: 'Failed to delete campus. Please try again.' });
+      setTimeout(() => setAlert(null), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCampusFormSubmit = async (data: CampusFormData) => {
+    try {
+      setLoading(true);
+      if (editingCampus) {
+        await campusService.update(editingCampus.id, data);
+        setAlert({ type: 'success', message: 'Campus updated successfully!' });
+      } else {
+        await campusService.create(data);
+        setAlert({ type: 'success', message: 'Campus created successfully!' });
+      }
+      setShowCampusForm(false);
+      setEditingCampus(null);
+      await loadCampuses();
+      setTimeout(() => setAlert(null), 3000);
+    } catch (error) {
+      console.error('Failed to save campus:', error);
+      setAlert({ 
+        type: 'danger', 
+        message: `Failed to ${editingCampus ? 'update' : 'create'} campus. Please try again.` 
+      });
+      setTimeout(() => setAlert(null), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseCampusForm = () => {
+    setShowCampusForm(false);
+    setEditingCampus(null);
+  };
 
   return (
     <CRow>
@@ -54,15 +124,21 @@ const Campuses: React.FC = () => {
         <CCard className="mb-4">
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <strong>Campus Management</strong>
-            <CButton color="primary" size="sm">
+            <CButton color="primary" size="sm" onClick={handleAddCampus} disabled={loading}>
               Add Campus
             </CButton>
           </CCardHeader>
           <CCardBody>
+            {alert && (
+              <CAlert color={alert.type} className="mb-3">
+                {alert.message}
+              </CAlert>
+            )}
+            
             <CTable hover responsive>
               <CTableHead>
                 <CTableRow>
-                  <CTableHeaderCell>Name</CTableHeaderCell>
+                  <CTableHeaderCell>Campus</CTableHeaderCell>
                   <CTableHeaderCell>Location</CTableHeaderCell>
                   <CTableHeaderCell>Address</CTableHeaderCell>
                   <CTableHeaderCell>Geofences</CTableHeaderCell>
@@ -74,7 +150,38 @@ const Campuses: React.FC = () => {
                 {campuses.map((campus) => (
                   <CTableRow key={campus.id}>
                     <CTableDataCell>
-                      <strong>{campus.name}</strong>
+                      <div className="d-flex align-items-center">
+                        {campus.logo ? (
+                          <img 
+                            src={campus.logo} 
+                            alt={`${campus.name} logo`} 
+                            style={{
+                              width: '40px', 
+                              height: '40px', 
+                              objectFit: 'contain',
+                              marginRight: '12px',
+                              borderRadius: '4px'
+                            }} 
+                          />
+                        ) : (
+                          <div 
+                            style={{
+                              width: '40px', 
+                              height: '40px', 
+                              backgroundColor: '#f8f9fa', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              marginRight: '12px',
+                              borderRadius: '4px',
+                              fontSize: '20px'
+                            }}
+                          >
+                            📷
+                          </div>
+                        )}
+                        <strong>{campus.name}</strong>
+                      </div>
                     </CTableDataCell>
                     <CTableDataCell>{campus.location}</CTableDataCell>
                     <CTableDataCell>{campus.address}</CTableDataCell>
@@ -87,16 +194,34 @@ const Campuses: React.FC = () => {
                       </CBadge>
                     </CTableDataCell>
                     <CTableDataCell>
-                      <CButton color="primary" variant="outline" size="sm" className="me-2">
+                      <CButton 
+                        color="primary" 
+                        variant="outline" 
+                        size="sm" 
+                        className="me-2"
+                        onClick={() => handleEditCampus(campus)}
+                        disabled={loading}
+                      >
                         Edit
                       </CButton>
                       <CButton 
                         color="info" 
                         variant="outline" 
                         size="sm"
+                        className="me-2"
                         onClick={() => handleManageGeofences({ id: campus.id, name: campus.name })}
+                        disabled={loading}
                       >
                         Manage Geofences
+                      </CButton>
+                      <CButton 
+                        color="danger" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleDeleteCampus(campus.id)}
+                        disabled={loading}
+                      >
+                        Delete
                       </CButton>
                     </CTableDataCell>
                   </CTableRow>
@@ -115,6 +240,14 @@ const Campuses: React.FC = () => {
           campusName={selectedCampus.name}
         />
       )}
+
+      <CampusForm
+        visible={showCampusForm}
+        onClose={handleCloseCampusForm}
+        onSubmit={handleCampusFormSubmit}
+        campus={editingCampus}
+        loading={loading}
+      />
     </CRow>
   );
 };
