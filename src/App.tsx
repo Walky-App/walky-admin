@@ -23,6 +23,7 @@ import { useTheme } from './hooks/useTheme'
 import Students from './pages/Students'
 import Engagement from './pages/Engagement'
 import Review from './pages/Review'
+import Geofences from './pages/Geofences'
 import CreateAccount from './pages/CreateAccount'
 import ForgotPassword from './pages/ForgotPassword'  
 import { AppTheme } from './theme'
@@ -873,6 +874,7 @@ function App() {
                 <Route path="/students" element={<Students />} />
                 <Route path="/engagement" element={<Engagement />} />
                 <Route path="/review" element={<Review />} />
+                <Route path="/geofences" element={<Geofences />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
