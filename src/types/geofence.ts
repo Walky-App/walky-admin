@@ -8,6 +8,7 @@ export interface Geofence {
   polygon?: Array<{ lat: number; lng: number }>;
   type: 'radius' | 'polygon';
   status: 'active' | 'inactive';
+  campusId: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,4 +22,5 @@ export interface GeofenceFormData {
   polygon?: Array<{ lat: number; lng: number }>;
   type: 'radius' | 'polygon';
   status: 'active' | 'inactive';
+  campusId: string;
 }

@@ -89,12 +89,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        {/* Geofences */}
-        <CNavItem className="px-3 py-2">
-          <NavLink to="/geofences" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            Geofences
-          </NavLink>
-        </CNavItem>
+
 
 </CSidebarNav>
     </CSidebar>

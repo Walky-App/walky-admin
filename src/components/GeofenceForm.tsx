@@ -32,6 +32,7 @@ interface GeofenceFormProps {
   onSubmit: (data: GeofenceFormData) => void;
   geofence?: Geofence | null;
   loading?: boolean;
+  campusId: string;
 }
 
 interface FormErrors {
@@ -47,7 +48,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
   onClose, 
   onSubmit, 
   geofence, 
-  loading = false 
+  loading = false,
+  campusId
 }) => {
   const [formData, setFormData] = useState<GeofenceFormData>({
     name: '',
@@ -56,7 +58,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
     longitude: -80.1918,
     radius: 100,
     type: 'radius',
-    status: 'active'
+    status: 'active',
+    campusId: campusId
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
@@ -72,7 +75,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
         radius: geofence.radius,
         polygon: geofence.polygon,
         type: geofence.type,
-        status: geofence.status
+        status: geofence.status,
+        campusId: geofence.campusId
       });
     } else {
       setFormData({
@@ -82,7 +86,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
         longitude: -80.1918,
         radius: 100,
         type: 'radius',
-        status: 'active'
+        status: 'active',
+        campusId: campusId
       });
     }
     setErrors({});

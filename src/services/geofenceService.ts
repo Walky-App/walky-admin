@@ -10,6 +10,7 @@ const mockGeofences: Geofence[] = [
     radius: 500,
     type: 'radius',
     status: 'active',
+    campusId: '1',
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z'
   },
@@ -22,6 +23,7 @@ const mockGeofences: Geofence[] = [
     radius: 200,
     type: 'radius',
     status: 'active',
+    campusId: '1',
     createdAt: '2024-01-20T14:30:00Z',
     updatedAt: '2024-01-20T14:30:00Z'
   },
@@ -34,6 +36,7 @@ const mockGeofences: Geofence[] = [
     radius: 150,
     type: 'radius',
     status: 'inactive',
+    campusId: '1',
     createdAt: '2024-02-01T09:15:00Z',
     updatedAt: '2024-02-10T16:45:00Z'
   },
@@ -46,8 +49,35 @@ const mockGeofences: Geofence[] = [
     radius: 300,
     type: 'radius',
     status: 'active',
+    campusId: '1',
     createdAt: '2024-02-15T11:20:00Z',
     updatedAt: '2024-02-15T11:20:00Z'
+  },
+  {
+    id: '5',
+    name: 'BBC Library',
+    description: 'Biscayne Bay Campus Library area',
+    latitude: 25.9108,
+    longitude: -80.1431,
+    radius: 100,
+    type: 'radius',
+    status: 'active',
+    campusId: '2',
+    createdAt: '2024-02-20T12:00:00Z',
+    updatedAt: '2024-02-20T12:00:00Z'
+  },
+  {
+    id: '6',
+    name: 'BBC Marine Sciences',
+    description: 'Marine and Environmental Science building',
+    latitude: 25.9120,
+    longitude: -80.1440,
+    radius: 150,
+    type: 'radius',
+    status: 'active',
+    campusId: '2',
+    createdAt: '2024-02-25T15:30:00Z',
+    updatedAt: '2024-02-25T15:30:00Z'
   }
 ];
 
@@ -55,6 +85,11 @@ export const geofenceService = {
   getAll: async (): Promise<Geofence[]> => {
     await new Promise(resolve => setTimeout(resolve, 500));
     return [...mockGeofences];
+  },
+
+  getByCampus: async (campusId: string): Promise<Geofence[]> => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return mockGeofences.filter(g => g.campusId === campusId);
   },
   
   create: async (data: GeofenceFormData): Promise<Geofence> => {
@@ -67,6 +102,11 @@ export const geofenceService = {
     };
     mockGeofences.push(newGeofence);
     return newGeofence;
+  },
+
+  createForCampus: async (campusId: string, data: Omit<GeofenceFormData, 'campusId'>): Promise<Geofence> => {
+    const formData = { ...data, campusId };
+    return geofenceService.create(formData);
   },
   
   update: async (id: string, data: Partial<GeofenceFormData>): Promise<Geofence> => {

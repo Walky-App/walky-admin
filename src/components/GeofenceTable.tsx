@@ -15,14 +15,16 @@ import { cilPencil, cilTrash } from '@coreui/icons';
 
 import { Geofence } from '../types/geofence';
 import { geofenceService } from '../services/geofenceService';
+import GeofenceMapPreview from './GeofenceMapPreview';
 
 interface GeofenceTableProps {
   onEdit: (geofence: Geofence) => void;
   onDelete: (id: string) => void;
   refreshTrigger: number;
+  campusId?: string;
 }
 
-const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refreshTrigger }) => {
+const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refreshTrigger, campusId }) => {
   const [geofences, setGeofences] = useState<Geofence[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +35,9 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
   const fetchGeofences = async () => {
     try {
       setLoading(true);
-      const data = await geofenceService.getAll();
+      const data = campusId 
+        ? await geofenceService.getByCampus(campusId)
+        : await geofenceService.getAll();
       setGeofences(data);
     } catch (error) {
       console.error('Failed to fetch geofences:', error);
@@ -75,10 +79,10 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
       <CTable hover responsive>
         <CTableHead>
           <CTableRow>
+            <CTableHeaderCell>Preview</CTableHeaderCell>
             <CTableHeaderCell>Name</CTableHeaderCell>
             <CTableHeaderCell>Description</CTableHeaderCell>
-            <CTableHeaderCell>Coordinates</CTableHeaderCell>
-            <CTableHeaderCell>Radius (m)</CTableHeaderCell>
+            <CTableHeaderCell>Type</CTableHeaderCell>
             <CTableHeaderCell>Status</CTableHeaderCell>
             <CTableHeaderCell>Created</CTableHeaderCell>
             <CTableHeaderCell>Actions</CTableHeaderCell>
@@ -88,7 +92,14 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
           {geofences.map((geofence) => (
             <CTableRow key={geofence.id}>
               <CTableDataCell>
+                <GeofenceMapPreview geofence={geofence} width={100} height={60} />
+              </CTableDataCell>
+              <CTableDataCell>
                 <strong>{geofence.name}</strong>
+                <br />
+                <small className="text-muted">
+                  {formatCoordinates(geofence.latitude, geofence.longitude)}
+                </small>
               </CTableDataCell>
               <CTableDataCell>
                 <div style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -96,11 +107,10 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
                 </div>
               </CTableDataCell>
               <CTableDataCell>
-                <code style={{ fontSize: '0.85em' }}>
-                  {formatCoordinates(geofence.latitude, geofence.longitude)}
-                </code>
+                <CBadge color={geofence.type === 'radius' ? 'primary' : 'info'} shape="rounded-pill">
+                  {geofence.type === 'radius' ? `Circle (${geofence.radius}m)` : 'Polygon'}
+                </CBadge>
               </CTableDataCell>
-              <CTableDataCell>{geofence.radius}</CTableDataCell>
               <CTableDataCell>
                 <CBadge 
                   color={geofence.status === 'active' ? 'success' : 'secondary'}

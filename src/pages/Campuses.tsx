@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   CCard,
   CCardBody,
@@ -14,8 +14,21 @@ import {
   CTableDataCell,
   CBadge
 } from '@coreui/react';
+import CampusGeofenceModal from '../components/CampusGeofenceModal';
 
 const Campuses: React.FC = () => {
+  const [selectedCampus, setSelectedCampus] = useState<{ id: string; name: string } | null>(null);
+  const [showGeofenceModal, setShowGeofenceModal] = useState(false);
+
+  const handleManageGeofences = (campus: { id: string; name: string }) => {
+    setSelectedCampus(campus);
+    setShowGeofenceModal(true);
+  };
+
+  const handleCloseGeofenceModal = () => {
+    setShowGeofenceModal(false);
+    setSelectedCampus(null);
+  };
   const campuses = [
     {
       id: '1',
@@ -77,7 +90,12 @@ const Campuses: React.FC = () => {
                       <CButton color="primary" variant="outline" size="sm" className="me-2">
                         Edit
                       </CButton>
-                      <CButton color="info" variant="outline" size="sm">
+                      <CButton 
+                        color="info" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleManageGeofences({ id: campus.id, name: campus.name })}
+                      >
                         Manage Geofences
                       </CButton>
                     </CTableDataCell>
@@ -88,6 +106,15 @@ const Campuses: React.FC = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      
+      {selectedCampus && (
+        <CampusGeofenceModal
+          visible={showGeofenceModal}
+          onClose={handleCloseGeofenceModal}
+          campusId={selectedCampus.id}
+          campusName={selectedCampus.name}
+        />
+      )}
     </CRow>
   );
 };
