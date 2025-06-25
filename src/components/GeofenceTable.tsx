@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   CTable, 
   CTableHead, 
@@ -15,7 +15,7 @@ import { cilPencil, cilTrash } from '@coreui/icons';
 
 import { Geofence } from '../types/geofence';
 import { geofenceService } from '../services/geofenceService';
-import GeofenceMapPreview from './GeofenceMapPreview';
+
 
 interface GeofenceTableProps {
   onEdit: (geofence: Geofence) => void;
@@ -28,11 +28,21 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
   const [geofences, setGeofences] = useState<Geofence[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchGeofences();
-  }, [refreshTrigger]);
+  const handleDeleteGeofence = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this geofence?')) {
+      return;
+    }
 
-  const fetchGeofences = async () => {
+    try {
+      await geofenceService.delete(id);
+      onDelete(id);
+      fetchGeofences();
+    } catch (error) {
+      console.error('Failed to delete geofence:', error);
+    }
+  };
+
+  const fetchGeofences = useCallback(async () => {
     try {
       setLoading(true);
       const data = campusId 
@@ -44,7 +54,11 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
     } finally {
       setLoading(false);
     }
-  };
+  }, [campusId]);
+
+  useEffect(() => {
+    fetchGeofences();
+  }, [refreshTrigger, fetchGeofences]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -92,7 +106,22 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
           {geofences.map((geofence) => (
             <CTableRow key={geofence.id}>
               <CTableDataCell>
-                <GeofenceMapPreview geofence={geofence} width={100} height={60} />
+                <div 
+                  style={{
+                    width: '100px',
+                    height: '60px',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    color: '#6c757d'
+                  }}
+                >
+                  {geofence.type === 'radius' ? '🔵' : '📐'} Map
+                </div>
               </CTableDataCell>
               <CTableDataCell>
                 <strong>{geofence.name}</strong>
@@ -134,7 +163,7 @@ const GeofenceTable: React.FC<GeofenceTableProps> = ({ onEdit, onDelete, refresh
                     color="danger"
                     variant="outline"
                     size="sm"
-                    onClick={() => onDelete(geofence.id)}
+                    onClick={() => handleDeleteGeofence(geofence.id)}
                   >
                     <CIcon icon={cilTrash} size="sm" />
                   </CButton>

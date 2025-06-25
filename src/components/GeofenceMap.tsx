@@ -347,7 +347,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     } else if (geofenceType === 'polygon' && polygon && polygon.length > 0) {
       drawGeofencePolygon(polygon);
     }
-  }, [geofenceType, drawGeofencePolygon, polygon]);
+  }, [geofenceType, drawGeofenceCircle, drawGeofencePolygon, polygon]);
 
   useEffect(() => {
     if (geofenceType === 'radius' && geofenceCircle && radius) {
@@ -382,10 +382,9 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       <CRow className="mb-3">
         <CCol>
           <CAlert color="info" className="mb-3">
-            <strong>Instructions:</strong> Search for a location below or click directly on the map to set the geofence. 
-            {!readonly && geofenceType === 'radius' && " You can drag the circle to move it or resize it by dragging the edge, or manually adjust the radius below."}
-            {!readonly && geofenceType === 'polygon' && " You can drag the polygon vertices to modify the shape."}
-            {" Searching for places with boundaries will automatically create polygons."}
+            <strong>Instructions:</strong> Search for a location or click on the map to set the geofence. 
+            {!readonly && geofenceType === 'radius' && " Adjust the radius using the controls."}
+            {!readonly && geofenceType === 'polygon' && " Search for places to auto-create areas."}
           </CAlert>
           
           {!readonly && (
@@ -396,8 +395,8 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
                 value={geofenceType}
                 onChange={(e) => handleTypeChange(e.target.value as 'radius' | 'polygon')}
               >
-                <option value="radius">Radius (Circle)</option>
-                <option value="polygon">Polygon (Custom Shape)</option>
+                <option value="radius">Circle</option>
+                <option value="polygon">Area</option>
               </CFormSelect>
             </div>
           )}
@@ -410,7 +409,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
             onSearch={handleSearch}
             onChange={(selected: unknown[]) => handleSelectionChange(selected as SearchOption[])}
             options={searchOptions}
-            placeholder="Search for a location (e.g., 'Florida International University' or 'Miami, FL')..."
+            placeholder="Search for a location..."
             selected={selectedOptions}
             renderMenuItemChildren={(option: unknown) => (
               <div>
@@ -444,10 +443,10 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
           
           {!readonly && geofenceType === 'polygon' && (
             <div className="mb-3">
-              <CAlert color="warning">
-                <strong>Polygon Mode:</strong> Search for a location with boundaries to automatically create a polygon, or manually draw one by clicking points on the map. You need at least 3 points to create a polygon.
+              <CAlert color="info">
+                <strong>Area Selection:</strong> Search for a location to automatically create the area boundary, or click on the map to draw manually.
                 {polygonVertices.length > 0 && (
-                  <><br/><small>Current vertices: {polygonVertices.length} {polygonVertices.length >= 3 ? '✓' : `(need ${3 - polygonVertices.length} more)`}</small></>
+                  <><br/><small>Current points: {polygonVertices.length} {polygonVertices.length >= 3 ? '✓' : `(need ${3 - polygonVertices.length} more)`}</small></>
                 )}
               </CAlert>
               {polygonVertices.length > 0 && (
@@ -460,7 +459,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
                   }}
                   className="mb-2"
                 >
-                  Clear Polygon
+                  Clear Area
                 </CButton>
               )}
             </div>

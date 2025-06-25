@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  CModal,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-  CModalFooter,
+  CCard,
+  CCardBody,
+  CCardHeader,
   CButton,
   CForm,
   CFormInput,
@@ -24,15 +22,14 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilMap, cilPencil } from '@coreui/icons';
 import { Geofence, GeofenceFormData } from '../types/geofence';
+import { geofenceService } from '../services/geofenceService';
 import GeofenceMap from './GeofenceMap';
 
-interface GeofenceFormProps {
-  visible: boolean;
-  onClose: () => void;
-  onSubmit: (data: GeofenceFormData) => void;
-  geofence?: Geofence | null;
-  loading?: boolean;
+interface GeofenceInlineFormProps {
   campusId: string;
+  geofence?: Geofence | null;
+  onCancel: () => void;
+  onSuccess: () => void;
 }
 
 interface FormErrors {
@@ -43,13 +40,11 @@ interface FormErrors {
   radius?: string;
 }
 
-const GeofenceForm: React.FC<GeofenceFormProps> = ({ 
-  visible, 
-  onClose, 
-  onSubmit, 
-  geofence, 
-  loading = false,
-  campusId
+const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({ 
+  campusId,
+  geofence,
+  onCancel,
+  onSuccess
 }) => {
   const [formData, setFormData] = useState<GeofenceFormData>({
     name: '',
@@ -64,6 +59,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
   
   const [errors, setErrors] = useState<FormErrors>({});
   const [activeTab, setActiveTab] = useState<'form' | 'map'>('form');
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
 
   useEffect(() => {
     if (geofence) {
@@ -91,7 +88,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
       });
     }
     setErrors({});
-  }, [geofence, visible, campusId]);
+    setAlert(null);
+  }, [geofence, campusId]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -120,10 +118,30 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      onSubmit(formData);
+    if (!validateForm()) return;
+
+    try {
+      setLoading(true);
+      if (geofence) {
+        await geofenceService.update(geofence.id, formData);
+        setAlert({ type: 'success', message: 'Geofence updated successfully!' });
+      } else {
+        await geofenceService.createForCampus(campusId, formData);
+        setAlert({ type: 'success', message: 'Geofence created successfully!' });
+      }
+      setTimeout(() => {
+        onSuccess();
+      }, 1000);
+    } catch (error) {
+      console.error('Failed to save geofence:', error);
+      setAlert({ 
+        type: 'danger', 
+        message: `Failed to ${geofence ? 'update' : 'create'} geofence. Please try again.` 
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,7 +164,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
       ...prev,
       latitude: lat,
       longitude: lng,
-      radius: type === 'radius' ? radius : prev.radius,
+      radius: type === 'radius' ? (radius || prev.radius) : prev.radius,
       polygon: type === 'polygon' ? polygon : prev.polygon,
       type: type || prev.type
     }));
@@ -160,15 +178,18 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
   };
 
   return (
-    <CModal visible={visible} onClose={onClose} size="xl">
-      <CModalHeader>
-        <CModalTitle>
-          {geofence ? 'Edit Geofence' : 'Create New Geofence'}
-        </CModalTitle>
-      </CModalHeader>
-      
-      <CForm onSubmit={handleSubmit}>
-        <CModalBody>
+    <CCard>
+      <CCardHeader>
+        <strong>{geofence ? 'Edit Geofence' : 'Create New Geofence'}</strong>
+      </CCardHeader>
+      <CCardBody>
+        {alert && (
+          <CAlert color={alert.type} className="mb-3">
+            {alert.message}
+          </CAlert>
+        )}
+
+        <CForm onSubmit={handleSubmit}>
           <CNav variant="tabs" className="mb-3">
             <CNavItem>
               <CNavLink 
@@ -195,7 +216,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
           <CTabContent>
             <CTabPane visible={activeTab === 'form'}>
               <CRow className="mb-3">
-                <CCol md={4}>
+                <CCol md={8}>
                   <CFormLabel htmlFor="name">Name *</CFormLabel>
                   <CFormInput
                     id="name"
@@ -210,19 +231,19 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                   )}
                 </CCol>
                 
-                <CCol md={4}>
-                  <CFormLabel htmlFor="type">Geofence Type</CFormLabel>
+                <CCol md={2}>
+                  <CFormLabel htmlFor="type">Type</CFormLabel>
                   <CFormSelect
                     id="type"
                     value={formData.type}
                     onChange={(e) => handleInputChange('type', e.target.value as 'radius' | 'polygon')}
                   >
-                    <option value="radius">Radius (Circle)</option>
-                    <option value="polygon">Polygon</option>
+                    <option value="radius">Circle</option>
+                    <option value="polygon">Area</option>
                   </CFormSelect>
                 </CCol>
                 
-                <CCol md={4}>
+                <CCol md={2}>
                   <CFormLabel htmlFor="status">Status</CFormLabel>
                   <CFormSelect
                     id="status"
@@ -240,7 +261,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                   <CFormLabel htmlFor="description">Description *</CFormLabel>
                   <CFormTextarea
                     id="description"
-                    rows={3}
+                    rows={2}
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     invalid={!!errors.description}
@@ -252,43 +273,41 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                 </CCol>
               </CRow>
 
-              <CRow className="mb-3">
-                <CCol md={6}>
-                  <CFormLabel htmlFor="latitude">Latitude *</CFormLabel>
-                  <CFormInput
-                    id="latitude"
-                    type="number"
-                    step="any"
-                    value={formData.latitude}
-                    onChange={(e) => handleInputChange('latitude', parseFloat(e.target.value) || 0)}
-                    invalid={!!errors.latitude}
-                    placeholder="25.7617"
-                  />
-                  {errors.latitude && (
-                    <div className="invalid-feedback d-block">{errors.latitude}</div>
-                  )}
-                </CCol>
-                
-                <CCol md={6}>
-                  <CFormLabel htmlFor="longitude">Longitude *</CFormLabel>
-                  <CFormInput
-                    id="longitude"
-                    type="number"
-                    step="any"
-                    value={formData.longitude}
-                    onChange={(e) => handleInputChange('longitude', parseFloat(e.target.value) || 0)}
-                    invalid={!!errors.longitude}
-                    placeholder="-80.1918"
-                  />
-                  {errors.longitude && (
-                    <div className="invalid-feedback d-block">{errors.longitude}</div>
-                  )}
-                </CCol>
-              </CRow>
-
               {formData.type === 'radius' && (
                 <CRow className="mb-3">
                   <CCol md={6}>
+                    <CFormLabel htmlFor="latitude">Center Latitude *</CFormLabel>
+                    <CFormInput
+                      id="latitude"
+                      type="number"
+                      step="any"
+                      value={formData.latitude}
+                      onChange={(e) => handleInputChange('latitude', parseFloat(e.target.value) || 0)}
+                      invalid={!!errors.latitude}
+                      placeholder="25.7617"
+                    />
+                    {errors.latitude && (
+                      <div className="invalid-feedback d-block">{errors.latitude}</div>
+                    )}
+                  </CCol>
+                  
+                  <CCol md={3}>
+                    <CFormLabel htmlFor="longitude">Center Longitude *</CFormLabel>
+                    <CFormInput
+                      id="longitude"
+                      type="number"
+                      step="any"
+                      value={formData.longitude}
+                      onChange={(e) => handleInputChange('longitude', parseFloat(e.target.value) || 0)}
+                      invalid={!!errors.longitude}
+                      placeholder="-80.1918"
+                    />
+                    {errors.longitude && (
+                      <div className="invalid-feedback d-block">{errors.longitude}</div>
+                    )}
+                  </CCol>
+
+                  <CCol md={3}>
                     <CFormLabel htmlFor="radius">Radius (meters) *</CFormLabel>
                     <CFormInput
                       id="radius"
@@ -304,35 +323,22 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                       <div className="invalid-feedback d-block">{errors.radius}</div>
                     )}
                   </CCol>
-                  <CCol md={6}>
-                    <CFormLabel>Geofence Info</CFormLabel>
-                    <div className="form-control-plaintext">
-                      Circle with {formData.radius || 100}m radius
-                    </div>
-                  </CCol>
                 </CRow>
               )}
 
               {formData.type === 'polygon' && (
                 <CRow className="mb-3">
                   <CCol>
-                    <CFormLabel>Polygon Info</CFormLabel>
+                    <CFormLabel>Area Selection</CFormLabel>
                     <div className="form-control-plaintext">
                       {formData.polygon && formData.polygon.length > 0 
-                        ? `Polygon with ${formData.polygon.length} vertices`
-                        : 'Use map selection to draw polygon or search for a location with boundaries'
+                        ? `Area defined with ${formData.polygon.length} points`
+                        : 'Use the map below to search for a location or draw an area'
                       }
                     </div>
                   </CCol>
                 </CRow>
               )}
-
-              <CAlert color="info" className="mb-0">
-                <strong>Tip:</strong> Use decimal degrees for coordinates. For example, FIU main campus is approximately at 25.7617, -80.1918.
-                {formData.type === 'polygon' && (
-                  <><br/><strong>Polygon Mode:</strong> Search for locations to automatically create polygons from boundaries, or use the map to manually draw polygon shapes.</>
-                )}
-              </CAlert>
             </CTabPane>
             
             <CTabPane visible={activeTab === 'map'}>
@@ -341,67 +347,49 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                   <CAlert color="info" className="mb-3">
                     <strong>Instructions:</strong> 
                     {formData.type === 'radius' 
-                      ? 'Click on the map to set the geofence center. Use the radius field below to adjust the size.'
-                      : 'Search for locations with boundaries to auto-create polygons, or click on the map to manually draw polygon vertices.'
+                      ? 'Click on the map to set the center point. Adjust the radius above.'
+                      : 'Search for a location to automatically create the area boundary, or click on the map to draw manually.'
                     }
                   </CAlert>
-                  <GeofenceMap
-                    latitude={formData.latitude}
-                    longitude={formData.longitude}
-                    radius={formData.radius}
-                    polygon={formData.polygon}
-                    type={formData.type}
-                    onLocationChange={handleMapLocationChange}
-                  />
+                  <div style={{ height: '400px' }}>
+                    <GeofenceMap
+                      latitude={formData.latitude}
+                      longitude={formData.longitude}
+                      radius={formData.radius || 100}
+                      polygon={formData.polygon}
+                      type={formData.type}
+                      onLocationChange={handleMapLocationChange}
+                    />
+                  </div>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                {formData.type === 'radius' && (
-                  <CCol md={6}>
-                    <CFormLabel htmlFor="map-radius">Radius (meters) *</CFormLabel>
-                    <CFormInput
-                      id="map-radius"
-                      type="number"
-                      min="1"
-                      max="10000"
-                      value={formData.radius || 100}
-                      onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
-                      invalid={!!errors.radius}
-                      placeholder="100"
-                    />
-                    {errors.radius && (
-                      <div className="invalid-feedback d-block">{errors.radius}</div>
-                    )}
-                  </CCol>
-                )}
-                <CCol md={formData.type === 'radius' ? 6 : 12}>
-                  <CFormLabel>
-                    {formData.type === 'radius' ? 'Selected Coordinates' : 'Center Coordinates'}
-                  </CFormLabel>
+                <CCol>
+                  <CFormLabel>Selected Location</CFormLabel>
                   <div className="form-control-plaintext">
                     <code>{formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}</code>
                     {formData.type === 'polygon' && formData.polygon && formData.polygon.length > 0 && (
-                      <><br/><small className="text-muted">Polygon: {formData.polygon.length} vertices</small></>
+                      <><br/><small className="text-muted">Area: {formData.polygon.length} boundary points</small></>
                     )}
                   </div>
                 </CCol>
               </CRow>
             </CTabPane>
           </CTabContent>
-        </CModalBody>
-        
-        <CModalFooter>
-          <CButton color="secondary" onClick={onClose} disabled={loading}>
-            Cancel
-          </CButton>
-          <CButton color="primary" type="submit" disabled={loading}>
-            {loading && <CSpinner size="sm" className="me-2" />}
-            {geofence ? 'Update' : 'Create'} Geofence
-          </CButton>
-        </CModalFooter>
-      </CForm>
-    </CModal>
+          
+          <div className="d-flex gap-2 mt-3">
+            <CButton color="primary" type="submit" disabled={loading}>
+              {loading && <CSpinner size="sm" className="me-2" />}
+              {geofence ? 'Update' : 'Create'} Geofence
+            </CButton>
+            <CButton color="secondary" onClick={onCancel} disabled={loading}>
+              Cancel
+            </CButton>
+          </div>
+        </CForm>
+      </CCardBody>
+    </CCard>
   );
 };
 
-export default GeofenceForm;
+export default GeofenceInlineForm;
