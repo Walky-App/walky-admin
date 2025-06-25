@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, useMap, MapMouseEvent } from '@vis.gl/react-google-maps';
 
 interface GeofenceMapProps {
   latitude: number;
@@ -71,10 +71,10 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     lng: longitude || -80.1918
   };
 
-  const handleMapClick = useCallback((event: { detail?: { latLng?: { lat(): number; lng(): number } } }) => {
+  const handleMapClick = useCallback((event: MapMouseEvent) => {
     if (!readonly && event.detail?.latLng) {
-      const lat = event.detail.latLng.lat();
-      const lng = event.detail.latLng.lng();
+      const lat = event.detail.latLng.lat;
+      const lng = event.detail.latLng.lng;
       onLocationChange(lat, lng, radius);
     }
   }, [onLocationChange, radius, readonly]);
