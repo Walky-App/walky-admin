@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import { CAlert, CRow, CCol, CFormInput, CFormLabel, CInputGroup, CInputGroupText } from '@coreui/react';
+import { CAlert, CRow, CCol, CFormInput, CFormLabel, CInputGroup, CInputGroupText, CFormSelect } from '@coreui/react';
 
 interface GeofenceMapProps {
   latitude: number;
   longitude: number;
-  radius: number;
-  onLocationChange: (lat: number, lng: number, radius: number) => void;
+  radius?: number;
+  polygon?: Array<{ lat: number; lng: number }>;
+  type: 'radius' | 'polygon';
+  onLocationChange: (lat: number, lng: number, radius?: number, polygon?: Array<{ lat: number; lng: number }>, type?: 'radius' | 'polygon') => void;
   readonly?: boolean;
 }
 
@@ -22,11 +24,14 @@ interface SearchOption {
 
 let map: google.maps.Map;
 let geofenceCircle: google.maps.Circle | null = null;
+let geofencePolygon: google.maps.Polygon | null = null;
 
 const GeofenceMap: React.FC<GeofenceMapProps> = ({
   latitude,
   longitude,
-  radius,
+  radius = 100,
+  polygon,
+  type,
   onLocationChange,
   readonly = false
 }) => {
@@ -34,15 +39,25 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
   const [selectedOptions, setSelectedOptions] = useState<SearchOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [localRadius, setLocalRadius] = useState<string>(radius.toString());
+  const [geofenceType, setGeofenceType] = useState<'radius' | 'polygon'>(type);
   const mapRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const clearGeofenceShapes = useCallback(() => {
+    if (geofenceCircle) {
+      geofenceCircle.setMap(null);
+      geofenceCircle = null;
+    }
+    if (geofencePolygon) {
+      geofencePolygon.setMap(null);
+      geofencePolygon = null;
+    }
+  }, []);
 
   const drawGeofenceCircle = useCallback(() => {
     if (!map || !latitude || !longitude || radius <= 0) return;
 
-    if (geofenceCircle) {
-      geofenceCircle.setMap(null);
-    }
+    clearGeofenceShapes();
 
     geofenceCircle = new window.google.maps.Circle({
       center: { lat: latitude, lng: longitude },
@@ -57,14 +72,16 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     });
 
     geofenceCircle.setMap(map);
-    map.setCenter({ lat: latitude, lng: longitude });
 
     if (!readonly && geofenceCircle.getEditable()) {
       geofenceCircle.addListener('radius_changed', () => {
         if (geofenceCircle) {
           const newRadius = Math.round(geofenceCircle.getRadius());
           setLocalRadius(newRadius.toString());
-          onLocationChange(latitude, longitude, newRadius);
+          const center = geofenceCircle.getCenter();
+          if (center) {
+            onLocationChange(center.lat(), center.lng(), newRadius, undefined, 'radius');
+          }
         }
       });
 
@@ -73,12 +90,53 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
           const center = geofenceCircle.getCenter();
           if (center) {
             const currentRadius = Math.round(geofenceCircle.getRadius());
-            onLocationChange(center.lat(), center.lng(), currentRadius);
+            onLocationChange(center.lat(), center.lng(), currentRadius, undefined, 'radius');
           }
         }
       });
     }
-  }, [latitude, longitude, radius, onLocationChange, readonly]);
+  }, [latitude, longitude, radius, onLocationChange, readonly, clearGeofenceShapes]);
+
+  const drawGeofencePolygon = useCallback((polygonCoords: Array<{ lat: number; lng: number }>) => {
+    if (!map || !polygonCoords || polygonCoords.length < 3) return;
+
+    clearGeofenceShapes();
+
+    geofencePolygon = new window.google.maps.Polygon({
+      paths: polygonCoords,
+      strokeColor: '#007bff',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#007bff',
+      fillOpacity: 0.2,
+      editable: !readonly,
+      clickable: false
+    });
+
+    geofencePolygon.setMap(map);
+
+    const bounds = new window.google.maps.LatLngBounds();
+    polygonCoords.forEach(coord => bounds.extend(coord));
+    map.fitBounds(bounds);
+
+    if (!readonly && geofencePolygon.getEditable()) {
+      geofencePolygon.addListener('paths_changed', () => {
+        if (geofencePolygon) {
+          const paths = geofencePolygon.getPaths();
+          if (paths.getLength() > 0) {
+            const path = paths.getAt(0);
+            const newPolygon: Array<{ lat: number; lng: number }> = [];
+            for (let i = 0; i < path.getLength(); i++) {
+              const vertex = path.getAt(i);
+              newPolygon.push({ lat: vertex.lat(), lng: vertex.lng() });
+            }
+            const center = bounds.getCenter();
+            onLocationChange(center.lat(), center.lng(), undefined, newPolygon, 'polygon');
+          }
+        }
+      });
+    }
+  }, [onLocationChange, readonly, clearGeofenceShapes]);
 
   const initMap = useCallback(() => {
     if (!mapRef.current || !window.google?.maps) return;
@@ -101,13 +159,19 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
         if (event.latLng) {
           const lat = event.latLng.lat();
           const lng = event.latLng.lng();
-          onLocationChange(lat, lng, radius);
+          if (geofenceType === 'radius') {
+            onLocationChange(lat, lng, radius, undefined, 'radius');
+          }
         }
       });
     }
 
-    drawGeofenceCircle();
-  }, [latitude, longitude, radius, onLocationChange, readonly, drawGeofenceCircle]);
+    if (geofenceType === 'radius') {
+      drawGeofenceCircle();
+    } else if (geofenceType === 'polygon' && polygon && polygon.length > 0) {
+      drawGeofencePolygon(polygon);
+    }
+  }, [latitude, longitude, radius, polygon, geofenceType, onLocationChange, readonly, drawGeofenceCircle, drawGeofencePolygon]);
 
   const handleSearch = useCallback((query: string) => {
     if (!query) {
@@ -139,6 +203,28 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
     }, 500);
   }, []);
 
+  const renderCoordinates = useCallback((coordinates: number[][][] | number[][]) => {
+    const coords: Array<{ lat: number; lng: number }> = [];
+    let position = 0;
+    
+    const processCoords = (coordArray: number[][]) => {
+      coordArray.forEach((location) => {
+        if (position % 10 === 0) {
+          coords.push({ lat: location[1], lng: location[0] });
+        }
+        position++;
+      });
+    };
+
+    if (Array.isArray(coordinates[0][0])) {
+      processCoords(coordinates[0] as number[][]);
+    } else {
+      processCoords(coordinates as number[][]);
+    }
+    
+    return coords;
+  }, []);
+
   const handleSelectionChange = useCallback((selected: SearchOption[]) => {
     setSelectedOptions(selected);
     
@@ -147,26 +233,53 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       const lat = parseFloat(option.lat);
       const lng = parseFloat(option.lon);
       
-      onLocationChange(lat, lng, radius);
+      if (option.geojson && (option.geojson.type === "MultiPolygon" || option.geojson.type === "Polygon")) {
+        const polygonCoords = renderCoordinates(option.geojson.coordinates);
+        if (polygonCoords.length > 2) {
+          setGeofenceType('polygon');
+          onLocationChange(lat, lng, undefined, polygonCoords, 'polygon');
+          if (map) {
+            const bounds = new window.google.maps.LatLngBounds();
+            polygonCoords.forEach(coord => bounds.extend(coord));
+            map.fitBounds(bounds);
+          }
+          return;
+        }
+      }
+      
+      onLocationChange(lat, lng, radius, undefined, geofenceType);
       
       if (map) {
         map.setCenter({ lat, lng });
         map.setZoom(15);
       }
     }
-  }, [onLocationChange, radius]);
+  }, [onLocationChange, radius, geofenceType, renderCoordinates]);
 
   const handleRadiusChange = useCallback((value: string) => {
     setLocalRadius(value);
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue) && numericValue >= 10 && numericValue <= 10000) {
-      onLocationChange(latitude, longitude, numericValue);
+      onLocationChange(latitude, longitude, numericValue, undefined, 'radius');
+      
+      if (geofenceCircle && !readonly) {
+        geofenceCircle.setRadius(numericValue);
+      }
     }
-  }, [latitude, longitude, onLocationChange]);
+  }, [latitude, longitude, onLocationChange, readonly]);
+
+  const handleTypeChange = useCallback((newType: 'radius' | 'polygon') => {
+    setGeofenceType(newType);
+    onLocationChange(latitude, longitude, newType === 'radius' ? radius : undefined, newType === 'polygon' ? polygon : undefined, newType);
+  }, [latitude, longitude, radius, polygon, onLocationChange]);
 
   useEffect(() => {
     setLocalRadius(radius.toString());
   }, [radius]);
+
+  useEffect(() => {
+    setGeofenceType(type);
+  }, [type]);
 
   useEffect(() => {
     const checkGoogleMaps = () => {
@@ -183,16 +296,17 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      if (geofenceCircle) {
-        geofenceCircle.setMap(null);
-        geofenceCircle = null;
-      }
+      clearGeofenceShapes();
     };
-  }, [initMap]);
+  }, [initMap, clearGeofenceShapes]);
 
   useEffect(() => {
-    drawGeofenceCircle();
-  }, [drawGeofenceCircle]);
+    if (geofenceType === 'radius') {
+      drawGeofenceCircle();
+    } else if (geofenceType === 'polygon' && polygon && polygon.length > 0) {
+      drawGeofencePolygon(polygon);
+    }
+  }, [geofenceType, drawGeofenceCircle, drawGeofencePolygon, polygon]);
 
   if (!window.google?.maps) {
     return (
@@ -221,9 +335,25 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
       <CRow className="mb-3">
         <CCol>
           <CAlert color="info" className="mb-3">
-            <strong>Instructions:</strong> Search for a location below or click directly on the map to set the geofence center. 
-            {!readonly && " You can drag the circle to move it or resize it by dragging the edge, or manually adjust the radius below."}
+            <strong>Instructions:</strong> Search for a location below or click directly on the map to set the geofence. 
+            {!readonly && geofenceType === 'radius' && " You can drag the circle to move it or resize it by dragging the edge, or manually adjust the radius below."}
+            {!readonly && geofenceType === 'polygon' && " You can drag the polygon vertices to modify the shape."}
+            {" Searching for places with boundaries will automatically create polygons."}
           </CAlert>
+          
+          {!readonly && (
+            <div className="mb-3">
+              <CFormLabel htmlFor="geofence-type">Geofence Type</CFormLabel>
+              <CFormSelect
+                id="geofence-type"
+                value={geofenceType}
+                onChange={(e) => handleTypeChange(e.target.value as 'radius' | 'polygon')}
+              >
+                <option value="radius">Radius (Circle)</option>
+                <option value="polygon">Polygon (Custom Shape)</option>
+              </CFormSelect>
+            </div>
+          )}
           
           <AsyncTypeahead
             id="location-search"
@@ -243,7 +373,7 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
             className="mb-3"
           />
           
-          {!readonly && (
+          {!readonly && geofenceType === 'radius' && (
             <div className="mb-3">
               <CFormLabel htmlFor="radius-input">Geofence Radius</CFormLabel>
               <CInputGroup>
@@ -262,6 +392,14 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
               <small className="text-muted">
                 Minimum: 10m, Maximum: 10,000m (10km)
               </small>
+            </div>
+          )}
+          
+          {!readonly && geofenceType === 'polygon' && (
+            <div className="mb-3">
+              <CAlert color="warning">
+                <strong>Polygon Mode:</strong> Search for a location with boundaries to automatically create a polygon, or manually draw one by clicking points on the map.
+              </CAlert>
             </div>
           )}
         </CCol>

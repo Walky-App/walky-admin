@@ -55,6 +55,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
     latitude: 25.7617,
     longitude: -80.1918,
     radius: 100,
+    type: 'radius',
     status: 'active'
   });
   
@@ -69,6 +70,8 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
         latitude: geofence.latitude,
         longitude: geofence.longitude,
         radius: geofence.radius,
+        polygon: geofence.polygon,
+        type: geofence.type,
         status: geofence.status
       });
     } else {
@@ -78,6 +81,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
         latitude: 25.7617,
         longitude: -80.1918,
         radius: 100,
+        type: 'radius',
         status: 'active'
       });
     }
@@ -103,7 +107,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
       newErrors.longitude = 'Longitude must be between -180 and 180';
     }
 
-    if (formData.radius <= 0 || formData.radius > 10000) {
+    if (formData.type === 'radius' && (!formData.radius || formData.radius <= 0 || formData.radius > 10000)) {
       newErrors.radius = 'Radius must be between 1 and 10000 meters';
     }
 
@@ -132,12 +136,14 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
     }
   };
 
-  const handleMapLocationChange = (lat: number, lng: number, radius: number) => {
+  const handleMapLocationChange = (lat: number, lng: number, radius?: number, polygon?: Array<{ lat: number; lng: number }>, type?: 'radius' | 'polygon') => {
     setFormData(prev => ({
       ...prev,
       latitude: lat,
       longitude: lng,
-      radius: radius
+      radius: type === 'radius' ? radius : prev.radius,
+      polygon: type === 'polygon' ? polygon : prev.polygon,
+      type: type || prev.type
     }));
     
     setErrors(prev => ({
@@ -184,7 +190,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
           <CTabContent>
             <CTabPane visible={activeTab === 'form'}>
               <CRow className="mb-3">
-                <CCol md={6}>
+                <CCol md={4}>
                   <CFormLabel htmlFor="name">Name *</CFormLabel>
                   <CFormInput
                     id="name"
@@ -199,7 +205,19 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                   )}
                 </CCol>
                 
-                <CCol md={6}>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="type">Geofence Type</CFormLabel>
+                  <CFormSelect
+                    id="type"
+                    value={formData.type}
+                    onChange={(e) => handleInputChange('type', e.target.value as 'radius' | 'polygon')}
+                  >
+                    <option value="radius">Radius (Circle)</option>
+                    <option value="polygon">Polygon</option>
+                  </CFormSelect>
+                </CCol>
+                
+                <CCol md={4}>
                   <CFormLabel htmlFor="status">Status</CFormLabel>
                   <CFormSelect
                     id="status"
@@ -230,7 +248,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
               </CRow>
 
               <CRow className="mb-3">
-                <CCol md={4}>
+                <CCol md={6}>
                   <CFormLabel htmlFor="latitude">Latitude *</CFormLabel>
                   <CFormInput
                     id="latitude"
@@ -246,7 +264,7 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                   )}
                 </CCol>
                 
-                <CCol md={4}>
+                <CCol md={6}>
                   <CFormLabel htmlFor="longitude">Longitude *</CFormLabel>
                   <CFormInput
                     id="longitude"
@@ -261,27 +279,54 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
                     <div className="invalid-feedback d-block">{errors.longitude}</div>
                   )}
                 </CCol>
-                
-                <CCol md={4}>
-                  <CFormLabel htmlFor="radius">Radius (meters) *</CFormLabel>
-                  <CFormInput
-                    id="radius"
-                    type="number"
-                    min="1"
-                    max="10000"
-                    value={formData.radius}
-                    onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
-                    invalid={!!errors.radius}
-                    placeholder="100"
-                  />
-                  {errors.radius && (
-                    <div className="invalid-feedback d-block">{errors.radius}</div>
-                  )}
-                </CCol>
               </CRow>
+
+              {formData.type === 'radius' && (
+                <CRow className="mb-3">
+                  <CCol md={6}>
+                    <CFormLabel htmlFor="radius">Radius (meters) *</CFormLabel>
+                    <CFormInput
+                      id="radius"
+                      type="number"
+                      min="1"
+                      max="10000"
+                      value={formData.radius || 100}
+                      onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
+                      invalid={!!errors.radius}
+                      placeholder="100"
+                    />
+                    {errors.radius && (
+                      <div className="invalid-feedback d-block">{errors.radius}</div>
+                    )}
+                  </CCol>
+                  <CCol md={6}>
+                    <CFormLabel>Geofence Info</CFormLabel>
+                    <div className="form-control-plaintext">
+                      Circle with {formData.radius || 100}m radius
+                    </div>
+                  </CCol>
+                </CRow>
+              )}
+
+              {formData.type === 'polygon' && (
+                <CRow className="mb-3">
+                  <CCol>
+                    <CFormLabel>Polygon Info</CFormLabel>
+                    <div className="form-control-plaintext">
+                      {formData.polygon && formData.polygon.length > 0 
+                        ? `Polygon with ${formData.polygon.length} vertices`
+                        : 'Use map selection to draw polygon or search for a location with boundaries'
+                      }
+                    </div>
+                  </CCol>
+                </CRow>
+              )}
 
               <CAlert color="info" className="mb-0">
                 <strong>Tip:</strong> Use decimal degrees for coordinates. For example, FIU main campus is approximately at 25.7617, -80.1918.
+                {formData.type === 'polygon' && (
+                  <><br/><strong>Polygon Mode:</strong> Search for locations to automatically create polygons from boundaries, or use the map to manually draw polygon shapes.</>
+                )}
               </CAlert>
             </CTabPane>
             
@@ -289,37 +334,50 @@ const GeofenceForm: React.FC<GeofenceFormProps> = ({
               <CRow className="mb-3">
                 <CCol>
                   <CAlert color="info" className="mb-3">
-                    <strong>Instructions:</strong> Click on the map to set the geofence center. Use the radius field below to adjust the size.
+                    <strong>Instructions:</strong> 
+                    {formData.type === 'radius' 
+                      ? 'Click on the map to set the geofence center. Use the radius field below to adjust the size.'
+                      : 'Search for locations with boundaries to auto-create polygons, or click on the map to manually draw polygon vertices.'
+                    }
                   </CAlert>
                   <GeofenceMap
                     latitude={formData.latitude}
                     longitude={formData.longitude}
                     radius={formData.radius}
+                    polygon={formData.polygon}
+                    type={formData.type}
                     onLocationChange={handleMapLocationChange}
                   />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                <CCol md={6}>
-                  <CFormLabel htmlFor="map-radius">Radius (meters) *</CFormLabel>
-                  <CFormInput
-                    id="map-radius"
-                    type="number"
-                    min="1"
-                    max="10000"
-                    value={formData.radius}
-                    onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
-                    invalid={!!errors.radius}
-                    placeholder="100"
-                  />
-                  {errors.radius && (
-                    <div className="invalid-feedback d-block">{errors.radius}</div>
-                  )}
-                </CCol>
-                <CCol md={6}>
-                  <CFormLabel>Selected Coordinates</CFormLabel>
+                {formData.type === 'radius' && (
+                  <CCol md={6}>
+                    <CFormLabel htmlFor="map-radius">Radius (meters) *</CFormLabel>
+                    <CFormInput
+                      id="map-radius"
+                      type="number"
+                      min="1"
+                      max="10000"
+                      value={formData.radius || 100}
+                      onChange={(e) => handleInputChange('radius', parseInt(e.target.value) || 0)}
+                      invalid={!!errors.radius}
+                      placeholder="100"
+                    />
+                    {errors.radius && (
+                      <div className="invalid-feedback d-block">{errors.radius}</div>
+                    )}
+                  </CCol>
+                )}
+                <CCol md={formData.type === 'radius' ? 6 : 12}>
+                  <CFormLabel>
+                    {formData.type === 'radius' ? 'Selected Coordinates' : 'Center Coordinates'}
+                  </CFormLabel>
                   <div className="form-control-plaintext">
                     <code>{formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}</code>
+                    {formData.type === 'polygon' && formData.polygon && formData.polygon.length > 0 && (
+                      <><br/><small className="text-muted">Polygon: {formData.polygon.length} vertices</small></>
+                    )}
                   </div>
                 </CCol>
               </CRow>
