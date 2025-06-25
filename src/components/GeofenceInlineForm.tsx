@@ -19,7 +19,7 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilMap, cilPencil } from '@coreui/icons';
 import { Geofence, GeofenceFormData } from '../types/geofence';
-import GeofenceMap from './GeofenceMap';
+import GeofenceMapFree from './GeofenceMapFree';
 
 interface GeofenceInlineFormProps {
   onSubmit: (data: GeofenceFormData) => void;
@@ -313,7 +313,7 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
                   : 'Search for locations with boundaries to auto-create polygons, or click on the map to manually draw polygon vertices.'
                 }
               </CAlert>
-              <GeofenceMap
+              <GeofenceMapFree
                 latitude={formData.latitude}
                 longitude={formData.longitude}
                 radius={formData.radius}
