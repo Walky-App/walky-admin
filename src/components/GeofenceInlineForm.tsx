@@ -11,21 +11,18 @@ import {
   CFormLabel,
   CSpinner,
   CAlert,
-  CNav,
-  CNavItem,
-  CNavLink,
   CTabContent,
   CTabPane,
+  CModal,
+  CModalHeader,
+  CModalBody,
+  CModalFooter,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import {
-  cilCode,
-  cilPencil,
-  cilCloudDownload,
-  cilExternalLink,
-} from "@coreui/icons";
+import { cilCloudDownload, cilExternalLink } from "@coreui/icons";
 import { Geofence, GeofenceFormData } from "../types/geofence";
 import { geofenceService } from "../services/geofenceService";
+import GeojsonMapEditor from "./GeojsonMapEditor";
 
 interface GeofenceInlineFormProps {
   onSubmit: (data: GeofenceFormData) => void;
@@ -61,7 +58,6 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [activeTab, setActiveTab] = useState<"form" | "json">("form");
   const [geojsonInput, setGeojsonInput] = useState<string>("");
 
   useEffect(() => {
@@ -299,31 +295,8 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
 
   return (
     <CForm onSubmit={handleSubmit}>
-      <CNav variant="tabs" className="mb-3">
-        <CNavItem>
-          <CNavLink
-            active={activeTab === "form"}
-            onClick={() => setActiveTab("form")}
-            style={{ cursor: "pointer" }}
-          >
-            <CIcon icon={cilPencil} className="me-2" />
-            Form Entry
-          </CNavLink>
-        </CNavItem>
-        <CNavItem>
-          <CNavLink
-            active={activeTab === "json"}
-            onClick={() => setActiveTab("json")}
-            style={{ cursor: "pointer" }}
-          >
-            <CIcon icon={cilCode} className="me-2" />
-            GeoJSON Import/Export
-          </CNavLink>
-        </CNavItem>
-      </CNav>
-
       <CTabContent>
-        <CTabPane visible={activeTab === "form"}>
+        <CTabPane visible={true}>
           <CRow className="mb-3">
             <CCol md={6}>
               <CFormLabel htmlFor="name">Name *</CFormLabel>
@@ -478,105 +451,36 @@ const GeofenceInlineForm: React.FC<GeofenceInlineFormProps> = ({
           )}
         </CTabPane>
 
-        <CTabPane visible={activeTab === "json"}>
+        <CTabPane visible={true}>
           <CRow className="mb-3">
             <CCol>
-              <CAlert color="info" className="mb-3">
-                <strong>GeoJSON Workflow:</strong> Import GeoJSON data to
-                populate the form, or export current form data as GeoJSON for
-                use with external tools like geojson.io.
-              </CAlert>
-            </CCol>
-          </CRow>
+              <CFormLabel>Editar GeoJSON no mapa</CFormLabel>
 
-          <CRow className="mb-3">
-            <CCol md={6}>
-              <CFormLabel htmlFor="geojson-import">Import GeoJSON</CFormLabel>
-              <CFormTextarea
-                id="geojson-import"
-                rows={8}
-                value={geojsonInput}
-                onChange={(e) => handleGeojsonInputChange(e.target.value)}
-                invalid={!!errors.geojson}
-                placeholder='Paste GeoJSON Feature here, e.g.:
-{
-  "type": "Feature",
-  "properties": {
-    "name": "Campus Area",
-    "description": "Main campus geofence"
-  },
-  "geometry": {
-    "type": "Point",
-    "coordinates": [-80.1918, 25.7617]
-  }
-}'
-              />
-              {errors.geojson && (
-                <div className="invalid-feedback d-block">{errors.geojson}</div>
-              )}
-              <div className="mt-2">
-                <CButton
-                  color="primary"
-                  size="sm"
-                  onClick={parseGeojsonInput}
-                  disabled={!geojsonInput.trim()}
-                >
-                  Import to Form
-                </CButton>
+              <div style={{ minHeight: 400, border: "1px solid #eee" }}>
+                <GeojsonMapEditor
+                  geojson={geojsonInput ? JSON.parse(geojsonInput) : null}
+                  onChange={(geojson) =>
+                    setGeojsonInput(JSON.stringify(geojson))
+                  }
+                />
               </div>
             </CCol>
-
-            <CCol md={6}>
-              <CFormLabel>Export Current Data</CFormLabel>
-              <div className="d-grid gap-2">
-                <CButton
-                  color="success"
-                  variant="outline"
-                  onClick={exportToGeojson}
-                  disabled={!formData.name || !formData.description}
-                >
-                  <CIcon icon={cilCloudDownload} className="me-2" />
-                  Download GeoJSON
-                </CButton>
-
-                <CButton
-                  color="info"
-                  variant="outline"
-                  onClick={openInGeojsonIo}
-                  disabled={!formData.name || !formData.description}
-                >
-                  <CIcon icon={cilExternalLink} className="me-2" />
-                  Open in geojson.io
-                </CButton>
-              </div>
-
-              <div className="mt-3">
-                <CFormLabel>Current Coordinates</CFormLabel>
-                <div className="form-control-plaintext">
-                  <code>
-                    {formData.latitude.toFixed(6)},{" "}
-                    {formData.longitude.toFixed(6)}
-                  </code>
-                  {formData.type === "radius" && (
-                    <>
-                      <br />
-                      <small className="text-muted">
-                        Radius: {formData.radius}m
-                      </small>
-                    </>
-                  )}
-                  {formData.type === "polygon" &&
-                    formData.polygon &&
-                    formData.polygon.length > 0 && (
-                      <>
-                        <br />
-                        <small className="text-muted">
-                          Polygon: {formData.polygon.length} vertices
-                        </small>
-                      </>
-                    )}
-                </div>
-              </div>
+            <CCol md={4}>
+              <CFormLabel>GeoJSON gerado</CFormLabel>
+              <pre
+                style={{
+                  background: "#f8f9fa",
+                  padding: 10,
+                  borderRadius: 4,
+                  fontSize: 12,
+                  maxHeight: 400,
+                  overflow: "auto",
+                }}
+              >
+                {geojsonInput
+                  ? JSON.stringify(JSON.parse(geojsonInput), null, 2)
+                  : "// Nenhum GeoJSON gerado"}
+              </pre>
             </CCol>
           </CRow>
         </CTabPane>
