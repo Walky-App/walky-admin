@@ -1,13 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Circle, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
-
-delete (L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: () => string })._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+import React, { useCallback, useEffect, useRef } from 'react';
+import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
 
 interface GeofenceMapProps {
   latitude: number;
@@ -17,24 +9,53 @@ interface GeofenceMapProps {
   readonly?: boolean;
 }
 
-interface MapClickHandlerProps {
-  onLocationChange: (lat: number, lng: number, radius: number) => void;
-  currentRadius: number;
-  readonly?: boolean;
+interface CircleProps {
+  center: { lat: number; lng: number };
+  radius: number;
+  fillColor?: string;
+  fillOpacity?: number;
+  strokeColor?: string;
+  strokeWeight?: number;
+  clickable?: boolean;
 }
 
-const MapClickHandler: React.FC<MapClickHandlerProps> = ({ 
-  onLocationChange, 
-  currentRadius, 
-  readonly 
+const Circle: React.FC<CircleProps> = ({
+  center,
+  radius,
+  fillColor = '#007bff',
+  fillOpacity = 0.2,
+  strokeColor = '#007bff',
+  strokeWeight = 2,
+  clickable = false
 }) => {
-  useMapEvents({
-    click: (e) => {
-      if (!readonly) {
-        onLocationChange(e.latlng.lat, e.latlng.lng, currentRadius);
+  const map = useMap();
+  const circleRef = useRef<google.maps.Circle | null>(null);
+
+  useEffect(() => {
+    if (!map) return;
+
+    if (circleRef.current) {
+      circleRef.current.setMap(null);
+    }
+
+    circleRef.current = new google.maps.Circle({
+      center,
+      radius,
+      fillColor,
+      fillOpacity,
+      strokeColor,
+      strokeWeight,
+      clickable,
+      map
+    });
+
+    return () => {
+      if (circleRef.current) {
+        circleRef.current.setMap(null);
       }
-    },
-  });
+    };
+  }, [map, center, radius, fillColor, fillOpacity, strokeColor, strokeWeight, clickable]);
+
   return null;
 };
 
@@ -45,60 +66,67 @@ const GeofenceMap: React.FC<GeofenceMapProps> = ({
   onLocationChange,
   readonly = false
 }) => {
-  const mapRef = useRef<L.Map>(null);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([
-    latitude || 25.7617,
-    longitude || -80.1918
-  ]);
-
-  useEffect(() => {
-    if (latitude && longitude) {
-      setMapCenter([latitude, longitude]);
-      if (mapRef.current) {
-        setTimeout(() => {
-          mapRef.current?.invalidateSize();
-        }, 100);
-      }
-    }
-  }, [latitude, longitude]);
-
-  const handleLocationChange = (lat: number, lng: number, newRadius: number) => {
-    onLocationChange(lat, lng, newRadius);
-    setMapCenter([lat, lng]);
+  const center = {
+    lat: latitude || 25.7617,
+    lng: longitude || -80.1918
   };
+
+  const handleMapClick = useCallback((event: { detail?: { latLng?: { lat(): number; lng(): number } } }) => {
+    if (!readonly && event.detail?.latLng) {
+      const lat = event.detail.latLng.lat();
+      const lng = event.detail.latLng.lng();
+      onLocationChange(lat, lng, radius);
+    }
+  }, [onLocationChange, radius, readonly]);
+
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string;
+
+  if (!apiKey) {
+    return (
+      <div style={{ 
+        height: '400px', 
+        width: '100%', 
+        borderRadius: '8px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#f8f9fa',
+        border: '1px solid #dee2e6'
+      }}>
+        <div className="text-center">
+          <p className="mb-2">Google Maps API key not configured</p>
+          <small className="text-muted">
+            Please set VITE_GOOGLE_MAPS_API_KEY in your .env file
+          </small>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ height: '400px', width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
-      <MapContainer
-        center={mapCenter}
-        zoom={15}
-        style={{ height: '100%', width: '100%' }}
-        ref={mapRef}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        
-        <MapClickHandler 
-          onLocationChange={handleLocationChange}
-          currentRadius={radius}
-          readonly={readonly}
-        />
-        
-        {latitude && longitude && radius > 0 && (
-          <Circle
-            center={[latitude, longitude]}
-            radius={radius}
-            pathOptions={{
-              color: '#007bff',
-              fillColor: '#007bff',
-              fillOpacity: 0.2,
-              weight: 2
-            }}
-          />
-        )}
-      </MapContainer>
+      <APIProvider apiKey={apiKey}>
+        <Map
+          defaultCenter={center}
+          defaultZoom={15}
+          style={{ width: '100%', height: '100%' }}
+          onClick={handleMapClick}
+          gestureHandling="greedy"
+          disableDefaultUI={false}
+        >
+          {latitude && longitude && radius > 0 && (
+            <Circle
+              center={{ lat: latitude, lng: longitude }}
+              radius={radius}
+              fillColor="#007bff"
+              fillOpacity={0.2}
+              strokeColor="#007bff"
+              strokeWeight={2}
+              clickable={false}
+            />
+          )}
+        </Map>
+      </APIProvider>
     </div>
   );
 };
