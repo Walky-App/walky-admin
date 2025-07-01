@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   CCard,
   CCardHeader,
@@ -13,88 +13,26 @@ import {
   CAlert,
   CFormText,
   CSpinner,
-} from '@coreui/react';
-import { useTheme } from '../hooks/useTheme';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import CIcon from '@coreui/icons-react';
-import { cilSave, cilX } from '@coreui/icons';
-import MultiSelectDropdown from '../components/MultiSelectDropdown';
-import ImageUpload from '../components/ImageUpload';
+  CFormFeedback,
+} from "@coreui/react";
+import { useTheme } from "../hooks/useTheme";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import CIcon from "@coreui/icons-react";
+import { cilSave, cilX, cilArrowLeft } from "@coreui/icons";
+import MultiSelectDropdown from "../components/MultiSelectDropdown";
+import CampusBoundary from "./CampusBoundary";
+import { CampusDetailsSkeleton } from "../components";
+import { campusService } from "../services/campusService";
+import { ambassadorService } from "../services/ambassadorService";
+import { CampusFormData, Campus as CampusType } from "../types/campus";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../lib/queryClient";
 
-// Fake campus data (would be fetched from API in a real app)
-const fakeCampuses = [
-  {
-    id: '1',
-    name: 'University of California, Berkeley',
-    location: 'Berkeley, CA',
-    address: '110 Sproul Hall, Berkeley, CA 94720',
-    students: 42501,
-    status: 'active',
-    createdAt: '2023-05-10',
-    contact: {
-      name: 'John Smith',
-      email: 'jsmith@berkeley.edu',
-      phone: '(510) 642-6000'
-    },
-    description: 'The University of California, Berkeley is a public land-grant research university in Berkeley, California.',
-    website: 'https://www.berkeley.edu',
-    timezone: 'America/Los_Angeles',
-    logo: null,
-    ambassadors: ['s1', 's3']
-  },
-  {
-    id: '2',
-    name: 'Stanford University',
-    location: 'Stanford, CA',
-    address: '450 Serra Mall, Stanford, CA 94305',
-    students: 16937,
-    status: 'active',
-    createdAt: '2023-06-15',
-    contact: {
-      name: 'Jane Doe',
-      email: 'jdoe@stanford.edu',
-      phone: '(650) 723-2300'
-    },
-    description: 'Stanford University is a private research university in Stanford, California.',
-    website: 'https://www.stanford.edu',
-    timezone: 'America/Los_Angeles',
-    logo: null,
-    ambassadors: ['s2', 's4']
-  },
-  // Other campuses would be here
-];
-
-// Fake student data
-const fakeStudents = [
-  { id: 's1', name: 'Alex Johnson', email: 'ajohnson@berkeley.edu' },
-  { id: 's2', name: 'Maria Garcia', email: 'mgarcia@stanford.edu' },
-  { id: 's3', name: 'David Lee', email: 'dlee@berkeley.edu' },
-  { id: 's4', name: 'Sophia Patel', email: 'spatel@stanford.edu' },
-  { id: 's5', name: 'James Wilson', email: 'jwilson@berkeley.edu' },
-  { id: 's6', name: 'Emma Chen', email: 'echen@stanford.edu' },
-];
-
-// Type definitions
-interface CampusContact {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-interface Campus {
-  id: string;
-  name: string;
-  location: string;
-  address: string;
-  students: number;
-  status: 'active' | 'inactive' | 'pending' | string;
-  createdAt: string;
-  contact: CampusContact;
-  description: string;
-  website: string;
-  timezone: string;
-  logo: File | null;
-  ambassadors: string[];
+interface CampusBoundaryData {
+  geometry: {
+    type: string;
+    coordinates: number[][][];
+  };
 }
 
 interface CampusDetailsProps {
@@ -107,322 +45,782 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
-  
+  const queryClient = useQueryClient();
+
+  // Get ambassadors for the dropdown
+  const { data: ambassadors = [], isLoading: loadingAmbassadors } = useQuery({
+    queryKey: queryKeys.ambassadors,
+    queryFn: ambassadorService.getAll,
+  });
+
+  // Mutations for create and update
+  const createCampusMutation = useMutation({
+    mutationFn: (data: CampusFormData) => campusService.create(data),
+    onSuccess: (result) => {
+      // Invalidate campuses query to refresh the list
+      queryClient.invalidateQueries({ queryKey: queryKeys.campuses });
+      setSaveSuccess(true);
+      setTimeout(() => {
+        navigate("/campuses", {
+          state: {
+            successMessage: `Campus "${
+              result.campus_name || result.name
+            }" created successfully!`,
+          },
+        });
+      }, 1500);
+    },
+    onError: (error) => {
+      handleSaveError(error);
+    },
+  });
+
+  const updateCampusMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CampusFormData> }) =>
+      campusService.update(id, data),
+    onSuccess: (result) => {
+      // Invalidate campuses query to refresh the list
+      queryClient.invalidateQueries({ queryKey: queryKeys.campuses });
+      setSaveSuccess(true);
+      setTimeout(() => {
+        navigate("/campuses", {
+          state: {
+            successMessage: `Campus "${
+              result.campus_name || result.name
+            }" updated successfully!`,
+          },
+        });
+      }, 1500);
+    },
+    onError: (error) => {
+      handleSaveError(error);
+    },
+  });
+
+  // Handle save errors
+  const handleSaveError = (error: unknown) => {
+    console.error("Failed to save campus:", error);
+
+    // Enhanced error handling to show specific validation errors
+    let errorMessage = "Failed to save campus. Please try again.";
+
+    if (error instanceof Error) {
+      errorMessage = `Failed to save campus: ${error.message}`;
+    } else if (typeof error === "object" && error !== null) {
+      const errorObj = error as {
+        response?: {
+          data?: {
+            message?: string;
+            errors?: Record<string, unknown>;
+            error?: string;
+            details?: unknown;
+          };
+          status?: number;
+        };
+      };
+
+      // Log full error details for debugging
+      console.error("🔍 Full error response:", errorObj.response?.data);
+      console.error("🔍 Error status:", errorObj.response?.status);
+
+      if (errorObj.response?.data?.message) {
+        errorMessage = `Failed to save campus: ${errorObj.response.data.message}`;
+      } else if (errorObj.response?.data?.error) {
+        errorMessage = `Failed to save campus: ${errorObj.response.data.error}`;
+      } else if (errorObj.response?.data?.errors) {
+        // Handle validation errors
+        const validationErrors = errorObj.response.data.errors;
+        const errorMessages = Object.keys(validationErrors).map((key) => {
+          const error = validationErrors[key];
+          const errorStr =
+            typeof error === "object" && error !== null && "message" in error
+              ? (error as { message: string }).message
+              : String(error);
+          return `${key}: ${errorStr}`;
+        });
+        errorMessage = `Validation failed: ${errorMessages.join(", ")}`;
+      } else if (errorObj.response?.status === 400) {
+        errorMessage =
+          "Bad Request: Please check all required fields are filled correctly.";
+      }
+    }
+
+    setSaveError(errorMessage);
+  };
+
   // State for form data
-  const [campus, setCampus] = useState<Campus | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [campus, setCampus] = useState<CampusType | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [saveError, setSaveError] = useState('');
+  const [saveError, setSaveError] = useState("");
   const [selectedAmbassadors, setSelectedAmbassadors] = useState<string[]>([]);
-  const [loadingStudents, setLoadingStudents] = useState(false);
-  
+
+  // New state for validation errors
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // State for campus polygon
+  const [campusPolygon, setCampusPolygon] = useState<CampusBoundaryData | null>(
+    null
+  );
+  const [polygonError, setPolygonError] = useState<string>("");
+
+  // Helper functions to convert between time formats
+  const minutesToTimeString = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const timeStringToMinutes = (timeString: string): number => {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
   // Fetch campus data on mount
   useEffect(() => {
-    // Determine the campusId to use - prefer prop, fallback to URL params
-    const effectiveCampusId = campusId || id || new URLSearchParams(location.search).get('id') || '';
-    
-    // In a real app, this would be an API call
-    const foundCampus = fakeCampuses.find(c => c.id === effectiveCampusId);
-    
-    if (foundCampus) {
-      setCampus(foundCampus);
-      setSelectedAmbassadors(foundCampus.ambassadors);
-    } else {
-      // If no campus is found, create a new one with default values
+    const loadCampusData = () => {
+      // Check if campus data was passed through navigation state
+      const campusDataFromState = location.state?.campusData;
+
+      if (campusDataFromState) {
+        console.log(
+          "📋 Using campus data from navigation state:",
+          campusDataFromState
+        );
+        setCampus(campusDataFromState);
+
+        // Set selected ambassadors from ambassador_ids
+        const ambassadorIds = campusDataFromState.ambassador_ids || [];
+        setSelectedAmbassadors(ambassadorIds);
+
+        // If campus has coordinates, set the polygon
+        if (campusDataFromState.coordinates) {
+          setCampusPolygon({
+            geometry: {
+              type: campusDataFromState.coordinates.type,
+              coordinates: campusDataFromState.coordinates.coordinates,
+            },
+          });
+        }
+      } else {
+        // Create new campus (no campus data in state)
+        createDefaultCampus();
+      }
+    };
+
+    const createDefaultCampus = () => {
+      const randomNum = Math.floor(Math.random() * 1000) + 1;
       setCampus({
-        id: '',
-        name: '',
-        location: '',
-        address: '',
-        students: 0,
-        status: 'active',
-        createdAt: new Date().toISOString().split('T')[0],
-        contact: {
-          name: '',
-          email: '',
-          phone: ''
-        },
-        description: '',
-        website: '',
-        timezone: 'America/New_York',
-        logo: null,
-        ambassadors: []
+        id: `default-${randomNum}`,
+        campus_name: "",
+        city: "",
+        state: "",
+        zip: "",
+        phone_number: "",
+        time_zone: "",
+        image_url: "",
+        address: "",
+        ambassador_ids: [],
+        is_active: true,
+        dawn_to_dusk: [360, 1200],
+        // Legacy fields for compatibility
+        name: "",
+        location: "",
+        status: "",
       });
       setSelectedAmbassadors([]);
-    }
-    
-    // Simulate loading students
-    setLoadingStudents(true);
-    setTimeout(() => {
-      setLoadingStudents(false);
-    }, 800);
-  }, [campusId, id, location.search]);
-  
-  // Handle input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>, field: string) => {
-    if (!campus) return;
-    
-    setCampus({
-      ...campus,
-      [field]: e.target.value
-    });
-  };
-  
-  // Handle contact input changes
-  const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    if (!campus) return;
-    
-    setCampus({
-      ...campus,
-      contact: {
-        ...campus.contact,
-        [field]: e.target.value
-      }
-    });
-  };
-  
-  // Handle logo change
-  const handleLogoChange = (file: File | null) => {
-    if (!campus) return;
-    setCampus({
-      ...campus,
-      logo: file
-    });
-  };
-  
+    };
+
+    loadCampusData();
+  }, [campusId, id, location.search, location.state]);
+
   // Handle ambassadors change
-  const handleAmbassadorsChange = (value: string[]) => {
+  const handleAmbassadorsChange = (ambassadorIds: string[]) => {
     if (!campus) return;
-    setSelectedAmbassadors(value);
+
+    console.log("📋 Selected ambassador IDs:", ambassadorIds);
+    setSelectedAmbassadors(ambassadorIds);
+
+    // Update campus with only the ambassador IDs
     setCampus({
       ...campus,
-      ambassadors: value
+      ambassador_ids: ambassadorIds, // Send only ambassador IDs
     });
   };
-  
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!campus) return;
-    
-    setSaving(true);
-    setSaveSuccess(false);
-    setSaveError('');
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In a real app, this would be saving to the backend
-      console.log('Campus saved:', campus);
-      
-      setSaveSuccess(true);
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (error) {
-      console.error('Failed to save campus:', error);
-      setSaveError('Failed to save campus. Please try again.');
-    } finally {
-      setSaving(false);
+  // Validate form
+  const validateForm = () => {
+    if (!campus) return false;
+
+    const newErrors: Record<string, string> = {};
+
+    // Check campus name (use new field name if available, fallback to legacy)
+    const campusName = campus.campus_name || campus.name || "";
+    if (!campusName.trim()) {
+      newErrors.campus_name = "Campus name is required.";
     }
+
+    // Check required backend fields
+    const city = campus.city || "";
+    if (!city.trim()) {
+      newErrors.city = "City is required.";
+    }
+
+    const state = campus.state || "";
+    if (!state.trim()) {
+      newErrors.state = "State is required.";
+    }
+
+    const zip = campus.zip || "";
+    if (!zip.trim()) {
+      newErrors.zip = "ZIP code is required.";
+    }
+
+    const phoneNumber = campus.phone_number || "";
+    if (!phoneNumber.trim()) {
+      newErrors.phone_number = "Phone number is required.";
+    }
+
+    const timeZone = campus.time_zone || "";
+    if (!timeZone.trim()) {
+      newErrors.time_zone = "Time zone is required.";
+    }
+
+    const address = campus.address || "";
+    if (!address.trim()) {
+      newErrors.address = "Address is required.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-  
+
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!campusPolygon) {
+      setPolygonError(
+        "You must define the campus boundary polygon on the map before saving."
+      );
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
+    if (!campus) return;
+
+    setSaveSuccess(false);
+    setSaveError("");
+
+    // Determine if this is a create or update operation
+    const effectiveCampusId =
+      campusId || id || new URLSearchParams(location.search).get("id") || "";
+
+    const isCreating =
+      !effectiveCampusId || effectiveCampusId.startsWith("default-");
+
+    // Prepare campus data for API
+    const campusData: CampusFormData = {
+      campus_name: campus.campus_name || campus.name || "",
+      image_url:
+        "https://via.placeholder.com/400x200/cccccc/666666?text=Campus+Image", // Provide a proper placeholder URL since backend //requires non-empty image_url // todo: ask about the image
+      ambassador_ids: campus.ambassador_ids || [], // Send only ambassador IDs
+      phone_number: campus.phone_number || "",
+      address: campus.address || "",
+      city: campus.city || "",
+      state: campus.state || "",
+      zip: campus.zip || "",
+      coordinates: campusPolygon?.geometry
+        ? {
+            type: campusPolygon.geometry.type,
+            coordinates: campusPolygon.geometry.coordinates,
+          }
+        : undefined,
+      dawn_to_dusk: campus.dawn_to_dusk || [360, 1200], // Default: 6:00 AM (360 min) and 8:00 PM (1200 min)
+      time_zone: campus.time_zone || "",
+      is_active: campus.is_active !== false, // Default to true if not explicitly set to false
+      // Backend handles school_id, enabled, and created_by automatically
+    };
+
+    // Log the campus data being sent for debugging
+    console.log("Campus data being sent to API:", campusData);
+    console.log("Selected Ambassadors:", selectedAmbassadors);
+    console.log("Ambassador IDs being sent:", campusData.ambassador_ids);
+    console.log("Ambassador IDs type:", typeof campusData.ambassador_ids);
+    console.log("Ambassador IDs value:", campusData.ambassador_ids);
+    console.log(
+      "Is ambassador_ids array?",
+      Array.isArray(campusData.ambassador_ids)
+    );
+
+    if (isCreating) {
+      // Create new campus using mutation
+      createCampusMutation.mutate(campusData);
+    } else {
+      // Update existing campus using mutation
+      updateCampusMutation.mutate({ id: effectiveCampusId, data: campusData });
+    }
+
+    setPolygonError("");
+  };
+
   // Handle cancel
   const handleCancel = () => {
-    navigate('/campuses');
+    navigate("/campuses");
   };
-  
-  // Convert students array to dropdown options
-  const studentOptions = fakeStudents.map(student => ({
-    value: student.id,
-    label: student.name
-  }));
-  
+
+  // Convert ambassadors array to dropdown options
+  const studentOptions =
+    ambassadors?.map((ambassador) => ({
+      value: ambassador._id || ambassador.id, // Use _id from MongoDB or fallback to id
+      label: `${ambassador.name} - ${ambassador.email}`,
+    })) || [];
+
+  console.log("📋 Available ambassadors:", ambassadors);
+  console.log("📋 Student options:", studentOptions);
+  console.log("📋 Selected ambassadors:", selectedAmbassadors);
+  console.log("📋 Current campus ambassador_ids:", campus?.ambassador_ids);
+
   // For tab view, adjust padding
   const containerPadding = inTabView ? "0" : "p-4";
-  
+
   // While loading
   if (!campus) {
-    return (
-      <div className={containerPadding}>
-        <CCard style={{ 
-          backgroundColor: theme.colors.cardBg,
-          borderColor: theme.colors.borderColor
-        }}>
-          <CCardBody>
-            <div className="text-center p-5">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-              <p className="mt-3" style={{ color: theme.colors.bodyColor }}>Loading campus details...</p>
-            </div>
-          </CCardBody>
-        </CCard>
-      </div>
-    );
+    return <CampusDetailsSkeleton inTabView={inTabView} />;
   }
-  
+
+  const isSaving =
+    createCampusMutation.isPending || updateCampusMutation.isPending;
+
   return (
-    <div className={containerPadding}>
-      <CCard style={{ 
-        backgroundColor: theme.colors.cardBg,
-        borderColor: theme.colors.borderColor
-      }}>
-        <CCardHeader style={{ 
+    <div className={containerPadding} style={{ position: "relative" }}>
+      {/* Saving Overlay */}
+      {isSaving && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.1)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "8px",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: theme.colors.cardBg,
+              padding: "20px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              border: `1px solid ${theme.colors.borderColor}`,
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <CSpinner size="sm" />
+            <span style={{ color: theme.colors.bodyColor }}>
+              Saving campus...
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Go Back Button */}
+      {!inTabView && (
+        <CButton
+          variant="ghost"
+          onClick={() => navigate("/campuses")}
+          className="back-button d-flex align-items-center mb-3"
+        >
+          <CIcon icon={cilArrowLeft} className="me-2" />
+          Back to Campuses
+        </CButton>
+      )}
+
+      <CCard
+        style={{
           backgroundColor: theme.colors.cardBg,
           borderColor: theme.colors.borderColor,
-          color: theme.colors.bodyColor
-        }}>
-          <h4 className="mb-0">{campus.id ? 'Edit Campus' : 'New Campus'}</h4>
+        }}
+      >
+        <CCardHeader
+          style={{
+            backgroundColor: theme.colors.cardBg,
+            borderColor: theme.colors.borderColor,
+            color: theme.colors.bodyColor,
+          }}
+          className="campus-card-header"
+        >
+          <h4 className="mb-0 fw-semibold">
+            {campus.id && !campus.id.startsWith("default-")
+              ? "Edit Campus"
+              : "New Campus"}
+          </h4>
         </CCardHeader>
-        <CCardBody>
+        <CCardBody className="p-4">
           {saveSuccess && (
             <CAlert color="success" dismissible>
               Campus details saved successfully!
             </CAlert>
           )}
-          
+
           {saveError && (
             <CAlert color="danger" dismissible>
               {saveError}
             </CAlert>
           )}
-          
-          <CForm onSubmit={handleSubmit}>
+
+          {polygonError && (
+            <CAlert
+              color="danger"
+              dismissible
+              onClose={() => setPolygonError("")}
+            >
+              {polygonError}
+            </CAlert>
+          )}
+
+          <CForm noValidate onSubmit={handleSubmit}>
             <CRow>
               <CCol md={7}>
-                <h5 className="mb-3" style={{ color: theme.colors.bodyColor }}>Basic Information</h5>
-                
+                <h5 className="mb-3" style={{ color: theme.colors.bodyColor }}>
+                  Basic Information
+                </h5>
+
                 <div className="mb-3">
-                  <CFormLabel htmlFor="campusName" style={{ color: theme.colors.bodyColor }}>Campus Name*</CFormLabel>
+                  <CFormLabel
+                    htmlFor="campusName"
+                    style={{ color: theme.colors.bodyColor }}
+                  >
+                    Campus Name*
+                  </CFormLabel>
                   <CFormInput
                     id="campusName"
-                    value={campus.name}
-                    onChange={(e) => handleInputChange(e, 'name')}
+                    value={campus.campus_name || campus.name || ""}
+                    onChange={(e) => {
+                      setCampus({
+                        ...campus,
+                        campus_name: e.target.value,
+                        name: e.target.value, // Keep legacy field for compatibility
+                      });
+                      setErrors((prev) => ({ ...prev, campus_name: "" }));
+                    }}
                     required
+                    invalid={!!errors.campus_name}
                     style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
+                      backgroundColor: theme.isDark ? "#343a40" : undefined,
+                      color: theme.isDark ? "#fff" : undefined,
+                      borderColor: theme.colors.borderColor,
                     }}
                   />
+                  {errors.campus_name && (
+                    <CFormFeedback invalid>{errors.campus_name}</CFormFeedback>
+                  )}
                 </div>
-                
+
                 <div className="mb-3">
-                  <CFormLabel htmlFor="campusLocation" style={{ color: theme.colors.bodyColor }}>Location*</CFormLabel>
+                  <CFormLabel
+                    htmlFor="phoneNumber"
+                    style={{ color: theme.colors.bodyColor }}
+                  >
+                    Phone Number*
+                  </CFormLabel>
                   <CFormInput
-                    id="campusLocation"
-                    value={campus.location}
-                    onChange={(e) => handleInputChange(e, 'location')}
-                    required
-                    style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
+                    id="phoneNumber"
+                    value={campus.phone_number || ""}
+                    onChange={(e) => {
+                      setCampus({
+                        ...campus,
+                        phone_number: e.target.value,
+                      });
+                      setErrors((prev) => ({ ...prev, phone_number: "" }));
                     }}
+                    required
+                    invalid={!!errors.phone_number}
+                    style={{
+                      backgroundColor: theme.isDark ? "#343a40" : undefined,
+                      color: theme.isDark ? "#fff" : undefined,
+                      borderColor: theme.colors.borderColor,
+                    }}
+                    placeholder="(555) 123-4567"
                   />
+                  {errors.phone_number && (
+                    <CFormFeedback invalid>{errors.phone_number}</CFormFeedback>
+                  )}
                 </div>
-                
+
                 <div className="mb-3">
-                  <CFormLabel htmlFor="campusAddress" style={{ color: theme.colors.bodyColor }}>Full Address</CFormLabel>
+                  <CFormLabel
+                    htmlFor="campusAddress"
+                    style={{ color: theme.colors.bodyColor }}
+                  >
+                    Full Address*
+                  </CFormLabel>
                   <CFormInput
                     id="campusAddress"
-                    value={campus.address}
-                    onChange={(e) => handleInputChange(e, 'address')}
-                    style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
+                    value={campus.address || ""}
+                    onChange={(e) => {
+                      setCampus({
+                        ...campus,
+                        address: e.target.value,
+                      });
+                      setErrors((prev) => ({ ...prev, address: "" }));
                     }}
-                  />
-                </div>    
-                
-                <div className="mb-3">
-                  <CFormLabel htmlFor="campusWebsite" style={{ color: theme.colors.bodyColor }}>Website</CFormLabel>
-                  <CFormInput
-                    id="campusWebsite"
-                    value={campus.website}
-                    onChange={(e) => handleInputChange(e, 'website')}
+                    required
+                    invalid={!!errors.address}
                     style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
+                      backgroundColor: theme.isDark ? "#343a40" : undefined,
+                      color: theme.isDark ? "#fff" : undefined,
+                      borderColor: theme.colors.borderColor,
                     }}
+                    placeholder="123 University Ave"
                   />
+                  {errors.address && (
+                    <CFormFeedback invalid>{errors.address}</CFormFeedback>
+                  )}
                 </div>
-                
-                <h5 className="mb-3 mt-4" style={{ color: theme.colors.bodyColor }}>Contact Information</h5>
-                
+
+                <CRow>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel
+                        htmlFor="city"
+                        style={{ color: theme.colors.bodyColor }}
+                      >
+                        City*
+                      </CFormLabel>
+                      <CFormInput
+                        id="city"
+                        value={campus.city || ""}
+                        onChange={(e) => {
+                          setCampus({
+                            ...campus,
+                            city: e.target.value,
+                          });
+                          setErrors((prev) => ({ ...prev, city: "" }));
+                        }}
+                        required
+                        invalid={!!errors.city}
+                        style={{
+                          backgroundColor: theme.isDark ? "#343a40" : undefined,
+                          color: theme.isDark ? "#fff" : undefined,
+                          borderColor: theme.colors.borderColor,
+                        }}
+                        placeholder="Miami"
+                      />
+                      {errors.city && (
+                        <CFormFeedback invalid>{errors.city}</CFormFeedback>
+                      )}
+                    </div>
+                  </CCol>
+                  <CCol md={4}>
+                    <div className="mb-3">
+                      <CFormLabel
+                        htmlFor="state"
+                        style={{ color: theme.colors.bodyColor }}
+                      >
+                        State*
+                      </CFormLabel>
+                      <CFormInput
+                        id="state"
+                        value={campus.state || ""}
+                        onChange={(e) => {
+                          setCampus({
+                            ...campus,
+                            state: e.target.value,
+                          });
+                          setErrors((prev) => ({ ...prev, state: "" }));
+                        }}
+                        required
+                        invalid={!!errors.state}
+                        style={{
+                          backgroundColor: theme.isDark ? "#343a40" : undefined,
+                          color: theme.isDark ? "#fff" : undefined,
+                          borderColor: theme.colors.borderColor,
+                        }}
+                        placeholder="FL"
+                      />
+                      {errors.state && (
+                        <CFormFeedback invalid>{errors.state}</CFormFeedback>
+                      )}
+                    </div>
+                  </CCol>
+                  <CCol md={2}>
+                    <div className="mb-3">
+                      <CFormLabel
+                        htmlFor="zip"
+                        style={{ color: theme.colors.bodyColor }}
+                      >
+                        ZIP*
+                      </CFormLabel>
+                      <CFormInput
+                        id="zip"
+                        value={campus.zip || ""}
+                        onChange={(e) => {
+                          setCampus({
+                            ...campus,
+                            zip: e.target.value,
+                          });
+                          setErrors((prev) => ({ ...prev, zip: "" }));
+                        }}
+                        required
+                        invalid={!!errors.zip}
+                        style={{
+                          backgroundColor: theme.isDark ? "#343a40" : undefined,
+                          color: theme.isDark ? "#fff" : undefined,
+                          borderColor: theme.colors.borderColor,
+                        }}
+                        placeholder="33199"
+                      />
+                      {errors.zip && (
+                        <CFormFeedback invalid>{errors.zip}</CFormFeedback>
+                      )}
+                    </div>
+                  </CCol>
+                </CRow>
+
                 <div className="mb-3">
-                  <CFormLabel htmlFor="contactName" style={{ color: theme.colors.bodyColor }}>Contact Name</CFormLabel>
-                  <CFormInput
-                    id="contactName"
-                    value={campus.contact.name}
-                    onChange={(e) => handleContactChange(e, 'name')}
-                    style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
+                  <CFormLabel
+                    htmlFor="timeZone"
+                    style={{ color: theme.colors.bodyColor }}
+                  >
+                    Time Zone*
+                  </CFormLabel>
+                  <CFormSelect
+                    id="timeZone"
+                    value={campus.time_zone || ""}
+                    onChange={(e) => {
+                      setCampus({
+                        ...campus,
+                        time_zone: e.target.value,
+                      });
+                      setErrors((prev) => ({ ...prev, time_zone: "" }));
                     }}
-                  />
-                </div>
-                
-                <div className="mb-3">
-                  <CFormLabel htmlFor="contactEmail" style={{ color: theme.colors.bodyColor }}>Contact Email</CFormLabel>
-                  <CFormInput
-                    id="contactEmail"
-                    type="email"
-                    value={campus.contact.email}
-                    onChange={(e) => handleContactChange(e, 'email')}
+                    required
+                    invalid={!!errors.time_zone}
                     style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
+                      backgroundColor: theme.isDark ? "#343a40" : undefined,
+                      color: theme.isDark ? "#fff" : undefined,
+                      borderColor: theme.colors.borderColor,
                     }}
-                  />
+                  >
+                    <option value="">Select Time Zone</option>
+                    <option value="America/New_York">Eastern Time (ET)</option>
+                    <option value="America/Chicago">Central Time (CT)</option>
+                    <option value="America/Denver">Mountain Time (MT)</option>
+                    <option value="America/Los_Angeles">
+                      Pacific Time (PT)
+                    </option>
+                    <option value="America/Anchorage">Alaska Time (AT)</option>
+                    <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                  </CFormSelect>
+                  {errors.time_zone && (
+                    <CFormFeedback invalid>{errors.time_zone}</CFormFeedback>
+                  )}
                 </div>
-                
-                <div className="mb-3">
-                  <CFormLabel htmlFor="contactPhone" style={{ color: theme.colors.bodyColor }}>Contact Phone</CFormLabel>
-                  <CFormInput
-                    id="contactPhone"
-                    value={campus.contact.phone}
-                    onChange={(e) => handleContactChange(e, 'phone')}
-                    style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
-                    }}
-                  />
-                </div>
+
+                <CRow>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel
+                        htmlFor="dawnTime"
+                        style={{ color: theme.colors.bodyColor }}
+                      >
+                        Dawn Time
+                      </CFormLabel>
+                      <CFormInput
+                        id="dawnTime"
+                        type="time"
+                        value={
+                          campus.dawn_to_dusk?.[0]
+                            ? minutesToTimeString(campus.dawn_to_dusk[0])
+                            : "06:00"
+                        }
+                        onChange={(e) => {
+                          const newMinutes = timeStringToMinutes(
+                            e.target.value
+                          );
+                          const newDawnToDusk = [
+                            ...(campus.dawn_to_dusk || [360, 1200]),
+                          ];
+                          newDawnToDusk[0] = newMinutes;
+                          setCampus({
+                            ...campus,
+                            dawn_to_dusk: newDawnToDusk,
+                          });
+                        }}
+                        style={{
+                          backgroundColor: theme.isDark ? "#343a40" : undefined,
+                          color: theme.isDark ? "#fff" : undefined,
+                          borderColor: theme.colors.borderColor,
+                        }}
+                      />
+                    </div>
+                  </CCol>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel
+                        htmlFor="duskTime"
+                        style={{ color: theme.colors.bodyColor }}
+                      >
+                        Dusk Time
+                      </CFormLabel>
+                      <CFormInput
+                        id="duskTime"
+                        type="time"
+                        value={
+                          campus.dawn_to_dusk?.[1]
+                            ? minutesToTimeString(campus.dawn_to_dusk[1])
+                            : "20:00"
+                        }
+                        onChange={(e) => {
+                          const newMinutes = timeStringToMinutes(
+                            e.target.value
+                          );
+                          const newDawnToDusk = [
+                            ...(campus.dawn_to_dusk || [360, 1200]),
+                          ];
+                          newDawnToDusk[1] = newMinutes;
+                          setCampus({
+                            ...campus,
+                            dawn_to_dusk: newDawnToDusk,
+                          });
+                        }}
+                        style={{
+                          backgroundColor: theme.isDark ? "#343a40" : undefined,
+                          color: theme.isDark ? "#fff" : undefined,
+                          borderColor: theme.colors.borderColor,
+                        }}
+                      />
+                    </div>
+                  </CCol>
+                </CRow>
+                <CFormText style={{ color: theme.colors.textMuted }}>
+                  Operating hours for campus security and monitoring.
+                </CFormText>
               </CCol>
-              
+
               <CCol md={5}>
-                <h5 className="mb-3" style={{ color: theme.colors.bodyColor }}>Campus Logo</h5>
-                
-                <div className="mb-4">
-                  <ImageUpload
-                    id="logo"
-                    onChange={handleLogoChange}
-                    value={campus.logo}
-                    placeholder="Upload your campus logo (PNG, JPG, SVG)"
-                    acceptedFormats="image/jpeg, image/png, image/svg+xml"
-                    maxSizeMB={2}
-                  />
-                  <CFormText style={{ color: theme.colors.textMuted }}>
-                    Recommended size: 200x200px, max 2MB
-                  </CFormText>
-                </div>
-                
-                <h5 className="mb-3" style={{ color: theme.colors.bodyColor }}>Student Ambassadors</h5>
-                
-                {loadingStudents ? (
+                <h5 className="mb-3" style={{ color: theme.colors.bodyColor }}>
+                  Student Ambassadors
+                </h5>
+
+                {loadingAmbassadors ? (
                   <div className="mb-3">
                     <div className="d-flex align-items-center">
                       <CSpinner size="sm" className="me-2" />
-                      <span style={{ color: theme.colors.textMuted }}>Loading students...</span>
+                      <span style={{ color: theme.colors.textMuted }}>
+                        Loading ambassadors...
+                      </span>
                     </div>
                   </div>
                 ) : (
@@ -433,65 +831,119 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                       onChange={handleAmbassadorsChange}
                       options={studentOptions}
                       placeholder="Select student ambassadors"
-                      searchPlaceholder="Search students..."
-                      helpText="These students will have special privileges"
+                      searchPlaceholder="Search ambassadors..."
                     />
+                    <CFormText style={{ color: theme.colors.textMuted }}>
+                      Select student ambassadors for this campus from the
+                      registered ambassadors.
+                    </CFormText>
                   </div>
                 )}
-                
-                <h5 className="mb-3" style={{ color: theme.colors.bodyColor }}>Regional Settings</h5>
-                
+
                 <div className="mb-3">
-                  <CFormLabel htmlFor="campusTimezone" style={{ color: theme.colors.bodyColor }}>Timezone</CFormLabel>
+                  <CFormLabel
+                    htmlFor="isActive"
+                    style={{ color: theme.colors.bodyColor }}
+                  >
+                    Campus Status
+                  </CFormLabel>
                   <CFormSelect
-                    id="campusTimezone"
-                    value={campus.timezone}
-                    onChange={(e) => handleInputChange(e, 'timezone')}
+                    id="isActive"
+                    value={campus.is_active !== false ? "true" : "false"}
+                    onChange={(e) => {
+                      setCampus({
+                        ...campus,
+                        is_active: e.target.value === "true",
+                      });
+                    }}
                     style={{
-                      backgroundColor: theme.isDark ? '#343a40' : undefined,
-                      color: theme.isDark ? '#fff' : undefined,
-                      borderColor: theme.colors.borderColor
+                      backgroundColor: theme.isDark ? "#343a40" : undefined,
+                      color: theme.isDark ? "#fff" : undefined,
+                      borderColor: theme.colors.borderColor,
                     }}
                   >
-                    <option value="America/New_York">Eastern Time (ET)</option>
-                    <option value="America/Chicago">Central Time (CT)</option>
-                    <option value="America/Denver">Mountain Time (MT)</option>
-                    <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                    <option value="America/Anchorage">Alaska Time (AKT)</option>
-                    <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
                   </CFormSelect>
+                  <CFormText style={{ color: theme.colors.textMuted }}>
+                    Set campus as active or inactive.
+                  </CFormText>
                 </div>
               </CCol>
             </CRow>
-            
-            <div className="d-flex justify-content-end mt-4">
-              <CButton 
-                type="button" 
-                color="outline-secondary" 
-                className="me-2"
-                onClick={handleCancel}
-              >
-                <CIcon icon={cilX} className="me-1" />
-                Cancel
-              </CButton>
-              <CButton 
-                type="submit" 
-                color="primary"
-                disabled={saving}
-              >
-                {saving ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <CIcon icon={cilSave} className="me-1" />
-                    Save Campus
-                  </>
-                )}
-              </CButton>
-            </div>
+
+            {/* Campus Boundary Section - Now at the bottom */}
+            <CRow className="mt-4">
+              <CCol>
+                <h5 className="mb-3" style={{ color: theme.colors.bodyColor }}>
+                  Campus Boundary
+                </h5>
+
+                <div
+                  style={{
+                    height: "800px",
+                    border: `1px solid ${theme.colors.borderColor}`,
+                    borderRadius: "4px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <CampusBoundary
+                    initialBoundaryData={campusPolygon}
+                    onBoundaryChange={(boundary) => {
+                      setCampusPolygon(boundary);
+                      if (boundary) {
+                        setPolygonError("");
+                        // Coordinates will be saved to backend on form submission
+                      }
+                    }}
+                  />
+                </div>
+                <CFormText
+                  style={{ color: theme.colors.textMuted, fontSize: "0.85em" }}
+                >
+                  Draw the campus boundary polygon on the map above. This is
+                  required.
+                </CFormText>
+              </CCol>
+            </CRow>
+
+            <CRow className="mt-4">
+              <CCol>
+                <CButton
+                  type="submit"
+                  color="primary"
+                  disabled={
+                    !campusPolygon ||
+                    createCampusMutation.isPending ||
+                    updateCampusMutation.isPending
+                  }
+                >
+                  {createCampusMutation.isPending ||
+                  updateCampusMutation.isPending ? (
+                    <>
+                      <CSpinner size="sm" className="me-2" /> Saving...
+                    </>
+                  ) : (
+                    <>
+                      <CIcon icon={cilSave} className="me-2" />
+                      Save
+                    </>
+                  )}
+                </CButton>
+                <CButton
+                  color="secondary"
+                  className="ms-2"
+                  onClick={handleCancel}
+                  disabled={
+                    createCampusMutation.isPending ||
+                    updateCampusMutation.isPending
+                  }
+                >
+                  <CIcon icon={cilX} className="me-2" />
+                  Cancel
+                </CButton>
+              </CCol>
+            </CRow>
           </CForm>
         </CCardBody>
       </CCard>
@@ -499,4 +951,4 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
   );
 };
 
-export default CampusDetails; 
+export default CampusDetails;
