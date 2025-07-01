@@ -13,20 +13,14 @@ import {
   CCardHeader,
   CRow,
   CCol,
-  // CDropdownItem,
-  // CDropdown,
-  // CDropdownMenu,
-  // CDropdownToggle,
   CWidgetStatsA,
 } from "@coreui/react";
 import { CChartBar, CChartLine } from "@coreui/react-chartjs";
 
 import { useState, useEffect, JSX } from "react";
 
-//React Routes
 import { Routes, Route, Navigate } from "react-router-dom";
 
-//Project Hooks and Theme
 import { useTheme } from "./hooks/useTheme";
 
 import Students from "./pages/Students.tsx";
@@ -45,22 +39,17 @@ import CampusView from "./pages/CampusView";
 import Ambassadors from "./pages/Ambassadors";
 import AmbassadorView from "./pages/AmbassadorView";
 
-//Styles
 import "./App.css";
 
 import MainChart from "./components/MainChart.tsx";
 
-//Chart.js Types
 import { Chart as ChartJS, TooltipModel } from "chart.js";
 
-//API
 import API from "./API/index.ts";
 import Login from "./pages/Login.tsx";
 
 type DashboardProps = {
   theme: AppTheme;
-  // chartOptions: object;
-  // barChartOptions: object;
 };
 
 type BaseWidgetData = {
@@ -76,7 +65,7 @@ type WalksData = {
 };
 
 type EventsData = {
-  value: number; // Total sum of events
+  value: number;
   percentChange: number;
   chartData: number[];
   monthLabels?: string[];
@@ -94,7 +83,6 @@ type SurpriseData = BaseWidgetData & {
   value: number | string;
 };
 
-// API Response Interfaces
 interface IdeaMonthData {
   month: string;
   year: string;
@@ -119,9 +107,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
   const [ideas, setIdeas] = useState<IdeasData | null>(null);
   const [surprise, setSurprise] = useState<SurpriseData | null>(null);
 
-  // Add CSS to hide default Chart.js tooltips
   useEffect(() => {
-    // Create a style element
     const style = document.createElement("style");
 
     style.textContent = `
@@ -129,10 +115,8 @@ const Dashboard = ({ theme }: DashboardProps) => {
           display: none !important;
         }
       `;
-    // Add the style to the document head
     document.head.appendChild(style);
 
-    // Clean up function to remove the style when component unmounts
     return () => {
       document.head.removeChild(style);
     };
@@ -146,15 +130,12 @@ const Dashboard = ({ theme }: DashboardProps) => {
         if (response?.data?.monthlyData) {
           const monthlyData = response.data.monthlyData as IdeaMonthData[];
 
-          // Extract the counts for the chart with proper type annotation
           const chartData = monthlyData.map(
             (month: IdeaMonthData) => month.count
           );
 
-          // Calculate the total sum of ideas
           const totalIdeas = chartData.reduce((sum, count) => sum + count, 0);
 
-          // Calculate percentage change between the last two months
           let percentChange = 0;
           if (monthlyData.length >= 2) {
             const lastMonth = monthlyData[monthlyData.length - 1].count;
@@ -165,7 +146,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                 (((lastMonth - previousMonth) / previousMonth) * 100).toFixed(2)
               );
             } else if (lastMonth > 0) {
-              percentChange = 100; // If previous month was 0 and current month has data
+              percentChange = 100;
             }
           }
 
