@@ -1,9 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  // baseURL: 'https://staging.walkyapp.com',
-
-  baseURL: "http://192.168.15.11:8080", // Use this for local development
+  baseURL: "https://staging.walkyapp.com",
+  // baseURL: "http://192.168.15.11:8080", // Use this for local development
 });
 
 API.interceptors.request.use((config) => {
@@ -11,7 +10,6 @@ API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log("🔑 Token added to request:", config.url);
   } else {
     console.warn("⚠️ No token found for request:", config.url);
   }
