@@ -320,3 +320,11 @@ body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table
   background-color: var(--cui-input-bg);
   color: var(--cui-input-color);
 }
+
+:root {
+  --review-bg: #FFF9EE; /* light mode yellow */
+}
+
+:root[data-coreui-theme="dark"] {
+  --review-bg: #2c2c26; /* dark mode match */
+}

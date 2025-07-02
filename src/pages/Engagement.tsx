@@ -1,10 +1,15 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import CIcon from '@coreui/icons-react'
 import { cilCompass, cilCalendar, cilLightbulb } from '@coreui/icons'
 import { CTooltip } from '@coreui/react'
 import { useTheme } from '../hooks/useTheme'
 
-// Widget Component
+import API from '../API'
+
+import { getToolTip } from '../hooks/useToolTip';
+
+
+// 🔹 Widget Component
 const Widget = ({
   title,
   tooltip,
@@ -20,8 +25,9 @@ const Widget = ({
   barColor: string
   icon: string | string[]
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme.isDark;
+
+  const { theme } = useTheme()
+  const isDark = theme.isDark
 
   const widgetContent = (
     <div
@@ -74,10 +80,18 @@ const Widget = ({
     </div>
   );
 
-  return tooltip ? <CTooltip content={tooltip}>{widgetContent}</CTooltip> : widgetContent;
+  return tooltip ? (
+    <CTooltip content={tooltip} style={getToolTip(isDark)}>
+      {widgetContent}
+    </CTooltip>
+  ) : (
+    widgetContent
+  );
+  
+  
 };
 
-// Section Component
+// 🔹 Section Component
 const Section = ({
   title,
   color,
@@ -117,31 +131,136 @@ const Section = ({
   );
 };
 
+
+
+
 // Main Page
+
 const Engagement = () => {
+  const [walks, setWalks] = useState({
+    total: 0,
+    pending: 0,
+    active: 0,
+    completed: 0,
+    cancelled: 0,
+  });
+
+  const [events, setEvents] = useState({
+    total: 0,
+    outdoor: 0,
+    indoor: 0,
+    public: 0,
+    private: 0,
+  });
+
+  const [ideas, setIdeas] = useState({
+    total: 0,
+    active: 0,
+    inactive: 0,
+    collaborated: 0,
+  });
+
+
+  useEffect(() => {
+
+    const fetchEvents = async () => {
+      try {
+        const total = await API.get('/events/eventType?filter=total');
+        const outdoor = await API.get('/events/eventType?filter=outdoor');
+        const indoor = await API.get('/events/eventType?filter=indoor');
+        const publicEvt = await API.get('/events/eventType?filter=public');
+        const privateEvt = await API.get('/events/eventType?filter=private');
+
+        setEvents({
+          total: total.data.count ?? '-',
+          outdoor: outdoor.data.count ?? '-',
+          indoor: indoor.data.count ?? '-',
+          public: publicEvt.data.count ?? '-',
+          private: privateEvt.data.count ?? '-',
+        });
+      } catch (err) {
+        console.error('❌ Failed to fetch events:', err);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    const fetchWalks = async () => {
+      try {
+        const totalRes = await API.get('/walks/count');
+        const pendingRes = await API.get('/walks/realtime/pending');
+        const activeRes = await API.get('/walks/realtime/active');
+        const completedRes = await API.get('/walks/realtime/completed');
+        const cancelledRes = await API.get('/walks/realtime/cancelled');
+  
+        setWalks({
+          total: totalRes.data.totalWalksCreated ?? '-',
+          pending: pendingRes.data.pending_count ?? '-',
+          active: activeRes.data.active_count ?? '-',
+          completed: completedRes.data.completed_count ?? '-',
+          cancelled: cancelledRes.data.cancelled_count ?? '-',
+        });
+      } catch (err) {
+        console.error('❌ Failed to fetch walks data:', err);
+      }
+    };
+  
+    fetchWalks();
+  }, []);
+
+  useEffect(() => {
+    const fetchIdeas = async () => {
+      try {
+        const total = await API.get('/ideas/count/total');
+        const active = await API.get('/ideas/count/active');
+        const inactive = await API.get('/ideas/count/inactive');
+        const collaborated = await API.get('/ideas/count/collaborated');
+  
+
+        setIdeas({
+          total: total.data.totalIdeasCreated ?? '-' ,
+          active: active.data.activeIdeasCount ?? '-',
+          inactive: inactive.data.inactiveIdeasCount ?? '-',
+          collaborated: collaborated.data.collaboratedIdeasCount ?? '-',
+        });
+      } catch (err) {
+        console.error('❌ Failed to fetch ideas:', err);
+      }
+    };
+
+    fetchIdeas();
+  }, []);
+  
+
+  const calcProgress = (value: number, total: number) =>
+    total > 0 ? Math.round((value / total) * 100) : 0;
+
   return (
     <div style={{ padding: '2rem' }}>
       <Section title="Walks" color="#6f42c1">
-        <Widget title="Total Walks" tooltip="Number of total walks recorded" value="128" progressValue={90} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Pending" value="23" progressValue={50} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Active" value="6" progressValue={60} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Completed" value="98" progressValue={100} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Cancelled/Closed" value="14" progressValue={30} barColor="#6f42c1" icon={cilCompass} />
+        <Widget title="Total Walks" tooltip="Number of total walks recorded" value={walks.total} progressValue={100} barColor="#6f42c1" icon={cilCompass} />
+        <Widget title="Pending" value={walks.pending} progressValue={Math.round((walks.pending / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
+        <Widget title="Active" value={walks.active} progressValue={Math.round((walks.active / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
+        <Widget title="Completed" value={walks.completed} progressValue={Math.round((walks.completed / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
+        <Widget title="Cancelled/Closed" value={walks.cancelled} progressValue={Math.round((walks.cancelled / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
       </Section>
 
+
       <Section title="Events" color="#42a5f5">
-        <Widget title="Total Events" tooltip="Number of total events created" value="128" progressValue={90} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Outdoor" value="23" progressValue={50} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Indoor" value="6" progressValue={60} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Public" value="98" progressValue={100} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Private" value="14" progressValue={30} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget title="Total Events" tooltip="Number of total events created" value={events.total} progressValue={100} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget title="Outdoor" value={events.outdoor} progressValue={calcProgress(events.outdoor, events.total)} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget title="Indoor" value={events.indoor} progressValue={calcProgress(events.indoor, events.total)} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget title="Public" value={events.public} progressValue={calcProgress(events.public, events.total)} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget title="Private" value={events.private} progressValue={calcProgress(events.private, events.total)} barColor="#42a5f5" icon={cilCalendar} />
       </Section>
 
       <Section title="Ideas" color="#f0ad4e">
-        <Widget title="Total Ideas" tooltip="Number of total ideas created" value="128" progressValue={90} barColor="#f0ad4e" icon={cilLightbulb} />
-        <Widget title="Active" value="23" progressValue={50} barColor="#f0ad4e" icon={cilLightbulb} />
-        <Widget title="Inactive" value="6" progressValue={60} barColor="#f0ad4e" icon={cilLightbulb} />
-        <Widget title="Collaborated" value="98" progressValue={100} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget title="Total Ideas" tooltip="Number of total ideas created" value={ideas.total} progressValue={100} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget title="Active" value={ideas.active} progressValue={calcProgress(ideas.active, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget title="Inactive" value={ideas.inactive} progressValue={calcProgress(ideas.inactive, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget title="Collaborated" value={ideas.collaborated} progressValue={calcProgress(ideas.collaborated, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
       </Section>
     </div>
   );

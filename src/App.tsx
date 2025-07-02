@@ -57,6 +57,20 @@ type BaseWidgetData = {
   chartData: number[];
 };
 
+interface MonthlyActiveUsersData {
+  monthlyData: Array<{
+    month?: string;
+    label?: string;
+    year?: number;
+    count: number;
+  }>;
+  chartData: number[];
+  chartLabels: string[];
+  totalActiveUsers: number;
+  last24HoursActiveUsers: number;
+  period: string;        // Add these two properties
+  since: string;         // that exist in your actual data
+}
 type WalksData = {
   value: number;
   percentChange: number;
@@ -94,11 +108,11 @@ interface EventMonthData {
   totalCount: number;
 }
 
-interface WalkMonthData {
-  month: string;
-  year: string;
-  count: number;
-  date?: string;
+// API Response structure for walks endpoint
+interface WalksApiResponse {
+  chartData?: number[];
+  chartLabels?: string[];
+  totalWalksCreated?: number;
 }
 
 const Dashboard = ({ theme }: DashboardProps) => {
@@ -396,7 +410,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                 "Loading..."
               )
             }
-            title="Walks"
+            title="Walks (Last 6 Months)"
             chart={
               <CChartLine
                 className="mt-3 mx-3"
@@ -553,6 +567,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }
           />
         </CCol>
+        <CCol sm={6} lg={3}>
         <CCol sm={6} lg={3}>
           <CWidgetStatsA
             className="mb-4"
@@ -892,7 +907,6 @@ function App() {
   const PrivateRoute = ({ children }: { children: JSX.Element }) => {
     return isLoggedIn ? children : <Navigate to="/login" />;
   };
-
   return (
     <Routes>
       {/* Login route (still public) */}
@@ -903,6 +917,7 @@ function App() {
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
+
 
       {/* Protected routes inside admin layout */}
       <Route
