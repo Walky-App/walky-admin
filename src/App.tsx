@@ -114,10 +114,12 @@ interface WalksApiResponse {
   chartLabels?: string[];
   totalWalksCreated?: number;
 }
-//Added
-type AppProps = {
-  initialLoginState?: boolean;
-};
+
+interface WalkMonthData {
+  month?: string;
+  year?: string;
+  count: number;
+}
 
 const Dashboard = ({ theme }: DashboardProps) => {
   const [walks, setWalks] = useState<WalksData | null>(null);
@@ -774,6 +776,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
         <CCardHeader className="d-flex justify-content-between align-items-center border-0 py-0 px-3">
           <div>
             <h5
+              data-testid="main-chart-title"
               className="mb-1"
               style={{
                 fontFamily: "Inter, sans-serif",
@@ -781,7 +784,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                 fontSize: "24px",
               }}
             >
-              Active Users
+              Active Users & Walks
             </h5>
             <div
               style={{
@@ -895,13 +898,17 @@ const Dashboard = ({ theme }: DashboardProps) => {
   );
 };
 
-function App() {
+type AppProps = {
+  initialLoginState?: boolean;
+};
+
+function App({ initialLoginState = false }: AppProps) {
   const { theme } = useTheme();
   useEffect(() => {
     document.body.classList.toggle("dark-mode", theme.isDark);
   }, [theme.isDark]);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(initialLoginState);
 
   // Check for existing token on component mount
   useEffect(() => {

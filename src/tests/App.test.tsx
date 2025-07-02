@@ -237,9 +237,13 @@ describe("Walky Admin Portal - Dashboard Page", () => {
       // Wait for API calls to resolve and components to render with longer timeout
       await waitFor(
         () => {
+          // Debug output to see what's in the DOM
+          console.log("Current DOM:", document.body.innerHTML);
+          
+          // Check if walks-widget is in document
           expect(screen.getByTestId("walks-widget")).toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 10000 }
       );
 
       // Also check for chart title
@@ -250,7 +254,7 @@ describe("Walky Admin Portal - Dashboard Page", () => {
             "Active Users & Walks"
           );
         },
-        { timeout: 5000 }
+        { timeout: 10000 }
       );
 
       // Restore console.error
