@@ -57,20 +57,6 @@ type BaseWidgetData = {
   chartData: number[];
 };
 
-interface MonthlyActiveUsersData {
-  monthlyData: Array<{
-    month?: string;
-    label?: string;
-    year?: number;
-    count: number;
-  }>;
-  chartData: number[];
-  chartLabels: string[];
-  totalActiveUsers: number;
-  last24HoursActiveUsers: number;
-  period: string; // Add these two properties
-  since: string; // that exist in your actual data
-}
 type WalksData = {
   value: number;
   percentChange: number;
@@ -109,10 +95,12 @@ interface EventMonthData {
 }
 
 // API Response structure for walks endpoint
-interface WalksApiResponse {
-  chartData?: number[];
-  chartLabels?: string[];
-  totalWalksCreated?: number;
+
+// Define WalkMonthData interface for monthly walks data
+interface WalkMonthData {
+  month?: string;
+  year?: number;
+  count: number;
 }
 
 const Dashboard = ({ theme }: DashboardProps) => {

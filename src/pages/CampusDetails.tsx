@@ -227,7 +227,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
         // Legacy fields for compatibility
         name: "",
         location: "",
-        status: "",
+        status: undefined,
       });
       setSelectedAmbassadors([]);
     };

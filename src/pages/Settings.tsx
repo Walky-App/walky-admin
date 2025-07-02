@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   CCard,
-  CCardHeader,
   CCardBody,
   CForm,
   CRow,
   CCol,
   CButton,
   CFormText,
-  CSpinner
-} from '@coreui/react';
-import { useTheme } from '../hooks/useTheme';
-import Input from '../components/Input';
-import MultiSelectDropdown from '../components/MultiSelectDropdown';
-import ImageUpload from '../components/ImageUpload';
-import API from '../API';
+} from "@coreui/react";
+import { useTheme } from "../hooks/useTheme";
+import Input from "../components/Input";
+import ImageUpload from "../components/ImageUpload";
+import API from "../API";
 
 interface Student {
   id: string;
@@ -24,87 +21,82 @@ interface Student {
 
 const Settings = () => {
   const { theme } = useTheme();
-  
+
   // State for form fields
-  const [schoolName, setSchoolName] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [emailDomain, setEmailDomain] = useState('');
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [schoolName, setSchoolName] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [emailDomain, setEmailDomain] = useState("");
+  const [selectedStudents] = useState<string[]>([]);
   const [logo, setLogo] = useState<File | null>(null);
-  
+
   // State for students data
-  const [students, setStudents] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [, setStudents] = useState<Student[]>([]);
+  const [, setLoading] = useState(false);
+  const [, setError] = useState("");
 
   // Fetch students data
   useEffect(() => {
     const fetchStudents = async () => {
       setLoading(true);
-      setError('');
+      setError("");
       try {
         const res = await API.get<{
           users: {
-            _id: string
-            first_name: string
-            last_name: string
-            email: string
-            createdAt: string
-            updatedAt: string
-          }[]
-        }>('/users/?fields=_id,first_name,last_name,email,createdAt,updatedAt');
-  
+            _id: string;
+            first_name: string;
+            last_name: string;
+            email: string;
+            createdAt: string;
+            updatedAt: string;
+          }[];
+        }>("/users/?fields=_id,first_name,last_name,email,createdAt,updatedAt");
+
         const transformed = res.data.users.map((user) => ({
           id: user._id,
           name: `${user.first_name} ${user.last_name}`,
-          email: user.email
+          email: user.email,
         }));
-  
+
         setStudents(transformed);
       } catch (err) {
-        console.error('❌ Failed to fetch student data:', err);
-        setError('Failed to load students. Please try again later.');
+        console.error("❌ Failed to fetch student data:", err);
+        setError("Failed to load students. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchStudents();
   }, []);
-
-  // Convert students array to dropdown options
-  const studentOptions = students.map(student => ({
-    value: student.id,
-    label: student.name
-  }));
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Create form data object with all settings
     const formData = {
       schoolName,
       displayName,
       emailDomain,
       studentAmbassadors: selectedStudents,
-      logo
+      logo,
     };
-    
+
     // Log the settings data (would be an API call in production)
-    console.log('Settings updated:', formData);
-    
+    console.log("Settings updated:", formData);
+
     // Here you would send this data to your backend
     // API.put('/settings', formData)
   };
 
   return (
     <div className="p-4">
-      <CCard style={{ 
-        backgroundColor: theme.colors.cardBg,
-        borderColor: theme.colors.borderColor
-      }}>
-     
+      <CCard
+        style={{
+          backgroundColor: theme.colors.cardBg,
+          borderColor: theme.colors.borderColor,
+        }}
+      >
         <CCardBody>
           <CForm onSubmit={handleSubmit}>
             <CRow className="mb-4">
@@ -163,17 +155,10 @@ const Settings = () => {
               </CCol>
             </CRow>
             <div className="d-flex justify-content-end mt-4">
-              <CButton 
-                type="button" 
-                color="outline-secondary" 
-                className="me-2"
-              >
+              <CButton type="button" color="outline-secondary" className="me-2">
                 Cancel
               </CButton>
-              <CButton 
-                type="submit" 
-                color="primary"
-              >
+              <CButton type="submit" color="primary">
                 Save Changes
               </CButton>
             </div>
@@ -184,4 +169,4 @@ const Settings = () => {
   );
 };
 
-export default Settings; 
+export default Settings;
