@@ -1,13 +1,12 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import API from '../API'
+import API from "../API";
 
 //login page
 type LoginProps = {
   onLogin: () => void;
 };
-
 
 const Login = ({ onLogin }: LoginProps) => {
   const navigate = useNavigate();
@@ -25,34 +24,37 @@ const Login = ({ onLogin }: LoginProps) => {
       setLoginError(true);
       return;
     }
-  
+
     try {
-      const response = await API.post('/login', {
+      const response = await API.post("/login", {
         email,
         password,
       });
-  
+
       const token = response?.data?.access_token;
-  
+
       if (token) {
-        sessionStorage.setItem('token', token);
+        // Store token in localStorage
+        localStorage.setItem("token", token);
         onLogin();
-        navigate('/');
+        navigate("/");
       } else {
         throw new Error("Token not found in response.");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("❌ Login failed:", error?.response?.data || error.message || error);
+      console.error(
+        "❌ Login failed:",
+        error?.response?.data || error.message || error
+      );
       setLoginError(true);
     }
   };
-  
-  
+
   return (
     <div
       style={{
-        display: "flex",             
+        display: "flex",
         height: "100vh",
         width: "100vw",
       }}
@@ -101,54 +103,58 @@ const Login = ({ onLogin }: LoginProps) => {
               onChange={(e) => {
                 setEmail(e.target.value);
                 setLoginError(false); // 👈 reset error on typing
-            }}
-            className={`form-control ${loginError ? 'is-invalid' : ''}`}
-            placeholder="Email address"
-          />
-          {loginError && (
-            <div className="invalid-feedback">Invalid email or password.</div>
-          )}
-
-
-            <label style={{ display: "block", marginBottom: "0.5rem" }}>
-              Password
-            </label>
-            <div style={{ position: "relative", marginBottom: "1.25rem" }}>
-            <input
-              data-testid="password-input"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setLoginError(false); // 👈 reset error on typing
               }}
-                className={`form-control ${loginError ? 'is-invalid' : ''}`}
-                placeholder="********"
+              className={`form-control ${loginError ? "is-invalid" : ""}`}
+              placeholder="Email address"
             />
             {loginError && (
               <div className="invalid-feedback">Invalid email or password.</div>
             )}
 
+            <label style={{ display: "block", marginBottom: "0.5rem" }}>
+              Password
+            </label>
+            <div style={{ position: "relative", marginBottom: "1.25rem" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setLoginError(false); // 👈 reset error on typing
+                }}
+                className={`form-control ${loginError ? "is-invalid" : ""}`}
+                placeholder="********"
+              />
+              {loginError && (
+                <div className="invalid-feedback">
+                  Invalid email or password.
+                </div>
+              )}
+
               <div
-              onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                top: loginError ? "30%" : '50%', 
-                right: loginError ? "2.25rem" : "0.75rem",  // 👈 shift left if error
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-                color: "#94a3b8",
-                zIndex: 2, // make sure it's on top
-              }}
-              title={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  top: loginError ? "30%" : "50%",
+                  right: loginError ? "2.25rem" : "0.75rem", // 👈 shift left if error
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                  color: "#94a3b8",
+                  zIndex: 2, // make sure it's on top
+                }}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </div>
             </div>
           </div>
 
           <div
-            style={{ textAlign: "left", marginBottom: "1rem", marginTop: "-1rem" }}
+            style={{
+              textAlign: "left",
+              marginBottom: "1rem",
+              marginTop: "-1rem",
+            }}
           >
             <Link
               to="/forgot-password"
