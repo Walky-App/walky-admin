@@ -95,6 +95,7 @@ const Login = ({ onLogin }: LoginProps) => {
               Email
             </label>
             <input
+              data-testid="email-input"
               type="email"
               value={email}
               onChange={(e) => {
@@ -114,6 +115,7 @@ const Login = ({ onLogin }: LoginProps) => {
             </label>
             <div style={{ position: "relative", marginBottom: "1.25rem" }}>
             <input
+              data-testid="password-input"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => {
@@ -160,6 +162,7 @@ const Login = ({ onLogin }: LoginProps) => {
           </div>
 
           <button
+            data-testid="continue-button"
             onClick={handleLogin}
             onMouseEnter={() => setIsContinueHovered(true)}
             onMouseLeave={() => {
