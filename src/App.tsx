@@ -68,8 +68,8 @@ interface MonthlyActiveUsersData {
   chartLabels: string[];
   totalActiveUsers: number;
   last24HoursActiveUsers: number;
-  period: string;        // Add these two properties
-  since: string;         // that exist in your actual data
+  period: string; // Add these two properties
+  since: string; // that exist in your actual data
 }
 type WalksData = {
   value: number;
@@ -568,7 +568,6 @@ const Dashboard = ({ theme }: DashboardProps) => {
           />
         </CCol>
         <CCol sm={6} lg={3}>
-        <CCol sm={6} lg={3}>
           <CWidgetStatsA
             className="mb-4"
             color="warning"
@@ -917,7 +916,6 @@ function App() {
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
-
 
       {/* Protected routes inside admin layout */}
       <Route
