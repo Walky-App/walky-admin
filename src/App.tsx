@@ -38,6 +38,9 @@ import CampusDetails from "./pages/CampusDetails";
 import CampusView from "./pages/CampusView";
 import Ambassadors from "./pages/Ambassadors";
 import AmbassadorView from "./pages/AmbassadorView";
+import Places from "./pages/Places";
+import PlaceTypes from "./pages/PlaceTypes";
+import CampusSync from "./pages/CampusSync";
 
 import "./App.css";
 
@@ -57,20 +60,7 @@ type BaseWidgetData = {
   chartData: number[];
 };
 
-interface MonthlyActiveUsersData {
-  monthlyData: Array<{
-    month?: string;
-    label?: string;
-    year?: number;
-    count: number;
-  }>;
-  chartData: number[];
-  chartLabels: string[];
-  totalActiveUsers: number;
-  last24HoursActiveUsers: number;
-  period: string; // Add these two properties
-  since: string; // that exist in your actual data
-}
+// Removed unused interface MonthlyActiveUsersData
 type WalksData = {
   value: number;
   percentChange: number;
@@ -108,12 +98,13 @@ interface EventMonthData {
   totalCount: number;
 }
 
-// API Response structure for walks endpoint
-interface WalksApiResponse {
-  chartData?: number[];
-  chartLabels?: string[];
-  totalWalksCreated?: number;
+interface WalkMonthData {
+  month?: string;
+  year?: number;
+  count: number;
 }
+
+// Removed unused interface WalksApiResponse
 
 const Dashboard = ({ theme }: DashboardProps) => {
   const [walks, setWalks] = useState<WalksData | null>(null);
@@ -893,7 +884,11 @@ function App() {
     document.body.classList.toggle("dark-mode", theme.isDark);
   }, [theme.isDark]);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    // Initialize state based on token presence
+    const token = localStorage.getItem("token");
+    return !!token;
+  });
 
   // Check for existing token on component mount
   useEffect(() => {
@@ -947,6 +942,9 @@ function App() {
                   element={<CampusView />}
                 />
                 <Route path="/campuses/campus-view" element={<CampusView />} />
+                <Route path="/places" element={<Places />} />
+                <Route path="/place-types" element={<PlaceTypes />} />
+                <Route path="/campus-sync" element={<CampusSync />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>

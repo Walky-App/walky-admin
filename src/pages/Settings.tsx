@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   CCard,
-  CCardHeader,
   CCardBody,
   CForm,
   CRow,
   CCol,
   CButton,
   CFormText,
-  CSpinner
 } from '@coreui/react';
 import { useTheme } from '../hooks/useTheme';
 import Input from '../components/Input';
-import MultiSelectDropdown from '../components/MultiSelectDropdown';
+// Removed unused import MultiSelectDropdown
 import ImageUpload from '../components/ImageUpload';
-import API from '../API';
 
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-}
+// Removed unused Student interface
 
 const Settings = () => {
   const { theme } = useTheme();
@@ -29,54 +22,14 @@ const Settings = () => {
   const [schoolName, setSchoolName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [emailDomain, setEmailDomain] = useState('');
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [selectedStudents] = useState<string[]>([]);
   const [logo, setLogo] = useState<File | null>(null);
   
-  // State for students data
-  const [students, setStudents] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // Removed unused state for students data
 
-  // Fetch students data
-  useEffect(() => {
-    const fetchStudents = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await API.get<{
-          users: {
-            _id: string
-            first_name: string
-            last_name: string
-            email: string
-            createdAt: string
-            updatedAt: string
-          }[]
-        }>('/users/?fields=_id,first_name,last_name,email,createdAt,updatedAt');
-  
-        const transformed = res.data.users.map((user) => ({
-          id: user._id,
-          name: `${user.first_name} ${user.last_name}`,
-          email: user.email
-        }));
-  
-        setStudents(transformed);
-      } catch (err) {
-        console.error('❌ Failed to fetch student data:', err);
-        setError('Failed to load students. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchStudents();
-  }, []);
+  // Removed unused student fetching logic
 
-  // Convert students array to dropdown options
-  const studentOptions = students.map(student => ({
-    value: student.id,
-    label: student.name
-  }));
+  // Removed unused studentOptions
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {

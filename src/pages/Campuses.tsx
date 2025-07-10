@@ -22,14 +22,17 @@ import {
   cilTrash,
   cilChevronBottom,
   cilChevronTop,
+  cilSync,
 } from "@coreui/icons";
 import { Campus } from "../types/campus";
 import { campusService } from "../services/campusService";
+import { campusSyncService } from "../services/campusSyncService";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../lib/queryClient";
 import CampusBoundary from "./CampusBoundary";
 import { CampusTableSkeleton } from "../components";
+import "../components/SyncButton.css";
 
 const Campuses: React.FC = () => {
   const navigate = useNavigate();
@@ -48,6 +51,11 @@ const Campuses: React.FC = () => {
 
   // Track which campuses are being deleted
   const [deletingCampuses, setDeletingCampuses] = useState<Set<string>>(
+    new Set()
+  );
+
+  // Track which campuses are being synced
+  const [syncingCampuses, setSyncingCampuses] = useState<Set<string>>(
     new Set()
   );
 
@@ -81,6 +89,62 @@ const Campuses: React.FC = () => {
       setAlert({
         type: "danger",
         message: "Failed to delete campus. Please try again.",
+      });
+      setTimeout(() => setAlert(null), 3000);
+    },
+  });
+
+  // Sync campus places mutation
+  const syncCampusMutation = useMutation({
+    mutationFn: (id: string) => {
+      // Add to syncing set when mutation starts
+      setSyncingCampuses((prev) => new Set(prev).add(id));
+      return campusSyncService.syncCampus(id);
+    },
+    onSuccess: (result, id) => {
+      // Remove from syncing set
+      setSyncingCampuses((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+      
+      const campus = campuses.find(c => c.id === id);
+      const campusName = campus?.campus_name || campus?.name || 'Campus';
+      
+      if (result.sync_status === 'completed') {
+        setAlert({ 
+          type: "success", 
+          message: `${campusName} places synced successfully! Added: ${result.places_added}, Updated: ${result.places_updated}, Removed: ${result.places_removed}` 
+        });
+      } else if (result.sync_status === 'partial') {
+        setAlert({ 
+          type: "success", 
+          message: `${campusName} places partially synced. Added: ${result.places_added}, Updated: ${result.places_updated}, Removed: ${result.places_removed}. Some errors occurred.` 
+        });
+      } else {
+        setAlert({ 
+          type: "danger", 
+          message: `${campusName} places sync failed. Please try again.` 
+        });
+      }
+      setTimeout(() => setAlert(null), 5000);
+    },
+    onError: (error, id) => {
+      // Remove from syncing set on error
+      setSyncingCampuses((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+      
+      const campus = campuses.find(c => c.id === id);
+      const campusName = campus?.campus_name || campus?.name || 'Campus';
+      
+      console.error("Failed to sync campus places:", error);
+      setAlert({
+        type: "danger",
+        message: `Failed to sync ${campusName} places. Please try again.`,
       });
       setTimeout(() => setAlert(null), 3000);
     },
@@ -172,6 +236,34 @@ const Campuses: React.FC = () => {
 
     console.log("🚀 Calling deleteCampusMutation with ID:", id);
     deleteCampusMutation.mutate(id);
+  };
+
+  const handleSyncCampus = (id: string) => {
+    console.log("🔄 Attempting to sync campus places with ID:", id);
+
+    // Don't allow sync if no valid ID
+    if (!id || id.startsWith("temp-")) {
+      console.warn("❌ Invalid campus ID for sync:", id);
+      setAlert({
+        type: "danger",
+        message:
+          "Cannot sync campus: Invalid campus ID. Please refresh the page and try again.",
+      });
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+
+    const campus = campuses.find(c => c.id === id);
+    const campusName = campus?.campus_name || campus?.name || 'Campus';
+
+    if (!window.confirm(
+      `Are you sure you want to sync places for ${campusName}? This will fetch the latest places data from Google Places API.`
+    )) {
+      return;
+    }
+
+    console.log("🚀 Calling syncCampusMutation with ID:", id);
+    syncCampusMutation.mutate(id);
   };
 
   const handleToggleGeofenceMap = (campusId: string) => {
@@ -269,8 +361,9 @@ const Campuses: React.FC = () => {
                         const campusId = campus.id || `temp-${index}`;
                         const campusKey = `row-${campusId}`;
 
-                        // Check if this campus is being deleted
+                        // Check if this campus is being deleted or synced
                         const isBeingDeleted = deletingCampuses.has(campusId);
+                        const isBeingSynced = syncingCampuses.has(campusId);
 
                         return (
                           <React.Fragment key={campusKey}>
@@ -429,6 +522,33 @@ const Campuses: React.FC = () => {
                               <CTableDataCell className="actions-cell">
                                 <div className="d-flex justify-content-center gap-1">
                                   <CButton
+                                    color="info"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSyncCampus(
+                                        campus.id || `temp-${index}`
+                                      );
+                                    }}
+                                    disabled={
+                                      loading || 
+                                      syncCampusMutation.isPending || 
+                                      isBeingSynced ||
+                                      isBeingDeleted
+                                    }
+                                    title="Sync Places"
+                                  >
+                                    <CIcon 
+                                      icon={cilSync} 
+                                      size="sm" 
+                                      className={isBeingSynced ? "fa-spin" : ""}
+                                      style={{
+                                        animation: isBeingSynced ? "spin 1s linear infinite" : "none"
+                                      }}
+                                    />
+                                  </CButton>
+                                  <CButton
                                     color="primary"
                                     variant="outline"
                                     size="sm"
@@ -436,7 +556,7 @@ const Campuses: React.FC = () => {
                                       e.stopPropagation();
                                       handleEditCampus(campus);
                                     }}
-                                    disabled={loading}
+                                    disabled={loading || isBeingSynced || isBeingDeleted}
                                     title="Edit Campus"
                                   >
                                     <CIcon icon={cilPencil} size="sm" />
@@ -452,7 +572,10 @@ const Campuses: React.FC = () => {
                                       );
                                     }}
                                     disabled={
-                                      loading || deleteCampusMutation.isPending
+                                      loading || 
+                                      deleteCampusMutation.isPending ||
+                                      isBeingSynced ||
+                                      isBeingDeleted
                                     }
                                     title="Delete Campus"
                                   >

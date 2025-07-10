@@ -4,68 +4,12 @@ import { CChartLine } from "@coreui/react-chartjs";
 import { useTheme } from "../hooks/useTheme";
 import { Chart, TooltipModel } from "chart.js";
 
-interface WalksData {
-  value: number;
-  percentChange: number;
-  chartData: number[];
-  monthLabels?: string[];
-}
 
-// Define the MonthlyActiveUsersData interface
-interface MonthlyActiveUsersData {
-  value: number;
-  percentChange: number;
-  chartData: number[];
-  chartLabels?: string[];
-}
-
-// Update props to accept both active users and walks data
-interface MainChartProps {
-  activeUsers?: MonthlyActiveUsersData | null;
-  walks?: WalksData | null;
-}
-
-const MainChart = ({ activeUsers, walks }: MainChartProps) => {
+const MainChart = () => {
   const chartRef = useRef<Chart | null>(null);
   const { theme } = useTheme();
 
-  // Determine labels, prioritizing active users labels
-  const chartLabels = activeUsers?.chartLabels ||
-    walks?.monthLabels || [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-    ];
-
-  // Define datasets array
-  const datasets = [
-    {
-      label: "Active Users",
-      data: activeUsers?.chartData || [70, 105, 120, 110, 165, 95, 85],
-      borderColor: "rgba(0, 123, 255, 1)",
-      backgroundColor: "rgba(0, 123, 255, 0.1)",
-      fill: true,
-      tension: 0.4,
-      pointRadius: 0,
-      hitRadius: 20,
-      hoverRadius: 4,
-    },
-    {
-      label: "Walks",
-      data: walks?.chartData || [140, 160, 180, 120, 170, 130, 100],
-      borderColor: "rgba(40, 167, 69, 1)",
-      backgroundColor: "transparent",
-      fill: false,
-      tension: 0.4,
-      pointRadius: 0,
-      hitRadius: 20,
-      hoverRadius: 4,
-    },
-  ];
+  // Removed unused variables chartLabels and datasets
 
   // Combined tooltip plugin that shows both values
   const tooltipPlugin = {
@@ -132,7 +76,6 @@ const MainChart = ({ activeUsers, walks }: MainChartProps) => {
       const chart = chartRef.current;
       if (chart.options.scales?.x?.grid) {
         chart.options.scales.x.grid.color = `${theme.colors.borderColor}33`;
-        chart.options.scales.x.grid.borderColor = `${theme.colors.borderColor}33`;
       }
       if (chart.options.scales?.x?.ticks) {
         chart.options.scales.x.ticks.color = theme.colors.bodyColor;
@@ -140,7 +83,6 @@ const MainChart = ({ activeUsers, walks }: MainChartProps) => {
 
       if (chart.options.scales?.x?.grid) {
         chart.options.scales.x.grid.color = `${theme.colors.borderColor}33`;
-        chart.options.scales.x.grid.borderColor = `${theme.colors.borderColor}33`;
       }
       if (chart.options.scales?.x?.ticks) {
         chart.options.scales.x.ticks.color = theme.colors.bodyColor;
@@ -148,7 +90,6 @@ const MainChart = ({ activeUsers, walks }: MainChartProps) => {
 
       if (chart.options.scales?.y?.grid) {
         chart.options.scales.y.grid.color = `${theme.colors.borderColor}33`;
-        chart.options.scales.y.grid.borderColor = `${theme.colors.borderColor}33`;
       }
       if (chart.options.scales?.y?.ticks) {
         chart.options.scales.y.ticks.color = theme.colors.bodyColor;

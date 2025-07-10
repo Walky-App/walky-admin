@@ -110,6 +110,36 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
+        {/* Places */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/places"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Places
+          </NavLink>
+        </CNavItem>
+
+        {/* Place Types */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/place-types"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Place Types
+          </NavLink>
+        </CNavItem>
+
+        {/* Campus Sync */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/campus-sync"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Campus Sync
+          </NavLink>
+        </CNavItem>
+
         {/* Settings */}
         <CNavItem className="px-3 py-2">
           <NavLink
