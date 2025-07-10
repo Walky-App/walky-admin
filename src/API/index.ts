@@ -1,12 +1,12 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://staging.walkyapp.com",
-  // baseURL: "http://192.168.15.11:8080", // Use this for local development
+  // baseURL: "https://staging.walkyapp.com",
+  baseURL: "http://localhost:8080", // Use this for local development
 });
 
 API.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
@@ -37,6 +37,17 @@ API.interceptors.response.use(
     if (error.response?.data) {
       console.error("📄 Error data:", error.response.data);
     }
+    
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401) {
+      // Token might be expired or invalid
+      localStorage.removeItem("token");
+      // Redirect to login page
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    
     return Promise.reject(error);
   }
 );

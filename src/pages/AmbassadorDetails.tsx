@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   CCard,
-  CCardHeader,
   CCardBody,
   CForm,
   CFormLabel,
@@ -42,7 +41,7 @@ const AmbassadorDetails = ({
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const queryClient = useQueryClient();
-
+  const [, setIsValidating] = useState<boolean>(false);
   // Mutations for create and update
   const createAmbassadorMutation = useMutation({
     mutationFn: (data: AmbassadorFormData) => ambassadorService.create(data),
@@ -193,61 +192,7 @@ const AmbassadorDetails = ({
     major: "",
   });
 
-  // Sample data for quick testing (only when creating new)
-  const fillSampleData = () => {
-    const sampleNames = [
-      "Alex Johnson",
-      "Maria Garcia",
-      "David Chen",
-      "Sarah Williams",
-      "James Wilson",
-      "Emma Thompson",
-      "Michael Brown",
-      "Lisa Rodriguez",
-      "Kevin Park",
-      "Anna Davis",
-    ];
-    const sampleMajors = [
-      "Computer Science",
-      "Business Administration",
-      "Psychology",
-      "Engineering",
-      "Biology",
-      "Mathematics",
-      "English Literature",
-      "Political Science",
-      "Art History",
-    ];
-    const sampleDomains = [
-      "@berkeley.edu",
-      "@stanford.edu",
-      "@mit.edu",
-      "@harvard.edu",
-      "@yale.edu",
-    ];
-
-    const randomName =
-      sampleNames[Math.floor(Math.random() * sampleNames.length)];
-    const randomMajor =
-      sampleMajors[Math.floor(Math.random() * sampleMajors.length)];
-    const randomDomain =
-      sampleDomains[Math.floor(Math.random() * sampleDomains.length)];
-    const randomYear = Math.floor(Math.random() * 4) + 2024; // 2024-2027
-
-    setAmbassador({
-      name: randomName,
-      email: randomName.toLowerCase().replace(" ", ".") + randomDomain,
-      phone: `+1 (555) ${Math.floor(Math.random() * 900) + 100}-${
-        Math.floor(Math.random() * 9000) + 1000
-      }`,
-      student_id: `STU${Math.floor(Math.random() * 9000) + 1000}`,
-      is_active: true,
-      profile_image_url: "",
-      bio: `${randomMajor} student passionate about helping fellow students navigate campus life.`,
-      graduation_year: randomYear,
-      major: randomMajor,
-    });
-  };
+  // Removed unused fillSampleData function
 
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -257,7 +202,6 @@ const AmbassadorDetails = ({
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
-  const [isValidating, setIsValidating] = useState(false);
 
   // Check if we're editing (have an ID) or creating new
   const effectiveId = ambassadorId || id;
