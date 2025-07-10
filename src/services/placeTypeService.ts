@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PlaceType, GoogleType, CreatePlaceTypeRequest, UpdatePlaceTypeRequest } from '../types/placeType';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://staging.walkyapp.com/api';
+const API_BASE_URL =  'https://staging.walkyapp.com/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
