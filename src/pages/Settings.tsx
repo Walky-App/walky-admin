@@ -118,6 +118,14 @@ const Settings = () => {
             <div className="d-flex justify-content-end mt-4">
               <CButton 
                 type="button" 
+                color="outline-primary" 
+                className="me-2"
+                onClick={() => window.location.href = '/profile-enhancement'}
+              >
+                Enhance Profile
+              </CButton>
+              <CButton 
+                type="button" 
                 color="outline-secondary" 
                 className="me-2"
               >
@@ -137,4 +145,4 @@ const Settings = () => {
   );
 };
 
-export default Settings; 
+export default Settings;  

@@ -27,6 +27,7 @@ import Students from "./pages/Students.tsx";
 import Engagement from "./pages/Engagement.tsx";
 import Review from "./pages/Review.tsx";
 import Settings from "./pages/Settings.tsx";
+import ProfileEnhancement from "./pages/ProfileEnhancement.tsx";
 import CreateAccount from "./pages/CreateAccount.tsx";
 import ForgotPassword from "./pages/ForgotPassword.tsx";
 import { AppTheme } from "./theme";
@@ -945,6 +946,7 @@ function App() {
                 <Route path="/places" element={<Places />} />
                 <Route path="/place-types" element={<PlaceTypes />} />
                 <Route path="/campus-sync" element={<CampusSync />} />
+                <Route path="/profile-enhancement" element={<ProfileEnhancement />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
