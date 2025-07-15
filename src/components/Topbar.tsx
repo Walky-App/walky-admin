@@ -12,8 +12,13 @@ import {
 } from "@coreui/react";
 import { useTheme } from "../hooks/useTheme";
 import React, { useState } from "react";
-import { cilAccountLogout } from "@coreui/icons";
+import { cilAccountLogout, cilSchool } from "@coreui/icons";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { getCurrentUserRole } from "../utils/UserRole";
+import { Role } from "../types/Role";
+import { schoolService } from "../services/schoolService";
+import { useSelectedSchool } from "../hooks/useSelectedSchool";
 
 type TopbarProps = {
   onToggleSidebar: () => void;
@@ -27,7 +32,11 @@ export const Topbar = ({
   sidebarVisible,
 }: TopbarProps) => {
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuth();
   const isDarkMode = theme.isDark;
+  const role = getCurrentUserRole();
+  const isAdmin = role === Role.ADMIN;
+  const { selectedSchoolName } = useSelectedSchool();
 
   const [hovered, setHovered] = useState<string | null>(null);
   const [themeHovered, setThemeHovered] = useState(false);
@@ -55,6 +64,17 @@ export const Topbar = ({
   };
 
   const navigate = useNavigate();
+
+  const handleChangeSchool = () => {
+    // Clear the selected school and navigate to school selection
+    schoolService.clearSelectedSchool();
+    navigate("/school-selection");
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <CNavbar
@@ -89,6 +109,23 @@ export const Topbar = ({
 
           {/* Right-side Icons */}
           <div className="d-flex align-items-center" style={{ gap: "1.5rem" }}>
+            {/* Selected School Display for Admins */}
+            {isAdmin && selectedSchoolName && (
+              <div
+                className="d-flex align-items-center px-3"
+                style={{
+                  borderRight: `1px solid var(--app-borderColor)`,
+                  height: "32px",
+                  color: iconColor,
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                }}
+              >
+                <CIcon icon={cilSchool} className="me-2" size="sm" />
+                {selectedSchoolName}
+              </div>
+            )}
+
             {/* Theme Toggle */}
             <div
               className="d-flex align-items-center px-3"
@@ -129,13 +166,13 @@ export const Topbar = ({
                 />
               </CDropdownToggle>
               <CDropdownMenu>
-                <CDropdownItem
-                  onClick={() => {
-                    // Clear token from localStorage
-                    localStorage.removeItem("token");
-                    navigate("/login");
-                  }}
-                >
+                {isAdmin && (
+                  <CDropdownItem onClick={handleChangeSchool}>
+                    <CIcon icon={cilSchool} className="me-2" />
+                    Change School
+                  </CDropdownItem>
+                )}
+                <CDropdownItem onClick={handleLogout}>
                   <CIcon icon={cilAccountLogout} className="me-2" />
                   Logout
                 </CDropdownItem>

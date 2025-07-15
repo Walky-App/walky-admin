@@ -10,3 +10,5 @@ export * as AmbassadorDetails from "./AmbassadorDetails.tsx";
 export * as AmbassadorView from "./AmbassadorView.tsx";
 export * as Places from "./Places.tsx";
 export * as CampusSync from "./CampusSync.tsx";
+export * as SchoolSelection from "./SchoolSelection.tsx";
+export * as Error404 from "./Error404.tsx";

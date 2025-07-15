@@ -1,15 +1,14 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import API from "../API";
+import { useAuth } from "../hooks/useAuth";
+import { getCurrentUserRole } from "../utils/UserRole";
+import { Role } from "../types/Role";
 
 //login page
-type LoginProps = {
-  onLogin: () => void;
-};
-
-const Login = ({ onLogin }: LoginProps) => {
+const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [isContinueHovered, setIsContinueHovered] = useState(false);
   const [isContinueActive, setIsContinueActive] = useState(false);
@@ -26,27 +25,23 @@ const Login = ({ onLogin }: LoginProps) => {
     }
 
     try {
-      const response = await API.post("/login", {
-        email,
-        password,
-      });
+      // Use the login function from AuthContext
+      await login(email, password);
 
-      const token = response?.data?.access_token;
+      // After successful login, check user role and navigate accordingly
+      const role = getCurrentUserRole();
 
-      if (token) {
-        // Store token in localStorage
-        localStorage.setItem("token", token);
-        onLogin();
-        navigate("/");
+      if (role === Role.ADMIN) {
+        // Check if admin has selected a school
+        const selectedSchool = localStorage.getItem("selectedSchool");
+        navigate(selectedSchool ? "/" : "/school-selection");
       } else {
-        throw new Error("Token not found in response.");
+        navigate("/");
       }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error(
-        "❌ Login failed:",
-        error?.response?.data || error.message || error
-      );
+      console.error("❌ Login failed:", error?.message || error);
       setLoginError(true);
     }
   };

@@ -8,6 +8,7 @@ export * as Topbar from "./Topbar.tsx";
 export * as Dropdown from "./DropDown.tsx";
 export * as Input from "./Input.tsx";
 export * as ImageUpload from "./ImageUpload.tsx";
+export * as AdminSchoolGuard from "./AdminSchoolGuard.tsx";
 export { default as SkeletonLoader } from "./SkeletonLoader";
 export { default as CampusTableSkeleton } from "./CampusTableSkeleton";
 export { default as CampusDetailsSkeleton } from "./CampusDetailsSkeleton";

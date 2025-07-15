@@ -32,6 +32,7 @@ import ForgotPassword from "./pages/ForgotPassword.tsx";
 import { AppTheme } from "./theme";
 import VerifyCode from "./pages/VerifyCode.tsx";
 import ExampleAdminLayout from "./components/ExampleAdminLayout.tsx";
+import { AdminSchoolGuard } from "./components/AdminSchoolGuard.tsx";
 import CampusBoundary from "./pages/CampusBoundary";
 import Campuses from "./pages/Campuses";
 import CampusDetails from "./pages/CampusDetails";
@@ -41,6 +42,8 @@ import AmbassadorView from "./pages/AmbassadorView";
 import Places from "./pages/Places";
 import PlaceTypes from "./pages/PlaceTypes";
 import CampusSync from "./pages/CampusSync";
+import { SchoolSelection } from "./pages/SchoolSelection.tsx";
+import { Error404 } from "./pages/Error404.tsx";
 
 import "./App.css";
 
@@ -50,6 +53,7 @@ import { Chart as ChartJS, TooltipModel } from "chart.js";
 
 import API from "./API/index.ts";
 import Login from "./pages/Login.tsx";
+import { useAuth } from "./hooks/useAuth";
 
 type DashboardProps = {
   theme: AppTheme;
@@ -880,6 +884,8 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
 function App() {
   const { theme } = useTheme();
+  const { user, isLoading } = useAuth();
+
   useEffect(() => {
     document.body.classList.toggle("dark-mode", theme.isDark);
   }, [theme.isDark]);
@@ -899,54 +905,114 @@ function App() {
   }, []);
 
   const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-    return isLoggedIn ? children : <Navigate to="/login" />;
+    if (isLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-700"></div>
+        </div>
+      );
+    }
+    return user ? children : <Navigate to="/login" />;
   };
   return (
     <Routes>
       {/* Login route (still public) */}
-      <Route
-        path="/login"
-        element={<Login onLogin={() => setIsLoggedIn(true)} />}
-      />
+      <Route path="/login" element={<Login />} />
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
+
+      {/* School Selection route for admins */}
+      <Route
+        path="/school-selection"
+        element={
+          <PrivateRoute>
+            <SchoolSelection />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 404 Error route */}
+      <Route path="/404" element={<Error404 />} />
 
       {/* Protected routes inside admin layout */}
       <Route
         path="*"
         element={
           <PrivateRoute>
-            <ExampleAdminLayout>
-              <Routes>
-                <Route path="/" element={<Dashboard theme={theme} />} />
-                <Route path="/students" element={<Students />} />
-                <Route path="/engagement" element={<Engagement />} />
-                <Route path="/review" element={<Review />} />
-                <Route path="/campuses" element={<Campuses />} />
-                <Route path="/campus-details/:id" element={<CampusDetails />} />
-                <Route path="/campus-details" element={<CampusDetails />} />
-                <Route path="/ambassadors" element={<Ambassadors />} />
-                <Route
-                  path="/ambassadors/ambassador-view/:id"
-                  element={<AmbassadorView />}
-                />
-                <Route
-                  path="/ambassadors/ambassador-view"
-                  element={<AmbassadorView />}
-                />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/campus-boundary" element={<CampusBoundary />} />
-                <Route
-                  path="/campuses/campus-view/:id"
-                  element={<CampusView />}
-                />
-                <Route path="/campuses/campus-view" element={<CampusView />} />
-                <Route path="/places" element={<Places />} />
-                <Route path="/place-types" element={<PlaceTypes />} />
-                <Route path="/campus-sync" element={<CampusSync />} />
-              </Routes>
-            </ExampleAdminLayout>
+            <AdminSchoolGuard>
+              <ExampleAdminLayout>
+                <Routes>
+                  <Route path="/" element={<Dashboard theme={theme} />} />
+                  <Route path="/students" element={<Students />} />
+                  <Route path="/engagement" element={<Engagement />} />
+                  <Route path="/review" element={<Review />} />
+                  <Route path="/campuses" element={<Campuses />} />
+                  <Route
+                    path="/campus-details/:id"
+                    element={<CampusDetails />}
+                  />
+                  <Route path="/campus-details" element={<CampusDetails />} />
+                  <Route path="/ambassadors" element={<Ambassadors />} />
+                  <Route
+                    path="/ambassadors/ambassador-view/:id"
+                    element={<AmbassadorView />}
+                  />
+                  <Route
+                    path="/ambassadors/ambassador-view"
+                    element={<AmbassadorView />}
+                  />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/campus-boundary" element={<CampusBoundary />} />
+                  <Route
+                    path="/campuses/campus-view/:id"
+                    element={<CampusView />}
+                  />
+                  <Route
+                    path="/campuses/campus-view"
+                    element={<CampusView />}
+                  />
+                  <Route path="/places" element={<Places />} />
+                  <Route path="/place-types" element={<PlaceTypes />} />
+                  <Route path="/campus-sync" element={<CampusSync />} />
+                </Routes>
+              </ExampleAdminLayout>
+              <ExampleAdminLayout>
+                <Routes>
+                  <Route path="/" element={<Dashboard theme={theme} />} />
+                  <Route path="/students" element={<Students />} />
+                  <Route path="/engagement" element={<Engagement />} />
+                  <Route path="/review" element={<Review />} />
+                  <Route path="/campuses" element={<Campuses />} />
+                  <Route
+                    path="/campus-details/:id"
+                    element={<CampusDetails />}
+                  />
+                  <Route path="/campus-details" element={<CampusDetails />} />
+                  <Route path="/ambassadors" element={<Ambassadors />} />
+                  <Route
+                    path="/ambassadors/ambassador-view/:id"
+                    element={<AmbassadorView />}
+                  />
+                  <Route
+                    path="/ambassadors/ambassador-view"
+                    element={<AmbassadorView />}
+                  />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/campus-boundary" element={<CampusBoundary />} />
+                  <Route
+                    path="/campuses/campus-view/:id"
+                    element={<CampusView />}
+                  />
+                  <Route
+                    path="/campuses/campus-view"
+                    element={<CampusView />}
+                  />
+                  {/* Catch all route for 404 */}
+                  <Route path="*" element={<Error404 />} />
+                </Routes>
+              </ExampleAdminLayout>
+            </AdminSchoolGuard>
           </PrivateRoute>
         }
       />

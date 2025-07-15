@@ -6,7 +6,7 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token"); // Changed from sessionStorage to localStorage
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
@@ -37,7 +37,7 @@ API.interceptors.response.use(
     if (error.response?.data) {
       console.error("📄 Error data:", error.response.data);
     }
-    
+
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
       // Token might be expired or invalid
@@ -47,7 +47,7 @@ API.interceptors.response.use(
         window.location.href = "/login";
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
