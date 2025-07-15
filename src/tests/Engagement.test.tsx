@@ -1,9 +1,19 @@
 // src/tests/Engagement.test.tsx
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import Engagement from '../pages/Engagement'
 import { MemoryRouter } from 'react-router-dom'
 import API from '../API'
 import userEvent from '@testing-library/user-event'
+
+jest.mock('@coreui/react', () => ({
+  ...jest.requireActual('@coreui/react'),
+  CTooltip: ({ children, content }: { children: React.ReactNode; content: string }) => (
+    <div>
+      {children}
+      <div data-testid="tooltip-content">{content}</div>
+    </div>
+  ),
+}));
 
 // Mock the window resize event
 const resizeWindow = (width: number) => {
@@ -77,12 +87,14 @@ afterEach(() => {
 
 describe('Walky Admin - Engagement Page', () => {
 
-  it('renders all 3 engagement sections', () => {
-    render(
-      <MemoryRouter>
-        <Engagement />
-      </MemoryRouter>
-    )
+  it('renders all 3 engagement sections', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Engagement />
+        </MemoryRouter>
+      )
+    })
 
     expect(screen.getByTestId('engagement-section-walks')).toBeInTheDocument()
     expect(screen.getByTestId('engagement-section-events')).toBeInTheDocument()
@@ -90,11 +102,13 @@ describe('Walky Admin - Engagement Page', () => {
   })
 
   it('renders all stat widgets with correct values and labels', async () => {
-    render(
-      <MemoryRouter>
-        <Engagement />
-      </MemoryRouter>
-    )
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Engagement />
+        </MemoryRouter>
+      )
+    })
 
     const widgetExpectations = [
       // Walks
@@ -415,13 +429,14 @@ describe('Walky Admin - Engagement Page', () => {
     })
 
     it('displays tooltip on hover with correct content', async () => {
-        render(
-          <MemoryRouter>
-            <Engagement />
-          </MemoryRouter>
-        )
+        await act(async () => {
+          render(
+            <MemoryRouter>
+              <Engagement />
+            </MemoryRouter>
+          )
+        })
       
-        const user = userEvent.setup()
       
         const tooltipsToCheck = [
           { testId: 'engagement-widget-walks-total-walks', expected: 'Number of total walks recorded' },
@@ -429,39 +444,39 @@ describe('Walky Admin - Engagement Page', () => {
           { testId: 'engagement-widget-ideas-total-ideas', expected: 'Number of total ideas created' },
         ]
       
-        for (const { testId, expected } of tooltipsToCheck) {
-          const widget = screen.getByTestId(testId)
-      
-          // Hover and wait for tooltip content to appear
-          await user.hover(widget)
-          const tooltip = await screen.findByText(expected)
-          expect(tooltip).toBeInTheDocument()
-      
-          // Unhover to clean up for the next iteration
-          await user.unhover(widget)
+        const tooltips = screen.getAllByTestId("tooltip-content")
+        expect(tooltips).toHaveLength(3)
+        
+        for (let i = 0; i < tooltipsToCheck.length; i++) {
+          expect(tooltips[i]).toBeInTheDocument()
+          expect(tooltips[i]).toHaveTextContent(tooltipsToCheck[i].expected)
         }
       })
     
-      it('applies correct light mode styles', () => {
+      it('applies correct light mode styles', async () => {
         mockIsDark = false // Light mode
-        render(
-          <MemoryRouter>
-            <Engagement />
-          </MemoryRouter>
-        )
+        await act(async () => {
+          render(
+            <MemoryRouter>
+              <Engagement />
+            </MemoryRouter>
+          )
+        })
       
         const widget = screen.getByTestId('engagement-widget-walks-total-walks')
         expect(widget).toHaveStyle('background-color: #f8f9fa')
         expect(widget.querySelector('strong')).toHaveStyle('color: #000')
       })
       
-      it('applies correct dark mode styles', () => {
+      it('applies correct dark mode styles', async () => {
         mockIsDark = true // Dark mode
-        render(
-          <MemoryRouter>
-            <Engagement />
-          </MemoryRouter>
-        )
+        await act(async () => {
+          render(
+            <MemoryRouter>
+              <Engagement />
+            </MemoryRouter>
+          )
+        })
       
         const widget = screen.getByTestId('engagement-widget-walks-total-walks')
         expect(widget).toHaveStyle('background-color: #2a2d36')

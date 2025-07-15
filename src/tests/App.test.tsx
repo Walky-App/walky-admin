@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "../App";
 import API from "../API";
@@ -133,7 +133,7 @@ jest.mock("@coreui/icons-react", () => ({
 jest.mock("../API");
 
 describe("Walky Admin Portal - Dashboard Page", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
 
     // Set up proper DOM for testing
@@ -165,12 +165,14 @@ describe("Walky Admin Portal - Dashboard Page", () => {
       })),
     });
 
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App initialLoginState={true} />
-      </MemoryRouter>,
-      { container: document.getElementById("root") as HTMLElement }
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={["/"]}>
+          <App initialLoginState={true} />
+        </MemoryRouter>,
+        { container: document.getElementById("root") as HTMLElement }
+      );
+    });
 
     // Add additional mocks for API endpoints used in the test
     (API.get as jest.Mock).mockImplementation((url: string) => {
@@ -399,12 +401,14 @@ describe("Walky Admin Portal - Dashboard Page", () => {
         }
       });
 
-      render(
-        <MemoryRouter initialEntries={["/"]}>
-          <App initialLoginState={true} />
-        </MemoryRouter>,
-        { container: document.getElementById("root") as HTMLElement }
-      );
+      await act(async () => {
+        render(
+          <MemoryRouter initialEntries={["/"]}>
+            <App initialLoginState={true} />
+          </MemoryRouter>,
+          { container: document.getElementById("root") as HTMLElement }
+        );
+      });
 
       // Wait for UI to reflect fallback values
       await waitFor(() => {

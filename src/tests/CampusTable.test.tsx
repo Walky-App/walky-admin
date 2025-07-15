@@ -1,10 +1,23 @@
 // src/tests/CampusTable.test.tsx
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import Campuses from "../pages/Campuses";
 import * as campusService from "../services/campusService";
+
+jest.mock('@react-google-maps/api', () => ({
+  useJsApiLoader: () => ({ isLoaded: true, loadError: null }),
+  GoogleMap: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="google-map">
+      {children}
+      <button role="button" aria-label="Map">Map</button>
+      <button role="button" aria-label="Satellite">Satellite</button>
+    </div>
+  ),
+  DrawingManager: () => null,
+  StandaloneSearchBox: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 import { Campus } from "../types/campus";
 
 const createTestQueryClient = () =>
@@ -63,13 +76,15 @@ describe("Walky Admin - CampusTable Component", () => {
   it("fetches and displays campus data from /campuses API", async () => {
     const queryClient = new QueryClient();
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Campuses />
-        </BrowserRouter>
-      </QueryClientProvider>
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Campuses />
+          </BrowserRouter>
+        </QueryClientProvider>
+      );
+    });
 
     // Wait for campus row to appear
     await waitFor(() =>
@@ -117,7 +132,9 @@ describe("Walky Admin - CampusTable Component", () => {
   });
   
   it("displays the Campus Boundary map with polygon boundaries and toggle buttons", async () => {
-    renderWithProviders(<Campuses />);
+    await act(async () => {
+      renderWithProviders(<Campuses />);
+    });
   
     const campusRow = await screen.findByText("Test University");
     campusRow.click();

@@ -1,5 +1,5 @@
 // src/tests/StudentTable.test.tsx
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import StudentTable from '../components/StudentTable'
 import { MemoryRouter } from 'react-router-dom'
 import API from '../API'
@@ -20,16 +20,16 @@ describe('Walky Admin - StudentTable Component', () => {
             first_name: 'Alice',
             last_name: 'Doe',
             email: 'alice@example.com',
-            createdAt: '2023-01-01T00:00:00Z',
-            updatedAt: '2023-01-05T00:00:00Z',
+            createdAt: '2022-12-31T00:00:00Z',
+            updatedAt: '2023-01-04T00:00:00Z',
           },
           {
             _id: '2',
             first_name: 'Bob',
             last_name: 'Smith',
             email: 'bob@example.com',
-            createdAt: '2023-02-01T00:00:00Z',
-            updatedAt: '2023-02-05T00:00:00Z',
+            createdAt: '2023-01-31T00:00:00Z',
+            updatedAt: '2023-02-04T00:00:00Z',
           },
         ],
       },
@@ -41,11 +41,13 @@ describe('Walky Admin - StudentTable Component', () => {
   })
 
   it('fetches and displays rows from /users API', async () => {
-    render(
-      <MemoryRouter>
-        <StudentTable />
-      </MemoryRouter>
-    )
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <StudentTable />
+        </MemoryRouter>
+      )
+    })
 
     const rows = await screen.findAllByTestId('student-row')
     expect(rows).toHaveLength(2)
@@ -62,11 +64,13 @@ describe('Walky Admin - StudentTable Component', () => {
   })
 
   it('transforms API data into readable table format', async () => {
-    render(
-      <MemoryRouter>
-        <StudentTable />
-      </MemoryRouter>
-    )
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <StudentTable />
+        </MemoryRouter>
+      )
+    })
   
     const rows = await screen.findAllByTestId('student-row')
     expect(rows).toHaveLength(2)

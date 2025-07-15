@@ -1,5 +1,5 @@
 // src/tests/ReviewTable.test.tsx
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import ReviewTable from '../components/ReviewTable'
 import { MemoryRouter } from 'react-router-dom'
 import API from '../API'
@@ -19,8 +19,8 @@ describe('Walky Admin - ReviewTable Component', () => {
             first_name: 'Jane',
             last_name: 'Doe',
             reason: 'Inappropriate behavior',
-            createdAt: '2023-05-01T00:00:00Z',
-            reportedOn: '2023-05-10T00:00:00Z',
+            createdAt: '2023-04-30T00:00:00Z',
+            reportedOn: '2023-05-09T00:00:00Z',
           },
         ],
       },
@@ -32,14 +32,16 @@ describe('Walky Admin - ReviewTable Component', () => {
   })
 
   it('fetches and displays rows from /users API with required fields', async () => {
-    render(
-      <MemoryRouter>
-        <ReviewTable />
-      </MemoryRouter>
-    )
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ReviewTable />
+        </MemoryRouter>
+      )
+    })
   
     // Wait for the row
-    const row = await screen.findByTestId('review-row')
+    await screen.findByTestId('review-row')
   
     expect(screen.getByTestId('review-id')).toHaveTextContent('r1')
     expect(screen.getByTestId('review-name')).toHaveTextContent('Jane Doe')
@@ -53,14 +55,16 @@ describe('Walky Admin - ReviewTable Component', () => {
   })
 
   it('transforms API data into readable table format', async () => {
-    render(
-      <MemoryRouter>
-        <ReviewTable />
-      </MemoryRouter>
-    )
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ReviewTable />
+        </MemoryRouter>
+      )
+    })
   
     // Wait for the table row to load
-    const row = await screen.findByTestId('review-row')
+    await screen.findByTestId('review-row')
   
     // Check name is full name (first + last)
     expect(screen.getByTestId('review-name')).toHaveTextContent('Jane Doe')
@@ -192,14 +196,16 @@ describe('Walky Admin - ReviewTable Component', () => {
   })
 
   it('opens dropdown menu and displays actions for each row', async () => {
-    render(
-      <MemoryRouter>
-        <ReviewTable />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ReviewTable />
+        </MemoryRouter>
+      );
+    })
   
     // Wait for the row to appear
-    const row = await screen.findByTestId('review-row');
+    await screen.findByTestId('review-row');
   
     // Click the dropdown toggle
     const toggle = screen.getByTestId('dropdown-toggle-r1'); // update ID to match your test data

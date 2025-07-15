@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { Topbar } from "../components/Topbar";
 import { MemoryRouter } from "react-router-dom";
 
@@ -36,16 +36,18 @@ jest.mock("../hooks/useTheme", () => ({
 }));
 
 describe("Walky Admin - Topbar Component", () => {
-  it("calls toggleTheme when theme toggle button is clicked", () => {
-    render(
-      <MemoryRouter>
-        <Topbar
-          onToggleSidebar={jest.fn()}
-          isMobile={false}
-          sidebarVisible={true}
-        />
-      </MemoryRouter>
-    );
+  it("calls toggleTheme when theme toggle button is clicked", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Topbar
+            onToggleSidebar={jest.fn()}
+            isMobile={false}
+            sidebarVisible={true}
+          />
+        </MemoryRouter>
+      );
+    })
 
     const toggleBtn = screen.getByTestId("theme-toggle");
     fireEvent.click(toggleBtn);
@@ -54,15 +56,17 @@ describe("Walky Admin - Topbar Component", () => {
   });
 
   it("shows avatar menu on click", async () => {
-    render(
-      <MemoryRouter>
-        <Topbar
-          onToggleSidebar={jest.fn()}
-          isMobile={false}
-          sidebarVisible={true}
-        />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Topbar
+            onToggleSidebar={jest.fn()}
+            isMobile={false}
+            sidebarVisible={true}
+          />
+        </MemoryRouter>
+      );
+    })
 
     // click avatar toggle to show dropdown
     const avatarToggle = screen.getByTestId("user-dropdown");
@@ -73,19 +77,21 @@ describe("Walky Admin - Topbar Component", () => {
     expect(logoutItem).toBeInTheDocument();
   });
 
-  it('removes token and navigates to "/login" on logout', () => {
-    render(
-      <MemoryRouter>
-        <Topbar
-          onToggleSidebar={jest.fn()}
-          isMobile={false}
-          sidebarVisible={true}
-        />
-      </MemoryRouter>
-    );
+  it('removes token and navigates to "/login" on logout', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Topbar
+            onToggleSidebar={jest.fn()}
+            isMobile={false}
+            sidebarVisible={true}
+          />
+        </MemoryRouter>
+      );
+    })
 
     // Open dropdown
-    const avatarToggle = screen.getByRole("link", { hidden: true });
+    const avatarToggle = screen.getByTestId("user-dropdown");
     fireEvent.click(avatarToggle);
 
     const logoutBtn = screen.getByTestId("logout-button");
