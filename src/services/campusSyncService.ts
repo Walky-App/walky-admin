@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL =  'https://staging.walkyapp.com/api';
+import API from '../API';
 
 export interface SyncResult {
   campus_id: string;
@@ -72,31 +70,21 @@ export interface CampusBoundaryPreview {
   search_points_count: number;
 }
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
 export const campusSyncService = {
   // Trigger sync for a specific campus
   syncCampus: async (campusId: string): Promise<SyncResult> => {
-    const response = await axios.post(
-      `${API_BASE_URL}/admin/campus-sync/sync/${campusId}`,
-      {},
-      { headers: getAuthHeaders() }
+    const response = await API.post(
+      `/admin/campus-sync/sync/${campusId}`,
+      {}
     );
     return response.data.data;
   },
 
   // Trigger sync for all campuses
   syncAllCampuses: async (): Promise<{ summary: { total: number; totalPlacesAdded: number; totalPlacesUpdated: number; totalPlacesRemoved: number }; results: SyncResult[] }> => {
-    const response = await axios.post(
-      `${API_BASE_URL}/admin/campus-sync/sync-all`,
-      {},
-      { headers: getAuthHeaders() }
+    const response = await API.post(
+      `/admin/campus-sync/sync-all`,
+      {}
     );
     return response.data.data;
   },
@@ -108,11 +96,10 @@ export const campusSyncService = {
     limit?: number;
     offset?: number;
   }): Promise<{ logs: SyncLog[]; pagination: { total: number; limit: number; offset: number } }> => {
-    const response = await axios.get(
-      `${API_BASE_URL}/admin/campus-sync/logs`,
+    const response = await API.get(
+      `/admin/campus-sync/logs`,
       {
-        params,
-        headers: getAuthHeaders()
+        params
       }
     );
     return response.data.data;
@@ -120,18 +107,16 @@ export const campusSyncService = {
 
   // Get campuses with sync status
   getCampusesWithSyncStatus: async (): Promise<CampusSyncStatus[]> => {
-    const response = await axios.get(
-      `${API_BASE_URL}/admin/campus-sync/campuses`,
-      { headers: getAuthHeaders() }
+    const response = await API.get(
+      `/admin/campus-sync/campuses`
     );
     return response.data.data;
   },
 
   // Preview campus boundary and search points
   previewCampusBoundary: async (campusId: string): Promise<CampusBoundaryPreview> => {
-    const response = await axios.get(
-      `${API_BASE_URL}/admin/campus-sync/campus/${campusId}/preview`,
-      { headers: getAuthHeaders() }
+    const response = await API.get(
+      `/admin/campus-sync/campus/${campusId}/preview`
     );
     return response.data.data;
   }

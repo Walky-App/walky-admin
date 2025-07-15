@@ -1,15 +1,5 @@
-import axios from 'axios';
+import API from '../API';
 import { PlaceType, GoogleType, CreatePlaceTypeRequest, UpdatePlaceTypeRequest } from '../types/placeType';
-
-const API_BASE_URL =  'https://staging.walkyapp.com/api';
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
 
 export const placeTypeService = {
   // Get all place types
@@ -17,11 +7,10 @@ export const placeTypeService = {
     is_active?: boolean;
     search?: string;
   }): Promise<PlaceType[]> => {
-    const response = await axios.get(
-      `${API_BASE_URL}/admin/place-types`,
+    const response = await API.get(
+      `/admin/place-types`,
       {
-        params,
-        headers: getAuthHeaders()
+        params
       }
     );
     return response.data.data;
