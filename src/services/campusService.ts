@@ -79,7 +79,6 @@ export const campusService = {
 
       console.log("✅ Campus created successfully:", response.data);
       
-      // Handle nested response structure
       const campus = response.data.data || response.data;
 
       return {
@@ -130,7 +129,7 @@ export const campusService = {
   ): Promise<Campus> => {
     try {
       const response = await API.patch(`/campus/${id}`, data);
-      // Handle nested response structure
+
       const campus = response.data.data || response.data;
       return {
         ...campus,

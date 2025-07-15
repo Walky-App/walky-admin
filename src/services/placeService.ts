@@ -24,14 +24,6 @@ export const placeService = {
       if (filters.order) params.append("order", filters.order);
 
       const response = await API.get(`/admin/places?${params.toString()}`);
-      
-      console.log("📋 Fetched places response:", response.data);
-      console.log("📋 Response data structure:", {
-        hasSuccess: response.data.success,
-        hasData: !!response.data.data,
-        hasPlaces: !!(response.data.data && response.data.data.places),
-        placesCount: response.data.data?.places?.length || 0
-      });
 
       // Handle success response with nested data structure
       if (response.data.success && response.data.data && response.data.data.places && Array.isArray(response.data.data.places)) {
