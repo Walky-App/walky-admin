@@ -115,6 +115,7 @@ function ExampleAdminLayout({ children }: Props) {
           <div className=" d-sm-flex justify-content-between align-items-center mt-0">
             <div className="d-sm-flex justify-content-between align-items-center">
             <h2
+              data-testid="page-title"
               className="mb-0"
               style={{
                 color: theme.colors.bodyColor,
@@ -131,6 +132,7 @@ function ExampleAdminLayout({ children }: Props) {
         </main>
       </div>
       <footer
+        data-testid="footer"
         className="footer py-3 border-top text-center d-flex justify-content-center"
         style={{
           backgroundColor: theme.colors.cardBg,

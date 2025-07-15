@@ -89,6 +89,7 @@ const StudentTable = () => {
         <CTableBody>
           {students.map((student) => (
             <CTableRow
+              data-testid="student-row"
               key={student.id}
               color={flaggedUsers.includes(student.id) ? 'danger' : undefined}
             >
@@ -112,6 +113,7 @@ const StudentTable = () => {
               <CTableDataCell>
                 <CDropdown alignment="end">
                   <CDropdownToggle
+                    data-testid={`dropdown-toggle-${student.id}`}
                     color="dark"
                     variant="ghost"
                     caret={false}
@@ -125,14 +127,16 @@ const StudentTable = () => {
                     ⋮
                   </CDropdownToggle>
                   <CDropdownMenu>
-                    <CDropdownItem>Send email</CDropdownItem>
-                    <CDropdownItem onClick={() => handleToggleFlagUser(student.id)}>
+                    <CDropdownItem data-testid={`send-email-${student.id}`}>Send email</CDropdownItem>
+                    <CDropdownItem 
+                      data-testid={`flag-user-${student.id}`}
+                      onClick={() => handleToggleFlagUser(student.id)}>
                       {flaggedUsers.includes(student.id)
                         ? 'Unflag user'
                         : 'Flag user'}
                     </CDropdownItem>
-                    <CDropdownItem>Request edit</CDropdownItem>
-                    <CDropdownItem>Request to delete</CDropdownItem>
+                    <CDropdownItem data-testid={`request-edit-${student.id}`}>Request edit</CDropdownItem>
+                    <CDropdownItem data-testid={`request-delete-${student.id}`}>Request to delete</CDropdownItem>
                   </CDropdownMenu>
                 </CDropdown>
               </CTableDataCell>

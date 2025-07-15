@@ -8,9 +8,10 @@ type InfoStatWidgetProps = {
   value: string | number
   label: string
   tooltip: string
+  testId?: string
 }
 
-const InfoStatWidget: React.FC<InfoStatWidgetProps> = ({ icon, value, label, tooltip }) => {
+const InfoStatWidget: React.FC<InfoStatWidgetProps> = ({ icon, value, label, tooltip, testId}) => {
   const { theme } = useTheme(); 
   const isDark = theme.isDark;
 
@@ -24,6 +25,7 @@ const InfoStatWidget: React.FC<InfoStatWidgetProps> = ({ icon, value, label, too
       '--cui-tooltip-border-color': theme.isDark ? '#adb5bd' : '#000',
     } as React.CSSProperties}>
       <div
+        data-testid={testId}
         className="d-flex rounded border overflow-hidden"
         style={{
           width: '100%',

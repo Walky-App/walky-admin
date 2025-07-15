@@ -75,6 +75,7 @@ export const Topbar = ({
           {/* Hamburger Button */}
           <button
             onClick={onToggleSidebar}
+            data-testid="toggle-sidebar"
             style={hovered === "menu" ? iconBtnHoverStyle : iconBtnStyle}
             onMouseEnter={() => setHovered("menu")}
             onMouseLeave={() => setHovered(null)}
@@ -112,6 +113,7 @@ export const Topbar = ({
                 className="p-0"
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
+                data-testid="theme-toggle"
                 style={{ color: iconColor }}
               >
                 <CIcon icon={isDarkMode ? cilMoon : cilSun} size="lg" />
@@ -126,10 +128,12 @@ export const Topbar = ({
                   src="/fiu-logo.png"
                   size="lg"
                   style={{ width: "35px" }}
+                  data-testid="user-dropdown"
                 />
               </CDropdownToggle>
               <CDropdownMenu>
                 <CDropdownItem
+                  data-testid="logout-button"
                   onClick={() => {
                     // Clear token from localStorage
                     localStorage.removeItem("token");

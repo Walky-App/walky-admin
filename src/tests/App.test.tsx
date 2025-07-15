@@ -1,10 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "../App";
 import API from "../API";
 import { getTheme } from "../theme";
+
+// Mocking Google Maps API calls
+jest.mock("@react-google-maps/api", () => ({
+  GoogleMap: () => <div data-testid="mocked-google-map" />,
+  useJsApiLoader: () => ({
+    isLoaded: true,
+    loadError: null,
+  }),
+  DrawingManager: () => <div data-testid="mocked-drawing-manager" />,
+}));
 
 // Mock the hooks/useTheme module
 jest.mock("../hooks/useTheme", () => ({
@@ -13,6 +23,8 @@ jest.mock("../hooks/useTheme", () => ({
     toggleTheme: jest.fn(),
   }),
 }));
+
+//mock Chart.js
 jest.mock("chart.js", () => {
   return {
     Chart: jest.fn(),
@@ -34,10 +46,14 @@ jest.mock("../components/ExampleAdminLayout", () => ({
     <div data-testid="admin-layout">{children}</div>
   ),
 }));
+
+// Mock MainChart component
 jest.mock("../components/MainChart", () => ({
   __esModule: true,
   default: () => <div data-testid="mocked-main-chart">Main Chart Mock</div>,
 }));
+
+// Mock @coreui/react-chartjs components
 jest.mock("@coreui/react-chartjs", () => ({
   CChartLine: (props: any) => {
     return (
@@ -55,9 +71,29 @@ jest.mock("@coreui/react-chartjs", () => ({
 jest.mock("@coreui/react", () => {
   // Create simplified mocks of CoreUI components
   return {
-    CWidgetStatsA: ({ "data-testid": testId, value, title, children }: any) => (
+    CWidgetStatsA: ({
+      "data-testid": testId,
+      value,
+      title,
+      percent,
+      trend,
+      icon,
+      children,
+    }: any) => (
       <div data-testid={testId || "coreui-widget"}>
-        <div className="widget-value">{value}</div>
+        <div className="widget-value">
+          {value}
+          {percent !== undefined && (
+            <span className="fs-6 fw-normal">
+              ({percent}%
+              <span data-testid="mocked-icon">
+                {trend === "up" ? "↑" : trend === "down" ? "↓" : ""}{" "}
+                {icon && "Icon"}
+              </span>
+              )
+            </span>
+          )}
+        </div>
         <div className="widget-title">{title}</div>
         {children}
       </div>
@@ -93,6 +129,7 @@ jest.mock("@coreui/icons-react", () => ({
   },
 }));
 
+// Mock API calls
 jest.mock("../API");
 
 describe("Walky Admin Portal - Dashboard Page", () => {
@@ -105,6 +142,36 @@ describe("Walky Admin Portal - Dashboard Page", () => {
     // Reset any document mocks to avoid interference
     jest.restoreAllMocks();
 
+    // Setup fake localStorage and media query for theme
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: jest.fn(() => "light"),
+        setItem: jest.fn(),
+      },
+      writable: true,
+    });
+
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App initialLoginState={true} />
+      </MemoryRouter>,
+      { container: document.getElementById("root") as HTMLElement }
+    );
+
     // Add additional mocks for API endpoints used in the test
     (API.get as jest.Mock).mockImplementation((url: string) => {
       switch (url) {
@@ -114,6 +181,10 @@ describe("Walky Admin Portal - Dashboard Page", () => {
               chartData: [10, 20, 30, 40, 50, 60],
               chartLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
               totalWalksCreated: 210,
+              monthlyData: [
+                { month: "May", year: "2025", count: 100 },
+                { month: "June", year: "2025", count: 110 },
+              ],
             },
           });
         case "/walks/count?groupBy=day":
@@ -123,6 +194,10 @@ describe("Walky Admin Portal - Dashboard Page", () => {
               chartData: [10, 20, 30, 40, 50, 60],
               chartLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
               totalWalksCreated: 210,
+              monthlyData: [
+                { month: "May", year: "2025", count: 100 },
+                { month: "June", year: "2025", count: 110 },
+              ],
             },
           });
         case "/users/monthly-active?period=month":
@@ -130,7 +205,10 @@ describe("Walky Admin Portal - Dashboard Page", () => {
         case "/users/monthly-active?period=week":
           return Promise.resolve({
             data: {
-              monthlyData: [],
+              monthlyData: [
+                { month: "May", year: "2025", count: 100 },
+                { month: "June", year: "2025", count: 110 },
+              ],
               chartData: [5, 10, 15, 20, 25, 30],
               chartLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
               totalActiveUsers: 100,
@@ -150,6 +228,10 @@ describe("Walky Admin Portal - Dashboard Page", () => {
                 { month: "February 2025", totalCount: 20 },
                 { month: "March 2025", totalCount: 30 },
               ],
+              monthlyData: [
+                { month: "May", year: "2025", count: 100 },
+                { month: "June", year: "2025", count: 110 },
+              ],
             },
           });
         case "/ideas/count":
@@ -159,9 +241,8 @@ describe("Walky Admin Portal - Dashboard Page", () => {
               chartData: [8, 12, 15, 18, 22, 25],
               totalIdeas: 100,
               monthlyData: [
-                { month: "January", year: "2025", count: 10 },
-                { month: "February", year: "2025", count: 20 },
-                { month: "March", year: "2025", count: 30 },
+                { month: "May", year: "2025", count: 100 },
+                { month: "June", year: "2025", count: 110 },
               ],
             },
           });
@@ -196,52 +277,26 @@ describe("Walky Admin Portal - Dashboard Page", () => {
       });
   });
 
-  it("renders the Walks widget and chart title", async () => {
+  it("renders the widgets and chart title", async () => {
     try {
       // Mock console methods to catch any errors
       const originalConsoleError = console.error;
       console.error = jest.fn();
-
-      // Mock window methods
-      Object.defineProperty(window, "localStorage", {
-        value: {
-          getItem: jest.fn(() => "light"),
-          setItem: jest.fn(),
-        },
-        writable: true,
-      });
-
-      Object.defineProperty(window, "matchMedia", {
-        writable: true,
-        value: jest.fn().mockImplementation((query) => ({
-          matches: false,
-          media: query,
-          onchange: null,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          dispatchEvent: jest.fn(),
-        })),
-      }); // Helper to stub document methods safely
-      // Removed complex document mocking approach
-
-      // Render with mocked theme hook
-      render(
-        <MemoryRouter initialEntries={["/"]}>
-          <App initialLoginState={true} />
-        </MemoryRouter>,
-        { container: document.getElementById("root") as HTMLElement }
-      );
 
       // Wait for API calls to resolve and components to render with longer timeout
       await waitFor(
         () => {
           // Debug output to see what's in the DOM
           console.log("Current DOM:", document.body.innerHTML);
-          
+
           // Check if walks-widget is in document
           expect(screen.getByTestId("walks-widget")).toBeInTheDocument();
+          // Check if events-widget is in document
+          expect(screen.getByTestId("events-widget")).toBeInTheDocument();
+          // Check if ideas-widget is in document
+          expect(screen.getByTestId("ideas-widget")).toBeInTheDocument();
+          // Check if surprise-widget is  in document
+          expect(screen.getByTestId("surprise-widget")).toBeInTheDocument();
         },
         { timeout: 10000 }
       );
@@ -259,6 +314,112 @@ describe("Walky Admin Portal - Dashboard Page", () => {
 
       // Restore console.error
       console.error = originalConsoleError;
+    } catch (error: unknown) {
+      console.error("🔥 FINAL ERROR:", error);
+      throw error;
+    }
+  });
+
+  it("shows correct label, number, trend %, and graph icon per card", async () => {
+    try {
+      await waitFor(() => {
+        const walksWidget = screen.getByTestId("walks-widget");
+        expect(walksWidget).toBeInTheDocument();
+        expect(walksWidget).toHaveTextContent("Walks");
+        expect(walksWidget).toHaveTextContent("210");
+        expect(walksWidget).toHaveTextContent("10%");
+        expect(
+          within(walksWidget).getByTestId("mocked-icon")
+        ).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        const eventsWidget = screen.getByTestId("events-widget");
+        expect(eventsWidget).toBeInTheDocument();
+        expect(eventsWidget).toHaveTextContent("Events");
+        expect(eventsWidget).toHaveTextContent("60");
+        expect(eventsWidget).toHaveTextContent("50%");
+        expect(
+          within(eventsWidget).getByTestId("mocked-icon")
+        ).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        const ideasWidget = screen.getByTestId("ideas-widget");
+        expect(ideasWidget).toBeInTheDocument();
+        expect(ideasWidget).toHaveTextContent("Ideas");
+        expect(ideasWidget).toHaveTextContent("210");
+        expect(ideasWidget).toHaveTextContent("10%");
+        expect(
+          within(ideasWidget).getByTestId("mocked-icon")
+        ).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        const surpriseWidget = screen.getByTestId("surprise-widget");
+        expect(surpriseWidget).toBeInTheDocument();
+        expect(surpriseWidget).toHaveTextContent("Surprise");
+        expect(surpriseWidget).toHaveTextContent(/coming soon/i);
+        expect(surpriseWidget).toHaveTextContent("0%");
+        expect(
+          within(surpriseWidget).getByTestId("mocked-icon")
+        ).toBeInTheDocument();
+      });
+    } catch (error: unknown) {
+      console.error("🔥 FINAL ERROR:", error);
+      throw error;
+    }
+  });
+
+  it("handles missing/falsy stat data gracefully", async () => {
+    try {
+      // Override API mock to return missing/falsy data
+      (API.get as jest.Mock).mockImplementation((url: string) => {
+        switch (url) {
+          case "/walks/count?groupBy=month":
+            return Promise.resolve({
+              data: {
+                chartData: [],
+                chartLabels: [],
+                totalWalksCreated: null, // simulate missing stat
+              },
+            });
+          case "/events/count":
+            return Promise.resolve({
+              data: {
+                totalEvents: undefined,
+              },
+            });
+          case "/ideas/count":
+            return Promise.resolve({
+              data: null, // simulate total API failure
+            });
+          default:
+            return Promise.resolve({ data: {} });
+        }
+      });
+
+      render(
+        <MemoryRouter initialEntries={["/"]}>
+          <App initialLoginState={true} />
+        </MemoryRouter>,
+        { container: document.getElementById("root") as HTMLElement }
+      );
+
+      // Wait for UI to reflect fallback values
+      await waitFor(() => {
+        const walks = screen.getByTestId("walks-widget");
+        expect(walks).toBeInTheDocument();
+        expect(walks).toHaveTextContent(/0|n\/a|coming soon|loading/i);
+
+        const events = screen.getByTestId("events-widget");
+        expect(events).toBeInTheDocument();
+        expect(events).toHaveTextContent(/0|n\/a|coming soon|loading/i);
+
+        const ideas = screen.getByTestId("ideas-widget");
+        expect(ideas).toBeInTheDocument();
+        expect(ideas).toHaveTextContent(/0|n\/a|coming soon|loading/i);
+      });
     } catch (error: unknown) {
       console.error("🔥 FINAL ERROR:", error);
       throw error;

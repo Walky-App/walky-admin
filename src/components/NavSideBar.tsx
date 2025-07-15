@@ -18,6 +18,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
 
   return (
     <CSidebar
+      data-testid="sidebar-container"
       className="border-end text-white flex-shrink-0"
       style={{
         backgroundColor: "#1e1e2f",
@@ -46,6 +47,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/"
+            data-testid="dashboard-link"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Dashboard
@@ -60,6 +62,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/students"
+            data-testid="students-link"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Students
@@ -70,6 +73,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/engagement"
+            data-testid="engagement-link"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Engagement
@@ -80,6 +84,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/review"
+            data-testid="review-link"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Review
@@ -94,6 +99,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/campuses"
+            data-testid="campuses-link"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Campuses
@@ -104,9 +110,40 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/ambassadors"
+            data-testid="ambassadors-link"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Ambassadors
+          </NavLink>
+        </CNavItem>
+
+        {/* Places */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/places"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Places
+          </NavLink>
+        </CNavItem>
+
+        {/* Place Types */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/place-types"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Place Types
+          </NavLink>
+        </CNavItem>
+
+        {/* Campus Sync */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/campus-sync"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Campus Sync
           </NavLink>
         </CNavItem>
 
@@ -114,6 +151,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/settings"
+            data-testid="settings-link"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Settings
