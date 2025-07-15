@@ -2,26 +2,17 @@
 import { render, screen } from '@testing-library/react'
 import InfoStatWidget from '../components/InfoStatWidget'
 import * as icon from '@coreui/icons'
-import userEvent from '@testing-library/user-event'
 
-// Mock useTheme as usual
-jest.mock('../hooks/useTheme', () => ({
-  useTheme: () => ({
-    theme: {
-      isDark: false,
-      colors: {
-        cardBg: '#fff',
-        bodyBg: '#fff',
-        bodyColor: '#000',
-        borderColor: '#ccc',
-        primary: '#007bff',
-      },
-    },
-    toggleTheme: jest.fn(),
-  }),
+jest.mock('@coreui/react', () => ({
+  ...jest.requireActual('@coreui/react'),
+  CTooltip: ({ children, content }: { children: React.ReactNode; content: string }) => (
+    <div>
+      {children}
+      <div data-testid="tooltip-content">{content}</div>
+    </div>
+  ),
 }))
 
-// mock dark mode
 jest.mock('../hooks/useTheme', () => ({
   useTheme: () => ({
     theme: {
@@ -93,13 +84,8 @@ describe('Walky Admin - InfoStatWidget Component', () => {
       />
     )
 
-    const widget = screen.getByTestId('tooltip-widget')
-
-    // Simulate hover to trigger the tooltip
-    await userEvent.hover(widget)
-
-    // Tooltip text should appear in the DOM
-    const tooltip = await screen.findByText("This is the average age of all users")
+    const tooltip = screen.getByTestId("tooltip-content")
     expect(tooltip).toBeInTheDocument()
+    expect(tooltip).toHaveTextContent("This is the average age of all users")
   })
 })

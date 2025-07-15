@@ -16,7 +16,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "bash -c \"./clean-build.sh && node --max-old-space-size=4096 ./node_modules/.bin/eslint --fix\""
+      "bash -c \"./clean-build.sh && node --max-old-space-size=4096 ./node_modules/.bin/eslint --fix $0\""
     ]
   },
   "dependencies": {
