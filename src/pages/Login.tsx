@@ -33,8 +33,8 @@ const Login = ({ onLogin }: LoginProps) => {
       const token = response?.data?.access_token;
 
       if (token) {
-        // Store token in sessionStorage
-        sessionStorage.setItem("token", token);
+        // Store token in localStorage
+        localStorage.setItem("token", token);
         onLogin();
         navigate("/");
       } else {

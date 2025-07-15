@@ -883,11 +883,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
   );
 };
 
-type AppProps = {
-  initialLoginState?: boolean;
-};
-
-function App({}: AppProps) {
+function App(): JSX.Element {
   const { theme } = useTheme();
   useEffect(() => {
     document.body.classList.toggle("dark-mode", theme.isDark);
