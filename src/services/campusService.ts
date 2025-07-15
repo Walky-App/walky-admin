@@ -78,7 +78,8 @@ export const campusService = {
       const response = await API.post("/campus", campusData);
 
       console.log("✅ Campus created successfully:", response.data);
-      const campus = response.data;
+      
+      const campus = response.data.data || response.data;
 
       return {
         ...campus,
@@ -128,8 +129,8 @@ export const campusService = {
   ): Promise<Campus> => {
     try {
       const response = await API.patch(`/campus/${id}`, data);
-      // Map _id to id if backend returns MongoDB _id field
-      const campus = response.data;
+
+      const campus = response.data.data || response.data;
       return {
         ...campus,
         id: campus.id || campus._id || "",

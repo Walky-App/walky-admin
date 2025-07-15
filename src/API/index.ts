@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  // baseURL: "https://staging.walkyapp.com",
-  baseURL: "http://localhost:8080", // Use this for local development
+  baseURL: "https://staging.walkyapp.com/api",
+  // baseURL: "http://localhost:8080/api", // Use this for local development with /api prefix
 });
 
 API.interceptors.request.use((config) => {
