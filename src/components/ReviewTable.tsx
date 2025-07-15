@@ -80,18 +80,18 @@ const ReviewTable = () => {
         </CTableHead>
         <CTableBody>
           {students.map((student) => (
-            <CTableRow key={student.id}>
-              <CTableHeaderCell scope="row">{student.id}</CTableHeaderCell>
-              <CTableDataCell>{student.name}</CTableDataCell>
-              <CTableDataCell>{student.reason || '-'}</CTableDataCell>
-              <CTableDataCell>
+            <CTableRow key={student.id} data-testid="review-row">
+              <CTableHeaderCell scope="row" data-testid="review-id">{student.id}</CTableHeaderCell>
+              <CTableDataCell data-testid="review-name">{student.name}</CTableDataCell>
+              <CTableDataCell data-testid="review-reason">{student.reason || '-'}</CTableDataCell>
+              <CTableDataCell data-testid="review-joined">
                 {new Date(student.joined).toLocaleDateString(undefined, {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
                 })}
               </CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell data-testid="review-reported">
                 {new Date(student.reportedOn).toLocaleDateString(undefined, {
                   month: "short",
                   day: "numeric",
@@ -100,7 +100,7 @@ const ReviewTable = () => {
               </CTableDataCell>
               <CTableDataCell>
                 <CDropdown alignment="end">
-                  <CDropdownToggle
+                  <CDropdownToggle data-testid={`dropdown-toggle-${student.id}`}
                     color="dark"
                     variant="ghost"
                     caret={false}
@@ -114,10 +114,10 @@ const ReviewTable = () => {
                     ⋮
                   </CDropdownToggle>
                   <CDropdownMenu>
-                    <CDropdownItem>Send Email</CDropdownItem>
-                    <CDropdownItem>View activity logs</CDropdownItem>
-                    <CDropdownItem>Suspend user </CDropdownItem>
-                    <CDropdownItem>Request to delete </CDropdownItem>
+                    <CDropdownItem data-testid={`send-email-${student.id}`} >Send Email</CDropdownItem>
+                    <CDropdownItem data-testid={`view-logs-${student.id}`}>View activity logs</CDropdownItem>
+                    <CDropdownItem data-testid={`suspend-${student.id}`}>Suspend user </CDropdownItem>
+                    <CDropdownItem data-testid={`delete-${student.id}`}>Request to delete </CDropdownItem>
                   </CDropdownMenu>
                 </CDropdown>
               </CTableDataCell>

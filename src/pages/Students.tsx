@@ -36,17 +36,19 @@ const Students = () => {
       }
     }
 
-     const getLanguages = async () => {
-       try {
-         const res = await API.get('/language/count')
-         console.log('✅ age/average response:', res);
-         if (res && res.data) {
-           setLanguages(res.data.totalUniqueLanguages)
-         }
-       } catch (err) {
-         console.error('❌ Failed to fetch languages:', err)
-       }
-     }
+    const getLanguages = async () => {
+      try {
+        const res = await API.get('/language/count')
+        if (res?.data?.totalUniqueLanguages !== undefined) {
+          setLanguages(res.data.totalUniqueLanguages)
+        } else {
+          setLanguages('—') // ⬅️ fallback!
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch languages:', err)
+        setLanguages('—') // ⬅️ fallback!
+      }
+    }
 
      const getParents = async () => {
        try {
@@ -66,10 +68,10 @@ const Students = () => {
   }, [])
 
   const widgets = [
-    { icon: icon.cilPeople, value: totalStudents, label: 'Total Students', tooltip: 'Amount of Students' },
-    { icon: icon.cilBirthdayCake, value: averageAge, label: 'Average Age', tooltip: 'Mean age of all students' },
-    { icon: icon.cilLanguage, value: languages, label: 'Languages', tooltip: 'The number of different spoken languages' },
-    { icon: icon.cilPushchair, value: parents, label: 'Parents', tooltip: 'Students who are parents' },
+    { icon: icon.cilPeople, value: totalStudents, label: 'Total Students', tooltip: 'Amount of Students', testId: 'total-students' },
+    { icon: icon.cilBirthdayCake, value: averageAge, label: 'Average Age', tooltip: 'Mean age of all students', testId: 'average-age' },
+    { icon: icon.cilLanguage, value: languages, label: 'Languages', tooltip: 'The number of different spoken languages', testId: 'languages' },
+    { icon: icon.cilPushchair, value: parents, label: 'Parents', tooltip: 'Students who are parents', testId: 'parents' },
   ]
 
   return (

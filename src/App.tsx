@@ -386,6 +386,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
       <CRow>
         <CCol sm={6} lg={3}>
           <CWidgetStatsA
+            data-testid="walks-widget"
             className="mb-4"
             color="primary"
             value={
@@ -394,7 +395,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                   {walks.value}{" "}
                   <span className="fs-6 fw-normal">
                     ({walks.percentChange}%{" "}
-                    <CIcon icon={getTrendIcon(walks.percentChange)} />)
+                    <CIcon icon={getTrendIcon(walks.percentChange)}  />)
                   </span>
                 </>
               ) : (
@@ -473,6 +474,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
         </CCol>
         <CCol sm={6} lg={3}>
           <CWidgetStatsA
+            data-testid="events-widget"
             className="mb-4"
             color="info"
             value={
@@ -560,6 +562,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
         </CCol>
         <CCol sm={6} lg={3}>
           <CWidgetStatsA
+            data-testid="ideas-widget"
             className="mb-4"
             color="warning"
             value={
@@ -648,6 +651,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
         </CCol>
         <CCol sm={6} lg={3}>
           <CWidgetStatsA
+            data-testid="surprise-widget"
             className="mb-4 px-0 py-0"
             color="danger"
             value={
@@ -757,6 +761,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
         <CCardHeader className="d-flex justify-content-between align-items-center border-0 py-0 px-3">
           <div>
             <h5
+              data-testid="main-chart-title"
               className="mb-1"
               style={{
                 fontFamily: "Inter, sans-serif",
@@ -764,7 +769,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                 fontSize: "24px",
               }}
             >
-              Active Users
+              Active Users & Walks
             </h5>
             <div
               style={{
@@ -878,7 +883,11 @@ const Dashboard = ({ theme }: DashboardProps) => {
   );
 };
 
-function App() {
+type AppProps = {
+  initialLoginState?: boolean;
+};
+
+function App({}: AppProps) {
   const { theme } = useTheme();
   useEffect(() => {
     document.body.classList.toggle("dark-mode", theme.isDark);
