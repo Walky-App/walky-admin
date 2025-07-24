@@ -12,16 +12,25 @@ const Students = () => {
   ]
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <CRow>
-        {widgets.map((w, idx) => (
-          <CCol xs={12} sm={6} md={3} className="mb-3" key={idx}>
-            <InfoStatWidget {...w} />
-          </CCol>
-        ))}
-      </CRow>
-      <StudentTable />
-    </div>
+    <main role="main" aria-labelledby="students-heading">
+      <div style={{ padding: '2rem' }}>
+        <h1 id="students-heading" className="visually-hidden">Students Dashboard</h1>
+        <section aria-labelledby="stats-heading">
+          <h2 id="stats-heading" className="visually-hidden">Student Statistics</h2>
+          <CRow role="group" aria-label="Student statistics overview">
+            {widgets.map((w, idx) => (
+              <CCol xs={12} sm={6} md={3} className="mb-3" key={idx}>
+                <InfoStatWidget {...w} />
+              </CCol>
+            ))}
+          </CRow>
+        </section>
+        <section aria-labelledby="table-heading">
+          <h2 id="table-heading" className="visually-hidden">Student Data Table</h2>
+          <StudentTable />
+        </section>
+      </div>
+    </main>
   )
 }
 
