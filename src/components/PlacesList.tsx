@@ -10,6 +10,7 @@ import {
 } from "@coreui/react";
 import { Place } from "../types/place";
 import ExpandablePlaceRow from "./ExpandablePlaceRow";
+import "./PlacesList.css";
 
 interface PlacesListProps {
   places: Place[];
@@ -83,15 +84,16 @@ const PlacesList: React.FC<PlacesListProps> = ({
 
   return (
     <>
-      <CTable hover responsive style={{ backgroundColor: "white" }}>
-        <CTableHead style={{ backgroundColor: "#343a40" }}>
+      <CTable hover responsive className="placesTable">
+        <CTableHead className="tableHeader">
           <CTableRow>
-            <CTableHeaderCell className="text-white fw-bold">Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-white fw-bold">Address</CTableHeaderCell>
-            <CTableHeaderCell className="text-white fw-bold">Category</CTableHeaderCell>
-            <CTableHeaderCell className="text-white fw-bold">Rating</CTableHeaderCell>
-            <CTableHeaderCell className="text-white fw-bold">Photos</CTableHeaderCell>
-            <CTableHeaderCell className="text-white fw-bold">Status</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Name</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Address</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Type</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Hierarchy</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Rating</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Photos</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Status</CTableHeaderCell>
             {/* <CTableHeaderCell>Actions</CTableHeaderCell> */}
           </CTableRow>
         </CTableHead>
@@ -108,7 +110,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
 
       {pages > 1 && (
         <div className="d-flex justify-content-between align-items-center mt-3">
-          <div className="text-muted">
+          <div className="paginationInfo">
             Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} places
           </div>
           <CPagination>{renderPagination()}</CPagination>
