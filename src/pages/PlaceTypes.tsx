@@ -280,14 +280,14 @@ const PlaceTypes: React.FC = () => {
                     ) : filteredPlaceTypes.length === 0 ? (
                       <CTableRow>
                         <CTableDataCell colSpan={7} className="text-center py-5">
-                          <div style={{ color: "#6c757d" }}>
+                          <div style={{ opacity: 0.7 }}>
                             <div style={{ fontSize: "48px", marginBottom: "16px" }}>
                               🏷️
                             </div>
-                            <h5 style={{ marginBottom: "8px", color: "#6c757d" }}>
+                            <h5 style={{ marginBottom: "8px" }}>
                               No place types found
                             </h5>
-                            <p style={{ marginBottom: "20px", color: "#6c757d" }}>
+                            <p style={{ marginBottom: "20px" }}>
                               Create your first place type to start mapping Google types
                             </p>
                             <CButton color="primary" onClick={handleAddNew}>
@@ -301,10 +301,10 @@ const PlaceTypes: React.FC = () => {
                       filteredPlaceTypes.map((placeType) => (
                         <CTableRow key={placeType._id}>
                           <CTableDataCell>
-                            <strong className="text-dark">{placeType.name}</strong>
+                            <strong>{placeType.name}</strong>
                           </CTableDataCell>
-                          <CTableDataCell className="text-dark">
-                            {placeType.description || <span className="text-muted">No description</span>}
+                          <CTableDataCell>
+                            {placeType.description || <span style={{ opacity: 0.6 }}>No description</span>}
                           </CTableDataCell>
                           <CTableDataCell>
                             <div className="d-flex flex-wrap gap-1">
@@ -320,7 +320,7 @@ const PlaceTypes: React.FC = () => {
                               )}
                             </div>
                           </CTableDataCell>
-                          <CTableDataCell className="text-dark">
+                          <CTableDataCell>
                             <strong>{placeType.places_count || 0}</strong>
                           </CTableDataCell>
                           <CTableDataCell>
@@ -459,7 +459,7 @@ const PlaceTypes: React.FC = () => {
                               onChange={() => handleGoogleTypeToggle(googleType.type)}
                               className="me-3"
                             />
-                            <div className="ml-5 fw-medium text-dark">
+                            <div className="fw-medium" style={{ marginLeft: "8px" }}>
                               {googleType.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </div>
                           </div>
