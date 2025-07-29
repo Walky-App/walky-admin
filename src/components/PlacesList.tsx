@@ -89,7 +89,7 @@ const PlacesList: React.FC<PlacesListProps> = ({
           <CTableRow>
             <CTableHeaderCell className="tableHeaderCell">Name</CTableHeaderCell>
             <CTableHeaderCell className="tableHeaderCell">Address</CTableHeaderCell>
-            <CTableHeaderCell className="tableHeaderCell">Type</CTableHeaderCell>
+            <CTableHeaderCell className="tableHeaderCell">Google Types</CTableHeaderCell>
             <CTableHeaderCell className="tableHeaderCell">Hierarchy</CTableHeaderCell>
             <CTableHeaderCell className="tableHeaderCell">Rating</CTableHeaderCell>
             <CTableHeaderCell className="tableHeaderCell">Photos</CTableHeaderCell>

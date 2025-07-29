@@ -22,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import { placeService } from "../services/placeService";
 import { Place } from "../types/place";
 import PhotoPreview from "./PhotoPreview";
+import PlaceDetailsModal from "./PlaceDetailsModal";
 import "./ExpandablePlaceRow.css";
 
 interface ExpandablePlaceRowProps {
@@ -36,6 +37,7 @@ const ExpandablePlaceRow: React.FC<ExpandablePlaceRowProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedPhotoPlace, setSelectedPhotoPlace] = useState<Place | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const {
     data: nestedData,
@@ -71,26 +73,8 @@ const ExpandablePlaceRow: React.FC<ExpandablePlaceRowProps> = ({
   };
 
   const formatPlaceType = (type: string) => {
-    // Common place type formatting
-    const typeMap: Record<string, string> = {
-      point_of_interest: "POI",
-      establishment: "Place",
-      meal_takeaway: "Takeaway",
-      meal_delivery: "Delivery",
-      clothing_store: "Clothing",
-      electronics_store: "Electronics",
-      book_store: "Books",
-      grocery_or_supermarket: "Grocery",
-      department_store: "Dept Store",
-      shopping_mall: "Mall",
-      beauty_salon: "Beauty",
-      hair_care: "Hair",
-      health: "Health",
-      doctor: "Doctor",
-      dentist: "Dentist",
-    };
-    
-    return typeMap[type] || type.replace(/_/g, ' ');
+    // Display Google place types exactly as they come from Google
+    return type;
   };
 
   const handleToggleExpand = () => {
@@ -171,7 +155,14 @@ const ExpandablePlaceRow: React.FC<ExpandablePlaceRowProps> = ({
             )}
             <div>
               <div className="d-flex align-items-center gap-2">
-                <strong className="placeName">{place.name}</strong>
+                <strong 
+                  className="placeName" 
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => setShowDetailsModal(true)}
+                  title="Click to view details"
+                >
+                  {place.name}
+                </strong>
                 {place.hierarchy_level !== undefined && place.hierarchy_level > 0 && (
                   <CBadge color="light" className="hierarchyIndicator">
                     L{place.hierarchy_level}
@@ -183,20 +174,14 @@ const ExpandablePlaceRow: React.FC<ExpandablePlaceRowProps> = ({
                   </CBadge>
                 )}
               </div>
-              {(place.types || place.google_types) && (place.types || place.google_types)!.length > 0 && (
-                <div className="placeTypes">
-                  {(place.types || place.google_types)!.slice(0, 3).map((type, index) => (
-                    <CBadge key={index} color="primary" className="placeTypeBadge">
-                      {formatPlaceType(type)}
-                    </CBadge>
-                  ))}
-                  {(place.types || place.google_types)!.length > 3 && (
-                    <CBadge color="secondary" className="placeTypeBadge moreTypes">
-                      +{(place.types || place.google_types)!.length - 3}
-                    </CBadge>
-                  )}
-                </div>
-              )}
+              <div className="d-flex align-items-center gap-2">
+                {getPlaceCategoryBadge(place.place_category)}
+                {place.parent_place_id && (
+                  <CBadge color="info" size="sm">
+                    Nested
+                  </CBadge>
+                )}
+              </div>
               {(place.nested_places_count || 0) > 0 && (
                 <div className="nestedCount">
                   <CBadge color="info" size="sm">
@@ -212,7 +197,26 @@ const ExpandablePlaceRow: React.FC<ExpandablePlaceRowProps> = ({
             <span>{formatAddress(place)}</span>
           </CTooltip>
         </CTableDataCell>
-        <CTableDataCell>{getPlaceCategoryBadge(place.place_category)}</CTableDataCell>
+        <CTableDataCell>
+          <div className="placeTypes">
+            {(place.types || place.google_types) && (place.types || place.google_types)!.length > 0 ? (
+              <>
+                {(place.types || place.google_types)!.slice(0, 2).map((type, index) => (
+                  <span key={index} className="placeTypeBadge">
+                    {formatPlaceType(type)}
+                  </span>
+                ))}
+                {(place.types || place.google_types)!.length > 2 && (
+                  <span className="placeTypeBadge moreTypes">
+                    +{(place.types || place.google_types)!.length - 2}
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-muted">No types</span>
+            )}
+          </div>
+        </CTableDataCell>
         <CTableDataCell>
           <div className="d-flex align-items-center gap-2">
             {place.parent_place_id && (
@@ -295,14 +299,14 @@ const ExpandablePlaceRow: React.FC<ExpandablePlaceRowProps> = ({
                             {(nestedPlace.types || nestedPlace.google_types) && (nestedPlace.types || nestedPlace.google_types)!.length > 0 ? (
                               <>
                                 {(nestedPlace.types || nestedPlace.google_types)!.slice(0, 2).map((type, index) => (
-                                  <CBadge key={index} color="success" size="sm" className="nestedTypeBadge">
+                                  <span key={index} className="nestedTypeBadge">
                                     {formatPlaceType(type)}
-                                  </CBadge>
+                                  </span>
                                 ))}
                                 {(nestedPlace.types || nestedPlace.google_types)!.length > 2 && (
-                                  <CBadge color="secondary" size="sm" className="nestedTypeBadge moreTypes">
+                                  <span className="nestedTypeBadge moreTypes">
                                     +{(nestedPlace.types || nestedPlace.google_types)!.length - 2}
-                                  </CBadge>
+                                  </span>
                                 )}
                               </>
                             ) : (
@@ -393,6 +397,13 @@ const ExpandablePlaceRow: React.FC<ExpandablePlaceRowProps> = ({
           onClose={() => setSelectedPhotoPlace(null)}
         />
       )}
+
+      {/* Place Details Modal */}
+      <PlaceDetailsModal
+        place={place}
+        visible={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+      />
     </>
   );
 };

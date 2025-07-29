@@ -9,20 +9,35 @@ import {
   CFormSelect,
   CAlert,
   CSpinner,
+  CNav,
+  CNavItem,
+  CNavLink,
+  CTabContent,
+  CTabPane,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilReload } from "@coreui/icons";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { campusService } from "../services/campusService";
 import { placeService } from "../services/placeService";
 import { queryKeys } from "../lib/queryClient";
 import { PlacesFilters } from "../types/place";
 import PlacesList from "../components/PlacesList";
+import RegionMapView from "../components/RegionMapView";
 
 const Places: React.FC = () => {
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<'list' | 'map'>('list');
   const [filters, setFilters] = useState<PlacesFilters>({
     page: 1,
     limit: 20,
+    is_deleted: false,
+  });
+  
+  // Separate filters for map view to get more places
+  const [mapFilters, setMapFilters] = useState<PlacesFilters>({
+    page: 1,
+    limit: 200, // Get up to 200 places for map view
     is_deleted: false,
   });
   
@@ -60,10 +75,28 @@ const Places: React.FC = () => {
     enabled: !!selectedCampus, // Only fetch when campus is selected
   });
 
+  // Separate query for map view with more places
+  const {
+    data: mapPlacesData,
+    isLoading: mapPlacesLoading,
+  } = useQuery({
+    queryKey: ["mapPlaces", mapFilters],
+    queryFn: () => placeService.getAll({
+      ...mapFilters,
+      // Show all places on map, not just top-level
+    }),
+    enabled: !!selectedCampus && activeTab === 'map', // Only fetch when campus is selected and map tab is active
+  });
+
   // Update filters when campus changes
   useEffect(() => {
     if (selectedCampus) {
       setFilters(prev => ({
+        ...prev,
+        campus_id: selectedCampus,
+        page: 1, // Reset to first page
+      }));
+      setMapFilters(prev => ({
         ...prev,
         campus_id: selectedCampus,
         page: 1, // Reset to first page
@@ -83,7 +116,12 @@ const Places: React.FC = () => {
 
   // Handle refresh
   const handleRefresh = () => {
-    refetchPlaces();
+    if (activeTab === 'list') {
+      refetchPlaces();
+    } else {
+      // Refetch map places
+      queryClient.invalidateQueries({ queryKey: ["mapPlaces", mapFilters] });
+    }
     setAlert({
       type: "info",
       message: "Refreshing places...",
@@ -122,6 +160,7 @@ const Places: React.FC = () => {
                 </CAlert>
               )}
               
+              {/* Campus Selection */}
               <CRow className="mb-4">
                 <CCol md={4}>
                   <CFormSelect
@@ -137,49 +176,11 @@ const Places: React.FC = () => {
                     ))}
                   </CFormSelect>
                 </CCol>
-                
-                <CCol md={3}>
-                  <CFormSelect
-                    value={hierarchyView}
-                    onChange={(e) => {
-                      const value = e.target.value as 'all' | 'top-level';
-                      setHierarchyView(value);
-                      setFilters(prev => ({
-                        ...prev,
-                        page: 1, // Reset to first page
-                      }));
-                    }}
-                    disabled={!selectedCampus}
-                  >
-                    <option value="top-level">Top Level Only</option>
-                    <option value="all">All Places</option>
-                  </CFormSelect>
-                </CCol>
-                
-                {/* <CCol md={6}>
-                  <CInputGroup>
-                    <CFormInput
-                      placeholder="Search places by name..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                      disabled={!selectedCampus}
-                    />
-                    <CButton
-                      color="primary"
-                      onClick={handleSearch}
-                      disabled={!selectedCampus}
-                    >
-                      <CIcon icon={cilSearch} />
-                    </CButton>
-                  </CInputGroup>
-                </CCol> */}
-                
                 <CCol md={2}>
                   <CButton
                     color="secondary"
                     onClick={handleRefresh}
-                    disabled={!selectedCampus || placesLoading}
+                    disabled={!selectedCampus || placesLoading || mapPlacesLoading}
                     className="w-100"
                   >
                     <CIcon icon={cilReload} className="me-2" />
@@ -187,6 +188,60 @@ const Places: React.FC = () => {
                   </CButton>
                 </CCol>
               </CRow>
+
+              {/* Tabs below campus selection */}
+              {selectedCampus && (
+                <CNav variant="tabs" className="mb-3">
+                  <CNavItem>
+                    <CNavLink
+                      href="#"
+                      active={activeTab === 'list'}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab('list');
+                      }}
+                    >
+                      List View
+                    </CNavLink>
+                  </CNavItem>
+                  <CNavItem>
+                    <CNavLink
+                      href="#"
+                      active={activeTab === 'map'}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab('map');
+                      }}
+                    >
+                      Region Map View
+                    </CNavLink>
+                  </CNavItem>
+                </CNav>
+              )}
+              
+              <CTabContent>
+                <CTabPane visible={activeTab === 'list'}>
+                  {selectedCampus && (
+                    <CRow className="mb-4">
+                      <CCol md={3}>
+                        <CFormSelect
+                          value={hierarchyView}
+                          onChange={(e) => {
+                            const value = e.target.value as 'all' | 'top-level';
+                            setHierarchyView(value);
+                            setFilters(prev => ({
+                              ...prev,
+                              page: 1, // Reset to first page
+                            }));
+                          }}
+                          disabled={!selectedCampus}
+                        >
+                          <option value="top-level">Top Level Only</option>
+                          <option value="all">All Places</option>
+                        </CFormSelect>
+                      </CCol>
+                    </CRow>
+                  )}
 
               {!selectedCampus && (
                 <div className="text-center py-5 text-muted">
@@ -215,12 +270,25 @@ const Places: React.FC = () => {
                 />
               )}
 
-              {selectedCampus && !placesLoading && placesData?.places.length === 0 && (
-                <div className="text-center py-5 text-muted">
-                  <h5>No places found</h5>
-                  <p>There are no places associated with this campus.</p>
-                </div>
-              )}
+                  {selectedCampus && !placesLoading && placesData?.places.length === 0 && (
+                    <div className="text-center py-5 text-muted">
+                      <h5>No places found</h5>
+                      <p>There are no places associated with this campus.</p>
+                    </div>
+                  )}
+                </CTabPane>
+                
+                <CTabPane visible={activeTab === 'map'}>
+                  <RegionMapView
+                    campuses={campuses}
+                    selectedCampus={selectedCampus}
+                    onCampusSelect={setSelectedCampus}
+                    placesData={mapPlacesData || placesData} // Use map-specific data with more places
+                    isLoading={mapPlacesLoading || campusesLoading}
+                    totalPlaces={mapPlacesData?.total || 0}
+                  />
+                </CTabPane>
+              </CTabContent>
             </CCardBody>
           </CCard>
         </CCol>
