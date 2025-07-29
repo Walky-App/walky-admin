@@ -46,10 +46,19 @@ export interface Place {
   
   // Walky specific fields
   campus_id?: string;
-  region_id?: string;
   categories?: string[];
+  
+  // Hierarchy fields
   parent_place_id?: string;
+  child_place_ids?: string[];
+  hierarchy_level?: number;
+  hierarchy_path?: string[];
+  is_inside_place?: boolean;
+  contains_places?: boolean;
   place_category?: 'container' | 'standalone' | 'nested';
+  floor_level?: string;
+  
+  // Status fields
   is_synced?: boolean;
   is_deleted?: boolean;
   deleted_at?: Date;
@@ -71,44 +80,17 @@ export interface Place {
   
   // For display purposes
   campus?: Campus;
-  region?: Region;
 }
 
-export interface Region {
-  _id: string;
-  name: string;
-  campus_id: string;
-  type: 'circle' | 'polygon';
-  center?: {
-    lat: number;
-    lng: number;
-  };
-  radius?: number;
-  polygon?: Array<{ lat: number; lng: number }>;
-  sync_settings?: {
-    enabled: boolean;
-    types?: string[];
-    keywords?: string[];
-    radius?: number;
-    last_sync?: Date;
-    sync_interval_hours?: number;
-  };
-  stats?: {
-    total_places: number;
-    synced_places: number;
-    last_updated: Date;
-  };
-  is_active: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+// Region interface removed - places are now directly associated with campuses
 
 export interface PlacesFilters {
   campus_id?: string;
-  region_id?: string;
   search?: string;
   categories?: string[];
   place_category?: 'container' | 'standalone' | 'nested';
+  hierarchy_level?: number;
+  parent_place_id?: string | null;
   is_deleted?: boolean;
   page?: number;
   limit?: number;

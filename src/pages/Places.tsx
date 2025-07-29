@@ -26,6 +26,8 @@ const Places: React.FC = () => {
     is_deleted: false,
   });
   
+  const [hierarchyView, setHierarchyView] = useState<'all' | 'top-level'>('top-level');
+  
   const [selectedCampus, setSelectedCampus] = useState<string>("");
   const [alert, setAlert] = useState<{
     type: "success" | "danger" | "info";
@@ -49,8 +51,12 @@ const Places: React.FC = () => {
     error: placesError,
     refetch: refetchPlaces,
   } = useQuery({
-    queryKey: ["places", filters],
-    queryFn: () => placeService.getAll(filters),
+    queryKey: ["places", filters, hierarchyView],
+    queryFn: () => placeService.getAll({
+      ...filters,
+      // Show only top-level places if hierarchy view is selected
+      hierarchy_level: hierarchyView === 'top-level' ? 0 : undefined,
+    }),
     enabled: !!selectedCampus, // Only fetch when campus is selected
   });
 
@@ -117,7 +123,7 @@ const Places: React.FC = () => {
               )}
               
               <CRow className="mb-4">
-                <CCol md={6}>
+                <CCol md={4}>
                   <CFormSelect
                     value={selectedCampus}
                     onChange={(e) => setSelectedCampus(e.target.value)}
@@ -130,6 +136,24 @@ const Places: React.FC = () => {
                         {campus.campus_name} - {campus.city}, {campus.state}
                       </option>
                     ))}
+                  </CFormSelect>
+                </CCol>
+                
+                <CCol md={3}>
+                  <CFormSelect
+                    value={hierarchyView}
+                    onChange={(e) => {
+                      const value = e.target.value as 'all' | 'top-level';
+                      setHierarchyView(value);
+                      setFilters(prev => ({
+                        ...prev,
+                        page: 1, // Reset to first page
+                      }));
+                    }}
+                    disabled={!selectedCampus}
+                  >
+                    <option value="top-level">Top Level Only</option>
+                    <option value="all">All Places</option>
                   </CFormSelect>
                 </CCol>
                 
@@ -152,7 +176,7 @@ const Places: React.FC = () => {
                   </CInputGroup>
                 </CCol> */}
                 
-                <CCol md={3}>
+                <CCol md={2}>
                   <CButton
                     color="secondary"
                     onClick={handleRefresh}

@@ -1,4 +1,4 @@
-import { Place, PlacesFilters, PlacesResponse, Region } from "../types/place";
+import { Place, PlacesFilters, PlacesResponse } from "../types/place";
 import API from "../API";
 
 // Removed unused interface BackendPlaceResponse
@@ -9,10 +9,12 @@ export const placeService = {
       const params = new URLSearchParams();
       
       if (filters.campus_id) params.append("campus_id", filters.campus_id);
-      if (filters.region_id) params.append("region_id", filters.region_id);
+      // Note: region_id is deprecated, using campus_id directly
       if (filters.search) params.append("search", filters.search);
       if (filters.categories?.length) params.append("categories", filters.categories.join(","));
       if (filters.place_category) params.append("place_category", filters.place_category);
+      if (filters.hierarchy_level !== undefined) params.append("hierarchy_level", String(filters.hierarchy_level));
+      if (filters.parent_place_id !== undefined) params.append("parent_place_id", filters.parent_place_id === null ? "" : filters.parent_place_id);
       if (filters.is_deleted !== undefined) params.append("is_deleted", String(filters.is_deleted));
       // Convert page to offset for backend
       if (filters.page && filters.limit) {
@@ -163,24 +165,5 @@ export const placeService = {
       console.error("Failed to fetch nested places:", error);
       throw error;
     }
-  },
-
-  getRegionsByCampus: async (campusId: string): Promise<Region[]> => {
-    try {
-      const response = await API.get(`/regions/campus/${campusId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch regions for campus:", error);
-      
-      // Handle 404 specifically (no regions found)
-      if (error instanceof Error && "response" in error) {
-        const axiosError = error as { response?: { status?: number } };
-        if (axiosError.response?.status === 404) {
-          return [];
-        }
-      }
-      
-      throw error;
-    }
-  },
+  }
 };
