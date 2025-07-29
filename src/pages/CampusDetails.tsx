@@ -460,7 +460,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
           }}
           className="campus-card-header"
         >
-          <h4 className="mb-0 fw-semibold">
+          <h4 className="mb-0 fw-semibold" data-testid="form-title">
             {campus.id && !campus.id.startsWith("default-")
               ? "Edit Campus"
               : "New Campus"}
@@ -474,7 +474,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
           )}
 
           {saveError && (
-            <CAlert color="danger" dismissible>
+            <CAlert color="danger" dismissible >
               {saveError}
             </CAlert>
           )}
@@ -504,6 +504,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                     Campus Name*
                   </CFormLabel>
                   <CFormInput
+                    data-testid= "input-campus-name"
                     id="campusName"
                     value={campus.campus_name || campus.name || ""}
                     onChange={(e) => {
@@ -535,6 +536,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                     Phone Number*
                   </CFormLabel>
                   <CFormInput
+                    data-testid="input-phone-number"
                     id="phoneNumber"
                     value={campus.phone_number || ""}
                     onChange={(e) => {
@@ -566,6 +568,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                     Full Address*
                   </CFormLabel>
                   <CFormInput
+                    data-testid="input-address"
                     id="campusAddress"
                     value={campus.address || ""}
                     onChange={(e) => {
@@ -599,6 +602,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                         City*
                       </CFormLabel>
                       <CFormInput
+                        data-testid="input-city"
                         id="city"
                         value={campus.city || ""}
                         onChange={(e) => {
@@ -631,6 +635,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                         State*
                       </CFormLabel>
                       <CFormInput
+                        data-testid="input-state"
                         id="state"
                         value={campus.state || ""}
                         onChange={(e) => {
@@ -663,6 +668,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                         ZIP*
                       </CFormLabel>
                       <CFormInput
+                        data-testid="input-zip"
                         id="zip"
                         value={campus.zip || ""}
                         onChange={(e) => {
@@ -696,6 +702,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                     Time Zone*
                   </CFormLabel>
                   <CFormSelect
+                    data-testid="select-time-zone"
                     id="timeZone"
                     value={campus.time_zone || ""}
                     onChange={(e) => {
@@ -738,6 +745,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                         Dawn Time
                       </CFormLabel>
                       <CFormInput
+                        data-testid="input-dawn-time"
                         id="dawnTime"
                         type="time"
                         value={
@@ -775,6 +783,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                         Dusk Time
                       </CFormLabel>
                       <CFormInput
+                        data-testid="input-dusk-time"
                         id="duskTime"
                         type="time"
                         value={
@@ -826,6 +835,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                 ) : (
                   <div className="mb-4">
                     <MultiSelectDropdown
+                      data-testid="select-ambassadors"
                       id="ambassadors"
                       value={selectedAmbassadors}
                       onChange={handleAmbassadorsChange}
@@ -848,6 +858,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                     Campus Status
                   </CFormLabel>
                   <CFormSelect
+                    data-testid="select-campus-status"
                     id="isActive"
                     value={campus.is_active !== false ? "true" : "false"}
                     onChange={(e) => {
@@ -880,6 +891,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                 </h5>
 
                 <div
+                  data-testid="campus-boundary-container"
                   style={{
                     height: "800px",
                     border: `1px solid ${theme.colors.borderColor}`,
@@ -910,6 +922,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
             <CRow className="mt-4">
               <CCol>
                 <CButton
+                  data-testid="button-save"
                   type="submit"
                   color="primary"
                   disabled={
@@ -931,6 +944,7 @@ const CampusDetails = ({ campusId, inTabView = false }: CampusDetailsProps) => {
                   )}
                 </CButton>
                 <CButton
+                  data-testid="button-cancel"
                   color="secondary"
                   className="ms-2"
                   onClick={handleCancel}

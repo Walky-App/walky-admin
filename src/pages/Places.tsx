@@ -105,13 +105,13 @@ const Places: React.FC = () => {
     <>
       <CRow>
         <CCol xs={12}>
-          <CCard className="mb-4">
+          <CCard className="mb-4" data-testid="places-page">
             <CCardHeader>
-              <strong>Places Management</strong>
+              <strong data-testid="places-page-title">Places Management</strong>
             </CCardHeader>
             <CCardBody>
               {alert && (
-                <CAlert color={alert.type} dismissible onClose={() => setAlert(null)}>
+                <CAlert color={alert.type} dismissible onClose={() => setAlert(null)} data-testid="refresh-alert">
                   {alert.message}
                 </CAlert>
               )}
@@ -122,8 +122,9 @@ const Places: React.FC = () => {
                     value={selectedCampus}
                     onChange={(e) => setSelectedCampus(e.target.value)}
                     disabled={campusesLoading}
+                    data-testid="campus-select"
                   >
-                    <option value="">Select a campus...</option>
+                    <option value="" data-testid="campus-option-default">Select a campus...</option>
                     {campuses.map((campus) => (
                       <option key={campus.id} value={campus.id}>
                         {campus.campus_name} - {campus.city}, {campus.state}
@@ -157,6 +158,7 @@ const Places: React.FC = () => {
                     onClick={handleRefresh}
                     disabled={!selectedCampus || placesLoading}
                     className="w-100"
+                    data-testid="refresh-button"
                   >
                     <CIcon icon={cilReload} className="me-2" />
                     Refresh
@@ -165,14 +167,14 @@ const Places: React.FC = () => {
               </CRow>
 
               {!selectedCampus && (
-                <div className="text-center py-5 text-muted">
+                <div className="text-center py-5 text-muted" data-testid="empty-prompt-select-campus">
                   <h5>Select a campus to view places</h5>
                   <p>Choose a campus from the dropdown above to see all places associated with it.</p>
                 </div>
               )}
 
               {selectedCampus && placesLoading && (
-                <div className="text-center py-5">
+                <div className="text-center py-5" data-testid="loading-places">
                   <CSpinner color="primary" />
                   <p className="mt-2">Loading places...</p>
                 </div>
@@ -192,7 +194,7 @@ const Places: React.FC = () => {
               )}
 
               {selectedCampus && !placesLoading && placesData?.places.length === 0 && (
-                <div className="text-center py-5 text-muted">
+                <div className="text-center py-5 text-muted" data-testid="empty-prompt-no-places">
                   <h5>No places found</h5>
                   <p>There are no places associated with this campus.</p>
                 </div>

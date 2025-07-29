@@ -52,7 +52,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4" data-testid="settings-page">
       <CCard style={{ 
         backgroundColor: theme.colors.cardBg,
         borderColor: theme.colors.borderColor
@@ -63,6 +63,7 @@ const Settings = () => {
             <CRow className="mb-4">
               <CCol md={6}>
                 <Input
+                  data-testid="settings-school-name"
                   id="schoolName"
                   label="School Name"
                   value={schoolName}
@@ -74,6 +75,7 @@ const Settings = () => {
               </CCol>
               <CCol md={6}>
                 <Input
+                  data-testid="settings-display-name"
                   id="displayName"
                   label="Display Name (visible to students)"
                   value={displayName}
@@ -87,6 +89,7 @@ const Settings = () => {
             <CRow className="mb-4">
               <CCol md={6}>
                 <Input
+                  data-testid="settings-email-domain"
                   id="emailDomain"
                   label="Email Domain"
                   value={emailDomain}
@@ -101,6 +104,7 @@ const Settings = () => {
               <CCol md={12}>
                 <div className="mb-3">
                   <ImageUpload
+                    data-testid="settings-logo-upload"
                     id="logo"
                     label="School Logo"
                     onChange={setLogo}
@@ -117,6 +121,7 @@ const Settings = () => {
             </CRow>
             <div className="d-flex justify-content-end mt-4">
               <CButton 
+                data-testid="settings-cancel-button"
                 type="button" 
                 color="outline-secondary" 
                 className="me-2"
@@ -124,6 +129,7 @@ const Settings = () => {
                 Cancel
               </CButton>
               <CButton 
+                data-testid="settings-save-button"
                 type="submit" 
                 color="primary"
               >

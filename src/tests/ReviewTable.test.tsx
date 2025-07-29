@@ -19,13 +19,14 @@ describe('Walky Admin - ReviewTable Component', () => {
             first_name: 'Jane',
             last_name: 'Doe',
             reason: 'Inappropriate behavior',
-            createdAt: '2023-04-30T00:00:00Z',
-            reportedOn: '2023-05-09T00:00:00Z',
+            createdAt: new Date(2023, 3, 30).toISOString(),
+            reportedOn: new Date(2023, 4, 9).toISOString(),
           },
         ],
       },
     })
   })
+
 
   afterEach(() => {
     jest.clearAllMocks()

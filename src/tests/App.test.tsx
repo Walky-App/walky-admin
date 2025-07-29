@@ -168,7 +168,7 @@ describe("Walky Admin Portal - Dashboard Page", () => {
     await act(async () => {
       render(
         <MemoryRouter initialEntries={["/"]}>
-          <App initialLoginState={true} />
+          <App />
         </MemoryRouter>,
         { container: document.getElementById("root") as HTMLElement }
       );
@@ -404,7 +404,7 @@ describe("Walky Admin Portal - Dashboard Page", () => {
       await act(async () => {
         render(
           <MemoryRouter initialEntries={["/"]}>
-            <App initialLoginState={true} />
+            <App />
           </MemoryRouter>,
           { container: document.getElementById("root") as HTMLElement }
         );

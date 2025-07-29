@@ -1,5 +1,6 @@
 // src/tests/CampusTable.test.tsx
-
+import userEvent from "@testing-library/user-event";
+import { useNavigate } from "react-router-dom";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
@@ -18,7 +19,17 @@ jest.mock('@react-google-maps/api', () => ({
   DrawingManager: () => null,
   StandaloneSearchBox: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
+
 import { Campus } from "../types/campus";
+
+// Spy on navigate
+jest.mock("react-router-dom", () => {
+  const originalModule = jest.requireActual("react-router-dom");
+  return {
+    ...originalModule,
+    useNavigate: jest.fn(),
+  };
+});
 
 const createTestQueryClient = () =>
     new QueryClient({
@@ -158,6 +169,79 @@ describe("Walky Admin - CampusTable Component", () => {
     expect(screen.getByRole("button", { name: /map/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /satellite/i })).toBeInTheDocument();
   });
+
+  it("triggers edit action and navigates to campus view with correct state", async () => {
+    const navigateMock = jest.fn();
+    (useNavigate as jest.Mock).mockReturnValue(navigateMock);
+
+    renderWithProviders(<Campuses />);
+    const editButton = await screen.findByTestId("edit-campus-1");
+
+    await userEvent.click(editButton);
+
+    expect(navigateMock).toHaveBeenCalledWith("/campuses/campus-view/1", {
+      state: { campusData: expect.objectContaining({ id: "1" }) },
+    });
+  });
   
+  it("renders the Delete button for each campus row", async () => {
+    renderWithProviders(<Campuses />);
+  
+    const deleteButton = await screen.findByTestId("delete-campus-1");
+    expect(deleteButton).toBeInTheDocument();
+  });  
+  
+  it("handles API errors gracefully (logs error and displays alert)", async () => {
+    const errorMessage = "Internal Server Error";
+  
+    jest
+      .spyOn(campusService.campusService, "getAll")
+      .mockRejectedValueOnce(new Error(errorMessage));
+  
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  
+    renderWithProviders(<Campuses />);
+  
+    // Wait for error alert to appear
+    const alert = await screen.findByText(/failed to load campuses/i);
+    expect(alert).toBeInTheDocument();
+  
+    // UI should not crash — check for section title
+    expect(screen.getByTestId("campuses-section-title")).toBeInTheDocument();
+  
+    // Optionally: confirm console.error was called
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Failed to load campuses:",
+      expect.any(Error)
+    );
+  
+    consoleErrorSpy.mockRestore(); // clean up
+  });  
+  
+  it("applies CoreUI structure and renders responsive elements", async () => {
+    renderWithProviders(<Campuses />);
+  
+    // Wait for table content to load
+    await screen.findByTestId("campuses-table");
+  
+    // Main layout container
+    expect(screen.getByTestId("campuses-page")).toBeInTheDocument();
+  
+    // Card wrapper for campus table
+    expect(screen.getByRole("heading", { name: /campus management/i })).toBeInTheDocument();
+  
+    // Ensure Add Campus button exists
+    expect(screen.getByTestId("add-campus-button")).toBeInTheDocument();
+  
+    // Table headers
+    expect(screen.getByRole("columnheader", { name: "Campus" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Location" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Address" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Status" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeInTheDocument();
+  
+    // Table body rows exist
+    expect(screen.getByText("Test University")).toBeInTheDocument();
+  });
   
 });

@@ -25,6 +25,7 @@ const ForgotPassword = () => {
 
   return (
     <div
+      data-testid="forgot-password-page"
       style={{
         height: '100vh',
         width: '100vw',
@@ -45,12 +46,13 @@ const ForgotPassword = () => {
           />
         </div>
 
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '1rem' }} data-testid="forgot-password-heading">
           Forgot your password?
         </h2>
 
         {submitted ? (
           <div
+            data-testid="forgot-password-success-message"
             style={{
               backgroundColor: '#1e293b',
               padding: '1rem',
@@ -62,10 +64,11 @@ const ForgotPassword = () => {
             If your email is registered, you’ll receive reset instructions shortly.
           </div>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} data-testid="forgot-password-form">
             <div style={{ textAlign: 'left', marginBottom: '1rem' }}>
               <label className="form-label">Email address</label>
               <input
+                data-testid="forgot-password-email-input"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -77,6 +80,7 @@ const ForgotPassword = () => {
 
             {error && (
               <p
+                data-testid="forgot-password-error"
                 style={{
                   color: 'salmon',
                   textAlign: 'center',
@@ -90,6 +94,7 @@ const ForgotPassword = () => {
 
 
             <button
+              data-testid="forgot-password-submit-button"
               type="submit"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => {
@@ -120,6 +125,7 @@ const ForgotPassword = () => {
             </button>
 
             <button
+              data-testid="forgot-password-back-button"
               type="button"
               onClick={() => navigate('/login')}
               style={{

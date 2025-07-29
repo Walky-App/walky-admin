@@ -218,16 +218,16 @@ const PlaceTypes: React.FC = () => {
     <div className="page-container">
       <CRow>
         <CCol xs={12}>
-          <CCard>
+          < CCard data-testid="place-types-page">
             <CCardHeader>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
-                  <h4 className="mb-0 fw-semibold">Place Types Management</h4>
+                  <h4 className="mb-0 fw-semibold" data-testid="places-types-title">Place Types Management</h4>
                   <small className="text-muted">
                     Map Google place types to application categories
                   </small>
                 </div>
-                <CButton color="primary" onClick={handleAddNew}>
+                <CButton color="primary" onClick={handleAddNew} data-testid="add-place-type-button">
                   <CIcon icon={cilPlus} className="me-2" />
                   Add Place Type
                 </CButton>
@@ -258,9 +258,9 @@ const PlaceTypes: React.FC = () => {
 
               {/* Place types table */}
               <div className="table-responsive">
-                <CTable hover>
+                <CTable hover data-testid="place-types-table">
                   <CTableHead style={{ backgroundColor: "#343a40" }}>
-                    <CTableRow>
+                    <CTableRow data-testid="place-types-table-header">
                       <CTableHeaderCell className="text-white fw-bold">Name</CTableHeaderCell>
                       <CTableHeaderCell className="text-white fw-bold">Description</CTableHeaderCell>
                       <CTableHeaderCell className="text-white fw-bold">Google Types</CTableHeaderCell>
@@ -273,7 +273,7 @@ const PlaceTypes: React.FC = () => {
                     {isLoading ? (
                       <CTableRow>
                         <CTableDataCell colSpan={7} className="text-center py-4">
-                          <CSpinner size="sm" className="me-2" />
+                          <CSpinner size="sm" className="me-2" data-testid="places-types-loading"/>
                           Loading place types...
                         </CTableDataCell>
                       </CTableRow>
@@ -299,7 +299,7 @@ const PlaceTypes: React.FC = () => {
                       </CTableRow>
                     ) : (
                       filteredPlaceTypes.map((placeType) => (
-                        <CTableRow key={placeType._id}>
+                        <CTableRow key={placeType._id} data-testid={`place-type-row-${placeType._id}`}>
                           <CTableDataCell>
                             <strong className="text-dark">{placeType.name}</strong>
                           </CTableDataCell>
@@ -309,7 +309,7 @@ const PlaceTypes: React.FC = () => {
                           <CTableDataCell>
                             <div className="d-flex flex-wrap gap-1">
                               {placeType.google_types.slice(0, 3).map((type) => (
-                                <CBadge key={type} color="secondary" className="small">
+                                <CBadge key={type} color="secondary" className="small" data-testid={`place-type-badge-${type}`}>
                                   {type}
                                 </CBadge>
                               ))}
@@ -320,7 +320,7 @@ const PlaceTypes: React.FC = () => {
                               )}
                             </div>
                           </CTableDataCell>
-                          <CTableDataCell className="text-dark">
+                          <CTableDataCell className="text-dark" >
                             <strong>{placeType.places_count || 0}</strong>
                           </CTableDataCell>
                           <CTableDataCell>
@@ -331,6 +331,7 @@ const PlaceTypes: React.FC = () => {
                           <CTableDataCell>
                             <div className="d-flex gap-1">
                               <CButton
+                                data-testid={`edit-place-type-button-${placeType._id}`}
                                 color="primary"
                                 variant="outline"
                                 size="sm"
@@ -340,6 +341,7 @@ const PlaceTypes: React.FC = () => {
                                 <CIcon icon={cilPencil} size="sm" />
                               </CButton>
                               <CButton
+                                data-testid={`delete-place-type-button-${placeType._id}`}
                                 color="danger"
                                 variant="outline"
                                 size="sm"
@@ -362,7 +364,7 @@ const PlaceTypes: React.FC = () => {
       </CRow>
 
       {/* Create/Edit Modal */}
-      <CModal visible={showModal} onClose={() => setShowModal(false)} size="lg">
+      <CModal visible={showModal} onClose={() => setShowModal(false)} size="lg" data-testid="create-edit-modal">
         <CModalHeader>
           <CModalTitle>
             {editingPlaceType ? "Edit Place Type" : "Create Place Type"}
@@ -410,7 +412,7 @@ const PlaceTypes: React.FC = () => {
             </div>
 
             <div className="mb-3">
-              <CFormLabel className="fw-semibold mb-2">
+              <CFormLabel className="fw-semibold mb-2" >
                 Select Google Place Types 
                 {formData.google_types.length > 0 && (
                   <CBadge color="primary" className="ms-2">
@@ -454,6 +456,7 @@ const PlaceTypes: React.FC = () => {
                         <div className="d-flex align-items-center justify-content-between">
                           <div className="d-flex align-items-center">
                             <CFormCheck
+                              data-testid={`google-type-${googleType.type}`}
                               id={`google-type-${googleType.type}`}
                               checked={formData.google_types.includes(googleType.type)}
                               onChange={() => handleGoogleTypeToggle(googleType.type)}
@@ -487,7 +490,7 @@ const PlaceTypes: React.FC = () => {
               {formData.google_types.length > 0 && (
                 <div className="mt-3">
                   <small className="text-muted">Selected types:</small>
-                  <div className="d-flex flex-wrap gap-1 mt-1">
+                  <div className="d-flex flex-wrap gap-1 mt-1" data-testid="selected-types-summary">
                     {formData.google_types.map((type) => (
                       <CBadge 
                         key={type} 
@@ -530,7 +533,7 @@ const PlaceTypes: React.FC = () => {
       </CModal>
 
       {/* Delete Confirmation Modal */}
-      <CModal visible={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+      <CModal visible={showDeleteModal} onClose={() => setShowDeleteModal(false)} data-testid="delete-confirmation-modal">
         <CModalHeader>
           <CModalTitle>Confirm Delete</CModalTitle>
         </CModalHeader>
@@ -538,7 +541,7 @@ const PlaceTypes: React.FC = () => {
           Are you sure you want to delete the place type "{deletingPlaceType?.name}"?
           {deletingPlaceType?.places_count && deletingPlaceType.places_count > 0 && (
             <div className="mt-2">
-              <CAlert color="warning" className="mb-0">
+              <CAlert color="warning" className="mb-0" data-testid="delete-warning-alert">
                 This place type is currently used by {deletingPlaceType.places_count} places.
               </CAlert>
             </div>

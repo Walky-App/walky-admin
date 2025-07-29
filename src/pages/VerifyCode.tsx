@@ -96,6 +96,7 @@ const VerifyCode = () => {
 
   return (
     <div
+      data-testid="verify-code-page"
       style={{
         backgroundColor: '#1c1e26',
         color: 'white',
@@ -111,11 +112,11 @@ const VerifyCode = () => {
           <img src="/Walky Logo_Duotone.svg" alt="Walky Logo" style={{ width: '120px' }} />
         </div>
 
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '1rem' }} data-testid="verify-code-heading">
           {step === 'verify' ? 'Enter Verification Code' : 'Reset Your Password'}
         </h2>
 
-        <div style={{ textAlign: 'left' }}>
+        <div style={{ textAlign: 'left' }} data-testid="verify-code-instructions">
           {step === 'verify' ? (
             <>
               <label className="form-label">Email</label>
@@ -129,6 +130,7 @@ const VerifyCode = () => {
 
               <label className="form-label">Verification Code</label>
               <input
+                data-testid="verify-code-input"
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
@@ -137,6 +139,7 @@ const VerifyCode = () => {
               />
 
               <button
+                data-testid="verify-code-submit-button"
                 onClick={handleVerify}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => {
@@ -169,6 +172,7 @@ const VerifyCode = () => {
               <label className="form-label">New Password</label>
               <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
                 <input
+                  data-testid="new-password-input"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -201,6 +205,7 @@ const VerifyCode = () => {
               />
 
               <button
+                data-testid="verify-reset-submit-button"
                 onClick={handleResetPassword}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => {
@@ -237,6 +242,7 @@ const VerifyCode = () => {
 
 {step === 'verify' && (
   <button
+    data-testid="verify-code-resend-button"
     type="button"
     onClick={handleResendCode}
     disabled={resendCooldown > 0}

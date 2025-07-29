@@ -435,22 +435,23 @@ const AmbassadorDetails = ({
   // Show loading state if we're fetching data
   if (isLoading) {
     return (
-      <div className="page-container">
+      <div className="page-container" >
         <div
           className="d-flex justify-content-center align-items-center"
           style={{ minHeight: "200px" }}
         >
-          <CSpinner color="primary" />
+          <CSpinner color="primary" data-testid="ambassador-loading-spinner"/>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container" data-testid="ambassador-details-page">
       {/* Go Back Button */}
       {!inTabView && (
         <CButton
+          data-testid="ambassador-go-back-button"
           variant="ghost"
           onClick={handleGoBack}
           className="back-button d-flex align-items-center mb-3"
@@ -463,13 +464,13 @@ const AmbassadorDetails = ({
       <CCard className="campus-card">
         <CCardBody className="campus-card-body p-4">
           {saveSuccess && (
-            <CAlert color="success" dismissible>
+            <CAlert color="success" dismissible data-testid="ambassador-success-alert">
               Ambassador details saved successfully!
             </CAlert>
           )}
 
           {saveError && (
-            <CAlert color="danger" dismissible>
+            <CAlert color="danger" dismissible data-testid="ambassador-error-alert">
               {saveError}
             </CAlert>
           )}
@@ -481,6 +482,7 @@ const AmbassadorDetails = ({
                   Full Name
                 </CFormLabel>
                 <CFormInput
+                  data-testid="ambassador-name-input"
                   type="text"
                   id="name"
                   placeholder="Enter ambassador's full name"
@@ -502,6 +504,7 @@ const AmbassadorDetails = ({
                   Email Address
                 </CFormLabel>
                 <CFormInput
+                  data-testid="ambassador-email-input"
                   type="email"
                   id="email"
                   placeholder="Enter email address"
@@ -647,6 +650,7 @@ const AmbassadorDetails = ({
 
             <div className="d-flex justify-content-end gap-2 mt-4">
               <CButton
+                data-testid="ambassador-cancel-button"
                 variant="outline"
                 color="secondary"
                 onClick={handleCancel}
@@ -659,6 +663,7 @@ const AmbassadorDetails = ({
                 Cancel
               </CButton>
               <CButton
+                data-testid="ambassador-save-button"
                 color="primary"
                 onClick={handleSave}
                 disabled={

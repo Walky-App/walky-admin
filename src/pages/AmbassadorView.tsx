@@ -5,7 +5,7 @@ const AmbassadorView = () => {
   const { id } = useParams<{ id: string }>();
 
   return (
-    <div className="p-2">
+    <div className="p-2" data-testid="ambassador-view-wrapper">
       <AmbassadorDetails ambassadorId={id} inTabView={false} />
     </div>
   );

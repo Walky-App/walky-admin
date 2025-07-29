@@ -217,7 +217,7 @@ describe('Walky Admin Portal - Login Component', () => {
   
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
-      expect(sessionStorage.getItem('token')).toBe('slay-token');
+      expect(localStorage.getItem('token')).toBe('slay-token');
     });
   });
   

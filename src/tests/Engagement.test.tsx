@@ -3,7 +3,6 @@ import { render, screen, waitFor, act } from '@testing-library/react'
 import Engagement from '../pages/Engagement'
 import { MemoryRouter } from 'react-router-dom'
 import API from '../API'
-import userEvent from '@testing-library/user-event'
 
 jest.mock('@coreui/react', () => ({
   ...jest.requireActual('@coreui/react'),
