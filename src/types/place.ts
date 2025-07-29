@@ -14,13 +14,6 @@ export interface Place {
       open?: { day: number; time: string };
     }>;
   };
-  hours?: {
-    weekday_text?: string[];
-    periods?: Array<{
-      close?: { day: number; time: string };
-      open?: { day: number; time: string };
-    }>;
-  };
   price_level?: number;
   rating?: number;
   user_ratings_total?: number;

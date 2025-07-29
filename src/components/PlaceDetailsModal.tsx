@@ -335,14 +335,14 @@ const PlaceDetailsModal: React.FC<PlaceDetailsModalProps> = ({
             )}
 
             {/* Opening Hours */}
-            {(place.opening_hours?.weekday_text?.length || place.hours?.weekday_text?.length) ? (
+            {place.opening_hours?.weekday_text?.length ? (
               <div className="mb-4">
                 <div className="d-flex align-items-center gap-2 mb-2">
                   <CIcon icon={cilClock} className="text-muted" size="sm" />
                   <strong className="small">Opening Hours</strong>
                 </div>
                 <div className="ps-4">
-                  {(place.opening_hours?.weekday_text || place.hours?.weekday_text || []).map((day, index) => (
+                  {(place.opening_hours?.weekday_text || []).map((day, index) => (
                     <p key={index} className="mb-1 small text-muted">{day}</p>
                   ))}
                 </div>
@@ -432,7 +432,7 @@ const PlaceDetailsModal: React.FC<PlaceDetailsModalProps> = ({
                     height="100%"
                     frameBorder="0"
                     style={{ border: 0 }}
-                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAumxyJ5Z1j-_X1EHUSy8GCRr21zDPzSHs&q=${location!.lat},${location!.lng}&zoom=16`}
+                    src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${location!.lat},${location!.lng}&zoom=16`}
                     allowFullScreen
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Location Preview"
@@ -537,7 +537,7 @@ const PlaceDetailsModal: React.FC<PlaceDetailsModalProps> = ({
                     height="100%"
                     frameBorder="0"
                     style={{ border: 0 }}
-                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAumxyJ5Z1j-_X1EHUSy8GCRr21zDPzSHs&q=${location!.lat},${location!.lng}&zoom=17`}
+                    src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${location!.lat},${location!.lng}&zoom=17`}
                     allowFullScreen
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Google Maps"

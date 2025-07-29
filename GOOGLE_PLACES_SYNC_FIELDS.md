@@ -93,10 +93,7 @@ const placeData = {
   coordinates: googlePlaceData.geometry?.location ? {
     lat: googlePlaceData.geometry.location.lat,
     lng: googlePlaceData.geometry.location.lng
-  } : undefined,
-  
-  // Store opening hours in both fields for compatibility
-  hours: googlePlaceData.opening_hours
+  } : undefined
 };
 ```
 
