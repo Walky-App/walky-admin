@@ -1,3 +1,5 @@
+@import "./tailwind.css";
+
 /* Dark mode theming */
 :root[data-coreui-theme="dark"] {
   --cui-body-bg: #1e2125;
@@ -327,4 +329,304 @@ body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table
 
 :root[data-coreui-theme="dark"] {
   --review-bg: #2c2c26; /* dark mode match */
+}
+
+/* Radix UI and Tailwind dark mode fixes */
+[data-coreui-theme="dark"] .dark\:bg-gray-900 {
+  background-color: rgb(17 24 39) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:bg-gray-800 {
+  background-color: rgb(31 41 55) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:bg-gray-700 {
+  background-color: rgb(55 65 81) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:bg-gray-600 {
+  background-color: rgb(75 85 99) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:text-white {
+  color: rgb(255 255 255) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:text-gray-300 {
+  color: rgb(209 213 219) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:text-gray-400 {
+  color: rgb(156 163 175) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:border-gray-600 {
+  border-color: rgb(75 85 99) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:border-gray-700 {
+  border-color: rgb(55 65 81) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:hover\:bg-gray-700:hover {
+  background-color: rgb(55 65 81) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:hover\:bg-gray-600:hover {
+  background-color: rgb(75 85 99) !important;
+}
+
+/* Dark mode gradients */
+[data-coreui-theme="dark"] .dark\:bg-green-900\/20 {
+  background-color: rgb(20 83 45 / 0.2) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:bg-red-900\/20 {
+  background-color: rgb(127 29 29 / 0.2) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:bg-blue-900\/20 {
+  background-color: rgb(30 58 138 / 0.2) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:bg-amber-900\/20 {
+  background-color: rgb(120 53 15 / 0.2) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:text-green-200 {
+  color: rgb(187 247 208) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:text-red-200 {
+  color: rgb(254 202 202) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:text-blue-200 {
+  color: rgb(191 219 254) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:text-amber-400 {
+  color: rgb(251 191 36) !important;
+}
+
+/* Dark mode inputs and buttons */
+[data-coreui-theme="dark"] input.dark\:bg-gray-700,
+[data-coreui-theme="dark"] button.dark\:bg-gray-700,
+[data-coreui-theme="dark"] textarea.dark\:bg-gray-700 {
+  background-color: rgb(55 65 81) !important;
+  color: rgb(255 255 255) !important;
+}
+
+[data-coreui-theme="dark"] .hover\:bg-gray-50:hover {
+  background-color: rgb(55 65 81) !important;
+}
+
+[data-coreui-theme="dark"] .hover\:bg-gray-100:hover {
+  background-color: rgb(55 65 81) !important;
+}
+
+/* bg-gray-50 dark mode override */
+[data-coreui-theme="dark"] .bg-gray-50 {
+  background-color: rgb(31 41 55) !important;
+}
+
+/* Radix UI Dialog dark mode fixes */
+[data-coreui-theme="dark"] [data-radix-dialog-content] {
+  background-color: rgb(31 41 55) !important;
+  color: rgb(229 231 235) !important;
+}
+
+/* Radix UI Tabs dark mode fixes */
+[data-coreui-theme="dark"] [role="tablist"] {
+  background-color: rgb(31 41 55) !important;
+  border-color: rgb(55 65 81) !important;
+}
+
+[data-coreui-theme="dark"] [role="tab"] {
+  color: rgb(156 163 175) !important;
+}
+
+[data-coreui-theme="dark"] [role="tab"]:hover {
+  color: rgb(229 231 235) !important;
+}
+
+[data-coreui-theme="dark"] [role="tab"][data-state="active"] {
+  color: rgb(96 165 250) !important;
+  border-color: rgb(96 165 250) !important;
+}
+
+[data-coreui-theme="dark"] [role="tabpanel"] {
+  background-color: rgb(31 41 55) !important;
+}
+
+/* Text contrast improvements for dark mode */
+[data-coreui-theme="dark"] .text-gray-500 {
+  color: rgb(156 163 175) !important;
+}
+
+[data-coreui-theme="dark"] .text-gray-600 {
+  color: rgb(209 213 219) !important;
+}
+
+[data-coreui-theme="dark"] .text-gray-700 {
+  color: rgb(229 231 235) !important;
+}
+
+[data-coreui-theme="dark"] .text-gray-800 {
+  color: rgb(243 244 246) !important;
+}
+
+[data-coreui-theme="dark"] .text-gray-900 {
+  color: rgb(249 250 251) !important;
+}
+
+/* Dark mode admin primary adjustments */
+[data-coreui-theme="dark"] .bg-admin-primary\/10 {
+  background-color: rgb(50 31 219 / 0.2) !important;
+}
+
+[data-coreui-theme="dark"] .dark\:bg-admin-primary\/20 {
+  background-color: rgb(50 31 219 / 0.2) !important;
+}
+
+/* Dark mode table styles */
+[data-coreui-theme="dark"] table {
+  color: rgb(255 255 255) !important;
+}
+
+[data-coreui-theme="dark"] th {
+  background-color: rgb(55 65 81) !important;
+  color: rgb(156 163 175) !important;
+}
+
+[data-coreui-theme="dark"] td {
+  border-color: rgb(55 65 81) !important;
+}
+
+[data-coreui-theme="dark"] tr:hover td {
+  background-color: rgb(55 65 81 / 0.5) !important;
+}
+
+/* Dark mode shadows */
+[data-coreui-theme="dark"] .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3) !important;
+}
+
+[data-coreui-theme="dark"] .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5) !important;
+}
+
+/* Radix UI specific fixes */
+[data-radix-select-viewport] {
+  max-height: var(--radix-select-content-available-height);
+}
+
+[data-radix-portal] {
+  z-index: 9999;
+}
+
+/* Remove hardcoded bg-white for dark mode compatibility */
+[data-coreui-theme="dark"] .bg-white:not([role="dialog"]):not([role="tabpanel"]) {
+  background-color: var(--cui-card-bg) !important;
+}
+
+/* Dialog backgrounds */
+[data-radix-dialog-content] {
+  background-color: #ffffff;
+}
+
+[data-coreui-theme="dark"] [data-radix-dialog-content] {
+  background-color: rgb(31 41 55) !important;
+}
+
+/* Select content backgrounds */
+[data-radix-select-content] {
+  background-color: #ffffff;
+}
+
+[data-coreui-theme="dark"] [data-radix-select-content] {
+  background-color: rgb(31 41 55) !important;
+  color: rgb(229 231 235) !important;
+}
+
+[data-coreui-theme="dark"] [data-radix-select-viewport] {
+  background-color: rgb(31 41 55) !important;
+}
+
+[data-coreui-theme="dark"] [data-radix-select-item] {
+  color: rgb(209 213 219) !important;
+}
+
+[data-coreui-theme="dark"] [data-radix-select-item]:hover {
+  background-color: rgb(55 65 81) !important;
+  color: rgb(243 244 246) !important;
+}
+
+/* Form controls */
+[data-coreui-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-coreui-theme="dark"] textarea {
+  background-color: var(--cui-input-bg) !important;
+  color: var(--cui-input-color) !important;
+}
+
+/* Switch thumb */
+[data-radix-switch-thumb] {
+  background-color: #ffffff;
+}
+
+[data-coreui-theme="dark"] [data-radix-switch-thumb] {
+  background-color: #e5e7eb;
+}
+
+/* Checkbox background */
+[data-radix-checkbox-root] {
+  background-color: var(--cui-card-bg, #ffffff);
+}
+
+[data-coreui-theme="dark"] [data-radix-checkbox-root] {
+  background-color: var(--cui-input-bg);
+}
+
+/* Animation classes */
+.data-\[state\=open\]\:animate-in[data-state="open"] {
+  animation: fade-in 150ms ease-out, zoom-in 150ms ease-out;
+}
+
+.data-\[state\=closed\]\:animate-out[data-state="closed"] {
+  animation: fade-out 150ms ease-in, zoom-out 150ms ease-in;
+}
+
+/* CoreUI Modal Dark Mode fixes */
+[data-coreui-theme="dark"] .modal-content {
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
+  border-color: var(--cui-border-color);
+}
+
+[data-coreui-theme="dark"] .modal-header {
+  background-color: var(--cui-card-bg);
+  border-color: var(--cui-border-color);
+}
+
+[data-coreui-theme="dark"] .modal-footer {
+  background-color: var(--cui-card-bg);
+  border-color: var(--cui-border-color);
+}
+
+[data-coreui-theme="dark"] .nav-tabs {
+  border-color: var(--cui-border-color);
+}
+
+[data-coreui-theme="dark"] .nav-tabs .nav-link {
+  color: var(--cui-body-color);
+}
+
+[data-coreui-theme="dark"] .nav-tabs .nav-link.active {
+  background-color: var(--cui-card-bg);
+  color: var(--cui-primary);
+  border-color: var(--cui-border-color) var(--cui-border-color) var(--cui-card-bg);
+}
+
+[data-coreui-theme="dark"] .nav-tabs .nav-link:hover {
+  border-color: var(--cui-border-color);
 }

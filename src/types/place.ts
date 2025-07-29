@@ -25,27 +25,61 @@ export interface Place {
       lng: number;
     };
   };
+  coordinates?: {
+    lat: number;
+    lng: number;
+    _id?: string;
+  };
   photos?: Array<{
     height: number;
     width: number;
-    html_attributions: string[];
+    html_attributions?: string[];
     photo_reference: string;
     photo_url?: string;
     gcs_url?: string;
     optimized_urls?: {
       thumb?: string;
+      small?: string;
+      medium?: string;
       large?: string;
+      _id?: string;
     };
+    uploaded_at?: Date;
+    _id?: string;
   }>;
-  reviews?: Array<{
-    author_name: string;
-    rating: number;
-    text: string;
-    time: number;
-  }>;
+  
+  // Additional Google Places API fields
+  business_status?: string; // OPERATIONAL, CLOSED_TEMPORARILY, CLOSED_PERMANENTLY
+  curbside_pickup?: boolean;
+  delivery?: boolean;
+  dine_in?: boolean;
+  editorial_summary?: {
+    language?: string;
+    overview?: string; // This is the description!
+  };
+  icon?: string;
+  icon_background_color?: string;
+  icon_mask_base_uri?: string;
+  plus_code?: {
+    compound_code?: string;
+    global_code?: string;
+  };
+  reservable?: boolean;
+  serves_beer?: boolean;
+  serves_breakfast?: boolean;
+  serves_brunch?: boolean;
+  serves_dinner?: boolean;
+  serves_lunch?: boolean;
+  serves_vegetarian_food?: boolean;
+  serves_wine?: boolean;
+  takeout?: boolean;
+  url?: string; // Google Maps URL
+  vicinity?: string; // Simplified address
+  wheelchair_accessible_entrance?: boolean;
   
   // Walky specific fields
   campus_id?: string;
+  campus_ids?: string[];
   categories?: string[];
   
   // Hierarchy fields
@@ -65,6 +99,8 @@ export interface Place {
   createdAt?: Date;
   updatedAt?: Date;
   last_synced_at?: Date;
+  status?: string;
+  is_active?: boolean;
   
   // Enhanced fields from backend
   nested_places_count?: number;
@@ -80,6 +116,11 @@ export interface Place {
   
   // For display purposes
   campus?: Campus;
+  
+  // Additional properties that might be in the data
+  secondary_description?: string;
+  adr_address?: string;
+  reference?: string;
 }
 
 // Region interface removed - places are now directly associated with campuses

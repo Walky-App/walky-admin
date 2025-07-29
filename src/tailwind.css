@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Custom theme overrides */
+@theme {
+  --color-admin-primary: #321fdb;
+  --color-admin-secondary: #9da5b1;
+  --color-admin-success: #2eb85c;
+  --color-admin-info: #39f;
+  --color-admin-warning: #f9b115;
+  --color-admin-danger: #e55353;
+  --color-admin-light: #ebedef;
+  --color-admin-dark: #4f5d73;
+}
+
+/* Ensure dark mode works with CoreUI */
+[data-coreui-theme="dark"] {
+  color-scheme: dark;
+}

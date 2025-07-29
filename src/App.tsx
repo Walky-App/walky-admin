@@ -1,10 +1,5 @@
 import CIcon from "@coreui/icons-react";
-import {
-  cilArrowTop,
-  cilCloudDownload,
-  cilArrowBottom,
-  cilArrowRight,
-} from "@coreui/icons";
+import { cilCloudDownload } from "@coreui/icons";
 import {
   CButton,
   CButtonGroup,
@@ -15,7 +10,6 @@ import {
   CCol,
   CWidgetStatsA,
 } from "@coreui/react";
-import { CChartBar, CChartLine } from "@coreui/react-chartjs";
 
 import { useState, useEffect, JSX } from "react";
 
@@ -46,7 +40,6 @@ import "./App.css";
 
 import MainChart from "./components/MainChart.tsx";
 
-import { Chart as ChartJS, TooltipModel } from "chart.js";
 
 import API from "./API/index.ts";
 import Login from "./pages/Login.tsx";
@@ -60,7 +53,6 @@ type BaseWidgetData = {
   chartData: number[];
 };
 
-// Removed unused interface MonthlyActiveUsersData
 type WalksData = {
   value: number;
   percentChange: number;
@@ -103,8 +95,6 @@ interface WalkMonthData {
   year?: number;
   count: number;
 }
-
-// Removed unused interface WalksApiResponse
 
 const Dashboard = ({ theme }: DashboardProps) => {
   const [walks, setWalks] = useState<WalksData | null>(null);
@@ -307,74 +297,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
     getSurpriseData();
   }, []);
 
-  const tooltipPlugin = {
-    id: "customTooltip",
-    afterDraw: (chart: ChartJS) => {
-      const tooltipModel = chart.tooltip as TooltipModel<"line">;
-
-      let tooltipEl = document.getElementById("chartjs-tooltip");
-      if (!tooltipEl) {
-        tooltipEl = document.createElement("div");
-        tooltipEl.id = "chartjs-tooltip";
-        tooltipEl.style.position = "absolute";
-        tooltipEl.style.padding = "8px 12px";
-        tooltipEl.style.borderRadius = "6px";
-        tooltipEl.style.pointerEvents = "none";
-        tooltipEl.style.transition = "all 0.1s ease";
-        tooltipEl.style.fontFamily = "Inter, sans-serif";
-        tooltipEl.style.fontSize = "12px";
-        document.body.appendChild(tooltipEl);
-      }
-
-      tooltipEl.style.background = theme.isDark
-        ? "rgba(255, 255, 255, 0.7)"
-        : "rgba(4, 4, 4, 0.75)";
-      tooltipEl.style.color = theme.isDark
-        ? "rgb(0, 0, 0)"
-        : "rgb(255, 255, 255)";
-
-      if (tooltipModel.opacity === 0) {
-        tooltipEl.style.opacity = "0";
-        return;
-      }
-
-      if (tooltipModel.dataPoints) {
-        const dataPoint = tooltipModel.dataPoints[0];
-        const hoveredMonth = dataPoint.label;
-        const value = dataPoint.raw;
-
-        // Determine which dataset this is from based on chart ID or label
-        const datasetLabel = dataPoint.dataset.label || "";
-
-        if (datasetLabel === "Events") {
-          tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Events this month: ${value}`;
-        } else if (datasetLabel === "Walks") {
-          tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Walks this month: ${value}`;
-        } else if (datasetLabel === "Ideas") {
-          tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Ideas this month: ${value}`;
-        } else if (datasetLabel === "Surprise") {
-          tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Value: ${value}`;
-        } else {
-          tooltipEl.innerHTML = `<strong>${hoveredMonth}</strong><br>Value: ${value}`;
-        }
-      }
-
-      const position = chart.canvas.getBoundingClientRect();
-      tooltipEl.style.opacity = "1";
-      tooltipEl.style.left = `${
-        position.left + window.pageXOffset + tooltipModel.caretX
-      }px`;
-      tooltipEl.style.top = `${
-        position.top + window.pageYOffset + tooltipModel.caretY
-      }px`;
-    },
-  };
-
-  const getTrendIcon = (percent: number) => {
-    if (percent > 0) return cilArrowTop;
-    if (percent < 0) return cilArrowBottom;
-    return cilArrowRight; // neutral case
-  };
+  // Chart functionality temporarily disabled
 
   return (
     <>
@@ -394,7 +317,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                   {walks.value}{" "}
                   <span className="fs-6 fw-normal">
                     ({walks.percentChange}%{" "}
-                    <CIcon icon={getTrendIcon(walks.percentChange)} />)
+)
                   </span>
                 </>
               ) : (
@@ -403,71 +326,12 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }
             title="Walks (Last 6 Months)"
             chart={
-              <CChartLine
+              <div
                 className="mt-3 mx-3"
-                style={{ height: "70px" }}
-                data={{
-                  labels: walks?.monthLabels || [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                  ],
-                  datasets: [
-                    {
-                      label: "Walks",
-                      backgroundColor: "transparent",
-                      borderColor: theme.colors.chartLine,
-                      pointBackgroundColor: theme.colors.primary,
-                      data: walks?.chartData || [],
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                      enabled: false,
-                    },
-                    title: {
-                      display: false,
-                    },
-                    subtitle: {
-                      display: false,
-                    },
-                  },
-                  interaction: {
-                    mode: "index",
-                    intersect: false,
-                  },
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: {
-                      display: false,
-                      grid: { display: false },
-                      ticks: { display: false },
-                    },
-                    y: {
-                      display: false,
-                      grid: { display: false },
-                      ticks: { display: false },
-                    },
-                  },
-                  elements: {
-                    line: { borderWidth: 1, tension: 0.4 },
-                    point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
-                  },
-                  animation: false,
-                  layout: {
-                    padding: {
-                      bottom: 10,
-                    },
-                  },
-                }}
-                plugins={[tooltipPlugin]}
-              />
+                style={{ height: "70px", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                <span style={{ color: theme.colors.secondary, fontSize: "12px" }}>Chart disabled</span>
+              </div>
             }
           />
         </CCol>
@@ -481,7 +345,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                   {events.value}{" "}
                   <span className="fs-6 fw-normal">
                     ({events.percentChange}%{" "}
-                    <CIcon icon={getTrendIcon(events.percentChange)} />)
+)
                   </span>
                 </>
               ) : (
@@ -490,71 +354,12 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }
             title="Events"
             chart={
-              <CChartLine
+              <div
                 className="mt-3 mx-3"
-                style={{ height: "70px" }}
-                data={{
-                  labels: events?.monthLabels || [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                  ],
-                  datasets: [
-                    {
-                      label: "Events",
-                      backgroundColor: "transparent",
-                      borderColor: theme.colors.chartLine,
-                      pointBackgroundColor: theme.colors.info,
-                      data: events?.chartData || [],
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                      enabled: false,
-                    },
-                    title: {
-                      display: false,
-                    },
-                    subtitle: {
-                      display: false,
-                    },
-                  },
-                  interaction: {
-                    mode: "index",
-                    intersect: false,
-                  },
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: {
-                      display: false,
-                      grid: { display: false },
-                      ticks: { display: false },
-                    },
-                    y: {
-                      display: false,
-                      grid: { display: false },
-                      ticks: { display: false },
-                    },
-                  },
-                  elements: {
-                    line: { borderWidth: 1, tension: 0.4 },
-                    point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
-                  },
-                  animation: false,
-                  layout: {
-                    padding: {
-                      bottom: 10,
-                    },
-                  },
-                }}
-                plugins={[tooltipPlugin]}
-              />
+                style={{ height: "70px", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                <span style={{ color: theme.colors.secondary, fontSize: "12px" }}>Chart disabled</span>
+              </div>
             }
           />
         </CCol>
@@ -568,7 +373,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                   {ideas.value}{" "}
                   <span className="fs-6 fw-normal">
                     ({ideas.percentChange}%{" "}
-                    <CIcon icon={getTrendIcon(ideas.percentChange)} />)
+)
                   </span>
                 </>
               ) : (
@@ -577,72 +382,12 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }
             title="Ideas"
             chart={
-              <CChartLine
+              <div
                 className="mt-3"
-                style={{ height: "70px" }}
-                data={{
-                  labels: ideas?.monthLabels || [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                  ],
-                  datasets: [
-                    {
-                      label: "Ideas",
-                      backgroundColor: `${theme.colors.warning}33`,
-                      borderColor: theme.colors.chartLine,
-                      data: ideas?.chartData || [],
-                      fill: true,
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                      enabled: false,
-                    },
-                    title: {
-                      display: false,
-                    },
-                    subtitle: {
-                      display: false,
-                    },
-                  },
-                  interaction: {
-                    mode: "index",
-                    intersect: false,
-                  },
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: {
-                      display: false,
-                      grid: { display: false },
-                      ticks: { display: false },
-                    },
-                    y: {
-                      display: false,
-                      grid: { display: false },
-                      ticks: { display: false },
-                    },
-                  },
-                  elements: {
-                    line: {
-                      borderWidth: 2,
-                      tension: 0.4,
-                    },
-                    point: {
-                      radius: 0,
-                      hitRadius: 10,
-                      hoverRadius: 4,
-                    },
-                  },
-                }}
-                plugins={[tooltipPlugin]}
-              />
+                style={{ height: "70px", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                <span style={{ color: theme.colors.secondary, fontSize: "12px" }}>Chart disabled</span>
+              </div>
             }
           />
         </CCol>
@@ -656,7 +401,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                   {surprise.value}{" "}
                   <span className="fs-6 fw-normal">
                     ({surprise.percentChange}%{" "}
-                    <CIcon icon={getTrendIcon(surprise.percentChange)} />)
+)
                   </span>
                 </>
               ) : (
@@ -669,78 +414,12 @@ const Dashboard = ({ theme }: DashboardProps) => {
               </div>
             }
             chart={
-              <CChartBar
+              <div
                 className="mt-3 mx-3"
-                style={{ height: "70px" }}
-                data={{
-                  labels: [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "November",
-                    "December",
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                  ],
-                  datasets: [
-                    {
-                      label: "Surprise",
-                      backgroundColor: theme.colors.danger,
-                      borderColor: theme.colors.chartLine,
-                      data: surprise?.chartData || [],
-                      barPercentage: 0.6,
-                    },
-                  ],
-                }}
-                options={{
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  scales: {
-                    x: {
-                      grid: {
-                        display: false,
-                        drawTicks: false,
-                      },
-                      ticks: {
-                        display: false,
-                      },
-                    },
-                    y: {
-                      grid: {
-                        display: false,
-                        drawTicks: false,
-                      },
-                      ticks: {
-                        display: false,
-                      },
-                    },
-                  },
-                  elements: {
-                    line: { borderWidth: 1, tension: 0.4 },
-                    point: { radius: 4, hitRadius: 10, hoverRadius: 4 },
-                  },
-                  animation: false,
-                  layout: {
-                    padding: {
-                      bottom: 0, //ensure graph is touching bottom of widget
-                    },
-                  },
-                }}
-                plugins={[tooltipPlugin]}
-              />
+                style={{ height: "70px", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                <span style={{ color: theme.colors.secondary, fontSize: "12px" }}>Chart disabled</span>
+              </div>
             }
           />
         </CCol>

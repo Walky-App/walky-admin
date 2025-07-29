@@ -8,10 +8,10 @@
 }
 
 .tableHeader {
-  background-color: #343a40;
+  background-color: #f8f9fa;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
 }
 
 .tableHeaderCell {
@@ -143,6 +143,11 @@
 
 [data-coreui-theme="dark"] .nestedTableHeaderCell {
   color: #e9ecef;
+}
+
+[data-coreui-theme="dark"] .tableHeaderCell {
+  color: #9ca3af;
+  border-bottom-color: #374151;
 }
 
 [data-coreui-theme="dark"] .loadingText {
