@@ -7,6 +7,12 @@ import { BrowserRouter } from "react-router-dom";
 import Campuses from "../pages/Campuses";
 import * as campusService from "../services/campusService";
 
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
+
 jest.mock('@react-google-maps/api', () => ({
   useJsApiLoader: () => ({ isLoaded: true, loadError: null }),
   GoogleMap: ({ children }: { children: React.ReactNode }) => (

@@ -4,6 +4,12 @@ import Campuses from '../pages/Campuses'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
+
 describe('Walky Admin - Campuses Page', () => {
   const queryClient = new QueryClient()
 

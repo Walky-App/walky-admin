@@ -141,6 +141,7 @@ const Places: React.FC = () => {
                 
                 <CCol md={3}>
                   <CFormSelect
+                    data-testid="hierarchy-view-select"
                     value={hierarchyView}
                     onChange={(e) => {
                       const value = e.target.value as 'all' | 'top-level';

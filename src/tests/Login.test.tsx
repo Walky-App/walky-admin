@@ -7,6 +7,12 @@ import API from '../API';
 
 jest.mock('../API');
 
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
+
 describe('Walky Admin Portal - Login Component', () => {
   it('renders email and password fields and the Continue button', () => {
       render(

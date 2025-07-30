@@ -4,6 +4,12 @@ import Engagement from '../pages/Engagement'
 import { MemoryRouter } from 'react-router-dom'
 import API from '../API'
 
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
+
 jest.mock('@coreui/react', () => ({
   ...jest.requireActual('@coreui/react'),
   CTooltip: ({ children, content }: { children: React.ReactNode; content: string }) => (

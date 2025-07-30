@@ -6,6 +6,13 @@ import App from "../App";
 import API from "../API";
 import { getTheme } from "../theme";
 
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
+
+
 // Mocking Google Maps API calls
 jest.mock("@react-google-maps/api", () => ({
   GoogleMap: () => <div data-testid="mocked-google-map" />,

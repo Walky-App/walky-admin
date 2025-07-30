@@ -8,6 +8,12 @@ import userEvent from '@testing-library/user-event'
 // Mock the API module
 jest.mock('../API')
 
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
+
 const mockedAPI = jest.mocked(API)
 
 describe('Walky Admin - StudentTable Component', () => {

@@ -1,10 +1,9 @@
 // src/tests/AmbassadorDetails.test.tsx
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useParams as mockUseParams, useLocation as mockUseLocation } from 'react-router-dom';
 import AmbassadorDetails from '../pages/AmbassadorDetails';
-import * as ReactQuery from '@tanstack/react-query'; 
-import { useParams, useLocation } from 'react-router-dom';
+import * as ReactQuery from '@tanstack/react-query';
 import { ambassadorService } from '../services/ambassadorService';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -20,12 +19,26 @@ const renderComponent = () => {
   );
 };
 
-
- jest.mock('@tanstack/react-query', () => ({
-   ...jest.requireActual('@tanstack/react-query'),
+jest.mock('@tanstack/react-query', () => ({
+  ...jest.requireActual('@tanstack/react-query'),
   useQuery: jest.fn(),
- }));
+}));
 
+jest.mock('../API', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  },
+}));
+
+const mockNavigate = jest.fn();
 const mockAmbassador = {
   id: 'tems-id',
   name: 'Tems',
@@ -39,55 +52,6 @@ const mockAmbassador = {
   major: 'Music Production',
 };
 
-const mockedUseParams = useParams as jest.Mock;
-const mockedUseLocation = useLocation as jest.Mock;
-
-
-// Default mock (used for ALL tests except the loading one)
-beforeEach(() => {
-  mockedUseLocation.mockReturnValue({ state: { ambassadorData: mockAmbassador } });
-  mockedUseParams.mockReturnValue({ id  : 'tems-id' });
-  (ReactQuery.useQuery as jest.Mock).mockReturnValue({
-    data: mockAmbassador,
-    isLoading: false,
-    isError: false,
-    error: null,
-  });
-});
-
-beforeAll(() => {
-  jest.spyOn(console, 'log').mockImplementation((msg, ...args) => {
-    if (
-      typeof msg === 'string' &&
-      msg.includes('📝 Loading ambassador from navigation state')
-    ) return;
-    console.info(msg, ...args);
-  });
-
-  jest.spyOn(console, 'warn').mockImplementation((msg, ...args) => {
-    if (typeof msg === 'string' && msg.includes('⚠️ No token found')) return;
-    console.warn(msg, ...args);
-  });
-
-  jest.spyOn(console, 'error').mockImplementation((msg, ...args) => {
-    if (
-      typeof msg === 'string' &&
-      msg.includes('Failed to update ambassador')
-    ) return;
-    console.error(msg, ...args);
-  });
-});
-
-
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-  useLocation: jest.fn(),
-  useParams: jest.fn(),
-}));
-
-
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
   return {
@@ -98,6 +62,23 @@ jest.mock('react-router-dom', () => {
   };
 });
 
+const mockedUseParams = mockUseParams as jest.Mock;
+const mockedUseLocation = mockUseLocation as jest.Mock;
+
+beforeEach(() => {
+  mockedUseLocation.mockReturnValue({ state: { ambassadorData: mockAmbassador } });
+  mockedUseParams.mockReturnValue({ id: 'tems-id' });
+  (ReactQuery.useQuery as jest.Mock).mockReturnValue({
+    data: mockAmbassador,
+    isLoading: false,
+    isError: false,
+    error: null,
+  });
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
 
 describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
   it('renders the AmbassadorDetails form with proper layout and theme styling', () => {

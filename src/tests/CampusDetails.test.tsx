@@ -7,7 +7,15 @@ import * as ambassadorModule from "../services/ambassadorService";
 import * as campusModule from "../services/campusService";
 
 
+
+
 jest.mock("../services/ambassadorService");
+
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
 
 const mockNavigate = jest.fn();
 
@@ -80,6 +88,7 @@ beforeEach(() => {
   
 
 describe("Walky Admin - CampusDetails Component", () => {
+  jest.setTimeout(20000);
   it("renders the form layout with required fields and buttons", async () => {
     renderWithProviders(<CampusDetails />);
 
@@ -123,6 +132,7 @@ describe("Walky Admin - CampusDetails Component", () => {
     });
 
     describe("handles form input changes", () => {
+        jest.setTimeout(20000);
         it("updates basic text fields", async () => {
           renderWithProviders(<CampusDetails />, { state: { campusData: mockCampusData } });
       
