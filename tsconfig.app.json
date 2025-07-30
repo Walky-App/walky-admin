@@ -11,8 +11,10 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "moduleDetection": "force",
+    "noEmit": true,
     "composite": true,
     "declaration": true,
     "declarationMap": true,
@@ -27,8 +29,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src/**/*",
-    "src/vite-env.d.ts"
-  ]
+  "include": ["src/**/*", "src/vite-env.d.ts"]
 }
