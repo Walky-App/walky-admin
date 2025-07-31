@@ -1,23 +1,7 @@
 // src/tests/AmbassadorDetails.test.tsx
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { BrowserRouter, useParams as mockUseParams, useLocation as mockUseLocation } from 'react-router-dom';
-import AmbassadorDetails from '../pages/AmbassadorDetails';
-import * as ReactQuery from '@tanstack/react-query';
-import { ambassadorService } from '../services/ambassadorService';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-const queryClient = new QueryClient();
-
-const renderComponent = () => {
-  render(
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AmbassadorDetails />
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
-};
+// ---- Mocks ----
+const mockNavigate = jest.fn();
 
 jest.mock('@tanstack/react-query', () => ({
   ...jest.requireActual('@tanstack/react-query'),
@@ -38,7 +22,28 @@ jest.mock('../API', () => ({
   },
 }));
 
-const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useParams: jest.fn(),
+    useLocation: jest.fn(),
+    BrowserRouter: actual.BrowserRouter,
+  };
+});
+
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import AmbassadorDetails from '../pages/AmbassadorDetails';
+import * as ReactQuery from '@tanstack/react-query';
+import { ambassadorService } from '../services/ambassadorService';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as ReactRouterDom from 'react-router-dom';
+
+const mockedUseParams = ReactRouterDom.useParams as jest.Mock;
+const mockedUseLocation = ReactRouterDom.useLocation as jest.Mock;
+
 const mockAmbassador = {
   id: 'tems-id',
   name: 'Tems',
@@ -52,18 +57,16 @@ const mockAmbassador = {
   major: 'Music Production',
 };
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-    useParams: jest.fn(),
-    useLocation: jest.fn(),
-  };
-});
-
-const mockedUseParams = mockUseParams as jest.Mock;
-const mockedUseLocation = mockUseLocation as jest.Mock;
+const renderComponent = () => {
+  const queryClient = new QueryClient();
+  render(
+    <QueryClientProvider client={queryClient}>
+      <ReactRouterDom.BrowserRouter>
+        <AmbassadorDetails />
+      </ReactRouterDom.BrowserRouter>
+    </QueryClientProvider>
+  );
+};
 
 beforeEach(() => {
   mockedUseLocation.mockReturnValue({ state: { ambassadorData: mockAmbassador } });
@@ -74,6 +77,11 @@ beforeEach(() => {
     isError: false,
     error: null,
   });
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+  document.body.classList.remove('dark-theme');
 });
 
 afterAll(() => {
@@ -93,10 +101,8 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
 
   it('pre-fills form inputs with ambassadorData from navigation state', async () => {
     renderComponent();
-    await waitFor(() => {
-      expect(screen.getByTestId('ambassador-name-input')).toHaveValue('Tems');
-      expect(screen.getByTestId('ambassador-email-input')).toHaveValue('tems@essence.co');
-    });
+    expect(screen.getByTestId('ambassador-name-input')).toHaveValue('Tems');
+    expect(screen.getByTestId('ambassador-email-input')).toHaveValue('tems@essence.co');
     expect(screen.getByDisplayValue('+2348000000000')).toBeInTheDocument();
     expect(screen.getByDisplayValue('TMS234')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Music Production')).toBeInTheDocument();
@@ -107,8 +113,8 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
 
   it('updates all form inputs when changed', async () => {
     renderComponent();
-    const nameInput = await screen.findByTestId('ambassador-name-input');
-    const emailInput = await screen.findByTestId('ambassador-email-input');
+    const nameInput = screen.getByTestId('ambassador-name-input');
+    const emailInput = screen.getByTestId('ambassador-email-input');
     const phoneInput = screen.getByLabelText(/Phone Number/i);
     const studentIdInput = screen.getByLabelText(/Student ID/i);
     const majorInput = screen.getByLabelText(/Major/i);
@@ -135,33 +141,29 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
     await userEvent.type(profileImgInput, 'https://example.com/new.jpg');
     await userEvent.selectOptions(statusSelect, 'false');
 
-    await waitFor(() => {
-      expect(nameInput).toHaveValue('New Name');
-      expect(emailInput).toHaveValue('new@email.com');
-      expect(phoneInput).toHaveValue('+19995556666');
-      expect(studentIdInput).toHaveValue('NEW123');
-      expect(majorInput).toHaveValue('Engineering');
-      expect(gradYearInput).toHaveValue(2030);
-      expect(bioInput).toHaveValue('I am a future engineer!');
-      expect(profileImgInput).toHaveValue('https://example.com/new.jpg');
-      expect(statusSelect).toHaveValue('false');
-    });
-  }, 10000);
+    expect(nameInput).toHaveValue('New Name');
+    expect(emailInput).toHaveValue('new@email.com');
+    expect(phoneInput).toHaveValue('+19995556666');
+    expect(studentIdInput).toHaveValue('NEW123');
+    expect(majorInput).toHaveValue('Engineering');
+    expect(gradYearInput).toHaveValue(2030);
+    expect(bioInput).toHaveValue('I am a future engineer!');
+    expect(profileImgInput).toHaveValue('https://example.com/new.jpg');
+    expect(statusSelect).toHaveValue('false');
+  });
 
   it('shows validation errors for missing required fields (name, email)', async () => {
     renderComponent();
-    const nameInput = await screen.findByTestId('ambassador-name-input');
-    const emailInput = await screen.findByTestId('ambassador-email-input');
+    const nameInput = screen.getByTestId('ambassador-name-input');
+    const emailInput = screen.getByTestId('ambassador-email-input');
     const saveButton = screen.getByTestId('ambassador-save-button');
 
     await userEvent.clear(nameInput);
     await userEvent.clear(emailInput);
     await userEvent.click(saveButton);
 
-    await waitFor(() => {
-      expect(screen.getByText(/Ambassador name is required/i)).toBeInTheDocument();
-      expect(screen.getByText(/Email address is required/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/Ambassador name is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/Email address is required/i)).toBeInTheDocument();
   });
 
   it('shows validation error for invalid email', async () => {
@@ -170,9 +172,7 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
     await userEvent.clear(emailInput);
     await userEvent.type(emailInput, 'invalid-email');
     await userEvent.click(screen.getByTestId('ambassador-save-button'));
-    await waitFor(() => {
-      expect(screen.getByText(/valid email address/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/valid email address/i)).toBeInTheDocument();
   });
 
   it('shows validation error for short student ID', async () => {
@@ -182,9 +182,7 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
     await userEvent.clear(studentIdInput);
     await userEvent.type(studentIdInput, 'ab');
     await userEvent.click(saveButton);
-    await waitFor(() => {
-      expect(screen.getByTestId('ambassador-error-alert')).toBeInTheDocument();
-    });
+    expect(await screen.findByTestId('ambassador-error-alert')).toBeInTheDocument();
     expect(studentIdInput).toHaveValue('ab');
   });
 
@@ -196,9 +194,7 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
     await userEvent.type(gradYearInput, '2045');
     await userEvent.click(saveButton);
     expect(gradYearInput).toHaveValue(2045);
-    await waitFor(() => {
-      expect(screen.getByTestId('ambassador-error-alert')).toBeInTheDocument();
-    });
+    expect(await screen.findByTestId('ambassador-error-alert')).toBeInTheDocument();
   });
 
   it('shows real-time validation feedback for invalid email', async () => {
@@ -206,9 +202,7 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
     const emailInput = screen.getByLabelText(/Email Address/i);
     await userEvent.clear(emailInput);
     await userEvent.type(emailInput, 'not-an-email');
-    await waitFor(() => {
-      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/please enter a valid email address/i)).toBeInTheDocument();
   });
 
   it('triggers PUT mutation with updated data when editing an ambassador', async () => {
@@ -223,12 +217,13 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
     await userEvent.type(screen.getByTestId('ambassador-email-input'), 'updated@essence.co');
     await userEvent.click(screen.getByTestId('ambassador-save-button'));
 
-    await waitFor(() => {
-      expect(updateSpy).toHaveBeenCalledWith('tems-id', expect.objectContaining({
-        name: 'Updated Tems',
-        email: 'updated@essence.co',
-      }));
-    });
+    expect(await waitFor(() =>
+      updateSpy.mock.calls.length > 0
+    )).toBeTruthy();
+    expect(updateSpy).toHaveBeenCalledWith('tems-id', expect.objectContaining({
+      name: 'Updated Tems',
+      email: 'updated@essence.co',
+    }));
   });
 
   it('triggers POST mutation when creating a new ambassador', async () => {
@@ -248,9 +243,8 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
       .spyOn(ambassadorService, 'create')
       .mockResolvedValueOnce({ ...newAmbassador, id: 'new-id' });
 
-    // 👇 Override mock to simulate "Create mode"
     mockedUseLocation.mockReturnValue({ state: null });
-    mockedUseParams.mockReturnValue({ id: undefined }); // no ID = create
+    mockedUseParams.mockReturnValue({ id: undefined });
 
     renderComponent();
 
@@ -261,27 +255,26 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
 
     await userEvent.click(screen.getByTestId('ambassador-save-button'));
 
-    await waitFor(() => {
-      expect(createSpy).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'Fresh Face',
-        email: 'fresh@uni.edu',
-      }));
-    });
+    expect(await waitFor(() =>
+      createSpy.mock.calls.length > 0
+    )).toBeTruthy();
+    expect(createSpy).toHaveBeenCalledWith(expect.objectContaining({
+      name: 'Fresh Face',
+      email: 'fresh@uni.edu',
+    }));
   });
 
-
-    it('navigates back to Ambassadors page when Cancel button is clicked', async () => {
+  it('navigates back to Ambassadors page when Cancel button is clicked', async () => {
     renderComponent();
-
     const cancelButton = screen.getByTestId('ambassador-cancel-button');
     await userEvent.click(cancelButton);
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/ambassadors');
-    });
+    expect(await waitFor(() =>
+      mockNavigate.mock.calls.length > 0
+    )).toBeTruthy();
+    expect(mockNavigate).toHaveBeenCalledWith('/ambassadors');
   });
 
-    it('shows error alert when server update fails', async () => {
+  it('shows error alert when server update fails', async () => {
     jest
       .spyOn(ambassadorService, 'update')
       .mockRejectedValueOnce(new Error('Server failed to update'));
@@ -291,13 +284,10 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
     const saveButton = screen.getByTestId('ambassador-save-button');
     await userEvent.click(saveButton);
 
-    await waitFor(() => {
-      expect(screen.getByTestId('ambassador-error-alert')).toBeInTheDocument();     
-    });
+    expect(await screen.findByTestId('ambassador-error-alert')).toBeInTheDocument();
   });
 
-    it('displays loading state when fetching data for editing', () => {
-    // override useQuery JUST for this test
+  it('displays loading state when fetching data for editing', () => {
     (ReactQuery.useQuery as jest.Mock).mockReturnValueOnce({
       data: undefined,
       isLoading: true,
@@ -326,5 +316,4 @@ describe('Walky Admin - Ambassador Page: AmbassadorDetails Component', () => {
       expect(document.body).toHaveClass('dark-theme');
     });
   });
-
 });

@@ -13,18 +13,46 @@ jest.mock('../utils/env', () => ({
   }),
 }));
 
-jest.mock('@react-google-maps/api', () => ({
-  useJsApiLoader: () => ({ isLoaded: true, loadError: null }),
-  GoogleMap: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="google-map">
-      {children}
-      <button role="button" aria-label="Map">Map</button>
-      <button role="button" aria-label="Satellite">Satellite</button>
-    </div>
-  ),
-  DrawingManager: () => null,
-  StandaloneSearchBox: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+jest.mock("@react-google-maps/api", () => {
+  // @ts-expect-error: safe require usage for Jest mock
+  const React = require("react") as typeof import("react");
+
+  const GoogleMap = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(
+      "div",
+      { "data-testid": "google-map" },
+      children,
+      React.createElement("button", {
+        role: "button",
+        "aria-label": "Map",
+        children: "Map",
+      }),
+      React.createElement("button", {
+        role: "button",
+        "aria-label": "Satellite",
+        children: "Satellite",
+      })
+    );
+
+  const DrawingManager = () => null;
+
+  const StandaloneSearchBox = ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children);
+
+  return {
+    __esModule: true,
+    useJsApiLoader: () => ({ isLoaded: true, loadError: null }),
+    GoogleMap,
+    DrawingManager,
+    StandaloneSearchBox,
+    LoadScript: ({ children }: { children: React.ReactNode }) =>
+      React.createElement("div", null, children),
+    Marker: () => null,
+    Polygon: () => null,
+    InfoWindow: () => null,
+  };
+});
+
 
 import { Campus } from "../types/campus";
 

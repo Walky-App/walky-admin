@@ -1,9 +1,19 @@
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}));
+
+// ✅ Must be before the import to work correctly
+jest.mock('../API');
+import API from '../API';
+
 // src/tests/ForgotPassword.test.tsx
 import { render, screen, waitFor } from '@testing-library/react'
 import ForgotPassword from '../pages/ForgotPassword'
 import { BrowserRouter, useNavigate } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
-import API from '../API'
+
 
 // Reusable render function
 const renderForgotPasswordPage = () => {
@@ -14,10 +24,6 @@ const renderForgotPasswordPage = () => {
   )
 }
 
-// mock the API.post call
-jest.mock('../API', () => ({
-  post: jest.fn(),
-}))
 
 
 jest.mock('react-router-dom', () => {
@@ -28,7 +34,7 @@ jest.mock('react-router-dom', () => {
   }
 })
 
-const mockedPost = API.post as jest.Mock
+const mockedPost = (API.post as unknown) as jest.Mock;
 const mockedNavigate = useNavigate as jest.Mock
 
 describe('Walky Admin - ForgotPassword Page', () => {

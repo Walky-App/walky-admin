@@ -4,7 +4,6 @@ import ExampleAdminLayout from "../components/ExampleAdminLayout";
 import { MemoryRouter } from "react-router-dom";
 
 
-
 // Mock Sidebar and Topbar to observe sidebar visibility behavior
 jest.mock("../components/NavSideBar.tsx", () => ({
   Sidebar: ({ visible }: { visible: boolean }) => (

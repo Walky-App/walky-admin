@@ -1,4 +1,4 @@
-// ✅ Place this BEFORE ALL IMPORTS
+// Mocks (must be before imports)
 jest.mock('@tanstack/react-query', () => {
   const actual = jest.requireActual('@tanstack/react-query');
   return {
@@ -22,7 +22,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AmbassadorView from '../pages/AmbassadorView';
-import * as ReactQuery from '@tanstack/react-query'; // <-- access mocked `useQuery`
+import * as ReactQuery from '@tanstack/react-query';
 
 const mockAmbassador = {
   id: 'tems-id',
@@ -37,10 +37,7 @@ const mockAmbassador = {
   major: 'Music Production',
 };
 
-const queryClient = new QueryClient();
-
 beforeEach(() => {
-  // 🧠 Return mocked ambassador data before rendering
   (ReactQuery.useQuery as jest.Mock).mockReturnValue({
     data: mockAmbassador,
     isLoading: false,
@@ -49,8 +46,13 @@ beforeEach(() => {
   });
 });
 
-const renderComponent = () =>
-  render(
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+const renderComponent = () => {
+  const queryClient = new QueryClient();
+  return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={['/ambassadors/tems-id']}>
         <Routes>
@@ -59,29 +61,26 @@ const renderComponent = () =>
       </MemoryRouter>
     </QueryClientProvider>
   );
+};
 
 describe('Walky Admin - Ambassadors Page: AmbassadorView', () => {
-    it('loads AmbassadorDetails with correct props based on route param', async () => {
-        renderComponent();
-        expect(await screen.findByTestId('ambassador-view-wrapper')).toBeInTheDocument();
-    });
+  it('loads AmbassadorDetails with correct props based on route param', async () => {
+    renderComponent();
+    expect(await screen.findByTestId('ambassador-view-wrapper')).toBeInTheDocument();
+  });
 
-    it('passes ambassadorId and disables tab view', () => {
-        renderComponent();
+  it('passes ambassadorId and disables tab view', () => {
+    renderComponent();
+    expect(
+      screen.getByText(/Mocked AmbassadorDetails - ID: tems-id, Tab: false/)
+    ).toBeInTheDocument();
+  });
 
-        expect(
-            screen.getByText(/Mocked AmbassadorDetails - ID: tems-id, Tab: false/)
-        ).toBeInTheDocument();
-    });
-
-    it('renders AmbassadorDetails inside padded container', () => {
-        renderComponent();
-
-        const wrapper = screen.getByTestId('ambassador-view-wrapper');
-        const details = screen.getByTestId('ambassador-details-page');
-
-        expect(wrapper).toContainElement(details);
-        expect(wrapper).toHaveClass('p-2');
-    });
-
+  it('renders AmbassadorDetails inside padded container', () => {
+    renderComponent();
+    const wrapper = screen.getByTestId('ambassador-view-wrapper');
+    const details = screen.getByTestId('ambassador-details-page');
+    expect(wrapper).toContainElement(details);
+    expect(wrapper).toHaveClass('p-2');
+  });
 });
