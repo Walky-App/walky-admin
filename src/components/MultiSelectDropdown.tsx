@@ -28,6 +28,7 @@ interface MultiSelectDropdownProps {
   invalid?: boolean;
   helpText?: string;
   className?: string;
+  'data-testid'?: string;
 }
 
 const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
@@ -43,6 +44,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   invalid = false,
   helpText,
   className = '',
+  'data-testid': testId,
 }) => {
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -210,6 +212,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
         <div
           style={containerStyle}
           onClick={handleToggleClick}
+          data-testid={testId}
           className={`form-select ${disabled ? 'opacity-75' : ''}`}
         >
           {selectedDisplay}
@@ -240,6 +243,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                   placeholder={searchPlaceholder}
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
+                  data-testid={testId ? `${testId}-search` : undefined}
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => {
                     // Prevent dropdown from closing on Enter

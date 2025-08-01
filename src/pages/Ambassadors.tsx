@@ -208,18 +208,19 @@ const Ambassadors: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container" data-testid="ambassadors-page">
       <CRow>
         <CCol xs={12}>
           <CCard className="campus-card">
             <CCardHeader className="campus-card-header">
               <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
-                  <h4 className="mb-0 fw-semibold me-3">
+                  <h4 className="mb-0 fw-semibold me-3" data-testid="ambassadors-section-title">
                     Ambassador Management
                   </h4>
                 </div>
                 <CButton
+                  data-testid="add-ambassador-button"
                   color="primary"
                   size="sm"
                   onClick={handleAddAmbassador}
@@ -232,15 +233,15 @@ const Ambassadors: React.FC = () => {
             </CCardHeader>
             <CCardBody className="campus-card-body">
               {alert && (
-                <CAlert color={alert.type} className="mb-3">
+                <CAlert data-testid="ambassadors-alert" color={alert.type} className="mb-3">
                   {alert.message}
                 </CAlert>
               )}
 
               <div className="table-responsive">
-                <CTable hover className="campus-table">
+                <CTable data-testid="ambassadors-table" hover className="campus-table">
                   <CTableHead>
-                    <CTableRow>
+                    <CTableRow >
                       <CTableHeaderCell className="campus-logo-cell">
                         Ambassador
                       </CTableHeaderCell>
@@ -265,8 +266,8 @@ const Ambassadors: React.FC = () => {
                     {loading ? (
                       // Loading skeleton rows
                       Array.from({ length: 5 }).map((_, index) => (
-                        <CTableRow key={`skeleton-${index}`}>
-                          <CTableDataCell>
+                        <CTableRow key={`skeleton-${index}`} >
+                          <CTableDataCell data-testid="empty-ambassador-message">
                             <div className="d-flex align-items-center">
                               <div
                                 style={{
@@ -370,7 +371,7 @@ const Ambassadors: React.FC = () => {
                         </CTableRow>
                       ))
                     ) : ambassadors.length === 0 ? (
-                      <CTableRow>
+                      <CTableRow >
                         <CTableDataCell
                           colSpan={6}
                           className="text-center py-5"
@@ -415,6 +416,7 @@ const Ambassadors: React.FC = () => {
 
                         return (
                           <CTableRow
+                            data-testid={`ambassador-row-${ambassadorId}`}
                             key={ambassadorKey}
                             style={
                               isBeingDeleted
@@ -509,8 +511,8 @@ const Ambassadors: React.FC = () => {
                                     <CIcon icon={cilUser} />
                                   </div>
                                 )}
-                                <div>
-                                  <div className="fw-semibold">
+                                <div >
+                                  <div className="fw-semibold" data-testid={`ambassador-name-${ambassadorId}`}>
                                     {ambassador.name}
                                   </div>
                                   <small className="text-muted">
@@ -524,18 +526,18 @@ const Ambassadors: React.FC = () => {
                                 </div>
                               </div>
                             </CTableDataCell>
-                            <CTableDataCell className="location-cell">
+                            <CTableDataCell className="location-cell" data-testid={`ambassador-email-${ambassadorId}`}>
                               {ambassador.email}
                             </CTableDataCell>
-                            <CTableDataCell className="address-cell">
+                            <CTableDataCell className="address-cell" data-testid={`ambassador-campus-${ambassadorId}`}>
                               <div title={ambassador.campus_name}>
                                 {ambassador.campus_name || "Not assigned"}
                               </div>
                             </CTableDataCell>
-                            <CTableDataCell className="geofence-cell">
+                            <CTableDataCell className="geofence-cell" data-testid={`ambassador-major-${ambassadorId}`}>
                               {ambassador.major || "Not specified"}
                             </CTableDataCell>
-                            <CTableDataCell className="status-cell">
+                            <CTableDataCell className="status-cell" data-testid={`ambassador-status-${ambassadorId}`}>
                               <CBadge
                                 color={
                                   ambassador.is_active !== false
@@ -551,6 +553,7 @@ const Ambassadors: React.FC = () => {
                             <CTableDataCell className="actions-cell">
                               <div className="d-flex justify-content-center gap-1">
                                 <CButton
+                                  data-testid={`edit-ambassador-${ambassadorId}`}
                                   color="primary"
                                   variant="outline"
                                   size="sm"
@@ -563,6 +566,7 @@ const Ambassadors: React.FC = () => {
                                   <CIcon icon={cilPencil} size="sm" />
                                 </CButton>
                                 <CButton
+                                  data-testid={`delete-ambassador-${ambassadorId}`}
                                   color="danger"
                                   variant="outline"
                                   size="sm"
