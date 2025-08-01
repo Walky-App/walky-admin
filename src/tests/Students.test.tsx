@@ -2,11 +2,24 @@
 import { render, screen } from '@testing-library/react'
 import Students from '../pages/Students'
 import { MemoryRouter } from 'react-router-dom'
+
+// Mock the API module
+jest.mock('../API')
+
+// Mock the env module to avoid import.meta.env issues
+jest.mock('../utils/env', () => ({
+  getEnv: () => ({
+    VITE_API_BASE_URL: 'http://localhost:8081/api',
+  }),
+}))
+
+// Import the mocked module to access the mock function
 import API from '../API'
 
-// Mock the API module to return dummy data for <StudentTable /> and stat widgets
-jest.mock("../API/", () => {
-    const get = jest.fn((url: string) => {
+describe('Walky Admin - Students Page', () => {
+  beforeEach(() => {
+    // Set up default mock responses for all API calls
+    (API.get as jest.Mock).mockImplementation((url: string) => {
       switch (url) {
         case "/users/?fields=_id,first_name,last_name,email,createdAt,updatedAt":
           return Promise.resolve({
@@ -35,12 +48,8 @@ jest.mock("../API/", () => {
           return Promise.resolve({ data: {} });
       }
     });
-  
-    return { get };
-  });
-  
+  })
 
-describe('Walky Admin - Students Page', () => {
   it('renders all 4 stat widgets', async () => {
     render(
       <MemoryRouter>
@@ -48,6 +57,7 @@ describe('Walky Admin - Students Page', () => {
       </MemoryRouter>
     )
 
+    // Verify all stat widgets are rendered
     expect(await screen.findByTestId('total-students')).toBeInTheDocument()
     expect(await screen.findByTestId('average-age')).toBeInTheDocument()
     expect(await screen.findByTestId('languages')).toBeInTheDocument()
@@ -55,7 +65,6 @@ describe('Walky Admin - Students Page', () => {
   })
 
   it("uses correct API calls to fetch stats", async () => {
-
     render(
       <MemoryRouter>
         <Students />
@@ -65,7 +74,7 @@ describe('Walky Admin - Students Page', () => {
     // Wait for any one stat to appear to ensure useEffect finished
     await screen.findByTestId("total-students");
   
-    // Assert that API.get was called with correct endpoints
+    // Verify that all expected API endpoints are called
     expect(API.get).toHaveBeenCalledWith("/users/count");
     expect(API.get).toHaveBeenCalledWith("/age/average");
     expect(API.get).toHaveBeenCalledWith("/language/count");
@@ -73,24 +82,21 @@ describe('Walky Admin - Students Page', () => {
   });
 
   it("displays fallback (—) if API fails or data is missing", async () => {
-    // Override the mock to simulate failures/missing data
-    const mockGet = jest.fn((url: string) => {
+    // Override the mock to simulate different failure scenarios
+    (API.get as jest.Mock).mockImplementation((url: string) => {
       switch (url) {
         case "/users/count":
-          return Promise.reject(new Error("Network error")); // fails
+          return Promise.reject(new Error("Network error")); // API call fails
         case "/age/average":
-          return Promise.resolve({}); // missing .data
+          return Promise.resolve({}); // Missing .data property
         case "/language/count":
-          return Promise.resolve({ data: {} }); // missing totalUniqueLanguages
+          return Promise.resolve({ data: {} }); // Missing totalUniqueLanguages property
         case "/users/parent-count":
-          return Promise.resolve({ data: { parentUsersCount: 13 } }); // normal
+          return Promise.resolve({ data: { parentUsersCount: 13 } }); // Normal response
         default:
           return Promise.resolve({ data: {} });
       }
     });
-  
-    // Replace the original mock
-    (API.get as jest.Mock) = mockGet;
   
     render(
       <MemoryRouter>
@@ -98,16 +104,16 @@ describe('Walky Admin - Students Page', () => {
       </MemoryRouter>
     );
   
-    // Wait for UI to settle
+    // Wait for UI to settle and verify fallback behavior
     const total = await screen.findByTestId("total-students");
     const age = await screen.findByTestId("average-age");
     const langs = await screen.findByTestId("languages");
     const parents = await screen.findByTestId("parents");
   
-    expect(total).toHaveTextContent("—");     // failed request
-    expect(age).toHaveTextContent("—");       // missing .data
-    expect(langs).toHaveTextContent("—");     // undefined value
-    expect(parents).toHaveTextContent("13");  // fallback not triggered
+    // Verify fallback values are displayed for failed/missing data
+    expect(total).toHaveTextContent("—");     // Failed request shows fallback
+    expect(age).toHaveTextContent("—");       // Missing .data shows fallback
+    expect(langs).toHaveTextContent("—");     // Missing property shows fallback
+    expect(parents).toHaveTextContent("13");  // Normal response shows actual value
   });
-  
 })
