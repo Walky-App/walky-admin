@@ -18,9 +18,9 @@ export const Sidebar = ({ visible }: SidebarProps) => {
 
   return (
     <CSidebar
-      className="border-end text-white flex-shrink-0"
+      className="border-end flex-shrink-0 sidebar"
       style={{
-        backgroundColor: "#1e1e2f",
+        backgroundColor: "#1e1e2f", // Always dark background
         transition: "transform 0.3s ease",
         transform: visible ? "translateX(0)" : "translateX(-100%)",
         position: "fixed",
@@ -30,6 +30,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         width: "250px",
         zIndex: 1040,
         pointerEvents: visible ? "auto" : "none", // 👈 prevents "ghost touches"
+        borderRight: "1px solid #495057", // Always dark border
       }}
       visible={visible} // ✅ important
     >
@@ -52,7 +53,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        <CNavTitle className="text-white-50 px-3" style={{ textAlign: "left" }}>
+        <CNavTitle className="px-3 sidebar-title">
           CAMPUS
         </CNavTitle>
 
@@ -86,7 +87,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        <CNavTitle className="text-white-50 px-3" style={{ textAlign: "left" }}>
+        <CNavTitle className="px-3 sidebar-title">
           ADMIN
         </CNavTitle>
 
