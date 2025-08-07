@@ -6,6 +6,7 @@ import {
   CNavTitle,
 } from "@coreui/react";
 import { NavLink } from "react-router-dom";
+import { useTheme } from "../hooks/useTheme";
 
 type SidebarProps = {
   visible: boolean;
@@ -14,13 +15,15 @@ type SidebarProps = {
 };
 
 export const Sidebar = ({ visible }: SidebarProps) => {
+  const { theme } = useTheme();
+
   // Handle close button click
 
   return (
     <CSidebar
-      className="border-end text-white flex-shrink-0"
+      className="border-end flex-shrink-0 sidebar"
       style={{
-        backgroundColor: "#1e1e2f",
+        backgroundColor: theme.isDark ? "#1e1e2f" : "#f8f9fa", // Dark in dark mode, light gray in light mode
         transition: "transform 0.3s ease",
         transform: visible ? "translateX(0)" : "translateX(-100%)",
         position: "fixed",
@@ -30,12 +33,13 @@ export const Sidebar = ({ visible }: SidebarProps) => {
         width: "250px",
         zIndex: 1040,
         pointerEvents: visible ? "auto" : "none", // 👈 prevents "ghost touches"
+        borderRight: `1px solid ${theme.isDark ? "#495057" : "#dee2e6"}`, // Dark border in dark mode, light border in light mode
       }}
       visible={visible} // ✅ important
     >
       <CSidebarHeader className="d-flex justify-content-center align-items-center py-3">
         <img
-          src="/Walky Logo_Duotone.svg"
+          src={theme.isDark ? "/Walky Logo_Duotone.svg" : "/walky_logo_-_orange_with_purple_.png"}
           alt="Walky Logo"
           style={{ maxHeight: "40px", objectFit: "contain" }}
         />
@@ -52,7 +56,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        <CNavTitle className="text-white-50 px-3" style={{ textAlign: "left" }}>
+        <CNavTitle className="px-3 sidebar-title">
           CAMPUS
         </CNavTitle>
 
@@ -86,7 +90,7 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        <CNavTitle className="text-white-50 px-3" style={{ textAlign: "left" }}>
+        <CNavTitle className="px-3 sidebar-title">
           ADMIN
         </CNavTitle>
 
