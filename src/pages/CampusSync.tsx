@@ -145,7 +145,7 @@ const CampusSync: React.FC = () => {
 
   if (campusesError) {
     return (
-      <CAlert color="danger">
+      <CAlert color="danger" data-testid="campus-fetch-error">
         Error loading campuses: {(campusesError as Error).message}
       </CAlert>
     );
@@ -169,7 +169,7 @@ const CampusSync: React.FC = () => {
               }}
             >
               <div className="d-flex justify-content-between align-items-center">
-                <h4 className="mb-0">Campus Sync Management</h4>
+                <h4 data-testid="sync-page-title" className="mb-0">Campus Sync Management</h4>
                 <div>
                   <CButton
                     color="primary"
@@ -195,6 +195,7 @@ const CampusSync: React.FC = () => {
             <CCardBody>
               {alert && (
                 <CAlert
+                  data-testid = "sync-alert"
                   color={alert.type}
                   dismissible
                   onClose={() => setAlert(null)}
@@ -242,6 +243,7 @@ const CampusSync: React.FC = () => {
                         <CTableDataCell>
                           <CTooltip content="Sync Campus">
                             <CButton
+                              data-testid="button-sync"
                               color="primary"
                               size="sm"
                               className="me-2"
@@ -249,7 +251,7 @@ const CampusSync: React.FC = () => {
                               disabled={!campus.has_coordinates || syncInProgress !== null}
                             >
                               {syncInProgress === campus._id ? (
-                                <CSpinner size="sm" />
+                                <CSpinner size="sm" role="status" />
                               ) : (
                                 <CIcon icon={cilSync} />
                               )}
@@ -257,6 +259,7 @@ const CampusSync: React.FC = () => {
                           </CTooltip>
                           <CTooltip content="Preview Boundary">
                             <CButton
+                              data-testid="button-preview"
                               color="info"
                               size="sm"
                               onClick={() => {
@@ -277,7 +280,7 @@ const CampusSync: React.FC = () => {
 
               {syncInProgress === "all" && (
                 <div className="mt-3">
-                  <p className="text-center mb-2">Syncing all campuses...</p>
+                  <p className="text-center mb-2" data-testid="syncing-progress-msg" >Syncing all campuses...</p>
                   <CProgress animated value={100} />
                 </div>
               )}

@@ -11,6 +11,7 @@ import { getToolTip } from '../hooks/useToolTip';
 
 // 🔹 Widget Component
 const Widget = ({
+  section,
   title,
   tooltip,
   value,
@@ -18,6 +19,7 @@ const Widget = ({
   barColor,
   icon,
 }: {
+  section: string
   title: string
   tooltip?: string
   value: string | number
@@ -31,6 +33,7 @@ const Widget = ({
 
   const widgetContent = (
     <div
+      data-testid={`engagement-widget-${section}-${title.replace(/\s+/g, '-').toLowerCase()}`}
       style={{
         width: '160px',
         backgroundColor: isDark ? '#2a2d36' : '#f8f9fa',
@@ -106,6 +109,7 @@ const Section = ({
 
   return (
     <div
+      data-testid={`engagement-section-${title.toLowerCase()}`}
       style={{
         backgroundColor: color,
         padding: '1rem',
@@ -240,27 +244,27 @@ const Engagement = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <Section title="Walks" color="#6f42c1">
-        <Widget title="Total Walks" tooltip="Number of total walks recorded" value={walks.total} progressValue={100} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Pending" value={walks.pending} progressValue={Math.round((walks.pending / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Active" value={walks.active} progressValue={Math.round((walks.active / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Completed" value={walks.completed} progressValue={Math.round((walks.completed / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
-        <Widget title="Cancelled/Closed" value={walks.cancelled} progressValue={Math.round((walks.cancelled / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
+        <Widget section ="walks" title="Total Walks" tooltip="Number of total walks recorded" value={walks.total} progressValue={100} barColor="#6f42c1" icon={cilCompass} />
+        <Widget section ="walks" title="Pending" value={walks.pending} progressValue={Math.round((walks.pending / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
+        <Widget section ="walks" title="Active" value={walks.active} progressValue={Math.round((walks.active / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
+        <Widget section ="walks" title="Completed" value={walks.completed} progressValue={Math.round((walks.completed / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
+        <Widget section ="walks" title="Cancelled/Closed" value={walks.cancelled} progressValue={Math.round((walks.cancelled / walks.total) * 100)} barColor="#6f42c1" icon={cilCompass} />
       </Section>
 
 
       <Section title="Events" color="#42a5f5">
-        <Widget title="Total Events" tooltip="Number of total events created" value={events.total} progressValue={100} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Outdoor" value={events.outdoor} progressValue={calcProgress(events.outdoor, events.total)} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Indoor" value={events.indoor} progressValue={calcProgress(events.indoor, events.total)} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Public" value={events.public} progressValue={calcProgress(events.public, events.total)} barColor="#42a5f5" icon={cilCalendar} />
-        <Widget title="Private" value={events.private} progressValue={calcProgress(events.private, events.total)} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget section ="events" title="Total Events" tooltip="Number of total events created" value={events.total} progressValue={100} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget section ="events" title="Outdoor" value={events.outdoor} progressValue={calcProgress(events.outdoor, events.total)} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget section ="events" title="Indoor" value={events.indoor} progressValue={calcProgress(events.indoor, events.total)} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget section ="events" title="Public" value={events.public} progressValue={calcProgress(events.public, events.total)} barColor="#42a5f5" icon={cilCalendar} />
+        <Widget section ="events" title="Private" value={events.private} progressValue={calcProgress(events.private, events.total)} barColor="#42a5f5" icon={cilCalendar} />
       </Section>
 
       <Section title="Ideas" color="#f0ad4e">
-        <Widget title="Total Ideas" tooltip="Number of total ideas created" value={ideas.total} progressValue={100} barColor="#f0ad4e" icon={cilLightbulb} />
-        <Widget title="Active" value={ideas.active} progressValue={calcProgress(ideas.active, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
-        <Widget title="Inactive" value={ideas.inactive} progressValue={calcProgress(ideas.inactive, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
-        <Widget title="Collaborated" value={ideas.collaborated} progressValue={calcProgress(ideas.collaborated, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget section ="ideas" title="Total Ideas" tooltip="Number of total ideas created" value={ideas.total} progressValue={100} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget section ="ideas" title="Active" value={ideas.active} progressValue={calcProgress(ideas.active, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget section ="ideas" title="Inactive" value={ideas.inactive} progressValue={calcProgress(ideas.inactive, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
+        <Widget section ="ideas" title="Collaborated" value={ideas.collaborated} progressValue={calcProgress(ideas.collaborated, ideas.total)} barColor="#f0ad4e" icon={cilLightbulb} />
       </Section>
     </div>
   );

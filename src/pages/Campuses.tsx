@@ -271,20 +271,21 @@ const Campuses: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container" data-testid = "campuses-page">
       <CRow>
         <CCol xs={12}>
           <CCard className="campus-card">
             <CCardHeader className="campus-card-header">
               <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
-                  <h4 className="mb-0 fw-semibold me-3">Campus Management</h4>
+                  <h4 className="mb-0 fw-semibold me-3" data-testid = "campuses-section-title">Campus Management</h4>
                 </div>
                 <CButton
                   color="primary"
                   size="sm"
                   onClick={handleAddCampus}
                   disabled={loading}
+                  data-testid="add-campus-button"
                 >
                   <CIcon icon={cilPlus} className="me-2" />
                   Add Campus
@@ -299,7 +300,7 @@ const Campuses: React.FC = () => {
               )}
 
               <div className="table-responsive">
-                <CTable hover className="campus-table">
+                <CTable hover className="campus-table" data-testid="campuses-table">
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell className="campus-logo-cell">
@@ -345,6 +346,7 @@ const Campuses: React.FC = () => {
                               Get started by creating your first campus
                             </p>
                             <CButton
+                              data-testid="add-campus-button"
                               color="primary"
                               onClick={handleAddCampus}
                               disabled={loading}
@@ -506,7 +508,7 @@ const Campuses: React.FC = () => {
                                     : campus.address}
                                 </div>
                               </CTableDataCell>
-                              <CTableDataCell className="status-cell">
+                              <CTableDataCell data-testid="campus-status-${campusId}"className="status-cell">
                                 <CBadge
                                   color={
                                     campus.is_active !== false
@@ -549,6 +551,34 @@ const Campuses: React.FC = () => {
                                     />
                                   </CButton>
                                   <CButton
+                                    color="info"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSyncCampus(
+                                        campus.id || `temp-${index}`
+                                      );
+                                    }}
+                                    disabled={
+                                      loading || 
+                                      syncCampusMutation.isPending || 
+                                      isBeingSynced ||
+                                      isBeingDeleted
+                                    }
+                                    title="Sync Places"
+                                  >
+                                    <CIcon 
+                                      icon={cilSync} 
+                                      size="sm" 
+                                      className={isBeingSynced ? "fa-spin" : ""}
+                                      style={{
+                                        animation: isBeingSynced ? "spin 1s linear infinite" : "none"
+                                      }}
+                                    />
+                                  </CButton>
+                                  <CButton
+                                    data-testid={`edit-campus-${campusId}`}
                                     color="primary"
                                     variant="outline"
                                     size="sm"
@@ -562,6 +592,7 @@ const Campuses: React.FC = () => {
                                     <CIcon icon={cilPencil} size="sm" />
                                   </CButton>
                                   <CButton
+                                    data-testid={`delete-campus-${campusId}`}
                                     color="danger"
                                     variant="outline"
                                     size="sm"
@@ -589,6 +620,7 @@ const Campuses: React.FC = () => {
                               <CTableRow key={`${campusKey}-geofence`}>
                                 <CTableDataCell colSpan={5}>
                                   <div
+                                    data-testid= {`campus-boundary-map-${campusId}`}
                                     style={{
                                       height: "800px",
                                       border: "1px solid #dee2e6",
