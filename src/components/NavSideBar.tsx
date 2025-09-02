@@ -110,26 +110,6 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        {/* Places */}
-        <CNavItem className="px-3 py-2">
-          <NavLink
-            to="/places"
-            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-          >
-            Places
-          </NavLink>
-        </CNavItem>
-
-        {/* Place Types */}
-        <CNavItem className="px-3 py-2">
-          <NavLink
-            to="/place-types"
-            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-          >
-            Place Types
-          </NavLink>
-        </CNavItem>
-
         {/* Campus Sync */}
         <CNavItem className="px-3 py-2">
           <NavLink
@@ -137,6 +117,30 @@ export const Sidebar = ({ visible }: SidebarProps) => {
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Campus Sync
+          </NavLink>
+        </CNavItem>
+
+        <CNavTitle className="px-3 sidebar-title">
+          MODERATION
+        </CNavTitle>
+
+        {/* Reports */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/reports"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Reports
+          </NavLink>
+        </CNavItem>
+
+        {/* Banned Users */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/banned-users"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Banned Users
           </NavLink>
         </CNavItem>
 

@@ -16,6 +16,9 @@ const pageTitles: Record<string, string> = {
   "/campus-details": "Campus Details",
   "/campus-view": "Campus View",
   "/settings": "Settings",
+  "/reports": "Reports",
+  "/report-details": "Report Details",
+  "/banned-users": "Banned Users",
 };
 
 type Props = { children: React.ReactNode };
