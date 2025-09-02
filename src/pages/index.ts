@@ -8,5 +8,7 @@ export * as Review from "./Review.tsx";
 export * as Ambassadors from "./Ambassadors.tsx";
 export * as AmbassadorDetails from "./AmbassadorDetails.tsx";
 export * as AmbassadorView from "./AmbassadorView.tsx";
-export * as Places from "./Places.tsx";
 export * as CampusSync from "./CampusSync.tsx";
+export * as Reports from "./Reports.tsx";
+export * as ReportDetails from "./ReportDetails.tsx";
+export * as BannedUsers from "./BannedUsers.tsx";

@@ -11,4 +11,3 @@ export * as ImageUpload from "./ImageUpload.tsx";
 export { default as SkeletonLoader } from "./SkeletonLoader";
 export { default as CampusTableSkeleton } from "./CampusTableSkeleton";
 export { default as CampusDetailsSkeleton } from "./CampusDetailsSkeleton";
-export { default as PlacesList } from "./PlacesList";

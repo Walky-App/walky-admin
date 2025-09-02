@@ -38,9 +38,10 @@ import CampusDetails from "./pages/CampusDetails";
 import CampusView from "./pages/CampusView";
 import Ambassadors from "./pages/Ambassadors";
 import AmbassadorView from "./pages/AmbassadorView";
-import Places from "./pages/Places";
-import PlaceTypes from "./pages/PlaceTypes";
 import CampusSync from "./pages/CampusSync";
+import Reports from "./pages/Reports";
+import ReportDetails from "./pages/ReportDetails";
+import BannedUsers from "./pages/BannedUsers";
 
 import "./App.css";
 
@@ -942,9 +943,10 @@ function App() {
                   element={<CampusView />}
                 />
                 <Route path="/campuses/campus-view" element={<CampusView />} />
-                <Route path="/places" element={<Places />} />
-                <Route path="/place-types" element={<PlaceTypes />} />
                 <Route path="/campus-sync" element={<CampusSync />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/reports/:id" element={<ReportDetails />} />
+                <Route path="/banned-users" element={<BannedUsers />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
