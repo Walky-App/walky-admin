@@ -40,7 +40,7 @@ import {
   cilDescription,
   cilHistory,
 } from "@coreui/icons";
-import { ReportDetails as ReportDetailsType, BanUserRequest } from "../types/report";
+import { ReportDetails as ReportDetailsType, BanUserRequest, ReportedUser } from "../types/report";
 import { reportService } from "../services/reportService";
 import { format } from "date-fns";
 
@@ -170,7 +170,7 @@ const ReportDetails: React.FC = () => {
   if (loading) {
     return (
       <div className="text-center p-5">
-        <CSpinner color="primary" size="lg" />
+        <CSpinner color="primary" />
       </div>
     );
   }
@@ -394,28 +394,28 @@ const ReportDetails: React.FC = () => {
                         <CRow>
                           <CCol md={4} className="text-center">
                             <CAvatar
-                              src={report.reportedItem.avatar_url || undefined}
+                              src={(report.reportedItem as ReportedUser).avatar_url || undefined}
                               size="xl"
                               color="danger"
                               textColor="white"
                               className="mb-3"
                             >
-                              {!report.reportedItem.avatar_url &&
-                                `${report.reportedItem.first_name?.[0]}${report.reportedItem.last_name?.[0]}`}
+                              {!(report.reportedItem as ReportedUser).avatar_url &&
+                                `${(report.reportedItem as ReportedUser).first_name?.[0]}${(report.reportedItem as ReportedUser).last_name?.[0]}`}
                             </CAvatar>
                             <h5>
-                              {report.reportedItem.first_name} {report.reportedItem.last_name}
+                              {(report.reportedItem as ReportedUser).first_name} {(report.reportedItem as ReportedUser).last_name}
                             </h5>
-                            <p className="text-muted">{report.reportedItem.email}</p>
-                            {report.reportedItem.is_banned && (
+                            <p className="text-muted">{(report.reportedItem as ReportedUser).email}</p>
+                            {(report.reportedItem as ReportedUser).is_banned && (
                               <CBadge color="danger" className="mb-2">
                                 BANNED
                               </CBadge>
                             )}
-                            {report.reportedItem.report_count && (
+                            {(report.reportedItem as ReportedUser).report_count && (
                               <div>
                                 <CBadge color="warning">
-                                  {report.reportedItem.report_count} Reports
+                                  {(report.reportedItem as ReportedUser).report_count} Reports
                                 </CBadge>
                               </div>
                             )}
@@ -423,21 +423,21 @@ const ReportDetails: React.FC = () => {
                           <CCol md={8}>
                             <CListGroup flush>
                               <CListGroupItem>
-                                <strong>User ID:</strong> {report.reportedItem._id}
+                                <strong>User ID:</strong> {(report.reportedItem as ReportedUser)._id}
                               </CListGroupItem>
-                              {report.reportedItem.profile_bio && (
+                              {(report.reportedItem as ReportedUser).profile_bio && (
                                 <CListGroupItem>
-                                  <strong>Bio:</strong> {report.reportedItem.profile_bio}
+                                  <strong>Bio:</strong> {(report.reportedItem as ReportedUser).profile_bio}
                                 </CListGroupItem>
                               )}
-                              {report.reportedItem.school_id && (
+                              {(report.reportedItem as ReportedUser).school_id && (
                                 <CListGroupItem>
-                                  <strong>School:</strong> {report.reportedItem.school_id.name}
+                                  <strong>School:</strong> {(report.reportedItem as ReportedUser).school_id?.name}
                                 </CListGroupItem>
                               )}
-                              {report.reportedItem.ban_reason && (
+                              {(report.reportedItem as ReportedUser).ban_reason && (
                                 <CListGroupItem>
-                                  <strong>Ban Reason:</strong> {report.reportedItem.ban_reason}
+                                  <strong>Ban Reason:</strong> {(report.reportedItem as ReportedUser).ban_reason}
                                 </CListGroupItem>
                               )}
                             </CListGroup>

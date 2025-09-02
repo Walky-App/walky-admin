@@ -120,7 +120,7 @@ const Reports: React.FC = () => {
     setFilters((prev) => ({
       ...prev,
       [key]: value || undefined,
-      page: key === "page" ? value : 1, // Reset to page 1 when other filters change
+      page: key === "page" ? (typeof value === 'number' ? value : 1) : 1, // Reset to page 1 when other filters change
     }));
   };
 
