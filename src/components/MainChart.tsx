@@ -22,21 +22,26 @@ const MainChart = () => {
         tooltipEl = document.createElement("div");
         tooltipEl.id = "chartjs-tooltip";
         tooltipEl.style.position = "absolute";
-        tooltipEl.style.padding = "8px 12px";
-        tooltipEl.style.borderRadius = "6px";
+        tooltipEl.style.padding = "16px 20px";
+        tooltipEl.style.borderRadius = "12px";
         tooltipEl.style.pointerEvents = "none";
-        tooltipEl.style.transition = "all 0.1s ease";
+        tooltipEl.style.transition = "all 0.2s ease";
         tooltipEl.style.fontFamily = "Inter, sans-serif";
-        tooltipEl.style.fontSize = "12px";
+        tooltipEl.style.fontSize = "13px";
+        tooltipEl.style.boxShadow = theme.isDark 
+          ? "0 8px 32px rgba(0,0,0,0.6)" 
+          : "0 8px 32px rgba(0,0,0,0.15)";
+        tooltipEl.style.border = `1px solid ${theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`;
+        tooltipEl.style.backdropFilter = "blur(10px)";
         document.body.appendChild(tooltipEl);
       }
 
       tooltipEl.style.background = theme.isDark
-        ? "rgba(255, 255, 255, 0.7)"
-        : "rgba(4, 4, 4, 0.75)";
+        ? "rgba(33, 38, 49, 0.95)"
+        : "rgba(255, 255, 255, 0.95)";
       tooltipEl.style.color = theme.isDark
-        ? "rgb(0, 0, 0)"
-        : "rgb(255, 255, 255)";
+        ? "rgb(225, 229, 235)"
+        : "rgb(51, 51, 51)";
 
       if (tooltipModel.opacity === 0) {
         tooltipEl.style.opacity = "0";
@@ -51,11 +56,19 @@ const MainChart = () => {
         const activeUsersValue = chart.data.datasets[0].data[dataIndex] || 0;
         const walksValue = chart.data.datasets[1].data[dataIndex] || 0;
 
-        // Create combined tooltip showing both values
+        // Create combined tooltip showing both values with modern styling
         tooltipEl.innerHTML = `
-          <strong>${hoveredMonth}</strong><br>
-          Active Users: ${activeUsersValue}<br>
-          Walks: ${walksValue}
+          <div style="font-weight: 600; margin-bottom: 8px; color: ${theme.isDark ? '#fff' : '#000'};">
+            📅 ${hoveredMonth}
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 4px;">
+            <div style="width: 12px; height: 12px; background: ${theme.colors.primary}; border-radius: 50%; margin-right: 8px;"></div>
+            <span style="color: ${theme.isDark ? '#f1f5f9' : '#1e293b'};">Active Students: <strong>${activeUsersValue?.toLocaleString()}</strong></span>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <div style="width: 12px; height: 12px; background: ${theme.colors.success}; border-radius: 50%; margin-right: 8px;"></div>
+            <span style="color: ${theme.isDark ? '#f1f5f9' : '#1e293b'};">Total Sessions: <strong>${walksValue?.toLocaleString()}</strong></span>
+          </div>
         `;
       }
 
@@ -96,13 +109,13 @@ const MainChart = () => {
       }
 
       if (chart.data.datasets[0]) {
-        chart.data.datasets[0].borderColor = "rgba(0, 123, 255, 1)";
-        chart.data.datasets[0].backgroundColor = "rgba(0, 123, 255, 0.08)"; // Light blue fill
+        chart.data.datasets[0].borderColor = theme.colors.primary;
+        chart.data.datasets[0].backgroundColor = `${theme.colors.primary}15`;
       }
 
       if (chart.data.datasets[1]) {
-        chart.data.datasets[1].borderColor = "rgba(40, 167, 69, 1)";
-        chart.data.datasets[1].backgroundColor = "transparent"; // No fill
+        chart.data.datasets[1].borderColor = theme.colors.success;
+        chart.data.datasets[1].backgroundColor = "transparent";
       }
 
       chart.update();
@@ -128,25 +141,32 @@ const MainChart = () => {
           "May",
           "June",
           "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
         ],
         datasets: [
           {
-            label: "Traffic",
-            data: [70, 105, 120, 110, 165, 95, 85],
-            borderColor: "rgba(0, 123, 255, 1)",
-            backgroundColor: "rgba(0, 123, 255, 0.1)",
+            label: "Active Students",
+            data: [2840, 3250, 3680, 3420, 4150, 3890, 4320, 4680, 4950, 5240, 5680, 6120],
+            borderColor: theme.colors.primary,
+            backgroundColor: `${theme.colors.primary}15`,
             fill: true,
             tension: 0.4,
             pointRadius: 0,
+            borderWidth: 3,
           },
           {
-            label: "Conversion",
-            data: [140, 160, 180, 120, 170, 130, 100],
-            borderColor: "rgba(40, 167, 69, 1)",
+            label: "Total Sessions",
+            data: [1420, 1680, 1920, 1750, 2180, 1980, 2340, 2580, 2790, 2940, 3180, 3420],
+            borderColor: theme.colors.success,
             backgroundColor: "transparent",
             fill: false,
             tension: 0.4,
             pointRadius: 0,
+            borderWidth: 3,
           },
         ],
       }}

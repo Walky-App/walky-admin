@@ -15,6 +15,7 @@ import {
   CBadge,
   CAlert,
 } from "@coreui/react";
+import { useTheme } from "../hooks/useTheme";
 import CIcon from "@coreui/icons-react";
 import {
   cilPlus,
@@ -35,6 +36,7 @@ import { CampusTableSkeleton } from "../components";
 import "../components/SyncButton.css";
 
 const Campuses: React.FC = () => {
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -271,51 +273,208 @@ const Campuses: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
+    <div style={{ padding: '2rem' }}>
+      {/* Modern Page Header */}
+      <div 
+        className="mb-5 dashboard-header"
+        style={{
+          background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`,
+          borderRadius: "16px",
+          padding: "24px 32px",
+          border: `1px solid ${theme.colors.borderColor}20`,
+          backdropFilter: "blur(10px)",
+          boxShadow: theme.isDark 
+            ? "0 8px 32px rgba(0,0,0,0.3)" 
+            : "0 8px 32px rgba(0,0,0,0.08)",
+        }}
+      >
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <h1 
+              style={{
+                fontSize: "28px",
+                fontWeight: "700",
+                margin: "0 0 8px 0",
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.info})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              🏫 Campus Management
+            </h1>
+            <p 
+              style={{
+                margin: 0,
+                color: theme.colors.textMuted,
+                fontSize: "16px",
+                fontWeight: "400",
+              }}
+            >
+              Manage university campuses, boundaries, and location data
+            </p>
+          </div>
+          <CButton
+            color="primary"
+            size="lg"
+            onClick={handleAddCampus}
+            disabled={loading}
+            className="modern-button"
+            style={{
+              borderRadius: "12px",
+              fontWeight: "600",
+              padding: "12px 24px",
+              boxShadow: `0 4px 12px ${theme.colors.primary}30`,
+              transition: "all 0.2s ease",
+            }}
+          >
+            <CIcon icon={cilPlus} className="me-2" />
+            Add Campus
+          </CButton>
+        </div>
+      </div>
+
       <CRow>
         <CCol xs={12}>
-          <CCard className="campus-card">
-            <CCardHeader className="campus-card-header">
+          <CCard 
+            className="main-chart"
+            style={{
+              borderRadius: "20px",
+              border: "none",
+              boxShadow: theme.isDark 
+                ? "0 12px 40px rgba(0,0,0,0.3)" 
+                : "0 12px 40px rgba(0,0,0,0.08)",
+              background: theme.isDark 
+                ? `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}05)`
+                : `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}02)`,
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <CCardHeader 
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: "32px 32px 0 32px",
+              }}
+            >
               <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
-                  <h4 className="mb-0 fw-semibold me-3">Campus Management</h4>
+                <div>
+                  <h3 
+                    style={{
+                      fontSize: "24px",
+                      fontWeight: "700",
+                      margin: "0 0 8px 0",
+                      color: theme.colors.bodyColor,
+                    }}
+                  >
+                    📍 Campus Directory
+                  </h3>
+                  <p 
+                    style={{
+                      margin: 0,
+                      color: theme.colors.textMuted,
+                      fontSize: "14px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {campuses.length} campus{campuses.length !== 1 ? 'es' : ''} configured
+                  </p>
                 </div>
-                <CButton
-                  color="primary"
-                  size="sm"
-                  onClick={handleAddCampus}
-                  disabled={loading}
-                >
-                  <CIcon icon={cilPlus} className="me-2" />
-                  Add Campus
-                </CButton>
               </div>
             </CCardHeader>
-            <CCardBody className="campus-card-body">
+            <CCardBody style={{ padding: "32px" }}>
               {alert && (
-                <CAlert color={alert.type} className="mb-3">
+                <CAlert 
+                  color={alert.type} 
+                  className="mb-4"
+                  style={{
+                    borderRadius: "12px",
+                    border: "none",
+                    boxShadow: theme.isDark 
+                      ? "0 4px 20px rgba(0,0,0,0.2)" 
+                      : "0 4px 20px rgba(0,0,0,0.05)",
+                  }}
+                >
                   {alert.message}
                 </CAlert>
               )}
 
-              <div className="table-responsive">
-                <CTable hover className="campus-table">
+              <div 
+                className="table-responsive"
+                style={{
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  background: theme.colors.cardBg,
+                  boxShadow: theme.isDark 
+                    ? "0 4px 20px rgba(0,0,0,0.2)" 
+                    : "0 4px 20px rgba(0,0,0,0.05)",
+                }}
+              >
+                <CTable hover className="mb-0">
                   <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell className="campus-logo-cell">
-                        Campus
+                    <CTableRow 
+                      style={{
+                        background: theme.isDark 
+                          ? `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`
+                          : `linear-gradient(135deg, ${theme.colors.primary}08, ${theme.colors.info}05)`,
+                      }}
+                    >
+                      <CTableHeaderCell 
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: theme.colors.bodyColor,
+                          border: "none",
+                          padding: "16px 20px",
+                        }}
+                      >
+                        🏫 Campus
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="location-cell">
-                        Location
+                      <CTableHeaderCell 
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: theme.colors.bodyColor,
+                          border: "none",
+                          padding: "16px 20px",
+                        }}
+                      >
+                        📍 Location
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="address-cell">
-                        Address
+                      <CTableHeaderCell 
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: theme.colors.bodyColor,
+                          border: "none",
+                          padding: "16px 20px",
+                        }}
+                      >
+                        🏠 Address
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="status-cell">
-                        Status
+                      <CTableHeaderCell 
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: theme.colors.bodyColor,
+                          border: "none",
+                          padding: "16px 20px",
+                          textAlign: "center",
+                        }}
+                      >
+                        ⚡ Status
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="actions-cell">
-                        Actions
+                      <CTableHeaderCell 
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: theme.colors.bodyColor,
+                          border: "none",
+                          padding: "16px 20px",
+                          textAlign: "center",
+                        }}
+                      >
+                        🔧 Actions
                       </CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -327,30 +486,54 @@ const Campuses: React.FC = () => {
                         <CTableDataCell
                           colSpan={5}
                           className="text-center py-5"
+                          style={{
+                            border: "none",
+                            padding: "60px 20px",
+                          }}
                         >
-                          <div style={{ color: "#6c757d" }}>
+                          <div>
                             <div
-                              style={{ fontSize: "48px", marginBottom: "16px" }}
+                              style={{ 
+                                fontSize: "64px", 
+                                marginBottom: "24px",
+                                opacity: 0.8,
+                              }}
                             >
                               🏫
                             </div>
-                            <h5
-                              style={{ marginBottom: "8px", color: "#6c757d" }}
+                            <h4
+                              style={{ 
+                                marginBottom: "12px", 
+                                color: theme.colors.bodyColor,
+                                fontWeight: "600",
+                              }}
                             >
-                              No campuses found
-                            </h5>
+                              No Campuses Found
+                            </h4>
                             <p
-                              style={{ marginBottom: "20px", color: "#6c757d" }}
+                              style={{ 
+                                marginBottom: "32px", 
+                                color: theme.colors.textMuted,
+                                fontSize: "16px",
+                              }}
                             >
-                              Get started by creating your first campus
+                              Get started by adding your first campus location
                             </p>
                             <CButton
                               color="primary"
+                              size="lg"
                               onClick={handleAddCampus}
                               disabled={loading}
+                              className="modern-button"
+                              style={{
+                                borderRadius: "12px",
+                                fontWeight: "600",
+                                padding: "12px 32px",
+                                boxShadow: `0 4px 12px ${theme.colors.primary}30`,
+                              }}
                             >
                               <CIcon icon={cilPlus} className="me-2" />
-                              Add Campus
+                              Add Your First Campus
                             </CButton>
                           </div>
                         </CTableDataCell>
@@ -519,8 +702,14 @@ const Campuses: React.FC = () => {
                                     : "Inactive"}
                                 </CBadge>
                               </CTableDataCell>
-                              <CTableDataCell className="actions-cell">
-                                <div className="d-flex justify-content-center gap-1">
+                              <CTableDataCell 
+                                style={{
+                                  border: "none",
+                                  padding: "16px 20px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <div className="d-flex justify-content-center gap-2">
                                   <CButton
                                     color="info"
                                     variant="outline"
@@ -538,6 +727,15 @@ const Campuses: React.FC = () => {
                                       isBeingDeleted
                                     }
                                     title="Sync Places"
+                                    style={{
+                                      borderRadius: "8px",
+                                      fontWeight: "500",
+                                      padding: "6px 12px",
+                                      border: `1px solid ${theme.colors.info}40`,
+                                      backgroundColor: `${theme.colors.info}10`,
+                                      color: theme.colors.info,
+                                      transition: "all 0.2s ease",
+                                    }}
                                   >
                                     <CIcon 
                                       icon={cilSync} 
@@ -558,6 +756,15 @@ const Campuses: React.FC = () => {
                                     }}
                                     disabled={loading || isBeingSynced || isBeingDeleted}
                                     title="Edit Campus"
+                                    style={{
+                                      borderRadius: "8px",
+                                      fontWeight: "500",
+                                      padding: "6px 12px",
+                                      border: `1px solid ${theme.colors.primary}40`,
+                                      backgroundColor: `${theme.colors.primary}10`,
+                                      color: theme.colors.primary,
+                                      transition: "all 0.2s ease",
+                                    }}
                                   >
                                     <CIcon icon={cilPencil} size="sm" />
                                   </CButton>
@@ -578,6 +785,15 @@ const Campuses: React.FC = () => {
                                       isBeingDeleted
                                     }
                                     title="Delete Campus"
+                                    style={{
+                                      borderRadius: "8px",
+                                      fontWeight: "500",
+                                      padding: "6px 12px",
+                                      border: `1px solid ${theme.colors.danger}40`,
+                                      backgroundColor: `${theme.colors.danger}10`,
+                                      color: theme.colors.danger,
+                                      transition: "all 0.2s ease",
+                                    }}
                                   >
                                     <CIcon icon={cilTrash} size="sm" />
                                   </CButton>

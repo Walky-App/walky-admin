@@ -113,7 +113,7 @@ export const WidgetStatsAExample = () => {
               </span>
             </>
           }
-          title="Walks"
+          title="Invites"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">

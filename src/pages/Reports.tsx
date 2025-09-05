@@ -28,6 +28,7 @@ import {
   CFormLabel,
   CFormCheck,
 } from "@coreui/react";
+import { useTheme } from "../hooks/useTheme";
 import CIcon from "@coreui/icons-react";
 import {
   cilDescription,
@@ -42,6 +43,7 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
 const Reports: React.FC = () => {
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,12 +96,115 @@ const Reports: React.FC = () => {
   const [bulkNotes, setBulkNotes] = useState("");
 
   // Fetch reports
+  // Generate realistic dummy data
+  const generateDummyReports = (): Report[] => {
+    const reportTypes = ['inappropriate_content', 'harassment', 'spam', 'fake_profile', 'violence', 'hate_speech'];
+    const statuses = ['pending', 'under_review', 'resolved', 'dismissed'];
+    const campuses = ['Main Campus', 'North Campus', 'Engineering Campus', 'Medical Campus'];
+    const names = [
+      'Alex Johnson', 'Sarah Chen', 'Michael Rodriguez', 'Emma Thompson', 'David Kim',
+      'Jessica Martinez', 'Ryan O\'Connor', 'Priya Patel', 'James Wilson', 'Maria Garcia',
+      'Kevin Zhang', 'Ashley Brown', 'Tyler Davis', 'Sophia Lee', 'Brandon Miller',
+      'Olivia Taylor', 'Jordan Smith', 'Isabella Jones', 'Noah Williams', 'Ava Anderson'
+    ];
+    
+    const reasons = [
+      'User posted inappropriate images in campus chat',
+      'Harassment and bullying behavior towards other students',
+      'Spam messages promoting unauthorized services',
+      'Fake profile using someone else\'s photos',
+      'Threatening language and violent content',
+      'Hate speech targeting specific groups',
+      'Sharing inappropriate content during campus events',
+      'Creating multiple fake accounts',
+      'Cyberbullying and targeted harassment',
+      'Posting offensive content about campus staff',
+      'Inappropriate comments on student posts',
+      'Spreading false information about campus events',
+      'Using platform for commercial advertising',
+      'Impersonating campus officials',
+      'Sharing personal information without consent'
+    ];
+
+    return Array.from({ length: 47 }, (_, i) => {
+      const reportedAt = new Date();
+      reportedAt.setDate(reportedAt.getDate() - Math.floor(Math.random() * 30));
+      
+      const updatedAt = new Date(reportedAt);
+      updatedAt.setHours(updatedAt.getHours() + Math.floor(Math.random() * 48));
+
+      const reporterName = names[Math.floor(Math.random() * names.length)];
+      const reportedUserName = names[Math.floor(Math.random() * names.length)];
+      const selectedReason = reasons[Math.floor(Math.random() * reasons.length)];
+      
+      return {
+        id: `report_${String(i + 1).padStart(3, '0')}`,
+        _id: `report_${String(i + 1).padStart(3, '0')}`,
+        reporter_id: `user_${Math.floor(Math.random() * 1000) + 1}`,
+        reporter_name: reporterName,
+        reported_user_id: `user_${Math.floor(Math.random() * 1000) + 1}`,
+        reported_user_name: reportedUserName,
+        reported_item_id: `item_${Math.floor(Math.random() * 1000) + 1}`,
+        school_id: `school_${Math.floor(Math.random() * 10) + 1}`,
+        report_type: reportTypes[Math.floor(Math.random() * reportTypes.length)] as 'inappropriate_content' | 'harassment' | 'spam' | 'fake_profile' | 'violence' | 'hate_speech',
+        reason: selectedReason,
+        description: selectedReason + '. This behavior violates our community guidelines and creates an unsafe environment for other users.',
+        status: statuses[Math.floor(Math.random() * statuses.length)] as 'pending' | 'under_review' | 'resolved' | 'dismissed',
+        campus_name: campuses[Math.floor(Math.random() * campuses.length)],
+        reported_at: reportedAt.toISOString(),
+        updated_at: updatedAt.toISOString(),
+        createdAt: reportedAt.toISOString(),
+        updatedAt: updatedAt.toISOString(),
+        reported_by: {
+          first_name: reporterName.split(' ')[0],
+          last_name: reporterName.split(' ')[1] || '',
+          email: `${reporterName.toLowerCase().replace(' ', '.')}@university.edu`
+        },
+        reported_user: {
+          first_name: reportedUserName.split(' ')[0],
+          last_name: reportedUserName.split(' ')[1] || '',
+          email: `${reportedUserName.toLowerCase().replace(' ', '.')}@university.edu`
+        },
+        admin_notes: Math.random() > 0.7 ? 'Reviewed and appropriate action taken' : undefined,
+        evidence_urls: Math.random() > 0.8 ? ['screenshot1.jpg', 'evidence2.png'] : undefined,
+      } as Report;
+    });
+  };
+
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const response = await reportService.getReports(filters);
-      setReports(response.reports);
-      setPagination(response.pagination);
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const allReports = generateDummyReports();
+      
+      // Apply filters
+      let filteredReports = allReports;
+      
+      if (filters.status) {
+        filteredReports = filteredReports.filter(report => report.status === filters.status);
+      }
+      
+      if (filters.report_type) {
+        filteredReports = filteredReports.filter(report => report.report_type === filters.report_type);
+      }
+      
+      // Apply pagination
+      const page = filters.page || 1;
+      const limit = filters.limit || 20;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedReports = filteredReports.slice(startIndex, endIndex);
+      
+      setReports(paginatedReports);
+      setPagination({
+        page: page,
+        limit: limit,
+        total: filteredReports.length,
+        pages: Math.ceil(filteredReports.length / limit),
+      });
       setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch reports";
@@ -237,9 +342,60 @@ const Reports: React.FC = () => {
   };
 
   return (
-    <>
+    <div style={{ padding: '2rem' }}>
+      {/* Modern Page Header */}
+      <div 
+        className="mb-5 dashboard-header"
+        style={{
+          background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`,
+          borderRadius: "16px",
+          padding: "24px 32px",
+          border: `1px solid ${theme.colors.borderColor}20`,
+          backdropFilter: "blur(10px)",
+          boxShadow: theme.isDark 
+            ? "0 8px 32px rgba(0,0,0,0.3)" 
+            : "0 8px 32px rgba(0,0,0,0.08)",
+        }}
+      >
+        <h1 
+          style={{
+            fontSize: "28px",
+            fontWeight: "700",
+            margin: "0 0 8px 0",
+            background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.info})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
+          📋 Report Management
+        </h1>
+        <p 
+          style={{
+            margin: 0,
+            color: theme.colors.textMuted,
+            fontSize: "16px",
+            fontWeight: "400",
+          }}
+        >
+          Monitor and manage user reports, violations, and community safety
+        </p>
+      </div>
+
       {alert && (
-        <CAlert color={alert.type} dismissible onClose={() => setAlert(null)}>
+        <CAlert 
+          color={alert.type} 
+          dismissible 
+          onClose={() => setAlert(null)}
+          className="mb-4"
+          style={{
+            borderRadius: "12px",
+            border: "none",
+            boxShadow: theme.isDark 
+              ? "0 4px 20px rgba(0,0,0,0.2)" 
+              : "0 4px 20px rgba(0,0,0,0.05)",
+          }}
+        >
           {alert.message}
         </CAlert>
       )}
@@ -593,8 +749,8 @@ const Reports: React.FC = () => {
               : "Mark as Under Review"}
           </CButton>
         </CModalFooter>
-      </CModal>
-    </>
+              </CModal>
+    </div>
   );
 };
 

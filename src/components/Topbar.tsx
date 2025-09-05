@@ -123,8 +123,9 @@ export const Topbar = ({
                 className="p-0 border-0 bg-transparent"
               >
                 <CAvatar
-                  src="/fiu-logo.png"
+                  src="/owl.png"
                   size="lg"
+                  shape='rounded-circle'
                   style={{ width: "35px" }}
                 />
               </CDropdownToggle>

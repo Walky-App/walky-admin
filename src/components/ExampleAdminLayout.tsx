@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Sidebar } from "./NavSideBar.tsx";
 import { Topbar } from "./Topbar.tsx";
 import { useTheme } from "../hooks/useTheme";
-import { BreadcrumbDividersExample } from "./examples/BreadCrumbs.tsx";
 import { useLocation } from "react-router-dom";
 
 const pageTitles: Record<string, string> = {
   "/": "Dashboard",
   "/students": "Students",
   "/engagement": "Real Time",
-  "/review": "Review",
   "/mywalky": "My Walky",
   "/compliance": "Compliance",
   "/campuses": "Campuses",
@@ -89,9 +87,7 @@ function ExampleAdminLayout({ children }: Props) {
         <main
           className="d-flex flex-column flex-grow-1 px-4 pt-0 pb-2"
           style={{
-            backgroundColor: location.pathname === "/review"
-              ? 'var(--review-bg)'
-              : theme.colors.bodyBg,
+            backgroundColor: theme.colors.bodyBg,
             color: theme.colors.bodyColor,
             marginTop: "56px",
             marginLeft: !isMobile && sidebarVisible ? "250px" : 0,
@@ -112,24 +108,8 @@ function ExampleAdminLayout({ children }: Props) {
               paddingBottom: "0",
             }}
           >
-            <BreadcrumbDividersExample />
           </div>
 
-          <div className=" d-sm-flex justify-content-between align-items-center mt-0">
-            <div className="d-sm-flex justify-content-between align-items-center">
-            <h2
-              className="mb-0"
-              style={{
-                color: theme.colors.bodyColor,
-              }}
-            >
-              {pageTitles[location.pathname]}
-            </h2>
-            </div>
-            <div className="mt-3 mt-sm-0">
-              {/* Add actions/buttons if needed */}
-            </div>
-          </div>
           {children}
         </main>
       </div>
@@ -140,7 +120,7 @@ function ExampleAdminLayout({ children }: Props) {
           color: theme.colors.bodyColor,
         }}
       >
-        <span className="small">Walky Admin © 2023 | Built with CoreUI</span>
+        <span className="small">Walky Group Inc © 2025</span>
       </footer>
     </div>
   );

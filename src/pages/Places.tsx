@@ -10,6 +10,7 @@ import {
   CAlert,
   CSpinner,
 } from "@coreui/react";
+import { useTheme } from "../hooks/useTheme";
 import CIcon from "@coreui/icons-react";
 import { cilReload } from "@coreui/icons";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +21,7 @@ import { PlacesFilters } from "../types/place";
 import PlacesList from "../components/PlacesList";
 
 const Places: React.FC = () => {
+  const { theme } = useTheme();
   const [filters, setFilters] = useState<PlacesFilters>({
     page: 1,
     limit: 20,
@@ -108,11 +110,69 @@ const Places: React.FC = () => {
   }, [campusesError, placesError, selectedCampus]);
 
   return (
-    <>
+    <div style={{ padding: '2rem' }}>
+      {/* Modern Page Header */}
+      <div 
+        className="mb-5 dashboard-header"
+        style={{
+          background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`,
+          borderRadius: "16px",
+          padding: "24px 32px",
+          border: `1px solid ${theme.colors.borderColor}20`,
+          backdropFilter: "blur(10px)",
+          boxShadow: theme.isDark 
+            ? "0 8px 32px rgba(0,0,0,0.3)" 
+            : "0 8px 32px rgba(0,0,0,0.08)",
+        }}
+      >
+        <h1 
+          style={{
+            fontSize: "28px",
+            fontWeight: "700",
+            margin: "0 0 8px 0",
+            background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.info})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
+          📍 Places Management
+        </h1>
+        <p 
+          style={{
+            margin: 0,
+            color: theme.colors.textMuted,
+            fontSize: "16px",
+            fontWeight: "400",
+          }}
+        >
+          Manage campus locations, buildings, and points of interest
+        </p>
+      </div>
+
       <CRow>
         <CCol xs={12}>
-          <CCard className="mb-4">
-            <CCardHeader>
+          <CCard 
+            className="mb-4 main-chart"
+            style={{
+              borderRadius: "20px",
+              border: "none",
+              boxShadow: theme.isDark 
+                ? "0 12px 40px rgba(0,0,0,0.3)" 
+                : "0 12px 40px rgba(0,0,0,0.08)",
+              background: theme.isDark 
+                ? `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}05)`
+                : `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}02)`,
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <CCardHeader 
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: "32px 32px 0 32px",
+              }}
+            >
               <strong>Places Management</strong>
             </CCardHeader>
             <CCardBody>

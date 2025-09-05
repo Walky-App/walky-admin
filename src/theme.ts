@@ -25,42 +25,42 @@ export interface AppTheme {
   isDark: boolean;
 }
 
-// Light theme colors
+// Light theme colors - Modern & Professional
 const lightColors: ThemeColors = {
-  bodyBg: '#f8f9fa',
-  bodyColor: '#333',
-  cardBg: '#fff',
-  borderColor: '#dee2e6',
-  primary: '#321fdb',
-  secondary: '#9da5b1',
-  success: '#2eb85c',
-  info: '#39f',
-  warning: '#f9b115',
-  danger: 'rgb(253, 120, 120)',
-  textMuted: '#6c757d',
+  bodyBg: '#f8fafc',
+  bodyColor: '#1e293b',
+  cardBg: '#ffffff',
+  borderColor: '#e2e8f0',
+  primary: '#3b82f6',
+  secondary: '#64748b',
+  success: '#10b981',
+  info: '#06b6d4',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  textMuted: '#64748b',
   chartLine: 'rgb(255, 255, 255)',
-  graphLine: 'rgb(15, 143, 222)',
-  chartPoint: '#5856d6',
-  chartLineBackground: 'rgba(15, 143, 222, 0.36)',
+  graphLine: 'rgb(59, 130, 246)',
+  chartPoint: '#8b5cf6',
+  chartLineBackground: 'rgba(59, 130, 246, 0.1)',
 };
 
-// Dark theme colors
+// Dark theme colors - Modern & Sleek
 const darkColors: ThemeColors = {
-  bodyBg: '#1e2125',
-  bodyColor: '#e1e5eb',
-  cardBg: '#212631',
-  borderColor: '#495057',
-  primary: '#4e5ec7',
-  secondary: '#a6aab2',
-  success: '#3dd273',
-  info: '#4dabf7',
-  warning: '#fbc43d',
-  danger: 'rgb(253, 120, 120)',
-  textMuted: '#adb5bd',
+  bodyBg: '#0f172a',
+  bodyColor: '#f1f5f9',
+  cardBg: '#1e293b',
+  borderColor: '#334155',
+  primary: '#60a5fa',
+  secondary: '#94a3b8',
+  success: '#34d399',
+  info: '#22d3ee',
+  warning: '#fbbf24',
+  danger: '#f87171',
+  textMuted: '#94a3b8',
   chartLine: 'rgb(255, 255, 255)',
-  graphLine: 'rgb(15, 143, 222)',
-  chartPoint: '#7c7bff',
-  chartLineBackground: 'rgba(15, 143, 222, 0.37)',
+  graphLine: 'rgb(96, 165, 250)',
+  chartPoint: '#a78bfa',
+  chartLineBackground: 'rgba(96, 165, 250, 0.2)',
 };
 
 // Theme getter function

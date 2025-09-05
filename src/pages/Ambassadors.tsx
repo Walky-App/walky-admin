@@ -15,6 +15,7 @@ import {
   CBadge,
   CAlert,
 } from "@coreui/react";
+import { useTheme } from "../hooks/useTheme";
 import CIcon from "@coreui/icons-react";
 import { cilPlus, cilPencil, cilTrash, cilUser } from "@coreui/icons";
 import { Ambassador } from "../types/ambassador";
@@ -24,6 +25,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../lib/queryClient";
 
 const Ambassadors: React.FC = () => {
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -208,26 +210,113 @@ const Ambassadors: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
+    <div style={{ padding: '2rem' }}>
+      {/* Modern Page Header */}
+      <div 
+        className="mb-5 dashboard-header"
+        style={{
+          background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`,
+          borderRadius: "16px",
+          padding: "24px 32px",
+          border: `1px solid ${theme.colors.borderColor}20`,
+          backdropFilter: "blur(10px)",
+          boxShadow: theme.isDark 
+            ? "0 8px 32px rgba(0,0,0,0.3)" 
+            : "0 8px 32px rgba(0,0,0,0.08)",
+        }}
+      >
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <h1 
+              style={{
+                fontSize: "28px",
+                fontWeight: "700",
+                margin: "0 0 8px 0",
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.info})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              👥 Ambassador Management
+            </h1>
+            <p 
+              style={{
+                margin: 0,
+                color: theme.colors.textMuted,
+                fontSize: "16px",
+                fontWeight: "400",
+              }}
+            >
+              Manage campus ambassadors and student representatives
+            </p>
+          </div>
+          <CButton
+            color="primary"
+            size="lg"
+            onClick={handleAddAmbassador}
+            disabled={loading}
+            className="modern-button"
+            style={{
+              borderRadius: "12px",
+              fontWeight: "600",
+              padding: "12px 24px",
+              boxShadow: `0 4px 12px ${theme.colors.primary}30`,
+              transition: "all 0.2s ease",
+            }}
+          >
+            <CIcon icon={cilPlus} className="me-2" />
+            Add Ambassador
+          </CButton>
+        </div>
+      </div>
+
       <CRow>
         <CCol xs={12}>
-          <CCard className="campus-card">
-            <CCardHeader className="campus-card-header">
+          <CCard 
+            className="main-chart"
+            style={{
+              borderRadius: "20px",
+              border: "none",
+              boxShadow: theme.isDark 
+                ? "0 12px 40px rgba(0,0,0,0.3)" 
+                : "0 12px 40px rgba(0,0,0,0.08)",
+              background: theme.isDark 
+                ? `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}05)`
+                : `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}02)`,
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <CCardHeader 
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: "32px 32px 0 32px",
+              }}
+            >
               <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
-                  <h4 className="mb-0 fw-semibold me-3">
-                    Ambassador Management
-                  </h4>
+                <div>
+                  <h3 
+                    style={{
+                      fontSize: "24px",
+                      fontWeight: "700",
+                      margin: "0 0 8px 0",
+                      color: theme.colors.bodyColor,
+                    }}
+                  >
+                    🌟 Ambassador Directory
+                  </h3>
+                  <p 
+                    style={{
+                      margin: 0,
+                      color: theme.colors.textMuted,
+                      fontSize: "14px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {ambassadors.length} ambassador{ambassadors.length !== 1 ? 's' : ''} active
+                  </p>
                 </div>
-                <CButton
-                  color="primary"
-                  size="sm"
-                  onClick={handleAddAmbassador}
-                  disabled={loading}
-                >
-                  <CIcon icon={cilPlus} className="me-2" />
-                  Add Ambassador
-                </CButton>
               </div>
             </CCardHeader>
             <CCardBody className="campus-card-body">

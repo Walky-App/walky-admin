@@ -80,15 +80,6 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        {/* Review */}
-        <CNavItem className="px-3 py-2">
-          <NavLink
-            to="/review"
-            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-          >
-            Review
-          </NavLink>
-        </CNavItem>
 
         <CNavTitle className="px-3 sidebar-title">
           ADMIN
