@@ -285,7 +285,7 @@ const Places: React.FC = () => {
           </CCard>
         </CCol>
       </CRow>
-    </>
+    </div>
   );
 };
 
