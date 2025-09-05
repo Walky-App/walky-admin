@@ -6,7 +6,7 @@ import { useTheme } from '../hooks/useTheme'
 
 import API from '../API'
 
-import { getToolTip } from '../hooks/useToolTip';
+// Removed unused getToolTip import
 
 
 // 🔹 Enhanced Widget Component with Modern Design

@@ -98,7 +98,7 @@ const Reports: React.FC = () => {
   // Fetch reports
   // Generate realistic dummy data
   const generateDummyReports = (): Report[] => {
-    const reportTypes = ['inappropriate_content', 'harassment', 'spam', 'fake_profile', 'violence', 'hate_speech'];
+    const reportTypes = ['user', 'message', 'event', 'idea'];
     const statuses = ['pending', 'under_review', 'resolved', 'dismissed'];
     const campuses = ['Main Campus', 'North Campus', 'Engineering Campus', 'Medical Campus'];
     const names = [
@@ -109,21 +109,14 @@ const Reports: React.FC = () => {
     ];
     
     const reasons = [
-      'User posted inappropriate images in campus chat',
-      'Harassment and bullying behavior towards other students',
-      'Spam messages promoting unauthorized services',
-      'Fake profile using someone else\'s photos',
-      'Threatening language and violent content',
-      'Hate speech targeting specific groups',
-      'Sharing inappropriate content during campus events',
-      'Creating multiple fake accounts',
-      'Cyberbullying and targeted harassment',
-      'Posting offensive content about campus staff',
-      'Inappropriate comments on student posts',
-      'Spreading false information about campus events',
-      'Using platform for commercial advertising',
-      'Impersonating campus officials',
-      'Sharing personal information without consent'
+      'harassment_threats',
+      'inappropriate_content', 
+      'spam_fake',
+      'underage_policy',
+      'made_uncomfortable',
+      'violence_dangerous',
+      'intellectual_property',
+      'other'
     ];
 
     return Array.from({ length: 47 }, (_, i) => {
@@ -145,10 +138,13 @@ const Reports: React.FC = () => {
         reported_user_id: `user_${Math.floor(Math.random() * 1000) + 1}`,
         reported_user_name: reportedUserName,
         reported_item_id: `item_${Math.floor(Math.random() * 1000) + 1}`,
-        school_id: `school_${Math.floor(Math.random() * 10) + 1}`,
-        report_type: reportTypes[Math.floor(Math.random() * reportTypes.length)] as 'inappropriate_content' | 'harassment' | 'spam' | 'fake_profile' | 'violence' | 'hate_speech',
-        reason: selectedReason,
-        description: selectedReason + '. This behavior violates our community guidelines and creates an unsafe environment for other users.',
+        school_id: {
+          _id: `school_${Math.floor(Math.random() * 10) + 1}`,
+          name: campuses[Math.floor(Math.random() * campuses.length)]
+        },
+        report_type: reportTypes[Math.floor(Math.random() * reportTypes.length)] as 'user' | 'message' | 'event' | 'idea',
+        reason: selectedReason as 'harassment_threats' | 'inappropriate_content' | 'spam_fake' | 'underage_policy' | 'made_uncomfortable' | 'violence_dangerous' | 'intellectual_property' | 'other',
+        description: 'This behavior violates our community guidelines and creates an unsafe environment for other users.',
         status: statuses[Math.floor(Math.random() * statuses.length)] as 'pending' | 'under_review' | 'resolved' | 'dismissed',
         campus_name: campuses[Math.floor(Math.random() * campuses.length)],
         reported_at: reportedAt.toISOString(),
@@ -156,11 +152,13 @@ const Reports: React.FC = () => {
         createdAt: reportedAt.toISOString(),
         updatedAt: updatedAt.toISOString(),
         reported_by: {
+          _id: `user_${Math.floor(Math.random() * 1000) + 1}`,
           first_name: reporterName.split(' ')[0],
           last_name: reporterName.split(' ')[1] || '',
           email: `${reporterName.toLowerCase().replace(' ', '.')}@university.edu`
         },
         reported_user: {
+          _id: `user_${Math.floor(Math.random() * 1000) + 1}`,
           first_name: reportedUserName.split(' ')[0],
           last_name: reportedUserName.split(' ')[1] || '',
           email: `${reportedUserName.toLowerCase().replace(' ', '.')}@university.edu`

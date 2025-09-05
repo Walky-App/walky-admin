@@ -167,7 +167,7 @@ const StudentTable = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {students.map((student, index) => (
+          {students.map((student) => (
             <CTableRow
               key={student.id}
               style={{

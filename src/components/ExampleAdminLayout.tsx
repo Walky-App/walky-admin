@@ -4,20 +4,7 @@ import { Topbar } from "./Topbar.tsx";
 import { useTheme } from "../hooks/useTheme";
 import { useLocation } from "react-router-dom";
 
-const pageTitles: Record<string, string> = {
-  "/": "Dashboard",
-  "/students": "Students",
-  "/engagement": "Real Time",
-  "/mywalky": "My Walky",
-  "/compliance": "Compliance",
-  "/campuses": "Campuses",
-  "/campus-details": "Campus Details",
-  "/campus-view": "Campus View",
-  "/settings": "Settings",
-  "/reports": "Reports",
-  "/report-details": "Report Details",
-  "/banned-users": "Banned Users",
-};
+// Removed unused pageTitles constant
 
 type Props = { children: React.ReactNode };
 

@@ -11,8 +11,7 @@ type InfoStatWidgetProps = {
 }
 
 const InfoStatWidget: React.FC<InfoStatWidgetProps> = ({ icon, value, label, tooltip }) => {
-  const { theme } = useTheme(); 
-  const isDark = theme.isDark;
+  const { theme } = useTheme();
 
   return (
     <CTooltip 
