@@ -43,10 +43,13 @@ import ReportDetails from "./pages/ReportDetails";
 import BannedUsers from "./pages/BannedUsers";
 
 import "./App.css";
+import "./styles/modern-theme.css";
+import "./styles/sidebar-modern.css";
+import "./styles/logo-background-fix.css";
+import "./styles/badge-fixes.css";
+import "./styles/visibility-fixes.css";
 
 import MainChart from "./components/MainChart.tsx";
-
-import { Chart as ChartJS, TooltipModel } from "chart.js";
 
 import API from "./API/index.ts";
 import Login from "./pages/Login.tsx";
@@ -356,8 +359,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
   const tooltipPlugin = {
     id: "customTooltip",
-    afterDraw: (chart: ChartJS) => {
-      const tooltipModel = chart.tooltip as TooltipModel<"line">;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    afterDraw: (chart: any) => {
+      const tooltipModel = chart.tooltip;
 
       let tooltipEl = document.getElementById("chartjs-tooltip");
       if (!tooltipEl) {

@@ -1,0 +1,290 @@
+/* Modern Sidebar Styles - Inspired by Linear, Notion, Slack */
+
+/* ============================================
+   LIGHT MODE SIDEBAR
+   ============================================ */
+.sidebar {
+  background: #FBFCFD !important;
+  border-right: 1px solid #E5E7EB !important;
+  box-shadow: none !important;
+}
+
+/* Sidebar brand/logo area */
+.sidebar-brand {
+  background: transparent !important;
+  border-bottom: 1px solid #E5E7EB !important;
+  padding: 1rem !important;
+  height: auto !important;
+}
+
+.sidebar-brand-full {
+  height: 32px !important;
+}
+
+/* Sidebar navigation */
+.sidebar-nav {
+  padding: 0.5rem 0 !important;
+}
+
+/* Group titles (CAMPUS, ADMIN, etc.) */
+.sidebar-nav .nav-title {
+  color: #9CA3AF !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  padding: 1rem 1rem 0.5rem 1rem !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+}
+
+/* Navigation links */
+.sidebar .nav-link {
+  color: #4B5563 !important;
+  padding: 0.5rem 1rem !important;
+  margin: 0.125rem 0.5rem !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: all 0.15s ease !important;
+  border: none !important;
+  position: relative !important;
+}
+
+.sidebar .nav-link:hover {
+  background: #F3F4F6 !important;
+  color: #111827 !important;
+  transform: translateX(2px);
+}
+
+.sidebar .nav-link.active {
+  background: #EEF2FF !important;
+  color: #5E5CE6 !important;
+  font-weight: 600 !important;
+}
+
+/* Add subtle left border for active state */
+.sidebar .nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 16px;
+  width: 3px;
+  background: #5E5CE6;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Navigation icons */
+.sidebar .nav-icon {
+  width: 20px !important;
+  height: 20px !important;
+  margin-right: 0.75rem !important;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar .nav-link:hover .nav-icon {
+  opacity: 1;
+}
+
+.sidebar .nav-link.active .nav-icon {
+  opacity: 1;
+  color: #5E5CE6 !important;
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+  border-top: 1px solid #E5E7EB !important;
+  padding: 1rem !important;
+  background: transparent !important;
+}
+
+/* ============================================
+   DARK MODE SIDEBAR
+   ============================================ */
+[data-coreui-theme="dark"] .sidebar {
+  background: #111113 !important;
+  border-right: 1px solid #27272A !important;
+}
+
+[data-coreui-theme="dark"] .sidebar-brand {
+  border-bottom: 1px solid #27272A !important;
+}
+
+[data-coreui-theme="dark"] .sidebar-nav .nav-title {
+  color: #52525B !important;
+  opacity: 1 !important;
+}
+
+[data-coreui-theme="dark"] .sidebar .nav-link {
+  color: #A1A1AA !important;
+}
+
+[data-coreui-theme="dark"] .sidebar .nav-link:hover {
+  background: #1F1F23 !important;
+  color: #FAFAFA !important;
+}
+
+[data-coreui-theme="dark"] .sidebar .nav-link.active {
+  background: rgba(124, 124, 255, 0.15) !important;
+  color: #7C7CFF !important;
+}
+
+[data-coreui-theme="dark"] .sidebar .nav-link.active::before {
+  background: #7C7CFF;
+}
+
+[data-coreui-theme="dark"] .sidebar-footer {
+  border-top: 1px solid #27272A !important;
+}
+
+[data-coreui-theme="dark"] .sidebar .nav-icon {
+  color: #A1A1AA !important;
+}
+
+[data-coreui-theme="dark"] .sidebar .nav-link:hover .nav-icon,
+[data-coreui-theme="dark"] .sidebar .nav-link.active .nav-icon {
+  color: #FAFAFA !important;
+}
+
+/* ============================================
+   SIDEBAR MINIMIZED STATE
+   ============================================ */
+.sidebar-minimized .sidebar {
+  width: 56px !important;
+}
+
+.sidebar-minimized .sidebar .nav-link {
+  padding: 0.75rem 0 !important;
+  margin: 0.125rem 0 !important;
+  justify-content: center !important;
+  border-radius: 0 !important;
+}
+
+.sidebar-minimized .sidebar .nav-title {
+  display: none !important;
+}
+
+.sidebar-minimized .sidebar .nav-icon {
+  margin: 0 !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.sidebar-minimized .sidebar .nav-link.active::before {
+  display: none;
+}
+
+/* ============================================
+   SIDEBAR TOGGLE BUTTON
+   ============================================ */
+.sidebar-toggler {
+  background: transparent !important;
+  border: none !important;
+  color: #6B7280 !important;
+  padding: 0.5rem !important;
+  transition: all 0.15s ease !important;
+}
+
+.sidebar-toggler:hover {
+  background: #F3F4F6 !important;
+  color: #111827 !important;
+}
+
+[data-coreui-theme="dark"] .sidebar-toggler {
+  color: #A1A1AA !important;
+}
+
+[data-coreui-theme="dark"] .sidebar-toggler:hover {
+  background: #1F1F23 !important;
+  color: #FAFAFA !important;
+}
+
+/* ============================================
+   SIDEBAR SCROLLBAR
+   ============================================ */
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+[data-coreui-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
+  background: #3F3F46;
+}
+
+[data-coreui-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #52525B;
+}
+
+/* ============================================
+   MOBILE SIDEBAR
+   ============================================ */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    z-index: 1030 !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease !important;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  
+  [data-coreui-theme="dark"] .sidebar {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+/* ============================================
+   SIDEBAR BACKDROP (MOBILE)
+   ============================================ */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1029;
+  display: none;
+}
+
+.sidebar-backdrop.show {
+  display: block;
+}
+
+[data-coreui-theme="dark"] .sidebar-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ============================================
+   SMOOTH TRANSITIONS
+   ============================================ */
+.sidebar,
+.sidebar * {
+  transition: background-color 0.2s ease, 
+              color 0.2s ease, 
+              border-color 0.2s ease,
+              transform 0.15s ease !important;
+}

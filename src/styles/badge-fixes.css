@@ -1,0 +1,203 @@
+/* Badge Visibility Fixes - Ensure text is always readable */
+
+/* ============================================
+   BOOTSTRAP BADGE OVERRIDES
+   ============================================ */
+
+/* Success badges - white text on green background */
+.badge.bg-success,
+span.bg-success,
+.bg-success.badge {
+  background-color: #34C759 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 500;
+}
+
+/* Info badges - white text on blue background */
+.badge.bg-info,
+span.bg-info,
+.bg-info.badge {
+  background-color: #5AC8FA !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 500;
+}
+
+/* Warning badges - white text on orange background */
+.badge.bg-warning,
+span.bg-warning,
+.bg-warning.badge {
+  background-color: #FF9500 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 500;
+}
+
+/* Danger badges - white text on red background */
+.badge.bg-danger,
+span.bg-danger,
+.bg-danger.badge {
+  background-color: #FF3B30 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 500;
+}
+
+/* Primary badges - white text on purple background */
+.badge.bg-primary,
+span.bg-primary,
+.bg-primary.badge {
+  background-color: #5E5CE6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 500;
+}
+
+/* Secondary badges - dark text on light background for light mode */
+.badge.bg-secondary,
+span.bg-secondary,
+.bg-secondary.badge {
+  background-color: #E5E7EB !important;
+  color: #374151 !important;
+  border: 1px solid #D1D5DB !important;
+  font-weight: 500;
+}
+
+/* Dark mode secondary badges */
+[data-coreui-theme="dark"] .badge.bg-secondary,
+[data-coreui-theme="dark"] span.bg-secondary,
+[data-coreui-theme="dark"] .bg-secondary.badge {
+  background-color: #374151 !important;
+  color: #F3F4F6 !important;
+  border: 1px solid #4B5563 !important;
+}
+
+/* ============================================
+   COREUI COLOR ATTRIBUTE BADGES
+   ============================================ */
+
+/* For badges using color attribute */
+[color="success"].badge,
+.badge[color="success"] {
+  background-color: #34C759 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+[color="info"].badge,
+.badge[color="info"] {
+  background-color: #5AC8FA !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+[color="warning"].badge,
+.badge[color="warning"] {
+  background-color: #FF9500 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+[color="danger"].badge,
+.badge[color="danger"] {
+  background-color: #FF3B30 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+[color="primary"].badge,
+.badge[color="primary"] {
+  background-color: #5E5CE6 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+[color="secondary"].badge,
+.badge[color="secondary"] {
+  background-color: #E5E7EB !important;
+  color: #374151 !important;
+  border: 1px solid #D1D5DB !important;
+}
+
+/* ============================================
+   DARK MODE ADJUSTMENTS
+   ============================================ */
+
+/* Slightly adjust colors for dark mode for better contrast */
+[data-coreui-theme="dark"] .badge.bg-success,
+[data-coreui-theme="dark"] span.bg-success {
+  background-color: #4ADE80 !important;
+  color: #000000 !important;
+}
+
+[data-coreui-theme="dark"] .badge.bg-info,
+[data-coreui-theme="dark"] span.bg-info {
+  background-color: #67E8F9 !important;
+  color: #000000 !important;
+}
+
+[data-coreui-theme="dark"] .badge.bg-warning,
+[data-coreui-theme="dark"] span.bg-warning {
+  background-color: #FB923C !important;
+  color: #000000 !important;
+}
+
+[data-coreui-theme="dark"] .badge.bg-danger,
+[data-coreui-theme="dark"] span.bg-danger {
+  background-color: #F87171 !important;
+  color: #000000 !important;
+}
+
+[data-coreui-theme="dark"] .badge.bg-primary,
+[data-coreui-theme="dark"] span.bg-primary {
+  background-color: #7C7CFF !important;
+  color: #ffffff !important;
+}
+
+/* ============================================
+   ENSURE HIGH SPECIFICITY
+   ============================================ */
+
+/* Override any conflicting styles with high specificity */
+.badge.bg-success:not(.text-dark),
+span.badge.bg-success:not(.text-dark) {
+  color: #ffffff !important;
+}
+
+.badge.bg-info:not(.text-dark),
+span.badge.bg-info:not(.text-dark) {
+  color: #ffffff !important;
+}
+
+.badge.bg-warning:not(.text-dark),
+span.badge.bg-warning:not(.text-dark) {
+  color: #ffffff !important;
+}
+
+.badge.bg-danger:not(.text-dark),
+span.badge.bg-danger:not(.text-dark) {
+  color: #ffffff !important;
+}
+
+.badge.bg-primary:not(.text-dark),
+span.badge.bg-primary:not(.text-dark) {
+  color: #ffffff !important;
+}
+
+/* ============================================
+   BADGE SIZING AND STYLING
+   ============================================ */
+
+.badge {
+  padding: 0.375em 0.75em !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  vertical-align: baseline !important;
+  letter-spacing: 0.025em !important;
+}

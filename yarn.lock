@@ -833,6 +833,7 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
+<<<<<<< HEAD
 "@types/chart.js@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@types/chart.js/-/chart.js-4.0.1.tgz"
@@ -841,6 +842,9 @@
     chart.js "*"
 
 "@types/estree@1.0.8", "@types/estree@^1.0.6":
+=======
+"@types/estree@^1.0.6", "@types/estree@1.0.8":
+>>>>>>> 3e959abb (fix: styles)
   version "1.0.8"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-1.0.8.tgz"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
@@ -1127,7 +1131,11 @@ chalk@^5.4.1:
   resolved "https://registry.npmjs.org/chalk/-/chalk-5.4.1.tgz"
   integrity sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==
 
+<<<<<<< HEAD
 chart.js@*:
+=======
+chart.js@^2.7.2:
+>>>>>>> 3e959abb (fix: styles)
   version "2.9.4"
   resolved "https://registry.npmjs.org/chart.js/-/chart.js-2.9.4.tgz"
   integrity sha512-B07aAzxcrikjAPyV+01j7BmOpxtQETxTSlQ26BEYJ+3iUkbNKaOJ/nDbT6JjyqYxseM0ON12COHYdU2cTIjC7A==

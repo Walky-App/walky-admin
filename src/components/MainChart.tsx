@@ -2,11 +2,11 @@ import { useEffect, useRef } from "react";
 import { CChartLine } from "@coreui/react-chartjs";
 // import { getStyle } from '@coreui/utils'
 import { useTheme } from "../hooks/useTheme";
-import { Chart, TooltipModel } from "chart.js";
 
 
 const MainChart = () => {
-  const chartRef = useRef<Chart | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const chartRef = useRef<any>(null);
   const { theme } = useTheme();
 
   // Removed unused variables chartLabels and datasets
@@ -14,8 +14,9 @@ const MainChart = () => {
   // Combined tooltip plugin that shows both values
   const tooltipPlugin = {
     id: "customTooltip",
-    afterDraw: (chart: Chart) => {
-      const tooltipModel = chart.tooltip as TooltipModel<"line">;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    afterDraw: (chart: any) => {
+      const tooltipModel = chart.tooltip;
       let tooltipEl = document.getElementById("chartjs-tooltip");
 
       if (!tooltipEl) {

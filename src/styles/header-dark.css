@@ -1,0 +1,206 @@
+/* Dark Header/Navbar for Light Mode - Professional Look */
+
+/* ============================================
+   HEADER/NAVBAR - DARK IN LIGHT MODE
+   ============================================ */
+
+/* Light Mode - Dark Header */
+:root:not([data-coreui-theme="dark"]) .header,
+:root:not([data-coreui-theme="dark"]) nav.navbar,
+:root:not([data-coreui-theme="dark"]) .navbar {
+  background: linear-gradient(180deg, #0F0F11 0%, #1A1A1D 100%) !important;
+  border-bottom: 1px solid #27272A !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Header text and icons in light mode should be light */
+:root:not([data-coreui-theme="dark"]) .header *,
+:root:not([data-coreui-theme="dark"]) nav.navbar *,
+:root:not([data-coreui-theme="dark"]) .navbar * {
+  color: #FAFAFA !important;
+}
+
+/* Header buttons in light mode */
+:root:not([data-coreui-theme="dark"]) .header button,
+:root:not([data-coreui-theme="dark"]) nav.navbar button,
+:root:not([data-coreui-theme="dark"]) .navbar button {
+  color: #A1A1AA !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  transition: all 0.15s ease !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .header button:hover,
+:root:not([data-coreui-theme="dark"]) nav.navbar button:hover,
+:root:not([data-coreui-theme="dark"]) .navbar button:hover {
+  color: #FAFAFA !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Toggle button specifically */
+:root:not([data-coreui-theme="dark"]) .sidebar-toggler {
+  color: #A1A1AA !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .sidebar-toggler:hover {
+  color: #FAFAFA !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Theme toggle button */
+:root:not([data-coreui-theme="dark"]) button[aria-label*="theme" i],
+:root:not([data-coreui-theme="dark"]) .theme-toggle {
+  color: #A1A1AA !important;
+}
+
+:root:not([data-coreui-theme="dark"]) button[aria-label*="theme" i]:hover,
+:root:not([data-coreui-theme="dark"]) .theme-toggle:hover {
+  color: #FAFAFA !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dropdown in header */
+:root:not([data-coreui-theme="dark"]) .header .dropdown-toggle,
+:root:not([data-coreui-theme="dark"]) nav.navbar .dropdown-toggle {
+  color: #A1A1AA !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .header .dropdown-toggle:hover,
+:root:not([data-coreui-theme="dark"]) nav.navbar .dropdown-toggle:hover {
+  color: #FAFAFA !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Icons in header */
+:root:not([data-coreui-theme="dark"]) .header svg,
+:root:not([data-coreui-theme="dark"]) nav.navbar svg,
+:root:not([data-coreui-theme="dark"]) .navbar svg,
+:root:not([data-coreui-theme="dark"]) .header img[src*="icon"],
+:root:not([data-coreui-theme="dark"]) nav.navbar img[src*="icon"] {
+  filter: brightness(0) invert(1) !important;
+  opacity: 0.8;
+}
+
+:root:not([data-coreui-theme="dark"]) .header button:hover svg,
+:root:not([data-coreui-theme="dark"]) nav.navbar button:hover svg {
+  opacity: 1;
+}
+
+/* Breadcrumb styling for dark header */
+:root:not([data-coreui-theme="dark"]) .breadcrumb {
+  background: transparent !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .breadcrumb-item {
+  color: #A1A1AA !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .breadcrumb-item.active {
+  color: #FAFAFA !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .breadcrumb-item + .breadcrumb-item::before {
+  color: #6B7280 !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .breadcrumb a {
+  color: #A1A1AA !important;
+  text-decoration: none;
+}
+
+:root:not([data-coreui-theme="dark"]) .breadcrumb a:hover {
+  color: #FAFAFA !important;
+}
+
+/* ============================================
+   SIDEBAR ADJUSTMENTS FOR DARK HEADER
+   ============================================ */
+
+/* Keep sidebar light in light mode */
+:root:not([data-coreui-theme="dark"]) .sidebar {
+  background: #FBFCFD !important;
+  border-right: 1px solid #E5E7EB !important;
+}
+
+/* But make sidebar header/brand area dark to match */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand {
+  background: linear-gradient(180deg, #0F0F11 0%, #1A1A1D 100%) !important;
+  border-bottom: 1px solid #27272A !important;
+}
+
+/* Logo in sidebar with dark header */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand img,
+:root:not([data-coreui-theme="dark"]) .sidebar-brand-full,
+:root:not([data-coreui-theme="dark"]) img[alt*="Walky Logo" i] {
+  /* Remove individual background since parent is now dark */
+  background: transparent !important;
+  padding: 8px !important;
+  filter: none !important;
+}
+
+/* ============================================
+   DARK MODE - KEEP ORIGINAL DARK THEME
+   ============================================ */
+
+/* Dark Mode - Keep dark header as is */
+[data-coreui-theme="dark"] .header,
+[data-coreui-theme="dark"] nav.navbar,
+[data-coreui-theme="dark"] .navbar {
+  background: #0A0A0B !important;
+  border-bottom: 1px solid #27272A !important;
+}
+
+[data-coreui-theme="dark"] .sidebar-brand {
+  background: #111113 !important;
+  border-bottom: 1px solid #27272A !important;
+}
+
+/* Dark mode text colors remain as configured */
+[data-coreui-theme="dark"] .header *,
+[data-coreui-theme="dark"] nav.navbar * {
+  color: #FAFAFA !important;
+}
+
+/* ============================================
+   SPECIFIC ADJUSTMENTS
+   ============================================ */
+
+/* Container adjustments */
+:root:not([data-coreui-theme="dark"]) .header .container-fluid,
+:root:not([data-coreui-theme="dark"]) nav.navbar .container-fluid {
+  background: transparent !important;
+}
+
+/* Remove any conflicting backgrounds */
+:root:not([data-coreui-theme="dark"]) .header > div,
+:root:not([data-coreui-theme="dark"]) nav.navbar > div {
+  background: transparent !important;
+}
+
+/* Ensure consistent height */
+.header,
+nav.navbar,
+.navbar {
+  min-height: 56px;
+  padding: 0.5rem 1rem;
+}
+
+/* Align items properly */
+.header .container-fluid,
+nav.navbar .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* ============================================
+   TRANSITIONS
+   ============================================ */
+.header,
+nav.navbar,
+.navbar,
+.sidebar-brand {
+  transition: background 0.3s ease, border-color 0.3s ease !important;
+}

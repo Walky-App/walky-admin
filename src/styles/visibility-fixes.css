@@ -1,0 +1,424 @@
+/* Visibility Fixes for Admin Panel */
+/* This file contains fixes for contrast and visibility issues */
+
+/* ============================================
+   BADGE VISIBILITY FIXES
+   ============================================ */
+
+/* Fix secondary badges in light mode */
+.badge-secondary,
+.bg-secondary {
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+/* Fix secondary badges in dark mode */
+[data-coreui-theme="dark"] .badge-secondary,
+[data-coreui-theme="dark"] .bg-secondary {
+  background-color: #868e96 !important;
+  color: #ffffff !important;
+  border: 1px solid #adb5bd;
+}
+
+/* Ensure all CoreUI badges are visible */
+[data-coreui-theme="dark"] .badge {
+  font-weight: 600;
+}
+
+/* Fix info badges */
+.badge-info,
+.bg-info {
+  background-color: #39f !important;
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .badge-info,
+[data-coreui-theme="dark"] .bg-info {
+  background-color: #4dabf7 !important;
+  color: #ffffff !important;
+}
+
+/* Fix warning badges */
+.badge-warning,
+.bg-warning {
+  background-color: #f9b115 !important;
+  color: #212529 !important;
+}
+
+[data-coreui-theme="dark"] .badge-warning,
+[data-coreui-theme="dark"] .bg-warning {
+  background-color: #fbc43d !important;
+  color: #212529 !important;
+}
+
+/* ============================================
+   TABLE VISIBILITY FIXES
+   ============================================ */
+
+/* Improve table text contrast in light mode */
+.table {
+  color: #212529 !important;
+}
+
+.table thead th {
+  color: #212529 !important;
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+.table tbody td {
+  color: #212529 !important;
+}
+
+/* Improve table text contrast in dark mode */
+[data-coreui-theme="dark"] .table {
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .table thead th {
+  color: #ffffff !important;
+  background-color: #2c3034;
+  border-color: #495057;
+}
+
+[data-coreui-theme="dark"] .table tbody td {
+  color: #e9ecef !important;
+  border-color: #495057;
+}
+
+/* Fix hover states */
+[data-coreui-theme="dark"] .table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.075) !important;
+  color: #ffffff !important;
+}
+
+/* ============================================
+   TEXT VISIBILITY FIXES
+   ============================================ */
+
+/* Fix muted text visibility */
+.text-muted {
+  color: #6c757d !important;
+}
+
+[data-coreui-theme="dark"] .text-muted {
+  color: #adb5bd !important;
+}
+
+/* Fix secondary text */
+.text-secondary {
+  color: #6c757d !important;
+}
+
+[data-coreui-theme="dark"] .text-secondary {
+  color: #adb5bd !important;
+}
+
+/* Fix disabled items */
+.disabled,
+[disabled],
+:disabled {
+  opacity: 0.6 !important;
+}
+
+[data-coreui-theme="dark"] .disabled,
+[data-coreui-theme="dark"] [disabled],
+[data-coreui-theme="dark"] :disabled {
+  opacity: 0.5 !important;
+  color: #868e96 !important;
+}
+
+/* ============================================
+   BUTTON VISIBILITY FIXES
+   ============================================ */
+
+/* Fix secondary buttons */
+.btn-secondary {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #ffffff !important;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .btn-secondary {
+  background-color: #868e96 !important;
+  border-color: #868e96 !important;
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .btn-secondary:hover {
+  background-color: #727b84 !important;
+  border-color: #6c757d !important;
+  color: #ffffff !important;
+}
+
+/* Fix outline buttons */
+.btn-outline-secondary {
+  color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .btn-outline-secondary {
+  color: #adb5bd !important;
+  border-color: #adb5bd !important;
+}
+
+[data-coreui-theme="dark"] .btn-outline-secondary:hover {
+  background-color: #adb5bd !important;
+  color: #212529 !important;
+}
+
+/* ============================================
+   FORM VISIBILITY FIXES
+   ============================================ */
+
+/* Fix placeholder text */
+::placeholder {
+  color: #6c757d !important;
+  opacity: 1 !important;
+}
+
+[data-coreui-theme="dark"] ::placeholder {
+  color: #868e96 !important;
+  opacity: 1 !important;
+}
+
+/* Fix form labels */
+.form-label {
+  color: #212529 !important;
+  font-weight: 500;
+}
+
+[data-coreui-theme="dark"] .form-label {
+  color: #e9ecef !important;
+}
+
+/* Fix form text/help text */
+.form-text {
+  color: #6c757d !important;
+}
+
+[data-coreui-theme="dark"] .form-text {
+  color: #adb5bd !important;
+}
+
+/* ============================================
+   DROPDOWN VISIBILITY FIXES
+   ============================================ */
+
+/* Fix dropdown items */
+.dropdown-item {
+  color: #212529 !important;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa !important;
+  color: #16181b !important;
+}
+
+.dropdown-item.disabled,
+.dropdown-item:disabled {
+  color: #6c757d !important;
+  opacity: 0.5;
+}
+
+[data-coreui-theme="dark"] .dropdown-item {
+  color: #e9ecef !important;
+}
+
+[data-coreui-theme="dark"] .dropdown-item:hover {
+  background-color: #495057 !important;
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .dropdown-item.disabled,
+[data-coreui-theme="dark"] .dropdown-item:disabled {
+  color: #868e96 !important;
+  opacity: 0.5;
+}
+
+/* ============================================
+   CARD VISIBILITY FIXES
+   ============================================ */
+
+/* Fix card text */
+.card {
+  color: #212529 !important;
+}
+
+.card-header {
+  color: #212529 !important;
+  font-weight: 500;
+}
+
+.card-body {
+  color: #212529 !important;
+}
+
+[data-coreui-theme="dark"] .card {
+  color: #e9ecef !important;
+}
+
+[data-coreui-theme="dark"] .card-header {
+  color: #ffffff !important;
+  background-color: #2c3034;
+  border-color: #495057;
+}
+
+[data-coreui-theme="dark"] .card-body {
+  color: #e9ecef !important;
+}
+
+/* ============================================
+   NAVIGATION VISIBILITY FIXES
+   ============================================ */
+
+/* Fix nav links */
+.nav-link {
+  color: #495057 !important;
+}
+
+.nav-link:hover {
+  color: #212529 !important;
+}
+
+.nav-link.active {
+  color: #321fdb !important;
+  font-weight: 500;
+}
+
+[data-coreui-theme="dark"] .nav-link {
+  color: #adb5bd !important;
+}
+
+[data-coreui-theme="dark"] .nav-link:hover {
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .nav-link.active {
+  color: #4e5ec7 !important;
+}
+
+/* ============================================
+   ALERT VISIBILITY FIXES
+   ============================================ */
+
+/* Fix alert text contrast */
+.alert-secondary {
+  background-color: #e2e3e5 !important;
+  border-color: #d3d6d8 !important;
+  color: #383d41 !important;
+}
+
+[data-coreui-theme="dark"] .alert-secondary {
+  background-color: #3a3f44 !important;
+  border-color: #454d55 !important;
+  color: #ffffff !important;
+}
+
+/* ============================================
+   SPECIAL CASES
+   ============================================ */
+
+/* Fix "test" or "demo" items specifically */
+.test-item,
+.demo-item,
+[class*="test"],
+[class*="demo"] {
+  opacity: 1 !important;
+}
+
+/* Ensure all status indicators are visible */
+.status-indicator {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Fix pagination */
+.page-link {
+  color: #321fdb !important;
+}
+
+.page-link:hover {
+  color: #2516a8 !important;
+  background-color: #e9ecef !important;
+}
+
+[data-coreui-theme="dark"] .page-link {
+  color: #4e5ec7 !important;
+  background-color: #2c3034 !important;
+  border-color: #495057 !important;
+}
+
+[data-coreui-theme="dark"] .page-link:hover {
+  color: #6c7bd8 !important;
+  background-color: #3a3f44 !important;
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+
+/* Improve focus states */
+:focus {
+  outline: 2px solid #321fdb !important;
+  outline-offset: 2px;
+}
+
+[data-coreui-theme="dark"] :focus {
+  outline-color: #4e5ec7 !important;
+}
+
+/* Ensure minimum contrast ratios */
+@media (prefers-contrast: high) {
+  .badge,
+  .btn,
+  .alert {
+    border: 2px solid currentColor !important;
+  }
+}
+
+/* ============================================
+   GLOBAL OVERRIDES
+   ============================================ */
+
+/* Ensure nothing is invisible due to same color as background */
+* {
+  min-opacity: 0.1;
+}
+
+/* Fix any elements that might be using transparent text */
+[style*="color: transparent"],
+[style*="color:transparent"] {
+  color: inherit !important;
+}
+
+/* Ensure all text has minimum contrast */
+body * {
+  text-shadow: none !important;
+}
+
+/* Fix any white text on white background or black on black */
+[data-coreui-theme="light"] [style*="color: white"],
+[data-coreui-theme="light"] [style*="color:#fff"],
+[data-coreui-theme="light"] [style*="color: #fff"] {
+  color: #212529 !important;
+}
+
+[data-coreui-theme="dark"] [style*="color: black"],
+[data-coreui-theme="dark"] [style*="color:#000"],
+[data-coreui-theme="dark"] [style*="color: #000"] {
+  color: #e9ecef !important;
+}

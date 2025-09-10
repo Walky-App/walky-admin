@@ -11,6 +11,9 @@
   --cui-dropdown-color: #e1e5eb;
   --cui-dropdown-border-color: #495057;
   --cui-btn-hover-bg: #495057;
+  --cui-secondary: #8b95a7;
+  --cui-secondary-bg: #4a5568;
+  --cui-secondary-color: #ffffff;
 }
 
 /* Apply dark mode transitions */
@@ -46,7 +49,7 @@ body, button, input, select, textarea, .card, .navbar, .footer, .sidebar {
   line-height: 1.5;
   font-weight: 400;
   --admin-primary: #321fdb;
-  --admin-secondary: #9da5b1;
+  --admin-secondary: #6c757d;
   --admin-success: #2eb85c;
   --admin-info: #39f;
   --admin-warning: #f9b115;
@@ -272,6 +275,17 @@ button:focus-visible {
   vertical-align: baseline;
   border-radius: 50rem;
   transition: all 0.2s ease-in-out;
+}
+
+/* Ensure secondary badges are visible */
+.badge.bg-secondary {
+  background-color: var(--admin-secondary) !important;
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .badge.bg-secondary {
+  background-color: var(--cui-secondary-bg) !important;
+  color: var(--cui-secondary-color) !important;
 }
 
 .badge.bg-success {
