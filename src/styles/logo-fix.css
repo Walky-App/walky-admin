@@ -1,0 +1,161 @@
+/* Logo Visibility Fix - Ensure logo is visible in both light and dark modes */
+
+/* ============================================
+   LOGO FIXES
+   ============================================ */
+
+/* Light Mode - Add dark background or invert logo colors */
+.sidebar-brand img,
+.sidebar-brand-full,
+.sidebar-brand-minimized,
+img[alt*="Walky Logo" i],
+img[alt*="logo" i] {
+  /* Add a subtle dark background to make white parts visible */
+  background: #1A1A1D;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+/* Alternative approach - Use CSS filters to invert in light mode */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand img,
+:root:not([data-coreui-theme="dark"]) .sidebar-brand-full,
+:root:not([data-coreui-theme="dark"]) .sidebar-brand-minimized,
+:root:not([data-coreui-theme="dark"]) img[alt*="Walky Logo" i] {
+  /* Invert the logo colors in light mode */
+  filter: invert(1) hue-rotate(180deg);
+  background: transparent;
+  padding: 0;
+}
+
+/* Dark Mode - Keep original logo */
+[data-coreui-theme="dark"] .sidebar-brand img,
+[data-coreui-theme="dark"] .sidebar-brand-full,
+[data-coreui-theme="dark"] .sidebar-brand-minimized,
+[data-coreui-theme="dark"] img[alt*="Walky Logo" i] {
+  filter: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* If the logo is an SVG, we can style it directly */
+.sidebar-brand svg,
+.sidebar svg[class*="logo"] {
+  fill: currentColor;
+}
+
+/* Light mode SVG colors */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand svg {
+  fill: #1A1A1D;
+  color: #1A1A1D;
+}
+
+/* Dark mode SVG colors */
+[data-coreui-theme="dark"] .sidebar-brand svg {
+  fill: #FAFAFA;
+  color: #FAFAFA;
+}
+
+/* Better approach - Use mix-blend-mode for automatic contrast */
+.sidebar-brand img.auto-contrast {
+  mix-blend-mode: difference;
+  filter: invert(1);
+}
+
+/* Ensure proper sizing */
+.sidebar-brand img {
+  max-height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Add hover effect */
+.sidebar-brand:hover img {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+/* ============================================
+   LOGO CONTAINER STYLING
+   ============================================ */
+.sidebar-brand {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--modern-border-primary);
+  background: transparent;
+  min-height: 64px;
+}
+
+/* If we need to add a background plate behind the logo */
+.logo-plate {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo-plate img {
+  filter: brightness(0) invert(1); /* Make logo white */
+  background: transparent !important;
+}
+
+/* ============================================
+   FALLBACK SOLUTION - Text Logo
+   ============================================ */
+/* If logo image is problematic, show text instead */
+.sidebar-brand::after {
+  content: '';
+  display: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #5E5CE6 0%, #7C7CFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Show text if image fails to load */
+.sidebar-brand img:not([src]),
+.sidebar-brand img[src=""],
+.sidebar-brand img.error {
+  display: none;
+}
+
+.sidebar-brand img:not([src]) ~ ::after,
+.sidebar-brand img[src=""] ~ ::after,
+.sidebar-brand img.error ~ ::after {
+  content: 'WALKY';
+  display: block;
+}
+
+/* ============================================
+   SPECIFIC FIXES FOR WALKY LOGO
+   ============================================ */
+/* Target the specific Walky logo and ensure visibility */
+img[src*="walky" i][src*="logo" i],
+img[src*="logo" i][src*="walky" i] {
+  /* For light mode - ensure dark text/elements are visible */
+  background-color: #2D3748;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+:root:not([data-coreui-theme="dark"]) img[src*="walky" i][src*="logo" i],
+:root:not([data-coreui-theme="dark"]) img[src*="logo" i][src*="walky" i] {
+  /* Dark background for light mode to show white letters */
+  background-color: #1A1A1D;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+[data-coreui-theme="dark"] img[src*="walky" i][src*="logo" i],
+[data-coreui-theme="dark"] img[src*="logo" i][src*="walky" i] {
+  /* Transparent background for dark mode */
+  background-color: transparent;
+  box-shadow: none;
+}

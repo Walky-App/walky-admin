@@ -10,6 +10,12 @@ import "@coreui/coreui/dist/css/coreui.min.css";
 // Import custom styles
 import "./index.css";
 import "./components/ThemeComponents.css";
+import "./styles/modern-theme.css";
+import "./styles/sidebar-modern.css";
+import "./styles/logo-background-fix.css";
+import "./styles/badge-fixes.css";
+import "./styles/visibility-fixes.css";
+import "./styles/enhanced-table.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "./components/ThemeProvider";
 

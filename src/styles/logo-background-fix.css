@@ -1,0 +1,177 @@
+/* Logo Background Fix - Subtle dark background only for logo area */
+
+/* ============================================
+   LOGO BACKGROUND - LIGHT MODE ONLY
+   ============================================ */
+
+/* Light Mode - Add subtle grayish background to logo area only */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand {
+  background: #F5F5F7 !important; /* Light gray background */
+  border-bottom: 1px solid #E5E7EB !important;
+  padding: 1rem !important;
+  position: relative !important;
+}
+
+/* Add background behind logo without affecting size */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: calc(100% - 16px);
+  min-width: 120px;
+  background: #2C3034;
+  border-radius: 10px;
+  z-index: 0;
+  padding: 0 20px;
+}
+
+/* Keep logo same size as dark mode */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand-full,
+:root:not([data-coreui-theme="dark"]) .sidebar-brand img,
+:root:not([data-coreui-theme="dark"]) img[alt*="Walky Logo" i],
+:root:not([data-coreui-theme="dark"]) img[alt*="logo" i] {
+  position: relative !important;
+  z-index: 1 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  display: inline-block !important;
+  transition: all 0.2s ease !important;
+  max-height: 40px !important;
+  width: auto !important;
+}
+
+/* Hover effect for logo background */
+:root:not([data-coreui-theme="dark"]) .sidebar-brand:hover::before {
+  background: #3A3F44 !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .sidebar-brand:hover img {
+  transform: scale(1.05);
+}
+
+/* Keep header/navbar in default light colors */
+:root:not([data-coreui-theme="dark"]) .header,
+:root:not([data-coreui-theme="dark"]) nav.navbar,
+:root:not([data-coreui-theme="dark"]) .navbar {
+  background: var(--modern-bg-primary) !important; /* Keep white/light background */
+  border-bottom: 1px solid var(--modern-border-primary) !important;
+  box-shadow: var(--modern-shadow-sm) !important;
+}
+
+/* Keep all header text in normal dark colors for light mode */
+:root:not([data-coreui-theme="dark"]) .header *,
+:root:not([data-coreui-theme="dark"]) nav.navbar *,
+:root:not([data-coreui-theme="dark"]) .navbar * {
+  color: var(--modern-text-primary) !important;
+}
+
+/* Keep header buttons in normal style */
+:root:not([data-coreui-theme="dark"]) .header button,
+:root:not([data-coreui-theme="dark"]) nav.navbar button,
+:root:not([data-coreui-theme="dark"]) .navbar button {
+  color: var(--modern-text-secondary) !important;
+  background: transparent !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .header button:hover,
+:root:not([data-coreui-theme="dark"]) nav.navbar button:hover,
+:root:not([data-coreui-theme="dark"]) .navbar button:hover {
+  background: var(--modern-bg-tertiary) !important;
+  color: var(--modern-text-primary) !important;
+}
+
+/* Keep sidebar in light colors */
+:root:not([data-coreui-theme="dark"]) .sidebar {
+  background: #FBFCFD !important;
+  border-right: 1px solid #E5E7EB !important;
+}
+
+/* ============================================
+   DARK MODE - NO CHANGES
+   ============================================ */
+
+/* Dark Mode - Logo shows naturally, no background needed */
+[data-coreui-theme="dark"] .sidebar-brand {
+  background: transparent !important;
+  border-bottom: 1px solid #27272A !important;
+}
+
+[data-coreui-theme="dark"] .sidebar-brand img,
+[data-coreui-theme="dark"] .sidebar-brand-full,
+[data-coreui-theme="dark"] img[alt*="Walky Logo" i] {
+  background: transparent !important;
+  padding: 0 !important;
+  filter: none !important;
+}
+
+/* Dark mode header remains dark */
+[data-coreui-theme="dark"] .header,
+[data-coreui-theme="dark"] nav.navbar,
+[data-coreui-theme="dark"] .navbar {
+  background: var(--modern-bg-primary) !important;
+  border-bottom: 1px solid var(--modern-border-primary) !important;
+}
+
+/* ============================================
+   LOGO SPECIFIC STYLING
+   ============================================ */
+
+/* Ensure logo is properly sized - same for both modes */
+.sidebar-brand img,
+.sidebar-brand-full,
+img[alt*="Walky Logo" i],
+img[alt*="logo" i] {
+  max-height: 40px !important;
+  height: 40px !important;
+  width: auto !important;
+  object-fit: contain !important;
+}
+
+/* Center the logo */
+.sidebar-brand {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 64px !important;
+}
+
+/* Logo container for better control */
+.logo-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  background: #2C3034;
+  border-radius: 10px;
+}
+
+:root:not([data-coreui-theme="dark"]) .logo-container {
+  background: #2C3034;
+}
+
+[data-coreui-theme="dark"] .logo-container {
+  background: transparent;
+}
+
+/* ============================================
+   REMOVE PREVIOUS DARK HEADER STYLES
+   ============================================ */
+
+/* Reset any dark header overrides from previous attempts */
+:root:not([data-coreui-theme="dark"]) .header svg,
+:root:not([data-coreui-theme="dark"]) nav.navbar svg,
+:root:not([data-coreui-theme="dark"]) .navbar svg {
+  filter: none !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .breadcrumb-item {
+  color: var(--modern-text-tertiary) !important;
+}
+
+:root:not([data-coreui-theme="dark"]) .breadcrumb-item.active {
+  color: var(--modern-text-primary) !important;
+}
