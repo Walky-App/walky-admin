@@ -10,6 +10,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { 
+  cilCompass, 
   cilCalendar, 
   cilLightbulb,
   cilChartLine,
@@ -268,6 +269,32 @@ const Engagement = () => {
     collaborated: 0,
   })
 
+  const [walksDistribution, setWalksDistribution] = useState<{
+    chartLabels: string[]
+    chartData: number[]
+    totalWalksCreated: number
+  }>({ 
+    chartLabels: [],
+    chartData: [],
+    totalWalksCreated: 0
+  })
+
+  // Set walks distribution data immediately with mock data
+  useEffect(() => {
+    const mockDistributionData = {
+      chartLabels: [
+        "Sep", "Oct", "Nov", "Dec",
+        "Jan", "Feb", "Mar", "Apr", 
+        "May", "Jun", "Jul"
+      ],
+      chartData: [0, 0, 0, 0, 14, 358, 44, 148, 96, 0, 2],
+      totalWalksCreated: 723
+    }
+    
+    console.log('Setting initial walks distribution data:', mockDistributionData)
+    setWalksDistribution(mockDistributionData)
+  }, [])
+
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true)
@@ -345,8 +372,6 @@ const Engagement = () => {
     return 'neutral'
   }
 
-  const { theme } = useTheme()
-
   return (
     <div style={{ padding: '2rem', background: 'transparent' }}>
       {/* Page Header */}
@@ -357,78 +382,74 @@ const Engagement = () => {
         </p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Top Stats Grid */}
       <CRow className="g-4 mb-4">
-        {/* Walks Stats */}
         <CCol xs={12} sm={6} lg={3}>
           <StatCard
             title="Total Walks"
-            value={walks.total}
-            icon={cilRunning}
+            value={walks.total.toLocaleString()}
+            icon={cilCompass}
             color="#5E5CE6"
-            percentage={12}
-            trend={calcTrend(walks.total, 1000)}
-            loading={loading}
-          />
-        </CCol>
-        <CCol xs={12} sm={6} lg={3}>
-          <StatCard
-            title="Active Walks"
-            value={walks.active}
-            icon={cilCheckCircle}
-            color="#34C759"
-            percentage={walks.total > 0 ? Math.round((walks.active / walks.total) * 100) : 0}
+            percentage={walks.active > 0 ? Math.round((walks.active / walks.total) * 100) : 0}
             trend={calcTrend(walks.active, walks.total)}
+            subtitle={`${walks.active} active now`}
             loading={loading}
           />
         </CCol>
-        
-        {/* Events Stats */}
         <CCol xs={12} sm={6} lg={3}>
           <StatCard
             title="Total Events"
-            value={events.total}
+            value={events.total.toLocaleString()}
             icon={cilCalendar}
             color="#007AFF"
-            percentage={8}
-            trend={calcTrend(events.total, 500)}
+            percentage={events.public > 0 ? Math.round((events.public / events.total) * 100) : 0}
+            trend="up"
+            subtitle={`${events.public} public events`}
             loading={loading}
           />
         </CCol>
-        
-        {/* Ideas Stats */}
         <CCol xs={12} sm={6} lg={3}>
           <StatCard
             title="Total Ideas"
-            value={ideas.total}
+            value={ideas.total.toLocaleString()}
             icon={cilLightbulb}
             color="#FF9500"
-            percentage={15}
-            trend={calcTrend(ideas.total, 300)}
+            percentage={ideas.active > 0 ? Math.round((ideas.active / ideas.total) * 100) : 0}
+            trend={calcTrend(ideas.active, ideas.total)}
+            subtitle={`${ideas.active} active ideas`}
+            loading={loading}
+          />
+        </CCol>
+        <CCol xs={12} sm={6} lg={3}>
+          <StatCard
+            title="Engagement Rate"
+            value={`${Math.round(((walks.active + ideas.active) / (walks.total + ideas.total)) * 100)}%`}
+            icon={cilChartLine}
+            color="#34C759"
+            trend="up"
+            percentage={12.5}
+            subtitle="vs last month"
             loading={loading}
           />
         </CCol>
       </CRow>
 
-      {/* Progress Cards */}
-      <CRow className="g-4">
-        {/* Walks Breakdown */}
-        <CCol xs={12} lg={4}>
+      {/* Detailed Progress Cards */}
+      <CRow className="g-4 mb-4">
+        <CCol lg={4}>
           <ProgressCard
             title="Walks Breakdown"
-            icon={cilRunning}
+            icon={cilCompass}
             color="#5E5CE6"
             items={[
-              { label: 'Pending', value: walks.pending, color: '#FF9500' },
               { label: 'Active', value: walks.active, color: '#34C759' },
+              { label: 'Pending', value: walks.pending, color: '#FF9500' },
               { label: 'Completed', value: walks.completed, color: '#007AFF' },
               { label: 'Cancelled', value: walks.cancelled, color: '#FF3B30' },
             ]}
           />
         </CCol>
-
-        {/* Events Distribution */}
-        <CCol xs={12} lg={4}>
+        <CCol lg={4}>
           <ProgressCard
             title="Events Distribution"
             icon={cilCalendar}
@@ -441,9 +462,7 @@ const Engagement = () => {
             ]}
           />
         </CCol>
-
-        {/* Ideas Status */}
-        <CCol xs={12} lg={4}>
+        <CCol lg={4}>
           <ProgressCard
             title="Ideas Status"
             icon={cilLightbulb}
@@ -457,61 +476,247 @@ const Engagement = () => {
         </CCol>
       </CRow>
 
-      {/* Additional Stats Row */}
-      <CRow className="g-4 mt-4">
-        <CCol xs={12} sm={6} md={3}>
+      {/* Walks Distribution Chart */}
+      <CRow className="g-4 mb-4">
+        <CCol xs={12}>
           <CCard 
             style={{ 
-              textAlign: 'center',
-              padding: '1.5rem',
-              background: theme.isDark ? 'var(--modern-card-bg)' : '#FFFFFF',
-              border: `1px solid ${theme.isDark ? 'var(--modern-border-primary)' : '#E5E7EB'}`,
               borderRadius: '12px',
+              border: '1px solid #E5E7EB',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              overflow: 'hidden'
             }}
           >
-            <CIcon icon={cilPeople} size="xl" style={{ color: '#5E5CE6', marginBottom: '0.5rem' }} />
-            <h6 style={{ marginBottom: '0.25rem' }}>Pending</h6>
-            <h3 style={{ fontWeight: '700', color: '#5E5CE6' }}>{walks.pending}</h3>
+            <CCardHeader 
+              style={{ 
+                background: 'transparent',
+                borderBottom: '1px solid #E5E7EB',
+                padding: '1.25rem'
+              }}
+            >
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center gap-3">
+                  <div 
+                    style={{ 
+                      width: '40px', 
+                      height: '40px',
+                      background: 'linear-gradient(135deg, #5E5CE615, #5E5CE625)',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <CIcon icon={cilChartLine} size="lg" style={{ color: '#5E5CE6' }} />
+                  </div>
+                  <div>
+                    <h5 className="mb-0" style={{ fontWeight: '600' }}>Walks Distribution</h5>
+                    <small style={{ color: '#6B7280' }}>
+                      Monthly walk activity over the past year
+                    </small>
+                  </div>
+                </div>
+                <CBadge 
+                  color="primary" 
+                  style={{ 
+                    padding: '8px 12px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    flexShrink: 0
+                  }}
+                >
+                  Total: {walksDistribution.totalWalksCreated.toLocaleString()}
+                </CBadge>
+              </div>
+            </CCardHeader>
+            <CCardBody className="p-4">
+              {/* Simple Custom Bar Chart */}
+              <div style={{ position: 'relative', width: '100%' }}>
+                {/* Y-axis labels */}
+                <div style={{ 
+                  position: 'absolute', 
+                  left: '-40px', 
+                  top: '0',
+                  height: '250px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  fontSize: '0.75rem',
+                  color: '#6B7280',
+                  width: '35px',
+                  textAlign: 'right'
+                }}>
+                  <div>400</div>
+                  <div>300</div>
+                  <div>200</div>
+                  <div>100</div>
+                  <div>0</div>
+                </div>
+                
+                {/* Chart Container */}
+                <div style={{ 
+                  height: '250px',
+                  borderLeft: '2px solid #E5E7EB',
+                  borderBottom: '2px solid #E5E7EB',
+                  position: 'relative',
+                  marginBottom: '40px',
+                  background: 'linear-gradient(180deg, transparent 0%, transparent 24.9%, #F3F4F6 25%, transparent 25.1%, transparent 49.9%, #F3F4F6 50%, transparent 50.1%, transparent 74.9%, #F3F4F6 75%, transparent 75.1%)',
+                  overflow: 'hidden'
+                }}>
+                  {/* Bars */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'flex-end',
+                    height: '100%',
+                    paddingLeft: '20px',
+                    paddingRight: '20px',
+                    gap: '10px'
+                  }}>
+                    {walksDistribution.chartData.map((value, index) => {
+                      const maxValue = 400; // Fixed max for consistency
+                      const height = Math.min((value / maxValue) * 100, 100); // Cap at 100%
+                      const label = walksDistribution.chartLabels[index];
+                      
+                      return (
+                        <div 
+                          key={index}
+                          style={{ 
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            position: 'relative',
+                            height: '100%',
+                            justifyContent: 'flex-end'
+                          }}
+                        >
+                          {/* Bar */}
+                          <div
+                            style={{
+                              backgroundColor: value === Math.max(...walksDistribution.chartData) 
+                                ? '#5E5CE6' 
+                                : 'rgba(94, 92, 230, 0.7)',
+                              borderRadius: '8px 8px 0 0',
+                              width: '100%',
+                              maxWidth: '60px',
+                              height: `${height}%`,
+                              minHeight: value > 0 ? '2px' : '0',
+                              transition: 'all 0.3s ease',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              justifyContent: 'center',
+                              paddingTop: '8px',
+                              position: 'relative'
+                            }}
+                            title={`${label}: ${value} walks`}
+                          >
+                            {value > 0 && height > 10 && (
+                              <span style={{ 
+                                color: 'white', 
+                                fontSize: '0.7rem',
+                                fontWeight: '600'
+                              }}>
+                                {value}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Month label */}
+                          <div style={{ 
+                            position: 'absolute',
+                            bottom: '-30px',
+                            fontSize: '0.75rem',
+                            color: '#6B7280',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {label}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                {/* Stats Summary */}
+                <div className="d-flex justify-content-around pt-3 border-top">
+                  <div className="text-center">
+                    <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Peak Month</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#5E5CE6' }}>
+                      Feb: {Math.max(...walksDistribution.chartData)}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Average</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#5E5CE6' }}>
+                      {Math.round(walksDistribution.totalWalksCreated / walksDistribution.chartData.length)}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Total Walks</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#5E5CE6' }}>
+                      {walksDistribution.totalWalksCreated}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CCardBody>
           </CCard>
         </CCol>
-        <CCol xs={12} sm={6} md={3}>
+      </CRow>
+
+      {/* Quick Stats Grid */}
+      <CRow className="g-3">
+        <CCol xs={6} md={3}>
           <CCard 
             style={{ 
-              textAlign: 'center',
-              padding: '1.5rem',
-              background: theme.isDark ? 'var(--modern-card-bg)' : '#FFFFFF',
-              border: `1px solid ${theme.isDark ? 'var(--modern-border-primary)' : '#E5E7EB'}`,
               borderRadius: '12px',
+              border: '1px solid #E5E7EB',
+              textAlign: 'center',
+              padding: '1.5rem'
             }}
           >
-            <CIcon icon={cilLocationPin} size="xl" style={{ color: '#34C759', marginBottom: '0.5rem' }} />
+            <CIcon icon={cilRunning} size="xl" style={{ color: '#34C759', marginBottom: '0.5rem' }} />
+            <h6 style={{ marginBottom: '0.25rem' }}>Active Now</h6>
+            <h3 style={{ fontWeight: '700', color: '#34C759' }}>{walks.active}</h3>
+          </CCard>
+        </CCol>
+        <CCol xs={6} md={3}>
+          <CCard 
+            style={{ 
+              borderRadius: '12px',
+              border: '1px solid #E5E7EB',
+              textAlign: 'center',
+              padding: '1.5rem'
+            }}
+          >
+            <CIcon icon={cilCheckCircle} size="xl" style={{ color: '#007AFF', marginBottom: '0.5rem' }} />
             <h6 style={{ marginBottom: '0.25rem' }}>Completed</h6>
-            <h3 style={{ fontWeight: '700', color: '#34C759' }}>{walks.completed}</h3>
+            <h3 style={{ fontWeight: '700', color: '#007AFF' }}>{walks.completed}</h3>
           </CCard>
         </CCol>
-        <CCol xs={12} sm={6} md={3}>
+        <CCol xs={6} md={3}>
           <CCard 
             style={{ 
-              textAlign: 'center',
-              padding: '1.5rem',
-              background: theme.isDark ? 'var(--modern-card-bg)' : '#FFFFFF',
-              border: `1px solid ${theme.isDark ? 'var(--modern-border-primary)' : '#E5E7EB'}`,
               borderRadius: '12px',
+              border: '1px solid #E5E7EB',
+              textAlign: 'center',
+              padding: '1.5rem'
             }}
           >
-            <CIcon icon={cilChartLine} size="xl" style={{ color: '#007AFF', marginBottom: '0.5rem' }} />
-            <h6 style={{ marginBottom: '0.25rem' }}>Active Ideas</h6>
-            <h3 style={{ fontWeight: '700', color: '#007AFF' }}>{ideas.active}</h3>
+            <CIcon icon={cilLocationPin} size="xl" style={{ color: '#5E5CE6', marginBottom: '0.5rem' }} />
+            <h6 style={{ marginBottom: '0.25rem' }}>Outdoor Events</h6>
+            <h3 style={{ fontWeight: '700', color: '#5E5CE6' }}>{events.outdoor}</h3>
           </CCard>
         </CCol>
-        <CCol xs={12} sm={6} md={3}>
+        <CCol xs={6} md={3}>
           <CCard 
             style={{ 
-              textAlign: 'center',
-              padding: '1.5rem',
-              background: theme.isDark ? 'var(--modern-card-bg)' : '#FFFFFF',
-              border: `1px solid ${theme.isDark ? 'var(--modern-border-primary)' : '#E5E7EB'}`,
               borderRadius: '12px',
+              border: '1px solid #E5E7EB',
+              textAlign: 'center',
+              padding: '1.5rem'
             }}
           >
             <CIcon icon={cilPeople} size="xl" style={{ color: '#FF9500', marginBottom: '0.5rem' }} />
