@@ -10,7 +10,6 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { 
-  cilCompass, 
   cilCalendar, 
   cilLightbulb,
   cilChartLine,
