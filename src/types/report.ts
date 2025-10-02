@@ -1,3 +1,11 @@
+export enum ReportType {
+  USER = "user",
+  EVENT = "event",
+  SPACE = "space",
+  IDEA = "idea",
+  MESSAGE = "message",
+}
+
 export interface Report {
   _id: string;
   reported_by: {
@@ -9,19 +17,19 @@ export interface Report {
     school_id?: string;
     campus_id?: string;
   };
-  report_type: 'user' | 'message' | 'event' | 'idea';
+  report_type: ReportType;
   reported_item_id: string;
-  reason: 
-    | 'harassment_threats'
-    | 'inappropriate_content'
-    | 'spam_fake'
-    | 'underage_policy'
-    | 'made_uncomfortable'
-    | 'violence_dangerous'
-    | 'intellectual_property'
-    | 'other';
+  reason:
+    | "harassment_threats"
+    | "inappropriate_content"
+    | "spam_fake"
+    | "underage_policy"
+    | "made_uncomfortable"
+    | "violence_dangerous"
+    | "intellectual_property"
+    | "other";
   description: string;
-  status: 'pending' | 'under_review' | 'resolved' | 'dismissed';
+  status: "pending" | "under_review" | "resolved" | "dismissed";
   reviewed_by?: {
     _id: string;
     first_name: string;
@@ -114,7 +122,7 @@ export interface UserBanHistory {
 }
 
 export interface UpdateReportStatusRequest {
-  status: 'pending' | 'under_review' | 'resolved' | 'dismissed';
+  status: "pending" | "under_review" | "resolved" | "dismissed";
   admin_notes?: string;
 }
 
@@ -130,13 +138,13 @@ export interface UnbanUserRequest {
 
 export interface BulkUpdateReportsRequest {
   report_ids: string[];
-  action: 'resolve' | 'dismiss' | 'under_review';
+  action: "resolve" | "dismiss" | "under_review";
   admin_notes?: string;
 }
 
 export interface ReportFilters {
-  status?: 'pending' | 'under_review' | 'resolved' | 'dismissed';
-  report_type?: 'user' | 'message' | 'event' | 'idea';
+  status?: "pending" | "under_review" | "resolved" | "dismissed";
+  report_type?: ReportType;
   school_id?: string;
   page?: number;
   limit?: number;

@@ -16,24 +16,25 @@ export const reportService = {
     try {
       console.log("🚀 Fetching reports with filters:", filters);
       const params = new URLSearchParams();
-      
+
       if (filters?.status) params.append("status", filters.status);
-      if (filters?.report_type) params.append("report_type", filters.report_type);
+      if (filters?.report_type)
+        params.append("report_type", filters.report_type);
       if (filters?.school_id) params.append("school_id", filters.school_id);
       if (filters?.page) params.append("page", filters.page.toString());
       if (filters?.limit) params.append("limit", filters.limit.toString());
-      
+
       const response = await api.get(`/admin/reports?${params.toString()}`);
       console.log("✅ Reports response:", response.data);
-      
+
       return {
         reports: response.data.reports || [],
         pagination: response.data.pagination || {
           page: 1,
           limit: 20,
           total: 0,
-          pages: 0
-        }
+          pages: 0,
+        },
       };
     } catch (error) {
       console.error("❌ Failed to fetch reports:", error);
@@ -71,13 +72,13 @@ export const reportService = {
   },
 
   // Ban user from report
-  banUserFromReport: async (
-    reportId: string,
-    data: BanUserRequest
-  ) => {
+  banUserFromReport: async (reportId: string, data: BanUserRequest) => {
     try {
       console.log("🚀 Banning user from report:", reportId, data);
-      const response = await api.post(`/admin/reports/${reportId}/ban-user`, data);
+      const response = await api.post(
+        `/admin/reports/${reportId}/ban-user`,
+        data
+      );
       console.log("✅ Ban user response:", response.data);
       return response.data;
     } catch (error) {
@@ -108,22 +109,24 @@ export const reportService = {
     try {
       console.log("🚀 Fetching banned users:", params);
       const queryParams = new URLSearchParams();
-      
+
       if (params?.page) queryParams.append("page", params.page.toString());
       if (params?.limit) queryParams.append("limit", params.limit.toString());
       if (params?.search) queryParams.append("search", params.search);
-      
-      const response = await api.get(`/admin/users/banned?${queryParams.toString()}`);
+
+      const response = await api.get(
+        `/admin/users/banned?${queryParams.toString()}`
+      );
       console.log("✅ Banned users response:", response.data);
-      
+
       return {
         users: response.data.users || [],
         pagination: response.data.pagination || {
           page: 1,
           limit: 20,
           total: 0,
-          pages: 0
-        }
+          pages: 0,
+        },
       };
     } catch (error) {
       console.error("❌ Failed to fetch banned users:", error);
@@ -135,7 +138,10 @@ export const reportService = {
   unbanUser: async (userId: string, data?: UnbanUserRequest) => {
     try {
       console.log("🚀 Unbanning user:", userId, data);
-      const response = await api.post(`/admin/users/${userId}/unban`, data || {});
+      const response = await api.post(
+        `/admin/users/${userId}/unban`,
+        data || {}
+      );
       console.log("✅ Unban response:", response.data);
       return response.data;
     } catch (error) {
@@ -162,7 +168,7 @@ export const reportService = {
     try {
       console.log("🚀 Removing user:", userId);
       const response = await api.delete(`/admin/users/${userId}/remove`, {
-        data: { reason, sendEmail }
+        data: { reason, sendEmail },
       });
       console.log("✅ Remove user response:", response.data);
       return response.data;

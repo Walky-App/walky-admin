@@ -33,27 +33,33 @@ import CIcon from "@coreui/icons-react";
 import {
   cilArrowLeft,
   cilBan,
-
   cilClock,
   cilUser,
-
   cilDescription,
   cilHistory,
 } from "@coreui/icons";
-import { ReportDetails as ReportDetailsType, BanUserRequest, ReportedUser } from "../types/report";
+import {
+  ReportDetails as ReportDetailsType,
+  BanUserRequest,
+  ReportedUser,
+  ReportType,
+} from "../types/report";
 import { reportService } from "../services/reportService";
 import { format } from "date-fns";
 
 const ReportDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [report, setReport] = useState<ReportDetailsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null);
+  const [alert, setAlert] = useState<{
+    type: "success" | "danger";
+    message: string;
+  } | null>(null);
   const [activeTab, setActiveTab] = useState("details");
-  
+
   // Ban modal
   const [banModal, setBanModal] = useState(false);
   const [banForm, setBanForm] = useState<BanUserRequest>({
@@ -61,7 +67,7 @@ const ReportDetails: React.FC = () => {
     ban_reason: "",
     resolve_related_reports: false,
   });
-  
+
   // Update status modal
   const [statusModal, setStatusModal] = useState(false);
   const [statusForm, setStatusForm] = useState({
@@ -72,14 +78,15 @@ const ReportDetails: React.FC = () => {
   // Fetch report details
   const fetchReportDetails = async () => {
     if (!id) return;
-    
+
     try {
       setLoading(true);
       const data = await reportService.getReportDetails(id);
       setReport(data);
       setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch report details";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch report details";
       setError(errorMessage);
       console.error("Error fetching report details:", err);
     } finally {
@@ -89,24 +96,32 @@ const ReportDetails: React.FC = () => {
 
   useEffect(() => {
     fetchReportDetails();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Update report status
   const handleUpdateStatus = async () => {
     if (!id || !statusForm.status) return;
-    
+
     try {
       await reportService.updateReportStatus(id, {
-        status: statusForm.status as "pending" | "under_review" | "resolved" | "dismissed",
+        status: statusForm.status as
+          | "pending"
+          | "under_review"
+          | "resolved"
+          | "dismissed",
         admin_notes: statusForm.admin_notes,
       });
-      setAlert({ type: "success", message: "Report status updated successfully" });
+      setAlert({
+        type: "success",
+        message: "Report status updated successfully",
+      });
       setStatusModal(false);
       setStatusForm({ status: "", admin_notes: "" });
       fetchReportDetails();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to update status";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update status";
       setAlert({ type: "danger", message: errorMessage });
     }
   };
@@ -114,15 +129,20 @@ const ReportDetails: React.FC = () => {
   // Ban user
   const handleBanUser = async () => {
     if (!id) return;
-    
+
     try {
       await reportService.banUserFromReport(id, banForm);
       setAlert({ type: "success", message: "User banned successfully" });
       setBanModal(false);
-      setBanForm({ ban_duration: undefined, ban_reason: "", resolve_related_reports: false });
+      setBanForm({
+        ban_duration: undefined,
+        ban_reason: "",
+        resolve_related_reports: false,
+      });
       fetchReportDetails();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to ban user";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to ban user";
       setAlert({ type: "danger", message: errorMessage });
     }
   };
@@ -180,7 +200,12 @@ const ReportDetails: React.FC = () => {
       <CAlert color="danger">
         {error || "Report not found"}
         <br />
-        <CButton color="primary" size="sm" className="mt-2" onClick={() => navigate("/reports")}>
+        <CButton
+          color="primary"
+          size="sm"
+          className="mt-2"
+          onClick={() => navigate("/reports")}
+        >
           Back to Reports
         </CButton>
       </CAlert>
@@ -219,13 +244,22 @@ const ReportDetails: React.FC = () => {
                   </CBadge>
                 </div>
                 <CButtonGroup>
-                  {report.report_type === "user" && report.status !== "resolved" && (
-                    <CButton color="danger" size="sm" onClick={() => setBanModal(true)}>
-                      <CIcon icon={cilBan} className="me-1" />
-                      Ban User
-                    </CButton>
-                  )}
-                  <CButton color="info" size="sm" onClick={() => setStatusModal(true)}>
+                  {report.report_type === ReportType.USER &&
+                    report.status !== "resolved" && (
+                      <CButton
+                        color="danger"
+                        size="sm"
+                        onClick={() => setBanModal(true)}
+                      >
+                        <CIcon icon={cilBan} className="me-1" />
+                        Ban User
+                      </CButton>
+                    )}
+                  <CButton
+                    color="info"
+                    size="sm"
+                    onClick={() => setStatusModal(true)}
+                  >
                     <CIcon icon={cilClock} className="me-1" />
                     Update Status
                   </CButton>
@@ -299,12 +333,22 @@ const ReportDetails: React.FC = () => {
                             </CListGroupItem>
                             <CListGroupItem className="d-flex justify-content-between">
                               <strong>Created:</strong>
-                              <span>{format(new Date(report.createdAt), "MMM dd, yyyy HH:mm")}</span>
+                              <span>
+                                {format(
+                                  new Date(report.createdAt),
+                                  "MMM dd, yyyy HH:mm"
+                                )}
+                              </span>
                             </CListGroupItem>
                             {report.resolved_at && (
                               <CListGroupItem className="d-flex justify-content-between">
                                 <strong>Resolved:</strong>
-                                <span>{format(new Date(report.resolved_at), "MMM dd, yyyy HH:mm")}</span>
+                                <span>
+                                  {format(
+                                    new Date(report.resolved_at),
+                                    "MMM dd, yyyy HH:mm"
+                                  )}
+                                </span>
                               </CListGroupItem>
                             )}
                           </CListGroup>
@@ -328,9 +372,12 @@ const ReportDetails: React.FC = () => {
                             </CAvatar>
                             <div>
                               <h6 className="mb-0">
-                                {report.reported_by.first_name} {report.reported_by.last_name}
+                                {report.reported_by.first_name}{" "}
+                                {report.reported_by.last_name}
                               </h6>
-                              <small className="text-muted">{report.reported_by.email}</small>
+                              <small className="text-muted">
+                                {report.reported_by.email}
+                              </small>
                             </div>
                           </div>
                           {report.school_id && (
@@ -346,15 +393,22 @@ const ReportDetails: React.FC = () => {
                           <CCardHeader>Reviewed By</CCardHeader>
                           <CCardBody>
                             <div className="d-flex align-items-center">
-                              <CAvatar color="success" textColor="white" className="me-3">
+                              <CAvatar
+                                color="success"
+                                textColor="white"
+                                className="me-3"
+                              >
                                 {`${report.reviewed_by.first_name?.[0]}${report.reviewed_by.last_name?.[0]}`}
                               </CAvatar>
                               <div>
                                 <h6 className="mb-0">
-                                  {report.reviewed_by.first_name} {report.reviewed_by.last_name}
+                                  {report.reviewed_by.first_name}{" "}
+                                  {report.reviewed_by.last_name}
                                 </h6>
                                 {report.reviewed_by.email && (
-                                  <small className="text-muted">{report.reviewed_by.email}</small>
+                                  <small className="text-muted">
+                                    {report.reviewed_by.email}
+                                  </small>
                                 )}
                               </div>
                             </div>
@@ -387,35 +441,55 @@ const ReportDetails: React.FC = () => {
 
                 {/* Reported Item Tab */}
                 <CTabPane visible={activeTab === "reported"}>
-                  {report.report_type === "user" && report.reportedItem ? (
+                  {report.report_type === ReportType.USER &&
+                  report.reportedItem ? (
                     <CCard>
                       <CCardHeader>Reported User</CCardHeader>
                       <CCardBody>
                         <CRow>
                           <CCol md={4} className="text-center">
                             <CAvatar
-                              src={(report.reportedItem as ReportedUser).avatar_url || undefined}
+                              src={
+                                (report.reportedItem as ReportedUser)
+                                  .avatar_url || undefined
+                              }
                               size="xl"
                               color="danger"
                               textColor="white"
                               className="mb-3"
                             >
-                              {!(report.reportedItem as ReportedUser).avatar_url &&
-                                `${(report.reportedItem as ReportedUser).first_name?.[0]}${(report.reportedItem as ReportedUser).last_name?.[0]}`}
+                              {!(report.reportedItem as ReportedUser)
+                                .avatar_url &&
+                                `${
+                                  (report.reportedItem as ReportedUser)
+                                    .first_name?.[0]
+                                }${
+                                  (report.reportedItem as ReportedUser)
+                                    .last_name?.[0]
+                                }`}
                             </CAvatar>
                             <h5>
-                              {(report.reportedItem as ReportedUser).first_name} {(report.reportedItem as ReportedUser).last_name}
+                              {(report.reportedItem as ReportedUser).first_name}{" "}
+                              {(report.reportedItem as ReportedUser).last_name}
                             </h5>
-                            <p className="text-muted">{(report.reportedItem as ReportedUser).email}</p>
-                            {(report.reportedItem as ReportedUser).is_banned && (
+                            <p className="text-muted">
+                              {(report.reportedItem as ReportedUser).email}
+                            </p>
+                            {(report.reportedItem as ReportedUser)
+                              .is_banned && (
                               <CBadge color="danger" className="mb-2">
                                 BANNED
                               </CBadge>
                             )}
-                            {(report.reportedItem as ReportedUser).report_count && (
+                            {(report.reportedItem as ReportedUser)
+                              .report_count && (
                               <div>
                                 <CBadge color="warning">
-                                  {(report.reportedItem as ReportedUser).report_count} Reports
+                                  {
+                                    (report.reportedItem as ReportedUser)
+                                      .report_count
+                                  }{" "}
+                                  Reports
                                 </CBadge>
                               </div>
                             )}
@@ -423,21 +497,37 @@ const ReportDetails: React.FC = () => {
                           <CCol md={8}>
                             <CListGroup flush>
                               <CListGroupItem>
-                                <strong>User ID:</strong> {(report.reportedItem as ReportedUser)._id}
+                                <strong>User ID:</strong>{" "}
+                                {(report.reportedItem as ReportedUser)._id}
                               </CListGroupItem>
-                              {(report.reportedItem as ReportedUser).profile_bio && (
+                              {(report.reportedItem as ReportedUser)
+                                .profile_bio && (
                                 <CListGroupItem>
-                                  <strong>Bio:</strong> {(report.reportedItem as ReportedUser).profile_bio}
+                                  <strong>Bio:</strong>{" "}
+                                  {
+                                    (report.reportedItem as ReportedUser)
+                                      .profile_bio
+                                  }
                                 </CListGroupItem>
                               )}
-                              {(report.reportedItem as ReportedUser).school_id && (
+                              {(report.reportedItem as ReportedUser)
+                                .school_id && (
                                 <CListGroupItem>
-                                  <strong>School:</strong> {(report.reportedItem as ReportedUser).school_id?.name}
+                                  <strong>School:</strong>{" "}
+                                  {
+                                    (report.reportedItem as ReportedUser)
+                                      .school_id?.name
+                                  }
                                 </CListGroupItem>
                               )}
-                              {(report.reportedItem as ReportedUser).ban_reason && (
+                              {(report.reportedItem as ReportedUser)
+                                .ban_reason && (
                                 <CListGroupItem>
-                                  <strong>Ban Reason:</strong> {(report.reportedItem as ReportedUser).ban_reason}
+                                  <strong>Ban Reason:</strong>{" "}
+                                  {
+                                    (report.reportedItem as ReportedUser)
+                                      .ban_reason
+                                  }
                                 </CListGroupItem>
                               )}
                             </CListGroup>
@@ -450,12 +540,18 @@ const ReportDetails: React.FC = () => {
                       <CCardHeader>Reported Item Snapshot</CCardHeader>
                       <CCardBody>
                         <pre className="mb-0">
-                          {JSON.stringify(report.reported_item_snapshot, null, 2)}
+                          {JSON.stringify(
+                            report.reported_item_snapshot,
+                            null,
+                            2
+                          )}
                         </pre>
                       </CCardBody>
                     </CCard>
                   ) : (
-                    <CAlert color="info">No additional information available for this item.</CAlert>
+                    <CAlert color="info">
+                      No additional information available for this item.
+                    </CAlert>
                   )}
                 </CTabPane>
 
@@ -472,7 +568,10 @@ const ReportDetails: React.FC = () => {
                               <small className="text-muted">
                                 Reported by {related.reported_by.first_name}{" "}
                                 {related.reported_by.last_name} on{" "}
-                                {format(new Date(related.createdAt), "MMM dd, yyyy")}
+                                {format(
+                                  new Date(related.createdAt),
+                                  "MMM dd, yyyy"
+                                )}
                               </small>
                             </div>
                             <CBadge color={getStatusColor(related.status)}>
@@ -505,7 +604,9 @@ const ReportDetails: React.FC = () => {
               onChange={(e) =>
                 setBanForm({
                   ...banForm,
-                  ban_duration: e.target.value ? parseInt(e.target.value) : undefined,
+                  ban_duration: e.target.value
+                    ? parseInt(e.target.value)
+                    : undefined,
                 })
               }
             >
@@ -523,7 +624,9 @@ const ReportDetails: React.FC = () => {
             <CFormTextarea
               rows={3}
               value={banForm.ban_reason}
-              onChange={(e) => setBanForm({ ...banForm, ban_reason: e.target.value })}
+              onChange={(e) =>
+                setBanForm({ ...banForm, ban_reason: e.target.value })
+              }
               placeholder="Enter reason for ban..."
             />
           </div>
@@ -533,7 +636,10 @@ const ReportDetails: React.FC = () => {
               label="Resolve all related reports for this user"
               checked={banForm.resolve_related_reports}
               onChange={(e) =>
-                setBanForm({ ...banForm, resolve_related_reports: e.target.checked })
+                setBanForm({
+                  ...banForm,
+                  resolve_related_reports: e.target.checked,
+                })
               }
             />
           </div>
@@ -558,7 +664,9 @@ const ReportDetails: React.FC = () => {
             <CFormLabel>New Status</CFormLabel>
             <CFormSelect
               value={statusForm.status}
-              onChange={(e) => setStatusForm({ ...statusForm, status: e.target.value })}
+              onChange={(e) =>
+                setStatusForm({ ...statusForm, status: e.target.value })
+              }
             >
               <option value="">Select Status</option>
               <option value="pending">Pending</option>
@@ -572,7 +680,9 @@ const ReportDetails: React.FC = () => {
             <CFormTextarea
               rows={3}
               value={statusForm.admin_notes}
-              onChange={(e) => setStatusForm({ ...statusForm, admin_notes: e.target.value })}
+              onChange={(e) =>
+                setStatusForm({ ...statusForm, admin_notes: e.target.value })
+              }
               placeholder="Enter notes about this status change..."
             />
           </div>

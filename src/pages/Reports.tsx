@@ -37,7 +37,12 @@ import {
   cilXCircle,
   cilClock,
 } from "@coreui/icons";
-import { Report, ReportFilters, BanUserRequest } from "../types/report";
+import {
+  Report,
+  ReportFilters,
+  BanUserRequest,
+  ReportType,
+} from "../types/report";
 import { reportService } from "../services/reportService";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -48,8 +53,11 @@ const Reports: React.FC = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null);
-  
+  const [alert, setAlert] = useState<{
+    type: "success" | "danger";
+    message: string;
+  } | null>(null);
+
   // Filters
   const [filters, setFilters] = useState<ReportFilters>({
     status: undefined,
@@ -57,7 +65,7 @@ const Reports: React.FC = () => {
     page: 1,
     limit: 20,
   });
-  
+
   // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
@@ -65,10 +73,12 @@ const Reports: React.FC = () => {
     total: 0,
     pages: 0,
   });
-  
+
   // Selected reports for bulk actions
-  const [selectedReports, setSelectedReports] = useState<Set<string>>(new Set());
-  
+  const [selectedReports, setSelectedReports] = useState<Set<string>>(
+    new Set()
+  );
+
   // Ban modal
   const [banModal, setBanModal] = useState<{
     show: boolean;
@@ -81,13 +91,13 @@ const Reports: React.FC = () => {
     userId: null,
     userName: "",
   });
-  
+
   const [banForm, setBanForm] = useState<BanUserRequest>({
     ban_duration: undefined,
     ban_reason: "",
     resolve_related_reports: false,
   });
-  
+
   // Bulk action modal
   const [bulkModal, setBulkModal] = useState({
     show: false,
@@ -95,117 +105,19 @@ const Reports: React.FC = () => {
   });
   const [bulkNotes, setBulkNotes] = useState("");
 
-  // Fetch reports
-  // Generate realistic dummy data
-  const generateDummyReports = (): Report[] => {
-    const reportTypes = ['user', 'message', 'event', 'idea'];
-    const statuses = ['pending', 'under_review', 'resolved', 'dismissed'];
-    const campuses = ['Main Campus', 'North Campus', 'Engineering Campus', 'Medical Campus'];
-    const names = [
-      'Alex Johnson', 'Sarah Chen', 'Michael Rodriguez', 'Emma Thompson', 'David Kim',
-      'Jessica Martinez', 'Ryan O\'Connor', 'Priya Patel', 'James Wilson', 'Maria Garcia',
-      'Kevin Zhang', 'Ashley Brown', 'Tyler Davis', 'Sophia Lee', 'Brandon Miller',
-      'Olivia Taylor', 'Jordan Smith', 'Isabella Jones', 'Noah Williams', 'Ava Anderson'
-    ];
-    
-    const reasons = [
-      'harassment_threats',
-      'inappropriate_content', 
-      'spam_fake',
-      'underage_policy',
-      'made_uncomfortable',
-      'violence_dangerous',
-      'intellectual_property',
-      'other'
-    ];
-
-    return Array.from({ length: 47 }, (_, i) => {
-      const reportedAt = new Date();
-      reportedAt.setDate(reportedAt.getDate() - Math.floor(Math.random() * 30));
-      
-      const updatedAt = new Date(reportedAt);
-      updatedAt.setHours(updatedAt.getHours() + Math.floor(Math.random() * 48));
-
-      const reporterName = names[Math.floor(Math.random() * names.length)];
-      const reportedUserName = names[Math.floor(Math.random() * names.length)];
-      const selectedReason = reasons[Math.floor(Math.random() * reasons.length)];
-      
-      return {
-        id: `report_${String(i + 1).padStart(3, '0')}`,
-        _id: `report_${String(i + 1).padStart(3, '0')}`,
-        reporter_id: `user_${Math.floor(Math.random() * 1000) + 1}`,
-        reporter_name: reporterName,
-        reported_user_id: `user_${Math.floor(Math.random() * 1000) + 1}`,
-        reported_user_name: reportedUserName,
-        reported_item_id: `item_${Math.floor(Math.random() * 1000) + 1}`,
-        school_id: {
-          _id: `school_${Math.floor(Math.random() * 10) + 1}`,
-          name: campuses[Math.floor(Math.random() * campuses.length)]
-        },
-        report_type: reportTypes[Math.floor(Math.random() * reportTypes.length)] as 'user' | 'message' | 'event' | 'idea',
-        reason: selectedReason as 'harassment_threats' | 'inappropriate_content' | 'spam_fake' | 'underage_policy' | 'made_uncomfortable' | 'violence_dangerous' | 'intellectual_property' | 'other',
-        description: 'This behavior violates our community guidelines and creates an unsafe environment for other users.',
-        status: statuses[Math.floor(Math.random() * statuses.length)] as 'pending' | 'under_review' | 'resolved' | 'dismissed',
-        campus_name: campuses[Math.floor(Math.random() * campuses.length)],
-        reported_at: reportedAt.toISOString(),
-        updated_at: updatedAt.toISOString(),
-        createdAt: reportedAt.toISOString(),
-        updatedAt: updatedAt.toISOString(),
-        reported_by: {
-          _id: `user_${Math.floor(Math.random() * 1000) + 1}`,
-          first_name: reporterName.split(' ')[0],
-          last_name: reporterName.split(' ')[1] || '',
-          email: `${reporterName.toLowerCase().replace(' ', '.')}@university.edu`
-        },
-        reported_user: {
-          _id: `user_${Math.floor(Math.random() * 1000) + 1}`,
-          first_name: reportedUserName.split(' ')[0],
-          last_name: reportedUserName.split(' ')[1] || '',
-          email: `${reportedUserName.toLowerCase().replace(' ', '.')}@university.edu`
-        },
-        admin_notes: Math.random() > 0.7 ? 'Reviewed and appropriate action taken' : undefined,
-        evidence_urls: Math.random() > 0.8 ? ['screenshot1.jpg', 'evidence2.png'] : undefined,
-      } as Report;
-    });
-  };
-
+  // Fetch reports from API
   const fetchReports = async () => {
     try {
       setLoading(true);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const allReports = generateDummyReports();
-      
-      // Apply filters
-      let filteredReports = allReports;
-      
-      if (filters.status) {
-        filteredReports = filteredReports.filter(report => report.status === filters.status);
-      }
-      
-      if (filters.report_type) {
-        filteredReports = filteredReports.filter(report => report.report_type === filters.report_type);
-      }
-      
-      // Apply pagination
-      const page = filters.page || 1;
-      const limit = filters.limit || 20;
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedReports = filteredReports.slice(startIndex, endIndex);
-      
-      setReports(paginatedReports);
-      setPagination({
-        page: page,
-        limit: limit,
-        total: filteredReports.length,
-        pages: Math.ceil(filteredReports.length / limit),
-      });
       setError(null);
+
+      const result = await reportService.getReports(filters);
+
+      setReports(result.reports);
+      setPagination(result.pagination);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch reports";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch reports";
       setError(errorMessage);
       console.error("Error fetching reports:", err);
     } finally {
@@ -215,15 +127,18 @@ const Reports: React.FC = () => {
 
   useEffect(() => {
     fetchReports();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   // Handle filter changes
-  const handleFilterChange = (key: keyof ReportFilters, value: string | number | undefined) => {
+  const handleFilterChange = (
+    key: keyof ReportFilters,
+    value: string | number | undefined
+  ) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value || undefined,
-      page: key === "page" ? (typeof value === 'number' ? value : 1) : 1, // Reset to page 1 when other filters change
+      page: key === "page" ? (typeof value === "number" ? value : 1) : 1, // Reset to page 1 when other filters change
     }));
   };
 
@@ -254,10 +169,14 @@ const Reports: React.FC = () => {
       await reportService.updateReportStatus(reportId, {
         status: status as "pending" | "under_review" | "resolved" | "dismissed",
       });
-      setAlert({ type: "success", message: "Report status updated successfully" });
+      setAlert({
+        type: "success",
+        message: "Report status updated successfully",
+      });
       fetchReports();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to update status";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update status";
       setAlert({ type: "danger", message: errorMessage });
     }
   };
@@ -265,15 +184,20 @@ const Reports: React.FC = () => {
   // Ban user
   const handleBanUser = async () => {
     if (!banModal.reportId) return;
-    
+
     try {
       await reportService.banUserFromReport(banModal.reportId, banForm);
       setAlert({ type: "success", message: "User banned successfully" });
       setBanModal({ show: false, reportId: null, userId: null, userName: "" });
-      setBanForm({ ban_duration: undefined, ban_reason: "", resolve_related_reports: false });
+      setBanForm({
+        ban_duration: undefined,
+        ban_reason: "",
+        resolve_related_reports: false,
+      });
       fetchReports();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to ban user";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to ban user";
       setAlert({ type: "danger", message: errorMessage });
     }
   };
@@ -281,20 +205,24 @@ const Reports: React.FC = () => {
   // Bulk update
   const handleBulkUpdate = async () => {
     if (!bulkModal.action || selectedReports.size === 0) return;
-    
+
     try {
       await reportService.bulkUpdateReports({
         report_ids: Array.from(selectedReports),
         action: bulkModal.action,
         admin_notes: bulkNotes,
       });
-      setAlert({ type: "success", message: `${selectedReports.size} reports updated successfully` });
+      setAlert({
+        type: "success",
+        message: `${selectedReports.size} reports updated successfully`,
+      });
       setBulkModal({ show: false, action: "" });
       setBulkNotes("");
       setSelectedReports(new Set());
       fetchReports();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to update reports";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update reports";
       setAlert({ type: "danger", message: errorMessage });
     }
   };
@@ -316,16 +244,18 @@ const Reports: React.FC = () => {
   };
 
   // Get report type color
-  const getTypeColor = (type: string) => {
+  const getTypeColor = (type: ReportType) => {
     switch (type) {
-      case "user":
+      case ReportType.USER:
         return "danger";
-      case "message":
+      case ReportType.MESSAGE:
         return "warning";
-      case "event":
+      case ReportType.EVENT:
         return "info";
-      case "idea":
+      case ReportType.IDEA:
         return "success";
+      case ReportType.SPACE:
+        return "secondary";
       default:
         return "primary";
     }
@@ -340,9 +270,9 @@ const Reports: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       {/* Modern Page Header */}
-      <div 
+      <div
         className="mb-5 dashboard-header"
         style={{
           background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`,
@@ -350,12 +280,12 @@ const Reports: React.FC = () => {
           padding: "24px 32px",
           border: `1px solid ${theme.colors.borderColor}20`,
           backdropFilter: "blur(10px)",
-          boxShadow: theme.isDark 
-            ? "0 8px 32px rgba(0,0,0,0.3)" 
+          boxShadow: theme.isDark
+            ? "0 8px 32px rgba(0,0,0,0.3)"
             : "0 8px 32px rgba(0,0,0,0.08)",
         }}
       >
-        <h1 
+        <h1
           style={{
             fontSize: "28px",
             fontWeight: "700",
@@ -368,7 +298,7 @@ const Reports: React.FC = () => {
         >
           📋 Report Management
         </h1>
-        <p 
+        <p
           style={{
             margin: 0,
             color: theme.colors.textMuted,
@@ -381,16 +311,16 @@ const Reports: React.FC = () => {
       </div>
 
       {alert && (
-        <CAlert 
-          color={alert.type} 
-          dismissible 
+        <CAlert
+          color={alert.type}
+          dismissible
           onClose={() => setAlert(null)}
           className="mb-4"
           style={{
             borderRadius: "12px",
             border: "none",
-            boxShadow: theme.isDark 
-              ? "0 4px 20px rgba(0,0,0,0.2)" 
+            boxShadow: theme.isDark
+              ? "0 4px 20px rgba(0,0,0,0.2)"
               : "0 4px 20px rgba(0,0,0,0.05)",
           }}
         >
@@ -410,7 +340,9 @@ const Reports: React.FC = () => {
                       <CButton
                         color="success"
                         size="sm"
-                        onClick={() => setBulkModal({ show: true, action: "resolve" })}
+                        onClick={() =>
+                          setBulkModal({ show: true, action: "resolve" })
+                        }
                       >
                         <CIcon icon={cilCheckCircle} className="me-1" />
                         Resolve ({selectedReports.size})
@@ -418,7 +350,9 @@ const Reports: React.FC = () => {
                       <CButton
                         color="secondary"
                         size="sm"
-                        onClick={() => setBulkModal({ show: true, action: "dismiss" })}
+                        onClick={() =>
+                          setBulkModal({ show: true, action: "dismiss" })
+                        }
                       >
                         <CIcon icon={cilXCircle} className="me-1" />
                         Dismiss ({selectedReports.size})
@@ -426,7 +360,9 @@ const Reports: React.FC = () => {
                       <CButton
                         color="info"
                         size="sm"
-                        onClick={() => setBulkModal({ show: true, action: "under_review" })}
+                        onClick={() =>
+                          setBulkModal({ show: true, action: "under_review" })
+                        }
                       >
                         <CIcon icon={cilClock} className="me-1" />
                         Review ({selectedReports.size})
@@ -442,7 +378,9 @@ const Reports: React.FC = () => {
                 <CCol md={3}>
                   <CFormSelect
                     value={filters.status || ""}
-                    onChange={(e) => handleFilterChange("status", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("status", e.target.value)
+                    }
                   >
                     <option value="">All Status</option>
                     <option value="pending">Pending</option>
@@ -454,19 +392,24 @@ const Reports: React.FC = () => {
                 <CCol md={3}>
                   <CFormSelect
                     value={filters.report_type || ""}
-                    onChange={(e) => handleFilterChange("report_type", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("report_type", e.target.value)
+                    }
                   >
                     <option value="">All Types</option>
-                    <option value="user">User</option>
-                    <option value="message">Message</option>
-                    <option value="event">Event</option>
-                    <option value="idea">Idea</option>
+                    <option value={ReportType.USER}>User</option>
+                    <option value={ReportType.MESSAGE}>Message</option>
+                    <option value={ReportType.EVENT}>Event</option>
+                    <option value={ReportType.IDEA}>Idea</option>
+                    <option value={ReportType.SPACE}>Space</option>
                   </CFormSelect>
                 </CCol>
                 <CCol md={3}>
                   <CFormSelect
                     value={filters.limit}
-                    onChange={(e) => handleFilterChange("limit", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      handleFilterChange("limit", parseInt(e.target.value))
+                    }
                   >
                     <option value="10">10 per page</option>
                     <option value="20">20 per page</option>
@@ -475,7 +418,11 @@ const Reports: React.FC = () => {
                   </CFormSelect>
                 </CCol>
                 <CCol md={3}>
-                  <CButton color="primary" onClick={fetchReports} disabled={loading}>
+                  <CButton
+                    color="primary"
+                    onClick={fetchReports}
+                    disabled={loading}
+                  >
                     Refresh
                   </CButton>
                 </CCol>
@@ -489,7 +436,9 @@ const Reports: React.FC = () => {
               ) : error ? (
                 <CAlert color="danger">{error}</CAlert>
               ) : reports.length === 0 ? (
-                <CAlert color="info">No reports found with the current filters.</CAlert>
+                <CAlert color="info">
+                  No reports found with the current filters.
+                </CAlert>
               ) : (
                 <>
                   <CTable hover responsive>
@@ -497,7 +446,10 @@ const Reports: React.FC = () => {
                       <CTableRow>
                         <CTableHeaderCell>
                           <CFormCheck
-                            checked={selectedReports.size === reports.length && reports.length > 0}
+                            checked={
+                              selectedReports.size === reports.length &&
+                              reports.length > 0
+                            }
                             onChange={handleSelectAll}
                           />
                         </CTableHeaderCell>
@@ -534,9 +486,12 @@ const Reports: React.FC = () => {
                             </div>
                           </CTableDataCell>
                           <CTableDataCell>
-                            {report.reported_by.first_name} {report.reported_by.last_name}
+                            {report.reported_by.first_name}{" "}
+                            {report.reported_by.last_name}
                             <br />
-                            <small className="text-muted">{report.reported_by.email}</small>
+                            <small className="text-muted">
+                              {report.reported_by.email}
+                            </small>
                           </CTableDataCell>
                           <CTableDataCell>
                             {format(new Date(report.createdAt), "MMM dd, yyyy")}
@@ -555,34 +510,39 @@ const Reports: React.FC = () => {
                               <CButton
                                 color="info"
                                 variant="ghost"
-                                onClick={() => navigate(`/reports/${report._id}`)}
+                                onClick={() =>
+                                  navigate(`/reports/${report._id}`)
+                                }
                                 title="View Details"
                               >
                                 <CIcon icon={cilDescription} />
                               </CButton>
-                              {report.report_type === "user" && report.status === "pending" && (
-                                <CButton
-                                  color="danger"
-                                  variant="ghost"
-                                  onClick={() =>
-                                    setBanModal({
-                                      show: true,
-                                      reportId: report._id,
-                                      userId: report.reported_item_id,
-                                      userName: `User ${report.reported_item_id}`,
-                                    })
-                                  }
-                                  title="Ban User"
-                                >
-                                  <CIcon icon={cilBan} />
-                                </CButton>
-                              )}
+                              {report.report_type === ReportType.USER &&
+                                report.status === "pending" && (
+                                  <CButton
+                                    color="danger"
+                                    variant="ghost"
+                                    onClick={() =>
+                                      setBanModal({
+                                        show: true,
+                                        reportId: report._id,
+                                        userId: report.reported_item_id,
+                                        userName: `User ${report.reported_item_id}`,
+                                      })
+                                    }
+                                    title="Ban User"
+                                  >
+                                    <CIcon icon={cilBan} />
+                                  </CButton>
+                                )}
                               {report.status === "pending" && (
                                 <>
                                   <CButton
                                     color="success"
                                     variant="ghost"
-                                    onClick={() => handleUpdateStatus(report._id, "resolved")}
+                                    onClick={() =>
+                                      handleUpdateStatus(report._id, "resolved")
+                                    }
                                     title="Resolve"
                                   >
                                     <CIcon icon={cilCheckCircle} />
@@ -590,7 +550,12 @@ const Reports: React.FC = () => {
                                   <CButton
                                     color="secondary"
                                     variant="ghost"
-                                    onClick={() => handleUpdateStatus(report._id, "dismissed")}
+                                    onClick={() =>
+                                      handleUpdateStatus(
+                                        report._id,
+                                        "dismissed"
+                                      )
+                                    }
                                     title="Dismiss"
                                   >
                                     <CIcon icon={cilXCircle} />
@@ -609,28 +574,36 @@ const Reports: React.FC = () => {
                     <CPagination align="center" aria-label="Page navigation">
                       <CPaginationItem
                         disabled={pagination.page === 1}
-                        onClick={() => handleFilterChange("page", pagination.page - 1)}
+                        onClick={() =>
+                          handleFilterChange("page", pagination.page - 1)
+                        }
                       >
                         Previous
                       </CPaginationItem>
-                      {[...Array(Math.min(5, pagination.pages))].map((_, index) => {
-                        const pageNum = index + 1;
-                        return (
-                          <CPaginationItem
-                            key={pageNum}
-                            active={pageNum === pagination.page}
-                            onClick={() => handleFilterChange("page", pageNum)}
-                          >
-                            {pageNum}
-                          </CPaginationItem>
-                        );
-                      })}
+                      {[...Array(Math.min(5, pagination.pages))].map(
+                        (_, index) => {
+                          const pageNum = index + 1;
+                          return (
+                            <CPaginationItem
+                              key={pageNum}
+                              active={pageNum === pagination.page}
+                              onClick={() =>
+                                handleFilterChange("page", pageNum)
+                              }
+                            >
+                              {pageNum}
+                            </CPaginationItem>
+                          );
+                        }
+                      )}
                       {pagination.pages > 5 && (
                         <CPaginationItem disabled>...</CPaginationItem>
                       )}
                       <CPaginationItem
                         disabled={pagination.page === pagination.pages}
-                        onClick={() => handleFilterChange("page", pagination.page + 1)}
+                        onClick={() =>
+                          handleFilterChange("page", pagination.page + 1)
+                        }
                       >
                         Next
                       </CPaginationItem>
@@ -644,7 +617,10 @@ const Reports: React.FC = () => {
       </CRow>
 
       {/* Ban User Modal */}
-      <CModal visible={banModal.show} onClose={() => setBanModal({ ...banModal, show: false })}>
+      <CModal
+        visible={banModal.show}
+        onClose={() => setBanModal({ ...banModal, show: false })}
+      >
         <CModalHeader>
           <CModalTitle>Ban User</CModalTitle>
         </CModalHeader>
@@ -656,7 +632,9 @@ const Reports: React.FC = () => {
               onChange={(e) =>
                 setBanForm({
                   ...banForm,
-                  ban_duration: e.target.value ? parseInt(e.target.value) : undefined,
+                  ban_duration: e.target.value
+                    ? parseInt(e.target.value)
+                    : undefined,
                 })
               }
             >
@@ -674,7 +652,9 @@ const Reports: React.FC = () => {
             <CFormTextarea
               rows={3}
               value={banForm.ban_reason}
-              onChange={(e) => setBanForm({ ...banForm, ban_reason: e.target.value })}
+              onChange={(e) =>
+                setBanForm({ ...banForm, ban_reason: e.target.value })
+              }
               placeholder="Enter reason for ban..."
             />
           </div>
@@ -684,7 +664,10 @@ const Reports: React.FC = () => {
               label="Resolve all related reports for this user"
               checked={banForm.resolve_related_reports}
               onChange={(e) =>
-                setBanForm({ ...banForm, resolve_related_reports: e.target.checked })
+                setBanForm({
+                  ...banForm,
+                  resolve_related_reports: e.target.checked,
+                })
               }
             />
           </div>
@@ -703,15 +686,25 @@ const Reports: React.FC = () => {
       </CModal>
 
       {/* Bulk Action Modal */}
-      <CModal visible={bulkModal.show} onClose={() => setBulkModal({ ...bulkModal, show: false })}>
+      <CModal
+        visible={bulkModal.show}
+        onClose={() => setBulkModal({ ...bulkModal, show: false })}
+      >
         <CModalHeader>
           <CModalTitle>
-            Bulk {bulkModal.action === "resolve" ? "Resolve" : bulkModal.action === "dismiss" ? "Dismiss" : "Review"} Reports
+            Bulk{" "}
+            {bulkModal.action === "resolve"
+              ? "Resolve"
+              : bulkModal.action === "dismiss"
+              ? "Dismiss"
+              : "Review"}{" "}
+            Reports
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <p>
-            You are about to {bulkModal.action} {selectedReports.size} selected reports.
+            You are about to {bulkModal.action} {selectedReports.size} selected
+            reports.
           </p>
           <div className="mb-3">
             <CFormLabel>Admin Notes (Optional)</CFormLabel>
@@ -747,7 +740,7 @@ const Reports: React.FC = () => {
               : "Mark as Under Review"}
           </CButton>
         </CModalFooter>
-              </CModal>
+      </CModal>
     </div>
   );
 };
