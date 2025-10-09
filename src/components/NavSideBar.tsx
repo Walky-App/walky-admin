@@ -115,6 +115,26 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
+        {/* Roles & Permissions */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/roles"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Roles & Permissions
+          </NavLink>
+        </CNavItem>
+
+        {/* Users & Roles */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/users-roles"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Users & Roles
+          </NavLink>
+        </CNavItem>
+
         <CNavTitle className="px-3 sidebar-title">
           MODERATION
         </CNavTitle>
@@ -136,6 +156,16 @@ export const Sidebar = ({ visible }: SidebarProps) => {
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             Banned Users
+          </NavLink>
+        </CNavItem>
+
+        {/* Locked Users */}
+        <CNavItem className="px-3 py-2">
+          <NavLink
+            to="/locked-users"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            Locked Users
           </NavLink>
         </CNavItem>
 
