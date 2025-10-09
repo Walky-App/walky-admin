@@ -19,7 +19,7 @@ export const schoolService = {
       ? response.data.data
       : [];
 
-    return payload.map((s) => ({
+    return payload.map((s: School) => ({
       ...s,
       id: s.id || s._id || "",
     }));
