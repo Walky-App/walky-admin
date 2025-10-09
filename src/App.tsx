@@ -41,6 +41,9 @@ import CampusSync from "./pages/CampusSync";
 import Reports from "./pages/Reports";
 import ReportDetails from "./pages/ReportDetails";
 import BannedUsers from "./pages/BannedUsers";
+import LockedUsers from "./pages/LockedUsers";
+import RolesManagement from "./pages/RolesManagement";
+import UsersRoles from "./pages/UsersRoles";
 
 import "./App.css";
 import "./styles/modern-theme.css";
@@ -1216,6 +1219,9 @@ function App() {
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/reports/:id" element={<ReportDetails />} />
                 <Route path="/banned-users" element={<BannedUsers />} />
+                <Route path="/locked-users" element={<LockedUsers />} />
+                <Route path="/roles" element={<RolesManagement />} />
+                <Route path="/users-roles" element={<UsersRoles />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
