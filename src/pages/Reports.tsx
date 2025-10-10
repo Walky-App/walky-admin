@@ -377,12 +377,12 @@ const Reports: React.FC = () => {
               <CRow className="mb-3">
                 <CCol md={3}>
                   <CFormSelect
-                    value={filters.status || ""}
+                    value={filters.status || "all"}
                     onChange={(e) =>
-                      handleFilterChange("status", e.target.value)
+                      handleFilterChange("status", e.target.value === "all" ? undefined : e.target.value)
                     }
                   >
-                    <option value="">All Status</option>
+                    <option value="all">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="under_review">Under Review</option>
                     <option value="resolved">Resolved</option>
@@ -391,12 +391,12 @@ const Reports: React.FC = () => {
                 </CCol>
                 <CCol md={3}>
                   <CFormSelect
-                    value={filters.report_type || ""}
+                    value={filters.report_type || "all"}
                     onChange={(e) =>
-                      handleFilterChange("report_type", e.target.value)
+                      handleFilterChange("report_type", e.target.value === "all" ? undefined : e.target.value)
                     }
                   >
-                    <option value="">All Types</option>
+                    <option value="all">All Types</option>
                     <option value={ReportType.USER}>User</option>
                     <option value={ReportType.MESSAGE}>Message</option>
                     <option value={ReportType.EVENT}>Event</option>
@@ -628,17 +628,17 @@ const Reports: React.FC = () => {
           <div className="mb-3">
             <CFormLabel>Ban Duration</CFormLabel>
             <CFormSelect
-              value={banForm.ban_duration || ""}
+              value={banForm.ban_duration?.toString() || "permanent"}
               onChange={(e) =>
                 setBanForm({
                   ...banForm,
-                  ban_duration: e.target.value
-                    ? parseInt(e.target.value)
-                    : undefined,
+                  ban_duration: e.target.value === "permanent"
+                    ? undefined
+                    : parseInt(e.target.value),
                 })
               }
             >
-              <option value="">Permanent Ban</option>
+              <option value="permanent">Permanent Ban</option>
               <option value="1">1 Day</option>
               <option value="3">3 Days</option>
               <option value="7">7 Days</option>
