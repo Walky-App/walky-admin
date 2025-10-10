@@ -18,6 +18,9 @@ export interface Ambassador {
   updatedAt?: string; // MongoDB timestamp
   created_by?: string;
   school_id?: string;
+  role?: string; // Primary role (super_admin, campus_admin, etc.)
+  roles?: Array<{ role: string; campus_id?: string }>; // Array of roles with optional campus scope
+  permissions?: string[]; // Array of permission strings
   __v?: number; // MongoDB version key
 }
 

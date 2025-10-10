@@ -36,6 +36,7 @@ import {
   cilCheckCircle,
   cilXCircle,
   cilClock,
+  cilInfo,
 } from "@coreui/icons";
 import {
   Report,
@@ -327,6 +328,72 @@ const Reports: React.FC = () => {
           {alert.message}
         </CAlert>
       )}
+
+      {/* Statistics Cards */}
+      <CRow className="g-3 mb-4">
+        <CCol xs={12} sm={6} lg={3}>
+          <CCard className="text-center">
+            <CCardBody>
+              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#6B7280" }}>
+                {reports.length}
+              </div>
+              <div style={{ fontSize: "0.875rem", color: "#9CA3AF" }}>
+                Total Reports
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol xs={12} sm={6} lg={3}>
+          <CCard className="text-center">
+            <CCardBody>
+              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#FF9500" }}>
+                {reports.filter((r) => r.status === "pending").length}
+              </div>
+              <div style={{ fontSize: "0.875rem", color: "#9CA3AF" }}>
+                Pending Review
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol xs={12} sm={6} lg={3}>
+          <CCard className="text-center">
+            <CCardBody>
+              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#007AFF" }}>
+                {reports.filter((r) => r.status === "under_review").length}
+              </div>
+              <div style={{ fontSize: "0.875rem", color: "#9CA3AF" }}>
+                Under Review
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol xs={12} sm={6} lg={3}>
+          <CCard className="text-center">
+            <CCardBody>
+              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#34C759" }}>
+                {reports.filter((r) => r.status === "resolved").length}
+              </div>
+              <div style={{ fontSize: "0.875rem", color: "#9CA3AF" }}>
+                Resolved
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      {/* Support Channel Alert */}
+      <CAlert color="info" className="mb-4">
+        <div className="d-flex align-items-center">
+          <CIcon icon={cilInfo} size="lg" className="me-3" />
+          <div>
+            <strong>Need Direct Support?</strong>
+            <p className="mb-0" style={{ fontSize: "0.875rem" }}>
+              For urgent safety concerns or complex cases, contact Walky support directly at{" "}
+              <a href="mailto:support@walkyapp.com">support@walkyapp.com</a>
+            </p>
+          </div>
+        </div>
+      </CAlert>
 
       <CRow>
         <CCol xs={12}>

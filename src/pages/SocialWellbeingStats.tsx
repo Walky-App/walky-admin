@@ -176,7 +176,7 @@ const SocialWellbeingStats = () => {
       setError(null)
 
       try {
-        const response = await API.get(`/api/admin/wellbeing-stats?period=${period}`)
+        const response = await API.get(`/api/admin/analytics/wellbeing-stats?period=${period}`)
         setMetrics(response.data)
       } catch (err) {
         console.error('Failed to fetch wellbeing statistics:', err)
