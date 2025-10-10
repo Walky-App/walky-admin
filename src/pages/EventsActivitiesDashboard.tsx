@@ -1,6 +1,6 @@
 /**
  * Events & Activities Dashboard
- * Purpose: Supervise events, spaces, and ideas with KPIs
+ * Purpose: Supervise events and spaces with KPIs
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -33,7 +33,6 @@ import CIcon from '@coreui/icons-react'
 import {
   cilCalendar,
   cilHome,
-  cilLightbulb,
   cilPeople,
   cilStar,
 } from '@coreui/icons'
@@ -48,10 +47,6 @@ interface KPIs {
   topSpace: {
     name: string
     members: number
-  }
-  topIdea: {
-    title: string
-    collaborations: number
   }
 }
 
@@ -78,20 +73,9 @@ interface Space {
   isActive: boolean
 }
 
-interface Idea {
-  _id: string
-  title: string
-  description: string
-  createdBy: string
-  collaborators: number
-  isInstitutionallyRelevant: boolean
-  viewCount: number
-  createdAt: Date
-}
-
 const EventsActivitiesDashboard = () => {
 
-  const [activeTab, setActiveTab] = useState<'events' | 'spaces' | 'ideas'>('events')
+  const [activeTab, setActiveTab] = useState<'events' | 'spaces'>('events')
   const [kpis, setKPIs] = useState<KPIs | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -101,10 +85,6 @@ const EventsActivitiesDashboard = () => {
 
   // Spaces state
   const [spaces, setSpaces] = useState<Space[]>([])
-
-  // Ideas state
-  const [ideas, setIdeas] = useState<Idea[]>([])
-  const [ideaFilter, setIdeaFilter] = useState<'all' | 'relevant'>('all')
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
@@ -117,7 +97,7 @@ const EventsActivitiesDashboard = () => {
 
   const fetchKPIs = async () => {
     try {
-      const response = await API.get('/api/admin/activities/kpis')
+      const response = await API.get('/api/admin/analytics/activities/kpis')
       setKPIs(response.data)
     } catch (error) {
       console.error('Failed to fetch KPIs:', error)
@@ -125,7 +105,6 @@ const EventsActivitiesDashboard = () => {
       setKPIs({
         topEvent: { name: 'Spring Music Festival', attendance: 247 },
         topSpace: { name: 'Computer Science Club', members: 156 },
-        topIdea: { title: 'Campus Sustainability Initiative', collaborations: 23 },
       })
     }
   }
@@ -143,11 +122,6 @@ const EventsActivitiesDashboard = () => {
           params: { page: currentPage, limit: itemsPerPage },
         })
         setSpaces(response.data.spaces)
-      } else {
-        const response = await API.get('/api/admin/ideas', {
-          params: { page: currentPage, limit: itemsPerPage },
-        })
-        setIdeas(response.data.ideas)
       }
     } catch (error) {
       console.error(`Failed to fetch ${activeTab}:`, error)
@@ -175,17 +149,6 @@ const EventsActivitiesDashboard = () => {
           ownerName: `Owner ${i}`,
           isActive: i % 5 !== 0,
         })))
-      } else {
-        setIdeas(Array.from({ length: 15 }, (_, i) => ({
-          _id: `idea-${i}`,
-          title: `Idea ${i + 1}`,
-          description: `Description for idea ${i + 1}`,
-          createdBy: `User ${i}`,
-          collaborators: Math.floor(Math.random() * 20),
-          isInstitutionallyRelevant: i % 3 === 0,
-          viewCount: Math.floor(Math.random() * 500),
-          createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000),
-        })))
       }
     } finally {
       setLoading(false)
@@ -200,13 +163,13 @@ const EventsActivitiesDashboard = () => {
           Events & Activities Dashboard
         </h2>
         <p style={{ color: '#6B7280', marginBottom: 0 }}>
-          Supervise events, spaces, and ideas across your campuses
+          Supervise events and spaces across your campuses
         </p>
       </div>
 
       {/* KPIs */}
       <CRow className="g-4 mb-4">
-        <CCol xs={12} md={4}>
+        <CCol xs={12} md={6}>
           <CCard style={{ border: '1px solid #E5E7EB', borderRadius: '12px' }}>
             <CCardBody className="text-center p-4">
               <div
@@ -236,7 +199,7 @@ const EventsActivitiesDashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol xs={12} md={4}>
+        <CCol xs={12} md={6}>
           <CCard style={{ border: '1px solid #E5E7EB', borderRadius: '12px' }}>
             <CCardBody className="text-center p-4">
               <div
@@ -266,36 +229,6 @@ const EventsActivitiesDashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol xs={12} md={4}>
-          <CCard style={{ border: '1px solid #E5E7EB', borderRadius: '12px' }}>
-            <CCardBody className="text-center p-4">
-              <div
-                style={{
-                  width: '56px',
-                  height: '56px',
-                  background: 'linear-gradient(135deg, #FF950015, #FF950025)',
-                  borderRadius: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 1rem',
-                }}
-              >
-                <CIcon icon={cilLightbulb} size="xl" style={{ color: '#FF9500' }} />
-              </div>
-              <h6 style={{ color: '#6B7280', fontSize: '0.875rem', textTransform: 'uppercase' }}>
-                Top Idea
-              </h6>
-              <h4 style={{ fontWeight: '700', marginBottom: '0.5rem' }}>
-                {kpis?.topIdea.title || 'N/A'}
-              </h4>
-              <CBadge color="warning" style={{ fontSize: '0.875rem' }}>
-                <CIcon icon={cilPeople} className="me-1" />
-                {kpis?.topIdea.collaborations || 0} collaborators
-              </CBadge>
-            </CCardBody>
-          </CCard>
-        </CCol>
       </CRow>
 
       {/* Tabs */}
@@ -320,16 +253,6 @@ const EventsActivitiesDashboard = () => {
               >
                 <CIcon icon={cilHome} className="me-2" />
                 Spaces
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink
-                active={activeTab === 'ideas'}
-                onClick={() => { setActiveTab('ideas'); setCurrentPage(1) }}
-                style={{ cursor: 'pointer' }}
-              >
-                <CIcon icon={cilLightbulb} className="me-2" />
-                Ideas
               </CNavLink>
             </CNavItem>
           </CNav>
@@ -465,78 +388,6 @@ const EventsActivitiesDashboard = () => {
                         </CTableDataCell>
                       </CTableRow>
                     ))}
-                  </CTableBody>
-                </CTable>
-              )}
-            </CTabPane>
-
-            {/* Ideas Tab */}
-            <CTabPane visible={activeTab === 'ideas'}>
-              <div className="d-flex justify-content-end mb-3">
-                <CButtonGroup>
-                  <CButton
-                    color={ideaFilter === 'all' ? 'primary' : 'secondary'}
-                    variant={ideaFilter === 'all' ? 'outline' : 'ghost'}
-                    onClick={() => setIdeaFilter('all')}
-                  >
-                    All Ideas
-                  </CButton>
-                  <CButton
-                    color={ideaFilter === 'relevant' ? 'primary' : 'secondary'}
-                    variant={ideaFilter === 'relevant' ? 'outline' : 'ghost'}
-                    onClick={() => setIdeaFilter('relevant')}
-                  >
-                    Institutionally Relevant
-                  </CButton>
-                </CButtonGroup>
-              </div>
-
-              {loading ? (
-                <div className="text-center py-5">
-                  <CSpinner />
-                </div>
-              ) : (
-                <CTable hover responsive>
-                  <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell>Idea Title</CTableHeaderCell>
-                      <CTableHeaderCell>Creator</CTableHeaderCell>
-                      <CTableHeaderCell>Collaborators</CTableHeaderCell>
-                      <CTableHeaderCell>Views</CTableHeaderCell>
-                      <CTableHeaderCell>Created</CTableHeaderCell>
-                      <CTableHeaderCell>Status</CTableHeaderCell>
-                      <CTableHeaderCell>Actions</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    {ideas
-                      .filter(idea => ideaFilter === 'all' || idea.isInstitutionallyRelevant)
-                      .map((idea) => (
-                        <CTableRow key={idea._id}>
-                          <CTableDataCell style={{ fontWeight: '500' }}>
-                            {idea.title}
-                            {idea.isInstitutionallyRelevant && (
-                              <CBadge color="success" className="ms-2">
-                                Relevant
-                              </CBadge>
-                            )}
-                          </CTableDataCell>
-                          <CTableDataCell>{idea.createdBy}</CTableDataCell>
-                          <CTableDataCell>{idea.collaborators}</CTableDataCell>
-                          <CTableDataCell>{idea.viewCount}</CTableDataCell>
-                          <CTableDataCell>
-                            {new Date(idea.createdAt).toLocaleDateString()}
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            <CBadge color="info">Active</CBadge>
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            <CButton size="sm" color="primary" variant="ghost">
-                              View Details
-                            </CButton>
-                          </CTableDataCell>
-                        </CTableRow>
-                      ))}
                   </CTableBody>
                 </CTable>
               )}

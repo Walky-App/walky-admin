@@ -204,15 +204,14 @@ const ReportsSafety = () => {
 
     setProcessing(true)
     try {
-      await API.post('/api/admin/ban-user', {
-        user_id: selectedReport.reported_item_id,
-        duration_days: parseInt(banDuration),
-        reason: banReason,
-        related_report_id: selectedReport._id,
+      await API.post(`/api/admin/reports/${selectedReport._id}/ban-user`, {
+        ban_duration: parseInt(banDuration),
+        ban_reason: banReason,
+        resolve_related_reports: true,
       })
 
-      // Also update report status to resolved
-      await handleUpdateStatus('resolved')
+      // Refresh reports list
+      await fetchReports()
 
       alert(`User banned for ${banDuration} days`)
       setShowBanModal(false)

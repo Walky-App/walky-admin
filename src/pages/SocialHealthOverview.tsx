@@ -197,8 +197,7 @@ const SocialHealthOverview = () => {
       setError(null)
 
       try {
-        // TODO: Replace with actual API endpoint
-        const response = await API.get(`/api/admin/social-health-metrics?period=${period}`)
+        const response = await API.get(`/api/admin/analytics/social-health-metrics?period=${period}`)
         setMetrics(response.data)
       } catch (err) {
         console.error('Failed to fetch social health metrics:', err)
