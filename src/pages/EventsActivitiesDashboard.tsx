@@ -94,7 +94,7 @@ const EventsActivitiesDashboard = () => {
 
   const fetchKPIs = async () => {
     try {
-      const response = await API.get('/api/admin/analytics/activities/kpis')
+      const response = await API.get('/admin/analytics/activities/kpis')
       setKPIs(response.data)
       setError(null)
     } catch (err: unknown) {
@@ -109,12 +109,12 @@ const EventsActivitiesDashboard = () => {
     setLoading(true)
     try {
       if (activeTab === 'events') {
-        const response = await API.get('/api/admin/events', {
+        const response = await API.get('/admin/events', {
           params: { page: currentPage, limit: itemsPerPage },
         })
         setEvents(response.data.events)
       } else if (activeTab === 'spaces') {
-        const response = await API.get('/api/admin/spaces', {
+        const response = await API.get('/admin/spaces', {
           params: { page: currentPage, limit: itemsPerPage },
         })
         setSpaces(response.data.spaces)

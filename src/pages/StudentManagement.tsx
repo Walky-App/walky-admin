@@ -87,7 +87,7 @@ const StudentManagement = () => {
   const fetchStudents = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await API.get('/api/admin/analytics/students', {
+      const response = await API.get('/admin/analytics/students', {
         params: {
           page: currentPage,
           limit: studentsPerPage,

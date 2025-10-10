@@ -176,7 +176,7 @@ const SocialWellbeingStats = () => {
       setError(null)
 
       try {
-        const response = await API.get(`/api/admin/analytics/wellbeing-stats?period=${period}`)
+        const response = await API.get(`/admin/analytics/wellbeing-stats?period=${period}`)
         setMetrics(response.data)
         setError(null)
       } catch (err: unknown) {

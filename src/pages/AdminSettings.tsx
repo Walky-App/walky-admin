@@ -102,7 +102,7 @@ const AdminSettings = () => {
   const fetchProfile = async () => {
     setLoading(true)
     try {
-      const response = await API.get('/api/admin/profile')
+      const response = await API.get('/admin/profile')
       const profileData = response.data
 
       setProfile(profileData)
@@ -155,7 +155,7 @@ const AdminSettings = () => {
     setErrorMessage(null)
 
     try {
-      await API.patch('/api/admin/profile', {
+      await API.patch('/admin/profile', {
         first_name: firstName,
         last_name: lastName,
         email,
@@ -187,7 +187,7 @@ const AdminSettings = () => {
     setErrorMessage(null)
 
     try {
-      await API.post('/api/admin/change-password', {
+      await API.post('/admin/change-password', {
         currentPassword,
         newPassword,
       })
@@ -212,12 +212,12 @@ const AdminSettings = () => {
     try {
       if (!twoFactorEnabled) {
         // Enable 2FA
-        await API.post('/api/admin/enable-2fa')
+        await API.post('/admin/enable-2fa')
         setTwoFactorEnabled(true)
         setSuccessMessage('Two-factor authentication enabled')
       } else {
         // Disable 2FA
-        await API.post('/api/admin/disable-2fa')
+        await API.post('/admin/disable-2fa')
         setTwoFactorEnabled(false)
         setSuccessMessage('Two-factor authentication disabled')
       }
@@ -235,7 +235,7 @@ const AdminSettings = () => {
     setErrorMessage(null)
 
     try {
-      await API.patch('/api/admin/notification-settings', {
+      await API.patch('/admin/notification-settings', {
         emailNotifications,
         securityAlerts,
       })
@@ -252,7 +252,7 @@ const AdminSettings = () => {
   const handleLogoutAllDevices = async () => {
     setSaving(true)
     try {
-      await API.post('/api/admin/logout-all-devices')
+      await API.post('/admin/logout-all-devices')
       setSuccessMessage('Logged out of all devices successfully')
       setShowLogoutAllModal(false)
     } catch (error) {
@@ -271,7 +271,7 @@ const AdminSettings = () => {
 
     setSaving(true)
     try {
-      await API.delete('/api/admin/account')
+      await API.delete('/admin/account')
       // Redirect to login or home page after deletion
       window.location.href = '/login'
     } catch (error) {
