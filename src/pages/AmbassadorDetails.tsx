@@ -14,6 +14,7 @@ import {
   CSpinner,
   CFormTextarea,
   CFormFeedback,
+  CBadge,
 } from "@coreui/react";
 import { useTheme } from "../hooks/useTheme";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -193,6 +194,13 @@ const AmbassadorDetails = ({
     major: "",
   });
 
+  // Read-only role and permissions data
+  const [roleData, setRoleData] = useState<{
+    role?: string;
+    roles?: Array<{ role: string; campus_id?: string }>;
+    permissions?: string[];
+  }>({});
+
   // Removed unused fillSampleData function
 
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -230,6 +238,13 @@ const AmbassadorDetails = ({
           graduation_year: ambassadorData.graduation_year || undefined,
           major: ambassadorData.major || "",
         });
+
+        // Set role data separately (read-only)
+        setRoleData({
+          role: ambassadorData.role,
+          roles: ambassadorData.roles,
+          permissions: ambassadorData.permissions,
+        });
       } else {
         // Fallback: fetch from API
         console.log(
@@ -251,6 +266,13 @@ const AmbassadorDetails = ({
               bio: ambassadorData.bio || "",
               graduation_year: ambassadorData.graduation_year || undefined,
               major: ambassadorData.major || "",
+            });
+
+            // Set role data separately (read-only)
+            setRoleData({
+              role: ambassadorData.role,
+              roles: ambassadorData.roles,
+              permissions: ambassadorData.permissions,
             });
           })
           .catch((error) => {
@@ -645,6 +667,79 @@ const AmbassadorDetails = ({
                 </CFormText>
               </CCol>
             </CRow>
+
+            {/* Super Admin Status & Roles/Permissions - Read Only */}
+            {isEditing && (roleData.role || roleData.roles || roleData.permissions) && (
+              <>
+                <hr className="my-4" />
+                <h5 className="mb-3">Access Control (Read-Only)</h5>
+
+                {/* Super Admin Status */}
+                {roleData.role && (
+                  <CRow className="mb-3">
+                    <CCol md={12}>
+                      <CFormLabel>Super Admin Status</CFormLabel>
+                      <div className="p-3 bg-light rounded">
+                        <CBadge
+                          color={roleData.role === 'super_admin' ? 'success' : 'secondary'}
+                          style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}
+                        >
+                          {roleData.role === 'super_admin' ? '✓ Super Admin' : roleData.role.replace('_', ' ').toUpperCase()}
+                        </CBadge>
+                        <CFormText className="d-block mt-2">
+                          Primary system role for this ambassador
+                        </CFormText>
+                      </div>
+                    </CCol>
+                  </CRow>
+                )}
+
+                {/* Roles & Permissions */}
+                <CRow className="mb-3">
+                  <CCol md={12}>
+                    <CFormLabel>Roles & Permissions</CFormLabel>
+                    <div className="p-3 bg-light rounded">
+                      {/* Additional Roles */}
+                      {roleData.roles && roleData.roles.length > 0 && (
+                        <div className="mb-3">
+                          <strong className="d-block mb-2">Additional Roles:</strong>
+                          <div className="d-flex flex-wrap gap-2">
+                            {roleData.roles.map((roleItem, index) => (
+                              <CBadge key={index} color="info">
+                                {roleItem.role}
+                                {roleItem.campus_id && ` (Campus: ${roleItem.campus_id})`}
+                              </CBadge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Permissions */}
+                      {roleData.permissions && roleData.permissions.length > 0 && (
+                        <div>
+                          <strong className="d-block mb-2">Permissions:</strong>
+                          <div className="d-flex flex-wrap gap-2">
+                            {roleData.permissions.map((permission, index) => (
+                              <CBadge key={index} color="primary" className="text-wrap">
+                                {permission}
+                              </CBadge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {(!roleData.roles || roleData.roles.length === 0) &&
+                       (!roleData.permissions || roleData.permissions.length === 0) && (
+                        <CFormText>No additional roles or permissions assigned</CFormText>
+                      )}
+                    </div>
+                    <CFormText className="d-block mt-2">
+                      These roles and permissions are managed by system administrators and cannot be modified here.
+                    </CFormText>
+                  </CCol>
+                </CRow>
+              </>
+            )}
 
             <div className="d-flex justify-content-end gap-2 mt-4">
               <CButton

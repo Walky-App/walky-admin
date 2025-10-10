@@ -48,7 +48,6 @@ import CampusAnalytics from "./pages/CampusAnalytics";
 import SocialHealthOverview from "./pages/SocialHealthOverview";
 import StudentManagement from "./pages/StudentManagement";
 import EventsActivitiesDashboard from "./pages/EventsActivitiesDashboard";
-import ReportsSafety from "./pages/ReportsSafety";
 import SocialWellbeingStats from "./pages/SocialWellbeingStats";
 import AdminSettings from "./pages/AdminSettings";
 
@@ -1233,7 +1232,6 @@ function App() {
                 <Route path="/social-health" element={<SocialHealthOverview />} />
                 <Route path="/student-management" element={<StudentManagement />} />
                 <Route path="/events-activities" element={<EventsActivitiesDashboard />} />
-                <Route path="/reports-safety" element={<ReportsSafety />} />
                 <Route path="/wellbeing-stats" element={<SocialWellbeingStats />} />
                 <Route path="/admin-settings" element={<AdminSettings />} />
               </Routes>

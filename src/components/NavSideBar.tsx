@@ -114,16 +114,6 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           </NavLink>
         </CNavItem>
 
-        {/* Reports & Safety */}
-        <CNavItem className="px-3 py-2">
-          <NavLink
-            to="/reports-safety"
-            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-          >
-            Reports & Safety
-          </NavLink>
-        </CNavItem>
-
         {/* Wellbeing Statistics */}
         <CNavItem className="px-3 py-2">
           <NavLink
@@ -192,13 +182,13 @@ export const Sidebar = ({ visible }: SidebarProps) => {
           MODERATION
         </CNavTitle>
 
-        {/* Reports (Old) */}
+        {/* Reports */}
         <CNavItem className="px-3 py-2">
           <NavLink
             to="/reports"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
-            Reports
+            Reports & Safety
           </NavLink>
         </CNavItem>
 
