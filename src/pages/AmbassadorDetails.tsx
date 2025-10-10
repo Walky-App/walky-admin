@@ -32,6 +32,7 @@ interface AmbassadorDetailsProps {
   inTabView?: boolean;
 }
 
+
 const AmbassadorDetails = ({
   ambassadorId,
   inTabView = false,
