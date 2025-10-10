@@ -197,7 +197,7 @@ const SocialHealthOverview = () => {
       setError(null)
 
       try {
-        const response = await API.get(`/api/admin/analytics/social-health-metrics?period=${period}`)
+        const response = await API.get(`/admin/analytics/social-health-metrics?period=${period}`)
         setMetrics(response.data)
         setError(null)
       } catch (err: unknown) {

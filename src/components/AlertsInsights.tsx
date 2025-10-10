@@ -99,7 +99,7 @@ const AlertsInsights: React.FC<AlertsInsightsProps> = ({
         params.categories = categories.join(',')
       }
 
-      const response = await API.get('/api/admin/alerts', { params })
+      const response = await API.get('/admin/alerts', { params })
       setAlerts(response.data.alerts)
     } catch (error) {
       console.error('Failed to fetch alerts:', error)
