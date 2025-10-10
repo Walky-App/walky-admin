@@ -90,11 +90,6 @@ const EventsActivitiesDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 15
 
-  useEffect(() => {
-    fetchKPIs()
-    fetchData()
-  }, [fetchData])
-
   const fetchKPIs = async () => {
     try {
       const response = await API.get('/api/admin/analytics/activities/kpis')
@@ -154,6 +149,11 @@ const EventsActivitiesDashboard = () => {
       setLoading(false)
     }
   }, [activeTab, currentPage, itemsPerPage])
+
+  useEffect(() => {
+    fetchKPIs()
+    fetchData()
+  }, [fetchData])
 
   return (
     <div style={{ padding: '2rem' }}>
