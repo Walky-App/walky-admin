@@ -89,8 +89,8 @@ const RolesManagement: React.FC = () => {
     queryFn: rolesService.getPermissions,
   });
 
-  const roles = rolesData?.roles || [];
-  const permissions = permissionsData?.permissions || {};
+  const roles = useMemo(() => rolesData?.roles || [], [rolesData?.roles]);
+  const permissions = useMemo(() => permissionsData?.permissions || {}, [permissionsData?.permissions]);
 
   // Create role mutation
   const createRoleMutation = useMutation({

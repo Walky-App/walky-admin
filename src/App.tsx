@@ -44,6 +44,13 @@ import BannedUsers from "./pages/BannedUsers";
 import LockedUsers from "./pages/LockedUsers";
 import RolesManagement from "./pages/RolesManagement";
 import UsersRoles from "./pages/UsersRoles";
+import CampusAnalytics from "./pages/CampusAnalytics";
+import SocialHealthOverview from "./pages/SocialHealthOverview";
+import StudentManagement from "./pages/StudentManagement";
+import EventsActivitiesDashboard from "./pages/EventsActivitiesDashboard";
+import ReportsSafety from "./pages/ReportsSafety";
+import SocialWellbeingStats from "./pages/SocialWellbeingStats";
+import AdminSettings from "./pages/AdminSettings";
 
 import "./App.css";
 import "./styles/modern-theme.css";
@@ -1222,6 +1229,13 @@ function App() {
                 <Route path="/locked-users" element={<LockedUsers />} />
                 <Route path="/roles" element={<RolesManagement />} />
                 <Route path="/users-roles" element={<UsersRoles />} />
+                <Route path="/campus-analytics/:campusId" element={<CampusAnalytics />} />
+                <Route path="/social-health" element={<SocialHealthOverview />} />
+                <Route path="/student-management" element={<StudentManagement />} />
+                <Route path="/events-activities" element={<EventsActivitiesDashboard />} />
+                <Route path="/reports-safety" element={<ReportsSafety />} />
+                <Route path="/wellbeing-stats" element={<SocialWellbeingStats />} />
+                <Route path="/admin-settings" element={<AdminSettings />} />
               </Routes>
             </ExampleAdminLayout>
           </PrivateRoute>
