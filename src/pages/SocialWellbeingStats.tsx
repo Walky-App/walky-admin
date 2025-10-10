@@ -178,96 +178,12 @@ const SocialWellbeingStats = () => {
       try {
         const response = await API.get(`/api/admin/analytics/wellbeing-stats?period=${period}`)
         setMetrics(response.data)
-      } catch (err) {
+        setError(null)
+      } catch (err: unknown) {
         console.error('Failed to fetch wellbeing statistics:', err)
-        setError('Failed to load statistics. Please try again.')
-
-        // Mock data for development
-        setMetrics({
-          averagePeers: 12.4,
-          averageTimeToFirstInteraction: {
-            days: 2,
-            hours: 18,
-          },
-          completionRates: {
-            walksCompleted: 67.3,
-            eventsAttended: 54.8,
-            spacesJoined: 43.2,
-          },
-          commonInterests: [
-            { interest: 'Music', count: 487, percentage: 26.4 },
-            { interest: 'Sports', count: 423, percentage: 22.9 },
-            { interest: 'Technology', count: 389, percentage: 21.1 },
-            { interest: 'Art', count: 321, percentage: 17.4 },
-            { interest: 'Travel', count: 298, percentage: 16.1 },
-            { interest: 'Reading', count: 267, percentage: 14.5 },
-            { interest: 'Gaming', count: 245, percentage: 13.3 },
-            { interest: 'Food', count: 223, percentage: 12.1 },
-          ],
-          topFieldsOfStudy: [
-            {
-              field: 'Computer Science',
-              interactionCount: 3421,
-              studentCount: 234,
-              averageInteractions: 14.6,
-            },
-            {
-              field: 'Business Administration',
-              interactionCount: 2987,
-              studentCount: 298,
-              averageInteractions: 10.0,
-            },
-            {
-              field: 'Engineering',
-              interactionCount: 2654,
-              studentCount: 187,
-              averageInteractions: 14.2,
-            },
-            {
-              field: 'Psychology',
-              interactionCount: 2134,
-              studentCount: 156,
-              averageInteractions: 13.7,
-            },
-            {
-              field: 'Biology',
-              interactionCount: 1876,
-              studentCount: 143,
-              averageInteractions: 13.1,
-            },
-          ],
-          isolatedStudents: [
-            {
-              _id: '1',
-              first_name: 'John',
-              last_name: 'Doe',
-              email: 'john.doe@university.edu',
-              daysSinceRegistration: 45,
-              totalInteractions: 0,
-              lastLogin: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-              campus: 'Main Campus',
-            },
-            {
-              _id: '2',
-              first_name: 'Jane',
-              last_name: 'Smith',
-              email: 'jane.smith@university.edu',
-              daysSinceRegistration: 32,
-              totalInteractions: 1,
-              lastLogin: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
-              campus: 'North Campus',
-            },
-            {
-              _id: '3',
-              first_name: 'Alex',
-              last_name: 'Johnson',
-              email: 'alex.johnson@university.edu',
-              daysSinceRegistration: 28,
-              totalInteractions: 0,
-              campus: 'Main Campus',
-            },
-          ],
-        })
+        const errorMessage = (err as { response?: { data?: { error?: string } }; message?: string })?.response?.data?.error || (err as { message?: string })?.message || 'Failed to load statistics. Please try again.'
+        setError(`API Error: ${errorMessage}`)
+        setMetrics(null)
       } finally {
         setLoading(false)
       }
