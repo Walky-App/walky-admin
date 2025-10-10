@@ -20,12 +20,12 @@ import {
   CModalTitle,
   CForm,
   CFormLabel,
-  CFormCheck,
+  // CFormCheck,
   CAlert,
   CSpinner,
-  CRow,
-  CCol,
-  CFormTextarea,
+  // CRow,
+  // CCol,
+  // CFormTextarea,
   CFormSelect,
   CNav,
   CNavItem,
@@ -34,13 +34,13 @@ import {
   CTabPane,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilPlus, cilPencil, cilTrash, cilSearch, cilUserPlus, cilShieldAlt } from "@coreui/icons";
+import { /* cilPlus, cilPencil, */ cilTrash, cilSearch, cilUserPlus, cilShieldAlt } from "@coreui/icons";
 import { rolesService } from "../services/rolesService";
 import {
   Role,
   GroupedPermissions,
-  CreateRoleRequest,
-  UpdateRoleRequest,
+  // CreateRoleRequest,
+  // UpdateRoleRequest,
   AssignRoleRequest,
 } from "../types/role";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -49,20 +49,20 @@ const RolesManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("roles");
-  const [showRoleModal, setShowRoleModal] = useState(false);
+  // const [showRoleModal, setShowRoleModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  // const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
   const [permissionSearch, setPermissionSearch] = useState("");
 
-  const [roleFormData, setRoleFormData] = useState<CreateRoleRequest>({
-    name: "",
-    display_name: "",
-    description: "",
-    permissions: [],
-    scope: "global",
-  });
+  // const [roleFormData, setRoleFormData] = useState<CreateRoleRequest>({
+  //   name: "",
+  //   display_name: "",
+  //   description: "",
+  //   permissions: [],
+  //   scope: "global",
+  // });
 
   const [assignFormData, setAssignFormData] = useState({
     userId: "",
@@ -92,34 +92,34 @@ const RolesManagement: React.FC = () => {
   const roles = useMemo(() => rolesData?.roles || [], [rolesData?.roles]);
   const permissions = useMemo(() => permissionsData?.permissions || {}, [permissionsData?.permissions]);
 
-  // Create role mutation
-  const createRoleMutation = useMutation({
-    mutationFn: rolesService.createRole,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] });
-      handleCloseRoleModal();
-    },
-    onError: (error) => {
-      console.error("Failed to create role:", error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      alert((error as any)?.response?.data?.message || "Failed to create role. Please try again.");
-    },
-  });
+  // Create role mutation - DISABLED
+  // const createRoleMutation = useMutation({
+  //   mutationFn: rolesService.createRole,
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["roles"] });
+  //     handleCloseRoleModal();
+  //   },
+  //   onError: (error) => {
+  //     console.error("Failed to create role:", error);
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //     alert((error as any)?.response?.data?.message || "Failed to create role. Please try again.");
+  //   },
+  // });
 
-  // Update role mutation
-  const updateRoleMutation = useMutation({
-    mutationFn: ({ roleId, data }: { roleId: string; data: UpdateRoleRequest }) =>
-      rolesService.updateRole(roleId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] });
-      handleCloseRoleModal();
-    },
-    onError: (error) => {
-      console.error("Failed to update role:", error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      alert((error as any)?.response?.data?.message || "Failed to update role. Please try again.");
-    },
-  });
+  // Update role mutation - DISABLED
+  // const updateRoleMutation = useMutation({
+  //   mutationFn: ({ roleId, data }: { roleId: string; data: UpdateRoleRequest }) =>
+  //     rolesService.updateRole(roleId, data),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["roles"] });
+  //     handleCloseRoleModal();
+  //   },
+  //   onError: (error) => {
+  //     console.error("Failed to update role:", error);
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //     alert((error as any)?.response?.data?.message || "Failed to update role. Please try again.");
+  //   },
+  // });
 
   // Delete role mutation
   const deleteRoleMutation = useMutation({
@@ -178,40 +178,40 @@ const RolesManagement: React.FC = () => {
     return filtered;
   }, [permissions, permissionSearch]);
 
-  const handleOpenRoleModal = (role?: Role) => {
-    if (role) {
-      setSelectedRole(role);
-      setRoleFormData({
-        name: role.name,
-        display_name: role.display_name,
-        description: role.description,
-        permissions: role.permissions,
-        scope: role.scope,
-      });
-    } else {
-      setSelectedRole(null);
-      setRoleFormData({
-        name: "",
-        display_name: "",
-        description: "",
-        permissions: [],
-        scope: "global",
-      });
-    }
-    setShowRoleModal(true);
-  };
+  // const handleOpenRoleModal = (role?: Role) => {
+  //   if (role) {
+  //     setSelectedRole(role);
+  //     setRoleFormData({
+  //       name: role.name,
+  //       display_name: role.display_name,
+  //       description: role.description,
+  //       permissions: role.permissions,
+  //       scope: role.scope,
+  //     });
+  //   } else {
+  //     setSelectedRole(null);
+  //     setRoleFormData({
+  //       name: "",
+  //       display_name: "",
+  //       description: "",
+  //       permissions: [],
+  //       scope: "global",
+  //     });
+  //   }
+  //   setShowRoleModal(true);
+  // };
 
-  const handleCloseRoleModal = () => {
-    setShowRoleModal(false);
-    setSelectedRole(null);
-    setRoleFormData({
-      name: "",
-      display_name: "",
-      description: "",
-      permissions: [],
-      scope: "global",
-    });
-  };
+  // const handleCloseRoleModal = () => {
+  //   setShowRoleModal(false);
+  //   setSelectedRole(null);
+  //   setRoleFormData({
+  //     name: "",
+  //     display_name: "",
+  //     description: "",
+  //     permissions: [],
+  //     scope: "global",
+  //   });
+  // };
 
   const handleOpenAssignModal = () => {
     setAssignFormData({
@@ -231,17 +231,17 @@ const RolesManagement: React.FC = () => {
     });
   };
 
-  const handleRoleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedRole) {
-      updateRoleMutation.mutate({
-        roleId: selectedRole._id,
-        data: roleFormData,
-      });
-    } else {
-      createRoleMutation.mutate(roleFormData);
-    }
-  };
+  // const handleRoleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (selectedRole) {
+  //     updateRoleMutation.mutate({
+  //       roleId: selectedRole._id,
+  //       data: roleFormData,
+  //     });
+  //   } else {
+  //     createRoleMutation.mutate(roleFormData);
+  //   }
+  // };
 
   const handleAssignSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -265,14 +265,14 @@ const RolesManagement: React.FC = () => {
     }
   };
 
-  const handlePermissionToggle = (permissionCode: string) => {
-    setRoleFormData((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(permissionCode)
-        ? prev.permissions.filter((p) => p !== permissionCode)
-        : [...prev.permissions, permissionCode],
-    }));
-  };
+  // const handlePermissionToggle = (permissionCode: string) => {
+  //   setRoleFormData((prev) => ({
+  //     ...prev,
+  //     permissions: prev.permissions.includes(permissionCode)
+  //       ? prev.permissions.filter((p) => p !== permissionCode)
+  //       : [...prev.permissions, permissionCode],
+  //   }));
+  // };
 
   if (rolesLoading || permissionsLoading) {
     return (
@@ -301,10 +301,11 @@ const RolesManagement: React.FC = () => {
                 <CIcon icon={cilUserPlus} className="me-1" />
                 Assign Role to User
               </CButton>
-              <CButton color="primary" onClick={() => handleOpenRoleModal()}>
+              {/* Create Role button hidden */}
+              {/* <CButton color="primary" onClick={() => handleOpenRoleModal()}>
                 <CIcon icon={cilPlus} className="me-1" />
                 Create Role
-              </CButton>
+              </CButton> */}
             </div>
           </div>
         </CCardHeader>
@@ -385,14 +386,15 @@ const RolesManagement: React.FC = () => {
                           )}
                         </CTableDataCell>
                         <CTableDataCell>
-                          <CButton
+                          {/* Edit button hidden */}
+                          {/* <CButton
                             color="info"
                             size="sm"
                             className="me-1"
                             onClick={() => handleOpenRoleModal(role)}
                           >
                             <CIcon icon={cilPencil} />
-                          </CButton>
+                          </CButton> */}
                           {!role.is_system_role && (
                             <CButton
                               color="danger"
@@ -458,8 +460,8 @@ const RolesManagement: React.FC = () => {
         </CCardBody>
       </CCard>
 
-      {/* Create/Edit Role Modal */}
-      <CModal visible={showRoleModal} onClose={handleCloseRoleModal} size="lg">
+      {/* Create/Edit Role Modal - HIDDEN */}
+      {/* <CModal visible={showRoleModal} onClose={handleCloseRoleModal} size="lg">
         <CModalHeader>
           <CModalTitle>{selectedRole ? "Edit Role" : "Create New Role"}</CModalTitle>
         </CModalHeader>
@@ -571,7 +573,7 @@ const RolesManagement: React.FC = () => {
             </CButton>
           </CModalFooter>
         </CForm>
-      </CModal>
+      </CModal> */}
 
       {/* Assign Role Modal */}
       <CModal visible={showAssignModal} onClose={handleCloseAssignModal}>
