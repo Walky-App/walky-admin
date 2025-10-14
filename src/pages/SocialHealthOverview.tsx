@@ -29,6 +29,7 @@ import {
   cilChart,
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
+import { useSchool } from '../contexts/SchoolContext'
 import API from '../API'
 
 interface SocialHealthMetrics {
@@ -185,6 +186,7 @@ const StatCard = ({
 
 const SocialHealthOverview = () => {
   // const { theme } = useTheme() // Theme not currently used in main component
+  const { selectedSchool } = useSchool()
 
   const [period, setPeriod] = useState<Period>('month')
   const [loading, setLoading] = useState(true)
@@ -193,6 +195,7 @@ const SocialHealthOverview = () => {
 
   useEffect(() => {
     const fetchMetrics = async () => {
+      console.log('🏥 SocialHealthOverview: Fetching metrics for school:', selectedSchool?._id || 'all schools')
       setLoading(true)
       setError(null)
 
@@ -211,7 +214,7 @@ const SocialHealthOverview = () => {
     }
 
     fetchMetrics()
-  }, [period])
+  }, [period, selectedSchool?._id])
 
   if (error && !metrics) {
     return (
