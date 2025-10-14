@@ -9,9 +9,9 @@ import {
   CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { 
-  cilCompass, 
-  cilCalendar, 
+import {
+  cilCompass,
+  cilCalendar,
   cilLightbulb,
   cilChartLine,
   cilPeople,
@@ -20,6 +20,8 @@ import {
   cilRunning,
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
+import { useSchool } from '../contexts/SchoolContext'
+import { useSchoolFilter } from '../hooks/useSchoolFilter'
 import API from '../API'
 
 // Modern Stat Card Component
@@ -245,6 +247,8 @@ const ProgressCard = ({
 
 // Main Engagement Dashboard
 const Engagement = () => {
+  const { selectedSchool } = useSchool()
+  useSchoolFilter() // Enable school filtering interceptor
   const [loading, setLoading] = useState(true)
   const [walks, setWalks] = useState({
     total: 0,
@@ -273,40 +277,46 @@ const Engagement = () => {
     chartLabels: string[]
     chartData: number[]
     totalWalksCreated: number
-  }>({ 
-    chartLabels: [],
-    chartData: [],
+  }>({
+    chartLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    chartData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     totalWalksCreated: 0
   })
 
-  // Set walks distribution data immediately with mock data
+  // Fetch walks distribution when school changes
   useEffect(() => {
-    const mockDistributionData = {
-      chartLabels: [
-        "Sep", "Oct", "Nov", "Dec",
-        "Jan", "Feb", "Mar", "Apr", 
-        "May", "Jun", "Jul"
-      ],
-      chartData: [0, 0, 0, 0, 14, 358, 44, 148, 96, 0, 2],
-      totalWalksCreated: 723
+    const fetchWalksDistribution = async () => {
+      try {
+        const response = await API.get('/admin/analytics/walks/distribution')
+        console.log('📊 Walks Distribution Response:', response.data)
+        setWalksDistribution(response.data)
+      } catch (err) {
+        console.error('Failed to fetch walks distribution:', err)
+        // Set default data on error
+        setWalksDistribution({
+          chartLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          chartData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          totalWalksCreated: 0
+        })
+      } 
     }
-    
-    console.log('Setting initial walks distribution data:', mockDistributionData)
-    setWalksDistribution(mockDistributionData)
-  }, [])
+
+    fetchWalksDistribution()
+  }, [selectedSchool?._id])
 
   useEffect(() => {
     const fetchAllData = async () => {
+      console.log('📊 Engagement: Fetching data for school:', selectedSchool?._id || 'all schools')
       setLoading(true)
-      
-      // Fetch Walks
+
+      // Fetch Walks from admin analytics endpoints
       try {
         const [totalRes, pendingRes, activeRes, completedRes, cancelledRes] = await Promise.all([
-          API.get('/walks/count'),
-          API.get('/walks/realtime/pending'),
-          API.get('/walks/realtime/active'),
-          API.get('/walks/realtime/completed'),
-          API.get('/walks/realtime/cancelled'),
+          API.get('/admin/analytics/walks/count'),
+          API.get('/admin/analytics/walks/pending'),
+          API.get('/admin/analytics/walks/active'),
+          API.get('/admin/analytics/walks/completed'),
+          API.get('/admin/analytics/walks/cancelled'),
         ])
 
         setWalks({
@@ -320,14 +330,14 @@ const Engagement = () => {
         console.error('Failed to fetch walks data:', err)
       }
 
-      // Fetch Events
+      // Fetch Events from admin analytics endpoints
       try {
         const [total, outdoor, indoor, publicEvt, privateEvt] = await Promise.all([
-          API.get('/events/eventType?filter=total'),
-          API.get('/events/eventType?filter=outdoor'),
-          API.get('/events/eventType?filter=indoor'),
-          API.get('/events/eventType?filter=public'),
-          API.get('/events/eventType?filter=private'),
+          API.get('/admin/analytics/events/count?filter=total'),
+          API.get('/admin/analytics/events/count?filter=outdoor'),
+          API.get('/admin/analytics/events/count?filter=indoor'),
+          API.get('/admin/analytics/events/count?filter=public'),
+          API.get('/admin/analytics/events/count?filter=private'),
         ])
 
         setEvents({
@@ -341,13 +351,13 @@ const Engagement = () => {
         console.error('Failed to fetch events:', err)
       }
 
-      // Fetch Ideas
+      // Fetch Ideas from admin analytics endpoints
       try {
         const [total, active, inactive, collaborated] = await Promise.all([
-          API.get('/ideas/count/total'),
-          API.get('/ideas/count/active'),
-          API.get('/ideas/count/inactive'),
-          API.get('/ideas/count/collaborated'),
+          API.get('/admin/analytics/ideas/count?type=total'),
+          API.get('/admin/analytics/ideas/count?type=active'),
+          API.get('/admin/analytics/ideas/count?type=inactive'),
+          API.get('/admin/analytics/ideas/count?type=collaborated'),
         ])
 
         setIdeas({
@@ -363,7 +373,7 @@ const Engagement = () => {
     }
 
     fetchAllData()
-  }, [])
+  }, [selectedSchool?._id])
 
   const calcTrend = (value: number, total: number): 'up' | 'down' | 'neutral' => {
     const percentage = total > 0 ? (value / total) * 100 : 0
@@ -644,19 +654,28 @@ const Engagement = () => {
                   <div className="text-center">
                     <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Peak Month</div>
                     <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#5E5CE6' }}>
-                      Feb: {Math.max(...walksDistribution.chartData)}
+                      {(() => {
+                        const maxValue = Math.max(...walksDistribution.chartData)
+                        const maxIndex = walksDistribution.chartData.indexOf(maxValue)
+                        const peakMonth = maxIndex >= 0 && maxIndex < walksDistribution.chartLabels.length
+                          ? walksDistribution.chartLabels[maxIndex]
+                          : '-'
+                        return `${peakMonth}: ${maxValue || 0}`
+                      })()}
                     </div>
                   </div>
                   <div className="text-center">
                     <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Average</div>
                     <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#5E5CE6' }}>
-                      {Math.round(walksDistribution.totalWalksCreated / walksDistribution.chartData.length)}
+                      {walksDistribution.chartData.length > 0
+                        ? Math.round(walksDistribution.totalWalksCreated / walksDistribution.chartData.length)
+                        : 0}
                     </div>
                   </div>
                   <div className="text-center">
                     <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Total Walks</div>
                     <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#5E5CE6' }}>
-                      {walksDistribution.totalWalksCreated}
+                      {walksDistribution.totalWalksCreated || 0}
                     </div>
                   </div>
                 </div>

@@ -3,6 +3,7 @@ import { Sidebar } from "./NavSideBar.tsx";
 import { Topbar } from "./Topbar.tsx";
 import { useTheme } from "../hooks/useTheme";
 import { useLocation } from "react-router-dom";
+import { useSchoolFilter } from "../hooks/useSchoolFilter";
 
 // Removed unused pageTitles constant
 
@@ -14,34 +15,39 @@ function ExampleAdminLayout({ children }: Props) {
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
 
+  // Initialize school filter interceptor
+  useSchoolFilter();
+
   // Toggle sidebar manually (for button clicks)
   const toggleSidebar = () => {
     setSidebarVisible((prev) => !prev);
   };
 
+  // Handle window resize - set mobile state and manage sidebar visibility
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
 
+      // Only auto-close on resize to mobile, don't auto-open on resize to desktop
       if (mobile) {
         setSidebarVisible(false);
-      } else {
-        setSidebarVisible(true);
       }
     };
 
+    // Set initial state
+    handleResize();
+
     window.addEventListener("resize", handleResize);
-    handleResize(); // Run once on mount
-
     return () => window.removeEventListener("resize", handleResize);
-  }, []); // ✅ Important: no dependencies
+  }, []);
 
+  // Close sidebar on navigation (mobile only)
   useEffect(() => {
     if (isMobile) {
       setSidebarVisible(false);
     }
-  }, [location, isMobile]);
+  }, [location.pathname, isMobile]); // Use location.pathname instead of location object
 
   return (
     <div
@@ -58,8 +64,6 @@ function ExampleAdminLayout({ children }: Props) {
         {/* Only render sidebar if it should be visible */}
         <Sidebar
           visible={sidebarVisible}
-          onVisibleChange={setSidebarVisible}
-          isMobile={isMobile}
         />
 
         {isMobile && sidebarVisible && (

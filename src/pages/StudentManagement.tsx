@@ -43,6 +43,7 @@ import {
   
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
+import { useSchool } from '../contexts/SchoolContext'
 import API from '../API'
 
 interface Student {
@@ -67,6 +68,7 @@ interface Student {
 
 const StudentManagement = () => {
   const { theme } = useTheme()
+  const { selectedSchool } = useSchool()
   const isDark = theme.isDark
 
   // State
@@ -85,6 +87,7 @@ const StudentManagement = () => {
 
   // Fetch students
   const fetchStudents = useCallback(async () => {
+    console.log('👥 StudentManagement: Fetching students for school:', selectedSchool?._id || 'all schools')
     setLoading(true)
     try {
       const response = await API.get('/admin/analytics/students', {
@@ -108,7 +111,7 @@ const StudentManagement = () => {
     } finally {
       setLoading(false)
     }
-  }, [currentPage, searchTerm, statusFilter, studentsPerPage])
+  }, [currentPage, searchTerm, statusFilter, studentsPerPage, selectedSchool?._id])
 
   useEffect(() => {
     fetchStudents()

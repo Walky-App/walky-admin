@@ -35,9 +35,13 @@ import {
   cilLockLocked,
   cilReload,
   cilWarning,
+  cilSearch,
 } from "@coreui/icons";
 import { format, formatDistanceToNow } from "date-fns";
 import { lockedUsersService } from "../services/lockedUsersService";
+import { useTheme } from "../hooks/useTheme";
+import { useSchool } from "../contexts/SchoolContext";
+import { useSchoolFilter } from "../hooks/useSchoolFilter";
 
 interface LockedUser {
   _id: string;
@@ -76,6 +80,9 @@ interface UnlockStats {
 }
 
 const LockedUsers: React.FC = () => {
+  const { theme } = useTheme();
+  const { selectedSchool } = useSchool();
+  useSchoolFilter(); // Enable school filtering interceptor
   const [lockedUsers, setLockedUsers] = useState<LockedUser[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -93,6 +100,7 @@ const LockedUsers: React.FC = () => {
   const [stats, setStats] = useState<UnlockStats | null>(null);
 
   const fetchLockedUsers = useCallback(async () => {
+    console.log('🔒 LockedUsers: Fetching locked users for school:', selectedSchool?._id || 'all schools');
     setLoading(true);
     setError(null);
     try {
@@ -109,7 +117,7 @@ const LockedUsers: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchTerm]);
+  }, [currentPage, searchTerm, selectedSchool?._id]);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -219,78 +227,247 @@ const LockedUsers: React.FC = () => {
 
   return (
     <>
-      {/* Stats Cards */}
+      {/* Modern Page Header */}
+      <div
+        className="mb-4 d-sm-flex justify-content-between align-items-center"
+        style={{
+          background: `linear-gradient(135deg, ${theme.colors.danger}15, ${theme.colors.warning}10)`,
+          borderRadius: "16px",
+          padding: "24px 32px",
+          border: `1px solid ${theme.colors.borderColor}20`,
+          backdropFilter: "blur(10px)",
+          boxShadow: theme.isDark
+            ? "0 8px 32px rgba(0,0,0,0.3)"
+            : "0 8px 32px rgba(0,0,0,0.08)",
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: "28px",
+              fontWeight: "700",
+              margin: "0 0 8px 0",
+              background: `linear-gradient(135deg, ${theme.colors.danger}, ${theme.colors.warning})`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            <CIcon icon={cilLockLocked} className="me-2" style={{ color: theme.colors.danger }} />
+            Locked Users Management
+          </h1>
+          <p
+            style={{
+              margin: 0,
+              color: theme.colors.textMuted,
+              fontSize: "16px",
+              fontWeight: "400",
+            }}
+          >
+            Monitor and manage user account lockouts due to failed login attempts
+          </p>
+        </div>
+        <div className="d-flex align-items-center gap-2 mt-3 mt-sm-0">
+          <CButton
+            color="success"
+            size="sm"
+            onClick={openBulkUnlockModal}
+            disabled={selectedUsers.length === 0}
+            style={{
+              borderRadius: "10px",
+              fontWeight: "600",
+              padding: "8px 16px",
+              boxShadow: selectedUsers.length > 0 ? `0 4px 12px ${theme.colors.success}30` : "none",
+            }}
+          >
+            <CIcon icon={cilLockUnlocked} className="me-1" />
+            Unlock ({selectedUsers.length})
+          </CButton>
+          <CButton
+            color="primary"
+            size="sm"
+            onClick={() => {
+              fetchLockedUsers();
+              fetchStats();
+            }}
+            disabled={loading}
+            style={{
+              borderRadius: "10px",
+              fontWeight: "600",
+              padding: "8px 16px",
+            }}
+          >
+            <CIcon icon={cilReload} className="me-1" />
+            Refresh
+          </CButton>
+        </div>
+      </div>
+
+      {/* Modern Stats Cards */}
       {stats && (
-        <CRow className="mb-4">
+        <CRow className="g-4 mb-4">
           <CCol sm={6} lg={3}>
-            <CCard className="text-white bg-danger">
-              <CCardBody className="pb-0">
-                <div className="text-value-lg">{stats.totalLocked}</div>
-                <div>Total Locked</div>
+            <CCard
+              className="border-0 shadow-sm"
+              style={{
+                borderRadius: "16px",
+                background: theme.isDark
+                  ? `linear-gradient(135deg, ${theme.colors.danger}20, ${theme.colors.danger}10)`
+                  : `linear-gradient(135deg, ${theme.colors.danger}08, ${theme.colors.danger}04)`,
+                backdropFilter: "blur(10px)",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+              }}
+            >
+              <CCardBody className="p-4">
+                <div style={{
+                  fontSize: "32px",
+                  fontWeight: "700",
+                  color: theme.colors.danger,
+                  marginBottom: "8px",
+                }}>
+                  {stats.totalLocked}
+                </div>
+                <div style={{
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: theme.colors.textMuted,
+                }}>
+                  Total Locked Users
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
           <CCol sm={6} lg={3}>
-            <CCard className="text-white bg-warning">
-              <CCardBody className="pb-0">
-                <div className="text-value-lg">{stats.lockedToday}</div>
-                <div>Locked Today</div>
+            <CCard
+              className="border-0 shadow-sm"
+              style={{
+                borderRadius: "16px",
+                background: theme.isDark
+                  ? `linear-gradient(135deg, ${theme.colors.warning}20, ${theme.colors.warning}10)`
+                  : `linear-gradient(135deg, ${theme.colors.warning}08, ${theme.colors.warning}04)`,
+                backdropFilter: "blur(10px)",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+              }}
+            >
+              <CCardBody className="p-4">
+                <div style={{
+                  fontSize: "32px",
+                  fontWeight: "700",
+                  color: theme.colors.warning,
+                  marginBottom: "8px",
+                }}>
+                  {stats.lockedToday}
+                </div>
+                <div style={{
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: theme.colors.textMuted,
+                }}>
+                  Locked Today
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
           <CCol sm={6} lg={3}>
-            <CCard className="text-white bg-info">
-              <CCardBody className="pb-0">
-                <div className="text-value-lg">{stats.lockedThisWeek}</div>
-                <div>Locked This Week</div>
+            <CCard
+              className="border-0 shadow-sm"
+              style={{
+                borderRadius: "16px",
+                background: theme.isDark
+                  ? `linear-gradient(135deg, ${theme.colors.info}20, ${theme.colors.info}10)`
+                  : `linear-gradient(135deg, ${theme.colors.info}08, ${theme.colors.info}04)`,
+                backdropFilter: "blur(10px)",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+              }}
+            >
+              <CCardBody className="p-4">
+                <div style={{
+                  fontSize: "32px",
+                  fontWeight: "700",
+                  color: theme.colors.info,
+                  marginBottom: "8px",
+                }}>
+                  {stats.lockedThisWeek}
+                </div>
+                <div style={{
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: theme.colors.textMuted,
+                }}>
+                  Locked This Week
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
           <CCol sm={6} lg={3}>
-            <CCard className="text-white bg-secondary">
-              <CCardBody className="pb-0">
-                <div className="text-value-lg">{stats.expiredLocks}</div>
-                <div>Expired Locks</div>
+            <CCard
+              className="border-0 shadow-sm"
+              style={{
+                borderRadius: "16px",
+                background: theme.isDark
+                  ? `linear-gradient(135deg, ${theme.colors.secondary}20, ${theme.colors.secondary}10)`
+                  : `linear-gradient(135deg, ${theme.colors.secondary}08, ${theme.colors.secondary}04)`,
+                backdropFilter: "blur(10px)",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+              }}
+            >
+              <CCardBody className="p-4">
+                <div style={{
+                  fontSize: "32px",
+                  fontWeight: "700",
+                  color: theme.colors.secondary,
+                  marginBottom: "8px",
+                }}>
+                  {stats.expiredLocks}
+                </div>
+                <div style={{
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: theme.colors.textMuted,
+                }}>
+                  Expired Locks
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
         </CRow>
       )}
 
-      <CCard>
-        <CCardHeader>
-          <CRow className="align-items-center">
-            <CCol md={6}>
-              <h4 className="mb-0">
-                <CIcon icon={cilLockLocked} className="me-2" />
-                Locked Users
-              </h4>
-            </CCol>
-            <CCol md={6} className="text-end">
-              <CButton
-                color="success"
-                size="sm"
-                className="me-2"
-                onClick={openBulkUnlockModal}
-                disabled={selectedUsers.length === 0}
-              >
-                <CIcon icon={cilLockUnlocked} className="me-1" />
-                Unlock Selected ({selectedUsers.length})
-              </CButton>
-              <CButton
-                color="primary"
-                size="sm"
-                onClick={() => {
-                  fetchLockedUsers();
-                  fetchStats();
-                }}
-                disabled={loading}
-              >
-                <CIcon icon={cilReload} className="me-1" />
-                Refresh
-              </CButton>
-            </CCol>
-          </CRow>
+      <CCard
+        className="border-0"
+        style={{
+          backgroundColor: theme.colors.cardBg,
+          borderRadius: "20px",
+          padding: "0",
+          boxShadow: theme.isDark
+            ? "0 12px 40px rgba(0,0,0,0.3)"
+            : "0 12px 40px rgba(0,0,0,0.08)",
+          background: theme.isDark
+            ? `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.danger}05)`
+            : `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.danger}02)`,
+          backdropFilter: "blur(10px)",
+        }}
+      >
+        <CCardHeader
+          className="border-0 bg-transparent"
+          style={{ padding: "24px 32px 16px 32px" }}
+        >
+          <h5
+            className="mb-0"
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 600,
+              fontSize: "20px",
+              color: theme.colors.bodyColor,
+            }}
+          >
+            <CIcon icon={cilLockLocked} className="me-2" />
+            Locked Accounts
+          </h5>
         </CCardHeader>
         <CCardBody>
           {error && (
@@ -304,18 +481,42 @@ const LockedUsers: React.FC = () => {
             </CAlert>
           )}
 
-          <CRow className="mb-3">
+          <CRow className="mb-4">
             <CCol md={6}>
-              <CFormInput
-                type="text"
-                placeholder="Search by name or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="mb-2"
-              />
+              <div style={{ position: "relative" }}>
+                <CIcon
+                  icon={cilSearch}
+                  style={{
+                    position: "absolute",
+                    left: "16px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: theme.colors.textMuted,
+                    pointerEvents: "none",
+                  }}
+                />
+                <CFormInput
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    paddingLeft: "48px",
+                    borderRadius: "12px",
+                    border: `1px solid ${theme.colors.borderColor}40`,
+                    backgroundColor: theme.isDark ? theme.colors.cardBg : "#fff",
+                    color: theme.colors.bodyColor,
+                  }}
+                />
+              </div>
             </CCol>
-            <CCol md={6} className="text-end">
-              <small className="text-muted">
+            <CCol md={6} className="text-end d-flex align-items-center justify-content-end">
+              <small
+                style={{
+                  color: theme.colors.textMuted,
+                  fontWeight: "500",
+                }}
+              >
                 Showing {lockedUsers.length} of {totalUsers} locked users
               </small>
             </CCol>

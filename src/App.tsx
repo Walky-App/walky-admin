@@ -17,9 +17,9 @@ import {
 } from "@coreui/react";
 import { CChartBar, CChartLine } from "@coreui/react-chartjs";
 
-import { useState, useEffect, JSX } from "react";
+import { useState, useEffect } from "react";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import { useTheme } from "./hooks/useTheme";
 
@@ -50,6 +50,8 @@ import StudentManagement from "./pages/StudentManagement";
 import EventsActivitiesDashboard from "./pages/EventsActivitiesDashboard";
 import SocialWellbeingStats from "./pages/SocialWellbeingStats";
 import AdminSettings from "./pages/AdminSettings";
+import Unauthorized from "./pages/Unauthorized";
+import { RoleProtectedRoute } from "./components/RoleProtectedRoute";
 
 import "./App.css";
 import "./styles/modern-theme.css";
@@ -62,6 +64,7 @@ import MainChart from "./components/MainChart.tsx";
 
 import API from "./API/index.ts";
 import Login from "./pages/Login.tsx";
+import { useSchool } from "./contexts/SchoolContext";
 
 type DashboardProps = {
   theme: AppTheme;
@@ -119,6 +122,7 @@ interface WalkMonthData {
 // Removed unused interface WalksApiResponse
 
 const Dashboard = ({ theme }: DashboardProps) => {
+  const { selectedSchool } = useSchool();
   const [walks, setWalks] = useState<WalksData | null>(null);
   const [events, setEvents] = useState<EventsData | null>(null);
   const [ideas, setIdeas] = useState<IdeasData | null>(null);
@@ -185,6 +189,8 @@ const Dashboard = ({ theme }: DashboardProps) => {
   }, []);
 
   useEffect(() => {
+    console.log('📊 Dashboard: Fetching data for school:', selectedSchool?._id || 'all schools');
+
     const getIdeasData = async () => {
       try {
         const response = await API.get("/ideas/count?groupBy=month");
@@ -359,7 +365,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
     getWalksData();
     getEventsData();
     getIdeasData();
-  }, []);
+  }, [selectedSchool?._id]); // Refetch when school changes
 
   // Calculate surprise data whenever walks data changes
   useEffect(() => {
@@ -1164,26 +1170,22 @@ function App() {
     document.body.classList.toggle("dark-mode", theme.isDark);
   }, [theme.isDark]);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+  // Keep track of login state for the Login component callback
+  const [, setIsLoggedIn] = useState(() => {
     // Initialize state based on token presence
     const token = localStorage.getItem("token");
     return !!token;
   });
 
-  // Check for existing token on component mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  // Define role constants for clarity
+  const SUPER_ADMIN = ['super_admin'];
+  const CAMPUS_ADMIN_AND_ABOVE = ['super_admin', 'campus_admin'];
+  const STAFF_AND_ABOVE = ['super_admin', 'campus_admin', 'editor', 'moderator', 'staff'];
+  const ALL_ADMIN_ROLES = ['super_admin', 'campus_admin', 'editor', 'moderator', 'staff', 'viewer'];
 
-  const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-    return isLoggedIn ? children : <Navigate to="/login" />;
-  };
   return (
     <Routes>
-      {/* Login route (still public) */}
+      {/* Public routes */}
       <Route
         path="/login"
         element={<Login onLogin={() => setIsLoggedIn(true)} />}
@@ -1191,52 +1193,233 @@ function App() {
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/* Protected routes inside admin layout */}
       <Route
         path="*"
         element={
-          <PrivateRoute>
-            <ExampleAdminLayout>
-              <Routes>
-                <Route path="/" element={<Dashboard theme={theme} />} />
-                <Route path="/students" element={<Students />} />
-                <Route path="/engagement" element={<Engagement />} />
-                <Route path="/campuses" element={<Campuses />} />
-                <Route path="/campus-details/:id" element={<CampusDetails />} />
-                <Route path="/campus-details" element={<CampusDetails />} />
-                <Route path="/ambassadors" element={<Ambassadors />} />
-                <Route
-                  path="/ambassadors/ambassador-view/:id"
-                  element={<AmbassadorView />}
-                />
-                <Route
-                  path="/ambassadors/ambassador-view"
-                  element={<AmbassadorView />}
-                />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/campus-boundary" element={<CampusBoundary />} />
-                <Route
-                  path="/campuses/campus-view/:id"
-                  element={<CampusView />}
-                />
-                <Route path="/campuses/campus-view" element={<CampusView />} />
-                <Route path="/campus-sync" element={<CampusSync />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/reports/:id" element={<ReportDetails />} />
-                <Route path="/banned-users" element={<BannedUsers />} />
-                <Route path="/locked-users" element={<LockedUsers />} />
-                <Route path="/roles" element={<RolesManagement />} />
-                <Route path="/users-roles" element={<UsersRoles />} />
-                <Route path="/campus-analytics/:campusId" element={<CampusAnalytics />} />
-                <Route path="/social-health" element={<SocialHealthOverview />} />
-                <Route path="/student-management" element={<StudentManagement />} />
-                <Route path="/events-activities" element={<EventsActivitiesDashboard />} />
-                <Route path="/wellbeing-stats" element={<SocialWellbeingStats />} />
-                <Route path="/admin-settings" element={<AdminSettings />} />
-              </Routes>
-            </ExampleAdminLayout>
-          </PrivateRoute>
+          <ExampleAdminLayout>
+            <Routes>
+              {/* Dashboard - accessible to all authenticated admins */}
+              <Route
+                path="/"
+                element={
+                  <RoleProtectedRoute allowedRoles={ALL_ADMIN_ROLES}>
+                    <Dashboard theme={theme} />
+                  </RoleProtectedRoute>
+                }
+              />
+
+              {/* Campus Staff and above routes */}
+              <Route
+                path="/students"
+                element={
+                  <RoleProtectedRoute allowedRoles={STAFF_AND_ABOVE}>
+                    <Students />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/student-management"
+                element={
+                  <RoleProtectedRoute allowedRoles={STAFF_AND_ABOVE}>
+                    <StudentManagement />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/engagement"
+                element={
+                  <RoleProtectedRoute allowedRoles={STAFF_AND_ABOVE}>
+                    <Engagement />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/events-activities"
+                element={
+                  <RoleProtectedRoute allowedRoles={STAFF_AND_ABOVE}>
+                    <EventsActivitiesDashboard />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/social-health"
+                element={
+                  <RoleProtectedRoute allowedRoles={STAFF_AND_ABOVE}>
+                    <SocialHealthOverview />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/wellbeing-stats"
+                element={
+                  <RoleProtectedRoute allowedRoles={STAFF_AND_ABOVE}>
+                    <SocialWellbeingStats />
+                  </RoleProtectedRoute>
+                }
+              />
+
+              {/* Campus Admin and above routes */}
+              <Route
+                path="/campuses"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <Campuses />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/campus-details/:id"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <CampusDetails />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/campus-details"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <CampusDetails />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/campus-boundary"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <CampusBoundary />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/campuses/campus-view/:id"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <CampusView />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/campuses/campus-view"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <CampusView />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/campus-analytics/:campusId"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <CampusAnalytics />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/ambassadors"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <Ambassadors />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/ambassadors/ambassador-view/:id"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <AmbassadorView />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/ambassadors/ambassador-view"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <AmbassadorView />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <Reports />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/reports/:id"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <ReportDetails />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/banned-users"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <BannedUsers />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/locked-users"
+                element={
+                  <RoleProtectedRoute allowedRoles={CAMPUS_ADMIN_AND_ABOVE}>
+                    <LockedUsers />
+                  </RoleProtectedRoute>
+                }
+              />
+
+              {/* Super Admin only routes */}
+              <Route
+                path="/campus-sync"
+                element={
+                  <RoleProtectedRoute allowedRoles={SUPER_ADMIN}>
+                    <CampusSync />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/roles"
+                element={
+                  <RoleProtectedRoute allowedRoles={SUPER_ADMIN}>
+                    <RolesManagement />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/users-roles"
+                element={
+                  <RoleProtectedRoute allowedRoles={SUPER_ADMIN}>
+                    <UsersRoles />
+                  </RoleProtectedRoute>
+                }
+              />
+
+              {/* Settings - accessible to all authenticated admins */}
+              <Route
+                path="/settings"
+                element={
+                  <RoleProtectedRoute allowedRoles={ALL_ADMIN_ROLES}>
+                    <Settings />
+                  </RoleProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-settings"
+                element={
+                  <RoleProtectedRoute allowedRoles={ALL_ADMIN_ROLES}>
+                    <AdminSettings />
+                  </RoleProtectedRoute>
+                }
+              />
+            </Routes>
+          </ExampleAdminLayout>
         }
       />
     </Routes>

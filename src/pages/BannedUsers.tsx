@@ -45,8 +45,12 @@ import {
 import { BannedUser, UserBanHistory } from "../types/report";
 import { reportService } from "../services/reportService";
 import { format, formatDistanceToNow, isPast } from "date-fns";
+import { useSchool } from "../contexts/SchoolContext";
+import { useSchoolFilter } from "../hooks/useSchoolFilter";
 
 const BannedUsers: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  useSchoolFilter(); // Enable school filtering interceptor
   const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +93,7 @@ const BannedUsers: React.FC = () => {
 
   // Fetch banned users
   const fetchBannedUsers = async (page = 1) => {
+    console.log('🚫 BannedUsers: Fetching banned users for school:', selectedSchool?._id || 'all schools');
     try {
       setLoading(true);
       const response = await reportService.getBannedUsers({
@@ -111,7 +116,7 @@ const BannedUsers: React.FC = () => {
   useEffect(() => {
     fetchBannedUsers();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedSchool?._id]);
 
   // Handle search
   const handleSearch = () => {

@@ -14,6 +14,7 @@ import { useTheme } from "../hooks/useTheme";
 import React, { useState } from "react";
 import { cilAccountLogout } from "@coreui/icons";
 import { useNavigate } from "react-router-dom";
+import { SchoolSelector } from "./SchoolSelector";
 
 type TopbarProps = {
   onToggleSidebar: () => void;
@@ -68,6 +69,7 @@ export const Topbar = ({
         right: 0,
         zIndex: 1050,
         transition: "left 0.3s ease",
+        borderBottom: `1px solid ${theme.colors.borderColor}40`,
       }}
     >
       <CContainer fluid>
@@ -89,6 +91,9 @@ export const Topbar = ({
 
           {/* Right-side Icons */}
           <div className="d-flex align-items-center" style={{ gap: "1.5rem" }}>
+            {/* School Selector */}
+            <SchoolSelector />
+
             {/* Theme Toggle */}
             <div
               className="d-flex align-items-center px-3"

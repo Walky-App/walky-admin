@@ -29,6 +29,8 @@ import {
   CFormCheck,
 } from "@coreui/react";
 import { useTheme } from "../hooks/useTheme";
+import { useSchool } from "../contexts/SchoolContext";
+import { useSchoolFilter } from "../hooks/useSchoolFilter";
 import CIcon from "@coreui/icons-react";
 import {
   cilDescription,
@@ -50,6 +52,8 @@ import { format } from "date-fns";
 
 const Reports: React.FC = () => {
   const { theme } = useTheme();
+  const { selectedSchool } = useSchool();
+  useSchoolFilter(); // Enable school filtering interceptor
   const navigate = useNavigate();
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,6 +112,7 @@ const Reports: React.FC = () => {
 
   // Fetch reports from API
   const fetchReports = async () => {
+    console.log('📋 Reports: Fetching reports for school:', selectedSchool?._id || 'all schools');
     try {
       setLoading(true);
       setError(null);
@@ -129,7 +134,7 @@ const Reports: React.FC = () => {
   useEffect(() => {
     fetchReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [filters, selectedSchool?._id]);
 
   // Handle filter changes
   const handleFilterChange = (
