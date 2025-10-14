@@ -29,6 +29,7 @@ import {
   cilChart,
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
+import { useSchool } from '../contexts/SchoolContext'
 import API from '../API'
 
 interface SocialHealthMetrics {
@@ -185,6 +186,7 @@ const StatCard = ({
 
 const SocialHealthOverview = () => {
   // const { theme } = useTheme() // Theme not currently used in main component
+  const { selectedSchool } = useSchool()
 
   const [period, setPeriod] = useState<Period>('month')
   const [loading, setLoading] = useState(true)
@@ -193,60 +195,26 @@ const SocialHealthOverview = () => {
 
   useEffect(() => {
     const fetchMetrics = async () => {
+      console.log('🏥 SocialHealthOverview: Fetching metrics for school:', selectedSchool?._id || 'all schools')
       setLoading(true)
       setError(null)
 
       try {
-        const response = await API.get(`/api/admin/analytics/social-health-metrics?period=${period}`)
+        const response = await API.get(`/admin/analytics/social-health-metrics?period=${period}`)
         setMetrics(response.data)
-      } catch (err) {
+        setError(null)
+      } catch (err: unknown) {
         console.error('Failed to fetch social health metrics:', err)
-        setError('Failed to load metrics. Please try again.')
-
-        // Mock data for development
-        setMetrics({
-          totalActiveUsers: 1847,
-          newUserRegistrations: {
-            thisWeek: 23,
-            thisMonth: 87,
-            trend: 12.5,
-          },
-          appOpenings: {
-            averagePerWeek: 4.7,
-            averagePerMonth: 18.3,
-          },
-          invitations: {
-            averageCreated: 3.2,
-            averageAccepted: 2.1,
-            averageIgnored: 1.1,
-            acceptanceRate: 65.6,
-          },
-          events: {
-            totalCreated: 143,
-            averageAttendance: 12.4,
-          },
-          activeSpaces: 67,
-          ideas: {
-            createdThisWeek: 15,
-            createdThisMonth: 52,
-            collaborationsThisWeek: 8,
-            collaborationsThisMonth: 31,
-          },
-          reports: {
-            byPeople: 12,
-            byEvents: 3,
-            byIdeas: 2,
-            bySpaces: 1,
-            totalRate: 0.97,
-          },
-        })
+        const errorMessage = (err as { response?: { data?: { error?: string } }; message?: string })?.response?.data?.error || (err as { message?: string })?.message || 'Failed to load metrics. Please try again.'
+        setError(`API Error: ${errorMessage}`)
+        setMetrics(null)
       } finally {
         setLoading(false)
       }
     }
 
     fetchMetrics()
-  }, [period])
+  }, [period, selectedSchool?._id])
 
   if (error && !metrics) {
     return (

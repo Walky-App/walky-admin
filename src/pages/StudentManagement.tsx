@@ -31,6 +31,7 @@ import {
   CFormSelect,
   CPagination,
   CPaginationItem,
+  CAlert,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -42,6 +43,7 @@ import {
   
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
+import { useSchool } from '../contexts/SchoolContext'
 import API from '../API'
 
 interface Student {
@@ -66,11 +68,13 @@ interface Student {
 
 const StudentManagement = () => {
   const { theme } = useTheme()
+  const { selectedSchool } = useSchool()
   const isDark = theme.isDark
 
   // State
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
@@ -83,9 +87,10 @@ const StudentManagement = () => {
 
   // Fetch students
   const fetchStudents = useCallback(async () => {
+    console.log('👥 StudentManagement: Fetching students for school:', selectedSchool?._id || 'all schools')
     setLoading(true)
     try {
-      const response = await API.get('/api/admin/analytics/students', {
+      const response = await API.get('/admin/analytics/students', {
         params: {
           page: currentPage,
           limit: studentsPerPage,
@@ -96,35 +101,17 @@ const StudentManagement = () => {
 
       setStudents(response.data.students)
       setTotalPages(response.data.pagination.pages)
-    } catch (error) {
-      console.error('Failed to fetch students:', error)
-
-      // Mock data for development
-      const mockStudents: Student[] = Array.from({ length: 20 }, (_, i) => ({
-        _id: `student-${i}`,
-        email: `student${i}@university.edu`,
-        first_name: ['John', 'Jane', 'Alex', 'Sarah', 'Michael'][i % 5],
-        last_name: ['Smith', 'Johnson', 'Williams', 'Brown', 'Davis'][i % 5],
-        avatar_url: `https://i.pravatar.cc/150?img=${i}`,
-        field_of_study: ['Computer Science', 'Business', 'Engineering', 'Arts', 'Medicine'][i % 5],
-        interests: ['Music', 'Sports', 'Technology', 'Art', 'Travel'].slice(0, (i % 3) + 2),
-        profile_bio: 'Passionate about learning and connecting with others.',
-        lastLogin: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-        createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
-        isActive: i % 4 !== 0,
-        engagementScore: Math.floor(Math.random() * 100),
-        stats: {
-          totalPeers: Math.floor(Math.random() * 50),
-          walksAccepted: Math.floor(Math.random() * 20),
-          eventsAttended: Math.floor(Math.random() * 15),
-        },
-      }))
-      setStudents(mockStudents)
-      setTotalPages(5)
+      setError(null)
+    } catch (err: unknown) {
+      console.error('Failed to fetch students:', err)
+      const errorMessage = (err as { response?: { data?: { error?: string } }; message?: string })?.response?.data?.error || (err as { message?: string })?.message || 'Failed to load students.'
+      setError(`API Error: ${errorMessage}`)
+      setStudents([])
+      setTotalPages(0)
     } finally {
       setLoading(false)
     }
-  }, [currentPage, searchTerm, statusFilter, studentsPerPage])
+  }, [currentPage, searchTerm, statusFilter, studentsPerPage, selectedSchool?._id])
 
   useEffect(() => {
     fetchStudents()
@@ -220,6 +207,13 @@ const StudentManagement = () => {
           </CRow>
         </CCardBody>
       </CCard>
+
+      {/* Error Display */}
+      {error && (
+        <CAlert color="danger" className="mb-4">
+          {error}
+        </CAlert>
+      )}
 
       {/* Students Table */}
       <CCard>

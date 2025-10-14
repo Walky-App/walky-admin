@@ -28,6 +28,7 @@ import {
   CFormSelect,
   CPagination,
   CPaginationItem,
+  CAlert,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -78,6 +79,7 @@ const EventsActivitiesDashboard = () => {
   const [activeTab, setActiveTab] = useState<'events' | 'spaces'>('events')
   const [kpis, setKPIs] = useState<KPIs | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   // Events state
   const [events, setEvents] = useState<Event[]>([])
@@ -92,15 +94,14 @@ const EventsActivitiesDashboard = () => {
 
   const fetchKPIs = async () => {
     try {
-      const response = await API.get('/api/admin/analytics/activities/kpis')
+      const response = await API.get('/admin/analytics/activities/kpis')
       setKPIs(response.data)
-    } catch (error) {
-      console.error('Failed to fetch KPIs:', error)
-      // Mock data
-      setKPIs({
-        topEvent: { name: 'Spring Music Festival', attendance: 247 },
-        topSpace: { name: 'Computer Science Club', members: 156 },
-      })
+      setError(null)
+    } catch (err: unknown) {
+      console.error('Failed to fetch KPIs:', err)
+      const errorMessage = (err as { response?: { data?: { error?: string } }; message?: string })?.response?.data?.error || (err as { message?: string })?.message || 'Failed to load KPIs.'
+      setError(`API Error: ${errorMessage}`)
+      setKPIs(null)
     }
   }
 
@@ -108,42 +109,25 @@ const EventsActivitiesDashboard = () => {
     setLoading(true)
     try {
       if (activeTab === 'events') {
-        const response = await API.get('/api/admin/events', {
+        const response = await API.get('/admin/events', {
           params: { page: currentPage, limit: itemsPerPage },
         })
         setEvents(response.data.events)
       } else if (activeTab === 'spaces') {
-        const response = await API.get('/api/admin/spaces', {
+        const response = await API.get('/admin/spaces', {
           params: { page: currentPage, limit: itemsPerPage },
         })
         setSpaces(response.data.spaces)
       }
-    } catch (error) {
-      console.error(`Failed to fetch ${activeTab}:`, error)
-      // Mock data for development
+      setError(null)
+    } catch (err: unknown) {
+      console.error(`Failed to fetch ${activeTab}:`, err)
+      const errorMessage = (err as { response?: { data?: { error?: string } }; message?: string })?.response?.data?.error || (err as { message?: string })?.message || `Failed to load ${activeTab}.`
+      setError(`API Error: ${errorMessage}`)
       if (activeTab === 'events') {
-        setEvents(Array.from({ length: 15 }, (_, i) => ({
-          _id: `event-${i}`,
-          name: `Event ${i + 1}`,
-          date: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000),
-          location: ['Library', 'Student Center', 'Auditorium'][i % 3],
-          type: i % 2 === 0 ? 'public' : 'private',
-          category: ['Music', 'Sports', 'Academic'][i % 3],
-          attendees: Math.floor(Math.random() * 100) + 10,
-          maxAttendees: Math.floor(Math.random() * 50) + 100,
-          createdBy: `User ${i}`,
-        })))
+        setEvents([])
       } else if (activeTab === 'spaces') {
-        setSpaces(Array.from({ length: 15 }, (_, i) => ({
-          _id: `space-${i}`,
-          title: `Space ${i + 1}`,
-          category: ['Academic', 'Social', 'Professional'][i % 3],
-          membersCount: Math.floor(Math.random() * 100) + 10,
-          createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
-          ownerId: `owner-${i}`,
-          ownerName: `Owner ${i}`,
-          isActive: i % 5 !== 0,
-        })))
+        setSpaces([])
       }
     } finally {
       setLoading(false)
@@ -230,6 +214,13 @@ const EventsActivitiesDashboard = () => {
           </CCard>
         </CCol>
       </CRow>
+
+      {/* Error Display */}
+      {error && (
+        <CAlert color="danger" className="mb-4">
+          {error}
+        </CAlert>
+      )}
 
       {/* Tabs */}
       <CCard>

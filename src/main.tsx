@@ -18,14 +18,17 @@ import "./styles/visibility-fixes.css";
 import "./styles/enhanced-table.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { SchoolProvider } from "./contexts/SchoolContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <SchoolProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </SchoolProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>

@@ -32,15 +32,36 @@ const Login = ({ onLogin }: LoginProps) => {
       });
 
       const token = response?.data?.access_token;
+      const userData = response?.data;
 
-      if (token) {
-        // Store token in localStorage
-        localStorage.setItem("token", token);
-        onLogin();
-        navigate("/");
-      } else {
+      if (!token) {
         throw new Error("Token not found in response.");
       }
+
+      // Validate user role - only allow admin roles
+      const adminRoles = ['super_admin', 'campus_admin', 'editor', 'moderator', 'staff', 'viewer'];
+      const userRole = userData?.role;
+
+      if (!userRole || !adminRoles.includes(userRole)) {
+        setLoginError(true);
+        console.warn(`❌ Access denied: User role "${userRole}" is not authorized for admin panel`);
+        return;
+      }
+
+      // Store token and user data in localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify({
+        _id: userData._id,
+        email: userData.email,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        role: userData.role,
+        campus_id: userData.campus_id,
+        school_id: userData.school_id,
+      }));
+
+      onLogin();
+      navigate("/");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(
