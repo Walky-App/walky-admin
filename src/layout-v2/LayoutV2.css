@@ -14,7 +14,18 @@
   top: 0;
   height: 100vh;
   z-index: 1001;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  width: 224px;
+}
+
+.layout-sidebar.hide {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.layout-sidebar.show {
+  transform: translateX(0);
+  opacity: 1;
 }
 
 /* Main Content */
@@ -22,13 +33,16 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 224px;
   transition: margin-left 0.3s ease;
   min-height: 100vh;
 }
 
 .layout-main.with-sidebar {
   margin-left: 224px;
+}
+
+.layout-main.full-width {
+  margin-left: 0;
 }
 
 /* Page Content */

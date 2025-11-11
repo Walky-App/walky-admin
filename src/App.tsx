@@ -52,6 +52,7 @@ import SocialWellbeingStats from "./pages/SocialWellbeingStats";
 import AdminSettings from "./pages/AdminSettings";
 import Unauthorized from "./pages/Unauthorized";
 import { RoleProtectedRoute } from "./components/RoleProtectedRoute";
+import V2Routes from "./routes/v2Routes";
 
 import "./App.css";
 import "./styles/modern-theme.css";
@@ -1194,6 +1195,9 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/* V2 Layout Routes - New Design System */}
+      <Route path="/v2/*" element={<V2Routes />} />
 
       {/* Protected routes inside admin layout */}
       <Route

@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LayoutV2 } from "../layout-v2";
 import EngagementAnalytics from "../pages-v2/EngagementAnalytics";
+import { CampusProvider } from "../contexts/CampusContext";
 
 /**
  * Example router configuration for V2 layout
@@ -13,11 +14,15 @@ import EngagementAnalytics from "../pages-v2/EngagementAnalytics";
  * <Routes>
  *   <Route path="/v2/*" element={<V2Routes />} />
  * </Routes>
+ * 
+ * Note: SchoolProvider is already available from main.tsx
+ * We wrap V2 routes with CampusProvider for campus-specific functionality
  */
 
 const V2Routes: React.FC = () => {
   return (
-    <Routes>
+    <CampusProvider>
+      <Routes>
       <Route path="/" element={<LayoutV2 />}>
         {/* Dashboard Routes */}
         <Route index element={<Navigate to="engagement" replace />} />
@@ -72,6 +77,7 @@ const V2Routes: React.FC = () => {
         <Route path="*" element={<div>Page Not Found</div>} />
       </Route>
     </Routes>
+    </CampusProvider>
   );
 };
 
