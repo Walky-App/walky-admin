@@ -8,7 +8,7 @@ const LayoutV2: React.FC = () => {
   const [sidebarVisible, setSidebarVisible] = useState(true);
 
   const toggleSidebar = () => {
-    console.log('Toggle sidebar clicked, current state:', sidebarVisible);
+    console.log("Toggle sidebar clicked, current state:", sidebarVisible);
     setSidebarVisible(!sidebarVisible);
   };
 
@@ -20,7 +20,11 @@ const LayoutV2: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className={`layout-main ${sidebarVisible ? "with-sidebar" : "full-width"}`}>
+      <div
+        className={`layout-main ${
+          sidebarVisible ? "with-sidebar" : "full-width"
+        }`}
+      >
         {/* Topbar */}
         <TopbarV2 onToggleSidebar={toggleSidebar} />
 

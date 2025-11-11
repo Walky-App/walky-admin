@@ -135,18 +135,18 @@ const Dashboard = ({ theme }: DashboardProps) => {
       if (walksData) {
         // Calculate 15% of total invites
         const surpriseValue = Math.round(walksData.value * 0.15);
-        
+
         // Calculate 15% of each month's data for the chart
-        const surpriseChartData = walksData.chartData.map(monthValue => 
+        const surpriseChartData = walksData.chartData.map((monthValue) =>
           Math.round(monthValue * 0.15)
         );
-        
+
         // Calculate percentage change based on the chart data
         let percentChange = 0;
         if (surpriseChartData.length >= 2) {
           const lastMonth = surpriseChartData[surpriseChartData.length - 1];
           const previousMonth = surpriseChartData[surpriseChartData.length - 2];
-          
+
           if (previousMonth > 0) {
             percentChange = Number(
               (((lastMonth - previousMonth) / previousMonth) * 100).toFixed(1)
@@ -190,7 +190,10 @@ const Dashboard = ({ theme }: DashboardProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('📊 Dashboard: Fetching data for school:', selectedSchool?._id || 'all schools');
+    console.log(
+      "📊 Dashboard: Fetching data for school:",
+      selectedSchool?._id || "all schools"
+    );
 
     const getIdeasData = async () => {
       try {
@@ -220,8 +223,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
           }
 
           // Enhance ideas data for impressive numbers
-          const enhancedTotalIdeas = totalIdeas < 300 ? totalIdeas + 892 : totalIdeas;
-          const enhancedIdeasChart = chartData.map(value => 
+          const enhancedTotalIdeas =
+            totalIdeas < 300 ? totalIdeas + 892 : totalIdeas;
+          const enhancedIdeasChart = chartData.map((value) =>
             value < 30 ? value + Math.floor(Math.random() * 50) + 40 : value
           );
 
@@ -283,8 +287,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
           });
 
           // Enhance events data for production appeal
-          const enhancedTotalEvents = totalEvents < 500 ? totalEvents + 1247 : totalEvents;
-          const enhancedEventsChart = chartData.map(value => 
+          const enhancedTotalEvents =
+            totalEvents < 500 ? totalEvents + 1247 : totalEvents;
+          const enhancedEventsChart = chartData.map((value) =>
             value < 50 ? value + Math.floor(Math.random() * 80) + 60 : value
           );
 
@@ -340,11 +345,12 @@ const Dashboard = ({ theme }: DashboardProps) => {
           }
 
           // Enhance data with impressive production numbers if low
-          const enhancedTotalWalks = totalWalks < 1000 ? totalWalks + 2847 : totalWalks;
-          const enhancedChartData = chartData.map(value => 
+          const enhancedTotalWalks =
+            totalWalks < 1000 ? totalWalks + 2847 : totalWalks;
+          const enhancedChartData = chartData.map((value) =>
             value < 100 ? value + Math.floor(Math.random() * 200) + 150 : value
           );
-          
+
           const walksData = {
             value: enhancedTotalWalks,
             percentChange,
@@ -446,7 +452,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
   return (
     <>
       {/* Modern Dashboard Header */}
-      <div 
+      <div
         className="mb-5 d-sm-flex justify-content-between align-items-center dashboard-header"
         style={{
           background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`,
@@ -454,13 +460,13 @@ const Dashboard = ({ theme }: DashboardProps) => {
           padding: "24px 32px",
           border: `1px solid ${theme.colors.borderColor}20`,
           backdropFilter: "blur(10px)",
-          boxShadow: theme.isDark 
-            ? "0 8px 32px rgba(0,0,0,0.3)" 
+          boxShadow: theme.isDark
+            ? "0 8px 32px rgba(0,0,0,0.3)"
             : "0 8px 32px rgba(0,0,0,0.08)",
         }}
       >
         <div>
-          <h1 
+          <h1
             style={{
               fontSize: "28px",
               fontWeight: "700",
@@ -473,7 +479,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
           >
             📊 Campus Analytics Dashboard
           </h1>
-          <p 
+          <p
             style={{
               margin: 0,
               color: theme.colors.textMuted,
@@ -485,7 +491,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
           </p>
         </div>
         <div className="d-flex align-items-center gap-3">
-          <div 
+          <div
             style={{
               padding: "8px 16px",
               backgroundColor: theme.colors.success + "20",
@@ -498,7 +504,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
           >
             ● Live Data
           </div>
-          <div 
+          <div
             style={{
               fontSize: "14px",
               color: theme.colors.textMuted,
@@ -517,7 +523,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
             style={{
               borderRadius: "16px",
               border: "none",
-              background: theme.isDark 
+              background: theme.isDark
                 ? `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.primary}10)`
                 : `linear-gradient(135deg, ${theme.colors.primary}08, ${theme.colors.primary}04)`,
               backdropFilter: "blur(10px)",
@@ -526,14 +532,14 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 12px 40px rgba(0,0,0,0.4)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 12px 40px rgba(0,0,0,0.4)"
                 : "0 12px 40px rgba(0,0,0,0.15)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 8px 32px rgba(0,0,0,0.3)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 8px 32px rgba(0,0,0,0.3)"
                 : "0 8px 32px rgba(0,0,0,0.08)";
             }}
             value={
@@ -626,7 +632,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
             style={{
               borderRadius: "16px",
               border: "none",
-              background: theme.isDark 
+              background: theme.isDark
                 ? `linear-gradient(135deg, ${theme.colors.info}20, ${theme.colors.info}10)`
                 : `linear-gradient(135deg, ${theme.colors.info}08, ${theme.colors.info}04)`,
               backdropFilter: "blur(10px)",
@@ -635,14 +641,14 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 12px 40px rgba(0,0,0,0.4)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 12px 40px rgba(0,0,0,0.4)"
                 : "0 12px 40px rgba(0,0,0,0.15)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 8px 32px rgba(0,0,0,0.3)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 8px 32px rgba(0,0,0,0.3)"
                 : "0 8px 32px rgba(0,0,0,0.08)";
             }}
             value={
@@ -735,7 +741,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
             style={{
               borderRadius: "16px",
               border: "none",
-              background: theme.isDark 
+              background: theme.isDark
                 ? `linear-gradient(135deg, ${theme.colors.warning}20, ${theme.colors.warning}10)`
                 : `linear-gradient(135deg, ${theme.colors.warning}08, ${theme.colors.warning}04)`,
               backdropFilter: "blur(10px)",
@@ -744,14 +750,14 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 12px 40px rgba(0,0,0,0.4)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 12px 40px rgba(0,0,0,0.4)"
                 : "0 12px 40px rgba(0,0,0,0.15)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 8px 32px rgba(0,0,0,0.3)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 8px 32px rgba(0,0,0,0.3)"
                 : "0 8px 32px rgba(0,0,0,0.08)";
             }}
             value={
@@ -845,7 +851,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
             style={{
               borderRadius: "16px",
               border: "none",
-              background: theme.isDark 
+              background: theme.isDark
                 ? `linear-gradient(135deg, ${theme.colors.danger}20, ${theme.colors.danger}10)`
                 : `linear-gradient(135deg, ${theme.colors.danger}08, ${theme.colors.danger}04)`,
               backdropFilter: "blur(10px)",
@@ -854,14 +860,14 @@ const Dashboard = ({ theme }: DashboardProps) => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 12px 40px rgba(0,0,0,0.4)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 12px 40px rgba(0,0,0,0.4)"
                 : "0 12px 40px rgba(0,0,0,0.15)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = theme.isDark 
-                ? "0 8px 32px rgba(0,0,0,0.3)" 
+              e.currentTarget.style.boxShadow = theme.isDark
+                ? "0 8px 32px rgba(0,0,0,0.3)"
                 : "0 8px 32px rgba(0,0,0,0.08)";
             }}
             value={
@@ -889,7 +895,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
                 data={{
                   labels: [
                     "Jan",
-                    "Feb", 
+                    "Feb",
                     "Mar",
                     "Apr",
                     "May",
@@ -962,10 +968,10 @@ const Dashboard = ({ theme }: DashboardProps) => {
           borderRadius: "20px",
           padding: "32px",
           border: "none",
-          boxShadow: theme.isDark 
-            ? "0 12px 40px rgba(0,0,0,0.3)" 
+          boxShadow: theme.isDark
+            ? "0 12px 40px rgba(0,0,0,0.3)"
             : "0 12px 40px rgba(0,0,0,0.08)",
-          background: theme.isDark 
+          background: theme.isDark
             ? `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}05)`
             : `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}02)`,
           backdropFilter: "blur(10px)",
@@ -1002,8 +1008,8 @@ const Dashboard = ({ theme }: DashboardProps) => {
           </div>
           <div className="d-flex align-items-center gap-3">
             <CButtonGroup role="group">
-              <CButton 
-                color="outline-secondary" 
+              <CButton
+                color="outline-secondary"
                 size="sm"
                 style={{
                   borderRadius: "8px 0 0 8px",
@@ -1013,8 +1019,8 @@ const Dashboard = ({ theme }: DashboardProps) => {
               >
                 Day
               </CButton>
-              <CButton 
-                color="primary" 
+              <CButton
+                color="primary"
                 size="sm"
                 style={{
                   fontWeight: "600",
@@ -1023,8 +1029,8 @@ const Dashboard = ({ theme }: DashboardProps) => {
               >
                 Week
               </CButton>
-              <CButton 
-                color="outline-secondary" 
+              <CButton
+                color="outline-secondary"
                 size="sm"
                 style={{
                   borderRadius: "0 8px 8px 0",
@@ -1035,9 +1041,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
                 Month
               </CButton>
             </CButtonGroup>
-            <CButton 
-              color="success" 
-              size="sm" 
+            <CButton
+              color="success"
+              size="sm"
               className="ms-2 modern-button"
               style={{
                 borderRadius: "10px",
@@ -1061,7 +1067,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
           {/* Modern Footer Stats */}
           <div
             style={{
-              background: theme.isDark 
+              background: theme.isDark
                 ? `linear-gradient(135deg, ${theme.colors.primary}10, ${theme.colors.info}05)`
                 : `linear-gradient(135deg, ${theme.colors.primary}05, ${theme.colors.info}03)`,
               borderTop: `1px solid ${theme.colors.borderColor}30`,
@@ -1179,10 +1185,23 @@ function App() {
   });
 
   // Define role constants for clarity
-  const SUPER_ADMIN = ['super_admin'];
-  const CAMPUS_ADMIN_AND_ABOVE = ['super_admin', 'campus_admin'];
-  const STAFF_AND_ABOVE = ['super_admin', 'campus_admin', 'editor', 'moderator', 'staff'];
-  const ALL_ADMIN_ROLES = ['super_admin', 'campus_admin', 'editor', 'moderator', 'staff', 'viewer'];
+  const SUPER_ADMIN = ["super_admin"];
+  const CAMPUS_ADMIN_AND_ABOVE = ["super_admin", "campus_admin"];
+  const STAFF_AND_ABOVE = [
+    "super_admin",
+    "campus_admin",
+    "editor",
+    "moderator",
+    "staff",
+  ];
+  const ALL_ADMIN_ROLES = [
+    "super_admin",
+    "campus_admin",
+    "editor",
+    "moderator",
+    "staff",
+    "viewer",
+  ];
 
   return (
     <Routes>
