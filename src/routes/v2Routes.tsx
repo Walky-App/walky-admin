@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LayoutV2 } from "../layout-v2";
-import EngagementAnalytics from "../pages-v2/EngagementAnalytics";
+import EngagementAnalytics from "../pages-v2/EngagementAnalytics/EngagementAnalytics";
 import { CampusProvider } from "../contexts/CampusContext";
 
 /**

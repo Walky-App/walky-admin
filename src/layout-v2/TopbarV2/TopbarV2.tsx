@@ -9,8 +9,8 @@ import {
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilChevronBottom } from "@coreui/icons";
-import { useSchool } from "../contexts/SchoolContext";
-import { useCampus } from "../contexts/CampusContext";
+import { useSchool } from "../../contexts/SchoolContext";
+import { useCampus } from "../../contexts/CampusContext";
 import "./TopbarV2.css";
 
 // SVG Icons

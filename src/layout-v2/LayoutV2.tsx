@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import SidebarV2 from "./SidebarV2";
-import TopbarV2 from "./TopbarV2";
+import SidebarV2 from "./SidebarV2/SidebarV2";
+import TopbarV2 from "./TopbarV2/TopbarV2";
 import "./LayoutV2.css";
 
 const LayoutV2: React.FC = () => {
