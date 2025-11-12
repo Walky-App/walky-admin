@@ -1,17 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   CContainer,
   CDropdown,
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CSpinner,
 } from "@coreui/react";
-import CIcon from "@coreui/icons-react";
-import { cilChevronBottom } from "@coreui/icons";
-import { useSchool } from "../../contexts/SchoolContext";
-import { useCampus } from "../../contexts/CampusContext";
+import { useSchool, School } from "../../contexts/SchoolContext";
+import { useCampus, Campus } from "../../contexts/CampusContext";
 import { useTheme } from "../../hooks/useTheme";
+import { useAuth } from "../../hooks/useAuth";
 import { AssetIcon } from "../../components-v2";
+import API from "../../API";
 import "./TopbarV2.css";
 
 interface TopbarV2Props {
@@ -19,16 +20,103 @@ interface TopbarV2Props {
 }
 
 const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
-  const { selectedSchool } = useSchool();
-  const { selectedCampus } = useCampus();
+  const {
+    selectedSchool,
+    setSelectedSchool,
+    availableSchools,
+    setAvailableSchools,
+    isLoadingSchools,
+    setIsLoadingSchools,
+  } = useSchool();
+  const {
+    selectedCampus,
+    setSelectedCampus,
+    availableCampuses,
+    setAvailableCampuses,
+    isLoadingCampuses,
+    setIsLoadingCampuses,
+  } = useCampus();
   const { toggleTheme } = useTheme();
+  const { user, isSuperAdmin } = useAuth();
 
-  // Mock user data - replace with actual user context
-  const currentUser = {
-    name: "Admin Name",
-    avatar:
-      "https://www.figma.com/api/mcp/asset/de3560b0-471d-4d73-bc23-658476275f11",
-  };
+  // Fetch schools on mount
+  useEffect(() => {
+    const fetchSchools = async () => {
+      if (!user) return;
+
+      setIsLoadingSchools(true);
+      try {
+        let schools = [];
+
+        if (isSuperAdmin()) {
+          const response = await API.get("/admin/schools");
+          schools = response.data || [];
+        } else if (user.school_id) {
+          const response = await API.get(`/admin/schools/${user.school_id}`);
+          const school = response.data;
+          schools = school ? [school] : [];
+        }
+
+        setAvailableSchools(schools);
+
+        if (!isSuperAdmin() && schools.length > 0 && !selectedSchool) {
+          setSelectedSchool(schools[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch schools:", error);
+        setAvailableSchools([]);
+      } finally {
+        setIsLoadingSchools(false);
+      }
+    };
+
+    fetchSchools();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email, user?.role]);
+
+  // Fetch campuses on mount
+  useEffect(() => {
+    const fetchCampuses = async () => {
+      if (!user) return;
+
+      setIsLoadingCampuses(true);
+      try {
+        let campuses = [];
+
+        if (isSuperAdmin()) {
+          const response = await API.get("/admin/campuses");
+          campuses = response.data?.data || response.data?.campuses || [];
+        } else if (user.campus_id) {
+          const response = await API.get(`/admin/campuses/${user.campus_id}`);
+          const campus =
+            response.data || response.data?.data || response.data?.campus;
+          campuses = campus ? [campus] : [];
+        }
+
+        setAvailableCampuses(campuses);
+
+        if (!isSuperAdmin() && campuses.length > 0 && !selectedCampus) {
+          setSelectedCampus(campuses[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch campuses:", error);
+        setAvailableCampuses([]);
+      } finally {
+        setIsLoadingCampuses(false);
+      }
+    };
+
+    fetchCampuses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email, user?.role]);
+
+  // Get user display name and avatar
+  const userName = user ? `${user.first_name} ${user.last_name}` : "Admin Name";
+  const userAvatar =
+    user?.avatar_url ||
+    "https://ui-avatars.com/api/?name=" +
+      encodeURIComponent(userName) +
+      "&background=4A5568&color=fff";
 
   return (
     <div className="topbar-v2">
@@ -39,7 +127,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           onClick={onToggleSidebar}
           aria-label="Toggle sidebar"
         >
-          <AssetIcon name="hamburguer-icon" size={16} color="#1d1b20" />
+          <AssetIcon name="hamburguer-icon" color="#1d1b20" />
         </button>
 
         {/* Main Container */}
@@ -49,19 +137,36 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {/* School Selector */}
             <div className="selector-group">
               <div className="selector-icon">
-                <AssetIcon name="school-icon" size={24} color="#1d1b20" />
+                <AssetIcon name="school-icon" color="#1d1b20" />
               </div>
               <div className="selector-info">
                 <span className="selector-label">Your school</span>
                 <CDropdown className="selector-dropdown">
                   <CDropdownToggle color="link" className="selector-toggle">
-                    {selectedSchool?.school_name || "FIU"}
-                    <CIcon icon={cilChevronBottom} size="sm" className="ms-2" />
+                    {isLoadingSchools ? (
+                      <CSpinner size="sm" />
+                    ) : (
+                      <>
+                        {selectedSchool?.school_name || "Select School"}
+                        <AssetIcon name="arrow-down" color="#1d1b20" />
+                      </>
+                    )}
                   </CDropdownToggle>
                   <CDropdownMenu>
-                    <CDropdownItem>FIU</CDropdownItem>
-                    <CDropdownItem>University of Miami</CDropdownItem>
-                    <CDropdownItem>FAU</CDropdownItem>
+                    {availableSchools.map((school: School) => (
+                      <CDropdownItem
+                        key={school._id}
+                        onClick={() => setSelectedSchool(school)}
+                        active={selectedSchool?._id === school._id}
+                      >
+                        {school.school_name}
+                      </CDropdownItem>
+                    ))}
+                    {availableSchools.length === 0 && !isLoadingSchools && (
+                      <CDropdownItem disabled>
+                        No schools available
+                      </CDropdownItem>
+                    )}
                   </CDropdownMenu>
                 </CDropdown>
               </div>
@@ -70,19 +175,36 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {/* Campus Selector */}
             <div className="selector-group">
               <div className="selector-icon">
-                <AssetIcon name="campus-icon" size={24} color="#1d1b20" />
+                <AssetIcon name="campus-icon" color="#1d1b20" />
               </div>
               <div className="selector-info">
                 <span className="selector-label">Your campus</span>
                 <CDropdown className="selector-dropdown">
                   <CDropdownToggle color="link" className="selector-toggle">
-                    {selectedCampus?.campus_name || "Miami Campus"}
-                    <CIcon icon={cilChevronBottom} size="sm" className="ms-2" />
+                    {isLoadingCampuses ? (
+                      <CSpinner size="sm" />
+                    ) : (
+                      <>
+                        {selectedCampus?.campus_name || "Select Campus"}
+                        <AssetIcon name="arrow-down" color="#1d1b20" />
+                      </>
+                    )}
                   </CDropdownToggle>
                   <CDropdownMenu>
-                    <CDropdownItem>Miami Campus</CDropdownItem>
-                    <CDropdownItem>Biscayne Bay Campus</CDropdownItem>
-                    <CDropdownItem>Engineering Campus</CDropdownItem>
+                    {availableCampuses.map((campus: Campus) => (
+                      <CDropdownItem
+                        key={campus._id}
+                        onClick={() => setSelectedCampus(campus)}
+                        active={selectedCampus?._id === campus._id}
+                      >
+                        {campus.campus_name}
+                      </CDropdownItem>
+                    ))}
+                    {availableCampuses.length === 0 && !isLoadingCampuses && (
+                      <CDropdownItem disabled>
+                        No campuses available
+                      </CDropdownItem>
+                    )}
                   </CDropdownMenu>
                 </CDropdown>
               </div>
@@ -97,7 +219,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
               onClick={toggleTheme}
               aria-label="Toggle theme"
             >
-              <AssetIcon name="wb-sunny-icon" size={24} color="#1d1b20" />
+              <AssetIcon
+                name="wb-sunny-icon"
+                color="var(--v2-neutral-grey-medium)"
+              />
             </button>
 
             {/* Divider */}
@@ -106,20 +231,20 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {/* User Dropdown */}
             <CDropdown className="user-dropdown">
               <CDropdownToggle color="link" className="user-toggle">
-                <span className="user-name">{currentUser.name}</span>
-                <CIcon icon={cilChevronBottom} size="sm" className="ms-2" />
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="user-avatar"
-                  width="38"
-                  height="38"
-                />
+                <span className="user-name">{userName}</span>
+                <AssetIcon name="arrow-down" color="#1d1b20" size={24} />
+                <div className="user-avatar-wrapper">
+                  <img
+                    src={userAvatar}
+                    alt={userName}
+                    className="user-avatar"
+                    width="38"
+                    height="38"
+                    draggable="false"
+                  />
+                </div>
               </CDropdownToggle>
               <CDropdownMenu>
-                <CDropdownItem href="/profile">Profile</CDropdownItem>
-                <CDropdownItem href="/settings">Settings</CDropdownItem>
-                <div className="dropdown-divider" />
                 <CDropdownItem href="/logout">Logout</CDropdownItem>
               </CDropdownMenu>
             </CDropdown>

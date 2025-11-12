@@ -39,26 +39,39 @@ const Login = ({ onLogin }: LoginProps) => {
       }
 
       // Validate user role - only allow admin roles
-      const adminRoles = ['super_admin', 'campus_admin', 'editor', 'moderator', 'staff', 'viewer'];
+      const adminRoles = [
+        "super_admin",
+        "campus_admin",
+        "editor",
+        "moderator",
+        "staff",
+        "viewer",
+      ];
       const userRole = userData?.role;
 
       if (!userRole || !adminRoles.includes(userRole)) {
         setLoginError(true);
-        console.warn(`❌ Access denied: User role "${userRole}" is not authorized for admin panel`);
+        console.warn(
+          `❌ Access denied: User role "${userRole}" is not authorized for admin panel`
+        );
         return;
       }
 
       // Store token and user data in localStorage
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({
-        _id: userData._id,
-        email: userData.email,
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        role: userData.role,
-        campus_id: userData.campus_id,
-        school_id: userData.school_id,
-      }));
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          _id: userData._id,
+          email: userData.email,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          role: userData.role,
+          avatar_url: userData.avatar_url,
+          campus_id: userData.campus_id,
+          school_id: userData.school_id,
+        })
+      );
 
       onLogin();
       navigate("/");
