@@ -1,4 +1,4 @@
-export type IconName = 'bell-notification' | 'calendar-event' | 'campus-icon' | 'hamburger-menu' | 'school-icon' | 'trend-down' | 'trend-up' | 'user-group';
+export type IconName = 'campus-icon' | 'hamburguer-icon' | 'menu-logo-walky' | 'school-icon' | 'wb-sunny-icon';
 
 export interface AssetIconProps {
   name: IconName;

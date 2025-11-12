@@ -39,7 +39,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           onClick={onToggleSidebar}
           aria-label="Toggle sidebar"
         >
-          <AssetIcon name="hamburger-menu" size={16} color="#1d1b20" />
+          <AssetIcon name="hamburguer-icon" size={16} color="#1d1b20" />
         </button>
 
         {/* Main Container */}
@@ -95,11 +95,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             <CDropdown className="notification-dropdown">
               <CDropdownToggle color="link" className="notification-btn">
                 <div style={{ position: "relative" }}>
-                  <AssetIcon
-                    name="bell-notification"
-                    size={20}
-                    color="#1d1b20"
-                  />
+                  {/* Icon removed - add new icon later */}
                   {notificationCount > 0 && (
                     <CBadge color="danger" className="notification-badge">
                       {notificationCount}
