@@ -11,67 +11,8 @@ import CIcon from "@coreui/icons-react";
 import { cilChevronBottom } from "@coreui/icons";
 import { useSchool } from "../../contexts/SchoolContext";
 import { useCampus } from "../../contexts/CampusContext";
+import { AssetIcon } from "../../components-v2";
 import "./TopbarV2.css";
-
-// SVG Icons
-const HamburgerIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <line x1="0" y1="2" x2="16" y2="2" stroke="#1D1B20" strokeWidth="2" />
-    <line x1="0" y1="8" x2="16" y2="8" stroke="#1D1B20" strokeWidth="2" />
-    <line x1="0" y1="14" x2="16" y2="14" stroke="#1D1B20" strokeWidth="2" />
-  </svg>
-);
-
-const SchoolIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 3L1 9L5 11.18V17.18L12 21L19 17.18V11.18L21 10.09V17H23V9L12 3ZM18.82 9L12 12.72L5.18 9L12 5.28L18.82 9ZM17 15.99L12 18.72L7 15.99V12.27L12 15L17 12.27V15.99Z"
-      fill="#1D1B20"
-    />
-  </svg>
-);
-
-const CampusIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 2L2 7V9H22V7L12 2ZM4 11V18H6V11H4ZM10 11V18H12V11H10ZM16 11V18H18V11H16ZM2 20V22H22V20H2Z"
-      fill="#1D1B20"
-    />
-  </svg>
-);
-
-const BellIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M10 2C8.9 2 8 2.9 8 4V4.29C6.03 5.17 4.75 7.08 4.75 9.25V13.5L3 15.25V16H17V15.25L15.25 13.5V9.25C15.25 7.08 13.97 5.17 12 4.29V4C12 2.9 11.1 2 10 2ZM10 18C11.1 18 12 17.1 12 16H8C8 17.1 8.9 18 10 18Z"
-      fill="#1D1B20"
-    />
-  </svg>
-);
 
 interface TopbarV2Props {
   onToggleSidebar?: () => void;
@@ -98,7 +39,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           onClick={onToggleSidebar}
           aria-label="Toggle sidebar"
         >
-          <HamburgerIcon />
+          <AssetIcon name="hamburger-menu" size={16} color="#1d1b20" />
         </button>
 
         {/* Main Container */}
@@ -108,7 +49,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {/* School Selector */}
             <div className="selector-group">
               <div className="selector-icon">
-                <SchoolIcon />
+                <AssetIcon name="school-icon" size={24} color="#1d1b20" />
               </div>
               <div className="selector-info">
                 <span className="selector-label">Your school</span>
@@ -129,7 +70,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {/* Campus Selector */}
             <div className="selector-group">
               <div className="selector-icon">
-                <CampusIcon />
+                <AssetIcon name="campus-icon" size={24} color="#1d1b20" />
               </div>
               <div className="selector-info">
                 <span className="selector-label">Your campus</span>
@@ -153,8 +94,12 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {/* Notifications */}
             <CDropdown className="notification-dropdown">
               <CDropdownToggle color="link" className="notification-btn">
-                <div className="notification-icon-wrapper">
-                  <BellIcon />
+                <div style={{ position: "relative" }}>
+                  <AssetIcon
+                    name="bell-notification"
+                    size={20}
+                    color="#1d1b20"
+                  />
                   {notificationCount > 0 && (
                     <CBadge color="danger" className="notification-badge">
                       {notificationCount}
