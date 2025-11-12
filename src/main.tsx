@@ -16,6 +16,7 @@ import "./styles/logo-background-fix.css";
 import "./styles/badge-fixes.css";
 import "./styles/visibility-fixes.css";
 import "./styles/enhanced-table.css";
+import "./styles-v2/design-tokens.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { SchoolProvider } from "./contexts/SchoolContext";

@@ -11,7 +11,7 @@ import CIcon from "@coreui/icons-react";
 import { cilChevronBottom } from "@coreui/icons";
 import { useSchool } from "../contexts/SchoolContext";
 import { useCampus } from "../contexts/CampusContext";
-import "./TopbarV2.css";
+import "./TopbarV2/TopbarV2.css";
 
 // SVG Icons
 const HamburgerIcon = () => (

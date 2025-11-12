@@ -1,9 +1,10 @@
-/* Layout V2 Styles */
+/* Layout V2 Styles - Using Design Tokens */
+@import "../styles-v2/design-tokens.css";
 
 .layout-v2 {
   display: flex;
   min-height: 100vh;
-  background-color: #f4f5f7;
+  background-color: var(--v2-bg-app);
   position: relative;
 }
 
@@ -13,9 +14,10 @@
   left: 0;
   top: 0;
   height: 100vh;
-  z-index: 1001;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  width: 224px;
+  z-index: var(--v2-z-sidebar);
+  transition: transform var(--v2-transition-slow),
+    opacity var(--v2-transition-slow);
+  width: var(--v2-sidebar-width);
 }
 
 .layout-sidebar.hide {
@@ -33,12 +35,12 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s ease;
+  transition: margin-left var(--v2-transition-slow);
   min-height: 100vh;
 }
 
 .layout-main.with-sidebar {
-  margin-left: 224px;
+  margin-left: var(--v2-sidebar-width);
 }
 
 .layout-main.full-width {
@@ -49,7 +51,7 @@
 .layout-content {
   flex: 1;
   padding: 0;
-  background-color: #f4f5f7;
+  background-color: var(--v2-bg-app);
   overflow-x: hidden;
 }
 
@@ -58,8 +60,8 @@
   display: none;
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  background-color: var(--v2-overlay-bg);
+  z-index: calc(var(--v2-z-sidebar) - 1);
 }
 
 /* Responsive */

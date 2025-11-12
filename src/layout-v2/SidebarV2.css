@@ -1,5 +1,4 @@
-/* Sidebar V2 Styles - Using Design Tokens */
-@import "../../styles-v2/design-tokens.css";
+/* Sidebar V2 Styles - Using V2 Design Tokens */
 
 .sidebar-v2 {
   width: var(--v2-sidebar-width);
@@ -82,7 +81,7 @@
 }
 
 .sidebar-menu-item:hover {
-  background-color: var(--v2-bg-hover);
+  background-color: var(--v2-bg-container);
 }
 
 .sidebar-menu-item.active,
@@ -100,7 +99,7 @@
 .sidebar-indicator {
   width: 3px;
   height: var(--v2-spacing-16);
-  background-color: var(--v2-primary-purple-active);
+  background-color: var(--v2-primary-purple-main);
   border-radius: 0 1.5px 1.5px 0;
   flex-shrink: 0;
 }
@@ -144,7 +143,7 @@
 }
 
 .sidebar-submenu-item:hover {
-  background-color: var(--v2-bg-hover);
+  background-color: var(--v2-bg-container);
 }
 
 .sidebar-submenu-item.active {
@@ -159,16 +158,16 @@
 }
 
 .sidebar-v2::-webkit-scrollbar-track {
-  background: var(--v2-bg-hover);
+  background: var(--v2-bg-container);
 }
 
 .sidebar-v2::-webkit-scrollbar-thumb {
   background: var(--v2-border-dark);
-  border-radius: var(--v2-radius-xs);
+  border-radius: 3px;
 }
 
 .sidebar-v2::-webkit-scrollbar-thumb:hover {
-  background: var(--v2-text-tertiary);
+  background: var(--v2-neutral-charts-grey, #a9abac);
 }
 
 /* Responsive */
