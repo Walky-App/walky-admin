@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   CContainer,
   CDropdown,
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
-  CBadge,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilChevronBottom } from "@coreui/icons";
 import { useSchool } from "../../contexts/SchoolContext";
 import { useCampus } from "../../contexts/CampusContext";
+import { useTheme } from "../../hooks/useTheme";
 import { AssetIcon } from "../../components-v2";
 import "./TopbarV2.css";
 
@@ -21,7 +21,7 @@ interface TopbarV2Props {
 const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
-  const [notificationCount] = useState(0); // Replace with actual notification count
+  const { toggleTheme } = useTheme();
 
   // Mock user data - replace with actual user context
   const currentUser = {
@@ -91,23 +91,17 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
           {/* User Actions */}
           <div className="user-actions">
-            {/* Notifications */}
-            <CDropdown className="notification-dropdown">
-              <CDropdownToggle color="link" className="notification-btn">
-                <div style={{ position: "relative" }}>
-                  {/* Icon removed - add new icon later */}
-                  {notificationCount > 0 && (
-                    <CBadge color="danger" className="notification-badge">
-                      {notificationCount}
-                    </CBadge>
-                  )}
-                </div>
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <div className="dropdown-header px-3 py-2">Notifications</div>
-                <CDropdownItem>No new notifications</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
+            {/* Theme Toggle */}
+            <button
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              <AssetIcon name="wb-sunny-icon" size={24} color="#1d1b20" />
+            </button>
+
+            {/* Divider */}
+            <div className="topbar-divider" />
 
             {/* User Dropdown */}
             <CDropdown className="user-dropdown">

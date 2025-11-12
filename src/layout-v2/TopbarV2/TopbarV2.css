@@ -19,7 +19,7 @@
   padding: 0 var(--v2-spacing-40);
   min-height: 58px;
   width: 100%;
-  gap: var(--v2-spacing-40);
+  gap: var(--v2-spacing-24);
 }
 
 /* Hamburger Button */
@@ -139,7 +139,39 @@
 .user-actions {
   display: flex;
   align-items: center;
-  gap: var(--v2-spacing-4);
+  gap: var(--v2-spacing-20);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: opacity var(--v2-transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  opacity: 0.7;
+}
+
+.theme-toggle-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Topbar Divider */
+.topbar-divider {
+  width: 1px;
+  height: 50px;
+  background-color: var(--v2-border-divider);
+  flex-shrink: 0;
 }
 
 /* Notification */
