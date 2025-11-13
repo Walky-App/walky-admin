@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import IconMap from "./icons.generated";
 import { AssetIconProps } from "./AssetIcon.types";
@@ -25,6 +24,7 @@ const AssetIcon: React.FC<AssetIconProps> = ({
         color: color || "currentColor",
         fill: color || "currentColor",
         ...(strokeColor && { stroke: strokeColor }),
+        ...(size && { width: size, height: size }),
         ...style,
       }}
     />
