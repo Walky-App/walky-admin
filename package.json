@@ -11,7 +11,9 @@
     "prepare": "husky",
     "tsc": "tsc",
     "type-check": "tsc -b",
-    "clean": "./clean-build.sh"
+    "clean": "./clean-build.sh",
+    "generate:icons": "node scripts/generate-icons.cjs",
+    "generate:images": "node scripts/generate-images.cjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -55,6 +57,7 @@
     "tsc-files": "^1.1.4",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.36.0",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vite-plugin-svgr": "^4.5.0"
   }
 }

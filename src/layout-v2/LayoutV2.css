@@ -1,0 +1,134 @@
+/* Layout V2 Styles - Using Design Tokens */
+@import "../styles-v2/design-tokens.css";
+
+.layout-v2 {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--v2-bg-app);
+  position: relative;
+}
+
+/* Sidebar */
+.layout-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: var(--v2-sidebar-width);
+  background-color: var(--v2-bg-sidebar);
+  z-index: var(--v2-z-sidebar);
+  transition: transform 0.3s ease-in-out;
+}
+
+.layout-sidebar.show {
+  transform: translateX(0);
+}
+
+.layout-sidebar.hide {
+  transform: translateX(-100%);
+}
+
+/* Main Content */
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease-in-out;
+  min-height: 100vh;
+}
+
+.layout-main.with-sidebar {
+  margin-left: var(--v2-sidebar-width);
+}
+
+.layout-main.full-width {
+  margin-left: 0;
+}
+
+/* Page Content */
+.layout-content {
+  flex: 1;
+  padding: 0;
+  background-color: var(--v2-bg-app);
+  overflow-x: hidden;
+}
+
+/* Overlay */
+.layout-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: var(--v2-overlay-bg);
+  z-index: calc(var(--v2-z-sidebar) - 1);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .layout-sidebar {
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    z-index: 1100 !important;
+  }
+
+  .layout-sidebar.hide {
+    transform: translateX(-100%);
+  }
+
+  .layout-sidebar.show {
+    transform: translateX(0);
+  }
+
+  .layout-main {
+    margin-left: 0 !important;
+  }
+
+  .layout-overlay {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1090;
+  }
+
+  .layout-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout-content {
+    padding: 0;
+  }
+
+  .layout-main {
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 576px) {
+  .layout-v2 {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  .layout-content {
+    padding: 0;
+    min-height: calc(100vh - 58px);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .layout-sidebar {
+    display: none;
+  }
+
+  .layout-main {
+    margin-left: 0;
+  }
+
+  .layout-content {
+    padding: 0;
+  }
+}

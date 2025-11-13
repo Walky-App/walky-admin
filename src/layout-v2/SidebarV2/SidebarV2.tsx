@@ -1,0 +1,237 @@
+import React, { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { AssetIcon } from "../../components-v2";
+import "./SidebarV2.css";
+
+// Walky Logo component
+const WalkyLogo = () => (
+  <div className="sidebar-logo">
+    <AssetIcon name="menu-logo-walky" />
+  </div>
+);
+
+interface MenuItem {
+  label: string;
+  path?: string;
+  submenu?: MenuItem[];
+}
+
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
+interface SidebarMenuItemProps {
+  item: MenuItem;
+  isSubmenuItem?: boolean;
+  onToggle?: () => void;
+  isOpen?: boolean;
+}
+
+const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
+  item,
+  isSubmenuItem = false,
+  onToggle,
+  isOpen = false,
+}) => {
+  const location = useLocation();
+  const hasSubmenu = item.submenu !== undefined;
+
+  if (isSubmenuItem) {
+    return (
+      <NavLink
+        to={item.path || "#"}
+        className={({ isActive: navIsActive }) =>
+          `sidebar-submenu-item ${navIsActive ? "active" : ""}`
+        }
+      >
+        {item.label}
+      </NavLink>
+    );
+  }
+
+  if (hasSubmenu) {
+    // Check if any submenu item is active
+    const isAnySubmenuActive = item.submenu?.some(
+      (subItem) => subItem.path && location.pathname === subItem.path
+    );
+
+    return (
+      <div className="sidebar-menu-item-wrapper">
+        <div
+          className={`sidebar-menu-item ${isOpen ? "open" : ""} ${
+            isAnySubmenuActive ? "active" : ""
+          }`}
+          onClick={() => {
+            if (onToggle) {
+              onToggle();
+            }
+          }}
+        >
+          {isAnySubmenuActive && <div className="sidebar-indicator" />}
+          <span className="menu-label">{item.label}</span>
+          <div
+            className="menu-icon-wrapper"
+            onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onToggle) {
+                onToggle();
+              }
+            }}
+          >
+            <AssetIcon
+              name={isOpen ? "arrow-up" : "arrow-down"}
+              className="menu-icon"
+              size={16}
+              color="currentColor"
+            />
+          </div>
+        </div>
+        {isOpen && item.submenu && item.submenu.length > 0 && (
+          <div className="sidebar-submenu">
+            {item.submenu.map((subItem, index) => (
+              <SidebarMenuItem key={index} item={subItem} isSubmenuItem />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <NavLink
+      to={item.path || "#"}
+      className={({ isActive: navIsActive }) =>
+        `sidebar-menu-item ${navIsActive ? "active" : ""}`
+      }
+    >
+      {({ isActive: navIsActive }) => (
+        <>
+          {navIsActive && <div className="sidebar-indicator" />}
+          <span className="menu-label">{item.label}</span>
+        </>
+      )}
+    </NavLink>
+  );
+};
+
+const SidebarV2: React.FC = () => {
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+
+  const menuSections: MenuSection[] = [
+    {
+      title: "DASHBOARD",
+      items: [
+        {
+          label: "Campus Analytics",
+          submenu: [
+            { label: "Engagement", path: "/v2/engagement" },
+            { label: "Popular Features", path: "/v2/popular-features" },
+            { label: "User Interactions", path: "/v2/user-interactions" },
+            { label: "Community", path: "/v2/community" },
+            { label: "Student safety", path: "/v2/student-safety" },
+            { label: "Student Behavior", path: "/v2/student-behavior" },
+          ],
+        },
+      ],
+    },
+    {
+      title: "CAMPUS",
+      items: [
+        {
+          label: "Manage Students",
+          submenu: [{ label: "All Students", path: "/v2/manage-students" }],
+        },
+        {
+          label: "Reported Content",
+          path: "/v2/reported-content",
+        },
+        {
+          label: "Events",
+          submenu: [{ label: "All Events", path: "/v2/events" }],
+        },
+        {
+          label: "Spaces",
+          submenu: [{ label: "All Spaces", path: "/v2/spaces" }],
+        },
+        {
+          label: "Ideas",
+          submenu: [{ label: "All Ideas", path: "/v2/ideas" }],
+        },
+      ],
+    },
+    {
+      title: "MODERATION",
+      items: [
+        {
+          label: "Report & Safety",
+          submenu: [{ label: "All Reports", path: "/v2/report-safety" }],
+        },
+        {
+          label: "Report History",
+          submenu: [{ label: "History", path: "/v2/report-history" }],
+        },
+      ],
+    },
+    {
+      title: "ADMIN",
+      items: [
+        {
+          label: "Campuses",
+          submenu: [{ label: "All Campuses", path: "/v2/campuses" }],
+        },
+        {
+          label: "Ambassadors",
+          submenu: [{ label: "All Ambassadors", path: "/v2/ambassadors" }],
+        },
+        {
+          label: "Role Management",
+          submenu: [{ label: "Manage Roles", path: "/v2/role-management" }],
+        },
+      ],
+    },
+    {
+      title: "SETTINGS",
+      items: [
+        {
+          label: "Administrators Roles",
+          submenu: [{ label: "Admin Roles", path: "/v2/administrators-roles" }],
+        },
+      ],
+    },
+  ];
+
+  const toggleMenu = (label: string) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+
+  return (
+    <div className="sidebar-v2">
+      <WalkyLogo />
+
+      <div className="sidebar-menu">
+        {menuSections.map((section, sectionIndex) => (
+          <div key={sectionIndex} className="menu-section">
+            <div className="menu-section-header">{section.title}</div>
+            <div className="menu-items">
+              {section.items.map((item, itemIndex) => (
+                <SidebarMenuItem
+                  key={itemIndex}
+                  item={item}
+                  isOpen={openMenus[item.label]}
+                  onToggle={() => item.submenu && toggleMenu(item.label)}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default SidebarV2;

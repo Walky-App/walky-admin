@@ -1,0 +1,471 @@
+/**
+ * Design Tokens - Walky Admin Portal
+ * 
+ * Source: Figma Design System
+ * File: https://www.figma.com/design/Kthn7Wm5T1Bhcb5GuzLfV0/Walky-Admin-Portal
+ * Node: 1578-48979
+ * 
+ * Auto-generated from Figma variables
+ */
+
+:root {
+  /* ========================================
+     SPACING
+     ======================================== */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-40: 40px;
+
+  /* ========================================
+     CORNER RADIUS
+     ======================================== */
+  --radius-xxs: 4px;
+  --radius-xs: 8px;
+  --radius-xs-plus: 12px;
+  --radius-s: 16px;
+  --radius-xxl: 48px;
+  --radius-round: 999px;
+
+  /* ========================================
+     COLORS - PRIMARY
+     ======================================== */
+  --primary-purple-main: #526ac9;
+  --primary-purple-variant: #546fd9;
+  --primary-dark-purple: #321fdb;
+
+  /* ========================================
+     COLORS - NEUTRALS
+     ======================================== */
+  --neutral-white: #ffffff;
+  --neutral-black: #1d1b20;
+  --neutral-dark-grey: #5b6168;
+  --neutral-grey-medium: #acb6ba;
+  --neutral-charts-grey: #a9abac;
+  --neutral-grey-hover: #575e67;
+  --neutral-placeholder: #676d70;
+  --neutral-disabled-grey: #eef0f1;
+  --neutral-black-40: #00000066;
+
+  /* ========================================
+     COLORS - BACKGROUNDS
+     ======================================== */
+  --bg-page: #f4f5f7;
+  --bg-container: #f7f8fa;
+  --bg-select: #edf2ff;
+  --bg-title: #ebf0fa;
+  --bg-dropdown: #fcfdfd;
+  --bg-table: #f1f4f9;
+  --bg-alert: #ffebe9;
+  --bg-flags: #fff8f7;
+
+  /* ========================================
+     COLORS - ICONS
+     ======================================== */
+  /* User */
+  --icon-user-bg: #e5e4ff;
+  --icon-user: #8280ff;
+
+  /* Events */
+  --icon-events-bg: #ffded1;
+  --icon-events: #ff9871;
+
+  /* Spaces */
+  --icon-spaces-bg: #d9e3f7;
+  --icon-spaces: #4a4cd9;
+
+  /* Ideas */
+  --icon-ideas-bg: #fff3d6;
+  --icon-ideas: #ebb129;
+
+  /* Green */
+  --icon-green-bg: #e9fcf4;
+  --icon-green: #00c617;
+
+  /* Orange */
+  --icon-orange-bg: #fcf3e9;
+  --icon-orange: #f69b39;
+
+  /* Red */
+  --icon-red-bg: #fce9e9;
+  --icon-red: #ff8082;
+
+  /* Light Blue */
+  --icon-lightblue-bg: #d9f7f7;
+  --icon-lightblue: #4ad9d4;
+
+  /* ========================================
+     COLORS - ALERTS
+     ======================================== */
+  --alert-success: #18682c;
+  --alert-success-toast: #1c9e3e;
+  --alert-error: #d53425;
+  --alert-active: #36e04a;
+
+  /* ========================================
+     COLORS - LINES & BORDERS
+     ======================================== */
+  --border-default: #e0e0e0;
+  --border-outline: #cac4d0;
+  --border-light: #eef0f1;
+  --border-dark: #d2d2d3;
+  --border-alert: #ffcac5;
+
+  /* ========================================
+     COLORS - CHART COLORS
+     ======================================== */
+  /* Lines */
+  --chart-green-line: #00b69b;
+  --chart-lightblue-line: #24aff5;
+  --chart-darkblue-line: #4379ee;
+  --chart-brightgreen-line: #00c943;
+  --chart-purple-line: #5e00b6;
+  --chart-red-line: #ee4343;
+
+  /* Bars */
+  --chart-invitations-accepted: #389001;
+  --chart-invitations-sent: #98f4a0;
+  --chart-invitations-ignored: #a0a0a0;
+  --chart-reported-messages: #bff2ff;
+  --chart-reported-spaces: #576cc2;
+
+  /* Text */
+  --chart-text-events: #ba5630;
+  --chart-text-ideas: #8a6818;
+
+  /* ========================================
+     COLORS - CHIPS
+     ======================================== */
+  /* Reported Content */
+  --chip-reported-orange-bg: #fff4e4;
+  --chip-reported-orange-text: #8f5400;
+  --chip-reported-pink-bg: #ffe2fa;
+  --chip-reported-pink-text: #91127c;
+  --chip-reported-red-bg: #ffe5e4;
+  --chip-reported-red-text: #a4181a;
+
+  /* Events */
+  --chip-public-bg: #d6e9c7;
+  --chip-public-text: #3b7809;
+  --chip-private-bg: #c1d0f5;
+  --chip-private-text: #0e3eb8;
+
+  /* Spaces */
+  --chip-clubs-bg: #e2e0f2;
+  --chip-clubs-text: #5f56a9;
+  --chip-fraternities-bg: #fbf1df;
+  --chip-fraternities-text: #896726;
+  --chip-sororities-bg: #fbf6f3;
+  --chip-sororities-text: #816651;
+
+  /* Admin Roles */
+  --chip-school-admin-bg: #cacaee;
+  --chip-school-admin-text: #1c1cd3;
+  --chip-campus-admin-bg: #cae1ee;
+  --chip-campus-admin-text: #0e4c6f;
+  --chip-moderator-bg: #f0e3c4;
+  --chip-moderator-text: #5f470b;
+  --chip-walky-admin-bg: #eed8ca;
+  --chip-walky-admin-text: #74370e;
+
+  /* Active */
+  --chip-active: #edffed;
+
+  /* ========================================
+     COLORS - OTHERS
+     ======================================== */
+  --color-export: #ebf0fa;
+  --color-email: #5088ff;
+  --color-orange-500: #ff9500;
+  --color-purple-700: #382f83;
+
+  /* ========================================
+     COLORS - SECONDARY
+     ======================================== */
+  --secondary-blue-variant: #6273b3;
+  --secondary-blue-pastel: #e4eefe;
+
+  /* ========================================
+     TYPOGRAPHY - FONT FAMILIES
+     ======================================== */
+  --font-family-body: "Lato", sans-serif;
+  --font-family-title: "Lato", sans-serif;
+  --font-family-caption: "Lato", sans-serif;
+
+  /* ========================================
+     TYPOGRAPHY - FONT WEIGHTS
+     ======================================== */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* ========================================
+     TYPOGRAPHY - FONT SIZES
+     ======================================== */
+  --font-size-xxxxs: 8px;
+  --font-size-s: 14px;
+  --font-size-m: 16px;
+  --font-size-l: 20px;
+  --font-size-xl: 24px;
+}
+
+/* ========================================
+   TYPOGRAPHY CLASSES
+   ======================================== */
+
+/* Web Typography */
+.text-h1-bold {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 32px;
+  line-height: 100%;
+}
+
+.text-h2-bold {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 30px;
+  line-height: 100%;
+}
+
+.text-h3-bold {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 28px;
+  line-height: 100%;
+}
+
+.text-h4-bold {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 24px;
+  line-height: 100%;
+}
+
+.text-subtitle-bold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-bold);
+  font-size: 20px;
+  line-height: 100%;
+}
+
+.text-subtitle-regular {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 20px;
+  line-height: 100%;
+}
+
+.text-body-large-bold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-bold);
+  font-size: 18px;
+  line-height: 100%;
+}
+
+.text-body-large-semibold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
+  font-size: 18px;
+  line-height: 100%;
+}
+
+.text-body-large-regular {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 18px;
+  line-height: 100%;
+}
+
+.text-body-bold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-bold);
+  font-size: 16px;
+  line-height: 100%;
+}
+
+.text-body-semibold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
+  font-size: 16px;
+  line-height: 100%;
+}
+
+.text-body-regular {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 16px;
+  line-height: 100%;
+}
+
+.text-small-bold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-bold);
+  font-size: 14px;
+  line-height: 100%;
+}
+
+.text-small-semibold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  line-height: 100%;
+}
+
+.text-small-regular {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 14px;
+  line-height: 100%;
+}
+
+.text-xs-bold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-bold);
+  font-size: 12px;
+  line-height: 100%;
+}
+
+.text-xs-semibold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
+  font-size: 12px;
+  line-height: 100%;
+}
+
+.text-xs-regular {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 12px;
+  line-height: 100%;
+}
+
+.text-xs-black {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-black);
+  font-size: 12px;
+  line-height: 100%;
+}
+
+/* Mobile Typography */
+.text-mobile-h2 {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 24px;
+  line-height: 100%;
+}
+
+.text-mobile-subtitle {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 20px;
+  line-height: 100%;
+}
+
+.text-mobile-card-title {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.text-mobile-body-bold {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-bold);
+  font-size: 16px;
+  line-height: 100%;
+}
+
+.text-mobile-body-regular {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 16px;
+  line-height: 100%;
+}
+
+.text-mobile-small-regular {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 14px;
+  line-height: 100%;
+}
+
+.text-mobile-caption {
+  font-family: var(--font-family-caption);
+  font-weight: var(--font-weight-regular);
+  font-size: 8px;
+  line-height: 100%;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Spacing utilities */
+.p-4 {
+  padding: var(--spacing-4);
+}
+.p-8 {
+  padding: var(--spacing-8);
+}
+.p-12 {
+  padding: var(--spacing-12);
+}
+.p-16 {
+  padding: var(--spacing-16);
+}
+.p-20 {
+  padding: var(--spacing-20);
+}
+.p-24 {
+  padding: var(--spacing-24);
+}
+.p-40 {
+  padding: var(--spacing-40);
+}
+
+.m-4 {
+  margin: var(--spacing-4);
+}
+.m-8 {
+  margin: var(--spacing-8);
+}
+.m-12 {
+  margin: var(--spacing-12);
+}
+.m-16 {
+  margin: var(--spacing-16);
+}
+.m-20 {
+  margin: var(--spacing-20);
+}
+.m-24 {
+  margin: var(--spacing-24);
+}
+.m-40 {
+  margin: var(--spacing-40);
+}
+
+/* Border radius utilities */
+.rounded-xxs {
+  border-radius: var(--radius-xxs);
+}
+.rounded-xs {
+  border-radius: var(--radius-xs);
+}
+.rounded-xs-plus {
+  border-radius: var(--radius-xs-plus);
+}
+.rounded-s {
+  border-radius: var(--radius-s);
+}
+.rounded-xxl {
+  border-radius: var(--radius-xxl);
+}
+.rounded-full {
+  border-radius: var(--radius-round);
+}
