@@ -1,13 +1,14 @@
-import React from 'react';
-import IconMap from './icons.generated';
-import { AssetIconProps } from './AssetIcon.types';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React from "react";
+import IconMap from "./icons.generated";
+import { AssetIconProps } from "./AssetIcon.types";
 
 const AssetIcon: React.FC<AssetIconProps> = ({
   name,
-  size = 24,
+  size,
   color,
   strokeColor,
-  className = '',
+  className = "",
   onClick,
   style = {},
 }) => {
@@ -18,14 +19,12 @@ const AssetIcon: React.FC<AssetIconProps> = ({
   }
   return (
     <SvgIcon
-      width={size}
-      height={size}
       className={className}
       onClick={onClick}
       style={{
-        color: color || 'currentColor',
-        fill: color || 'currentColor',
-        stroke: strokeColor || color || 'currentColor',
+        color: color || "currentColor",
+        fill: color || "currentColor",
+        ...(strokeColor && { stroke: strokeColor }),
         ...style,
       }}
     />
@@ -34,4 +33,4 @@ const AssetIcon: React.FC<AssetIconProps> = ({
 
 export default AssetIcon;
 export { AssetIcon };
-export type { AssetIconProps, IconName } from './AssetIcon.types';
+export type { AssetIconProps, IconName } from "./AssetIcon.types";

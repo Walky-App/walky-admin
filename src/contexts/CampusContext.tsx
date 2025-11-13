@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useAuth } from "../hooks/useAuth";
 
 export interface Campus {
   _id: string;
@@ -28,19 +34,21 @@ interface CampusProviderProps {
 
 export const CampusProvider: React.FC<CampusProviderProps> = ({ children }) => {
   const { user } = useAuth();
-  const [selectedCampus, setSelectedCampusState] = useState<Campus | null>(null);
+  const [selectedCampus, setSelectedCampusState] = useState<Campus | null>(
+    null
+  );
   const [availableCampuses, setAvailableCampuses] = useState<Campus[]>([]);
   const [isLoadingCampuses, setIsLoadingCampuses] = useState(false);
 
   // Load selected campus from localStorage on mount
   useEffect(() => {
-    const savedCampus = localStorage.getItem('selectedCampus');
+    const savedCampus = localStorage.getItem("selectedCampus");
     if (savedCampus) {
       try {
         setSelectedCampusState(JSON.parse(savedCampus));
       } catch (error) {
-        console.error('Failed to parse saved campus:', error);
-        localStorage.removeItem('selectedCampus');
+        console.error("Failed to parse saved campus:", error);
+        localStorage.removeItem("selectedCampus");
       }
     }
   }, []);
@@ -49,21 +57,21 @@ export const CampusProvider: React.FC<CampusProviderProps> = ({ children }) => {
   const setSelectedCampus = (campus: Campus | null) => {
     setSelectedCampusState(campus);
     if (campus) {
-      localStorage.setItem('selectedCampus', JSON.stringify(campus));
+      localStorage.setItem("selectedCampus", JSON.stringify(campus));
     } else {
-      localStorage.removeItem('selectedCampus');
+      localStorage.removeItem("selectedCampus");
     }
   };
 
   // Clear campus selection
   const clearCampusSelection = () => {
     setSelectedCampusState(null);
-    localStorage.removeItem('selectedCampus');
+    localStorage.removeItem("selectedCampus");
   };
 
   // Auto-select campus for campus_admin users
   useEffect(() => {
-    if (user?.role === 'campus_admin' && user?.campus_id && !selectedCampus) {
+    if (user?.role === "campus_admin" && user?.campus_id && !selectedCampus) {
       // For campus_admin, auto-select their campus
       // This will be populated when campuses are fetched
     }
@@ -86,10 +94,11 @@ export const CampusProvider: React.FC<CampusProviderProps> = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCampus = (): CampusContextType => {
   const context = useContext(CampusContext);
   if (context === undefined) {
-    throw new Error('useCampus must be used within a CampusProvider');
+    throw new Error("useCampus must be used within a CampusProvider");
   }
   return context;
 };

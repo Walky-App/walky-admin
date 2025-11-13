@@ -1,16 +1,12 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import CIcon from "@coreui/icons-react";
-import { cilChevronBottom, cilChevronTop } from "@coreui/icons";
+import { NavLink, useLocation } from "react-router-dom";
+import { AssetIcon } from "../../components-v2";
 import "./SidebarV2.css";
 
 // Walky Logo component
 const WalkyLogo = () => (
   <div className="sidebar-logo">
-    <img
-      src="https://www.figma.com/api/mcp/asset/db751427-2b25-477b-b060-13ec024b9795"
-      alt="Walky Logo"
-    />
+    <AssetIcon name="menu-logo-walky" />
   </div>
 );
 
@@ -27,7 +23,6 @@ interface MenuSection {
 
 interface SidebarMenuItemProps {
   item: MenuItem;
-  isActive?: boolean;
   isSubmenuItem?: boolean;
   onToggle?: () => void;
   isOpen?: boolean;
@@ -35,12 +30,12 @@ interface SidebarMenuItemProps {
 
 const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   item,
-  isActive = false,
   isSubmenuItem = false,
   onToggle,
   isOpen = false,
 }) => {
-  const hasSubmenu = item.submenu && item.submenu.length > 0;
+  const location = useLocation();
+  const hasSubmenu = item.submenu !== undefined;
 
   if (isSubmenuItem) {
     return (
@@ -56,22 +51,44 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   }
 
   if (hasSubmenu) {
+    // Check if any submenu item is active
+    const isAnySubmenuActive = item.submenu?.some(
+      (subItem) => subItem.path && location.pathname === subItem.path
+    );
+
     return (
       <div className="sidebar-menu-item-wrapper">
         <div
-          className={`sidebar-menu-item ${isActive ? "active" : ""} ${
-            isOpen ? "open" : ""
+          className={`sidebar-menu-item ${isOpen ? "open" : ""} ${
+            isAnySubmenuActive ? "active" : ""
           }`}
-          onClick={onToggle}
+          onClick={() => {
+            if (onToggle) {
+              onToggle();
+            }
+          }}
         >
-          {isActive && <div className="sidebar-indicator" />}
+          {isAnySubmenuActive && <div className="sidebar-indicator" />}
           <span className="menu-label">{item.label}</span>
-          <CIcon
-            icon={isOpen ? cilChevronTop : cilChevronBottom}
-            className="menu-icon"
-          />
+          <div
+            className="menu-icon-wrapper"
+            onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onToggle) {
+                onToggle();
+              }
+            }}
+          >
+            <AssetIcon
+              name={isOpen ? "arrow-up" : "arrow-down"}
+              className="menu-icon"
+              size={16}
+              color="currentColor"
+            />
+          </div>
         </div>
-        {isOpen && item.submenu && (
+        {isOpen && item.submenu && item.submenu.length > 0 && (
           <div className="sidebar-submenu">
             {item.submenu.map((subItem, index) => (
               <SidebarMenuItem key={index} item={subItem} isSubmenuItem />
@@ -89,16 +106,18 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
         `sidebar-menu-item ${navIsActive ? "active" : ""}`
       }
     >
-      {isActive && <div className="sidebar-indicator" />}
-      <span className="menu-label">{item.label}</span>
+      {({ isActive: navIsActive }) => (
+        <>
+          {navIsActive && <div className="sidebar-indicator" />}
+          <span className="menu-label">{item.label}</span>
+        </>
+      )}
     </NavLink>
   );
 };
 
 const SidebarV2: React.FC = () => {
-  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
-    "Campus Analytics": true,
-  });
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   const menuSections: MenuSection[] = [
     {
@@ -120,24 +139,65 @@ const SidebarV2: React.FC = () => {
     {
       title: "CAMPUS",
       items: [
-        { label: "Manage Students", path: "/v2/manage-students" },
-        { label: "Reported Content", path: "/v2/reported-content" },
-        { label: "Events", path: "/v2/events" },
-        { label: "Spaces", path: "/v2/spaces" },
-        { label: "Ideas", path: "/v2/ideas" },
+        {
+          label: "Manage Students",
+          submenu: [{ label: "All Students", path: "/v2/manage-students" }],
+        },
+        {
+          label: "Reported Content",
+          path: "/v2/reported-content",
+        },
+        {
+          label: "Events",
+          submenu: [{ label: "All Events", path: "/v2/events" }],
+        },
+        {
+          label: "Spaces",
+          submenu: [{ label: "All Spaces", path: "/v2/spaces" }],
+        },
+        {
+          label: "Ideas",
+          submenu: [{ label: "All Ideas", path: "/v2/ideas" }],
+        },
+      ],
+    },
+    {
+      title: "MODERATION",
+      items: [
+        {
+          label: "Report & Safety",
+          submenu: [{ label: "All Reports", path: "/v2/report-safety" }],
+        },
+        {
+          label: "Report History",
+          submenu: [{ label: "History", path: "/v2/report-history" }],
+        },
       ],
     },
     {
       title: "ADMIN",
       items: [
-        { label: "Campuses", path: "/v2/campuses" },
-        { label: "Ambassadors", path: "/v2/ambassadors" },
+        {
+          label: "Campuses",
+          submenu: [{ label: "All Campuses", path: "/v2/campuses" }],
+        },
+        {
+          label: "Ambassadors",
+          submenu: [{ label: "All Ambassadors", path: "/v2/ambassadors" }],
+        },
+        {
+          label: "Role Management",
+          submenu: [{ label: "Manage Roles", path: "/v2/role-management" }],
+        },
       ],
     },
     {
       title: "SETTINGS",
       items: [
-        { label: "Administrators Roles", path: "/v2/administrators-roles" },
+        {
+          label: "Administrators Roles",
+          submenu: [{ label: "Admin Roles", path: "/v2/administrators-roles" }],
+        },
       ],
     },
   ];
@@ -162,7 +222,6 @@ const SidebarV2: React.FC = () => {
                 <SidebarMenuItem
                   key={itemIndex}
                   item={item}
-                  isActive={openMenus[item.label]}
                   isOpen={openMenus[item.label]}
                   onToggle={() => item.submenu && toggleMenu(item.label)}
                 />

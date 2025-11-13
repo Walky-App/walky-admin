@@ -28,13 +28,13 @@
   margin: 0;
 }
 
-.time-period-selector {
+.time-selector {
   display: flex;
   align-items: center;
   gap: var(--v2-spacing-12);
 }
 
-.selector-label {
+.engagement-analytics .selector-label {
   font-weight: var(--v2-font-weight-semibold);
   font-size: var(--v2-font-size-md);
   color: var(--v2-text-primary);

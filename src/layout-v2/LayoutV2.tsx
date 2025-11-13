@@ -1,16 +1,42 @@
-import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import SidebarV2 from "./SidebarV2/SidebarV2";
 import TopbarV2 from "./TopbarV2/TopbarV2";
 import "./LayoutV2.css";
 
 const LayoutV2: React.FC = () => {
-  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const location = useLocation();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
+  const [sidebarVisible, setSidebarVisible] = useState(window.innerWidth > 992);
 
   const toggleSidebar = () => {
-    console.log("Toggle sidebar clicked, current state:", sidebarVisible);
     setSidebarVisible(!sidebarVisible);
   };
+
+  // Handle resize
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 992;
+      setIsMobile(mobile);
+
+      // Auto-open on desktop, close on mobile
+      if (!mobile) {
+        setSidebarVisible(true);
+      } else {
+        setSidebarVisible(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Close sidebar on route change ONLY on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarVisible(false);
+    }
+  }, [location.pathname, isMobile]);
 
   return (
     <div className="layout-v2">
@@ -35,8 +61,11 @@ const LayoutV2: React.FC = () => {
       </div>
 
       {/* Overlay for mobile */}
-      {sidebarVisible && (
-        <div className="layout-overlay" onClick={toggleSidebar} />
+      {isMobile && (
+        <div
+          className={`layout-overlay ${sidebarVisible ? "visible" : ""}`}
+          onClick={toggleSidebar}
+        />
       )}
     </div>
   );
