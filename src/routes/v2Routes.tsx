@@ -41,25 +41,21 @@ const V2Routes: React.FC = () => {
             element={<DashboardPopularFeatures />}
           />
 
-          {/* Placeholder routes for other pages */}
+          {/* Placeholder routes for other dashboard pages */}
           <Route
-            path="popular-features"
-            element={<div>Popular Features - Coming Soon</div>}
-          />
-          <Route
-            path="user-interactions"
+            path="dashboard/user-interactions"
             element={<div>User Interactions - Coming Soon</div>}
           />
           <Route
-            path="community"
+            path="dashboard/community"
             element={<div>Community - Coming Soon</div>}
           />
           <Route
-            path="student-safety"
+            path="dashboard/student-safety"
             element={<div>Student Safety - Coming Soon</div>}
           />
           <Route
-            path="student-behavior"
+            path="dashboard/student-behavior"
             element={<div>Student Behavior - Coming Soon</div>}
           />
 
