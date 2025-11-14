@@ -22,7 +22,11 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
   ];
 
   return (
-    <div className="time-selector">
+    <div
+      className="time-selector"
+      role="tablist"
+      aria-label="Time period selector"
+    >
       {options.map((option, index) => {
         const isSelected = selected === option.value;
         const isFirst = index === 0;
@@ -32,6 +36,9 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
           <button
             key={option.value}
             data-testid={`time-selector-${option.value}`}
+            role="tab"
+            aria-selected={isSelected}
+            aria-label={`${option.label} period`}
             className={`time-option ${isFirst ? "first" : ""} ${
               isLast ? "last" : ""
             } ${isSelected ? "selected" : ""}`}

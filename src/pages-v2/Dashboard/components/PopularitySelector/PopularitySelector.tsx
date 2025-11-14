@@ -13,9 +13,15 @@ const PopularitySelector: React.FC<PopularitySelectorProps> = ({
   onChange,
 }) => {
   return (
-    <div className="popularity-selector">
+    <div
+      className="popularity-selector"
+      role="radiogroup"
+      aria-label="Popularity filter"
+    >
       <button
         data-testid="popularity-selector-least"
+        role="radio"
+        aria-checked={selected === "least"}
         className={`popularity-option ${
           selected === "least" ? "" : "selected"
         }`}
@@ -25,6 +31,8 @@ const PopularitySelector: React.FC<PopularitySelectorProps> = ({
       </button>
       <button
         data-testid="popularity-selector-most"
+        role="radio"
+        aria-checked={selected === "most"}
         className={`popularity-option popularity-option-right ${
           selected === "most" ? "selected" : ""
         }`}

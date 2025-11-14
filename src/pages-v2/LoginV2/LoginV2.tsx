@@ -25,7 +25,11 @@ const LoginV2: React.FC = () => {
   };
 
   return (
-    <div className="login-v2" data-testid="login-v2-page">
+    <main
+      className="login-v2"
+      data-testid="login-v2-page"
+      aria-label="Login page"
+    >
       <div className="login-container">
         <div className="login-form-wrapper">
           <div className="login-logo" role="img" aria-label="Walky Logo">
@@ -107,7 +111,7 @@ const LoginV2: React.FC = () => {
           data-testid="login-decoration-image"
         />
       </div>
-    </div>
+    </main>
   );
 };
 

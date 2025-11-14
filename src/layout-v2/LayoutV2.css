@@ -132,3 +132,17 @@
     padding: 0;
   }
 }
+
+/* Acessibilidade: Estilos de foco para navegação */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
+  outline: none;
+}

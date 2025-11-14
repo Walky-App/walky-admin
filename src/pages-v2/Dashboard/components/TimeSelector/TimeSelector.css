@@ -9,7 +9,7 @@
   justify-content: center;
   padding: 8px 16px;
   border: 1px solid;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 14px;
   line-height: 1;
@@ -19,6 +19,17 @@
 
 .time-option:hover {
   opacity: 0.9;
+}
+
+/* Acessibilidade: foco visível para navegação por teclado */
+.time-option:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.time-option:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .time-option.first {

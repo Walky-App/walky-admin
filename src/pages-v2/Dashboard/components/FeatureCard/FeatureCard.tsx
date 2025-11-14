@@ -25,9 +25,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 }) => {
   const { theme } = useTheme();
 
+  const headingId = `feature-card-${title.replace(/\s+/g, "-").toLowerCase()}`;
+
   return (
     <CCard
       className="feature-card"
+      role="region"
+      aria-labelledby={headingId}
       style={{
         backgroundColor: theme.colors.cardBg,
         borderColor: theme.colors.borderColor,
@@ -37,8 +41,11 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         <div className="feature-card-content">
           {/* Header */}
           <div className="feature-card-header">
-            <div className="feature-icon-container">{icon}</div>
+            <div className="feature-icon-container" aria-hidden="true">
+              {icon}
+            </div>
             <h3
+              id={headingId}
               className="feature-title"
               style={{ color: theme.colors.textMuted }}
             >
@@ -47,12 +54,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
           </div>
 
           {/* Items List */}
-          <div className="feature-items-list">
+          <ol className="feature-items-list" aria-label={`${title} ranking`}>
             {items.map((item) => (
-              <div key={item.rank} className="feature-item">
+              <li key={item.rank} className="feature-item">
                 <span
                   className="feature-rank"
                   style={{ color: theme.colors.primary }}
+                  aria-label={`Rank ${item.rank}`}
                 >
                   {item.rank}.
                 </span>
@@ -60,11 +68,16 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                   <div
                     className="feature-item-icon-bg"
                     style={{ backgroundColor: item.iconBgColor }}
+                    aria-hidden="true"
                   >
                     <img src={item.icon} alt="" className="feature-item-icon" />
                   </div>
                 ) : (
-                  <img src={item.icon} alt="" className="feature-item-img" />
+                  <img
+                    src={item.icon}
+                    alt={`${item.label} icon`}
+                    className="feature-item-img"
+                  />
                 )}
                 <span
                   className="feature-label"
@@ -72,9 +85,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                 >
                   {item.label}
                 </span>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
 
         {/* See All Link */}
@@ -84,6 +97,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
             onClick={onSeeAll}
             className="see-all-btn"
             style={{ color: theme.colors.primary }}
+            aria-label={`See all ${title.toLowerCase()}`}
           >
             See all →
           </button>

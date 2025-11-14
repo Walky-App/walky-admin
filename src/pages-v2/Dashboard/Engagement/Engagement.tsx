@@ -58,7 +58,7 @@ const Engagement: React.FC = () => {
   };
 
   return (
-    <div className="engagement-page">
+    <main className="engagement-page" aria-label="User Engagement Dashboard">
       {/* Filter Container */}
       <div className="filter-container">
         <div className="filter-options-container">
@@ -210,7 +210,7 @@ const Engagement: React.FC = () => {
           Last updated: 25 oct 2025 - 9:33:00
         </p>
       </div>
-    </div>
+    </main>
   );
 };
 
