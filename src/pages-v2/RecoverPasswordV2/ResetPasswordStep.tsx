@@ -38,7 +38,11 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
   };
 
   return (
-    <div className="recover-container">
+    <div
+      className="reset-password-step"
+      role="region"
+      aria-label="Reset password form"
+    >
       <div className="recover-content">
         <div className="recover-logo" role="img" aria-label="Walky Logo">
           <AssetIcon

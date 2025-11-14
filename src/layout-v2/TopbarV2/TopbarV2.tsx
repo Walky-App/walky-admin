@@ -242,7 +242,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         <button
           className="hamburger-btn"
           onClick={onToggleSidebar}
-          aria-label="Toggle sidebar"
+          aria-label="Toggle navigation menu"
         >
           <AssetIcon name="hamburguer-icon" color="#1d1b20" />
         </button>
@@ -366,7 +366,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             <button
               className="theme-toggle-btn"
               onClick={toggleTheme}
-              aria-label="Toggle theme"
+              aria-label="Toggle color theme"
             >
               <AssetIcon
                 name="wb-sunny-icon"

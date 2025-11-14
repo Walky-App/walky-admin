@@ -15,13 +15,14 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ onClick }) => {
       data-testid="export-button"
       className="export-button"
       onClick={onClick}
+      aria-label="Export data to CSV"
       style={{
         backgroundColor: "#ebf0fa",
         borderColor: "#d2d2d3",
         color: theme.colors.bodyColor,
       }}
     >
-      <AssetIcon name="export-icon" size={20} />
+      <AssetIcon name="export-icon" size={20} aria-hidden="true" />
       <span>Export</span>
     </button>
   );

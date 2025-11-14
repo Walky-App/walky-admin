@@ -33,3 +33,14 @@
 .popularity-option:hover:not(.selected) {
   background-color: #f5f5f5;
 }
+
+/* Acessibilidade: foco visível para navegação por teclado */
+.popularity-option:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.popularity-option:focus:not(:focus-visible) {
+  outline: none;
+}
