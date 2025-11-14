@@ -1,4 +1,4 @@
-export type IconName = 'arrow-down' | 'arrow-up' | 'campus-icon' | 'hamburguer-icon' | 'logo-walky-white' | 'menu-logo-walky' | 'school-icon' | 'wb-sunny-icon';
+export type IconName = 'arrow-down' | 'arrow-up' | 'calendar-icon' | 'campus-icon' | 'double-users-icon' | 'export-icon' | 'grid-icon' | 'hamburguer-icon' | 'ideas-icons' | 'lock-icon' | 'logo-walky-white' | 'map-icon' | 'menu-logo-walky' | 'popular-emoji-icon' | 'school-icon' | 'space-icon' | 'student-behavior-icon' | 'swap-arrows-icon' | 'table-icon' | 'tooltip-icon' | 'top-fields-study-icon' | 'top-interests-icon' | 'trend-down-icon' | 'trend-up-icon' | 'user-interactions-icon' | 'visited-places-icon' | 'wb-sunny-icon';
 
 export interface AssetIconProps {
   name: IconName;

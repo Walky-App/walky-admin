@@ -4,7 +4,9 @@ import { AssetIconProps } from "./AssetIcon.types";
 
 const AssetIcon: React.FC<AssetIconProps> = ({
   name,
+  size,
   color,
+  strokeColor,
   className = "",
   onClick,
   style = {},
@@ -16,11 +18,14 @@ const AssetIcon: React.FC<AssetIconProps> = ({
   }
   return (
     <SvgIcon
+      width={size ?? undefined}
+      height={size ?? undefined}
       className={className}
       onClick={onClick}
       style={{
         color: color || "currentColor",
         fill: color || "currentColor",
+        ...(strokeColor ? { stroke: strokeColor } : {}),
         ...style,
       }}
     />

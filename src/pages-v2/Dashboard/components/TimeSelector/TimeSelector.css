@@ -1,0 +1,43 @@
+.time-selector {
+  display: flex;
+  align-items: center;
+}
+
+.time-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px solid;
+  font-family: 'Lato', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-option:hover {
+  opacity: 0.9;
+}
+
+.time-option.first {
+  border-radius: 8px 0 0 8px;
+}
+
+.time-option.last {
+  border-radius: 0 8px 8px 0;
+}
+
+.time-option:not(.first):not(.last) {
+  border-left: 0;
+  border-right: 0;
+}
+
+.time-option.first:not(.last) {
+  border-right: 0;
+}
+
+.time-option.last:not(.first) {
+  border-left: 0;
+}

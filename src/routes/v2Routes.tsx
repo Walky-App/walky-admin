@@ -1,7 +1,8 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LayoutV2 } from "../layout-v2";
-import EngagementAnalytics from "../pages-v2/EngagementAnalytics/EngagementAnalytics";
+import DashboardEngagement from "../pages-v2/Dashboard/Engagement/Engagement";
+import DashboardPopularFeatures from "../pages-v2/Dashboard/PopularFeatures/PopularFeatures";
 import { CampusProvider } from "../contexts/CampusContext";
 
 /**
@@ -25,8 +26,20 @@ const V2Routes: React.FC = () => {
       <Routes>
         <Route path="/" element={<LayoutV2 />}>
           {/* Dashboard Routes */}
-          <Route index element={<Navigate to="engagement" replace />} />
-          <Route path="engagement" element={<EngagementAnalytics />} />
+          <Route
+            index
+            element={<Navigate to="dashboard/engagement" replace />}
+          />
+
+          {/* New Dashboard Screens (Figma Design) */}
+          <Route
+            path="dashboard/engagement"
+            element={<DashboardEngagement />}
+          />
+          <Route
+            path="dashboard/popular-features"
+            element={<DashboardPopularFeatures />}
+          />
 
           {/* Placeholder routes for other pages */}
           <Route
