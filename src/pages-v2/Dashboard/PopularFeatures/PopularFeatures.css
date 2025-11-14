@@ -1,0 +1,144 @@
+.popular-features-page {
+  padding: 32px 40px;
+  min-height: 100vh;
+}
+
+.popular-features-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  margin: 0;
+}
+
+.filter-section {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.filter-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.feature-cards-row {
+  margin-bottom: 32px;
+  gap: 32px;
+}
+
+.feature-cards-row .col-xs-12,
+.feature-cards-row .col-md-6,
+.feature-cards-row .col-lg-4 {
+  padding: 0;
+}
+
+.last-updated-container {
+  padding: 20px 37px;
+  border-radius: 12px;
+  margin-top: 24px;
+}
+
+.last-updated-text {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 992px) {
+  .popular-features-page {
+    padding: 24px 20px;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .feature-cards-row {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .popular-features-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .title-container {
+    gap: 16px;
+  }
+
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

@@ -1,0 +1,111 @@
+.feature-card {
+  border-radius: 14px;
+  border-width: 1px;
+  border-style: solid;
+  height: 251px;
+  overflow: hidden;
+}
+
+.feature-card-body {
+  padding: 16px 32px;
+  height: 251px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.feature-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.feature-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-icon-container {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.feature-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-rank {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  margin-left: 24px;
+}
+
+.feature-item-icon-bg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feature-item-icon {
+  width: 22.4px;
+  height: 22.4px;
+  object-fit: cover;
+}
+
+.feature-item-img {
+  width: 40px;
+  height: 30px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.feature-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.feature-see-all {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 20px;
+}
+
+.see-all-btn {
+  background: none;
+  border: none;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.see-all-btn:hover {
+  text-decoration: underline;
+}
