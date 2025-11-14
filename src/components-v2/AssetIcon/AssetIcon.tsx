@@ -4,9 +4,7 @@ import { AssetIconProps } from "./AssetIcon.types";
 
 const AssetIcon: React.FC<AssetIconProps> = ({
   name,
-  size,
   color,
-  strokeColor,
   className = "",
   onClick,
   style = {},
@@ -23,8 +21,6 @@ const AssetIcon: React.FC<AssetIconProps> = ({
       style={{
         color: color || "currentColor",
         fill: color || "currentColor",
-        ...(strokeColor && { stroke: strokeColor }),
-        ...(size && { width: size, height: size }),
         ...style,
       }}
     />

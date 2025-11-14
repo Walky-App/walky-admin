@@ -1,1 +1,43 @@
+echo "🚀 Pre-commit checks starting...\n"
+
+# 1. Check build
+echo "1️⃣  Checking build..."
+yarn build
+if [ $? -ne 0 ]; then
+  echo "\n❌ Commit blocked: Build failed"
+  exit 1
+fi
+
+# 2. Check data-testid in components
+echo "2️⃣  Checking test IDs..."
+node scripts/check-test-ids.js
+if [ $? -ne 0 ]; then
+  echo "\n❌ Commit blocked: Add data-testid to elements"
+  exit 1
+fi
+
+# 3. Check accessibility
+echo "3️⃣  Checking accessibility..."
+node scripts/check-accessibility.js
+if [ $? -ne 0 ]; then
+  echo "\n❌ Commit blocked: Fix accessibility issues"
+  exit 1
+fi
+
+# 4. Run tests
+echo "4️⃣  Running tests..."
+yarn test --run --reporter=verbose
+if [ $? -ne 0 ]; then
+  echo "\n❌ Commit blocked: Tests failed"
+  exit 1
+fi
+
+# 5. Lint staged files
+echo "5️⃣  Running linter..."
 npx lint-staged
+if [ $? -ne 0 ]; then
+  echo "\n❌ Commit blocked: Fix lint errors"
+  exit 1
+fi
+
+echo "\n✅ All checks passed! Commit allowed.\n"
