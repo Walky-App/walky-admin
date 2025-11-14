@@ -65,6 +65,8 @@ import MainChart from "./components/MainChart.tsx";
 
 import API from "./API/index.ts";
 import Login from "./pages/Login.tsx";
+import LoginV2 from "./pages-v2/LoginV2/LoginV2";
+import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2";
 import { useSchool } from "./contexts/SchoolContext";
 
 type DashboardProps = {
@@ -1214,6 +1216,10 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/* V2 Auth Routes */}
+      <Route path="/login-v2" element={<LoginV2 />} />
+      <Route path="/recover-password" element={<RecoverPasswordV2 />} />
 
       {/* V2 Layout Routes - New Design System */}
       <Route path="/v2/*" element={<V2Routes />} />

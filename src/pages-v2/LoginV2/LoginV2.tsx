@@ -1,0 +1,114 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AssetIcon from "../../components-v2/AssetIcon/AssetIcon";
+import AssetImage from "../../components-v2/AssetImage/AssetImage";
+import "./LoginV2.css";
+
+const LoginV2: React.FC = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // TODO: Implement login logic
+    console.log("Login attempt:", { email, password });
+
+    setIsLoading(false);
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/recover-password");
+  };
+
+  return (
+    <div className="login-v2" data-testid="login-v2-page">
+      <div className="login-container">
+        <div className="login-form-wrapper">
+          <div className="login-logo" role="img" aria-label="Walky Logo">
+            <AssetIcon name="logo-walky-white" />
+          </div>
+
+          <form
+            className="login-form"
+            onSubmit={handleSubmit}
+            data-testid="login-form"
+            aria-label="Login form"
+          >
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                data-testid="email-input"
+                aria-label="Email address"
+                aria-required="true"
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                className="form-input"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                data-testid="password-input"
+                aria-label="Password"
+                aria-required="true"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="forgot-password-link"
+                onClick={handleForgotPassword}
+                data-testid="forgot-password-button"
+                aria-label="Forgot password"
+              >
+                Forgot Password
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              className="submit-button"
+              disabled={isLoading}
+              data-testid="submit-button"
+              aria-label="Sign in"
+              aria-busy={isLoading}
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="login-decoration" role="presentation" aria-hidden="true">
+        <AssetImage
+          name="login-placeholder"
+          alt="Decorative illustration for login page"
+          className="decoration-image"
+          data-testid="login-decoration-image"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default LoginV2;

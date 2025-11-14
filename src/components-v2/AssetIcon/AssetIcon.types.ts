@@ -1,4 +1,4 @@
-export type IconName = 'arrow-down' | 'arrow-up' | 'campus-icon' | 'hamburguer-icon' | 'menu-logo-walky' | 'school-icon' | 'wb-sunny-icon';
+export type IconName = 'arrow-down' | 'arrow-up' | 'campus-icon' | 'hamburguer-icon' | 'logo-walky-white' | 'menu-logo-walky' | 'school-icon' | 'wb-sunny-icon';
 
 export interface AssetIconProps {
   name: IconName;
