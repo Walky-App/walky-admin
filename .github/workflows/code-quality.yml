@@ -10,79 +10,79 @@ jobs:
   test-ids:
     name: 🔍 Test IDs
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
-        
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "yarn"
-          
+
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: 🔍 Check Test IDs
         run: yarn check:testids
 
   accessibility:
     name: ♿ Accessibility
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
-        
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "yarn"
-          
+
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: ♿ Check Accessibility
         run: yarn check:a11y
 
   tests:
     name: 🧪 Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
-        
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "yarn"
-          
+
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: 🧪 Run Tests
         run: yarn test --run --reporter=verbose
 
   lint:
     name: 🔎 Linter
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
-        
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "yarn"
-          
+
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: 🔎 Run Linter
         run: yarn lint
