@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Script para verificar se componentes React têm data-testid
- * Executa no pre-commit para garantir testabilidade
+ * Script to verify if React components have data-testid
+ * Runs on pre-commit to ensure testability
  */
 
 import fs from "fs";
@@ -91,7 +91,7 @@ function scanDirectory(dir) {
   });
 }
 
-console.log("🔍 Verificando data-testid em componentes...\n");
+console.log("🔍 Checking data-testid in components...\n");
 
 TARGET_DIRS.forEach((dir) => {
   const fullPath = path.join(process.cwd(), dir);
@@ -101,18 +101,18 @@ TARGET_DIRS.forEach((dir) => {
 });
 
 if (hasErrors) {
-  console.error("❌ Componentes sem data-testid encontrados:\n");
+  console.error("❌ Components without data-testid found:\n");
   errors.forEach((error) => {
     console.error(`  ${error.file}:${error.line}`);
-    console.error(`    Elemento: <${error.element}> sem data-testid`);
+    console.error(`    Element: <${error.element}> missing data-testid`);
     console.error(`    Snippet: ${error.snippet}\n`);
   });
-  console.error(`\n⚠️  Total de elementos sem test ID: ${errors.length}`);
+  console.error(`\n⚠️  Total elements without test ID: ${errors.length}`);
   console.error(
-    '💡 Adicione data-testid="elemento-descritivo" aos elementos interativos\n'
+    '💡 Add data-testid="descriptive-element" to interactive elements\n'
   );
   process.exit(1);
 } else {
-  console.log("✅ Todos os elementos interativos têm data-testid!\n");
+  console.log("✅ All interactive elements have data-testid!\n");
   process.exit(0);
 }

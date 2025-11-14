@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Script para verificar atributos de acessibilidade em componentes React
- * Executa no pre-commit para garantir WCAG compliance
+ * Script to verify accessibility attributes in React components
+ * Runs on pre-commit to ensure WCAG compliance
  */
 
 import fs from "fs";
@@ -15,16 +15,16 @@ const __dirname = path.dirname(__filename);
 const ACCESSIBILITY_CHECKS = {
   img: {
     required: ["alt"],
-    message: "Imagens devem ter atributo alt",
+    message: "Images must have alt attribute",
   },
   input: {
     required: ["aria-label", "aria-required"],
-    optional: true, // Pelo menos um é necessário
-    message: "Inputs devem ter aria-label ou aria-required",
+    optional: true, // At least one is required
+    message: "Inputs must have aria-label or aria-required",
   },
   button: {
     required: ["aria-label"],
-    message: "Botões devem ter aria-label",
+    message: "Buttons must have aria-label",
   },
 };
 
@@ -58,7 +58,7 @@ function checkAccessibility(filePath) {
         file: relativePath,
         line: lineNumber,
         type: "img",
-        issue: "Faltando atributo alt",
+        issue: "Missing alt attribute",
         snippet: element.substring(0, 80) + "...",
       });
       hasErrors = true;
@@ -84,7 +84,7 @@ function checkAccessibility(filePath) {
         file: relativePath,
         line: lineNumber,
         type: "input",
-        issue: "Faltando aria-label ou id (para associar com label)",
+        issue: "Missing aria-label or id (to associate with label)",
         snippet: element.substring(0, 80) + "...",
       });
       hasErrors = true;
@@ -120,7 +120,7 @@ function checkAccessibility(filePath) {
           file: relativePath,
           line: lineNumber,
           type: "button",
-          issue: "Faltando aria-label ou conteúdo de texto",
+          issue: "Missing aria-label or text content",
           snippet: element.substring(0, 80) + "...",
         });
         hasErrors = true;
@@ -148,7 +148,7 @@ function scanDirectory(dir) {
   });
 }
 
-console.log("♿ Verificando acessibilidade (WCAG)...\n");
+console.log("♿ Checking accessibility (WCAG)...\n");
 
 TARGET_DIRS.forEach((dir) => {
   const fullPath = path.join(process.cwd(), dir);
@@ -158,7 +158,7 @@ TARGET_DIRS.forEach((dir) => {
 });
 
 if (hasErrors) {
-  console.error("❌ Problemas de acessibilidade encontrados:\n");
+  console.error("❌ Accessibility issues found:\n");
 
   const groupedErrors = errors.reduce((acc, error) => {
     if (!acc[error.file]) acc[error.file] = [];
@@ -169,18 +169,18 @@ if (hasErrors) {
   Object.entries(groupedErrors).forEach(([file, fileErrors]) => {
     console.error(`  📄 ${file}`);
     fileErrors.forEach((error) => {
-      console.error(`    Linha ${error.line}: ${error.issue}`);
+      console.error(`    Line ${error.line}: ${error.issue}`);
       console.error(`      ${error.snippet}\n`);
     });
   });
 
-  console.error(`\n⚠️  Total de problemas: ${errors.length}`);
-  console.error("💡 Dicas:");
-  console.error('   - Adicione alt="" às imagens');
-  console.error("   - Adicione aria-label aos inputs e buttons");
-  console.error('   - Use aria-required="true" em campos obrigatórios\n');
+  console.error(`\n⚠️  Total issues: ${errors.length}`);
+  console.error("💡 Tips:");
+  console.error('   - Add alt="" to images');
+  console.error("   - Add aria-label to inputs and buttons");
+  console.error('   - Use aria-required="true" on required fields\n');
   process.exit(1);
 } else {
-  console.log("✅ Todos os componentes estão acessíveis!\n");
+  console.log("✅ All components are accessible!\n");
   process.exit(0);
 }
