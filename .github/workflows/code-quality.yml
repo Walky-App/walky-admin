@@ -22,7 +22,7 @@ jobs:
           cache: "yarn"
 
       - name: 📦 Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: 🔍 Check Test IDs
         run: yarn check:testids
@@ -42,7 +42,7 @@ jobs:
           cache: "yarn"
 
       - name: 📦 Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: ♿ Check Accessibility
         run: yarn check:a11y
@@ -62,7 +62,7 @@ jobs:
           cache: "yarn"
 
       - name: 📦 Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: 🧪 Run Tests
         run: yarn test --run --reporter=verbose
@@ -82,7 +82,7 @@ jobs:
           cache: "yarn"
 
       - name: 📦 Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: 🔎 Run Linter
         run: yarn lint
