@@ -46,10 +46,7 @@ const V2Routes: React.FC = () => {
             path="dashboard/user-interactions"
             element={<DashboardUserInteractions />}
           />
-          <Route
-            path="dashboard/community"
-            element={<DashboardCommunity />}
-          />
+          <Route path="dashboard/community" element={<DashboardCommunity />} />
           <Route
             path="dashboard/student-safety"
             element={<div>Student Safety - Coming Soon</div>}
