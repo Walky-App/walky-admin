@@ -1,5 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { CChartLine } from "@coreui/react-chartjs";
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+} from "recharts";
 import { useTheme } from "../../../../hooks/useTheme";
 import "./LineChart.css";
 
@@ -18,94 +27,48 @@ export const LineChart: React.FC<LineChartProps> = ({
   data,
   labels,
   color,
-  backgroundColor,
   yAxisLabel,
   maxValue,
 }) => {
   const { theme } = useTheme();
 
-  const chartData = {
-    labels,
-    datasets: [
-      {
-        label: title,
-        data,
-        borderColor: color,
-        backgroundColor: backgroundColor,
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-        pointHoverBackgroundColor: "#4d4d4d",
-        pointHoverBorderColor: "#eef0f1",
-        pointHoverBorderWidth: 2,
-      },
-    ],
+  // Transform data to Recharts format
+  const chartData = labels.map((label, index) => ({
+    name: label,
+    value: data[index],
+  }));
+
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div
+          style={{
+            backgroundColor: theme.colors.tooltipBg,
+            border: `1px solid ${theme.colors.tooltipBorder}`,
+            padding: "10px",
+            borderRadius: "4px",
+            color: theme.colors.tooltipText,
+            fontSize: "12px",
+            fontFamily: "Lato",
+          }}
+        >
+          <p style={{ margin: 0 }}>{`${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
   };
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: true,
-        backgroundColor: "#4d4d4d",
-        titleColor: "#ffffff",
-        bodyColor: "#ffffff",
-        borderColor: "#eef0f1",
-        borderWidth: 1,
-        padding: 10,
-        displayColors: false,
-        callbacks: {
-          label: function (context: { parsed: { y: string | number } }) {
-            return `${context.parsed.y}`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: theme.colors.textMuted,
-          font: {
-            family: "Lato",
-            size: 12,
-            weight: 600,
-          },
-        },
-      },
-      y: {
-        beginAtZero: true,
-        max: maxValue,
-        grid: {
-          color: "#d2d2d3",
-          borderDash: [5, 5],
-        },
-        ticks: {
-          color: theme.colors.textMuted,
-          font: {
-            family: "Lato",
-            size: 12,
-            weight: 600,
-          },
-          callback: function (value: string | number) {
-            if (yAxisLabel) {
-              return `${value}${yAxisLabel}`;
-            }
-            if (typeof value === "number" && value >= 1000) {
-              return `${value / 1000}k`;
-            }
-            return value;
-          },
-        },
-      },
-    },
+  // Format Y-axis ticks
+  const formatYAxis = (value: number): string => {
+    if (yAxisLabel) {
+      return `${value}${yAxisLabel}`;
+    }
+    if (value >= 1000) {
+      return `${value / 1000}k`;
+    }
+    return value.toString();
   };
 
   return (
@@ -123,7 +86,71 @@ export const LineChart: React.FC<LineChartProps> = ({
         {title}
       </h3>
       <div className="line-chart-wrapper">
-        <CChartLine data={chartData} options={chartOptions} />
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={chartData}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient
+                id={`gradient-${title.replace(/\s+/g, "-")}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="0%" stopColor={color} stopOpacity={0.5} />
+                <stop offset="50%" stopColor={color} stopOpacity={0.25} />
+                <stop offset="100%" stopColor={color} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="5 5"
+              stroke={theme.colors.gridColor}
+              vertical={false}
+              horizontal={true}
+            />
+            <XAxis
+              dataKey="name"
+              tick={{
+                fill: theme.colors.textMuted,
+                fontFamily: "Lato",
+                fontSize: 12,
+                fontWeight: 600,
+              }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              domain={[0, maxValue || "auto"]}
+              tick={{
+                fill: theme.colors.textMuted,
+                fontFamily: "Lato",
+                fontSize: 12,
+                fontWeight: 600,
+              }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={formatYAxis}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={false} />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke={color}
+              strokeWidth={2}
+              fill={`url(#gradient-${title.replace(/\s+/g, "-")})`}
+              fillOpacity={1}
+              dot={false}
+              activeDot={{
+                r: 6,
+                fill: theme.colors.tooltipBg,
+                stroke: theme.colors.tooltipBorder,
+                strokeWidth: 2,
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

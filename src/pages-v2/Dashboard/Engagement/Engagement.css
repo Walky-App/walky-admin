@@ -1,5 +1,5 @@
 .engagement-page {
-  padding: 0;
+  padding: 0 32px 0 0;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -49,6 +49,8 @@
 }
 
 .stats-container {
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   width: 100%;
   margin: 0;
@@ -56,6 +58,8 @@
 
 .stats-container > div {
   padding: 0;
+  flex: 1;
+  min-width: 250px;
 }
 
 .section-header {
@@ -63,7 +67,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .section-title-container {
@@ -90,7 +94,38 @@
   margin: 0;
 }
 
+.section-dropdown {
+  display: inline-grid;
+  position: relative;
+}
+
+.engagement-dropdown {
+  width: 261px;
+  height: 38px;
+  border: 0.6px solid;
+  border-radius: 4px;
+  padding: 9.5px 17px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  text-align: right;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg width="10" height="7" viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="%23000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  padding-right: 35px;
+  cursor: pointer;
+}
+
+.engagement-dropdown:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+}
+
 .charts-row {
+  display: flex;
+  flex-wrap: nowrap;
   gap: 30px;
   width: 100%;
   margin: 0;

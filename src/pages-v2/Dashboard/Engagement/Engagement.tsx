@@ -154,11 +154,25 @@ const Engagement: React.FC = () => {
             Engagement
           </h2>
         </div>
+        <div className="section-dropdown">
+          <select
+            className="engagement-dropdown"
+            aria-label="Select engagement metric"
+            style={{
+              backgroundColor: "#fcfdfd",
+              borderColor: "#a9abac",
+              color: "#5b6168",
+            }}
+            defaultValue="user-engagement"
+          >
+            <option value="user-engagement">User Engagement Over Time</option>
+          </select>
+        </div>
       </div>
 
       {/* Charts Row 1 */}
       <CRow className="charts-row">
-        <CCol xs={12} md={6} lg={8}>
+        <CCol xs={12} lg={8}>
           <LineChart
             title="Total active users"
             data={userEngagementData}
@@ -168,7 +182,7 @@ const Engagement: React.FC = () => {
             maxValue={100000}
           />
         </CCol>
-        <CCol xs={12} md={6} lg={4}>
+        <CCol xs={12} lg={4}>
           <LineChart
             title="Total chats"
             data={totalChatsData}
@@ -182,7 +196,7 @@ const Engagement: React.FC = () => {
 
       {/* Charts Row 2 */}
       <CRow className="charts-row">
-        <CCol xs={12} md={6} lg={8}>
+        <CCol xs={12} lg={8}>
           <LineChart
             title="Session duration"
             data={sessionDurationData}
@@ -193,7 +207,7 @@ const Engagement: React.FC = () => {
             maxValue={20}
           />
         </CCol>
-        <CCol xs={12} md={6} lg={4}>
+        <CCol xs={12} lg={4}>
           <DonutChart title="Events by Users vs Spaces" data={donutData} />
         </CCol>
       </CRow>

@@ -1,6 +1,13 @@
 .popular-features-page {
-  padding: 32px 40px;
+  padding: 32px;
   min-height: 100vh;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
 
 .popular-features-header {
@@ -40,15 +47,15 @@
 
 .filter-section {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .filter-options {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 16px;
 }
 
 .filter-label {
@@ -77,14 +84,18 @@
 }
 
 .feature-cards-row {
-  margin-bottom: 32px;
-  gap: 32px;
+  margin-bottom: 24px;
+  gap: 24px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .feature-cards-row .col-xs-12,
 .feature-cards-row .col-md-6,
 .feature-cards-row .col-lg-4 {
   padding: 0;
+  flex: 0 0 calc(33.333% - 16px);
+  max-width: calc(33.333% - 16px);
 }
 
 .last-updated-container {
