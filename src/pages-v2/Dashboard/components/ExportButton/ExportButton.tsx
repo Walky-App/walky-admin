@@ -17,8 +17,8 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ onClick }) => {
       onClick={onClick}
       aria-label="Export data to CSV"
       style={{
-        backgroundColor: "#ebf0fa",
-        borderColor: "#d2d2d3",
+        backgroundColor: theme.colors.exportBg,
+        borderColor: theme.colors.exportBorder,
         color: theme.colors.bodyColor,
       }}
     >

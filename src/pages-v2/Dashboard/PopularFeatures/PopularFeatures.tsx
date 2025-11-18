@@ -134,22 +134,7 @@ const PopularFeatures: React.FC = () => {
       style={{ backgroundColor: theme.colors.bodyBg }}
       aria-label="Popular Features Dashboard"
     >
-      {/* Header Section */}
-      <div className="popular-features-header">
-        <div className="title-container">
-          <div className="icon-container" aria-hidden="true">
-            <div className="icon-circle" style={{ backgroundColor: "#e5e4ff" }}>
-              <AssetIcon name="popular-emoji-icon" color="#8280ff" size={30} />
-            </div>
-          </div>
-          <h1 className="page-title" style={{ color: theme.colors.bodyColor }}>
-            Popular Features
-          </h1>
-        </div>
-        <ViewToggle selected={viewType} onChange={setViewType} />
-      </div>
-
-      {/* Filter Section */}
+      {/* Filter Section - Now at top */}
       <section className="filter-section" aria-label="Data filters">
         <div className="filter-options">
           <p className="filter-label" style={{ color: theme.colors.bodyColor }}>
@@ -184,6 +169,28 @@ const PopularFeatures: React.FC = () => {
         <ExportButton onClick={handleExport} />
       </section>
 
+      {/* Header Section */}
+      <div className="popular-features-header">
+        <div className="title-container">
+          <div className="icon-container" aria-hidden="true">
+            <div
+              className="icon-circle"
+              style={{ backgroundColor: theme.colors.iconPurpleBg }}
+            >
+              <AssetIcon
+                name="popular-emoji-icon"
+                color={theme.colors.iconPurple}
+                size={30}
+              />
+            </div>
+          </div>
+          <h1 className="page-title" style={{ color: theme.colors.bodyColor }}>
+            Popular Features
+          </h1>
+        </div>
+        <ViewToggle selected={viewType} onChange={setViewType} />
+      </div>
+
       {/* Top Row Cards */}
       <section aria-label="Feature statistics">
         <CRow className="feature-cards-row">
@@ -193,7 +200,7 @@ const PopularFeatures: React.FC = () => {
               icon={
                 <AssetIcon
                   name="top-interests-icon"
-                  color="#8280ff"
+                  color={theme.colors.iconPurple}
                   size={30}
                 />
               }
@@ -205,7 +212,11 @@ const PopularFeatures: React.FC = () => {
             <FeatureCard
               title="Popular ways to connect"
               icon={
-                <AssetIcon name="double-users-icon" color="#8280ff" size={30} />
+                <AssetIcon
+                  name="double-users-icon"
+                  color={theme.colors.iconPurple}
+                  size={30}
+                />
               }
               items={popularWaysToConnect}
               onSeeAll={() => console.log("See all ways")}
@@ -217,7 +228,7 @@ const PopularFeatures: React.FC = () => {
               icon={
                 <AssetIcon
                   name="visited-places-icon"
-                  color="#00c617"
+                  color={theme.colors.iconGreen}
                   size={30}
                 />
               }
@@ -232,7 +243,13 @@ const PopularFeatures: React.FC = () => {
           <CCol xs={12} md={6} lg={4}>
             <FeatureCard
               title="Top invitation categories"
-              icon={<AssetIcon name="tooltip-icon" color="#ff9500" size={30} />}
+              icon={
+                <AssetIcon
+                  name="tooltip-icon"
+                  color={theme.colors.iconOrange}
+                  size={30}
+                />
+              }
               items={topInvitationCategories}
               onSeeAll={() => console.log("See all categories")}
             />
@@ -241,7 +258,11 @@ const PopularFeatures: React.FC = () => {
             <FeatureCard
               title="Most Engaged"
               icon={
-                <AssetIcon name="double-users-icon" color="#8280ff" size={30} />
+                <AssetIcon
+                  name="double-users-icon"
+                  color={theme.colors.iconPurple}
+                  size={30}
+                />
               }
               items={mostEngaged}
               onSeeAll={() => console.log("See all engaged")}
@@ -253,7 +274,7 @@ const PopularFeatures: React.FC = () => {
       {/* Last Updated Footer */}
       <div
         className="last-updated-container"
-        style={{ backgroundColor: "#ebf0fa" }}
+        style={{ backgroundColor: theme.colors.lastUpdatedBg }}
       >
         <p
           className="last-updated-text"

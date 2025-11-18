@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { CChartDoughnut } from "@coreui/react-chartjs";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useTheme } from "../../../../hooks/useTheme";
 import "./DonutChart.css";
 
 interface DonutChartData {
   label: string;
   value: number;
-  percentage: string;
+  percentage: string | number;
   color: string;
 }
 
@@ -18,43 +19,34 @@ interface DonutChartProps {
 export const DonutChart: React.FC<DonutChartProps> = ({ title, data }) => {
   const { theme } = useTheme();
 
-  const chartData = {
-    labels: data.map((item) => item.label),
-    datasets: [
-      {
-        data: data.map((item) => item.value),
-        backgroundColor: data.map((item) => item.color),
-        borderWidth: 0,
-      },
-    ],
-  };
+  // Transform data for Recharts
+  const chartData = data.map((item) => ({
+    name: item.label,
+    value: item.value,
+  }));
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: true,
-    cutout: "70%",
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: true,
-        backgroundColor: "#4d4d4d",
-        titleColor: "#ffffff",
-        bodyColor: "#ffffff",
-        borderColor: "#eef0f1",
-        borderWidth: 1,
-        padding: 10,
-        displayColors: true,
-        callbacks: {
-          label: function (context: { label: string; parsed: number }) {
-            const total = data.reduce((sum, item) => sum + item.value, 0);
-            const percentage = ((context.parsed / total) * 100).toFixed(2);
-            return `${context.label}: ${percentage}%`;
-          },
-        },
-      },
-    },
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const total = data.reduce((sum, item) => sum + item.value, 0);
+      const percentage = ((payload[0].value / total) * 100).toFixed(2);
+      return (
+        <div
+          style={{
+            backgroundColor: theme.colors.tooltipBg,
+            border: `1px solid ${theme.colors.tooltipBorder}`,
+            padding: "10px",
+            borderRadius: "4px",
+            color: theme.colors.tooltipText,
+            fontSize: "12px",
+            fontFamily: "Lato",
+          }}
+        >
+          <p style={{ margin: 0 }}>{`${payload[0].name}: ${percentage}%`}</p>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -63,7 +55,6 @@ export const DonutChart: React.FC<DonutChartProps> = ({ title, data }) => {
       style={{
         backgroundColor: theme.colors.cardBg,
         borderColor: theme.colors.borderColor,
-        color: theme.colors.bodyColor,
       }}
     >
       <h3
@@ -72,32 +63,49 @@ export const DonutChart: React.FC<DonutChartProps> = ({ title, data }) => {
       >
         {title}
       </h3>
-
       <div className="donut-chart-content">
         <div className="donut-chart-wrapper">
-          <CChartDoughnut data={chartData} options={chartOptions} />
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                innerRadius="70%"
+                outerRadius="100%"
+                dataKey="value"
+                stroke="none"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
-
         <div className="donut-chart-legend">
-          {data.map((item) => (
-            <div key={item.label} className="legend-item">
-              <div className="legend-item-label">
-                <div
-                  className="legend-color-indicator"
+          {data.map((item, index) => (
+            <div key={index} className="legend-item">
+              <div className="legend-label">
+                <span
+                  className="legend-color"
                   style={{ backgroundColor: item.color }}
                 />
                 <span
                   className="legend-text"
-                  style={{ color: theme.colors.textMuted }}
+                  style={{ color: theme.colors.bodyColor }}
                 >
                   {item.label}
                 </span>
               </div>
               <span
                 className="legend-percentage"
-                style={{ color: theme.colors.textMuted }}
+                style={{ color: theme.colors.bodyColor }}
               >
-                {item.percentage}
+                {typeof item.percentage === "string"
+                  ? item.percentage
+                  : `${item.percentage}%`}
               </span>
             </div>
           ))}
