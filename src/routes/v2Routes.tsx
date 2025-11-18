@@ -4,6 +4,7 @@ import { LayoutV2 } from "../layout-v2";
 import DashboardEngagement from "../pages-v2/Dashboard/Engagement/Engagement";
 import DashboardPopularFeatures from "../pages-v2/Dashboard/PopularFeatures/PopularFeatures";
 import DashboardUserInteractions from "../pages-v2/Dashboard/UserInteractions";
+import DashboardCommunity from "../pages-v2/Dashboard/Community";
 import { CampusProvider } from "../contexts/CampusContext";
 
 /**
@@ -47,7 +48,7 @@ const V2Routes: React.FC = () => {
           />
           <Route
             path="dashboard/community"
-            element={<div>Community - Coming Soon</div>}
+            element={<DashboardCommunity />}
           />
           <Route
             path="dashboard/student-safety"
