@@ -1,0 +1,55 @@
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.filter-bar-options {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-bar-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-bar-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.filter-bar-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.filter-bar-date-range {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 992px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-bar-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

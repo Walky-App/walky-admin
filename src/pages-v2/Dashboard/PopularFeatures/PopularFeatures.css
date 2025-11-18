@@ -3,11 +3,23 @@
   min-height: 100vh;
 }
 
-.filter-section {
+.filter-section-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
+}
+
+.popularity-filter {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.filter-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .popular-features-header {
@@ -75,12 +87,6 @@
   display: flex;
   align-items: center;
   gap: 9px;
-}
-
-.filter-title {
-  font-family: "Lato", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
 }
 
 .feature-cards-row {

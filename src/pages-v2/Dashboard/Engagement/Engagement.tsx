@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 import { CRow, CCol } from "@coreui/react";
-import { AssetIcon } from "../../../components-v2";
-import { StatsCard } from "../components/StatsCard/StatsCard";
-import { TimeSelector } from "../components/TimeSelector/TimeSelector";
-import { ExportButton } from "../components/ExportButton/ExportButton";
-import { LineChart } from "../components/LineChart/LineChart";
-import { DonutChart } from "../components/DonutChart/DonutChart";
+import { AssetIcon, FilterBar, TimePeriod } from "../../../components-v2";
+import { StatsCard, LineChart, DonutChart } from "../components";
 import { useTheme } from "../../../hooks/useTheme";
 import "./Engagement.css";
-
-type TimePeriod = "all-time" | "week" | "month";
 
 const Engagement: React.FC = () => {
   const { theme } = useTheme();
@@ -59,26 +53,13 @@ const Engagement: React.FC = () => {
 
   return (
     <main className="engagement-page" aria-label="User Engagement Dashboard">
-      {/* Filter Container */}
-      <div className="filter-container">
-        <div className="filter-options-container">
-          <p className="filter-label" style={{ color: theme.colors.bodyColor }}>
-            Filter by:
-          </p>
-          <div className="filter-options">
-            <div className="time-period-filter">
-              <p
-                className="filter-option-label"
-                style={{ color: theme.colors.bodyColor }}
-              >
-                Time period:
-              </p>
-              <TimeSelector selected={timePeriod} onChange={setTimePeriod} />
-            </div>
-          </div>
-        </div>
-        <ExportButton onClick={handleExport} />
-      </div>
+      {/* Filter Bar */}
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        dateRange=""
+        onExport={handleExport}
+      />
 
       {/* Stats Cards */}
       <CRow className="stats-container">

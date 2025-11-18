@@ -1,17 +1,9 @@
 import React, { useState } from "react";
 import { CRow, CCol } from "@coreui/react";
-import { AssetIcon } from "../../../components-v2";
+import { AssetIcon, FilterBar, TimePeriod } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
-import {
-  FeatureCard,
-  TimeSelector,
-  ExportButton,
-  PopularitySelector,
-  ViewToggle,
-} from "../components";
+import { FeatureCard, PopularitySelector, ViewToggle } from "../components";
 import "./PopularFeatures.css";
-
-type TimePeriod = "all-time" | "week" | "month";
 type PopularityOption = "least" | "most";
 type ViewType = "grid" | "list";
 
@@ -134,40 +126,24 @@ const PopularFeatures: React.FC = () => {
       style={{ backgroundColor: theme.colors.bodyBg }}
       aria-label="Popular Features Dashboard"
     >
-      {/* Filter Section - Now at top */}
-      <section className="filter-section" aria-label="Data filters">
-        <div className="filter-options">
-          <p className="filter-label" style={{ color: theme.colors.bodyColor }}>
-            Filter by:
-          </p>
-          <div className="filter-controls">
-            <div className="filter-group">
-              <span
-                className="filter-title"
-                style={{ color: theme.colors.bodyColor }}
-                id="time-period-label"
-              >
-                Time period:
-              </span>
-              <TimeSelector selected={timePeriod} onChange={setTimePeriod} />
-            </div>
-            <div className="filter-group">
-              <span
-                className="filter-title"
-                style={{ color: theme.colors.bodyColor }}
-                id="popularity-label"
-              >
-                Popularity:
-              </span>
-              <PopularitySelector
-                selected={popularity}
-                onChange={setPopularity}
-              />
-            </div>
-          </div>
+      {/* Filter Bar */}
+      <div className="filter-section-wrapper">
+        <FilterBar
+          timePeriod={timePeriod}
+          onTimePeriodChange={setTimePeriod}
+          dateRange=""
+          onExport={handleExport}
+        />
+        <div className="popularity-filter">
+          <span
+            className="filter-title"
+            style={{ color: theme.colors.bodyColor }}
+          >
+            Popularity:
+          </span>
+          <PopularitySelector selected={popularity} onChange={setPopularity} />
         </div>
-        <ExportButton onClick={handleExport} />
-      </section>
+      </div>
 
       {/* Header Section */}
       <div className="popular-features-header">

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { LayoutV2 } from "../layout-v2";
 import DashboardEngagement from "../pages-v2/Dashboard/Engagement/Engagement";
 import DashboardPopularFeatures from "../pages-v2/Dashboard/PopularFeatures/PopularFeatures";
+import DashboardUserInteractions from "../pages-v2/Dashboard/UserInteractions";
 import { CampusProvider } from "../contexts/CampusContext";
 
 /**
@@ -40,11 +41,9 @@ const V2Routes: React.FC = () => {
             path="dashboard/popular-features"
             element={<DashboardPopularFeatures />}
           />
-
-          {/* Placeholder routes for other dashboard pages */}
           <Route
             path="dashboard/user-interactions"
-            element={<div>User Interactions - Coming Soon</div>}
+            element={<DashboardUserInteractions />}
           />
           <Route
             path="dashboard/community"
