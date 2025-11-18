@@ -1,6 +1,6 @@
 import React from "react";
-import { AssetIcon } from "../../../../components-v2";
-import { useTheme } from "../../../../hooks/useTheme";
+import { AssetIcon } from "../AssetIcon/AssetIcon";
+import { useTheme } from "../../hooks/useTheme";
 import "./ExportButton.css";
 
 interface ExportButtonProps {
