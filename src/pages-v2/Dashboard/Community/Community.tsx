@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { AssetIcon, FilterBar, TimePeriod, StackedBarChart } from "../../../components-v2";
+import {
+  AssetIcon,
+  FilterBar,
+  TimePeriod,
+  StackedBarChart,
+} from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import "./Community.css";
 

@@ -10,4 +10,9 @@ export { ExportButton } from "./ExportButton";
 export { FilterBar } from "./FilterBar";
 export type { TimePeriod } from "./FilterBar";
 export { StackedBarChart } from "./StackedBarChart";
-export type { StackedBarChartProps, WeekData, BarDataItem, LegendItem } from "./StackedBarChart";
+export type {
+  StackedBarChartProps,
+  WeekData,
+  BarDataItem,
+  LegendItem,
+} from "./StackedBarChart";
