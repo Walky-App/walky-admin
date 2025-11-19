@@ -1,5 +1,6 @@
 import React from "react";
 import { AssetIcon } from "../../../../components-v2";
+import { useTheme } from "../../../../hooks/useTheme";
 import "./ViewToggle.css";
 
 type ViewType = "grid" | "list";
@@ -10,6 +11,8 @@ interface ViewToggleProps {
 }
 
 const ViewToggle: React.FC<ViewToggleProps> = ({ selected, onChange }) => {
+  const { theme } = useTheme();
+
   return (
     <div className="view-toggle" role="group" aria-label="View mode selector">
       <button
@@ -19,7 +22,12 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ selected, onChange }) => {
         aria-label="Grid view"
         aria-pressed={selected === "grid"}
       >
-        <AssetIcon name="grid-icon" size={18} aria-hidden="true" />
+        <AssetIcon
+          name="grid-icon"
+          size={18}
+          color={selected === "grid" ? "#ffffff" : theme.colors.bodyColor}
+          aria-hidden="true"
+        />
       </button>
       <button
         data-testid="view-toggle-list"
@@ -28,10 +36,14 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ selected, onChange }) => {
         aria-label="List view"
         aria-pressed={selected === "list"}
       >
-        <AssetIcon name="table-icon" size={18} aria-hidden="true" />
+        <AssetIcon
+          name="table-icon"
+          size={18}
+          color={selected === "list" ? "#ffffff" : theme.colors.bodyColor}
+          aria-hidden="true"
+        />
       </button>
     </div>
   );
 };
-
 export default ViewToggle;

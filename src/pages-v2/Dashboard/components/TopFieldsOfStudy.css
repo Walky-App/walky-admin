@@ -1,0 +1,249 @@
+.top-fields-container {
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 24px;
+  height: auto;
+  min-height: 270px;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+}
+
+.top-fields-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 38px;
+}
+
+.top-fields-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-fields-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.top-fields-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.top-fields-table-header {
+  display: grid;
+  grid-template-columns: 236px 116px 1fr;
+  align-items: center;
+  padding: 13px 24px;
+  border-radius: 12px;
+  height: 53px;
+}
+
+.table-header-item {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.table-header-text {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.tooltip-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.tooltip-button:hover {
+  opacity: 0.8;
+}
+
+/* Tooltip customization */
+.tooltip {
+  --bs-tooltip-bg: #1d1b20;
+  --bs-tooltip-color: #ffffff;
+}
+
+.tooltip-button .tooltip,
+.tooltip-button + .tooltip,
+.tooltip-inner {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  text-align: center;
+  background-color: #1d1b20 !important;
+  color: #ffffff !important;
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+/* Tooltip arrow - usando variáveis CSS do Bootstrap */
+.tooltip .tooltip-arrow::before,
+.bs-tooltip-top .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before {
+  border-top-color: #1d1b20 !important;
+}
+
+.bs-tooltip-bottom .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^="bottom"] .tooltip-arrow::before {
+  border-bottom-color: #1d1b20 !important;
+}
+
+.bs-tooltip-start .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^="left"] .tooltip-arrow::before {
+  border-left-color: #1d1b20 !important;
+}
+
+.bs-tooltip-end .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before {
+  border-right-color: #1d1b20 !important;
+}
+
+.top-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
+
+.field-item {
+  display: grid;
+  grid-template-columns: 236px 116px 1fr;
+  align-items: center;
+  padding: 0 24px;
+  min-height: 73px;
+}
+
+.field-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-rank {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  min-width: 38px;
+  text-align: center;
+}
+
+.field-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.field-students,
+.field-interactions {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .top-fields-container {
+    height: auto;
+    min-height: 270px;
+  }
+
+  .top-fields-table-header {
+    grid-template-columns: 1fr 100px 120px;
+  }
+
+  .field-item {
+    grid-template-columns: 1fr 100px 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-fields-container {
+    padding: 24px;
+  }
+
+  .top-fields-header {
+    margin-bottom: 24px;
+  }
+
+  .top-fields-table-header {
+    display: none;
+  }
+
+  .field-item {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 24px;
+    border: 1px solid #eef0f1;
+    border-radius: 12px;
+    min-height: auto;
+  }
+
+  .field-info {
+    width: 100%;
+  }
+
+  .field-students,
+  .field-interactions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .field-students::before {
+    content: "Students";
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  .field-interactions::before {
+    content: "Avg interactions";
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  .top-fields-list {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-fields-title {
+    font-size: 14px;
+  }
+
+  .table-header-text,
+  .field-name,
+  .field-students,
+  .field-interactions {
+    font-size: 12px;
+  }
+
+  .field-rank {
+    font-size: 14px;
+    min-width: 34px;
+    padding: 4px 8px;
+  }
+}

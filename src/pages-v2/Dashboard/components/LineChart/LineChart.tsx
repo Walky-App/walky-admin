@@ -16,6 +16,7 @@ interface LineChartProps {
   title: string;
   data: number[];
   labels: string[];
+  subLabels?: string[]; // Optional sub-labels for date ranges
   color: string;
   backgroundColor: string;
   yAxisLabel?: string;
@@ -26,6 +27,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   title,
   data,
   labels,
+  subLabels,
   color,
   yAxisLabel,
   maxValue,
@@ -35,6 +37,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   // Transform data to Recharts format
   const chartData = labels.map((label, index) => ({
     name: label,
+    subLabel: subLabels?.[index] || "",
     value: data[index],
   }));
 
@@ -50,7 +53,7 @@ export const LineChart: React.FC<LineChartProps> = ({
             borderRadius: "4px",
             color: theme.colors.tooltipText,
             fontSize: "12px",
-            fontFamily: "Lato",
+            fontFamily: "var(--v2-font-family)",
           }}
         >
           <p style={{ margin: 0 }}>{`${payload[0].value}`}</p>
@@ -71,6 +74,42 @@ export const LineChart: React.FC<LineChartProps> = ({
     return value.toString();
   };
 
+  // Custom X-axis tick with sub-labels
+  const CustomXAxisTick = ({ x, y, payload }: any) => {
+    const dataPoint = chartData.find((d) => d.name === payload.value);
+
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          x={0}
+          y={0}
+          dy={16}
+          textAnchor="middle"
+          fill={theme.colors.textSecondary}
+          fontFamily="var(--v2-font-family)"
+          fontSize={14}
+          fontWeight={600}
+        >
+          {payload.value}
+        </text>
+        {dataPoint?.subLabel && (
+          <text
+            x={0}
+            y={0}
+            dy={34}
+            textAnchor="middle"
+            fill={theme.colors.textMuted}
+            fontFamily="var(--v2-font-family)"
+            fontSize={12}
+            fontWeight={400}
+          >
+            {dataPoint.subLabel}
+          </text>
+        )}
+      </g>
+    );
+  };
+
   return (
     <div
       className="line-chart-container"
@@ -89,7 +128,7 @@ export const LineChart: React.FC<LineChartProps> = ({
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
-            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
             <defs>
               <linearGradient
@@ -112,22 +151,19 @@ export const LineChart: React.FC<LineChartProps> = ({
             />
             <XAxis
               dataKey="name"
-              tick={{
-                fill: theme.colors.textMuted,
-                fontFamily: "Lato",
-                fontSize: 12,
-                fontWeight: 600,
-              }}
+              tick={<CustomXAxisTick />}
               axisLine={false}
               tickLine={false}
+              height={subLabels ? 60 : 40}
             />
             <YAxis
               domain={[0, maxValue || "auto"]}
               tick={{
-                fill: theme.colors.textMuted,
-                fontFamily: "Lato",
-                fontSize: 12,
+                fill: theme.colors.textSecondary,
+                fontFamily: "var(--v2-font-family)",
+                fontSize: 14,
                 fontWeight: 600,
+                textAnchor: "end",
               }}
               axisLine={false}
               tickLine={false}

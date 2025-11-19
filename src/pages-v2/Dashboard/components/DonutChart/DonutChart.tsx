@@ -39,7 +39,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({ title, data }) => {
             borderRadius: "4px",
             color: theme.colors.tooltipText,
             fontSize: "12px",
-            fontFamily: "Lato",
+            fontFamily: "var(--v2-font-family)",
           }}
         >
           <p style={{ margin: 0 }}>{`${payload[0].name}: ${percentage}%`}</p>

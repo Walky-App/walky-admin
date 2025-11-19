@@ -5,3 +5,5 @@ export { DonutChart } from "./DonutChart/DonutChart";
 export { default as FeatureCard } from "./FeatureCard/FeatureCard";
 export { default as PopularitySelector } from "./PopularitySelector/PopularitySelector";
 export { default as ViewToggle } from "./ViewToggle/ViewToggle";
+export { default as CommonInterests } from "./CommonInterests";
+export { default as TopFieldsOfStudy } from "./TopFieldsOfStudy";

@@ -18,4 +18,5 @@ export interface StackedBarChartProps {
   weeks: WeekData[];
   data: BarDataItem[];
   legend: LegendItem[];
+  onBarClick?: (legendKey: string, legendLabel: string) => void;
 }

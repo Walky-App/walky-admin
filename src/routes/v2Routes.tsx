@@ -5,6 +5,8 @@ import DashboardEngagement from "../pages-v2/Dashboard/Engagement/Engagement";
 import DashboardPopularFeatures from "../pages-v2/Dashboard/PopularFeatures/PopularFeatures";
 import DashboardUserInteractions from "../pages-v2/Dashboard/UserInteractions";
 import DashboardCommunity from "../pages-v2/Dashboard/Community";
+import DashboardStudentSafety from "../pages-v2/Dashboard/StudentSafety";
+import DashboardStudentBehavior from "../pages-v2/Dashboard/StudentBehavior";
 import { CampusProvider } from "../contexts/CampusContext";
 
 /**
@@ -49,11 +51,11 @@ const V2Routes: React.FC = () => {
           <Route path="dashboard/community" element={<DashboardCommunity />} />
           <Route
             path="dashboard/student-safety"
-            element={<div>Student Safety - Coming Soon</div>}
+            element={<DashboardStudentSafety />}
           />
           <Route
             path="dashboard/student-behavior"
-            element={<div>Student Behavior - Coming Soon</div>}
+            element={<DashboardStudentBehavior />}
           />
 
           {/* Campus Routes */}
