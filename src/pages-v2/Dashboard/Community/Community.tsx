@@ -5,12 +5,10 @@ import {
   TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
-import { useTheme } from "../../../hooks/useTheme";
 import { BarChart } from "./components/BarChart";
 import "./Community.css";
 
 const Community: React.FC = () => {
-  const { theme } = useTheme();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   const handleExport = () => {
@@ -110,13 +108,11 @@ const Community: React.FC = () => {
       {/* Header Section */}
       <div className="page-header">
         <div className="icon-container" aria-hidden="true">
-          <div className="icon-circle" style={{ backgroundColor: "#fcf3e9" }}>
+          <div className="icon-circle">
             <AssetIcon name="popular-emoji-icon" color="#f69b39" size={30} />
           </div>
         </div>
-        <h1 className="page-title" style={{ color: theme.colors.bodyColor }}>
-          Community Creation
-        </h1>
+        <h1 className="page-title">Community Creation</h1>
       </div>
 
       {/* Creation Metrics Bar Chart */}

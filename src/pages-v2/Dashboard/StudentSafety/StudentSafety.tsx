@@ -7,11 +7,9 @@ import {
   LastUpdated,
   ReportDetailsModal,
 } from "../../../components-v2";
-import { useTheme } from "../../../hooks/useTheme";
 import "./StudentSafety.css";
 
 const StudentSafety: React.FC = () => {
-  const { theme } = useTheme();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReportType, setSelectedReportType] = useState("");
@@ -298,13 +296,11 @@ const StudentSafety: React.FC = () => {
       {/* Header Section */}
       <div className="page-header">
         <div className="icon-container" aria-hidden="true">
-          <div className="icon-circle" style={{ backgroundColor: "#fce9e9" }}>
+          <div className="icon-circle">
             <AssetIcon name="lock-icon" color="#ef6161" size={30} />
           </div>
         </div>
-        <h1 className="page-title" style={{ color: theme.colors.bodyColor }}>
-          Student Safety
-        </h1>
+        <h1 className="page-title">Student Safety</h1>
       </div>
 
       {/* Reports Bar Chart */}

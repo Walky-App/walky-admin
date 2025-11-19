@@ -6,13 +6,11 @@ import {
   TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
-import { useTheme } from "../../../hooks/useTheme";
 import { LineChart } from "../components";
 import { BarChart } from "./components/BarChart";
 import "./UserInteractions.css";
 
 const UserInteractions: React.FC = () => {
-  const { theme } = useTheme();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   const handleExport = () => {
@@ -139,7 +137,7 @@ const UserInteractions: React.FC = () => {
       {/* Header Section */}
       <div className="page-header">
         <div className="icon-container" aria-hidden="true">
-          <div className="icon-circle" style={{ backgroundColor: "#e9fcf4" }}>
+          <div className="icon-circle">
             <AssetIcon
               name="user-interactions-icon"
               color="#389001"
@@ -147,9 +145,7 @@ const UserInteractions: React.FC = () => {
             />
           </div>
         </div>
-        <h1 className="page-title" style={{ color: theme.colors.bodyColor }}>
-          User Interactions
-        </h1>
+        <h1 className="page-title">User Interactions</h1>
       </div>
 
       {/* Invitations Bar Chart */}

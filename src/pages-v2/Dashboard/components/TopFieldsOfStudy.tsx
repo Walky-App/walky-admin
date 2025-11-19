@@ -21,10 +21,7 @@ const TopFieldsOfStudy: React.FC<TopFieldsOfStudyProps> = ({ fields }) => {
   const { theme } = useTheme();
 
   return (
-    <div
-      className="top-fields-container"
-      style={{ backgroundColor: theme.colors.cardBg }}
-    >
+    <div className="top-fields-container">
       <div className="top-fields-header">
         <div className="top-fields-icon">
           <AssetIcon
@@ -33,26 +30,13 @@ const TopFieldsOfStudy: React.FC<TopFieldsOfStudyProps> = ({ fields }) => {
             size={24}
           />
         </div>
-        <h3
-          className="top-fields-title"
-          style={{ color: theme.colors.textMuted }}
-        >
-          Top fields of study by interaction
-        </h3>
+        <h3 className="top-fields-title">Top fields of study by interaction</h3>
       </div>
 
       <div className="top-fields-content">
-        <div
-          className="top-fields-table-header"
-          style={{ backgroundColor: theme.colors.dropdownBg }}
-        >
+        <div className="top-fields-table-header">
           <div className="table-header-item">
-            <span
-              className="table-header-text"
-              style={{ color: theme.colors.bodyColor }}
-            >
-              Field
-            </span>
+            <span className="table-header-text">Field</span>
             <AssetIcon
               name="swap-arrows-icon"
               color={theme.colors.bodyColor}
@@ -60,12 +44,7 @@ const TopFieldsOfStudy: React.FC<TopFieldsOfStudyProps> = ({ fields }) => {
             />
           </div>
           <div className="table-header-item">
-            <span
-              className="table-header-text"
-              style={{ color: theme.colors.bodyColor }}
-            >
-              Students
-            </span>
+            <span className="table-header-text">Students</span>
             <AssetIcon
               name="swap-arrows-icon"
               color={theme.colors.bodyColor}
@@ -73,12 +52,7 @@ const TopFieldsOfStudy: React.FC<TopFieldsOfStudyProps> = ({ fields }) => {
             />
           </div>
           <div className="table-header-item">
-            <span
-              className="table-header-text"
-              style={{ color: theme.colors.bodyColor }}
-            >
-              Avg interactions
-            </span>
+            <span className="table-header-text">Avg interactions</span>
             <CTooltip
               content="Explanation of how this data is calculated"
               placement="top"
@@ -89,7 +63,11 @@ const TopFieldsOfStudy: React.FC<TopFieldsOfStudyProps> = ({ fields }) => {
                 aria-label="Information about average interactions"
                 type="button"
               >
-                <AssetIcon name="tooltip-icon" color="#acb6ba" size={16} />
+                <AssetIcon
+                  name="tooltip-icon"
+                  color={theme.colors.iconTooltip}
+                  size={16}
+                />
               </button>
             </CTooltip>
           </div>
@@ -108,25 +86,10 @@ const TopFieldsOfStudy: React.FC<TopFieldsOfStudyProps> = ({ fields }) => {
                 >
                   #{field.rank}
                 </div>
-                <p
-                  className="field-name"
-                  style={{ color: theme.colors.bodyColor }}
-                >
-                  {field.name}
-                </p>
+                <p className="field-name">{field.name}</p>
               </div>
-              <p
-                className="field-students"
-                style={{ color: theme.colors.bodyColor }}
-              >
-                {field.students}
-              </p>
-              <p
-                className="field-interactions"
-                style={{ color: theme.colors.bodyColor }}
-              >
-                {field.avgInteractions}
-              </p>
+              <p className="field-students">{field.students}</p>
+              <p className="field-interactions">{field.avgInteractions}</p>
             </div>
           ))}
         </div>

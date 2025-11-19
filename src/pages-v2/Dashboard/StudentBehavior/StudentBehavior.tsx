@@ -139,45 +139,22 @@ const StudentBehavior: React.FC = () => {
       {/* Header Section */}
       <div className="page-header">
         <div className="icon-container" aria-hidden="true">
-          <div className="icon-circle" style={{ backgroundColor: "#e9fcf4" }}>
+          <div className="icon-circle">
             <AssetIcon name="trend-up-icon" color="#00c943" size={30} />
           </div>
         </div>
-        <h1 className="page-title" style={{ color: theme.colors.bodyColor }}>
-          Student Behavior
-        </h1>
+        <h1 className="page-title">Student Behavior</h1>
       </div>
 
       {/* Metric Cards */}
       <CRow className="metric-cards-row">
         {metricCards.map((card, index) => (
           <CCol key={index} xs={12} sm={6} lg={3} className="metric-card-col">
-            <div
-              className="metric-card"
-              style={{
-                backgroundColor: theme.colors.cardBg,
-                borderColor: theme.colors.borderColor,
-              }}
-            >
-              <p
-                className="metric-card-title"
-                style={{ color: theme.colors.bodyColor }}
-              >
-                {card.title}
-              </p>
+            <div className="metric-card">
+              <p className="metric-card-title">{card.title}</p>
               <div className="metric-card-value-container">
-                <span
-                  className="metric-card-value"
-                  style={{ color: theme.colors.bodyColor }}
-                >
-                  {card.value}
-                </span>
-                <span
-                  className="metric-card-unit"
-                  style={{ color: theme.colors.bodyColor }}
-                >
-                  {card.unit}
-                </span>
+                <span className="metric-card-value">{card.value}</span>
+                <span className="metric-card-unit">{card.unit}</span>
               </div>
               <div className="metric-card-change">
                 <AssetIcon
@@ -186,22 +163,21 @@ const StudentBehavior: React.FC = () => {
                       ? "trend-up-icon"
                       : "trend-down-icon"
                   }
-                  color={card.changeDirection === "up" ? "#18682c" : "#ba0000"}
+                  color={
+                    card.changeDirection === "up"
+                      ? theme.colors.trendUpGreen
+                      : theme.colors.trendDownRed
+                  }
                   size={16}
                 />
                 <p className="metric-card-change-text">
                   <span
                     className="change-percentage"
-                    style={{
-                      color:
-                        card.changeDirection === "up" ? "#18682c" : "#ba0000",
-                    }}
+                    data-trend={card.changeDirection}
                   >
                     {card.changePercentage}
                   </span>{" "}
-                  <span style={{ color: theme.colors.bodyColor }}>
-                    {card.change}
-                  </span>
+                  <span className="change-text">{card.change}</span>
                 </p>
               </div>
               {card.hasTooltip && (
@@ -213,17 +189,14 @@ const StudentBehavior: React.FC = () => {
                     onMouseEnter={() => setHoveredTooltip(index)}
                     onMouseLeave={() => setHoveredTooltip(null)}
                   >
-                    <AssetIcon name="tooltip-icon" color="#acb6ba" size={16} />
+                    <AssetIcon
+                      name="tooltip-icon"
+                      color={theme.colors.iconTooltip}
+                      size={16}
+                    />
                   </button>
                   {hoveredTooltip === index && (
-                    <div
-                      className="metric-card-tooltip"
-                      style={{
-                        backgroundColor: theme.colors.tooltipBg,
-                        color: theme.colors.tooltipText,
-                        borderColor: theme.colors.tooltipBorder,
-                      }}
-                    >
+                    <div className="metric-card-tooltip">
                       {card.tooltipText}
                     </div>
                   )}
@@ -237,22 +210,15 @@ const StudentBehavior: React.FC = () => {
       {/* Student Completion Rates */}
       <div className="completion-section">
         <div className="completion-header">
-          <AssetIcon name="double-users-icon" color="#1d1b20" size={24} />
-          <h2
-            className="completion-title"
-            style={{ color: theme.colors.bodyColor }}
-          >
-            Student Completion Rates
-          </h2>
+          <AssetIcon
+            name="double-users-icon"
+            color={theme.colors.bodyColor}
+            size={24}
+          />
+          <h2 className="completion-title">Student Completion Rates</h2>
         </div>
 
-        <div
-          className="completion-container"
-          style={{
-            backgroundColor: theme.colors.cardBg,
-            borderColor: theme.colors.borderColor,
-          }}
-        >
+        <div className="completion-container">
           <CRow className="completion-metrics-row">
             {completionMetrics.map((metric, index) => (
               <CCol
@@ -265,12 +231,7 @@ const StudentBehavior: React.FC = () => {
               >
                 <div className="completion-metric">
                   <div className="completion-metric-header">
-                    <p
-                      className="completion-metric-label"
-                      style={{ color: theme.colors.bodyColor }}
-                    >
-                      {metric.label}
-                    </p>
+                    <p className="completion-metric-label">{metric.label}</p>
                     <p
                       className="completion-metric-percentage"
                       style={{ color: metric.textColor }}
@@ -279,10 +240,7 @@ const StudentBehavior: React.FC = () => {
                     </p>
                   </div>
                   <div className="completion-progress-bar-container">
-                    <div
-                      className="completion-progress-bar-bg"
-                      style={{ backgroundColor: "#ebf1ff" }}
-                    >
+                    <div className="completion-progress-bar-bg">
                       <div
                         className="completion-progress-bar"
                         style={{
@@ -292,10 +250,7 @@ const StudentBehavior: React.FC = () => {
                       />
                     </div>
                   </div>
-                  <p
-                    className="completion-metric-description"
-                    style={{ color: theme.colors.textMuted }}
-                  >
+                  <p className="completion-metric-description">
                     {metric.description}
                   </p>
                 </div>
