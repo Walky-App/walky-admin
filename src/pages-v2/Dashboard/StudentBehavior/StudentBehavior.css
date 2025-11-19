@@ -105,7 +105,6 @@
 }
 
 .student-behavior-page .change-percentage {
-  color: #18682c;
   font-weight: 600;
 }
 
@@ -182,11 +181,17 @@
 }
 
 .student-behavior-page .completion-metrics-row {
-  gap: 40px;
+  gap: 24px;
+  row-gap: 40px;
+  margin: 0 -12px;
 }
 
 .student-behavior-page .completion-metric-col {
-  margin-bottom: 50px;
+  margin-bottom: 0;
+  padding-left: 12px;
+  padding-right: 12px;
+  flex: 0 0 auto;
+  width: calc(33.333333% - 24px);
 }
 
 .student-behavior-page .completion-metric-col.single-metric {
@@ -197,6 +202,7 @@
   display: flex;
   flex-direction: column;
   gap: 11px;
+  height: 100%;
 }
 
 .student-behavior-page .completion-metric-header {
@@ -251,7 +257,7 @@
   font-size: 14px;
   line-height: 1.4;
   margin: 0;
-  max-width: 350px;
+  max-width: 100%;
 }
 
 /* Responsive */
@@ -275,7 +281,16 @@
   }
 
   .student-behavior-page .completion-metrics-row {
-    gap: 30px;
+    gap: 20px;
+    row-gap: 30px;
+    margin: 0 -10px;
+  }
+
+  .student-behavior-page .completion-metric-col {
+    margin-bottom: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: calc(33.333333% - 20px);
   }
 }
 
@@ -301,6 +316,16 @@
 
   .student-behavior-page .completion-container {
     padding: 24px 16px;
+  }
+
+  .student-behavior-page .completion-metrics-row {
+    margin: 0;
+  }
+
+  .student-behavior-page .completion-metric-col {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
   }
 
   .student-behavior-page .completion-metric-description {
