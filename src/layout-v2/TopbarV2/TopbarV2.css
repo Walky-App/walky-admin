@@ -89,7 +89,7 @@
 .selector-info {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 4px;
   align-items: flex-start;
 }
 
@@ -110,26 +110,28 @@
   font-family: var(--v2-font-family);
   font-size: var(--v2-font-size-lg);
   font-weight: var(--v2-font-weight-regular);
-  color: var(--v2-neutral-black) !important;
+  color: var(--v2-text-primary) !important;
   padding: 0;
   text-decoration: none !important;
   display: flex;
   align-items: center;
-  border: none;
+  border: none !important;
   background: none !important;
   box-shadow: none !important;
   line-height: var(--v2-line-height-tight);
-  gap: var(--v2-spacing-12);
+  gap: 16px;
   cursor: pointer;
   transition: none !important;
 }
 
 .selector-toggle:hover,
 .selector-toggle:focus,
-.selector-toggle:active {
-  color: var(--v2-neutral-black) !important;
+.selector-toggle:active,
+.selector-toggle.show {
+  color: var(--v2-text-primary) !important;
   text-decoration: none !important;
   background: none !important;
+  border: none !important;
   box-shadow: none !important;
   opacity: 1 !important;
   transform: none !important;
@@ -145,7 +147,7 @@
   font-weight: 400;
   line-height: 100%;
   letter-spacing: 0%;
-  color: var(--v2-neutral-black);
+  color: var(--v2-text-primary);
 }
 
 /* User Actions */
@@ -312,7 +314,6 @@
 /* Border */
 .topbar-border {
   height: 1px;
-  background-color: var(--v2-border-divider);
   margin-top: var(--v2-spacing-16);
   width: 100%;
 }
@@ -368,7 +369,7 @@
   height: 40px;
   display: none;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: var(--v2-spacing-8);
   background: transparent;
   border: none;
@@ -376,7 +377,8 @@
   cursor: pointer;
   transition: background-color var(--v2-transition-fast);
   padding: 0 var(--v2-spacing-12);
-  max-width: 150px;
+  max-width: 180px;
+  min-width: 120px;
 }
 
 .selector-icon-btn:hover {
@@ -392,11 +394,14 @@
 .selector-btn-text {
   font-family: var(--v2-font-family);
   font-size: var(--v2-font-size-sm);
-  font-weight: var(--v2-font-weight-semibold);
-  color: var(--v2-text-primary);
+  flex: 1;
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 0 8px;
+  font-weight: var(--v2-font-weight-semibold);
+  color: var(--v2-text-primary);
 }
 
 /* Modal Styles */

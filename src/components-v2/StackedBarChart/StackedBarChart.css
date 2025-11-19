@@ -25,7 +25,8 @@
   justify-content: space-between;
   padding-top: 10px;
   padding-bottom: 10px;
-  min-width: 40px;
+  width: 40px;
+  flex-shrink: 0;
 }
 
 .stacked-bar-y-axis-label {
@@ -66,7 +67,7 @@
   height: 100%;
   position: relative;
   z-index: 1;
-  padding: 0 20px;
+  padding: 0;
 }
 
 .stacked-bar-week-bars {
@@ -80,23 +81,34 @@
 
 .stacked-bar-bars-group {
   display: flex;
-  gap: 4px;
-  align-items: flex-end;
+  flex-direction: column-reverse;
+  align-items: center;
   height: 100%;
-  max-width: 80px;
+  width: 47px;
 }
 
 .stacked-bar-bar {
-  width: 20px;
-  border-radius: 4px 4px 0 0;
+  width: 100%;
   transition: opacity 0.2s ease;
   cursor: pointer;
   min-height: 2px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stacked-bar-bar:hover {
-  opacity: 0.8;
+  opacity: 0.85;
+  filter: brightness(1.05);
+}
+
+.stacked-bar-value {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+  z-index: 2;
 }
 
 .stacked-bar-tooltip {
@@ -118,11 +130,12 @@
 .stacked-bar-x-axis-labels {
   display: flex;
   justify-content: space-between;
-  padding: 0 60px;
+  margin-left: 56px;
   margin-top: 16px;
 }
 
 .stacked-bar-week-label {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

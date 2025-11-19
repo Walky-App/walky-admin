@@ -55,23 +55,18 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       <div className="stats-change-container">
         <div className={`trend-icon trend-${trend.direction}`}>
           <AssetIcon
-            name={trend.direction === "up" ? "arrow-up" : "arrow-down"}
-            size={16}
-            color={
-              trend.direction === "up"
-                ? theme.colors.success
-                : theme.colors.danger
+            name={
+              trend.direction === "up" ? "trend-up-icon" : "trend-down-icon"
             }
+            size={16}
+            color={trend.direction === "up" ? "#18682c" : "#d53425"}
           />
         </div>
         <p className="stats-change-text">
           <span
             className={trend.direction === "up" ? "trend-up" : "trend-down"}
             style={{
-              color:
-                trend.direction === "up"
-                  ? theme.colors.success
-                  : theme.colors.danger,
+              color: trend.direction === "up" ? "#18682c" : "#d53425",
             }}
           >
             {trend.value}

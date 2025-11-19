@@ -25,7 +25,8 @@
   justify-content: space-between;
   padding-top: 10px;
   padding-bottom: 10px;
-  min-width: 40px;
+  width: 40px;
+  flex-shrink: 0;
 }
 
 .y-axis-label {
@@ -66,7 +67,7 @@
   height: 100%;
   position: relative;
   z-index: 1;
-  padding: 0 20px;
+  padding: 0;
 }
 
 .week-bars {
@@ -100,11 +101,12 @@
 .x-axis-labels {
   display: flex;
   justify-content: space-between;
-  padding: 0 60px;
+  margin-left: 56px;
   margin-top: 16px;
 }
 
 .week-label {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

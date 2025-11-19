@@ -1,0 +1,178 @@
+.common-interests-container {
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 24px;
+  height: auto;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+}
+
+.common-interests-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+
+.common-interests-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.common-interests-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.common-interests-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.common-interests-dropdown {
+  min-width: 160px;
+}
+
+.common-interests-dropdown .dropdown-toggle-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.common-interests-dropdown .dropdown-toggle-custom::after {
+  display: none;
+}
+
+.common-interests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 6px;
+}
+
+.interest-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.interest-rank {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  min-width: 38px;
+  text-align: center;
+}
+
+.interest-info {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  flex: 1;
+}
+
+.interest-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.interest-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+}
+
+.interest-stats {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  margin: 0;
+}
+
+.interest-progress-container {
+  position: relative;
+  height: 14px;
+}
+
+.interest-progress-bg {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 100%;
+  height: 13px;
+  border-radius: 16px;
+}
+
+.interest-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 14px;
+  border-radius: 16px 0 0 16px;
+}
+
+/* See all button */
+.see-all-button {
+  margin-top: 20px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+}
+
+.see-all-button:hover {
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .common-interests-container {
+    height: auto;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .common-interests-container {
+    padding: 16px;
+  }
+
+  .common-interests-header {
+    margin-bottom: 24px;
+  }
+
+  .interest-name,
+  .interest-stats {
+    font-size: 14px;
+  }
+
+  .interest-rank {
+    font-size: 14px;
+    min-width: 34px;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .interest-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

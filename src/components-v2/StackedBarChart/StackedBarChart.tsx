@@ -8,6 +8,7 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
   weeks,
   data,
   legend,
+  onBarClick,
 }) => {
   const { theme } = useTheme();
   const [hoveredBar, setHoveredBar] = useState<{
@@ -85,8 +86,9 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
             {data.map((weekData, weekIndex) => (
               <div key={weekIndex} className="stacked-bar-week-bars">
                 <div className="stacked-bar-bars-group">
-                  {legend.map((legendItem) => {
+                  {legend.map((legendItem, barIndex) => {
                     const value = weekData[legendItem.key] || 0;
+                    const isTopBar = barIndex === legend.length - 1;
                     return (
                       <div
                         key={legendItem.key}
@@ -94,7 +96,13 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
                         style={{
                           height: `${getBarHeight(value)}%`,
                           backgroundColor: legendItem.color,
+                          borderTopLeftRadius: isTopBar ? "8px" : "0",
+                          borderTopRightRadius: isTopBar ? "8px" : "0",
+                          cursor: onBarClick ? "pointer" : "default",
                         }}
+                        onClick={() =>
+                          onBarClick?.(legendItem.key, legendItem.label)
+                        }
                         onMouseEnter={() =>
                           setHoveredBar({
                             weekIndex,
@@ -105,6 +113,17 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
                         onMouseLeave={() => setHoveredBar(null)}
                         data-testid={`bar-${weekIndex}-${legendItem.key}`}
                       >
+                        <span
+                          className="stacked-bar-value"
+                          style={{
+                            color:
+                              legendItem.color === "#576cc2"
+                                ? "#ffffff"
+                                : "#1d1b20",
+                          }}
+                        >
+                          {value}
+                        </span>
                         {hoveredBar?.weekIndex === weekIndex &&
                           hoveredBar?.barKey === legendItem.key && (
                             <div
@@ -116,7 +135,7 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
                                 border: "1px solid",
                               }}
                             >
-                              {value.toLocaleString()}
+                              {legendItem.label}: {value.toLocaleString()}
                             </div>
                           )}
                       </div>

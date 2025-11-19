@@ -9,6 +9,9 @@ export type { GeneratedIconKeys } from "./AssetIcon/icons.generated";
 export { ExportButton } from "./ExportButton";
 export { FilterBar } from "./FilterBar";
 export type { TimePeriod } from "./FilterBar";
+export { LastUpdated } from "./LastUpdated";
+export { ReportDetailsModal } from "./ReportDetailsModal";
+export { SeeAllInterestsModal } from "./SeeAllInterestsModal";
 export { StackedBarChart } from "./StackedBarChart";
 export type {
   StackedBarChartProps,

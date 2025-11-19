@@ -3,6 +3,7 @@ import arrowDown from "../../assets-v2/svg/arrow-down.svg?react";
 import arrowUp from "../../assets-v2/svg/arrow-up.svg?react";
 import calendarIcon from "../../assets-v2/svg/calendar-icon.svg?react";
 import campusIcon from "../../assets-v2/svg/campus-icon.svg?react";
+import copyIcon from "../../assets-v2/svg/copy-icon.svg?react";
 import doubleUsersIcon from "../../assets-v2/svg/double-users-icon.svg?react";
 import exportIcon from "../../assets-v2/svg/export-icon.svg?react";
 import gridIcon from "../../assets-v2/svg/grid-icon.svg?react";
@@ -32,6 +33,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   "arrow-up": arrowUp,
   "calendar-icon": calendarIcon,
   "campus-icon": campusIcon,
+  "copy-icon": copyIcon,
   "double-users-icon": doubleUsersIcon,
   "export-icon": exportIcon,
   "grid-icon": gridIcon,

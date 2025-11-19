@@ -44,7 +44,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     isLoadingCampuses,
     setIsLoadingCampuses,
   } = useCampus();
-  const { toggleTheme } = useTheme();
+  const { toggleTheme, theme } = useTheme();
   const { user, isSuperAdmin } = useAuth();
 
   // Track if initial fetch has been done
@@ -259,20 +259,32 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                   onClick={() => setSchoolModalOpen(true)}
                   aria-label="Select school"
                 >
-                  <AssetIcon name="school-icon" color="#1d1b20" />
+                  <AssetIcon
+                    name="school-icon"
+                    color={theme.colors.bodyColor}
+                  />
                   <span className="selector-btn-text">
                     {selectedSchool?.school_name || "School"}
                   </span>
+                  <AssetIcon name="arrow-down" size={18} />
                 </button>
                 <button
                   className="selector-icon-btn"
                   onClick={() => setCampusModalOpen(true)}
                   aria-label="Select campus"
                 >
-                  <AssetIcon name="campus-icon" color="#1d1b20" />
+                  <AssetIcon
+                    name="campus-icon"
+                    color={theme.colors.bodyColor}
+                  />
                   <span className="selector-btn-text">
                     {selectedCampus?.campus_name || "Campus"}
                   </span>
+                  <AssetIcon
+                    name="arrow-down"
+                    size={18}
+                    color={theme.colors.bodyColor}
+                  />
                 </button>
               </>
             ) : (
@@ -280,7 +292,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 {/* Desktop: Full dropdowns */}
                 <div className="selector-group">
                   <div className="selector-icon">
-                    <AssetIcon name="school-icon" color="#1d1b20" />
+                    <AssetIcon
+                      name="school-icon"
+                      color={theme.colors.bodyColor}
+                    />
                   </div>
                   <div className="selector-info">
                     <span className="selector-label">Your school</span>
@@ -293,7 +308,11 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                             <span className="selector-value">
                               {selectedSchool?.school_name || "Select School"}
                             </span>
-                            <AssetIcon name="arrow-down" color="#1d1b20" />
+                            <AssetIcon
+                              name="arrow-down"
+                              size={20}
+                              color={theme.colors.bodyColor}
+                            />
                           </>
                         )}
                       </CDropdownToggle>
@@ -319,7 +338,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
                 <div className="selector-group">
                   <div className="selector-icon">
-                    <AssetIcon name="campus-icon" color="#1d1b20" />
+                    <AssetIcon
+                      name="campus-icon"
+                      color={theme.colors.bodyColor}
+                    />
                   </div>
                   <div className="selector-info">
                     <span className="selector-label">Your campus</span>
@@ -332,7 +354,11 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                             <span className="selector-value">
                               {selectedCampus?.campus_name || "Select Campus"}
                             </span>
-                            <AssetIcon name="arrow-down" color="#1d1b20" />
+                            <AssetIcon
+                              name="arrow-down"
+                              size={20}
+                              color={theme.colors.bodyColor}
+                            />
                           </>
                         )}
                       </CDropdownToggle>
@@ -381,7 +407,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             <CDropdown className="user-dropdown">
               <CDropdownToggle color="link" className="user-toggle">
                 <span className="user-name">{userName}</span>
-                <AssetIcon name="arrow-down" color="#1d1b20" />
+                <AssetIcon name="arrow-down" color={theme.colors.bodyColor} />
                 <div className="user-avatar-wrapper">
                   <img
                     src={userAvatar}

@@ -1,5 +1,9 @@
 .community-page {
-  padding: 32px;
+  padding: 0 32px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: var(--v2-bg-page);
   min-height: 100vh;
 }
 
@@ -36,69 +40,19 @@
   margin-bottom: 24px;
 }
 
-.footer-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 24px;
-}
-
-.suggest-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 20px 32px;
-  border-radius: 12px;
-}
-
-.suggest-text {
-  font-family: "Lato", sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  margin: 0;
-}
-
-.suggest-link {
-  font-family: "Lato", sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: #526ac9;
-  text-decoration: underline;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.suggest-link:hover {
-  opacity: 0.8;
-}
-
-.last-updated-container {
-  padding: 20px 0;
-}
-
-.last-updated-text {
-  font-family: "Lato", sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  margin: 0;
-}
-
 /* Responsive breakpoints */
 @media (max-width: 992px) {
   .community-page {
-    padding: 24px 20px;
-  }
-
-  .footer-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    gap: 20px;
   }
 }
 
 @media (max-width: 768px) {
+  .community-page {
+    gap: 20px;
+    padding: 0 8px 0 0;
+  }
+
   .page-header {
     gap: 16px;
   }

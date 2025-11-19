@@ -46,7 +46,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
             style={{
               backgroundColor: isSelected
                 ? theme.colors.primary
-                : theme.colors.cardBg,
+                : "transparent",
               color: isSelected ? theme.colors.white : theme.colors.textMuted,
               borderColor: theme.colors.borderColor,
             }}

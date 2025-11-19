@@ -6,6 +6,7 @@ const AssetIcon: React.FC<AssetIconProps> = ({
   name,
   size,
   color,
+  fill,
   strokeColor,
   className = "",
   onClick,
@@ -24,7 +25,7 @@ const AssetIcon: React.FC<AssetIconProps> = ({
       onClick={onClick}
       style={{
         color: color || "currentColor",
-        fill: color || "currentColor",
+        ...(fill ? { fill: fill } : {}),
         ...(strokeColor ? { stroke: strokeColor } : {}),
         ...style,
       }}

@@ -1,0 +1,255 @@
+.report-details-modal {
+  z-index: 9999 !important;
+}
+
+.report-details-modal .modal-backdrop {
+  z-index: 9998 !important;
+}
+
+.report-details-modal .modal-dialog {
+  max-width: 812px;
+}
+
+.report-details-modal .modal-content {
+  border-radius: 14px;
+  border: 1px solid #cac4d0;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+  overflow: visible;
+}
+
+.report-details-modal .modal-header {
+  border-bottom: none;
+  padding: 32px 32px 20px 32px;
+  position: relative;
+}
+
+.report-details-modal .btn-close {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 16px;
+  height: 16px;
+  opacity: 1;
+  filter: none;
+}
+
+.report-details-modal .modal-title {
+  width: 100%;
+}
+
+.modal-header-content {
+  width: 100%;
+}
+
+.modal-header-content h3 {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 8px 0;
+}
+
+.modal-header-content p {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.modal-header-content p strong {
+  font-weight: 600;
+}
+
+.report-details-modal .modal-body {
+  padding: 0 32px 32px 32px;
+}
+
+/* Reports List Container */
+.reports-list-container {
+  margin-bottom: 24px;
+}
+
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+/* Custom Scrollbar */
+.reports-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.reports-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reports-list::-webkit-scrollbar-thumb {
+  background: #acb6ba;
+  border-radius: 2px;
+}
+
+/* Report Item */
+.report-item {
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  background-color: #f9f9f9;
+}
+
+/* Status Badge */
+.report-status-badge {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Report Fields */
+.report-field {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.report-field-label {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.report-field-link {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #526ac9;
+  text-decoration: none;
+}
+
+.report-field-link:hover {
+  text-decoration: underline;
+}
+
+.report-id-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-id-text {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.copy-button:hover {
+  opacity: 1;
+}
+
+.reason-tag {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.report-description {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.report-footer {
+  padding-top: 8px;
+  border-top: 1px solid #eef0f1;
+}
+
+.report-footer-text {
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  margin-top: 0;
+}
+
+.close-button {
+  padding: 10px 32px;
+  border-radius: 12px;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  height: 40px;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .report-details-modal .modal-dialog {
+    max-width: 95%;
+    margin: 1rem;
+  }
+
+  .report-details-modal .modal-header,
+  .report-details-modal .modal-body {
+    padding: 20px;
+  }
+
+  .report-item {
+    padding: 16px;
+  }
+
+  .report-status-badge {
+    position: static;
+    align-self: flex-start;
+    margin-bottom: 8px;
+  }
+}

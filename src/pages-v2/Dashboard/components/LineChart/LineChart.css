@@ -1,13 +1,14 @@
 .line-chart-container {
-  border: 1px solid;
+  border: 1px solid var(--v2-border-light);
   border-radius: 14px;
   padding: 24px;
-  background-color: white;
+  background-color: var(--v2-bg-card);
   height: 365px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
 }
 
 .line-chart-title {
@@ -16,6 +17,7 @@
   font-size: 24px;
   line-height: 1;
   margin: 0;
+  color: var(--v2-text-primary);
 }
 
 .line-chart-wrapper {
@@ -23,4 +25,33 @@
   position: relative;
   min-height: 0;
   width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .line-chart-container {
+    height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .line-chart-container {
+    padding: 16px;
+    height: 280px;
+  }
+
+  .line-chart-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .line-chart-container {
+    padding: 12px;
+    height: 240px;
+  }
+
+  .line-chart-title {
+    font-size: 16px;
+  }
 }

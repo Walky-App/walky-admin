@@ -13,6 +13,7 @@ export interface ThemeColors {
   warning: string;
   danger: string;
   textMuted: string;
+  textSecondary: string;
   chartLine: string;
   chartPoint: string;
   chartLineBackground: string;
@@ -57,6 +58,7 @@ const lightColors: ThemeColors = {
   warning: "#FF9500",
   danger: "#FF3B30",
   textMuted: "#9CA3AF",
+  textSecondary: "#5B6168",
   chartLine: "rgb(255, 255, 255)",
   graphLine: "#5E5CE6",
   chartPoint: "#7C7CFF",
@@ -95,6 +97,7 @@ const darkColors: ThemeColors = {
   warning: "#FB923C",
   danger: "#F87171",
   textMuted: "#52525B",
+  textSecondary: "#A1A1AA",
   chartLine: "rgb(255, 255, 255)",
   graphLine: "#7C7CFF",
   chartPoint: "#5E5CE6",

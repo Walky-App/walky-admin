@@ -31,8 +31,8 @@
   /* ========================================
      V2 COLORS - BACKGROUNDS
      ======================================== */
-  --v2-bg-page: #f4f5f7;
-  --v2-bg-app: #f4f5f7;
+  --v2-bg-page: #ffffff;
+  --v2-bg-app: #ffffff;
   --v2-bg-container: #f7f8fa;
   --v2-bg-card: #ffffff;
   --v2-bg-select: #edf2ff;
@@ -40,8 +40,8 @@
   --v2-bg-title: #ebf0fa;
   --v2-bg-dropdown: #fcfdfd;
   --v2-bg-table: #f1f4f9;
-  --v2-bg-sidebar: #ffffff;
-  --v2-bg-topbar: #ffffff;
+  --v2-bg-sidebar: #f6f9ff;
+  --v2-bg-topbar: #f6f9ff;
   --v2-tooltip-bg: #4d4d4d;
   --v2-overlay-bg: rgba(0, 0, 0, 0.5);
 
@@ -192,12 +192,16 @@
 [data-theme="dark"] {
   /* V2 Backgrounds - Dark Mode */
   --v2-bg-page: #0a0a0b;
+  --v2-bg-app: #0a0a0b;
   --v2-bg-container: #111113;
   --v2-bg-card: #141416;
   --v2-bg-sidebar: #0f0f11;
   --v2-bg-topbar: #141416;
   --v2-bg-select: #1a1a1d;
   --v2-bg-title: #1f1f23;
+  --v2-bg-dropdown: #1a1a1d;
+  --v2-bg-hover: #1f1f23;
+  --v2-bg-table: #1a1a1d;
 
   /* V2 Text - Dark Mode */
   --v2-text-primary: #fafafa;

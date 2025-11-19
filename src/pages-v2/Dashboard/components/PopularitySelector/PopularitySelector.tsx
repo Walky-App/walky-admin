@@ -23,7 +23,7 @@ const PopularitySelector: React.FC<PopularitySelectorProps> = ({
         role="radio"
         aria-checked={selected === "least"}
         className={`popularity-option ${
-          selected === "least" ? "" : "selected"
+          selected === "least" ? "selected" : ""
         }`}
         onClick={() => onChange("least")}
       >
