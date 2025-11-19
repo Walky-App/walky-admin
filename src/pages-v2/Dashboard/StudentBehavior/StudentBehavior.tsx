@@ -14,6 +14,8 @@ interface MetricCard {
   value: string;
   unit: string;
   change: string;
+  changeDirection: "up" | "down";
+  changePercentage: string;
   hasTooltip?: boolean;
   tooltipText?: string;
 }
@@ -40,14 +42,18 @@ const StudentBehavior: React.FC = () => {
       title: "Average peers per student",
       value: "4.2",
       unit: "Peers",
-      change: "8.5% Up from last month",
+      change: "Up from last month",
+      changeDirection: "up",
+      changePercentage: "8.5%",
       hasTooltip: false,
     },
     {
       title: "Average time to first interaction",
       value: "1.2",
       unit: "Days",
-      change: "8.5% Up from last month",
+      change: "Down from last month",
+      changeDirection: "down",
+      changePercentage: "3.2%",
       hasTooltip: true,
       tooltipText: "Average time from registration to first interaction.",
     },
@@ -55,7 +61,9 @@ const StudentBehavior: React.FC = () => {
       title: "Students who met in person",
       value: "20",
       unit: "%",
-      change: "8.5% Up from last month",
+      change: "Up from last month",
+      changeDirection: "up",
+      changePercentage: "5.1%",
       hasTooltip: true,
       tooltipText:
         "Percentage of students with at least one accepted and completed invitation",
@@ -64,7 +72,9 @@ const StudentBehavior: React.FC = () => {
       title: "Students who joined a Space",
       value: "20",
       unit: "%",
-      change: "8.5% Up from last month",
+      change: "Up from last month",
+      changeDirection: "up",
+      changePercentage: "12.3%",
       hasTooltip: true,
       tooltipText: "Percentage of students who joined at least one space.",
     },
@@ -170,11 +180,27 @@ const StudentBehavior: React.FC = () => {
                 </span>
               </div>
               <div className="metric-card-change">
-                <AssetIcon name="arrow-up" color="#18682c" size={16} />
+                <AssetIcon
+                  name={
+                    card.changeDirection === "up"
+                      ? "trend-up-icon"
+                      : "trend-down-icon"
+                  }
+                  color={card.changeDirection === "up" ? "#18682c" : "#ba0000"}
+                  size={16}
+                />
                 <p className="metric-card-change-text">
-                  <span className="change-percentage">8.5%</span>{" "}
+                  <span
+                    className="change-percentage"
+                    style={{
+                      color:
+                        card.changeDirection === "up" ? "#18682c" : "#ba0000",
+                    }}
+                  >
+                    {card.changePercentage}
+                  </span>{" "}
                   <span style={{ color: theme.colors.bodyColor }}>
-                    Up from last month
+                    {card.change}
                   </span>
                 </p>
               </div>
@@ -232,7 +258,7 @@ const StudentBehavior: React.FC = () => {
               <CCol
                 key={index}
                 xs={12}
-                lg={4}
+                md={3}
                 className={`completion-metric-col ${
                   index === 4 ? "single-metric" : ""
                 }`}
