@@ -38,6 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--v2-icon-bg-green);
 }
 
 .page-title {
@@ -45,6 +46,7 @@
   font-weight: 700;
   font-size: 32px;
   margin: 0;
+  color: var(--v2-body-color);
 }
 
 .feature-cards-row {

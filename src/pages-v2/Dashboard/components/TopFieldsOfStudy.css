@@ -1,10 +1,11 @@
 .top-fields-container {
-  border: 1px solid #eef0f1;
+  background-color: var(--v2-card-bg);
+  border: 1px solid var(--v2-border-light);
   border-radius: 14px;
   padding: 24px;
   height: auto;
   min-height: 270px;
-  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--v2-shadow-card);
 }
 
 .top-fields-header {
@@ -27,6 +28,7 @@
   font-weight: 600;
   font-size: 16px;
   margin: 0;
+  color: var(--v2-text-muted);
 }
 
 .top-fields-content {
@@ -36,6 +38,7 @@
 }
 
 .top-fields-table-header {
+  background-color: var(--v2-dropdown-bg);
   display: grid;
   grid-template-columns: 236px 116px 1fr;
   align-items: center;
@@ -54,6 +57,7 @@
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 14px;
+  color: var(--v2-body-color);
 }
 
 .tooltip-button {
@@ -73,10 +77,16 @@
   opacity: 0.8;
 }
 
+.tooltip-button:focus {
+  outline: 2px solid var(--v2-focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Tooltip customization */
 .tooltip {
-  --bs-tooltip-bg: #1d1b20;
-  --bs-tooltip-color: #ffffff;
+  --bs-tooltip-bg: var(--v2-tooltip-bg);
+  --bs-tooltip-color: var(--v2-tooltip-text);
 }
 
 .tooltip-button .tooltip,
@@ -86,32 +96,32 @@
   font-weight: 400;
   font-size: 14px;
   text-align: center;
-  background-color: #1d1b20 !important;
-  color: #ffffff !important;
+  background-color: var(--v2-tooltip-bg) !important;
+  color: var(--v2-tooltip-text) !important;
   border-radius: 4px;
   padding: 8px 12px;
 }
 
-/* Tooltip arrow - usando variáveis CSS do Bootstrap */
+/* Tooltip arrow */
 .tooltip .tooltip-arrow::before,
 .bs-tooltip-top .tooltip-arrow::before,
 .bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before {
-  border-top-color: #1d1b20 !important;
+  border-top-color: var(--v2-tooltip-bg) !important;
 }
 
 .bs-tooltip-bottom .tooltip-arrow::before,
 .bs-tooltip-auto[data-popper-placement^="bottom"] .tooltip-arrow::before {
-  border-bottom-color: #1d1b20 !important;
+  border-bottom-color: var(--v2-tooltip-bg) !important;
 }
 
 .bs-tooltip-start .tooltip-arrow::before,
 .bs-tooltip-auto[data-popper-placement^="left"] .tooltip-arrow::before {
-  border-left-color: #1d1b20 !important;
+  border-left-color: var(--v2-tooltip-bg) !important;
 }
 
 .bs-tooltip-end .tooltip-arrow::before,
 .bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before {
-  border-right-color: #1d1b20 !important;
+  border-right-color: var(--v2-tooltip-bg) !important;
 }
 
 .top-fields-list {
@@ -150,6 +160,7 @@
   font-size: 14px;
   margin: 0;
   opacity: 0.8;
+  color: var(--v2-body-color);
 }
 
 .field-students,
@@ -159,6 +170,7 @@
   font-size: 14px;
   margin: 0;
   opacity: 0.8;
+  color: var(--v2-body-color);
 }
 
 /* Responsive */
@@ -195,7 +207,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 20px 24px;
-    border: 1px solid #eef0f1;
+    border: 1px solid var(--v2-border-light);
     border-radius: 12px;
     min-height: auto;
   }

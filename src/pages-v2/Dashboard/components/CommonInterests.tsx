@@ -30,10 +30,7 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({ interests }) => {
   console.log("CommonInterests modalVisible:", false);
 
   return (
-    <div
-      className="common-interests-container"
-      style={{ backgroundColor: theme.colors.cardBg }}
-    >
+    <div className="common-interests-container">
       <div className="common-interests-header">
         <div className="common-interests-title-group">
           <div className="common-interests-icon">
@@ -42,31 +39,10 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({ interests }) => {
               color={theme.colors.iconPurple}
             />
           </div>
-          <h3
-            className="common-interests-title"
-            style={{ color: theme.colors.textMuted }}
-          >
-            Common Interests
-          </h3>
+          <h3 className="common-interests-title">Common Interests</h3>
         </div>
         <CDropdown className="common-interests-dropdown">
-          <CDropdownToggle
-            color="light"
-            className="dropdown-toggle-custom"
-            style={{
-              backgroundColor: theme.colors.dropdownBg,
-              border: `0.6px solid ${theme.colors.dropdownBorder}`,
-              borderRadius: "4px",
-              fontSize: "12px",
-              fontFamily: '"Lato", sans-serif',
-              fontWeight: 600,
-              color: theme.colors.dropdownText,
-              padding: "8px 12px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
+          <CDropdownToggle color="light" className="dropdown-toggle-custom">
             {selectedFilter}
             <AssetIcon
               name="arrow-down"
@@ -139,30 +115,16 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({ interests }) => {
             </div>
             <div className="interest-info">
               <div className="interest-details">
-                <p
-                  className="interest-name"
-                  style={{ color: theme.colors.bodyColor }}
-                >
-                  {interest.name}
-                </p>
-                <p
-                  className="interest-stats"
-                  style={{ color: theme.colors.textMuted }}
-                >
+                <p className="interest-name">{interest.name}</p>
+                <p className="interest-stats">
                   {interest.students} students ({interest.percentage}%)
                 </p>
               </div>
               <div className="interest-progress-container">
-                <div
-                  className="interest-progress-bg"
-                  style={{ backgroundColor: "#eef0f1" }}
-                />
+                <div className="interest-progress-bg" />
                 <div
                   className="interest-progress-bar"
-                  style={{
-                    backgroundColor: theme.colors.iconPurple,
-                    width: `${interest.barWidth}px`,
-                  }}
+                  style={{ width: `${interest.barWidth}px` }}
                 />
               </div>
             </div>
