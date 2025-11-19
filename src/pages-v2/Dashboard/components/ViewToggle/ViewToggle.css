@@ -2,7 +2,7 @@
   display: flex;
   border-radius: 8px;
   overflow: hidden;
-  gap: 2px;
+  border: 1px solid #ebf1ff;
 }
 
 .view-option {
@@ -19,6 +19,7 @@
 
 .view-option.selected {
   background-color: #546fd9;
+  border-left: 1px solid #ebf1ff;
 }
 
 .view-option.selected svg,

@@ -327,8 +327,8 @@ const PopularFeatures: React.FC = () => {
                 title="Top invitation categories"
                 icon={
                   <AssetIcon
-                    name="tooltip-icon"
-                    color={theme.colors.iconOrange}
+                    name="map-icon"
+                    color={theme.colors.iconPurple}
                     size={30}
                   />
                 }

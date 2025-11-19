@@ -11,7 +11,7 @@ export { FilterBar } from "./FilterBar";
 export type { TimePeriod } from "./FilterBar";
 export { LastUpdated } from "./LastUpdated";
 export { ReportDetailsModal } from "./ReportDetailsModal";
-export { SeeAllInterestsModal } from "./SeeAllInterestsModal";
+export { default as SeeAllInterestsModal } from "./SeeAllInterestsModal/SeeAllInterestsModal";
 export { StackedBarChart } from "./StackedBarChart";
 export type {
   StackedBarChartProps,

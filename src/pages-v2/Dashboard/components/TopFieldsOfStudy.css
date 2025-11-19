@@ -38,7 +38,7 @@
 }
 
 .top-fields-table-header {
-  background-color: var(--v2-dropdown-bg);
+  background-color: #f1f4f9;
   display: grid;
   grid-template-columns: 236px 116px 1fr;
   align-items: center;

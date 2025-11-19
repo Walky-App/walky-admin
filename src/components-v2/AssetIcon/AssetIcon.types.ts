@@ -15,6 +15,7 @@ export type IconName =
   | "menu-logo-walky"
   | "popular-emoji-icon"
   | "school-icon"
+  | "search-icon"
   | "space-icon"
   | "student-behavior-icon"
   | "swap-arrows-icon"
@@ -30,8 +31,8 @@ export type IconName =
 
 export interface AssetIconProps {
   name: IconName;
-  size?: number | string;
   fill?: string;
+  size?: number | string;
   color?: string;
   strokeColor?: string;
   className?: string;
