@@ -1,0 +1,242 @@
+.popular-features-page {
+  padding: 0 32px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: var(--v2-bg-page);
+  min-height: 100vh;
+}
+
+.popular-features-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--v2-icon-bg-green);
+}
+
+.page-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  margin: 0;
+  color: var(--v2-body-color);
+}
+
+.feature-cards-row {
+  margin-bottom: 24px;
+  gap: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.feature-cards-row > [class*="col-"] {
+  padding: 0;
+  flex: 0 0 calc(33.333% - 20px);
+  max-width: calc(33.333% - 20px);
+}
+
+.bottom-cards-row > [class*="col-"] {
+  flex: 0 0 calc(50% - 15px);
+  max-width: calc(50% - 15px);
+  padding: 0;
+}
+
+.list-view-section {
+  margin-bottom: 30px;
+}
+
+.list-view-row {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.list-view-row > [class*="col-"] {
+  padding: 0;
+}
+
+.list-view-row > .col-lg-6 {
+  flex: 0 0 calc(50% - 15px);
+  max-width: calc(50% - 15px);
+}
+
+.last-updated-container {
+  padding: 20px 37px;
+  border-radius: 12px;
+}
+
+.last-updated-text {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Acessibilidade: Estilos de foco para todos os elementos interativos */
+button:focus-visible,
+[role="radio"]:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+button:focus:not(:focus-visible),
+[role="radio"]:focus:not(:focus-visible),
+[role="tab"]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .popular-features-page {
+    padding: 0 16px 0 0;
+  }
+
+  .feature-cards-row .col-xs-12,
+  .feature-cards-row .col-md-6,
+  .feature-cards-row .col-lg-4 {
+    flex: 0 0 calc(50% - 12px);
+    max-width: calc(50% - 12px);
+  }
+}
+
+@media (max-width: 992px) {
+  .popular-features-page {
+    gap: 20px;
+  }
+
+  .popular-features-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .list-view-row .col-lg-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .feature-cards-row {
+    gap: 20px;
+  }
+
+  .feature-cards-row .col-xs-12,
+  .feature-cards-row .col-md-6,
+  .feature-cards-row .col-lg-4 {
+    flex: 0 0 calc(50% - 10px);
+    max-width: calc(50% - 10px);
+  }
+
+  .header-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .popular-features-page {
+    gap: 20px;
+    padding: 0 8px 0 0;
+  }
+
+  .popular-features-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .title-container {
+    gap: 16px;
+  }
+
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .header-controls {
+    width: 100%;
+  }
+
+  .feature-cards-row {
+    gap: 16px;
+  }
+
+  .feature-cards-row .col-xs-12,
+  .feature-cards-row .col-md-6,
+  .feature-cards-row .col-lg-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .bottom-cards-row .col-xs-12,
+  .bottom-cards-row .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 20px;
+  }
+
+  .icon-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .filter-label {
+    font-size: 14px;
+  }
+
+  .last-updated-container {
+    padding: 16px 20px;
+  }
+
+  .last-updated-text {
+    font-size: 14px;
+  }
+}

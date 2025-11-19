@@ -1,0 +1,90 @@
+.student-safety-page {
+  padding: 0 32px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: var(--v2-bg-page);
+  min-height: 100vh;
+}
+
+/* Page Header Styles */
+.student-safety-page .page-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 24px;
+}
+
+.student-safety-page .icon-container {
+  display: inline-grid;
+  grid-template-columns: max-content;
+  grid-template-rows: max-content;
+  justify-items: start;
+  line-height: 0;
+}
+
+.student-safety-page .icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--v2-icon-bg-red);
+}
+
+.student-safety-page .page-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  margin: 0;
+  color: var(--v2-body-color);
+}
+
+/* Reports Section */
+.student-safety-page .reports-section {
+  margin-bottom: 24px;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .student-safety-page {
+    gap: 20px;
+  }
+
+  .student-safety-page .page-header {
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .student-safety-page .icon-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .student-safety-page .page-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .student-safety-page {
+    gap: 20px;
+    padding: 0 8px 0 0;
+  }
+
+  .student-safety-page .page-header {
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .student-safety-page .icon-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .student-safety-page .page-title {
+    font-size: 24px;
+  }
+}

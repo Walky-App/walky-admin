@@ -1,0 +1,133 @@
+.user-interactions-page {
+  padding: 0 32px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: var(--v2-bg-page);
+  min-height: 100vh;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.filter-options {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.filter-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.date-range {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--v2-icon-bg-green);
+}
+
+.page-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  margin: 0;
+  color: var(--v2-body-color);
+}
+
+.invitations-section {
+  margin-bottom: 24px;
+}
+
+.charts-row {
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.charts-row .col-xs-12,
+.charts-row .col-lg-6 {
+  padding: 0;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 992px) {
+  .user-interactions-page {
+    gap: 20px;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .charts-row {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-interactions-page {
+    gap: 20px;
+    padding: 0 8px 0 0;
+  }
+
+  .page-header {
+    gap: 16px;
+  }
+
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

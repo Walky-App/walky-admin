@@ -1,0 +1,120 @@
+/* Dashboard Theme CSS Variables */
+/* These are automatically synced with the TypeScript theme */
+
+:root {
+  /* Border colors */
+  --v2-border-light: #eef0f1;
+  --v2-border-medium: #a9abac;
+
+  /* Shadows */
+  --v2-shadow-card: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+
+  /* Focus and interactions */
+  --v2-focus-ring: #546fd9;
+  --v2-bg-hover: #f5f5f5;
+
+  /* Chart/Data visualization colors */
+  --v2-chart-orange: #ff9871;
+  --v2-chart-yellow: #ebb129;
+  --v2-chart-blue: #4a4cd9;
+  --v2-chart-light-green: #98f4a0;
+  --v2-chart-dark-green: #389001;
+  --v2-chart-gray: #a0a0a0;
+
+  /* Status/Trend colors */
+  --v2-trend-up-green: #18682c;
+  --v2-trend-down-red: #d53425;
+
+  /* Icon backgrounds (semantic colors) */
+  --v2-icon-bg-green: #e9fcf4;
+  --v2-icon-bg-orange: #fcf3e9;
+  --v2-icon-bg-red: #fce9e9;
+  --v2-icon-bg-blue: #ebf1ff;
+
+  /* Tooltip icon color */
+  --v2-icon-tooltip: #acb6ba;
+
+  /* Typography */
+  --v2-font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+  --v2-font-family-heading: "Lato", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --v2-font-size-xs: 0.75rem; /* 12px */
+  --v2-font-size-sm: 0.875rem; /* 14px */
+  --v2-font-size-md: 1rem; /* 16px */
+  --v2-font-size-lg: 1.125rem; /* 18px */
+  --v2-font-size-xl: 1.25rem; /* 20px */
+  --v2-font-size-2xl: 1.5rem; /* 24px */
+  --v2-font-size-3xl: 1.875rem; /* 30px */
+  --v2-font-weight-normal: 400;
+  --v2-font-weight-medium: 500;
+  --v2-font-weight-semibold: 600;
+  --v2-font-weight-bold: 700;
+  --v2-line-height-tight: 1.25;
+  --v2-line-height-normal: 1.5;
+  --v2-line-height-relaxed: 1.75;
+
+  /* Spacing */
+  --v2-spacing-0: 0;
+  --v2-spacing-1: 0.25rem; /* 4px */
+  --v2-spacing-2: 0.5rem; /* 8px */
+  --v2-spacing-3: 0.75rem; /* 12px */
+  --v2-spacing-4: 1rem; /* 16px */
+  --v2-spacing-5: 1.25rem; /* 20px */
+  --v2-spacing-6: 1.5rem; /* 24px */
+  --v2-spacing-8: 2rem; /* 32px */
+  --v2-spacing-10: 2.5rem; /* 40px */
+  --v2-spacing-12: 3rem; /* 48px */
+  --v2-spacing-16: 4rem; /* 64px */
+  --v2-spacing-20: 5rem; /* 80px */
+  --v2-spacing-24: 6rem; /* 96px */
+  --v2-spacing-32: 8rem; /* 128px */
+  --v2-spacing-40: 10rem; /* 160px */
+  --v2-spacing-48: 12rem; /* 192px */
+  --v2-spacing-64: 16rem; /* 256px */
+
+  /* Border Radius */
+  --v2-radius-none: 0;
+  --v2-radius-sm: 0.25rem; /* 4px */
+  --v2-radius-md: 0.5rem; /* 8px */
+  --v2-radius-lg: 0.75rem; /* 12px */
+  --v2-radius-xl: 1rem; /* 16px */
+  --v2-radius-full: 9999px;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+  /* Border colors */
+  --v2-border-light: #27272a;
+  --v2-border-medium: #3f3f46;
+
+  /* Shadows */
+  --v2-shadow-card: 0px 6px 54px 0px rgba(0, 0, 0, 0.3);
+
+  /* Focus ring */
+  --v2-focus-ring: #7c7cff;
+
+  /* Hover states */
+  --v2-bg-hover: #1e1e22;
+
+  /* Chart/Data visualization colors */
+  --v2-chart-orange: #ffb84d;
+  --v2-chart-yellow: #fde047;
+  --v2-chart-blue: #7c7cff;
+  --v2-chart-light-green: #86efac;
+  --v2-chart-dark-green: #4ade80;
+  --v2-chart-gray: #71717a;
+
+  /* Status/Trend colors */
+  --v2-trend-up-green: #4ade80;
+  --v2-trend-down-red: #f87171;
+
+  /* Icon backgrounds (semantic colors) */
+  --v2-icon-bg-green: #1e3a2d;
+  --v2-icon-bg-orange: #3a2e1e;
+  --v2-icon-bg-red: #3a1e1e;
+  --v2-icon-bg-blue: #1e2a3a;
+
+  /* Tooltip icon color */
+  --v2-icon-tooltip: #71717a;
+}

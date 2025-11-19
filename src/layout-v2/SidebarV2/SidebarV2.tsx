@@ -126,12 +126,21 @@ const SidebarV2: React.FC = () => {
         {
           label: "Campus Analytics",
           submenu: [
-            { label: "Engagement", path: "/v2/engagement" },
-            { label: "Popular Features", path: "/v2/popular-features" },
-            { label: "User Interactions", path: "/v2/user-interactions" },
-            { label: "Community", path: "/v2/community" },
-            { label: "Student safety", path: "/v2/student-safety" },
-            { label: "Student Behavior", path: "/v2/student-behavior" },
+            { label: "Engagement", path: "/v2/dashboard/engagement" },
+            {
+              label: "Popular Features",
+              path: "/v2/dashboard/popular-features",
+            },
+            {
+              label: "User Interactions",
+              path: "/v2/dashboard/user-interactions",
+            },
+            { label: "Community", path: "/v2/dashboard/community" },
+            { label: "Student safety", path: "/v2/dashboard/student-safety" },
+            {
+              label: "Student Behavior",
+              path: "/v2/dashboard/student-behavior",
+            },
           ],
         },
       ],

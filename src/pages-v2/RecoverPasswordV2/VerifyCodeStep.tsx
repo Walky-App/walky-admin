@@ -34,7 +34,11 @@ const VerifyCodeStep: React.FC<VerifyCodeStepProps> = ({
   };
 
   return (
-    <div className="recover-container">
+    <div
+      className="verify-code-step"
+      role="region"
+      aria-label="Verification code form"
+    >
       <div className="recover-content">
         <div className="recover-logo" role="img" aria-label="Walky Logo">
           <AssetIcon

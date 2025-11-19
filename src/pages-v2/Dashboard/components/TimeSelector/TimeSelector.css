@@ -1,0 +1,44 @@
+.time-selector {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.time-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  min-width: 80px;
+  border: 1px solid;
+  border-right: 0;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: none;
+  border-radius: 0;
+}
+
+.time-option.last {
+  border-right: 1px solid;
+}
+
+.time-option:hover {
+  opacity: 0.9;
+}
+
+/* Acessibilidade: foco visível para navegação por teclado */
+.time-option:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.time-option:focus:not(:focus-visible) {
+  outline: none;
+}

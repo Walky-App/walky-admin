@@ -50,33 +50,36 @@ const RecoverPasswordV2: React.FC = () => {
 
   if (currentStep === "verify") {
     return (
-      <div
+      <main
         className="recover-password-v2"
         data-testid="recover-password-verify-step"
+        aria-label="Verify code page"
       >
         <VerifyCodeStep
           email={email}
           onVerify={handleVerify}
           onResendCode={handleResendCode}
         />
-      </div>
+      </main>
     );
   }
 
   if (currentStep === "reset") {
     return (
-      <div
+      <main
         className="recover-password-v2"
         data-testid="recover-password-reset-step"
+        aria-label="Reset password page"
       >
         <ResetPasswordStep onReset={handleReset} />
-      </div>
+      </main>
     );
   }
   return (
-    <div
+    <main
       className="recover-password-v2"
       data-testid="recover-password-email-step"
+      aria-label="Password recovery page"
     >
       <div className="recover-container">
         <div className="recover-content">
@@ -134,7 +137,7 @@ const RecoverPasswordV2: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

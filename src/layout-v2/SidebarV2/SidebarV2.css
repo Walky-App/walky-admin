@@ -218,3 +218,17 @@
     max-width: 320px;
   }
 }
+
+/* Acessibilidade: Estilos de foco para navegação */
+.sidebar-v2 a:focus-visible,
+.sidebar-v2 button:focus-visible,
+.sidebar-v2 [role="button"]:focus-visible {
+  outline: 2px solid #8280ff;
+  outline-offset: 2px;
+}
+
+.sidebar-v2 a:focus:not(:focus-visible),
+.sidebar-v2 button:focus:not(:focus-visible),
+.sidebar-v2 [role="button"]:focus:not(:focus-visible) {
+  outline: none;
+}

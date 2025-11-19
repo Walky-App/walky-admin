@@ -1,7 +1,12 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LayoutV2 } from "../layout-v2";
-import EngagementAnalytics from "../pages-v2/EngagementAnalytics/EngagementAnalytics";
+import DashboardEngagement from "../pages-v2/Dashboard/Engagement/Engagement";
+import DashboardPopularFeatures from "../pages-v2/Dashboard/PopularFeatures/PopularFeatures";
+import DashboardUserInteractions from "../pages-v2/Dashboard/UserInteractions";
+import DashboardCommunity from "../pages-v2/Dashboard/Community";
+import DashboardStudentSafety from "../pages-v2/Dashboard/StudentSafety";
+import DashboardStudentBehavior from "../pages-v2/Dashboard/StudentBehavior";
 import { CampusProvider } from "../contexts/CampusContext";
 
 /**
@@ -25,29 +30,32 @@ const V2Routes: React.FC = () => {
       <Routes>
         <Route path="/" element={<LayoutV2 />}>
           {/* Dashboard Routes */}
-          <Route index element={<Navigate to="engagement" replace />} />
-          <Route path="engagement" element={<EngagementAnalytics />} />
+          <Route
+            index
+            element={<Navigate to="dashboard/engagement" replace />}
+          />
 
-          {/* Placeholder routes for other pages */}
+          {/* New Dashboard Screens (Figma Design) */}
           <Route
-            path="popular-features"
-            element={<div>Popular Features - Coming Soon</div>}
+            path="dashboard/engagement"
+            element={<DashboardEngagement />}
           />
           <Route
-            path="user-interactions"
-            element={<div>User Interactions - Coming Soon</div>}
+            path="dashboard/popular-features"
+            element={<DashboardPopularFeatures />}
           />
           <Route
-            path="community"
-            element={<div>Community - Coming Soon</div>}
+            path="dashboard/user-interactions"
+            element={<DashboardUserInteractions />}
+          />
+          <Route path="dashboard/community" element={<DashboardCommunity />} />
+          <Route
+            path="dashboard/student-safety"
+            element={<DashboardStudentSafety />}
           />
           <Route
-            path="student-safety"
-            element={<div>Student Safety - Coming Soon</div>}
-          />
-          <Route
-            path="student-behavior"
-            element={<div>Student Behavior - Coming Soon</div>}
+            path="dashboard/student-behavior"
+            element={<DashboardStudentBehavior />}
           />
 
           {/* Campus Routes */}

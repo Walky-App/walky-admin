@@ -1,0 +1,296 @@
+.engagement-page {
+  padding: 0 32px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: var(--v2-bg-page);
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.filter-options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 653px;
+}
+
+.filter-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  margin: 0;
+}
+
+.filter-options {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.time-period-filter {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.filter-option-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  margin: 0;
+}
+
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  margin: 0;
+}
+
+.stats-container > div {
+  padding: 0;
+  flex: 1;
+  min-width: 250px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  overflow: visible;
+}
+
+.section-title-container {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.section-icon-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  margin: 0;
+}
+
+.section-dropdown {
+  position: relative;
+}
+
+.engagement-dropdown-toggle {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--v2-text-primary) !important;
+  text-decoration: none !important;
+  display: flex;
+  align-items: center;
+  box-shadow: none !important;
+  line-height: 1;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.engagement-metric-toggle {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  text-decoration: none !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.engagement-metric-toggle:hover,
+.engagement-metric-toggle:focus,
+.engagement-metric-toggle:active {
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+.engagement-metric-toggle::after {
+  display: none;
+}
+
+.engagement-dropdown-toggle:hover {
+  color: var(--v2-text-primary) !important;
+  text-decoration: none !important;
+  background-color: var(--v2-bg-dropdown) !important;
+  border-color: var(--v2-primary-purple-main);
+  box-shadow: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.engagement-dropdown-toggle:focus,
+.engagement-dropdown-toggle:active,
+.engagement-dropdown-toggle.show {
+  color: var(--v2-text-primary) !important;
+  text-decoration: none !important;
+  background-color: var(--v2-bg-dropdown) !important;
+  border-color: var(--v2-primary-purple-main);
+  box-shadow: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.engagement-dropdown-toggle::after {
+  display: none;
+}
+
+.selector-dropdown .dropdown-menu {
+  border: 1px solid var(--v2-border-dark);
+  border-radius: 8px;
+  box-shadow: var(--v2-shadow-lg);
+  margin-top: 8px;
+  background-color: var(--v2-bg-dropdown);
+}
+
+.selector-dropdown .dropdown-item {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  padding: 10px 16px;
+  color: var(--v2-text-primary);
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.selector-dropdown .dropdown-item:hover {
+  background-color: var(--v2-bg-select);
+  color: var(--v2-text-primary);
+}
+
+.selector-dropdown .dropdown-item.active,
+.selector-dropdown .dropdown-item:active {
+  background-color: var(--v2-bg-select);
+  color: var(--v2-primary-purple-main);
+}
+
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  width: 100%;
+  margin: 0;
+  flex-direction: row !important;
+}
+
+.charts-row > div {
+  padding: 0;
+  min-width: 0;
+  flex: 0 0 calc(50% - 15px);
+  max-width: calc(50% - 15px);
+}
+
+/* Last Updated styles moved to components-v2/LastUpdated/LastUpdated.css */
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .charts-row {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .engagement-page {
+    padding: 0 16px 0 0;
+  }
+
+  .charts-row {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .stats-container {
+    gap: 16px;
+  }
+
+  .charts-row {
+    gap: 16px;
+  }
+
+  /* Full width em tablet e mobile */
+  .charts-row > div {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .engagement-page {
+    gap: 20px;
+    padding: 0 8px 0 0;
+  }
+
+  .section-title-container {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .section-icon-container {
+    width: 48px;
+    height: 48px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .charts-row {
+    gap: 16px;
+  }
+}
+
+/* Acessibilidade: Estilos de foco para elementos interativos */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
