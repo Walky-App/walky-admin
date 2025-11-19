@@ -52,8 +52,8 @@
 }
 
 .student-behavior-page .metric-card {
-  background-color: var(--v2-card-bg);
-  border: 1px solid var(--v2-border-color);
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
   border-radius: var(--v2-radius-xl);
   padding: var(--v2-spacing-6);
   min-width: 200px;
@@ -62,6 +62,7 @@
   flex-direction: column;
   gap: var(--v2-spacing-5);
   position: relative;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
 }
 
 .student-behavior-page .metric-card-title {
