@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { AssetIcon } from "../../components-v2";
+import { AssetIcon, SearchInput } from "../../components-v2";
 import { SpaceTable, SpaceData } from "./components/SpaceTable";
 import "./SpacesManager.css";
 
@@ -103,17 +103,12 @@ export const SpacesManager: React.FC = () => {
           <h2 className="spaces-list-title">List of Spaces</h2>
 
           <div className="spaces-filters">
-            <div className="search-input-container">
-              <AssetIcon name="search-icon" size={24} color="#676D70" />
-              <input
-                data-testid="search-input"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search"
+              variant="secondary"
+            />
 
             <div className="category-filter-dropdown" ref={dropdownRef}>
               <button

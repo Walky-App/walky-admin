@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { StatusBadge } from "../../pages-v2/Campus/components/StatusBadge";
+import { CustomToast } from "../CustomToast/CustomToast";
+import { BanUserModal } from "../BanUserModal/BanUserModal";
+import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
 import "./StudentProfileModal.css";
 
 export interface StudentProfileData {
@@ -73,19 +76,60 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   onDeactivateUser,
 }) => {
   const [activeTab, setActiveTab] = useState<HistoryTab>("ban");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showBanModal, setShowBanModal] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
 
   if (!student) return null;
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(student.email);
+    setToastMessage("Email copied to clipboard");
+    setShowToast(true);
   };
 
   const handleCopyUserId = () => {
     navigator.clipboard.writeText(student.userId);
+    setToastMessage("User ID copied to clipboard");
+    setShowToast(true);
   };
 
   const handleCopyReportId = (reportId: string) => {
     navigator.clipboard.writeText(reportId);
+    setToastMessage("Report ID copied to clipboard");
+    setShowToast(true);
+  };
+
+  const handleBanClick = () => {
+    setShowBanModal(true);
+  };
+
+  const handleDeactivateClick = () => {
+    setShowDeactivateModal(true);
+  };
+
+  const handleConfirmBan = (reason: string, duration: string) => {
+    console.log(
+      "Banning user:",
+      student,
+      "Reason:",
+      reason,
+      "Duration:",
+      duration
+    );
+    setShowBanModal(false);
+    onBanUser?.(student);
+    // Optionally close the profile modal too
+    // onClose();
+  };
+
+  const handleConfirmDeactivate = () => {
+    console.log("Deactivating user:", student);
+    setShowDeactivateModal(false);
+    onDeactivateUser?.(student);
+    // Optionally close the profile modal too
+    // onClose();
   };
 
   const renderHistoryContent = () => {
@@ -94,7 +138,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         return (
           <div className="history-empty">
             <div className="history-empty-icon">
-              <AssetIcon name="check-icon" size={33} color="#00C617" />
+              <AssetIcon name="check-icon" size={33} color="#546FD9" />
             </div>
             <p className="history-empty-text">No ban history for this user</p>
           </div>
@@ -137,7 +181,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         return (
           <div className="history-empty">
             <div className="history-empty-icon">
-              <AssetIcon name="check-icon" size={33} color="#00C617" />
+              <AssetIcon name="check-icon" size={33} color="#546FD9" />
             </div>
             <p className="history-empty-text">
               No report history for this user
@@ -210,7 +254,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         return (
           <div className="history-empty">
             <div className="history-empty-icon">
-              <AssetIcon name="check-icon" size={33} color="#00C617" />
+              <AssetIcon name="check-icon" size={33} color="#546FD9" />
             </div>
             <p className="history-empty-text">No blocked by users</p>
           </div>
@@ -262,7 +306,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           onClick={onClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} color="#5B6168" />
+          <AssetIcon name="close-button" size={16} color="#5B6168" />
         </button>
 
         <div className="profile-container">
@@ -294,14 +338,6 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                   </button>
                 </div>
 
-                <button
-                  data-testid="profile-send-email-btn"
-                  className="profile-send-email-btn"
-                  onClick={handleCopyEmail}
-                >
-                  Send email
-                </button>
-
                 <div className="profile-userid-row">
                   <div className="profile-userid-badge">
                     <span className="profile-userid-text">
@@ -325,14 +361,14 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               <button
                 data-testid="profile-deactivate-btn"
                 className="profile-btn profile-btn-deactivate"
-                onClick={() => onDeactivateUser?.(student)}
+                onClick={handleDeactivateClick}
               >
                 Deactivate user
               </button>
               <button
                 data-testid="profile-ban-btn"
                 className="profile-btn profile-btn-ban"
-                onClick={() => onBanUser?.(student)}
+                onClick={handleBanClick}
               >
                 Ban user
               </button>
@@ -464,6 +500,27 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           </div>
         </div>
       </CModalBody>
+
+      {showToast && (
+        <CustomToast
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <BanUserModal
+        visible={showBanModal}
+        onClose={() => setShowBanModal(false)}
+        onConfirm={handleConfirmBan}
+        userName={student.name}
+      />
+
+      <DeactivateUserModal
+        visible={showDeactivateModal}
+        onClose={() => setShowDeactivateModal(false)}
+        onConfirm={handleConfirmDeactivate}
+        userName={student.name}
+      />
     </CModal>
   );
 };

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { AssetIcon } from "../../../components-v2";
+import { SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { Pagination } from "../components/Pagination";
-import { StudentTable, StudentData } from "../components/StudentTable";
+import { BannedStudentTable } from "../components/BannedStudentTable";
+import { StudentData } from "../components/StudentTable";
 import "./BannedStudents.css";
 
 export const BannedStudents: React.FC = () => {
@@ -197,18 +198,15 @@ export const BannedStudents: React.FC = () => {
     console.log("Student clicked:", student);
   };
 
-  const handleActionClick = (student: StudentData) => {
-    console.log("Action clicked for:", student);
-  };
-
   return (
     <div className="banned-students-page">
       <div className="banned-students-stats">
         <StatsCard
           title="Total banned students"
           value="42"
-          iconName="lock-icon"
-          iconBgColor="#FFEBEE"
+          iconName="double-users-icon"
+          iconBgColor="#E9FCF4"
+          iconColor="#00C617"
           trend={{
             value: "12%",
             isPositive: false,
@@ -220,6 +218,7 @@ export const BannedStudents: React.FC = () => {
           value="28"
           iconName="lock-icon"
           iconBgColor="#FFF3E0"
+          iconColor="#F69B39"
           tooltip="Students with permanent ban status"
           showTooltip={hoveredTooltip === "permanent-bans"}
           onTooltipHover={(show) =>
@@ -234,34 +233,28 @@ export const BannedStudents: React.FC = () => {
             <h1 className="banned-students-title">
               List of banned students in Walky
             </h1>
-            <div className="banned-students-search">
-              <AssetIcon name="search-icon" size={24} className="search-icon" />
-              <input
-                data-testid="search-input"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search"
+              variant="primary"
+            />
           </div>
           <ExportButton onClick={handleExport} />
         </div>
 
-        <StudentTable
+        <BannedStudentTable
           students={paginatedStudents}
           columns={[
             "userId",
             "name",
-            "email",
-            "bannedDate",
             "bannedBy",
-            "reason",
             "duration",
+            "status",
+            "bannedDate",
+            "reason",
           ]}
           onStudentClick={handleStudentClick}
-          onActionClick={handleActionClick}
         />
 
         <div className="banned-students-pagination">

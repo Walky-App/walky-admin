@@ -1,8 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import "./IdeasTable.css";
-import { AssetIcon, IdeaDetailsModal } from "../../../components-v2";
-import { DeleteModal } from "../../../components-v2/DeleteModal/DeleteModal";
-import { CustomToast } from "../../../components-v2/CustomToast/CustomToast";
+import {
+  AssetIcon,
+  IdeaDetailsModal,
+  DeleteModal,
+  CustomToast,
+  ActionDropdown,
+} from "../../../components-v2";
 
 export interface IdeaData {
   id: string;
@@ -34,33 +38,12 @@ type SortDirection = "asc" | "desc";
 export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const [sortField, setSortField] = useState<SortField>("creationDate");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ideaToDelete, setIdeaToDelete] = useState<IdeaData | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState<IdeaData | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpenDropdownId(null);
-      }
-    };
-
-    if (openDropdownId) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openDropdownId]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -111,20 +94,18 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     e.stopPropagation();
     setSelectedIdea(idea);
     setDetailsModalOpen(true);
-    setOpenDropdownId(null);
   };
 
   const handleFlagIdea = (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log("Flag idea", idea);
     // TODO: Implement flag idea functionality
-    setOpenDropdownId(null);
   };
 
-  const handleDeleteClick = (idea: IdeaData) => {
+  const handleDeleteClick = (idea: IdeaData, e: React.MouseEvent) => {
+    e.stopPropagation();
     setIdeaToDelete(idea);
     setDeleteModalOpen(true);
-    setOpenDropdownId(null);
   };
 
   const handleDeleteConfirm = (reason: string) => {
@@ -228,51 +209,30 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                 </div>
               </td>
               <td>
-                <div className="idea-dropdown-container" ref={dropdownRef}>
-                  <button
-                    data-testid="idea-dropdown-toggle-btn"
-                    className="idea-dropdown-toggle"
-                    onClick={() =>
-                      setOpenDropdownId(
-                        openDropdownId === idea.id ? null : idea.id
-                      )
-                    }
-                    aria-label="More options"
-                  >
-                    <AssetIcon
-                      name="vertical-3-dots-icon"
-                      size={24}
-                      color="#1D1B20"
-                    />
-                  </button>
-                  {openDropdownId === idea.id && (
-                    <div className="idea-dropdown-menu">
-                      <div
-                        className="idea-dropdown-item idea-dropdown-title"
-                        onClick={(e) => handleViewIdeaDetails(idea, e)}
-                      >
-                        Idea Details
-                      </div>
-                      <div
-                        className="idea-dropdown-item idea-dropdown-item-flag"
-                        onClick={(e) => handleFlagIdea(idea, e)}
-                      >
-                        <AssetIcon name="flag-icon" size={18} color="#1D1B20" />
-                        <span>Flag</span>
-                      </div>
-                      <div className="idea-dropdown-divider" />
-                      <div
-                        className="idea-dropdown-item idea-dropdown-item-delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(idea);
-                        }}
-                      >
-                        Delete Idea
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ActionDropdown
+                  testId="idea-dropdown"
+                  items={[
+                    {
+                      label: "Idea Details",
+                      onClick: (e) => handleViewIdeaDetails(idea, e),
+                    },
+                    {
+                      label: "Flag",
+                      icon: "flag-icon",
+                      onClick: (e) => handleFlagIdea(idea, e),
+                    },
+                    {
+                      isDivider: true,
+                      label: "",
+                      onClick: () => {},
+                    },
+                    {
+                      label: "Delete Idea",
+                      variant: "danger",
+                      onClick: (e) => handleDeleteClick(idea, e),
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))}

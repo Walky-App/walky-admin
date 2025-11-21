@@ -1,0 +1,115 @@
+.action-dropdown-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.action-dropdown-toggle {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+  box-shadow: none !important;
+  position: relative;
+  z-index: 1001;
+}
+
+.action-dropdown-toggle:hover {
+  opacity: 0.7;
+}
+
+.action-dropdown-toggle:focus {
+  box-shadow: none !important;
+}
+
+.action-dropdown-toggle::after {
+  display: none !important;
+}
+
+.action-dropdown-menu {
+  min-width: 187px !important;
+  margin-top: 4px !important;
+  padding: 16px !important;
+  background: #ffffff !important;
+  border: 1px solid #cac4d0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+  z-index: 9999 !important;
+}
+
+.action-dropdown-menu.show {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+[data-theme="dark"] .action-dropdown-menu {
+  background: #1e1e1e !important;
+  border-color: #3e3e3e !important;
+}
+
+.action-dropdown-item {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: "Lato", sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: 16px !important;
+  line-height: normal !important;
+  color: #1d1b20 !important;
+  cursor: pointer !important;
+  background: transparent !important;
+  transition: color 0.2s;
+  border: none !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+}
+
+.action-dropdown-item span {
+  font-family: "Lato", sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: 16px !important;
+}
+
+[data-theme="dark"] .action-dropdown-item {
+  color: #ffffff !important;
+}
+
+.action-dropdown-item:hover {
+  color: #526ac9 !important;
+  background: transparent !important;
+}
+
+.action-dropdown-divider {
+  height: 1px !important;
+  background-color: #eef0f1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+[data-theme="dark"] .action-dropdown-divider {
+  background-color: #3e3e3e;
+}
+
+.action-dropdown-item-danger {
+  color: #d53425 !important;
+  font-weight: 400 !important;
+}
+
+.action-dropdown-item-danger:hover {
+  color: #a82a1e !important;
+  background: transparent !important;
+}
+
+.action-dropdown-item-danger span {
+  font-weight: 400 !important;
+}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./ReportSafety.css";
-import { AssetIcon, ExportButton } from "../../components-v2";
+import { AssetIcon, ExportButton, SearchInput } from "../../components-v2";
 
 interface ReportData {
   id: string;
@@ -146,17 +146,12 @@ export const ReportSafety: React.FC = () => {
           <div className="reports-title-section">
             <h1 className="reports-title">Reported users & content</h1>
             <div className="reports-filters">
-              <div className="search-input-wrapper">
-                <AssetIcon name="search-icon" size={24} color="#676d70" />
-                <input
-                  data-testid="search-input"
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="search-input"
-                />
-              </div>
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search"
+                variant="secondary"
+              />
 
               <div className="filter-dropdown">
                 <AssetIcon name="grid-icon" size={24} color="#5b6168" />

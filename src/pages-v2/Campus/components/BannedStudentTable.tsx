@@ -4,105 +4,36 @@ import {
   AssetIcon,
   StudentProfileModal,
   StudentProfileData,
-  FlagUserModal,
+  UnbanUserModal,
   DeactivateUserModal,
-  BanUserModal,
-  CustomToast,
+  FlagUserModal,
   ActionDropdown,
+  CustomToast,
 } from "../../../components-v2";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
+import { StudentData, StudentTableColumn } from "./StudentTable";
 
-export interface StudentData {
-  id: string;
-  userId: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  interests?: string[];
-  status: "active" | "banned" | "deactivated" | "disengaged";
-  memberSince: string;
-  onlineLast: string;
-  // Profile fields
-  areaOfStudy?: string;
-  lastLogin?: string;
-  totalPeers?: number;
-  bio?: string;
-  // Banned specific fields
-  bannedDate?: string;
-  bannedBy?: string;
-  bannedByEmail?: string;
-  bannedTime?: string;
-  reason?: string;
-  duration?: string;
-  // Deactivated specific fields
-  deactivatedDate?: string;
-  deactivatedBy?: string;
-  // History data
-  banHistory?: Array<{
-    title: string;
-    duration: string;
-    expiresIn?: string;
-    reason: string;
-    bannedDate: string;
-    bannedTime: string;
-    bannedBy: string;
-  }>;
-  reportHistory?: Array<{
-    reportedIdea: string;
-    reportId: string;
-    reason: string;
-    description: string;
-    reportedDate: string;
-    reportedTime: string;
-    reportedBy: string;
-    status: "Pending" | "Resolved";
-  }>;
-  blockedByUsers?: Array<{
-    id: string;
-    name: string;
-    avatar?: string;
-    date: string;
-    time: string;
-  }>;
-}
-
-export type StudentTableColumn =
-  | "userId"
-  | "name"
-  | "email"
-  | "interests"
-  | "status"
-  | "memberSince"
-  | "onlineLast"
-  | "bannedDate"
-  | "bannedBy"
-  | "reason"
-  | "duration"
-  | "deactivatedDate"
-  | "deactivatedBy";
-
-interface StudentTableProps {
+interface BannedStudentTableProps {
   students: StudentData[];
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
-  onActionClick?: (student: StudentData) => void;
 }
 
 type SortField = StudentTableColumn;
 type SortDirection = "asc" | "desc";
 
-export const StudentTable: React.FC<StudentTableProps> = ({
+export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   students,
   columns = [
     "userId",
     "name",
-    "email",
-    "interests",
+    "bannedBy",
+    "duration",
     "status",
-    "memberSince",
-    "onlineLast",
+    "bannedDate",
+    "reason",
   ],
   onStudentClick,
 }) => {
@@ -112,13 +43,15 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     null
   );
   const [profileModalVisible, setProfileModalVisible] = useState(false);
-  const [flagModalVisible, setFlagModalVisible] = useState(false);
-  const [studentToFlag, setStudentToFlag] = useState<StudentData | null>(null);
+  const [unbanModalVisible, setUnbanModalVisible] = useState(false);
   const [deactivateModalVisible, setDeactivateModalVisible] = useState(false);
+  const [flagModalVisible, setFlagModalVisible] = useState(false);
+  const [studentToUnban, setStudentToUnban] = useState<StudentData | null>(
+    null
+  );
   const [studentToDeactivate, setStudentToDeactivate] =
     useState<StudentData | null>(null);
-  const [banModalVisible, setBanModalVisible] = useState(false);
-  const [studentToBan, setStudentToBan] = useState<StudentData | null>(null);
+  const [studentToFlag, setStudentToFlag] = useState<StudentData | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -127,54 +60,16 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     setProfileModalVisible(true);
   };
 
-  const handleSendEmail = (student: StudentData) => {
-    // Copy email to clipboard
-    navigator.clipboard.writeText(student.email);
-
-    // Show toast
-    setToastMessage("Email copied to clipboard");
-    setShowToast(true);
-
-    // Auto-hide after 3 seconds
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
-  };
-
-  const handleCloseProfile = () => {
-    setProfileModalVisible(false);
-    setSelectedStudent(null);
-  };
-
-  const handleFlagUser = (student: StudentData) => {
-    // Check if user has opted out of the modal
-    const shouldSkip =
-      localStorage.getItem("walky-admin-flag-user-hide-message") === "true";
-
-    if (shouldSkip) {
-      // Skip modal and flag directly
-      handleConfirmFlag(student);
-    } else {
-      setStudentToFlag(student);
-      setFlagModalVisible(true);
+  const handleSendEmail = async (student: StudentData) => {
+    try {
+      await navigator.clipboard.writeText(student.email);
+      setToastMessage("Email copied to clipboard");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Failed to copy email:", error);
+      setToastMessage("Failed to copy email");
+      setShowToast(true);
     }
-  };
-
-  const handleConfirmFlag = (student?: StudentData) => {
-    const studentToProcess = student || studentToFlag;
-    if (!studentToProcess) return;
-
-    console.log("Flagging user:", studentToProcess);
-    // TODO: Call API to flag user
-    // Example: await flagUserAPI(studentToProcess.id);
-
-    setFlagModalVisible(false);
-    setStudentToFlag(null);
-  };
-
-  const handleCloseFlagModal = () => {
-    setFlagModalVisible(false);
-    setStudentToFlag(null);
   };
 
   const handleDeactivateUser = (student: StudentData) => {
@@ -198,32 +93,51 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     setStudentToDeactivate(null);
   };
 
-  const handleBanUser = (student: StudentData) => {
-    setStudentToBan(student);
-    setBanModalVisible(true);
+  const handleFlagUser = (student: StudentData) => {
+    setStudentToFlag(student);
+    setFlagModalVisible(true);
   };
 
-  const handleConfirmBan = (
-    duration: string,
-    reason: string,
-    resolveReports: boolean
-  ) => {
-    if (!studentToBan) return;
+  const handleConfirmFlag = () => {
+    if (!studentToFlag) return;
 
-    console.log("Banning user:", studentToBan);
-    console.log("Duration:", duration);
-    console.log("Reason:", reason);
-    console.log("Resolve reports:", resolveReports);
-    // TODO: Call API to ban user
-    // Example: await banUserAPI(studentToBan.id, { duration, reason, resolveReports });
+    console.log("Flagging user:", studentToFlag);
+    // TODO: Call API to flag user
+    // Example: await flagUserAPI(studentToFlag.id);
 
-    setBanModalVisible(false);
-    setStudentToBan(null);
+    setFlagModalVisible(false);
+    setStudentToFlag(null);
   };
 
-  const handleCloseBanModal = () => {
-    setBanModalVisible(false);
-    setStudentToBan(null);
+  const handleCloseFlagModal = () => {
+    setFlagModalVisible(false);
+    setStudentToFlag(null);
+  };
+
+  const handleCloseProfile = () => {
+    setProfileModalVisible(false);
+    setSelectedStudent(null);
+  };
+
+  const handleUnbanUser = (student: StudentData) => {
+    setStudentToUnban(student);
+    setUnbanModalVisible(true);
+  };
+
+  const handleConfirmUnban = () => {
+    if (!studentToUnban) return;
+
+    console.log("Unbanning user:", studentToUnban);
+    // TODO: Call API to unban user
+    // Example: await unbanUserAPI(studentToUnban.id);
+
+    setUnbanModalVisible(false);
+    setStudentToUnban(null);
+  };
+
+  const handleCloseUnbanModal = () => {
+    setUnbanModalVisible(false);
+    setStudentToUnban(null);
   };
 
   const handleSort = (field: SortField) => {
@@ -428,7 +342,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               ))}
               <td className="student-table-cell student-table-actions">
                 <ActionDropdown
-                  testId="student-dropdown"
+                  testId="banned-student-dropdown"
                   items={[
                     {
                       label: "View profile",
@@ -445,25 +359,18 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                       },
                     },
                     {
-                      label: "Flag",
+                      label: "Flag user",
                       icon: "flag-icon",
                       onClick: (e) => {
                         e.stopPropagation();
                         handleFlagUser(student);
                       },
                     },
+
                     {
                       isDivider: true,
                       label: "",
                       onClick: () => {},
-                    },
-                    {
-                      label: "Ban user",
-                      variant: "danger",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleBanUser(student);
-                      },
                     },
                     {
                       label: "Deactivate user",
@@ -471,6 +378,14 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                       onClick: (e) => {
                         e.stopPropagation();
                         handleDeactivateUser(student);
+                      },
+                    },
+                    {
+                      label: "Unban user",
+                      variant: "danger",
+                      onClick: (e) => {
+                        e.stopPropagation();
+                        handleUnbanUser(student);
                       },
                     },
                   ]}
@@ -489,10 +404,11 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
       />
 
-      <FlagUserModal
-        visible={flagModalVisible}
-        onClose={handleCloseFlagModal}
-        onConfirm={() => handleConfirmFlag()}
+      <UnbanUserModal
+        visible={unbanModalVisible}
+        onClose={handleCloseUnbanModal}
+        onConfirm={handleConfirmUnban}
+        userName={studentToUnban?.name}
       />
 
       <DeactivateUserModal
@@ -502,17 +418,17 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         userName={studentToDeactivate?.name}
       />
 
-      <BanUserModal
-        visible={banModalVisible}
-        onClose={handleCloseBanModal}
-        onConfirm={handleConfirmBan}
-        userName={studentToBan?.name}
+      <FlagUserModal
+        visible={flagModalVisible}
+        onClose={handleCloseFlagModal}
+        onConfirm={handleConfirmFlag}
       />
 
       {showToast && (
         <CustomToast
           message={toastMessage}
           onClose={() => setShowToast(false)}
+          duration={3000}
         />
       )}
     </div>

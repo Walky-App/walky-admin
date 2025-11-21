@@ -1,124 +1,42 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import React, { useState } from "react";
 import {
   AssetIcon,
   StudentProfileModal,
   StudentProfileData,
-  FlagUserModal,
-  DeactivateUserModal,
-  BanUserModal,
-  CustomToast,
+  ActivateUserModal,
   ActionDropdown,
+  CustomToast,
+  FlagUserModal,
 } from "../../../components-v2";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
+import { StudentData, StudentTableColumn } from "./StudentTable";
 
-export interface StudentData {
-  id: string;
-  userId: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  interests?: string[];
-  status: "active" | "banned" | "deactivated" | "disengaged";
-  memberSince: string;
-  onlineLast: string;
-  // Profile fields
-  areaOfStudy?: string;
-  lastLogin?: string;
-  totalPeers?: number;
-  bio?: string;
-  // Banned specific fields
-  bannedDate?: string;
-  bannedBy?: string;
-  bannedByEmail?: string;
-  bannedTime?: string;
-  reason?: string;
-  duration?: string;
-  // Deactivated specific fields
-  deactivatedDate?: string;
-  deactivatedBy?: string;
-  // History data
-  banHistory?: Array<{
-    title: string;
-    duration: string;
-    expiresIn?: string;
-    reason: string;
-    bannedDate: string;
-    bannedTime: string;
-    bannedBy: string;
-  }>;
-  reportHistory?: Array<{
-    reportedIdea: string;
-    reportId: string;
-    reason: string;
-    description: string;
-    reportedDate: string;
-    reportedTime: string;
-    reportedBy: string;
-    status: "Pending" | "Resolved";
-  }>;
-  blockedByUsers?: Array<{
-    id: string;
-    name: string;
-    avatar?: string;
-    date: string;
-    time: string;
-  }>;
-}
-
-export type StudentTableColumn =
-  | "userId"
-  | "name"
-  | "email"
-  | "interests"
-  | "status"
-  | "memberSince"
-  | "onlineLast"
-  | "bannedDate"
-  | "bannedBy"
-  | "reason"
-  | "duration"
-  | "deactivatedDate"
-  | "deactivatedBy";
-
-interface StudentTableProps {
+interface DeactivatedStudentTableProps {
   students: StudentData[];
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
-  onActionClick?: (student: StudentData) => void;
 }
 
 type SortField = StudentTableColumn;
 type SortDirection = "asc" | "desc";
 
-export const StudentTable: React.FC<StudentTableProps> = ({
-  students,
-  columns = [
-    "userId",
-    "name",
-    "email",
-    "interests",
-    "status",
-    "memberSince",
-    "onlineLast",
-  ],
-  onStudentClick,
-}) => {
+export const DeactivatedStudentTable: React.FC<
+  DeactivatedStudentTableProps
+> = ({ students, columns = ["userId", "name", "email"], onStudentClick }) => {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
     null
   );
   const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const [activateModalVisible, setActivateModalVisible] = useState(false);
   const [flagModalVisible, setFlagModalVisible] = useState(false);
-  const [studentToFlag, setStudentToFlag] = useState<StudentData | null>(null);
-  const [deactivateModalVisible, setDeactivateModalVisible] = useState(false);
-  const [studentToDeactivate, setStudentToDeactivate] =
+  const [studentToActivate, setStudentToActivate] =
     useState<StudentData | null>(null);
-  const [banModalVisible, setBanModalVisible] = useState(false);
-  const [studentToBan, setStudentToBan] = useState<StudentData | null>(null);
+  const [studentToFlag, setStudentToFlag] = useState<StudentData | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -127,46 +45,29 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     setProfileModalVisible(true);
   };
 
-  const handleSendEmail = (student: StudentData) => {
-    // Copy email to clipboard
-    navigator.clipboard.writeText(student.email);
-
-    // Show toast
-    setToastMessage("Email copied to clipboard");
-    setShowToast(true);
-
-    // Auto-hide after 3 seconds
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
-  };
-
-  const handleCloseProfile = () => {
-    setProfileModalVisible(false);
-    setSelectedStudent(null);
-  };
-
-  const handleFlagUser = (student: StudentData) => {
-    // Check if user has opted out of the modal
-    const shouldSkip =
-      localStorage.getItem("walky-admin-flag-user-hide-message") === "true";
-
-    if (shouldSkip) {
-      // Skip modal and flag directly
-      handleConfirmFlag(student);
-    } else {
-      setStudentToFlag(student);
-      setFlagModalVisible(true);
+  const handleSendEmail = async (student: StudentData) => {
+    try {
+      await navigator.clipboard.writeText(student.email);
+      setToastMessage("Email copied to clipboard");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Failed to copy email:", error);
+      setToastMessage("Failed to copy email");
+      setShowToast(true);
     }
   };
 
-  const handleConfirmFlag = (student?: StudentData) => {
-    const studentToProcess = student || studentToFlag;
-    if (!studentToProcess) return;
+  const handleFlagUser = (student: StudentData) => {
+    setStudentToFlag(student);
+    setFlagModalVisible(true);
+  };
 
-    console.log("Flagging user:", studentToProcess);
+  const handleConfirmFlag = () => {
+    if (!studentToFlag) return;
+
+    console.log("Flagging user:", studentToFlag);
     // TODO: Call API to flag user
-    // Example: await flagUserAPI(studentToProcess.id);
+    // Example: await flagUserAPI(studentToFlag.id);
 
     setFlagModalVisible(false);
     setStudentToFlag(null);
@@ -177,53 +78,30 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     setStudentToFlag(null);
   };
 
-  const handleDeactivateUser = (student: StudentData) => {
-    setStudentToDeactivate(student);
-    setDeactivateModalVisible(true);
+  const handleCloseProfile = () => {
+    setProfileModalVisible(false);
+    setSelectedStudent(null);
   };
 
-  const handleConfirmDeactivate = () => {
-    if (!studentToDeactivate) return;
-
-    console.log("Deactivating user:", studentToDeactivate);
-    // TODO: Call API to deactivate user
-    // Example: await deactivateUserAPI(studentToDeactivate.id);
-
-    setDeactivateModalVisible(false);
-    setStudentToDeactivate(null);
+  const handleActivateUser = (student: StudentData) => {
+    setStudentToActivate(student);
+    setActivateModalVisible(true);
   };
 
-  const handleCloseDeactivateModal = () => {
-    setDeactivateModalVisible(false);
-    setStudentToDeactivate(null);
+  const handleConfirmActivate = () => {
+    if (!studentToActivate) return;
+
+    console.log("Activating user:", studentToActivate);
+    // TODO: Call API to activate user
+    // Example: await activateUserAPI(studentToActivate.id);
+
+    setActivateModalVisible(false);
+    setStudentToActivate(null);
   };
 
-  const handleBanUser = (student: StudentData) => {
-    setStudentToBan(student);
-    setBanModalVisible(true);
-  };
-
-  const handleConfirmBan = (
-    duration: string,
-    reason: string,
-    resolveReports: boolean
-  ) => {
-    if (!studentToBan) return;
-
-    console.log("Banning user:", studentToBan);
-    console.log("Duration:", duration);
-    console.log("Reason:", reason);
-    console.log("Resolve reports:", resolveReports);
-    // TODO: Call API to ban user
-    // Example: await banUserAPI(studentToBan.id, { duration, reason, resolveReports });
-
-    setBanModalVisible(false);
-    setStudentToBan(null);
-  };
-
-  const handleCloseBanModal = () => {
-    setBanModalVisible(false);
-    setStudentToBan(null);
+  const handleCloseActivateModal = () => {
+    setActivateModalVisible(false);
+    setStudentToActivate(null);
   };
 
   const handleSort = (field: SortField) => {
@@ -243,32 +121,21 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     if (!sortField) return students;
 
     return [...students].sort((a, b) => {
-      const aValue = (a as any)[sortField];
-      const bValue = (b as any)[sortField];
+      const aValue = a[sortField];
+      const bValue = b[sortField];
 
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-      return 0;
+      if (aValue === undefined || bValue === undefined) return 0;
+
+      let comparison = 0;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === "number" && typeof bValue === "number") {
+        comparison = aValue - bValue;
+      }
+
+      return sortDirection === "asc" ? comparison : -comparison;
     });
   }, [students, sortField, sortDirection]);
-
-  const renderInterests = (interests?: string[]) => {
-    if (!interests || interests.length === 0) return null;
-
-    const visible = interests.slice(0, 2);
-    const remaining = interests.length - 2;
-
-    return (
-      <div className="student-interests">
-        {visible.map((interest, idx) => (
-          <InterestChip key={idx} label={interest} />
-        ))}
-        {remaining > 0 && (
-          <span className="student-interests-more">+{remaining}...</span>
-        )}
-      </div>
-    );
-  };
 
   const columnConfig: Record<
     StudentTableColumn,
@@ -293,7 +160,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               e.stopPropagation();
               handleCopyUserId(student.userId);
             }}
-            title="Copy User ID"
+            aria-label="Copy user ID"
           >
             <AssetIcon name="copy-icon" size={16} color="#321FDB" />
           </button>
@@ -304,35 +171,36 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       label: "Student name",
       sortable: true,
       render: (student) => (
-        <div className="student-info">
-          <div className="student-avatar">
-            {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
-              <img src={student.avatar} alt={student.name} />
-            ) : (
-              <div className="student-avatar-placeholder">
-                {student.avatar || student.name.charAt(0)}
-              </div>
-            )}
-          </div>
-          <span className="student-name">{student.name}</span>
+        <div className="student-name-cell">
+          <div className="student-avatar">{student.avatar}</div>
+          <span>{student.name}</span>
         </div>
       ),
     },
     email: {
       label: "Email address",
-      sortable: false,
-      render: (student) => (
-        <span className="student-email">{student.email}</span>
-      ),
+      sortable: true,
+      render: (student) => <span>{student.email}</span>,
     },
     interests: {
-      label: "Interest",
+      label: "Interests",
       sortable: false,
-      render: (student) => renderInterests(student.interests),
+      render: (student) => (
+        <div className="interests-cell">
+          {student.interests?.slice(0, 2).map((interest, index) => (
+            <InterestChip key={index} label={interest} />
+          ))}
+          {student.interests && student.interests.length > 2 && (
+            <span className="interests-more">
+              +{student.interests.length - 2}
+            </span>
+          )}
+        </div>
+      ),
     },
     status: {
       label: "Status",
-      sortable: false,
+      sortable: true,
       render: (student) => <StatusBadge status={student.status} />,
     },
     memberSince: {
@@ -372,7 +240,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       render: (student) => <span>{student.duration || "-"}</span>,
     },
     deactivatedDate: {
-      label: "Deactivated date",
+      label: "Deactivation date",
       sortable: true,
       render: (student) => (
         <span className="student-date">{student.deactivatedDate || "-"}</span>
@@ -428,7 +296,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               ))}
               <td className="student-table-cell student-table-actions">
                 <ActionDropdown
-                  testId="student-dropdown"
+                  testId="deactivated-student-dropdown"
                   items={[
                     {
                       label: "View profile",
@@ -458,19 +326,11 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                       onClick: () => {},
                     },
                     {
-                      label: "Ban user",
+                      label: "Activate user",
                       variant: "danger",
                       onClick: (e) => {
                         e.stopPropagation();
-                        handleBanUser(student);
-                      },
-                    },
-                    {
-                      label: "Deactivate user",
-                      variant: "danger",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleDeactivateUser(student);
+                        handleActivateUser(student);
                       },
                     },
                   ]}
@@ -489,30 +349,24 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
       />
 
+      <ActivateUserModal
+        visible={activateModalVisible}
+        onClose={handleCloseActivateModal}
+        onConfirm={handleConfirmActivate}
+        userName={studentToActivate?.name}
+      />
+
       <FlagUserModal
         visible={flagModalVisible}
         onClose={handleCloseFlagModal}
-        onConfirm={() => handleConfirmFlag()}
-      />
-
-      <DeactivateUserModal
-        visible={deactivateModalVisible}
-        onClose={handleCloseDeactivateModal}
-        onConfirm={handleConfirmDeactivate}
-        userName={studentToDeactivate?.name}
-      />
-
-      <BanUserModal
-        visible={banModalVisible}
-        onClose={handleCloseBanModal}
-        onConfirm={handleConfirmBan}
-        userName={studentToBan?.name}
+        onConfirm={handleConfirmFlag}
       />
 
       {showToast && (
         <CustomToast
           message={toastMessage}
           onClose={() => setShowToast(false)}
+          duration={3000}
         />
       )}
     </div>

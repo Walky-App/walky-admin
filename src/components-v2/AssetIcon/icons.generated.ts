@@ -6,6 +6,7 @@ import calendarIcon from '../../assets-v2/svg/calendar-icon.svg?react';
 import campusIcon from '../../assets-v2/svg/campus-icon.svg?react';
 import chatIcon from '../../assets-v2/svg/chat-icon.svg?react';
 import checkIcon from '../../assets-v2/svg/check-icon.svg?react';
+import closeButton from '../../assets-v2/svg/close-button.svg?react';
 import copyIcon from '../../assets-v2/svg/copy-icon.svg?react';
 import doubleUsersIcon from '../../assets-v2/svg/double-users-icon.svg?react';
 import exportIcon from '../../assets-v2/svg/export-icon.svg?react';
@@ -34,6 +35,7 @@ import topFieldsStudyIcon from '../../assets-v2/svg/top-fields-study-icon.svg?re
 import topInterestsIcon from '../../assets-v2/svg/top-interests-icon.svg?react';
 import trendDownIcon from '../../assets-v2/svg/trend-down-icon.svg?react';
 import trendUpIcon from '../../assets-v2/svg/trend-up-icon.svg?react';
+import trendUpRed from '../../assets-v2/svg/trend-up-red.svg?react';
 import userInteractionsIcon from '../../assets-v2/svg/user-interactions-icon.svg?react';
 import vertical3DotsIcon from '../../assets-v2/svg/vertical-3-dots-icon.svg?react';
 import visitedPlacesIcon from '../../assets-v2/svg/visited-places-icon.svg?react';
@@ -48,6 +50,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'campus-icon': campusIcon,
   'chat-icon': chatIcon,
   'check-icon': checkIcon,
+  'close-button': closeButton,
   'copy-icon': copyIcon,
   'double-users-icon': doubleUsersIcon,
   'export-icon': exportIcon,
@@ -76,6 +79,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'top-interests-icon': topInterestsIcon,
   'trend-down-icon': trendDownIcon,
   'trend-up-icon': trendUpIcon,
+  'trend-up-red': trendUpRed,
   'user-interactions-icon': userInteractionsIcon,
   'vertical-3-dots-icon': vertical3DotsIcon,
   'visited-places-icon': visitedPlacesIcon,

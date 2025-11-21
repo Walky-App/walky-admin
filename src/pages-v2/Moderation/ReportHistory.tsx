@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./ReportHistory.css";
-import { AssetIcon, ExportButton } from "../../components-v2";
+import { AssetIcon, ExportButton, SearchInput } from "../../components-v2";
 
 interface HistoryReportData {
   id: string;
@@ -163,17 +163,12 @@ export const ReportHistory: React.FC = () => {
               History of reported users & content
             </h2>
             <div className="reports-filters">
-              <div className="search-input-wrapper">
-                <AssetIcon name="search-icon" size={24} color="#676d70" />
-                <input
-                  data-testid="search-input"
-                  type="text"
-                  className="search-input"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search"
+                variant="secondary"
+              />
 
               <div className="filter-dropdown">
                 <AssetIcon name="grid-icon" size={24} color="#5b6168" />

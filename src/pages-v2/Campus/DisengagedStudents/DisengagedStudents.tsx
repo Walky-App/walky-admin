@@ -1,5 +1,11 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import React, { useState } from "react";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
+import {
+  StudentProfileModal,
+  StudentProfileData,
+  CustomToast,
+} from "../../../components-v2";
 import { StatsCard } from "../components/StatsCard";
 import "./DisengagedStudents.css";
 
@@ -15,6 +21,12 @@ interface DisengagedStudent {
 }
 
 export const DisengagedStudents: React.FC = () => {
+  const [selectedStudent, setSelectedStudent] =
+    useState<DisengagedStudent | null>(null);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
   // Mock data
   const mockStudents: DisengagedStudent[] = [
     {
@@ -49,8 +61,26 @@ export const DisengagedStudents: React.FC = () => {
     },
   ];
 
-  const handleSendOutreach = (student: DisengagedStudent) => {
-    console.log("Send outreach to:", student);
+  const handleSendOutreach = async (student: DisengagedStudent) => {
+    try {
+      await navigator.clipboard.writeText(student.email);
+      setToastMessage("Email copied to clipboard");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Failed to copy email:", error);
+      setToastMessage("Failed to copy email");
+      setShowToast(true);
+    }
+  };
+
+  const handleStudentClick = (student: DisengagedStudent) => {
+    setSelectedStudent(student);
+    setProfileModalVisible(true);
+  };
+
+  const handleCloseProfile = () => {
+    setProfileModalVisible(false);
+    setSelectedStudent(null);
   };
 
   const handleExport = () => {
@@ -66,6 +96,7 @@ export const DisengagedStudents: React.FC = () => {
           value="264"
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
+          iconColor="#00C617"
           trend={{
             value: "8.5%",
             isPositive: true,
@@ -75,8 +106,10 @@ export const DisengagedStudents: React.FC = () => {
         <StatsCard
           title="Disengaged students"
           value="3"
-          iconName="lock-icon"
+          // @ts-ignore
+          iconName="x-icon"
           iconBgColor="#FCE9E9"
+          iconColor="#FF8082"
           trend={{
             value: "8.5%",
             isPositive: false,
@@ -128,7 +161,11 @@ export const DisengagedStudents: React.FC = () => {
                           <img src={student.avatar} alt={student.name} />
                         )}
                       </div>
-                      <span className="disengaged-student-name">
+                      <span
+                        className="disengaged-student-name"
+                        onClick={() => handleStudentClick(student)}
+                        style={{ cursor: "pointer" }}
+                      >
                         {student.name}
                       </span>
                     </div>
@@ -179,6 +216,35 @@ export const DisengagedStudents: React.FC = () => {
           </table>
         </div>
       </div>
+
+      <StudentProfileModal
+        visible={profileModalVisible}
+        student={
+          selectedStudent
+            ? ({
+                userId: selectedStudent.id,
+                name: selectedStudent.name,
+                email: selectedStudent.email,
+                avatar: selectedStudent.avatar,
+                status: "disengaged" as const,
+                interests: [],
+                memberSince: selectedStudent.memberSince,
+                onlineLast: "-",
+              } as unknown as StudentProfileData)
+            : null
+        }
+        onClose={handleCloseProfile}
+        onBanUser={(student) => console.log("Ban user", student)}
+        onDeactivateUser={(student) => console.log("Deactivate user", student)}
+      />
+
+      {showToast && (
+        <CustomToast
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+          duration={3000}
+        />
+      )}
     </div>
   );
 };

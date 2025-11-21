@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AssetIcon } from "../../components-v2";
+import { SearchInput } from "../../components-v2";
 import { IdeasTable, IdeaData } from "./components/IdeasTable";
 import "./IdeasManager.css";
 
@@ -78,16 +78,12 @@ export const IdeasManager: React.FC = () => {
             <h2 className="ideas-manager-list-title">List of Ideas</h2>
             <div className="ideas-manager-filters">
               <div className="ideas-manager-search">
-                <div className="ideas-manager-search-input">
-                  <AssetIcon name="search-icon" size={24} color="#676D70" />
-                  <input
-                    data-testid="search-input"
-                    type="text"
-                    placeholder="Search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search"
+                  variant="secondary"
+                />
               </div>
             </div>
           </div>

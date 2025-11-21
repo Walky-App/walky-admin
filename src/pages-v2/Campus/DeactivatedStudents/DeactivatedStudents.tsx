@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { AssetIcon } from "../../../components-v2";
+import { SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { Pagination } from "../components/Pagination";
-import { StudentTable, StudentData } from "../components/StudentTable";
+import { StudentData } from "../components/StudentTable";
+import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
 import "./DeactivatedStudents.css";
 
 export const DeactivatedStudents: React.FC = () => {
@@ -79,10 +80,6 @@ export const DeactivatedStudents: React.FC = () => {
     console.log("Student clicked:", student);
   };
 
-  const handleActionClick = (student: StudentData) => {
-    console.log("Action clicked for:", student);
-  };
-
   const handleExport = () => {
     console.log("Export clicked");
   };
@@ -93,8 +90,9 @@ export const DeactivatedStudents: React.FC = () => {
         <StatsCard
           title="Total deactivated students"
           value="87"
-          iconName="lock-icon"
-          iconBgColor="#FFF4E6"
+          iconName="double-users-icon"
+          iconBgColor="#E9FCF4"
+          iconColor="#00C617"
           trend={{
             value: "2.3%",
             isPositive: false,
@@ -105,7 +103,8 @@ export const DeactivatedStudents: React.FC = () => {
           title="Deactivated this month"
           value="12"
           iconName="lock-icon"
-          iconBgColor="#FFE6E6"
+          iconBgColor="#FCE9E9"
+          iconColor="#FF8082"
           tooltip="Students who were deactivated in the current month"
           showTooltip={hoveredTooltip === "this-month"}
           onTooltipHover={(show) =>
@@ -120,34 +119,28 @@ export const DeactivatedStudents: React.FC = () => {
             <h1 className="deactivated-students-title">
               List of deactivated students in Walky
             </h1>
-            <div className="deactivated-students-search">
-              <AssetIcon name="search-icon" size={24} className="search-icon" />
-              <input
-                data-testid="search-input"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search"
+              variant="primary"
+            />
           </div>
           <ExportButton onClick={handleExport} />
         </div>
 
-        <StudentTable
+        <DeactivatedStudentTable
           students={paginatedStudents}
           columns={[
             "userId",
             "name",
             "email",
-            "interests",
-            "deactivatedDate",
             "deactivatedBy",
+            "status",
             "memberSince",
+            "deactivatedDate",
           ]}
           onStudentClick={handleStudentClick}
-          onActionClick={handleActionClick}
         />
 
         <div className="deactivated-students-pagination">

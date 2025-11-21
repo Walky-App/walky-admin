@@ -1,16 +1,16 @@
 import React from "react";
 import { CModal, CModalBody, CButton } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
-import "./DeactivateUserModal.css";
+import "./UnbanUserModal.css";
 
-export interface DeactivateUserModalProps {
+export interface UnbanUserModalProps {
   visible: boolean;
   onClose: () => void;
   onConfirm: () => void;
   userName?: string;
 }
 
-export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
+export const UnbanUserModal: React.FC<UnbanUserModalProps> = ({
   visible,
   onClose,
   onConfirm,
@@ -30,56 +30,55 @@ export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
       onClose={onClose}
       alignment="center"
       backdrop="static"
-      className="deactivate-user-modal"
+      className="unban-user-modal"
     >
-      <CModalBody className="deactivate-user-modal-body">
+      <CModalBody className="unban-user-modal-body">
         {/* Close button */}
         <button
-          data-testid="deactivate-modal-close-btn"
-          className="deactivate-modal-close-icon"
+          data-testid="unban-modal-close-btn"
+          className="unban-modal-close-icon"
           onClick={handleCancel}
           aria-label="Close modal"
         >
           <AssetIcon name="close-button" size={16} color="#5B6168" />
         </button>
 
-        <div className="deactivate-modal-content">
+        <div className="unban-modal-content">
           {/* Content Section */}
           <div>
             {/* Title */}
-            <h2 className="deactivate-modal-title">Deactivate user</h2>
+            <h2 className="unban-modal-title">Unban user</h2>
 
             {/* Message Container */}
-            <div className="deactivate-modal-message-container">
-              <p className="deactivate-modal-question">
-                Are you sure you want to deactivate{" "}
-                <span className="deactivate-modal-username">
+            <div className="unban-modal-message-container">
+              <p className="unban-modal-question">
+                Are you sure you want to unban{" "}
+                <span className="unban-modal-username">
                   {userName || "this user"}
                 </span>
                 ?
               </p>
-              <p className="deactivate-modal-description">
-                The selected student will be notified via email about the
-                deactivation of their account. This action can be reversed later
-                if needed.
+              <p className="unban-modal-description">
+                The student will regain access to the platform and receive an
+                email notifying them that their account has been reinstated.
               </p>
             </div>
           </div>
 
           {/* Buttons */}
-          <div className="deactivate-modal-button-container">
+          <div className="unban-modal-button-container">
             <CButton
               color="light"
               onClick={handleCancel}
-              className="deactivate-modal-cancel-button"
+              className="unban-modal-cancel-button"
             >
               Cancel
             </CButton>
             <CButton
               onClick={handleConfirm}
-              className="deactivate-modal-confirm-button"
+              className="unban-modal-confirm-button"
             >
-              Deactivate user
+              Unban user
             </CButton>
           </div>
         </div>
@@ -88,4 +87,4 @@ export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
   );
 };
 
-export default DeactivateUserModal;
+export default UnbanUserModal;
