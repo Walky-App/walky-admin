@@ -57,11 +57,13 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           )}
         </div>
         {iconName && (
-          <div
-            className="stats-card-icon-container"
-            style={{ backgroundColor: iconBgColor }}
-          >
-            <AssetIcon name={iconName} size={33} color={iconColor} />
+          <div className="stats-card-icon-container-main">
+            <div
+              className="stats-card-icon-container"
+              style={{ backgroundColor: iconBgColor }}
+            >
+              <AssetIcon name={iconName} size={33} color={iconColor} />
+            </div>
           </div>
         )}
       </div>
@@ -69,7 +71,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       {trend && (
         <div className="stats-card-trend">
           <AssetIcon
-            name={trend.isPositive ? "trend-up-icon" : "trend-down-icon"}
+            name={trend.isPositive ? "trend-up-icon" : "trend-up-red"}
             size={24}
             className="stats-card-trend-icon"
           />

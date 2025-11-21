@@ -35,7 +35,7 @@
 .deactivated-students-title-section {
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 16px;
   flex: 1;
   max-width: 528px;
 }

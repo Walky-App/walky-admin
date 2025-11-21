@@ -58,7 +58,7 @@ export const FlagUserModal: React.FC<FlagUserModalProps> = ({
           onClick={handleCancel}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} color="#5B6168" />
+          <AssetIcon name="close-button" size={16} color="#5B6168" />
         </button>
 
         <div className="flag-modal-content">

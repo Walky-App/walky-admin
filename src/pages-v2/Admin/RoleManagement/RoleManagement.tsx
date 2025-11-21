@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import AssetIcon from "../../../components-v2/AssetIcon/AssetIcon";
+import { SearchInput } from "../../../components-v2";
 import {
   RolePermissionsModal,
   RemoveMemberModal,
@@ -255,17 +256,12 @@ export const RoleManagement: React.FC = () => {
           <div className="members-header-left">
             <h2 className="members-title">Members list</h2>
             <div className="members-filters">
-              <div className="search-input-wrapper">
-                <AssetIcon name="search-icon" size={24} />
-                <input
-                  data-testid="members-search-input"
-                  type="text"
-                  className="search-input"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search"
+                variant="secondary"
+              />
               <div className="role-filter-wrapper" ref={roleFilterRef}>
                 <button
                   data-testid="role-filter-btn"

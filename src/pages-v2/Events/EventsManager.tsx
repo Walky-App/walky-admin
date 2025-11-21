@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AssetIcon } from "../../components-v2";
+import { AssetIcon, SearchInput } from "../../components-v2";
 import { EventTable, EventData } from "./components/EventTable";
 import { EventCalendar } from "./components/EventCalendar";
 import "./EventsManager.css";
@@ -103,17 +103,12 @@ export const EventsManager: React.FC = () => {
           <h2 className="events-list-title">List of Events</h2>
 
           <div className="events-filters">
-            <div className="search-input-container">
-              <AssetIcon name="search-icon" size={24} color="#676D70" />
-              <input
-                data-testid="search-input"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search"
+              variant="secondary"
+            />
 
             <div className="type-filter-dropdown">
               <select

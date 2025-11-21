@@ -13,7 +13,7 @@
 
 .status-badge-active {
   background-color: #edffed;
-  color: var(--v2-success);
+  color: #18682c;
 }
 
 .status-badge-banned {
@@ -22,8 +22,8 @@
 }
 
 .status-badge-deactivated {
-  background-color: #f1f4f9;
-  color: #5b6168;
+  background-color: #2d3339;
+  color: #ffffff;
 }
 
 .status-badge-disengaged {
@@ -43,8 +43,8 @@
 }
 
 [data-theme="dark"] .status-badge-deactivated {
-  background-color: rgba(91, 97, 104, 0.2);
-  color: #acb6ba;
+  background-color: #2d3339;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .status-badge-disengaged {

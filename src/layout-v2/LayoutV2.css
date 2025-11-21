@@ -4,8 +4,10 @@
 .layout-v2 {
   display: flex;
   min-height: 100vh;
+  max-width: 100vw;
   background-color: var(--v2-bg-app);
   position: relative;
+  overflow-x: hidden;
 }
 
 /* Sidebar */
@@ -50,7 +52,6 @@
   flex: 1;
   padding: 32px 32px 0 32px;
   background-color: var(--v2-bg-app);
-  overflow-x: hidden;
 }
 
 /* Overlay */
@@ -99,10 +100,6 @@
 @media (max-width: 768px) {
   .layout-content {
     padding: 0;
-  }
-
-  .layout-main {
-    overflow-x: hidden;
   }
 }
 

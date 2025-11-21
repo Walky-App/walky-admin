@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AssetIcon } from "../../../components-v2";
+import { SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { StudentTable, StudentData } from "../components/StudentTable";
@@ -181,17 +181,12 @@ export const ActiveStudents: React.FC = () => {
             <h1 className="active-students-title">
               List of active students in Walky
             </h1>
-            <div className="active-students-search">
-              <AssetIcon name="search-icon" size={24} className="search-icon" />
-              <input
-                data-testid="search-input"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search"
+              variant="primary"
+            />
           </div>
           <ExportButton onClick={handleExport} />
         </div>

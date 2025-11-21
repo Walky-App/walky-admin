@@ -21,7 +21,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
 }
 
 .stats-card-tooltip-wrapper {
@@ -65,7 +64,7 @@
 
 .stats-card-tooltip {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 12px);
   right: 0;
   min-width: 280px;
   max-width: 320px;
@@ -84,11 +83,44 @@
   pointer-events: none;
 }
 
+.stats-card-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 6px 0 6px;
+  border-color: #ffffff transparent transparent transparent;
+}
+
+.stats-card-tooltip::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 7px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7px 7px 0 7px;
+  border-color: #e0e0e0 transparent transparent transparent;
+  z-index: -1;
+}
+
 /* Dark mode */
 [data-theme="dark"] .stats-card-tooltip {
   background-color: #2a2a2a;
   border-color: #3a3a3a;
   color: #ffffff;
+}
+
+[data-theme="dark"] .stats-card-tooltip::after {
+  border-color: #2a2a2a transparent transparent transparent;
+}
+
+[data-theme="dark"] .stats-card-tooltip::before {
+  border-color: #3a3a3a transparent transparent transparent;
 }
 
 .stats-card-title {
@@ -97,6 +129,15 @@
   font-weight: 600;
   line-height: normal;
   color: #5b6168;
+}
+
+.stats-card-icon-container-main {
+  width: 64px;
+  height: 64px;
+  border-radius: 23px;
+  display: flex;
+  flex-shrink: 0;
+  flex: 1;
 }
 
 .stats-card-icon-container {

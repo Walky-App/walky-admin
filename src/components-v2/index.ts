@@ -7,6 +7,10 @@ export type { AssetIconProps, IconName } from "./AssetIcon/AssetIcon.types";
 export type { GeneratedIconKeys } from "./AssetIcon/icons.generated";
 
 export { AddAmbassadorModal } from "./AddAmbassadorModal";
+export { ActionDropdown } from "./ActionDropdown/ActionDropdown";
+export type { DropdownItem } from "./ActionDropdown/ActionDropdown";
+export { ActivateUserModal } from "./ActivateUserModal";
+export type { ActivateUserModalProps } from "./ActivateUserModal";
 export { BanUserModal } from "./BanUserModal";
 export type { BanUserModalProps } from "./BanUserModal";
 export { CustomToast } from "./CustomToast";
@@ -30,6 +34,8 @@ export { RolePermissionsModal } from "./RolePermissionsModal";
 export { RemoveMemberModal } from "./RemoveMemberModal";
 export { ChangeRoleModal } from "./ChangeRoleModal";
 export { SendPasswordResetModal } from "./SendPasswordResetModal";
+export { SearchInput } from "./SearchInput";
+export type { SearchInputProps } from "./SearchInput";
 export { CreateMemberModal } from "./CreateMemberModal";
 export type { MemberFormData } from "./CreateMemberModal";
 export { UnsavedChangesModal } from "./UnsavedChangesModal";
@@ -47,3 +53,5 @@ export type {
 } from "./StackedBarChart";
 export { StudentProfileModal } from "./StudentProfileModal";
 export type { StudentProfileData } from "./StudentProfileModal";
+export { UnbanUserModal } from "./UnbanUserModal";
+export type { UnbanUserModalProps } from "./UnbanUserModal";

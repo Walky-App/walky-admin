@@ -10,7 +10,6 @@
 }
 
 .deactivate-user-modal-body {
-  padding: var(--v2-spacing-32);
   position: relative;
 }
 
@@ -106,62 +105,73 @@
 
 /* Cancel Button */
 .deactivate-modal-cancel-button {
-  background-color: var(--v2-neutral-white);
-  border: 1px solid var(--v2-border-dark);
-  border-radius: var(--v2-radius-lg);
-  padding: 9px var(--v2-spacing-32);
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--v2-transition-fast);
+  background-color: var(--v2-neutral-white) !important;
+  border: 1px solid var(--v2-border-dark) !important;
+  border-radius: var(--v2-radius-lg) !important;
+  padding: 9px var(--v2-spacing-32) !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all var(--v2-transition-fast) !important;
 }
 
 .deactivate-modal-cancel-button span {
-  font-family: "Lato", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 100%;
-  color: var(--v2-neutral-black);
-  text-align: right;
+  font-family: "Lato", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 100% !important;
+  color: var(--v2-neutral-black) !important;
+  text-align: right !important;
 }
 
 .deactivate-modal-cancel-button:hover {
-  background-color: var(--v2-bg-hover);
-  border-color: var(--v2-border-dark);
+  background-color: var(--v2-bg-hover) !important;
+  border-color: var(--v2-border-dark) !important;
 }
 
 /* Confirm Button */
 .deactivate-modal-confirm-button {
-  background-color: var(--v2-neutral-black);
-  border: none;
-  border-radius: var(--v2-radius-lg);
-  padding: 9px var(--v2-spacing-20);
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
-  transition: all var(--v2-transition-fast);
+  background-color: var(--v2-neutral-black) !important;
+  border: none !important;
+  border-radius: var(--v2-radius-lg) !important;
+  padding: 9px var(--v2-spacing-20) !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2) !important;
+  transition: all var(--v2-transition-fast) !important;
+  color: #ffffff !important;
 }
 
 .deactivate-modal-confirm-button span {
-  font-family: "Lato", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 100%;
-  color: var(--v2-neutral-white);
-  text-align: right;
+  font-family: "Lato", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 100% !important;
+  color: #ffffff !important;
+  text-align: right !important;
 }
 
 .deactivate-modal-confirm-button:hover {
-  background-color: #000000;
-  transform: translateY(-1px);
-  box-shadow: 0px 4px 10px 0px rgba(115, 115, 115, 0.3);
+  background-color: #000000 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0px 4px 10px 0px rgba(115, 115, 115, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.deactivate-modal-confirm-button:hover span {
+  color: #ffffff !important;
 }
 
 .deactivate-modal-confirm-button:active {
-  transform: translateY(0);
+  transform: translateY(0) !important;
+  color: #ffffff !important;
+}
+
+.deactivate-modal-confirm-button:focus {
+  color: #ffffff !important;
 }
 
 /* Dark Mode Support */
