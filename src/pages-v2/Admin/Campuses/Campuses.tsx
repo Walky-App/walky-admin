@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import "./Campuses.css";
-import { AssetIcon } from "../../../components-v2";
+import { AssetIcon, CopyableId } from "../../../components-v2";
 import CampusBoundary from "../../../pages/CampusBoundary";
 
 interface CampusData {
@@ -65,10 +65,6 @@ export const Campuses: React.FC = () => {
       .includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
-
-  const handleCopyCampusId = (campusId: string) => {
-    navigator.clipboard.writeText(campusId);
-  };
 
   const handleToggleExpand = (campusId: string) => {
     if (expandedCampusId === campusId) {
@@ -144,17 +140,12 @@ export const Campuses: React.FC = () => {
 
                     {/* ID Column */}
                     <td className="campus-id-cell">
-                      <div className="campus-id-wrapper">
-                        <span className="campus-id">{campus.campusId}</span>
-                        <button
-                          data-testid="copy-campus-id-btn"
-                          className="copy-button"
-                          onClick={() => handleCopyCampusId(campus.campusId)}
-                          title="Copy ID"
-                        >
-                          <AssetIcon name="copy-icon" size={16} />
-                        </button>
-                      </div>
+                      <CopyableId
+                        id={campus.campusId}
+                        label="Campus ID"
+                        variant="primary"
+                        testId="copy-campus-id"
+                      />
                     </td>
 
                     {/* Location Column */}

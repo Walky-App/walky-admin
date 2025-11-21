@@ -6,6 +6,9 @@ import {
   DeleteModal,
   CustomToast,
   ActionDropdown,
+  CopyableId,
+  FlagModal,
+  UnflagModal,
 } from "../../../components-v2";
 
 export interface IdeaData {
@@ -26,6 +29,8 @@ export interface IdeaData {
     name: string;
     avatar?: string;
   }>;
+  isFlagged?: boolean;
+  flagReason?: string;
 }
 
 interface IdeasTableProps {
@@ -40,6 +45,10 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ideaToDelete, setIdeaToDelete] = useState<IdeaData | null>(null);
+  const [flagModalOpen, setFlagModalOpen] = useState(false);
+  const [ideaToFlag, setIdeaToFlag] = useState<IdeaData | null>(null);
+  const [unflagModalOpen, setUnflagModalOpen] = useState(false);
+  const [ideaToUnflag, setIdeaToUnflag] = useState<IdeaData | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -84,12 +93,6 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     return 0;
   });
 
-  const handleCopyStudentId = (studentId: string) => {
-    navigator.clipboard.writeText(studentId);
-    setToastMessage("Student ID copied to clipboard");
-    setShowToast(true);
-  };
-
   const handleViewIdeaDetails = (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedIdea(idea);
@@ -98,8 +101,36 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
   const handleFlagIdea = (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log("Flag idea", idea);
-    // TODO: Implement flag idea functionality
+    setIdeaToFlag(idea);
+    setFlagModalOpen(true);
+  };
+
+  const handleFlagConfirm = (reason: string) => {
+    if (ideaToFlag) {
+      console.log("Flagging idea:", ideaToFlag.ideaTitle, "Reason:", reason);
+      // TODO: Call API to flag idea
+      setToastMessage(`Idea "${ideaToFlag.ideaTitle}" flagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
+  const handleUnflagIdea = (idea: IdeaData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIdeaToUnflag(idea);
+    setUnflagModalOpen(true);
+  };
+
+  const handleUnflagConfirm = () => {
+    if (ideaToUnflag) {
+      console.log("Unflagging idea:", ideaToUnflag.ideaTitle);
+      // TODO: Call API to unflag idea
+      setToastMessage(
+        `Idea "${ideaToUnflag.ideaTitle}" unflagged successfully`
+      );
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const handleDeleteClick = (idea: IdeaData, e: React.MouseEvent) => {
@@ -158,9 +189,24 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
         </thead>
         <tbody>
           {sortedIdeas.map((idea) => (
-            <tr key={idea.id}>
+            <tr
+              key={idea.id}
+              className={idea.isFlagged ? "idea-row-flagged" : ""}
+            >
               <td>
-                <span className="ideas-table-idea-title">{idea.ideaTitle}</span>
+                <div className="idea-title-cell">
+                  {idea.isFlagged && (
+                    <AssetIcon
+                      name="flag-icon"
+                      size={16}
+                      color="#D53425"
+                      className="idea-flag-icon"
+                    />
+                  )}
+                  <span className="ideas-table-idea-title">
+                    {idea.ideaTitle}
+                  </span>
+                </div>
               </td>
               <td>
                 <div className="ideas-table-owner">
@@ -179,19 +225,11 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                 </div>
               </td>
               <td>
-                <div className="ideas-table-student-id">
-                  <div className="ideas-table-student-id-box">
-                    {idea.studentId}
-                  </div>
-                  <button
-                    data-testid="copy-student-id-btn"
-                    className="ideas-table-copy-button"
-                    onClick={() => handleCopyStudentId(idea.studentId)}
-                    aria-label="Copy student ID"
-                  >
-                    <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                  </button>
-                </div>
+                <CopyableId
+                  id={idea.studentId}
+                  label="Student ID"
+                  testId="copy-student-id"
+                />
               </td>
               <td>
                 <div className="ideas-table-collaborated-badge">
@@ -217,15 +255,22 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                       onClick: (e) => handleViewIdeaDetails(idea, e),
                     },
                     {
-                      label: "Flag",
-                      icon: "flag-icon",
-                      onClick: (e) => handleFlagIdea(idea, e),
-                    },
-                    {
                       isDivider: true,
                       label: "",
                       onClick: () => {},
                     },
+                    idea.isFlagged
+                      ? {
+                          label: "Unflag",
+                          icon: "flag-icon",
+                          variant: "danger",
+                          onClick: (e) => handleUnflagIdea(idea, e),
+                        }
+                      : {
+                          label: "Flag",
+                          icon: "flag-icon",
+                          onClick: (e) => handleFlagIdea(idea, e),
+                        },
                     {
                       label: "Delete Idea",
                       variant: "danger",
@@ -238,6 +283,22 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
           ))}
         </tbody>
       </table>
+
+      <UnflagModal
+        isOpen={unflagModalOpen}
+        onClose={() => setUnflagModalOpen(false)}
+        onConfirm={handleUnflagConfirm}
+        itemName={ideaToUnflag?.ideaTitle || ""}
+        type="idea"
+      />
+
+      <FlagModal
+        isOpen={flagModalOpen}
+        onClose={() => setFlagModalOpen(false)}
+        onConfirm={handleFlagConfirm}
+        itemName={ideaToFlag?.ideaTitle || ""}
+        type="idea"
+      />
 
       <DeleteModal
         isOpen={deleteModalOpen}
@@ -303,6 +364,8 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                       "https://www.figma.com/api/mcp/asset/720d3983-b06d-4bcb-9fd8-03d3510897d8",
                   },
                 ],
+                isFlagged: selectedIdea.isFlagged,
+                flagReason: selectedIdea.flagReason,
               }
             : null
         }

@@ -1,13 +1,14 @@
 .space-table-wrapper {
   background-color: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
+  border-radius: 0;
+  overflow: visible;
   margin-top: 18px;
 }
 
 .space-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .space-table thead {
@@ -27,6 +28,13 @@
 
 .space-table thead tr th:first-child {
   padding-left: 35px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.space-table thead tr th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .space-table-header {
@@ -37,11 +45,27 @@
 }
 
 .space-table tbody tr {
-  border-bottom: 1px solid #a9abac;
+  border-bottom: 0.4px solid rgba(169, 171, 172, 0.4);
 }
 
-.space-table tbody tr:last-child {
+.space-table tbody tr.space-row-flagged {
+  background-color: #fff3f2;
   border-bottom: none;
+}
+
+.space-table tbody tr.space-row-flagged td {
+  background-color: #fff3f2;
+  position: relative;
+}
+
+.space-table tbody tr.space-row-flagged td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+.space-table tbody tr.space-row-flagged td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .space-table tbody tr td {
@@ -58,6 +82,26 @@
   padding-left: 35px;
 }
 
+.space-table tbody tr td:last-child {
+  position: relative;
+  z-index: 100;
+}
+
+.space-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.space-flag-icon {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .space-name {
   font-family: "Lato", sans-serif;
   font-weight: 600;
@@ -71,6 +115,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .owner-avatar {

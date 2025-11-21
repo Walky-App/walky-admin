@@ -97,7 +97,7 @@ export const IdeasInsights: React.FC = () => {
           <div className="stats-card-header">
             <p className="stats-card-title">Historical conversion rate</p>
             <div className="stats-card-icon conversion-icon-bg">
-              <AssetIcon name="search-icon" size={32} color="#00C943" />
+              <AssetIcon name="stats-icon" size={30} color="#00C943" />
             </div>
           </div>
           <p className="stats-card-value">80%</p>
@@ -151,7 +151,7 @@ export const IdeasInsights: React.FC = () => {
             </div>
             <p className="time-card-value">1.4 Days</p>
             <div className="time-card-trend">
-              <AssetIcon name="trend-up-icon" size={24} color="#D53425" />
+              <AssetIcon name="trend-up-red" size={24} color="#D53425" />
               <p className="trend-text">
                 <span className="trend-percentage">1.3%</span>{" "}
                 <span className="trend-label">Up from last month</span>
@@ -170,7 +170,7 @@ export const IdeasInsights: React.FC = () => {
             </div>
             <p className="time-card-value">2 Days</p>
             <div className="time-card-trend">
-              <AssetIcon name="trend-up-icon" size={24} color="#D53425" />
+              <AssetIcon name="trend-up-red" size={24} color="#D53425" />
               <p className="trend-text">
                 <span className="trend-percentage">1.3%</span>{" "}
                 <span className="trend-label">Up from last month</span>

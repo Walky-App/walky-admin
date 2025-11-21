@@ -12,10 +12,12 @@ interface WeekEvent {
 
 interface EventCalendarWeekProps {
   date: Date;
+  onEventClick?: (eventId: string) => void;
 }
 
 export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
   date,
+  onEventClick,
 }) => {
   const hours = Array.from({ length: 13 }, (_, i) => i + 8); // 8am to 8pm
 
@@ -91,6 +93,64 @@ export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
     return duration / 60;
   };
 
+  // Check if two events overlap
+  const eventsOverlap = (event1: WeekEvent, event2: WeekEvent) => {
+    if (event1.day !== event2.day) return false;
+
+    const [e1StartH, e1StartM] = event1.startTime.split(":").map(Number);
+    const [e1EndH, e1EndM] = event1.endTime.split(":").map(Number);
+    const [e2StartH, e2StartM] = event2.startTime.split(":").map(Number);
+    const [e2EndH, e2EndM] = event2.endTime.split(":").map(Number);
+
+    const e1Start = e1StartH * 60 + e1StartM;
+    const e1End = e1EndH * 60 + e1EndM;
+    const e2Start = e2StartH * 60 + e2StartM;
+    const e2End = e2EndH * 60 + e2EndM;
+
+    return e1Start < e2End && e2Start < e1End;
+  };
+
+  // Calculate event layout for a specific day
+  const getEventLayoutForDay = (dayIndex: number) => {
+    const dayEvents = events.filter((e) => e.day === dayIndex);
+    const sortedEvents = [...dayEvents].sort((a, b) => {
+      const [aH, aM] = a.startTime.split(":").map(Number);
+      const [bH, bM] = b.startTime.split(":").map(Number);
+      return aH * 60 + aM - (bH * 60 + bM);
+    });
+
+    const columns: WeekEvent[][] = [];
+
+    sortedEvents.forEach((event) => {
+      let placed = false;
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        const hasOverlap = column.some((e) => eventsOverlap(e, event));
+        if (!hasOverlap) {
+          column.push(event);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        columns.push([event]);
+      }
+    });
+
+    const layout: Array<{
+      event: WeekEvent;
+      column: number;
+      totalColumns: number;
+    }> = [];
+
+    sortedEvents.forEach((event) => {
+      const column = columns.findIndex((col) => col.includes(event));
+      layout.push({ event, column, totalColumns: columns.length });
+    });
+
+    return layout;
+  };
+
   const isToday = (d: Date) => {
     const today = new Date();
     return (
@@ -125,17 +185,17 @@ export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
         </div>
 
         <div className="week-days-grid">
-          {weekDays.map((_, dayIndex) => (
-            <div key={dayIndex} className="week-day-column">
-              {hours.map((hour) => (
-                <div key={hour} className="week-hour-cell">
-                  <div className="cell-line"></div>
-                </div>
-              ))}
+          {weekDays.map((_, dayIndex) => {
+            const dayLayout = getEventLayoutForDay(dayIndex);
+            return (
+              <div key={dayIndex} className="week-day-column">
+                {hours.map((hour) => (
+                  <div key={hour} className="week-hour-cell">
+                    <div className="cell-line"></div>
+                  </div>
+                ))}
 
-              {events
-                .filter((event) => event.day === dayIndex)
-                .map((event) => (
+                {dayLayout.map(({ event, column, totalColumns }) => (
                   <div
                     key={event.id}
                     className={`week-event-block ${event.type}`}
@@ -144,14 +204,19 @@ export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
                       height: `${
                         getEventHeight(event.startTime, event.endTime) * 60
                       }px`,
+                      left: `${(column / totalColumns) * 100}%`,
+                      width: `${100 / totalColumns}%`,
+                      cursor: onEventClick ? "pointer" : "default",
                     }}
+                    onClick={() => onEventClick?.(event.id)}
                   >
                     <div className="event-time-short">{event.startTime}</div>
                     <div className="event-title-short">{event.title}</div>
                   </div>
                 ))}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

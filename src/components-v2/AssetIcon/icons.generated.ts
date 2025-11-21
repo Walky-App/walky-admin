@@ -1,5 +1,6 @@
 import { FC, SVGProps } from 'react';
 import arrowDown from '../../assets-v2/svg/arrow-down.svg?react';
+import arrowLargeLeftIcon from '../../assets-v2/svg/arrow-large-left-icon.svg?react';
 import arrowUp from '../../assets-v2/svg/arrow-up.svg?react';
 import braannedStudentsIcon from '../../assets-v2/svg/braanned-students-icon.svg?react';
 import calendarIcon from '../../assets-v2/svg/calendar-icon.svg?react';
@@ -23,6 +24,7 @@ import menuLogoWalky from '../../assets-v2/svg/menu-logo-walky.svg?react';
 import popularEmojiIcon from '../../assets-v2/svg/popular-emoji-icon.svg?react';
 import priviteEventIcon from '../../assets-v2/svg/privite-event-icon.svg?react';
 import publicEventIcon from '../../assets-v2/svg/public-event-icon.svg?react';
+import redFlagIcon from '../../assets-v2/svg/red-flag-icon.svg?react';
 import schoolIcon from '../../assets-v2/svg/school-icon.svg?react';
 import searchIcon from '../../assets-v2/svg/search-icon.svg?react';
 import spaceIcon from '../../assets-v2/svg/space-icon.svg?react';
@@ -44,6 +46,7 @@ import xIcon from '../../assets-v2/svg/x-icon.svg?react';
 
 const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'arrow-down': arrowDown,
+  'arrow-large-left-icon': arrowLargeLeftIcon,
   'arrow-up': arrowUp,
   'braanned-students-icon': braannedStudentsIcon,
   'calendar-icon': calendarIcon,
@@ -67,6 +70,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'popular-emoji-icon': popularEmojiIcon,
   'privite-event-icon': priviteEventIcon,
   'public-event-icon': publicEventIcon,
+  'red-flag-icon': redFlagIcon,
   'school-icon': schoolIcon,
   'search-icon': searchIcon,
   'space-icon': spaceIcon,

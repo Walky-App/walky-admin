@@ -1,7 +1,4 @@
 .spaces-insights-page {
-  padding: 32px 40px;
-  background-color: #f6f9ff;
-  min-height: 100vh;
 }
 
 /* Header */
@@ -263,7 +260,6 @@
   display: flex;
   flex-direction: column;
   gap: 26px;
-  padding: 0 25px;
 }
 
 .space-item {

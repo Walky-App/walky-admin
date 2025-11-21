@@ -1,5 +1,4 @@
 .events-manager-container {
-  padding: 32px 40px;
   background-color: #ffffff;
   min-height: 100vh;
 }
@@ -18,12 +17,13 @@
   font-family: "Lato", sans-serif;
   font-size: 32px;
   font-weight: 700;
-  line-height: 100%;
   background: linear-gradient(90deg, #555aec 0%, #486cb1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin: 0;
+  display: inline-block;
+  width: fit-content;
 }
 
 .events-manager-subtitle {
@@ -76,90 +76,28 @@
   background-color: #ffffff;
 }
 
-.events-list-header {
-  margin-bottom: 32px;
+.events-card {
+  background-color: #ffffff !important;
+  border: 1px solid #eef0f1 !important;
+  border-radius: 12px !important;
+  box-shadow: 0px 1px 8px 0px rgba(84, 111, 217, 0.1) !important;
+  padding: 32px 24px !important;
 }
 
-.events-list-title {
-  font-family: "Lato", sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #1d1b20;
-  line-height: 100%;
-  margin: 0 0 17px 0;
+.events-list-title-1 {
+  font-family: "Lato", sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
+  color: #1d1b20 !important;
+  line-height: normal !important;
+  margin: 0 0 16px 0 !important;
 }
 
 .events-filters {
   display: flex;
   gap: 17px;
-}
-
-.search-input-container {
-  position: relative;
-  width: 375px;
-}
-
-.search-input-container svg {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.search-input {
-  width: 100%;
-  height: 40px;
-  padding: 0 16px 0 48px;
-  border: 1px solid #cac4d0;
-  border-radius: 8px;
-  font-family: "Lato", sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  color: #1d1b20;
-  background-color: #ffffff;
-}
-
-.search-input::placeholder {
-  color: #676d70;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #546fd9;
-}
-
-.type-filter-dropdown {
-  position: relative;
-  width: 136px;
-}
-
-.type-filter-select {
-  width: 100%;
-  height: 40px;
-  padding: 0 32px 0 14px;
-  border: 0.6px solid #a9abac;
-  border-radius: 4px;
-  font-family: "Lato", sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: #5b6168;
-  background-color: #fcfdfd;
-  cursor: pointer;
-  appearance: none;
-}
-
-.type-filter-dropdown svg {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.type-filter-select:focus {
-  outline: none;
-  border-color: #546fd9;
+  margin-bottom: 32px;
 }
 
 .events-pagination {

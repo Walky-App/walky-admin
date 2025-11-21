@@ -1,7 +1,7 @@
 import React from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./EventDetailsModal.css";
-import { AssetIcon } from "../../components-v2";
+import { AssetIcon, CopyableId } from "../../components-v2";
 import { EventTypeChip } from "../../pages-v2/Events/components/EventTypeChip";
 
 export interface EventAttendee {
@@ -26,6 +26,8 @@ export interface EventDetailsData {
   description: string;
   attendees: EventAttendee[];
   maxAttendees: number;
+  isFlagged?: boolean;
+  flagReason?: string;
 }
 
 interface EventDetailsModalProps {
@@ -40,10 +42,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   eventData,
 }) => {
   if (!eventData) return null;
-
-  const handleCopyStudentId = (studentId: string) => {
-    navigator.clipboard.writeText(studentId);
-  };
 
   const handleBack = () => {
     onClose();
@@ -65,7 +63,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
           onClick={onClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} color="#5b6168" />
+          <AssetIcon name="close-button" size={16} color="#5b6168" />
         </button>
 
         <div className="event-details-content">
@@ -78,10 +76,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               aria-label="Go back"
             >
               <AssetIcon
-                name="arrow-down"
+                name="arrow-large-left-icon"
                 size={32}
                 color="#1d1b20"
-                style={{ transform: "rotate(90deg)" }}
               />
             </button>
             <h2 className="event-details-title">Event details</h2>
@@ -129,20 +126,11 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     <p className="event-organizer-name">
                       {eventData.organizer.name}
                     </p>
-                    <div className="event-organizer-id-container">
-                      <div className="event-organizer-id-badge">
-                        {eventData.organizer.studentId}
-                      </div>
-                      <button
-                        data-testid="event-organizer-copy-btn"
-                        className="event-organizer-copy-btn"
-                        onClick={() =>
-                          handleCopyStudentId(eventData.organizer.studentId)
-                        }
-                      >
-                        <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                      </button>
-                    </div>
+                    <CopyableId
+                      id={eventData.organizer.studentId}
+                      label="Student ID"
+                      testId="event-organizer-copy"
+                    />
                   </div>
                 </div>
               </div>
@@ -177,6 +165,14 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                       {eventData.description}
                     </span>
                   </div>
+                  {eventData.isFlagged && eventData.flagReason && (
+                    <div className="event-info-flag-reason">
+                      <span className="event-info-label">Flag reason:</span>{" "}
+                      <span className="event-info-value event-info-value-flagged">
+                        {eventData.flagReason}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

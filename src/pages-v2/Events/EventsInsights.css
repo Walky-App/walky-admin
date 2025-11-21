@@ -1,7 +1,4 @@
 .events-insights-page {
-  padding: 32px 40px;
-  background: #f7f8fa;
-  min-height: 100vh;
 }
 
 /* Header with Export Button */
@@ -33,17 +30,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 43px;
+  gap: 16px;
 }
 
 .stats-card-title {
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 16px;
-  line-height: 1;
+  line-height: 1.2;
   color: #5b6168;
   margin: 0;
   flex: 1;
+  white-space: nowrap;
 }
 
 .stats-icon {
@@ -106,22 +104,24 @@
   color: #5b6168;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-right: none;
+  margin-left: -1px;
 }
 
 .time-option:first-child {
   border-radius: 8px 0 0 8px;
+  margin-left: 0;
 }
 
 .time-option:last-child {
   border-radius: 0 8px 8px 0;
-  border-right: 1px solid #a9abac;
 }
 
 .time-option.active {
   background: #546fd9;
   color: #ffffff;
   border-color: #546fd9;
+  position: relative;
+  z-index: 1;
 }
 
 .time-option:hover:not(.active) {
@@ -157,7 +157,9 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 0 6px;
+  padding: 0 12px 0 6px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .interest-item {
@@ -284,6 +286,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 12px;
 }
 
 .event-list-item {

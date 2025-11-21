@@ -37,6 +37,7 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({
       alignment="end"
       className="action-dropdown-container"
       autoClose={true}
+      portal
     >
       <CDropdownToggle
         as="button"

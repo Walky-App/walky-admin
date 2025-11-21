@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./EventCalendar.css";
 import { EventCalendarDay } from "./EventCalendarDay";
 import { EventCalendarWeek } from "./EventCalendarWeek";
@@ -28,6 +28,12 @@ export const EventCalendar: React.FC = () => {
   const [selectedEventDetails, setSelectedEventDetails] =
     useState<EventDetailsData | null>(null);
 
+  // Close modals when view mode changes
+  useEffect(() => {
+    setEventDetailsModalOpen(false);
+    setScheduledEventsModalOpen(false);
+  }, [viewMode]);
+
   const monthNames = [
     "January",
     "February",
@@ -55,6 +61,26 @@ export const EventCalendar: React.FC = () => {
 
   // Mock detailed events data for the modal
   const getEventsForDate = (day: number): ScheduledEventItem[] => {
+    if (day === 9) {
+      return [
+        {
+          id: "101",
+          eventName: "Morning Coffee Meetup",
+          date: "OCT 9, 2025",
+          time: "9:00 AM",
+          location: "Student Union Café",
+          eventImage: undefined,
+        },
+        {
+          id: "102",
+          eventName: "Study Group - Biology",
+          date: "OCT 9, 2025",
+          time: "3:00 PM",
+          location: "Library Room 204",
+          eventImage: undefined,
+        },
+      ];
+    }
     if (day === 16) {
       return [
         {
@@ -91,7 +117,55 @@ export const EventCalendar: React.FC = () => {
         },
       ];
     }
-    // Return empty array for other dates (can be extended later)
+    if (day === 25) {
+      return [
+        {
+          id: "201",
+          eventName: "Movie Night - Classic Films",
+          date: "OCT 25, 2025",
+          time: "7:00 PM",
+          location: "Student Theater",
+          eventImage: undefined,
+        },
+        {
+          id: "202",
+          eventName: "Coding Workshop",
+          date: "OCT 25, 2025",
+          time: "2:00 PM",
+          location: "Computer Lab A",
+          eventImage: undefined,
+        },
+        {
+          id: "203",
+          eventName: "Art Exhibition Opening",
+          date: "OCT 25, 2025",
+          time: "6:00 PM",
+          location: "University Gallery",
+          eventImage: undefined,
+        },
+      ];
+    }
+    if (day === 28) {
+      return [
+        {
+          id: "301",
+          eventName: "Career Fair 2025",
+          date: "OCT 28, 2025",
+          time: "10:00 AM",
+          location: "Main Hall",
+          eventImage: undefined,
+        },
+        {
+          id: "302",
+          eventName: "Music Jam Session",
+          date: "OCT 28, 2025",
+          time: "4:00 PM",
+          location: "Music Building",
+          eventImage: undefined,
+        },
+      ];
+    }
+    // Return empty array for other dates
     return [];
   };
 
@@ -104,7 +178,47 @@ export const EventCalendar: React.FC = () => {
   };
 
   const handleEventClick = (eventId: string) => {
-    // Get the event details and open the details modal
+    console.log("handleEventClick called with eventId:", eventId);
+    // For Day and Week views, we need to create event details on the fly
+    // since those views have their own mock events
+    const eventDetails: EventDetailsData = {
+      id: eventId,
+      eventName: "Event Details",
+      organizer: {
+        name: "Becky",
+        studentId: "166g...fjhsgt",
+        avatar: undefined,
+      },
+      date: currentDate
+        .toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+        .toUpperCase()
+        .replace(",", ""),
+      time: "2:00 PM",
+      place: "Campus Location",
+      type: "public",
+      description:
+        "A fun event for students. Bring your A-game and let's have some competitive fun!",
+      attendees: [
+        { id: "1", name: "Becky", avatar: undefined },
+        { id: "2", name: "Ben Thompson", avatar: undefined },
+        { id: "3", name: "Leo Martinez", avatar: undefined },
+        { id: "4", name: "Mariana Silva", avatar: undefined },
+      ],
+      maxAttendees: 8,
+      eventImage: undefined,
+    };
+
+    console.log("Opening event details modal");
+    setSelectedEventDetails(eventDetails);
+    setEventDetailsModalOpen(true);
+  };
+
+  const handleMonthEventClick = (eventId: string) => {
+    // Get the event details from scheduled events and open the details modal
     const events = selectedDate ? getEventsForDate(selectedDate) : [];
     const event = events.find((e) => e.id === eventId);
 
@@ -261,7 +375,16 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
         </div>
-        <EventCalendarDay date={currentDate} />
+        <EventCalendarDay date={currentDate} onEventClick={handleEventClick} />
+
+        {/* Event Details Modal */}
+        {selectedEventDetails && (
+          <EventDetailsModal
+            isOpen={eventDetailsModalOpen}
+            onClose={() => setEventDetailsModalOpen(false)}
+            eventData={selectedEventDetails}
+          />
+        )}
       </div>
     );
   }
@@ -332,7 +455,16 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
         </div>
-        <EventCalendarWeek date={currentDate} />
+        <EventCalendarWeek date={currentDate} onEventClick={handleEventClick} />
+
+        {/* Event Details Modal */}
+        {selectedEventDetails && (
+          <EventDetailsModal
+            isOpen={eventDetailsModalOpen}
+            onClose={() => setEventDetailsModalOpen(false)}
+            eventData={selectedEventDetails}
+          />
+        )}
       </div>
     );
   }
@@ -469,7 +601,7 @@ export const EventCalendar: React.FC = () => {
             : ""
         }
         events={selectedDate ? getEventsForDate(selectedDate) : []}
-        onEventClick={handleEventClick}
+        onEventClick={handleMonthEventClick}
       />
 
       {/* Event Details Modal */}

@@ -1,7 +1,4 @@
 .ideas-insights-page {
-  padding: 32px 40px;
-  background: #f6f9ff;
-  min-height: calc(100vh - 78px);
 }
 
 /* Header */
@@ -153,6 +150,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
 }
 
 .time-card-header {
@@ -214,8 +212,7 @@
   border: 1px solid #eef0f1;
   border-radius: 14px;
   padding: 20px;
-  max-height: 355px;
-  overflow: hidden;
+  height: 100%;
 }
 
 .popular-ideas-title {

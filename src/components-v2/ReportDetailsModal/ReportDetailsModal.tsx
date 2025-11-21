@@ -1,6 +1,6 @@
 import React from "react";
 import { CModal, CModalHeader, CModalBody, CButton } from "@coreui/react";
-import AssetIcon from "../AssetIcon/AssetIcon";
+import { CopyableId } from "../CopyableId";
 import { useTheme } from "../../hooks/useTheme";
 import "./ReportDetailsModal.css";
 
@@ -63,10 +63,6 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
       return { bg: "#ffe9e9", text: "#ba0000" };
     }
     return { bg: "#f4f5f7", text: "#676d70" };
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
   };
 
   return (
@@ -143,22 +139,15 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                   >
                     Report ID:
                   </span>
-                  <div className="report-id-container">
-                    <span
-                      className="report-id-text"
-                      style={{ color: theme.colors.textMuted }}
-                    >
-                      {report.reportId}
-                    </span>
-                    <button
-                      data-testid="copy-report-id-button"
-                      className="copy-button"
-                      onClick={() => copyToClipboard(report.reportId)}
-                      aria-label="Copy Report ID"
-                    >
-                      <AssetIcon name="copy-icon" size={14} color="#acb6ba" />
-                    </button>
-                  </div>
+                  <CopyableId
+                    id={report.reportId}
+                    label="Report ID"
+                    variant="secondary"
+                    size="small"
+                    iconSize={14}
+                    iconColor="#acb6ba"
+                    testId="copy-report-id"
+                  />
                 </div>
 
                 {/* Reason */}

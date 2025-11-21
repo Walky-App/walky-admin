@@ -59,6 +59,11 @@ export const EventsInsights: React.FC = () => {
     { name: "Acting", students: 16, percentage: 6.0 },
     { name: "Anime", students: 16, percentage: 6.0 },
     { name: "Arcade", students: 16, percentage: 6.0 },
+    { name: "Soccer", students: 15, percentage: 5.6 },
+    { name: "Music", students: 14, percentage: 5.2 },
+    { name: "Photography", students: 13, percentage: 4.9 },
+    { name: "Coding", students: 12, percentage: 4.5 },
+    { name: "Art", students: 11, percentage: 4.1 },
   ];
 
   // Mock events data
@@ -72,6 +77,11 @@ export const EventsInsights: React.FC = () => {
     },
     { rank: 4, name: "Top Golf Monday", attendees: 2 },
     { rank: 5, name: "Top Golf Sunday", attendees: 1 },
+    { rank: 6, name: "Study Group Session", attendees: 5 },
+    { rank: 7, name: "Movie Night", attendees: 4 },
+    { rank: 8, name: "Board Game Evening", attendees: 3 },
+    { rank: 9, name: "Coffee Meetup", attendees: 2 },
+    { rank: 10, name: "Yoga Class", attendees: 1 },
   ];
 
   const publicEvents: EventItem[] = [
@@ -84,6 +94,11 @@ export const EventsInsights: React.FC = () => {
     },
     { rank: 4, name: "Top Golf Monday", attendees: 60 },
     { rank: 5, name: "Top Golf Sunday", attendees: 59 },
+    { rank: 6, name: "Campus Concert", attendees: 58 },
+    { rank: 7, name: "Tech Workshop", attendees: 55 },
+    { rank: 8, name: "Career Fair", attendees: 52 },
+    { rank: 9, name: "Food Festival", attendees: 50 },
+    { rank: 10, name: "Sports Tournament", attendees: 48 },
   ];
 
   return (
@@ -137,7 +152,7 @@ export const EventsInsights: React.FC = () => {
           data={expandReachData}
         />
         <DonutChart
-          title="Events by Users vs Spaces"
+          title="Events organized by Users vs Spaces"
           data={usersVsSpacesData}
         />
       </div>
@@ -200,7 +215,7 @@ export const EventsInsights: React.FC = () => {
       {/* Most Selected Interests */}
       <div className="interests-section">
         <div className="interests-header">
-          <AssetIcon name="wb-sunny-icon" size={30} color="#FFC107" />
+          <AssetIcon name="top-interests-icon" size={30} color="#526AC9" />
           <h2 className="interests-title">
             Most selected Interests as Event categories
           </h2>

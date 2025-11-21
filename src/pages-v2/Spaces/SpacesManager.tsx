@@ -19,6 +19,9 @@ const mockSpaces: SpaceData[] = [
     creationDate: "Oct 7, 2025",
     creationTime: "12:45",
     category: "clubs",
+    isFlagged: true,
+    flagReason:
+      "Space contains inappropriate content and violates community guidelines.",
   },
   {
     id: "2",

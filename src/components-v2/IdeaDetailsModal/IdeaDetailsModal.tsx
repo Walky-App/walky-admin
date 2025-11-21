@@ -1,7 +1,7 @@
 import React from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./IdeaDetailsModal.css";
-import { AssetIcon } from "../../components-v2";
+import { AssetIcon, CopyableId } from "../../components-v2";
 
 export interface IdeaCollaborator {
   id: string;
@@ -22,6 +22,8 @@ export interface IdeaDetailsData {
   description: string;
   lookingFor: string;
   collaborators: IdeaCollaborator[];
+  isFlagged?: boolean;
+  flagReason?: string;
 }
 
 interface IdeaDetailsModalProps {
@@ -36,10 +38,6 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
   ideaData,
 }) => {
   if (!ideaData) return null;
-
-  const handleCopyStudentId = (studentId: string) => {
-    navigator.clipboard.writeText(studentId);
-  };
 
   return (
     <CModal
@@ -57,7 +55,7 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
           onClick={onClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} color="#5b6168" />
+          <AssetIcon name="close-button" size={16} color="#5b6168" />
         </button>
 
         <div className="idea-details-content">
@@ -88,20 +86,13 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
                   </div>
                   <div className="idea-owner-info">
                     <p className="idea-owner-name">{ideaData.owner.name}</p>
-                    <div className="idea-owner-id-container">
-                      <div className="idea-owner-id-badge">
-                        {ideaData.owner.studentId}
-                      </div>
-                      <button
-                        data-testid="idea-owner-copy-btn"
-                        className="idea-owner-copy-btn"
-                        onClick={() =>
-                          handleCopyStudentId(ideaData.owner.studentId)
-                        }
-                      >
-                        <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                      </button>
-                    </div>
+                    <CopyableId
+                      id={ideaData.owner.studentId}
+                      label="Student ID"
+                      variant="secondary"
+                      iconColor="#ACB6BA"
+                      testId="idea-owner-copy"
+                    />
                   </div>
                 </div>
               </div>
@@ -134,6 +125,14 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
                       {ideaData.lookingFor}
                     </span>
                   </div>
+                  {ideaData.isFlagged && ideaData.flagReason && (
+                    <div className="idea-info-flag-reason">
+                      <span className="idea-info-label">Reason for flag:</span>{" "}
+                      <span className="idea-info-value-flagged">
+                        {ideaData.flagReason}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

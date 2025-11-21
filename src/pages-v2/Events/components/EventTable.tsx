@@ -1,10 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
-  AssetIcon,
   DeleteModal,
   CustomToast,
   EventDetailsModal,
   EventDetailsData,
+  CopyableId,
+  ActionDropdown,
+  AssetIcon,
+  FlagModal,
+  UnflagModal,
 } from "../../../components-v2";
 import { EventTypeChip, EventType } from "./EventTypeChip";
 import "./EventTable.css";
@@ -21,6 +25,8 @@ export interface EventData {
   eventTime: string;
   attendees: number;
   type: EventType;
+  isFlagged?: boolean;
+  flagReason?: string;
 }
 
 interface EventTableProps {
@@ -33,32 +39,18 @@ type SortDirection = "asc" | "desc";
 export const EventTable: React.FC<EventTableProps> = ({ events }) => {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<EventData | null>(null);
+  const [flagModalOpen, setFlagModalOpen] = useState(false);
+  const [eventToFlag, setEventToFlag] = useState<EventData | null>(null);
+  const [unflagModalOpen, setUnflagModalOpen] = useState(false);
+  const [eventToUnflag, setEventToUnflag] = useState<EventData | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(
     null
   );
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpenDropdownId(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -69,14 +61,9 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
     }
   };
 
-  const handleCopyStudentId = (studentId: string) => {
-    navigator.clipboard.writeText(studentId);
-  };
-
   const handleDeleteClick = (event: EventData) => {
     setEventToDelete(event);
     setDeleteModalOpen(true);
-    setOpenDropdownId(null);
   };
 
   const handleDeleteConfirm = (reason: string) => {
@@ -123,10 +110,45 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
       ],
       maxAttendees: 8,
       eventImage: undefined, // Mock data - no image
+      isFlagged: event.isFlagged,
+      flagReason: event.flagReason,
     };
     setSelectedEvent(eventDetails);
     setDetailsModalOpen(true);
-    setOpenDropdownId(null);
+  };
+
+  const handleFlagEvent = (event: EventData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEventToFlag(event);
+    setFlagModalOpen(true);
+  };
+
+  const handleFlagConfirm = (reason: string) => {
+    if (eventToFlag) {
+      console.log("Flagging event:", eventToFlag.eventName, "Reason:", reason);
+      // TODO: Call API to flag event
+      setToastMessage(`Event "${eventToFlag.eventName}" flagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
+  const handleUnflagEvent = (event: EventData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEventToUnflag(event);
+    setUnflagModalOpen(true);
+  };
+
+  const handleUnflagConfirm = () => {
+    if (eventToUnflag) {
+      console.log("Unflagging event:", eventToUnflag.eventName);
+      // TODO: Call API to unflag event
+      setToastMessage(
+        `Event "${eventToUnflag.eventName}" unflagged successfully`
+      );
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const sortedEvents = [...events].sort((a, b) => {
@@ -213,9 +235,22 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
         </thead>
         <tbody>
           {sortedEvents.map((event) => (
-            <tr key={event.id}>
+            <tr
+              key={event.id}
+              className={event.isFlagged ? "event-row-flagged" : ""}
+            >
               <td>
-                <span className="event-name">{event.eventName}</span>
+                <div className="event-name-cell">
+                  {event.isFlagged && (
+                    <AssetIcon
+                      name="flag-icon"
+                      size={16}
+                      color="#D53425"
+                      className="event-flag-icon"
+                    />
+                  )}
+                  <span className="event-name">{event.eventName}</span>
+                </div>
               </td>
               <td>
                 <div className="organizer-cell">
@@ -235,19 +270,11 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                 </div>
               </td>
               <td>
-                <div className="student-id-cell">
-                  <div className="student-id-badge">
-                    <span>{event.studentId}</span>
-                  </div>
-                  <button
-                    data-testid="copy-student-id-btn"
-                    className="copy-btn"
-                    onClick={() => handleCopyStudentId(event.studentId)}
-                    title="Copy student ID"
-                  >
-                    <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                  </button>
-                </div>
+                <CopyableId
+                  id={event.studentId}
+                  label="Student ID"
+                  testId="copy-student-id"
+                />
               </td>
               <td>
                 <div className="event-date-cell">
@@ -264,51 +291,40 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                 <EventTypeChip type={event.type} />
               </td>
               <td>
-                <div className="event-dropdown-container" ref={dropdownRef}>
-                  <button
-                    data-testid="event-dropdown-toggle-btn"
-                    className="event-dropdown-toggle"
-                    onClick={() =>
-                      setOpenDropdownId(
-                        openDropdownId === event.id ? null : event.id
-                      )
-                    }
-                  >
-                    <AssetIcon
-                      name="vertical-3-dots-icon"
-                      size={24}
-                      color="#1D1B20"
-                    />
-                  </button>
-                  {openDropdownId === event.id && (
-                    <div className="event-dropdown-menu">
-                      <div
-                        className="event-dropdown-item"
-                        onClick={(e) => handleViewEvent(event, e)}
-                      >
-                        View event
-                      </div>
-                      <div
-                        className="event-dropdown-item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log("Edit event", event);
-                        }}
-                      >
-                        Edit event
-                      </div>
-                      <div
-                        className="event-dropdown-item event-dropdown-item-delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(event);
-                        }}
-                      >
-                        Delete event
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ActionDropdown
+                  testId="event-dropdown"
+                  items={[
+                    {
+                      label: "View event",
+                      onClick: (e) => handleViewEvent(event, e),
+                    },
+                    {
+                      isDivider: true,
+                      label: "",
+                      onClick: () => {},
+                    },
+                    event.isFlagged
+                      ? {
+                          label: "Unflag",
+                          icon: "flag-icon",
+                          variant: "danger",
+                          onClick: (e) => handleUnflagEvent(event, e),
+                        }
+                      : {
+                          label: "Flag event",
+                          icon: "flag-icon",
+                          onClick: (e) => handleFlagEvent(event, e),
+                        },
+                    {
+                      label: "Delete event",
+                      variant: "danger",
+                      onClick: (e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(event);
+                      },
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))}
@@ -320,6 +336,22 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
         itemName={eventToDelete?.eventName || ""}
+        type="event"
+      />
+
+      <UnflagModal
+        isOpen={unflagModalOpen}
+        onClose={() => setUnflagModalOpen(false)}
+        onConfirm={handleUnflagConfirm}
+        itemName={eventToUnflag?.eventName || ""}
+        type="event"
+      />
+
+      <FlagModal
+        isOpen={flagModalOpen}
+        onClose={() => setFlagModalOpen(false)}
+        onConfirm={handleFlagConfirm}
+        itemName={eventToFlag?.eventName || ""}
         type="event"
       />
 

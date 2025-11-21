@@ -1,5 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
-import { AssetIcon, DeleteModal, CustomToast } from "../../../components-v2";
+import React, { useState } from "react";
+import {
+  DeleteModal,
+  CustomToast,
+  CopyableId,
+  ActionDropdown,
+  AssetIcon,
+  FlagModal,
+  SpaceDetailsModal,
+  SpaceDetailsData,
+  UnflagModal,
+} from "../../../components-v2";
 import { SpaceTypeChip, SpaceType } from "./SpaceTypeChip";
 import "./SpaceTable.css";
 
@@ -16,6 +26,8 @@ export interface SpaceData {
   creationDate: string;
   creationTime: string;
   category: SpaceType;
+  isFlagged?: boolean;
+  flagReason?: string;
 }
 
 interface SpaceTableProps {
@@ -28,28 +40,18 @@ type SortDirection = "asc" | "desc";
 export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [spaceToDelete, setSpaceToDelete] = useState<SpaceData | null>(null);
+  const [flagModalOpen, setFlagModalOpen] = useState(false);
+  const [spaceToFlag, setSpaceToFlag] = useState<SpaceData | null>(null);
+  const [unflagModalOpen, setUnflagModalOpen] = useState(false);
+  const [spaceToUnflag, setSpaceToUnflag] = useState<SpaceData | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedSpace, setSelectedSpace] = useState<SpaceDetailsData | null>(
+    null
+  );
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpenDropdownId(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -60,14 +62,9 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     }
   };
 
-  const handleCopyStudentId = (studentId: string) => {
-    navigator.clipboard.writeText(studentId);
-  };
-
   const handleDeleteClick = (space: SpaceData) => {
     setSpaceToDelete(space);
     setDeleteModalOpen(true);
-    setOpenDropdownId(null);
   };
 
   const handleDeleteConfirm = (reason: string) => {
@@ -89,16 +86,117 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
 
   const handleViewSpaceDetails = (space: SpaceData, e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log("View space details", space);
-    // TODO: Implement view space details modal
-    setOpenDropdownId(null);
+    // Convert SpaceData to SpaceDetailsData
+    const spaceDetails: SpaceDetailsData = {
+      id: space.id,
+      spaceName: space.spaceName,
+      owner: {
+        name: space.owner.name,
+        avatar: space.owner.avatar,
+        studentId: space.studentId,
+      },
+      creationDate: space.creationDate,
+      creationTime: space.creationTime,
+      category: space.category,
+      chapter: "FIU Official",
+      contact: "fiuhonduras@gmail.com",
+      about:
+        "Our club is a space to connect, share, and meet new people. It's all about building community, having good conversations, and enjoying time together.",
+      howWeUse:
+        "We post events and offer general information about how to get involved. If you are interested in joining or want to recommend someone please contact us and we'll get back to you!",
+      description:
+        "A vibrant community space for students to connect and share their culture.",
+      events: [
+        {
+          id: "1",
+          title: "4v4 Basketball game",
+          date: "OCT 16, 2025",
+          time: "2:00 PM",
+          location: "S. Campus Basketball Courts",
+          image:
+            "https://www.figma.com/api/mcp/asset/86606deb-9b9b-4ceb-ad63-93bf44dcac72",
+        },
+      ],
+      members: [
+        {
+          id: "1",
+          name: "Anni",
+          avatar:
+            "https://www.figma.com/api/mcp/asset/a5bd2efd-d2f7-4634-9ac4-fcb1ccb6d939",
+        },
+        {
+          id: "2",
+          name: "Ben",
+          avatar:
+            "https://www.figma.com/api/mcp/asset/7c38d015-cf9a-408b-88a1-d8cd58c5e8a3",
+        },
+        {
+          id: "3",
+          name: "Justin",
+          avatar:
+            "https://www.figma.com/api/mcp/asset/65ed9095-436b-4458-84be-7878e60e56ea",
+        },
+        {
+          id: "4",
+          name: "Austin",
+          avatar:
+            "https://www.figma.com/api/mcp/asset/0324e47a-ecc7-439a-a8ea-513c8588e1f2",
+        },
+        {
+          id: "5",
+          name: "Nataly",
+          avatar:
+            "https://www.figma.com/api/mcp/asset/f283a2e1-c53a-470c-8da7-f8c85f6c8551",
+        },
+        { id: "6", name: "Becky", avatar: space.owner.avatar },
+      ],
+      spaceImage:
+        "https://www.figma.com/api/mcp/asset/edc87584-5c7e-4e17-9c9c-95b0f48140f2",
+      spaceLogo:
+        "https://www.figma.com/api/mcp/asset/df84a020-2c75-41bf-9ec0-ab7d12ff8e15",
+      memberRange: "1-10",
+      yearEstablished: "2024",
+      governingBody: "Interfraternity",
+      primaryFocus: "Social",
+      isFlagged: space.isFlagged,
+      flagReason: space.flagReason,
+    };
+    setSelectedSpace(spaceDetails);
+    setDetailsModalOpen(true);
   };
 
   const handleFlagSpace = (space: SpaceData, e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log("Flag space", space);
-    // TODO: Implement flag space functionality
-    setOpenDropdownId(null);
+    setSpaceToFlag(space);
+    setFlagModalOpen(true);
+  };
+
+  const handleFlagConfirm = (reason: string) => {
+    if (spaceToFlag) {
+      console.log("Flagging space:", spaceToFlag.spaceName, "Reason:", reason);
+      // TODO: Call API to flag space
+      setToastMessage(`Space "${spaceToFlag.spaceName}" flagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
+  const handleUnflagSpace = (space: SpaceData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSpaceToUnflag(space);
+    setUnflagModalOpen(true);
+  };
+
+  const handleUnflagConfirm = () => {
+    if (spaceToUnflag) {
+      console.log("Unflagging space:", spaceToUnflag.spaceName);
+      // TODO: Call API to unflag space
+      setToastMessage(
+        `Space "${spaceToUnflag.spaceName}" unflagged successfully`
+      );
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const sortedSpaces = [...spaces].sort((a, b) => {
@@ -198,9 +296,22 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         </thead>
         <tbody>
           {sortedSpaces.map((space) => (
-            <tr key={space.id}>
+            <tr
+              key={space.id}
+              className={space.isFlagged ? "space-row-flagged" : ""}
+            >
               <td>
-                <span className="space-name">{space.spaceName}</span>
+                <div className="space-name-cell">
+                  {space.isFlagged && (
+                    <AssetIcon
+                      name="flag-icon"
+                      size={16}
+                      color="#D53425"
+                      className="space-flag-icon"
+                    />
+                  )}
+                  <span className="space-name">{space.spaceName}</span>
+                </div>
               </td>
               <td>
                 <div className="owner-cell">
@@ -217,19 +328,11 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
                 </div>
               </td>
               <td>
-                <div className="student-id-cell">
-                  <div className="student-id-badge">
-                    <span>{space.studentId}</span>
-                  </div>
-                  <button
-                    data-testid="copy-student-id-btn"
-                    className="copy-btn"
-                    onClick={() => handleCopyStudentId(space.studentId)}
-                    title="Copy student ID"
-                  >
-                    <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                  </button>
-                </div>
+                <CopyableId
+                  id={space.studentId}
+                  label="Student ID"
+                  testId="copy-student-id"
+                />
               </td>
               <td>
                 <div className="count-badge events-badge">
@@ -251,55 +354,61 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
                 <SpaceTypeChip type={space.category} />
               </td>
               <td>
-                <div className="space-dropdown-container" ref={dropdownRef}>
-                  <button
-                    data-testid="space-dropdown-toggle-btn"
-                    className="space-dropdown-toggle"
-                    onClick={() =>
-                      setOpenDropdownId(
-                        openDropdownId === space.id ? null : space.id
-                      )
-                    }
-                  >
-                    <AssetIcon
-                      name="vertical-3-dots-icon"
-                      size={24}
-                      color="#1D1B20"
-                    />
-                  </button>
-                  {openDropdownId === space.id && (
-                    <div className="space-dropdown-menu">
-                      <div
-                        className="space-dropdown-item space-dropdown-title"
-                        onClick={(e) => handleViewSpaceDetails(space, e)}
-                      >
-                        Space Details
-                      </div>
-                      <div
-                        className="space-dropdown-item space-dropdown-item-flag"
-                        onClick={(e) => handleFlagSpace(space, e)}
-                      >
-                        <AssetIcon name="flag-icon" size={18} color="#1D1B20" />
-                        <span>Flag</span>
-                      </div>
-                      <div className="space-dropdown-divider" />
-                      <div
-                        className="space-dropdown-item space-dropdown-item-delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(space);
-                        }}
-                      >
-                        Delete Space
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ActionDropdown
+                  testId="space-dropdown"
+                  items={[
+                    {
+                      label: "Space Details",
+                      onClick: (e) => handleViewSpaceDetails(space, e),
+                    },
+                    {
+                      isDivider: true,
+                      label: "",
+                      onClick: () => {},
+                    },
+                    space.isFlagged
+                      ? {
+                          label: "Unflag",
+                          icon: "flag-icon",
+                          variant: "danger",
+                          onClick: (e) => handleUnflagSpace(space, e),
+                        }
+                      : {
+                          label: "Flag",
+                          icon: "flag-icon",
+                          onClick: (e) => handleFlagSpace(space, e),
+                        },
+                    {
+                      label: "Delete Space",
+                      variant: "danger",
+                      onClick: (e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(space);
+                      },
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <UnflagModal
+        isOpen={unflagModalOpen}
+        onClose={() => setUnflagModalOpen(false)}
+        onConfirm={handleUnflagConfirm}
+        itemName={spaceToUnflag?.spaceName || ""}
+        type="space"
+      />
+
+      <FlagModal
+        isOpen={flagModalOpen}
+        onClose={() => setFlagModalOpen(false)}
+        onConfirm={handleFlagConfirm}
+        itemName={spaceToFlag?.spaceName || ""}
+        type="space"
+      />
 
       <DeleteModal
         isOpen={deleteModalOpen}
@@ -307,6 +416,15 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         onConfirm={handleDeleteConfirm}
         itemName={spaceToDelete?.spaceName || ""}
         type="space"
+      />
+
+      <SpaceDetailsModal
+        isOpen={detailsModalOpen}
+        onClose={() => {
+          setDetailsModalOpen(false);
+          setSelectedSpace(null);
+        }}
+        spaceData={selectedSpace}
       />
 
       {showToast && (
