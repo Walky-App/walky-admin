@@ -28,7 +28,12 @@ export const DeleteAmbassadorModal: React.FC<DeleteAmbassadorModalProps> = ({
         className="delete-modal-content"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="delete-modal-close" onClick={onClose}>
+        <button
+          data-testid="delete-ambassador-close-btn"
+          className="delete-modal-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -46,10 +51,18 @@ export const DeleteAmbassadorModal: React.FC<DeleteAmbassadorModalProps> = ({
           </div>
 
           <div className="delete-modal-actions">
-            <button className="delete-modal-cancel" onClick={onClose}>
+            <button
+              data-testid="delete-ambassador-cancel-btn"
+              className="delete-modal-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
-            <button className="delete-modal-confirm" onClick={handleConfirm}>
+            <button
+              data-testid="delete-ambassador-confirm-btn"
+              className="delete-modal-confirm"
+              onClick={handleConfirm}
+            >
               Delete Ambassador
             </button>
           </div>

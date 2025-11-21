@@ -258,6 +258,7 @@ export const RoleManagement: React.FC = () => {
               <div className="search-input-wrapper">
                 <AssetIcon name="search-icon" size={24} />
                 <input
+                  data-testid="members-search-input"
                   type="text"
                   className="search-input"
                   placeholder="Search"
@@ -267,6 +268,7 @@ export const RoleManagement: React.FC = () => {
               </div>
               <div className="role-filter-wrapper" ref={roleFilterRef}>
                 <button
+                  data-testid="role-filter-btn"
                   className="role-filter-button"
                   onClick={() => setIsRoleFilterOpen(!isRoleFilterOpen)}
                 >
@@ -276,30 +278,35 @@ export const RoleManagement: React.FC = () => {
                 {isRoleFilterOpen && (
                   <div className="role-filter-dropdown">
                     <button
+                      data-testid="filter-all-roles"
                       className="dropdown-item"
                       onClick={() => handleRoleFilterSelect("All Roles")}
                     >
                       All Roles
                     </button>
                     <button
+                      data-testid="filter-walky-admin"
                       className="dropdown-item"
                       onClick={() => handleRoleFilterSelect("Walky Admin")}
                     >
                       Walky Admin
                     </button>
                     <button
+                      data-testid="filter-school-admin"
                       className="dropdown-item"
                       onClick={() => handleRoleFilterSelect("School Admin")}
                     >
                       School Admin
                     </button>
                     <button
+                      data-testid="filter-campus-admin"
                       className="dropdown-item"
                       onClick={() => handleRoleFilterSelect("Campus Admin")}
                     >
                       Campus Admin
                     </button>
                     <button
+                      data-testid="filter-moderator"
                       className="dropdown-item"
                       onClick={() => handleRoleFilterSelect("Moderator")}
                     >
@@ -310,7 +317,11 @@ export const RoleManagement: React.FC = () => {
               </div>
             </div>
           </div>
-          <button className="create-member-button" onClick={handleCreateMember}>
+          <button
+            data-testid="create-member-btn"
+            className="create-member-button"
+            onClick={handleCreateMember}
+          >
             <span>+ Create new member</span>
           </button>
         </div>
@@ -369,6 +380,7 @@ export const RoleManagement: React.FC = () => {
                   {/* Role Column */}
                   <td className="member-role">
                     <button
+                      data-testid="role-badge-btn"
                       className="role-badge"
                       onClick={() => handleRoleClick(member.role)}
                     >
@@ -411,6 +423,7 @@ export const RoleManagement: React.FC = () => {
                       }}
                     >
                       <button
+                        data-testid="member-options-btn"
                         className="options-button"
                         onClick={() => handleMemberOptions(member.id)}
                         title="More options"
@@ -420,18 +433,21 @@ export const RoleManagement: React.FC = () => {
                       {openActionMenuId === member.id && (
                         <div className="actions-dropdown">
                           <button
+                            data-testid="member-change-role-btn"
                             className="action-item"
                             onClick={() => handleChangeRole(member.id)}
                           >
                             Change role
                           </button>
                           <button
+                            data-testid="member-send-password-reset-btn"
                             className="action-item"
                             onClick={() => handleSendPasswordReset(member.id)}
                           >
                             Send a password reset
                           </button>
                           <button
+                            data-testid="member-remove-btn"
                             className="action-item remove"
                             onClick={() => handleRemoveMember(member.id)}
                           >
@@ -453,11 +469,19 @@ export const RoleManagement: React.FC = () => {
             Showing {totalMembers} of {totalMembers} entries
           </p>
           <div className="pagination-controls">
-            <button className="pagination-button" disabled>
+            <button
+              data-testid="pagination-prev-btn"
+              className="pagination-button"
+              disabled
+            >
               Previous
             </button>
             <div className="page-number active">{currentPage}</div>
-            <button className="pagination-button" disabled>
+            <button
+              data-testid="pagination-next-btn"
+              className="pagination-button"
+              disabled
+            >
               Next
             </button>
           </div>

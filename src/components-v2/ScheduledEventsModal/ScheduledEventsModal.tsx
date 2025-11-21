@@ -43,6 +43,7 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
     >
       <CModalBody className="scheduled-events-modal-body">
         <button
+          data-testid="scheduled-events-close-btn"
           onClick={onClose}
           className="scheduled-events-close"
           aria-label="Close"
@@ -68,6 +69,7 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
                 <div className="search-input-container">
                   <AssetIcon name="search-icon" size={12} color="#676D70" />
                   <input
+                    data-testid="scheduled-events-search-input"
                     type="text"
                     placeholder="Search Event"
                     value={searchQuery}
@@ -147,7 +149,11 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
 
           {/* Footer */}
           <div className="scheduled-events-footer">
-            <button onClick={onClose} className="scheduled-events-close-btn">
+            <button
+              data-testid="scheduled-events-close-footer-btn"
+              onClick={onClose}
+              className="scheduled-events-close-btn"
+            >
               Close
             </button>
           </div>

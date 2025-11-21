@@ -166,6 +166,7 @@ export const DisengagedStudents: React.FC = () => {
                   </td>
                   <td>
                     <button
+                      data-testid="send-outreach-btn"
                       className="disengaged-send-outreach-button"
                       onClick={() => handleSendOutreach(student)}
                     >

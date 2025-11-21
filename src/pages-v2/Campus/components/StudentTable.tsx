@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import {
   CDropdown,
@@ -110,7 +111,6 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     "onlineLast",
   ],
   onStudentClick,
-  onActionClick: _onActionClick,
 }) => {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -294,6 +294,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
             <span className="student-userid-text">{student.userId}</span>
           </div>
           <button
+            data-testid="copy-user-id-btn"
             className="student-userid-copy"
             onClick={(e) => {
               e.stopPropagation();

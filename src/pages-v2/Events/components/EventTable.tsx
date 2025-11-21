@@ -240,6 +240,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                     <span>{event.studentId}</span>
                   </div>
                   <button
+                    data-testid="copy-student-id-btn"
                     className="copy-btn"
                     onClick={() => handleCopyStudentId(event.studentId)}
                     title="Copy student ID"
@@ -265,6 +266,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
               <td>
                 <div className="event-dropdown-container" ref={dropdownRef}>
                   <button
+                    data-testid="event-dropdown-toggle-btn"
                     className="event-dropdown-toggle"
                     onClick={() =>
                       setOpenDropdownId(

@@ -28,7 +28,12 @@ const RemoveMemberModal: React.FC<RemoveMemberModalProps> = ({
   return (
     <div className="remove-member-overlay" onClick={handleOverlayClick}>
       <div className="remove-member-content" onClick={handleContentClick}>
-        <button className="remove-member-close" onClick={onClose}>
+        <button
+          data-testid="remove-member-close-btn"
+          className="remove-member-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -47,10 +52,18 @@ const RemoveMemberModal: React.FC<RemoveMemberModalProps> = ({
           </div>
 
           <div className="remove-member-buttons">
-            <button className="remove-member-cancel" onClick={onClose}>
+            <button
+              data-testid="remove-member-cancel-btn"
+              className="remove-member-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
-            <button className="remove-member-confirm" onClick={onConfirm}>
+            <button
+              data-testid="remove-member-confirm-btn"
+              className="remove-member-confirm"
+              onClick={onConfirm}
+            >
               Remove role
             </button>
           </div>

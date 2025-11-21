@@ -32,6 +32,7 @@ export const Pagination: React.FC<PaginationProps> = ({
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
+          data-testid="pagination-page-btn"
           key={i}
           className={`pagination-button pagination-number ${
             i === currentPage ? "active" : ""
@@ -53,6 +54,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       </div>
       <div className="pagination-controls">
         <button
+          data-testid="pagination-prev-btn"
           className="pagination-button pagination-prev"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -61,6 +63,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         </button>
         {renderPageNumbers()}
         <button
+          data-testid="pagination-next-btn"
           className="pagination-button pagination-next"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}

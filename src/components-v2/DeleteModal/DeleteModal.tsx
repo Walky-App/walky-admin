@@ -51,7 +51,12 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
       className="delete-modal-wrapper"
     >
       <CModalBody className="delete-modal-body">
-        <button className="delete-modal-close" onClick={handleClose}>
+        <button
+          data-testid="delete-modal-close-btn"
+          className="delete-modal-close"
+          onClick={handleClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} color="#5b6168" />
         </button>
 
@@ -86,10 +91,15 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
           </div>
 
           <div className="delete-modal-actions">
-            <button className="delete-modal-cancel-btn" onClick={handleClose}>
+            <button
+              data-testid="delete-modal-cancel-btn"
+              className="delete-modal-cancel-btn"
+              onClick={handleClose}
+            >
               Cancel
             </button>
             <button
+              data-testid="delete-modal-confirm-btn"
               className="delete-modal-confirm-btn"
               onClick={handleConfirm}
             >

@@ -106,6 +106,7 @@ export const SpacesManager: React.FC = () => {
             <div className="search-input-container">
               <AssetIcon name="search-icon" size={24} color="#676D70" />
               <input
+                data-testid="search-input"
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
@@ -116,6 +117,7 @@ export const SpacesManager: React.FC = () => {
 
             <div className="category-filter-dropdown" ref={dropdownRef}>
               <button
+                data-testid="category-filter-btn"
                 className="category-filter-button"
                 onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
               >
@@ -260,6 +262,7 @@ export const SpacesManager: React.FC = () => {
 
           <div className="pagination-controls">
             <button
+              data-testid="pagination-prev-btn"
               className="pagination-btn"
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
@@ -272,6 +275,7 @@ export const SpacesManager: React.FC = () => {
             </div>
 
             <button
+              data-testid="pagination-next-btn"
               className="pagination-btn"
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}

@@ -59,14 +59,24 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
       className="event-details-modal-wrapper"
     >
       <CModalBody className="event-details-modal-body">
-        <button className="event-details-close" onClick={onClose}>
+        <button
+          data-testid="event-details-close-btn"
+          className="event-details-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} color="#5b6168" />
         </button>
 
         <div className="event-details-content">
           {/* Header */}
           <div className="event-details-header">
-            <button className="event-details-back-btn" onClick={handleBack}>
+            <button
+              data-testid="event-details-back-btn"
+              className="event-details-back-btn"
+              onClick={handleBack}
+              aria-label="Go back"
+            >
               <AssetIcon
                 name="arrow-down"
                 size={32}
@@ -124,6 +134,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                         {eventData.organizer.studentId}
                       </div>
                       <button
+                        data-testid="event-organizer-copy-btn"
                         className="event-organizer-copy-btn"
                         onClick={() =>
                           handleCopyStudentId(eventData.organizer.studentId)
@@ -205,7 +216,11 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
 
           {/* Footer */}
           <div className="event-details-footer">
-            <button className="event-details-close-btn" onClick={onClose}>
+            <button
+              data-testid="event-details-close-footer-btn"
+              className="event-details-close-btn"
+              onClick={onClose}
+            >
               Close
             </button>
           </div>

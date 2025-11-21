@@ -123,6 +123,7 @@ export const DeactivatedStudents: React.FC = () => {
             <div className="deactivated-students-search">
               <AssetIcon name="search-icon" size={24} className="search-icon" />
               <input
+                data-testid="search-input"
                 type="text"
                 placeholder="Search"
                 value={searchQuery}

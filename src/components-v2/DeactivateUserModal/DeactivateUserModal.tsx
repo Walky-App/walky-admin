@@ -34,7 +34,12 @@ export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
     >
       <CModalBody className="deactivate-user-modal-body">
         {/* Close button */}
-        <button className="deactivate-modal-close-icon" onClick={handleCancel}>
+        <button
+          data-testid="deactivate-modal-close-btn"
+          className="deactivate-modal-close-icon"
+          onClick={handleCancel}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} color="#5B6168" />
         </button>
 

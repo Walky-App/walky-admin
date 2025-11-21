@@ -49,7 +49,12 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
   return (
     <div className="change-role-overlay" onClick={handleOverlayClick}>
       <div className="change-role-content" onClick={handleContentClick}>
-        <button className="change-role-close" onClick={onClose}>
+        <button
+          data-testid="change-role-close-btn"
+          className="change-role-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -65,6 +70,7 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
             <label className="change-role-label">Select a role</label>
             <div className="change-role-dropdown-wrapper">
               <button
+                data-testid="change-role-dropdown-btn"
                 className="change-role-select"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
@@ -75,6 +81,7 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
                 <div className="change-role-dropdown">
                   {roleOptions.map((role) => (
                     <button
+                      data-testid="change-role-option-btn"
                       key={role}
                       className={`change-role-option ${
                         role === selectedRole ? "selected" : ""
@@ -90,10 +97,18 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
           </div>
 
           <div className="change-role-buttons">
-            <button className="change-role-cancel" onClick={onClose}>
+            <button
+              data-testid="change-role-cancel-btn"
+              className="change-role-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
-            <button className="change-role-confirm" onClick={handleSave}>
+            <button
+              data-testid="change-role-confirm-btn"
+              className="change-role-confirm"
+              onClick={handleSave}
+            >
               Save changes
             </button>
           </div>

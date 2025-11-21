@@ -26,7 +26,12 @@ const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
   return (
     <div className="unsaved-changes-overlay" onClick={handleOverlayClick}>
       <div className="unsaved-changes-content" onClick={handleContentClick}>
-        <button className="unsaved-changes-close" onClick={onClose}>
+        <button
+          data-testid="unsaved-changes-close-btn"
+          className="unsaved-changes-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -43,10 +48,18 @@ const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
           </div>
 
           <div className="unsaved-changes-buttons">
-            <button className="unsaved-changes-stay" onClick={onClose}>
+            <button
+              data-testid="unsaved-changes-stay-btn"
+              className="unsaved-changes-stay"
+              onClick={onClose}
+            >
               Stay
             </button>
-            <button className="unsaved-changes-leave" onClick={onLeave}>
+            <button
+              data-testid="unsaved-changes-leave-btn"
+              className="unsaved-changes-leave"
+              onClick={onLeave}
+            >
               Leave without updating
             </button>
           </div>

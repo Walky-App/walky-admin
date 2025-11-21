@@ -205,7 +205,12 @@ export const EventCalendar: React.FC = () => {
           </div>
 
           <div className="month-navigation">
-            <button className="nav-arrow" onClick={handlePrevMonth}>
+            <button
+              data-testid="calendar-prev-month-btn"
+              className="nav-arrow"
+              onClick={handlePrevMonth}
+              aria-label="Previous month"
+            >
               <AssetIcon
                 name="arrow-down"
                 size={14}
@@ -216,7 +221,12 @@ export const EventCalendar: React.FC = () => {
             <h2 className="month-year">
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
             </h2>
-            <button className="nav-arrow" onClick={handleNextMonth}>
+            <button
+              data-testid="calendar-next-month-btn"
+              className="nav-arrow"
+              onClick={handleNextMonth}
+              aria-label="Next month"
+            >
               <AssetIcon
                 name="arrow-down"
                 size={14}
@@ -228,16 +238,22 @@ export const EventCalendar: React.FC = () => {
 
           <div className="view-toggle">
             <button
+              data-testid="view-day-btn"
               className="view-option view-option-active"
               onClick={() => setViewMode("day")}
             >
               Day
             </button>
             <div className="view-divider"></div>
-            <button className="view-option" onClick={() => setViewMode("week")}>
+            <button
+              data-testid="view-week-btn"
+              className="view-option"
+              onClick={() => setViewMode("week")}
+            >
               Week
             </button>
             <button
+              data-testid="view-month-btn"
               className="view-option"
               onClick={() => setViewMode("month")}
             >
@@ -260,7 +276,12 @@ export const EventCalendar: React.FC = () => {
           </div>
 
           <div className="month-navigation">
-            <button className="nav-arrow" onClick={handlePrevMonth}>
+            <button
+              data-testid="calendar-prev-btn"
+              className="nav-arrow"
+              onClick={handlePrevMonth}
+              aria-label="Previous month"
+            >
               <AssetIcon
                 name="arrow-down"
                 size={14}
@@ -271,7 +292,12 @@ export const EventCalendar: React.FC = () => {
             <h2 className="month-year">
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
             </h2>
-            <button className="nav-arrow" onClick={handleNextMonth}>
+            <button
+              data-testid="calendar-next-btn"
+              className="nav-arrow"
+              onClick={handleNextMonth}
+              aria-label="Next month"
+            >
               <AssetIcon
                 name="arrow-down"
                 size={14}
@@ -282,17 +308,23 @@ export const EventCalendar: React.FC = () => {
           </div>
 
           <div className="view-toggle">
-            <button className="view-option" onClick={() => setViewMode("day")}>
+            <button
+              data-testid="view-day-btn"
+              className="view-option"
+              onClick={() => setViewMode("day")}
+            >
               Day
             </button>
             <div className="view-divider"></div>
             <button
+              data-testid="view-week-btn"
               className="view-option view-option-active"
               onClick={() => setViewMode("week")}
             >
               Week
             </button>
             <button
+              data-testid="view-month-btn"
               className="view-option"
               onClick={() => setViewMode("month")}
             >
@@ -314,7 +346,12 @@ export const EventCalendar: React.FC = () => {
         </div>
 
         <div className="month-navigation">
-          <button className="nav-arrow" onClick={handlePrevMonth}>
+          <button
+            data-testid="calendar-prev-btn"
+            className="nav-arrow"
+            onClick={handlePrevMonth}
+            aria-label="Previous month"
+          >
             <AssetIcon
               name="arrow-down"
               size={14}
@@ -325,7 +362,12 @@ export const EventCalendar: React.FC = () => {
           <h2 className="month-year">
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h2>
-          <button className="nav-arrow" onClick={handleNextMonth}>
+          <button
+            data-testid="calendar-next-btn"
+            className="nav-arrow"
+            onClick={handleNextMonth}
+            aria-label="Next month"
+          >
             <AssetIcon
               name="arrow-down"
               size={14}
@@ -336,14 +378,23 @@ export const EventCalendar: React.FC = () => {
         </div>
 
         <div className="view-toggle">
-          <button className="view-option" onClick={() => setViewMode("day")}>
+          <button
+            data-testid="view-day-btn"
+            className="view-option"
+            onClick={() => setViewMode("day")}
+          >
             Day
           </button>
           <div className="view-divider"></div>
-          <button className="view-option" onClick={() => setViewMode("week")}>
+          <button
+            data-testid="view-week-btn"
+            className="view-option"
+            onClick={() => setViewMode("week")}
+          >
             Week
           </button>
           <button
+            data-testid="view-month-btn"
             className="view-option view-option-active"
             onClick={() => setViewMode("month")}
           >

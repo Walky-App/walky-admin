@@ -51,7 +51,12 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
       className="idea-details-modal-wrapper"
     >
       <CModalBody className="idea-details-modal-body">
-        <button className="idea-details-close" onClick={onClose}>
+        <button
+          data-testid="idea-details-close-btn"
+          className="idea-details-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} color="#5b6168" />
         </button>
 
@@ -88,6 +93,7 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
                         {ideaData.owner.studentId}
                       </div>
                       <button
+                        data-testid="idea-owner-copy-btn"
                         className="idea-owner-copy-btn"
                         onClick={() =>
                           handleCopyStudentId(ideaData.owner.studentId)
@@ -166,7 +172,11 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
 
           {/* Footer */}
           <div className="idea-details-footer">
-            <button className="idea-details-close-btn" onClick={onClose}>
+            <button
+              data-testid="idea-details-close-footer-btn"
+              className="idea-details-close-btn"
+              onClick={onClose}
+            >
               Close
             </button>
           </div>

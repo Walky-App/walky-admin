@@ -37,6 +37,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           {tooltip && (
             <div className="stats-card-tooltip-wrapper">
               <button
+                data-testid="stats-card-tooltip-btn"
                 className="stats-card-tooltip-btn"
                 aria-label="More information"
                 onMouseEnter={() => onTooltipHover?.(true)}

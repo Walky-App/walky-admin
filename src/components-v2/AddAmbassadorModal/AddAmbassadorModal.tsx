@@ -90,7 +90,12 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         className="add-ambassador-modal-content"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="add-ambassador-modal-close" onClick={handleClose}>
+        <button
+          data-testid="add-ambassador-modal-close"
+          className="add-ambassador-modal-close"
+          onClick={handleClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -108,6 +113,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
             <div className="add-ambassador-search-input-wrapper">
               <AssetIcon name="search-icon" size={12} />
               <input
+                data-testid="add-ambassador-search-input"
                 type="text"
                 className="add-ambassador-search-input"
                 placeholder="Search"
@@ -117,6 +123,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
               />
             </div>
             <button
+              data-testid="add-ambassador-search-btn"
               className="add-ambassador-search-button"
               onClick={handleSearch}
             >
@@ -171,6 +178,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
                 {searchResults.map((student) => (
                   <div key={student.id} className="add-ambassador-student-item">
                     <input
+                      data-testid="add-ambassador-student-checkbox"
                       type="checkbox"
                       className="add-ambassador-checkbox"
                       checked={selectedStudents.includes(student.id)}
@@ -199,12 +207,14 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         {/* Action Buttons */}
         <div className="add-ambassador-modal-actions">
           <button
+            data-testid="add-ambassador-cancel-btn"
             className="add-ambassador-cancel-button"
             onClick={handleClose}
           >
             Cancel
           </button>
           <button
+            data-testid="add-ambassador-confirm-btn"
             className={`add-ambassador-confirm-button ${
               selectedStudents.length === 0 ? "disabled" : ""
             }`}

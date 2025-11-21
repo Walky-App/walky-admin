@@ -25,7 +25,12 @@ export const CustomToast: React.FC<CustomToastProps> = ({
             <p className="custom-toast-text">{message}</p>
           </div>
         </div>
-        <button className="custom-toast-close-btn" onClick={onClose}>
+        <button
+          data-testid="custom-toast-close-btn"
+          className="custom-toast-close-btn"
+          onClick={onClose}
+          aria-label="Close notification"
+        >
           <AssetIcon name="x-icon" size={16} color="#5B6168" />
         </button>
       </div>

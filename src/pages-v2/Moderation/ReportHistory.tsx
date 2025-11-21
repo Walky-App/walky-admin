@@ -166,6 +166,7 @@ export const ReportHistory: React.FC = () => {
               <div className="search-input-wrapper">
                 <AssetIcon name="search-icon" size={24} color="#676d70" />
                 <input
+                  data-testid="search-input"
                   type="text"
                   className="search-input"
                   placeholder="Search"
@@ -227,6 +228,7 @@ export const ReportHistory: React.FC = () => {
                               {report.studentId}
                             </div>
                             <button
+                              data-testid="copy-student-id-btn"
                               className="copy-button"
                               onClick={() =>
                                 handleCopyStudentId(report.studentId)
@@ -273,7 +275,11 @@ export const ReportHistory: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                      <button className="options-button">
+                      <button
+                        data-testid="options-btn"
+                        className="options-button"
+                        aria-label="Report options"
+                      >
                         <AssetIcon
                           name="vertical-3-dots-icon"
                           size={24}
@@ -295,6 +301,7 @@ export const ReportHistory: React.FC = () => {
           </p>
           <div className="pagination-controls">
             <button
+              data-testid="pagination-prev-btn"
               className="pagination-button"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(currentPage - 1)}
@@ -303,6 +310,7 @@ export const ReportHistory: React.FC = () => {
             </button>
             <div className="pagination-page-number active">{currentPage}</div>
             <button
+              data-testid="pagination-next-btn"
               className="pagination-button"
               disabled={currentPage === totalPages || totalPages === 0}
               onClick={() => setCurrentPage(currentPage + 1)}
