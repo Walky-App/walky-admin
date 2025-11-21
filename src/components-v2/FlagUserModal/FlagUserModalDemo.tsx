@@ -50,6 +50,7 @@ export const FlagUserModalDemo: React.FC = () => {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         <button
+          data-testid="demo-flag-btn"
           onClick={handleShowModal}
           style={{
             padding: "12px 24px",
@@ -66,6 +67,7 @@ export const FlagUserModalDemo: React.FC = () => {
         </button>
 
         <button
+          data-testid="demo-show-modal-btn"
           onClick={() => setShowModal(true)}
           style={{
             padding: "12px 24px",
@@ -82,6 +84,7 @@ export const FlagUserModalDemo: React.FC = () => {
         </button>
 
         <button
+          data-testid="demo-clear-preference-btn"
           onClick={handleClearPreference}
           style={{
             padding: "12px 24px",

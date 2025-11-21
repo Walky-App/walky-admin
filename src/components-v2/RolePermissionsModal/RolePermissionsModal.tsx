@@ -155,7 +155,12 @@ const RolePermissionsModal: React.FC<RolePermissionsModalProps> = ({
   return (
     <div className="role-permissions-overlay" onClick={handleOverlayClick}>
       <div className="role-permissions-content" onClick={handleContentClick}>
-        <button className="role-permissions-close" onClick={onClose}>
+        <button
+          data-testid="role-permissions-close-btn"
+          className="role-permissions-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -167,6 +172,7 @@ const RolePermissionsModal: React.FC<RolePermissionsModalProps> = ({
           {roleData.permissions.length > 0 && (
             <div className="role-permissions-section">
               <button
+                data-testid="role-permissions-toggle-btn"
                 className="role-permissions-section-header"
                 onClick={togglePermissions}
               >
@@ -200,7 +206,11 @@ const RolePermissionsModal: React.FC<RolePermissionsModalProps> = ({
           )}
 
           <div className="role-permissions-button-container">
-            <button className="role-permissions-close-button" onClick={onClose}>
+            <button
+              data-testid="role-permissions-close-footer-btn"
+              className="role-permissions-close-button"
+              onClick={onClose}
+            >
               Close
             </button>
           </div>

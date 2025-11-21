@@ -133,7 +133,11 @@ export const Ambassadors: React.FC = () => {
               {activeAmbassadors} ambassadors active
             </p>
           </div>
-          <button className="add-button" onClick={handleAddAmbassador}>
+          <button
+            data-testid="add-ambassador-btn"
+            className="add-button"
+            onClick={handleAddAmbassador}
+          >
             <span>+ Add a new Ambassador</span>
           </button>
         </div>
@@ -176,6 +180,7 @@ export const Ambassadors: React.FC = () => {
                     <div className="student-id-wrapper">
                       <span className="student-id">{ambassador.studentId}</span>
                       <button
+                        data-testid="copy-student-id-btn"
                         className="copy-button"
                         onClick={() =>
                           handleCopyStudentId(ambassador.studentId)
@@ -222,6 +227,7 @@ export const Ambassadors: React.FC = () => {
                   {/* Actions Column */}
                   <td className="ambassador-actions">
                     <button
+                      data-testid="delete-ambassador-btn"
                       className="delete-button"
                       onClick={() => handleDeleteAmbassador(ambassador.id)}
                       title="Delete ambassador"
@@ -241,11 +247,19 @@ export const Ambassadors: React.FC = () => {
             Showing {mockAmbassadors.length} of {totalAmbassadors} entries
           </p>
           <div className="pagination-controls">
-            <button className="pagination-button" disabled>
+            <button
+              data-testid="pagination-prev-btn"
+              className="pagination-button"
+              disabled
+            >
               Previous
             </button>
             <div className="page-number active">{currentPage}</div>
-            <button className="pagination-button" disabled>
+            <button
+              data-testid="pagination-next-btn"
+              className="pagination-button"
+              disabled
+            >
               Next
             </button>
           </div>

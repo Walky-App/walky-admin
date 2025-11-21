@@ -161,6 +161,7 @@ export const AdministratorSettings: React.FC = () => {
             className="settings-back-btn"
             onClick={handleBackToPanel}
             data-testid="settings-back-btn"
+            aria-label="Back to admin panel"
           >
             <AssetIcon name="arrow-down" size={32} />
           </button>
@@ -272,6 +273,7 @@ export const AdministratorSettings: React.FC = () => {
                   <button
                     className="profile-picture-edit"
                     data-testid="profile-picture-edit-btn"
+                    aria-label="Edit profile picture"
                   >
                     <AssetIcon name="copy-icon" size={24} />
                   </button>

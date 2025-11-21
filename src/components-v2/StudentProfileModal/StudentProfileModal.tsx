@@ -171,6 +171,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                     <span className="report-id-text">{report.reportId}</span>
                   </div>
                   <button
+                    data-testid="profile-copy-report-id-btn"
                     className="profile-copy-btn"
                     onClick={() => handleCopyReportId(report.reportId)}
                     title="Copy report ID"
@@ -255,7 +256,12 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
       className="student-profile-modal"
     >
       <CModalBody className="student-profile-modal-body">
-        <button className="profile-close-icon" onClick={onClose}>
+        <button
+          data-testid="profile-close-icon"
+          className="profile-close-icon"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} color="#5B6168" />
         </button>
 
@@ -278,15 +284,18 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 <div className="profile-email-row">
                   <span className="profile-email">{student.email}</span>
                   <button
+                    data-testid="profile-copy-email-btn"
                     className="profile-copy-btn"
                     onClick={handleCopyEmail}
                     title="Copy email"
+                    aria-label="Copy email to clipboard"
                   >
                     <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
                   </button>
                 </div>
 
                 <button
+                  data-testid="profile-send-email-btn"
                   className="profile-send-email-btn"
                   onClick={handleCopyEmail}
                 >
@@ -300,9 +309,11 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                     </span>
                   </div>
                   <button
+                    data-testid="profile-copy-userid-btn"
                     className="profile-copy-btn"
                     onClick={handleCopyUserId}
                     title="Copy user ID"
+                    aria-label="Copy user ID to clipboard"
                   >
                     <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
                   </button>
@@ -312,12 +323,14 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
             <div className="profile-action-buttons">
               <button
+                data-testid="profile-deactivate-btn"
                 className="profile-btn profile-btn-deactivate"
                 onClick={() => onDeactivateUser?.(student)}
               >
                 Deactivate user
               </button>
               <button
+                data-testid="profile-ban-btn"
                 className="profile-btn profile-btn-ban"
                 onClick={() => onBanUser?.(student)}
               >
@@ -407,6 +420,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           <div className="profile-history-section">
             <div className="profile-history-tabs">
               <button
+                data-testid="profile-history-ban-tab"
                 className={`profile-history-tab ${
                   activeTab === "ban" ? "active" : ""
                 }`}
@@ -415,6 +429,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 Ban history
               </button>
               <button
+                data-testid="profile-history-report-tab"
                 className={`profile-history-tab ${
                   activeTab === "report" ? "active" : ""
                 }`}
@@ -423,6 +438,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 Report history
               </button>
               <button
+                data-testid="profile-history-block-tab"
                 className={`profile-history-tab ${
                   activeTab === "block" ? "active" : ""
                 }`}
@@ -438,7 +454,11 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           </div>
 
           <div className="profile-close-button-container">
-            <button className="profile-close-button" onClick={onClose}>
+            <button
+              data-testid="profile-close-footer-btn"
+              className="profile-close-button"
+              onClick={onClose}
+            >
               Close
             </button>
           </div>

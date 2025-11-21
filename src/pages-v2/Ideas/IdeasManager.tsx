@@ -81,6 +81,7 @@ export const IdeasManager: React.FC = () => {
                 <div className="ideas-manager-search-input">
                   <AssetIcon name="search-icon" size={24} color="#676D70" />
                   <input
+                    data-testid="search-input"
                     type="text"
                     placeholder="Search"
                     value={searchQuery}
@@ -101,16 +102,21 @@ export const IdeasManager: React.FC = () => {
             </p>
             <div className="ideas-manager-pagination-controls">
               <button
+                data-testid="pagination-prev-btn"
                 className="ideas-manager-pagination-button"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
               >
                 Previous
               </button>
-              <button className="ideas-manager-pagination-page active">
+              <button
+                data-testid="pagination-page-btn"
+                className="ideas-manager-pagination-page active"
+              >
                 {currentPage}
               </button>
               <button
+                data-testid="pagination-next-btn"
                 className="ideas-manager-pagination-button"
                 disabled={currentPage >= totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}

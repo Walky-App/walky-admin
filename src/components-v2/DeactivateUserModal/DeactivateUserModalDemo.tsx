@@ -37,6 +37,7 @@ export const DeactivateUserModalDemo: React.FC = () => {
           User Name:
         </label>
         <input
+          data-testid="demo-username-input"
           type="text"
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
@@ -53,6 +54,7 @@ export const DeactivateUserModalDemo: React.FC = () => {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         <button
+          data-testid="demo-deactivate-btn"
           onClick={() => setShowModal(true)}
           style={{
             padding: "12px 24px",
@@ -69,6 +71,7 @@ export const DeactivateUserModalDemo: React.FC = () => {
         </button>
 
         <button
+          data-testid="demo-test-btn"
           onClick={() => {
             setUserName("");
             setShowModal(true);

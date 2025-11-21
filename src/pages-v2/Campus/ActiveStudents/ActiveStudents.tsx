@@ -184,6 +184,7 @@ export const ActiveStudents: React.FC = () => {
             <div className="active-students-search">
               <AssetIcon name="search-icon" size={24} className="search-icon" />
               <input
+                data-testid="search-input"
                 type="text"
                 placeholder="Search"
                 value={searchQuery}

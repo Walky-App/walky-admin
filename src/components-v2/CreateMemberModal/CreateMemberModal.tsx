@@ -80,7 +80,12 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   return (
     <div className="create-member-overlay" onClick={handleOverlayClick}>
       <div className="create-member-content" onClick={handleContentClick}>
-        <button className="create-member-close" onClick={onClose}>
+        <button
+          data-testid="create-member-close-btn"
+          className="create-member-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -100,6 +105,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
               <div className="create-member-field">
                 <label className="create-member-label">First name</label>
                 <input
+                  data-testid="create-member-firstname-input"
                   type="text"
                   className="create-member-input"
                   placeholder="John"
@@ -112,6 +118,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
               <div className="create-member-field">
                 <label className="create-member-label">Last name</label>
                 <input
+                  data-testid="create-member-lastname-input"
                   type="text"
                   className="create-member-input"
                   placeholder="Doe"
@@ -127,6 +134,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
             <div className="create-member-field">
               <label className="create-member-label">Email</label>
               <input
+                data-testid="create-member-email-input"
                 type="email"
                 className="create-member-input"
                 placeholder="Email"
@@ -140,6 +148,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
               <label className="create-member-label">Role</label>
               <div className="create-member-dropdown-wrapper">
                 <button
+                  data-testid="create-member-role-dropdown-btn"
                   className="create-member-select"
                   onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
                 >
@@ -152,6 +161,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                   <div className="create-member-dropdown">
                     {roleOptions.map((role) => (
                       <button
+                        data-testid="create-member-role-option-btn"
                         key={role}
                         className="create-member-option"
                         onClick={() => handleRoleSelect(role)}
@@ -170,6 +180,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                 <label className="create-member-label">School</label>
                 <div className="create-member-dropdown-wrapper">
                   <button
+                    data-testid="create-member-school-dropdown-btn"
                     className="create-member-select"
                     onClick={() =>
                       setIsSchoolDropdownOpen(!isSchoolDropdownOpen)
@@ -183,6 +194,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                   {isSchoolDropdownOpen && (
                     <div className="create-member-dropdown">
                       <button
+                        data-testid="create-member-school-option-btn"
                         className="create-member-option"
                         onClick={() => {
                           handleInputChange("school", "School 1");
@@ -192,6 +204,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                         School 1
                       </button>
                       <button
+                        data-testid="create-member-school-option-btn"
                         className="create-member-option"
                         onClick={() => {
                           handleInputChange("school", "School 2");
@@ -208,6 +221,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                 <label className="create-member-label">Campus</label>
                 <div className="create-member-dropdown-wrapper">
                   <button
+                    data-testid="create-member-campus-dropdown-btn"
                     className="create-member-select"
                     onClick={() =>
                       setIsCampusDropdownOpen(!isCampusDropdownOpen)
@@ -221,6 +235,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                   {isCampusDropdownOpen && (
                     <div className="create-member-dropdown">
                       <button
+                        data-testid="create-member-campus-option-btn"
                         className="create-member-option"
                         onClick={() => {
                           handleInputChange("campus", "Campus 1");
@@ -230,6 +245,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                         Campus 1
                       </button>
                       <button
+                        data-testid="create-member-campus-option-btn"
                         className="create-member-option"
                         onClick={() => {
                           handleInputChange("campus", "Campus 2");
@@ -246,10 +262,18 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
           </div>
 
           <div className="create-member-buttons">
-            <button className="create-member-cancel" onClick={onClose}>
+            <button
+              data-testid="create-member-cancel-btn"
+              className="create-member-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
-            <button className="create-member-confirm" onClick={handleCreate}>
+            <button
+              data-testid="create-member-confirm-btn"
+              className="create-member-confirm"
+              onClick={handleCreate}
+            >
               Create new member
             </button>
           </div>

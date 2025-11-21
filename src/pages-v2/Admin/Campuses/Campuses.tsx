@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import "./Campuses.css";
 import { AssetIcon } from "../../../components-v2";
@@ -124,6 +125,7 @@ export const Campuses: React.FC = () => {
                         />
                         <div className="campus-dropdown">
                           <button
+                            data-testid="campus-dropdown-btn"
                             className="dropdown-button"
                             onClick={() => handleToggleExpand(campus.id)}
                           >
@@ -145,6 +147,7 @@ export const Campuses: React.FC = () => {
                       <div className="campus-id-wrapper">
                         <span className="campus-id">{campus.campusId}</span>
                         <button
+                          data-testid="copy-campus-id-btn"
                           className="copy-button"
                           onClick={() => handleCopyCampusId(campus.campusId)}
                           title="Copy ID"
@@ -171,7 +174,12 @@ export const Campuses: React.FC = () => {
 
                     {/* Sync Column */}
                     <td className="campus-sync">
-                      <button className="sync-button" title="Sync places">
+                      <button
+                        data-testid="sync-places-btn"
+                        className="sync-button"
+                        title="Sync places"
+                        aria-label="Sync places for campus"
+                      >
                         <AssetIcon name="swap-arrows-icon" size={16} />
                       </button>
                     </td>
@@ -208,11 +216,19 @@ export const Campuses: React.FC = () => {
             Showing {filteredCampuses.length} of {totalCampuses} entries
           </p>
           <div className="pagination-controls">
-            <button className="pagination-button" disabled>
+            <button
+              data-testid="pagination-prev-btn"
+              className="pagination-button"
+              disabled
+            >
               Previous
             </button>
             <div className="page-number active">{currentPage}</div>
-            <button className="pagination-button" disabled>
+            <button
+              data-testid="pagination-next-btn"
+              className="pagination-button"
+              disabled
+            >
               Next
             </button>
           </div>

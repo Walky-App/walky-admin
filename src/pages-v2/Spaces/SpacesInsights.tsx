@@ -89,6 +89,7 @@ export const SpacesInsights: React.FC = () => {
           <p className="filter-label">Time period:</p>
           <div className="time-selector">
             <button
+              data-testid="time-all-btn"
               className={`time-option first ${
                 timePeriod === "all" ? "active" : ""
               }`}
@@ -97,12 +98,14 @@ export const SpacesInsights: React.FC = () => {
               All time
             </button>
             <button
+              data-testid="time-week-btn"
               className={`time-option ${timePeriod === "week" ? "active" : ""}`}
               onClick={() => setTimePeriod("week")}
             >
               Week
             </button>
             <button
+              data-testid="time-month-btn"
               className={`time-option last ${
                 timePeriod === "month" ? "active" : ""
               }`}

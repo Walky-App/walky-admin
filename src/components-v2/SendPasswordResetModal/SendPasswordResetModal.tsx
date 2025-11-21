@@ -33,7 +33,12 @@ const SendPasswordResetModal: React.FC<SendPasswordResetModalProps> = ({
   return (
     <div className="send-password-overlay" onClick={handleOverlayClick}>
       <div className="send-password-content" onClick={handleContentClick}>
-        <button className="send-password-close" onClick={onClose}>
+        <button
+          data-testid="send-password-close-btn"
+          className="send-password-close"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} />
         </button>
 
@@ -48,6 +53,7 @@ const SendPasswordResetModal: React.FC<SendPasswordResetModalProps> = ({
           <div className="send-password-checkbox-container">
             <label className="send-password-checkbox-label">
               <input
+                data-testid="send-password-checkbox"
                 type="checkbox"
                 className="send-password-checkbox"
                 checked={dontShowAgain}
@@ -60,10 +66,18 @@ const SendPasswordResetModal: React.FC<SendPasswordResetModalProps> = ({
           </div>
 
           <div className="send-password-buttons">
-            <button className="send-password-cancel" onClick={onClose}>
+            <button
+              data-testid="send-password-cancel-btn"
+              className="send-password-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
-            <button className="send-password-confirm" onClick={handleSendLink}>
+            <button
+              data-testid="send-password-confirm-btn"
+              className="send-password-confirm"
+              onClick={handleSendLink}
+            >
               Send link
             </button>
           </div>

@@ -203,6 +203,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                     {idea.studentId}
                   </div>
                   <button
+                    data-testid="copy-student-id-btn"
                     className="ideas-table-copy-button"
                     onClick={() => handleCopyStudentId(idea.studentId)}
                     aria-label="Copy student ID"
@@ -229,6 +230,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
               <td>
                 <div className="idea-dropdown-container" ref={dropdownRef}>
                   <button
+                    data-testid="idea-dropdown-toggle-btn"
                     className="idea-dropdown-toggle"
                     onClick={() =>
                       setOpenDropdownId(

@@ -149,6 +149,7 @@ export const ReportSafety: React.FC = () => {
               <div className="search-input-wrapper">
                 <AssetIcon name="search-icon" size={24} color="#676d70" />
                 <input
+                  data-testid="search-input"
                   type="text"
                   placeholder="Search"
                   value={searchQuery}
@@ -221,6 +222,7 @@ export const ReportSafety: React.FC = () => {
                               {report.studentId}
                             </div>
                             <button
+                              data-testid="copy-student-id-btn"
                               className="copy-button"
                               onClick={() =>
                                 handleCopyStudentId(report.studentId)
@@ -265,7 +267,11 @@ export const ReportSafety: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                      <button className="options-button">
+                      <button
+                        data-testid="options-btn"
+                        className="options-button"
+                        aria-label="Report options"
+                      >
                         <AssetIcon
                           name="vertical-3-dots-icon"
                           size={24}

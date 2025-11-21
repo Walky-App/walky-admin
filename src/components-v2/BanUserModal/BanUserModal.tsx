@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import { CModal, CModalBody, CButton } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
@@ -90,7 +91,12 @@ export const BanUserModal: React.FC<BanUserModalProps> = ({
     >
       <CModalBody className="ban-user-modal-body">
         {/* Close button */}
-        <button className="ban-modal-close-icon" onClick={handleCancel}>
+        <button
+          data-testid="ban-modal-close-btn"
+          className="ban-modal-close-icon"
+          onClick={handleCancel}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} color="#5B6168" />
         </button>
 
@@ -105,6 +111,7 @@ export const BanUserModal: React.FC<BanUserModalProps> = ({
               <label className="ban-modal-label">Ban duration</label>
               <div className="ban-modal-dropdown" ref={dropdownRef}>
                 <button
+                  data-testid="ban-duration-dropdown-btn"
                   className="ban-modal-dropdown-trigger"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   type="button"
@@ -127,6 +134,7 @@ export const BanUserModal: React.FC<BanUserModalProps> = ({
                           <div className="ban-modal-dropdown-divider" />
                         )}
                         <button
+                          data-testid="ban-duration-option-btn"
                           className={`ban-modal-dropdown-item ${
                             duration === dur ? "selected" : ""
                           }`}
@@ -146,6 +154,7 @@ export const BanUserModal: React.FC<BanUserModalProps> = ({
             <div className="ban-modal-field ban-modal-field-textarea">
               <label className="ban-modal-label">Ban reason</label>
               <textarea
+                data-testid="ban-reason-textarea"
                 className="ban-modal-textarea"
                 placeholder="Enter reason for ban"
                 value={reason}
@@ -158,6 +167,7 @@ export const BanUserModal: React.FC<BanUserModalProps> = ({
             <div className="ban-modal-checkbox-container">
               <label className="ban-modal-checkbox-label">
                 <input
+                  data-testid="ban-resolve-reports-checkbox"
                   type="checkbox"
                   checked={resolveReports}
                   onChange={(e) => setResolveReports(e.target.checked)}

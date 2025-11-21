@@ -222,6 +222,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
                     <span>{space.studentId}</span>
                   </div>
                   <button
+                    data-testid="copy-student-id-btn"
                     className="copy-btn"
                     onClick={() => handleCopyStudentId(space.studentId)}
                     title="Copy student ID"
@@ -252,6 +253,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
               <td>
                 <div className="space-dropdown-container" ref={dropdownRef}>
                   <button
+                    data-testid="space-dropdown-toggle-btn"
                     className="space-dropdown-toggle"
                     onClick={() =>
                       setOpenDropdownId(

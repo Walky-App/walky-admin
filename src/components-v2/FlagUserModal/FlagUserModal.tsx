@@ -52,7 +52,12 @@ export const FlagUserModal: React.FC<FlagUserModalProps> = ({
     >
       <CModalBody className="flag-user-modal-body">
         {/* Close button */}
-        <button className="flag-modal-close-icon" onClick={handleCancel}>
+        <button
+          data-testid="flag-modal-close-btn"
+          className="flag-modal-close-icon"
+          onClick={handleCancel}
+          aria-label="Close modal"
+        >
           <AssetIcon name="x-icon" size={16} color="#5B6168" />
         </button>
 
@@ -75,6 +80,7 @@ export const FlagUserModal: React.FC<FlagUserModalProps> = ({
             <div className="flag-modal-checkbox-container">
               <label className="flag-modal-checkbox-label">
                 <input
+                  data-testid="flag-modal-checkbox"
                   type="checkbox"
                   checked={dontShowAgain}
                   onChange={handleCheckboxChange}

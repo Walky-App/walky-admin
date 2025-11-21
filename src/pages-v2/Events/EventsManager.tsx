@@ -81,12 +81,14 @@ export const EventsManager: React.FC = () => {
 
       <div className="events-manager-view-toggle">
         <button
+          data-testid="view-list-btn"
           className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
           onClick={() => setViewMode("list")}
         >
           List view
         </button>
         <button
+          data-testid="view-calendar-btn"
           className={`view-toggle-btn ${
             viewMode === "calendar" ? "active" : ""
           }`}
@@ -104,6 +106,7 @@ export const EventsManager: React.FC = () => {
             <div className="search-input-container">
               <AssetIcon name="search-icon" size={24} color="#676D70" />
               <input
+                data-testid="search-input"
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
@@ -114,6 +117,7 @@ export const EventsManager: React.FC = () => {
 
             <div className="type-filter-dropdown">
               <select
+                aria-label="Filter events by type"
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
                 className="type-filter-select"
@@ -138,6 +142,7 @@ export const EventsManager: React.FC = () => {
 
               <div className="pagination-controls">
                 <button
+                  data-testid="pagination-prev-btn"
                   className="pagination-btn"
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
@@ -150,6 +155,7 @@ export const EventsManager: React.FC = () => {
                 </div>
 
                 <button
+                  data-testid="pagination-next-btn"
                   className="pagination-btn"
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}

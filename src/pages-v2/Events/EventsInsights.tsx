@@ -174,18 +174,21 @@ export const EventsInsights: React.FC = () => {
         <span className="filter-label">Time period:</span>
         <div className="time-selector">
           <button
+            data-testid="time-all-btn"
             className={`time-option ${timePeriod === "all" ? "active" : ""}`}
             onClick={() => setTimePeriod("all")}
           >
             All time
           </button>
           <button
+            data-testid="time-week-btn"
             className={`time-option ${timePeriod === "week" ? "active" : ""}`}
             onClick={() => setTimePeriod("week")}
           >
             Week
           </button>
           <button
+            data-testid="time-month-btn"
             className={`time-option ${timePeriod === "month" ? "active" : ""}`}
             onClick={() => setTimePeriod("month")}
           >
