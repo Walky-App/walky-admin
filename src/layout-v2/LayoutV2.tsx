@@ -38,6 +38,13 @@ const LayoutV2: React.FC = () => {
     }
   }, [location.pathname, isMobile]);
 
+  // Close sidebar when entering Administrator Settings page
+  useEffect(() => {
+    if (location.pathname.includes("/admin/settings")) {
+      setSidebarVisible(false);
+    }
+  }, [location.pathname]);
+
   return (
     <div className="layout-v2">
       {/* Sidebar */}

@@ -1,0 +1,250 @@
+.ideas-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.ideas-table thead {
+  background-color: #ebf0fa;
+  border-radius: 12px;
+}
+
+.ideas-table thead tr th {
+  padding: 13.5px 0;
+  text-align: left;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ideas-table thead tr th:first-child {
+  padding-left: 35px;
+  border-radius: 12px 0 0 12px;
+}
+
+.ideas-table thead tr th:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+.ideas-table-header-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ideas-table tbody tr {
+  border-bottom: 0.6px solid #5b6168;
+}
+
+.ideas-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.ideas-table tbody td {
+  padding: 12px 0;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  opacity: 0.8;
+  vertical-align: middle;
+}
+
+.ideas-table tbody td:first-child {
+  padding-left: 35px;
+}
+
+.ideas-table-idea-title {
+  display: block;
+  max-width: 230px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ideas-table-owner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ideas-table-owner-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ideas-table-owner-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ideas-table-owner-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #eef0f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #5b6168;
+}
+
+.ideas-table-owner-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+.ideas-table-student-id {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ideas-table-student-id-box {
+  background-color: #f1f4f9;
+  padding: 0 8px;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  color: #321fdb;
+  opacity: 0.8;
+}
+
+.ideas-table-copy-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.ideas-table-copy-button:hover {
+  opacity: 0.7;
+}
+
+.ideas-table-collaborated-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #546fd9;
+  color: #ffffff;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 100%;
+  min-width: 22px;
+  height: 22px;
+}
+
+.ideas-table-date {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ideas-table-date-main {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+.ideas-table-date-time {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 100%;
+  color: #5b6168;
+}
+
+/* Custom Dropdown Styles */
+.idea-dropdown-container {
+  position: relative;
+}
+
+.idea-dropdown-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.idea-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 187px;
+  z-index: 1000;
+  margin-top: 4px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.idea-dropdown-item {
+  padding: 0 !important;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: #1d1b20;
+  cursor: pointer;
+  background: transparent !important;
+  transition: color 0.2s;
+}
+
+.idea-dropdown-item:hover {
+  color: #526ac9;
+}
+
+.idea-dropdown-title {
+  padding: 0 0 16px 0 !important;
+}
+
+.idea-dropdown-item-flag {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.idea-dropdown-divider {
+  height: 1px;
+  background-color: #eef0f1;
+  margin: 16px 0;
+}
+
+.idea-dropdown-item-delete {
+  color: #d53425;
+}
+
+.idea-dropdown-item-delete:hover {
+  color: #a82a1e;
+}

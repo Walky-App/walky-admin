@@ -1,0 +1,308 @@
+/* Add Ambassador Modal Styles */
+
+.add-ambassador-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.add-ambassador-modal-content {
+  background: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 14px;
+  padding: 32px;
+  width: 622px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.add-ambassador-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b6168;
+  transition: color 0.2s;
+}
+
+.add-ambassador-modal-close:hover {
+  color: #1d1b20;
+}
+
+.add-ambassador-modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-ambassador-modal-title {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1d1b20;
+  margin: 0;
+  line-height: 1;
+}
+
+.add-ambassador-modal-subtitle {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #5b6168;
+  margin: 0;
+  line-height: 1;
+}
+
+.add-ambassador-search-container {
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 12px;
+  padding: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 468px;
+  overflow: hidden;
+}
+
+.add-ambassador-search-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-left: 24px;
+}
+
+.add-ambassador-search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 8px;
+  padding: 16px;
+  height: 48px;
+}
+
+.add-ambassador-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #1d1b20;
+}
+
+.add-ambassador-search-input::placeholder {
+  color: #676d70;
+}
+
+.add-ambassador-search-button {
+  background: #526ac9;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
+  transition: background 0.2s;
+  height: 48px;
+}
+
+.add-ambassador-search-button:hover {
+  background: #4558b0;
+}
+
+.add-ambassador-results-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-left: 24px;
+  padding-right: 8px;
+}
+
+/* Empty State */
+.add-ambassador-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+}
+
+.add-ambassador-empty-icon {
+  width: 60px;
+  height: 60px;
+  background: #ebf1ff;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-ambassador-empty-text {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1d1b20;
+  opacity: 0.8;
+  margin: 0;
+  text-align: center;
+  max-width: 280px;
+}
+
+/* Results List */
+.add-ambassador-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-ambassador-student-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eef0f1;
+}
+
+.add-ambassador-student-item:last-child {
+  border-bottom: none;
+}
+
+.add-ambassador-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 0.667px solid #5b6168;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.add-ambassador-student-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.add-ambassador-student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.add-ambassador-student-name {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d1b20;
+  margin: 0;
+  line-height: 1;
+}
+
+.add-ambassador-student-email {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #5b6168;
+  margin: 0;
+  line-height: 1;
+}
+
+/* Action Buttons */
+.add-ambassador-modal-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+}
+
+.add-ambassador-cancel-button,
+.add-ambassador-confirm-button {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 9px 32px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.add-ambassador-cancel-button {
+  background: #ffffff;
+  border: 1px solid #d2d2d3;
+  color: #1d1b20;
+  padding: 9px 32px;
+}
+
+.add-ambassador-cancel-button:hover {
+  background: #f5f5f5;
+  border-color: #b0b0b0;
+}
+
+.add-ambassador-confirm-button {
+  background: #526ac9;
+  border: none;
+  color: #ffffff;
+  padding: 9px 20px;
+  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
+}
+
+.add-ambassador-confirm-button:hover:not(.disabled) {
+  background: #4558b0;
+  box-shadow: 0px 3px 10px 0px rgba(115, 115, 115, 0.3);
+}
+
+.add-ambassador-confirm-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.add-ambassador-confirm-button:active:not(.disabled) {
+  background: #3a4a9a;
+}
+
+/* Scrollbar Styles */
+.add-ambassador-results-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.add-ambassador-results-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.add-ambassador-results-area::-webkit-scrollbar-thumb {
+  background: #cac4d0;
+  border-radius: 4px;
+}
+
+.add-ambassador-results-area::-webkit-scrollbar-thumb:hover {
+  background: #b0aab6;
+}

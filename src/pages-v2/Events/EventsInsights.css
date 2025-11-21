@@ -1,0 +1,386 @@
+.events-insights-page {
+  padding: 32px 40px;
+  background: #f7f8fa;
+  min-height: 100vh;
+}
+
+/* Header with Export Button */
+.insights-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+}
+
+/* Top Stats Cards Row */
+.stats-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.stats-card {
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stats-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 43px;
+}
+
+.stats-card-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+  flex: 1;
+}
+
+.stats-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stats-card-value {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1;
+  color: #1d1b20;
+  margin: 0;
+}
+
+/* Donut Charts Row */
+.donut-charts-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+/* Time Period Filter */
+.time-period-filter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.filter-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: #1d1b20;
+}
+
+.time-selector {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.time-option {
+  padding: 8px 16px;
+  border: 1px solid #a9abac;
+  background: #ffffff;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  color: #5b6168;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-right: none;
+}
+
+.time-option:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.time-option:last-child {
+  border-radius: 0 8px 8px 0;
+  border-right: 1px solid #a9abac;
+}
+
+.time-option.active {
+  background: #546fd9;
+  color: #ffffff;
+  border-color: #546fd9;
+}
+
+.time-option:hover:not(.active) {
+  background: #f7f8fa;
+}
+
+/* Interests Section */
+.interests-section {
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 24px 20px;
+  margin-bottom: 32px;
+}
+
+.interests-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.interests-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+.interests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 6px;
+}
+
+.interest-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.interest-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.icon-background {
+  width: 100%;
+  height: 100%;
+  background: #ebf1ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-placeholder {
+  width: 28px;
+  height: 28px;
+  background: #c1d0f5;
+  border-radius: 4px;
+}
+
+.interest-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.interest-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.interest-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.interest-students {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+.interest-progress {
+  width: 100%;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 14px;
+  background: #eef0f1;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #526ac9;
+  border-radius: 16px 0 0 16px;
+  transition: width 0.3s ease;
+}
+
+/* Events Lists Row */
+.events-lists-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 32px;
+}
+
+.events-list-section {
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 24px 20px;
+}
+
+.events-list-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 15.333px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.events-list-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.event-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.event-rank {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  color: #526ac9;
+  flex-shrink: 0;
+  min-width: 24px;
+}
+
+.event-image-placeholder {
+  width: 50px;
+  height: 37.5px;
+  background: #eef0f1;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.event-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #5b6168;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.event-attendees {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .stats-cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  .donut-charts-row {
+    grid-template-columns: 1fr;
+  }
+
+  .events-lists-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .events-insights-page {
+    padding: 16px;
+  }
+
+  .stats-cards-row,
+  .donut-charts-row,
+  .events-lists-row {
+    gap: 16px;
+  }
+
+  .stats-card-header {
+    gap: 20px;
+  }
+
+  .stats-card-title {
+    font-size: 14px;
+  }
+
+  .stats-card-value {
+    font-size: 24px;
+  }
+
+  .stats-icon {
+    width: 48px;
+    height: 48px;
+  }
+}

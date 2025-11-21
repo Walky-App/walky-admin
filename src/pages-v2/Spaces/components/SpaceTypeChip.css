@@ -1,0 +1,39 @@
+.space-type-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 18px;
+  border-radius: 14px;
+  width: fit-content;
+}
+
+.space-type-chip span {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 100%;
+}
+
+.space-type-chip-clubs {
+  background-color: #e2e0f2;
+}
+
+.space-type-chip-clubs span {
+  color: #5f56a9;
+}
+
+.space-type-chip-fraternities {
+  background-color: #fbf1df;
+}
+
+.space-type-chip-fraternities span {
+  color: #896726;
+}
+
+.space-type-chip-sororities {
+  background-color: #fbf6f3;
+}
+
+.space-type-chip-sororities span {
+  color: #816651;
+}

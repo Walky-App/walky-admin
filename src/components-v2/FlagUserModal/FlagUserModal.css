@@ -1,0 +1,250 @@
+/* Flag User Modal Styles */
+
+.flag-user-modal .modal-content {
+  background-color: var(--v2-neutral-white);
+  border: 1px solid var(--v2-border-outline);
+  border-radius: var(--v2-radius-xl);
+  box-shadow: var(--v2-shadow-lg);
+  max-width: 521px;
+  padding: 0;
+}
+
+.flag-user-modal-body {
+  padding: var(--v2-spacing-32);
+  position: relative;
+}
+
+/* Close Icon */
+.flag-modal-close-icon {
+  position: absolute;
+  top: var(--v2-spacing-24);
+  right: var(--v2-spacing-24);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--v2-transition-fast);
+  z-index: 10;
+}
+
+.flag-modal-close-icon:hover {
+  opacity: 0.7;
+}
+
+/* Content */
+.flag-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 46px;
+  width: 457px;
+}
+
+/* Content Inner */
+.flag-modal-content > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-24);
+}
+
+/* Title */
+.flag-modal-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Description Container */
+.flag-modal-description-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-16);
+}
+
+.flag-modal-description {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  opacity: 0.826;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Checkbox Container */
+.flag-modal-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-16);
+}
+
+.flag-modal-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-16);
+  cursor: pointer;
+  margin: 0;
+}
+
+.flag-modal-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.flag-modal-checkbox-custom {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: var(--v2-primary-purple-main);
+  border-radius: var(--v2-radius-xs);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--v2-transition-fast);
+}
+
+.flag-modal-checkbox-input:not(:checked) + .flag-modal-checkbox-custom {
+  background-color: transparent;
+  border: 2px solid var(--v2-border-dark);
+}
+
+.flag-modal-checkbox-input:hover + .flag-modal-checkbox-custom {
+  opacity: 0.9;
+}
+
+.flag-modal-checkbox-text {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  user-select: none;
+}
+
+/* Button Container */
+.flag-modal-button-container {
+  display: flex;
+  gap: var(--v2-spacing-20);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Cancel Button */
+.flag-modal-cancel-button {
+  background-color: var(--v2-neutral-white);
+  border: 1px solid var(--v2-border-dark);
+  border-radius: var(--v2-radius-lg);
+  padding: 9px var(--v2-spacing-32);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--v2-transition-fast);
+}
+
+.flag-modal-cancel-button span {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  text-align: right;
+}
+
+.flag-modal-cancel-button:hover {
+  background-color: var(--v2-bg-hover);
+  border-color: var(--v2-border-dark);
+}
+
+/* Confirm Button */
+.flag-modal-confirm-button {
+  background-color: var(--v2-primary-purple-main);
+  border: none;
+  border-radius: var(--v2-radius-lg);
+  padding: 9px var(--v2-spacing-20);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
+  transition: all var(--v2-transition-fast);
+}
+
+.flag-modal-confirm-button span {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--v2-neutral-white);
+  text-align: right;
+}
+
+.flag-modal-confirm-button:hover {
+  background-color: var(--v2-primary-purple-variant);
+  transform: translateY(-1px);
+  box-shadow: 0px 4px 10px 0px rgba(115, 115, 115, 0.3);
+}
+
+.flag-modal-confirm-button:active {
+  transform: translateY(0);
+}
+
+/* Dark Mode Support */
+:root[data-coreui-theme="dark"] .flag-user-modal .modal-content,
+[data-theme="dark"] .flag-user-modal .modal-content {
+  background-color: var(--v2-bg-card);
+  border-color: var(--v2-border-default);
+}
+
+:root[data-coreui-theme="dark"] .flag-modal-title,
+[data-theme="dark"] .flag-modal-title,
+:root[data-coreui-theme="dark"] .flag-modal-description,
+[data-theme="dark"] .flag-modal-description,
+:root[data-coreui-theme="dark"] .flag-modal-checkbox-text,
+[data-theme="dark"] .flag-modal-checkbox-text {
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .flag-modal-cancel-button,
+[data-theme="dark"] .flag-modal-cancel-button {
+  background-color: transparent;
+  border-color: var(--v2-border-default);
+}
+
+:root[data-coreui-theme="dark"] .flag-modal-cancel-button span,
+[data-theme="dark"] .flag-modal-cancel-button span {
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .flag-modal-cancel-button:hover,
+[data-theme="dark"] .flag-modal-cancel-button:hover {
+  background-color: var(--v2-bg-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+  .flag-modal-content {
+    width: 100%;
+  }
+
+  .flag-modal-button-container {
+    flex-direction: column;
+    gap: var(--v2-spacing-12);
+  }
+
+  .flag-modal-cancel-button,
+  .flag-modal-confirm-button {
+    width: 100%;
+  }
+}
