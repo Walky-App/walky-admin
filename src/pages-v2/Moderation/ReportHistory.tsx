@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import "./ReportHistory.css";
-import { AssetIcon, ExportButton, SearchInput } from "../../components-v2";
+import {
+  AssetIcon,
+  ExportButton,
+  SearchInput,
+  CopyableId,
+  ActionDropdown,
+} from "../../components-v2";
 
 interface HistoryReportData {
   id: string;
@@ -73,10 +79,6 @@ export const ReportHistory: React.FC = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentReports = filteredReports.slice(startIndex, endIndex);
-
-  const handleCopyStudentId = (studentId: string) => {
-    navigator.clipboard.writeText(studentId);
-  };
 
   const getReasonColor = (reason: string) => {
     switch (reason) {
@@ -218,24 +220,13 @@ export const ReportHistory: React.FC = () => {
                           <p className="report-description">
                             {report.description}
                           </p>
-                          <div className="student-id-container">
-                            <div className="student-id-badge">
-                              {report.studentId}
-                            </div>
-                            <button
-                              data-testid="copy-student-id-btn"
-                              className="copy-button"
-                              onClick={() =>
-                                handleCopyStudentId(report.studentId)
-                              }
-                            >
-                              <AssetIcon
-                                name="copy-icon"
-                                size={16}
-                                color="#ACB6BA"
-                              />
-                            </button>
-                          </div>
+                          <CopyableId
+                            id={report.studentId}
+                            label="Student ID"
+                            variant="secondary"
+                            iconColor="#ACB6BA"
+                            testId="copy-student-id"
+                          />
                         </div>
                       </div>
                     </td>
@@ -270,17 +261,25 @@ export const ReportHistory: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                      <button
-                        data-testid="options-btn"
-                        className="options-button"
-                        aria-label="Report options"
-                      >
-                        <AssetIcon
-                          name="vertical-3-dots-icon"
-                          size={24}
-                          color="#1d1b20"
-                        />
-                      </button>
+                      <ActionDropdown
+                        testId="report-history-options"
+                        items={[
+                          {
+                            label: "View details",
+                            onClick: (e) => {
+                              e.stopPropagation();
+                              console.log("View report", report);
+                            },
+                          },
+                          {
+                            label: "Export",
+                            onClick: (e) => {
+                              e.stopPropagation();
+                              console.log("Export report", report);
+                            },
+                          },
+                        ]}
+                      />
                     </td>
                   </tr>
                 );

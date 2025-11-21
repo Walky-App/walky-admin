@@ -30,6 +30,9 @@ const mockIdeas: IdeaData[] = [
     collaborated: 8,
     creationDate: "Oct 7, 2025",
     creationTime: "12:45",
+    isFlagged: true,
+    flagReason:
+      "Idea description includes spam or promotional content that is not relevant to the campus community.",
   },
   {
     id: "3",

@@ -23,11 +23,13 @@
 
 .ideas-table thead tr th:first-child {
   padding-left: 35px;
-  border-radius: 12px 0 0 12px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
 .ideas-table thead tr th:last-child {
-  border-radius: 0 12px 12px 0;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .ideas-table-header-cell {
@@ -37,11 +39,27 @@
 }
 
 .ideas-table tbody tr {
-  border-bottom: 0.6px solid #5b6168;
+  border-bottom: 0.4px solid rgba(169, 171, 172, 0.4);
 }
 
-.ideas-table tbody tr:last-child {
+.ideas-table tbody tr.idea-row-flagged {
+  background-color: #fff3f2;
   border-bottom: none;
+}
+
+.ideas-table tbody tr.idea-row-flagged td {
+  background-color: #fff3f2;
+  position: relative;
+}
+
+.ideas-table tbody tr.idea-row-flagged td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+.ideas-table tbody tr.idea-row-flagged td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .ideas-table tbody td {
@@ -59,6 +77,26 @@
   padding-left: 35px;
 }
 
+.ideas-table tbody td:last-child {
+  position: relative;
+  z-index: 100;
+}
+
+.idea-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.idea-flag-icon {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .ideas-table-idea-title {
   display: block;
   max-width: 230px;
@@ -71,6 +109,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .ideas-table-owner-avatar {

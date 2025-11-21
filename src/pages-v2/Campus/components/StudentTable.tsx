@@ -9,6 +9,7 @@ import {
   BanUserModal,
   CustomToast,
   ActionDropdown,
+  CopyableId,
 } from "../../../components-v2";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
@@ -235,10 +236,6 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     }
   };
 
-  const handleCopyUserId = (userId: string) => {
-    navigator.clipboard.writeText(userId);
-  };
-
   const sortedStudents = React.useMemo(() => {
     if (!sortField) return students;
 
@@ -282,22 +279,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       label: "User ID",
       sortable: true,
       render: (student) => (
-        <div className="student-userid">
-          <div className="student-userid-badge">
-            <span className="student-userid-text">{student.userId}</span>
-          </div>
-          <button
-            data-testid="copy-user-id-btn"
-            className="student-userid-copy"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCopyUserId(student.userId);
-            }}
-            title="Copy User ID"
-          >
-            <AssetIcon name="copy-icon" size={16} color="#321FDB" />
-          </button>
-        </div>
+        <CopyableId id={student.userId} label="User ID" testId="copy-user-id" />
       ),
     },
     name: {

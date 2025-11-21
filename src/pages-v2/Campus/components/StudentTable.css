@@ -7,7 +7,7 @@
 
 .student-table {
   width: 100%;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0;
   position: relative;
   z-index: 1;
@@ -35,10 +35,12 @@
 
 .student-table-header th:first-child {
   border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
 .student-table-header th:last-child {
   border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .table-header-cell {
@@ -55,7 +57,7 @@
 
 .student-table-row {
   height: 73px;
-  border-bottom: 1px solid #e0e0e0 !important;
+  border-bottom: 0.4px solid rgba(169, 171, 172, 0.4) !important;
   cursor: pointer;
   transition: background-color 0.2s;
   position: relative;
@@ -70,11 +72,8 @@
   line-height: normal;
   color: #1d1b20;
   opacity: 0.8;
-  border-bottom: 1px solid #e0e0e0 !important;
-}
-
-.student-table-row {
-  position: relative;
+  border-bottom: none !important;
+  border: none !important;
 }
 
 .student-table-row:hover {
@@ -271,7 +270,7 @@
 }
 
 [data-theme="dark"] .student-table-row {
-  border-bottom-color: #3a3a3a;
+  border-bottom: 0.4px solid rgba(169, 171, 172, 0.4) !important;
 }
 
 [data-theme="dark"] .student-table-row:hover {

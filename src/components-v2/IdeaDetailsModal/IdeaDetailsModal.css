@@ -97,8 +97,8 @@
 }
 
 .idea-owner-avatar {
-  width: 130px;
-  height: 130px;
+  width: 60px !important;
+  height: 60px !important;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -211,6 +211,28 @@
 .idea-info-value {
   font-weight: 400;
   opacity: 0.8;
+}
+
+.idea-info-flag-reason {
+  font-size: 16px;
+  line-height: 100%;
+  padding: 12px;
+  background: #fff3f2;
+  border-radius: 8px;
+  border-left: 3px solid #d53425;
+}
+
+.idea-info-flag-reason .idea-info-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  color: #d53425;
+}
+
+.idea-info-flag-reason .idea-info-value-flagged {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  color: #1d1b20;
+  opacity: 0.9;
 }
 
 /* Vertical Divider */

@@ -1,11 +1,11 @@
-.delete-modal-wrapper .modal-content {
+.unflag-modal-wrapper .modal-content {
   border: none;
   border-radius: 14px;
   box-shadow: none;
   background: transparent;
 }
 
-.delete-modal-body {
+.unflag-modal-body {
   padding: 32px;
   position: relative;
   background: #ffffff;
@@ -13,7 +13,7 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
-.delete-modal-close {
+.unflag-modal-close {
   position: absolute;
   top: 24px;
   right: 24px;
@@ -27,11 +27,11 @@
   transition: opacity 0.2s;
 }
 
-.delete-modal-close:hover {
+.unflag-modal-close:hover {
   opacity: 0.7;
 }
 
-.delete-modal-content {
+.unflag-modal-content {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -39,7 +39,7 @@
   max-width: 100%;
 }
 
-.delete-modal-title {
+.unflag-modal-title {
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 24px;
@@ -48,13 +48,13 @@
   margin: 0;
 }
 
-.delete-modal-message {
+.unflag-modal-message {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
-.delete-modal-question {
+.unflag-modal-question {
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 18px;
@@ -64,14 +64,14 @@
   margin: 0;
 }
 
-.delete-modal-question strong {
+.unflag-modal-question strong {
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 18px;
   line-height: 100%;
 }
 
-.delete-modal-warning {
+.unflag-modal-warning {
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 14px;
@@ -80,64 +80,7 @@
   margin: 0;
 }
 
-.delete-modal-reason {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
-}
-
-.delete-modal-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
-
-.delete-modal-label {
-  font-family: "Lato", sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 100%;
-  color: #1d1b20;
-}
-
-.delete-modal-textarea {
-  width: 100%;
-  min-height: 90px;
-  padding: 16px;
-  font-family: "Lato", sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 100%;
-  color: #1d1b20;
-  background: #ffffff;
-  border: 1px solid #cac4d0;
-  border-radius: 8px;
-  resize: vertical;
-  transition: border-color 0.2s;
-}
-
-.delete-modal-textarea::placeholder {
-  color: #676d70;
-}
-
-.delete-modal-textarea:focus {
-  outline: none;
-  border-color: #546fd9;
-}
-
-.delete-modal-char-count {
-  font-family: "Lato", sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 100%;
-  color: #5b6168;
-  margin: 0;
-  text-align: right;
-}
-
-.delete-modal-actions {
+.unflag-modal-actions {
   display: flex;
   gap: 20px;
   align-items: center;
@@ -145,7 +88,7 @@
   margin-top: 22px;
 }
 
-.delete-modal-cancel-btn {
+.unflag-modal-cancel-btn {
   background: #ffffff;
   border: 1px solid #d2d2d3;
   border-radius: 12px;
@@ -163,16 +106,16 @@
   justify-content: center;
 }
 
-.delete-modal-cancel-btn:hover {
+.unflag-modal-cancel-btn:hover {
   background: #f6f9ff;
   border-color: #546fd9;
 }
 
-.delete-modal-confirm-btn {
-  background: #d53425;
+.unflag-modal-confirm-btn {
+  background: #526ac9;
   border: none;
-  border-radius: 12px;
-  padding: 9px 20px;
+  border-radius: 8px;
+  padding: 10px 20px;
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 16px;
@@ -180,18 +123,17 @@
   color: #ffffff;
   cursor: pointer;
   transition: all 0.2s;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
 }
 
-.delete-modal-confirm-btn:hover {
-  background: #b82a1e;
+.unflag-modal-confirm-btn:hover {
+  background: #4159b3;
   box-shadow: 0px 4px 12px 0px rgba(115, 115, 115, 0.3);
 }
 
-.delete-modal-confirm-btn:active {
+.unflag-modal-confirm-btn:active {
   transform: translateY(1px);
 }

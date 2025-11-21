@@ -13,8 +13,6 @@
   background: #ffffff;
   border-radius: 12px;
   position: relative;
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
 .event-details-close {
@@ -77,7 +75,7 @@
 .event-details-main {
   display: flex;
   gap: 40px;
-  min-height: 735px;
+  min-height: auto;
 }
 
 .event-details-left {
@@ -106,7 +104,7 @@
 /* Event Image */
 .event-details-image {
   width: 100%;
-  height: 213px;
+  height: 160px;
   border-radius: 12px;
   overflow: hidden;
   background: #f1f4f9;
@@ -136,8 +134,8 @@
 }
 
 .event-organizer-avatar {
-  width: 130px;
-  height: 130px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -157,7 +155,7 @@
   align-items: center;
   justify-content: center;
   font-family: "Lato", sans-serif;
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 700;
   color: #a9abac;
 }
@@ -260,6 +258,28 @@
   color: #1d1b20;
 }
 
+.event-info-flag-reason {
+  font-size: 16px;
+  line-height: 100%;
+  padding: 12px;
+  background: #fff3f2;
+  border-radius: 8px;
+  border-left: 3px solid #d53425;
+}
+
+.event-info-flag-reason .event-info-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  color: #d53425;
+}
+
+.event-info-flag-reason .event-info-value-flagged {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  color: #1d1b20;
+  opacity: 0.9;
+}
+
 /* Divider */
 .event-details-divider {
   width: 1px;
@@ -274,7 +294,7 @@
   gap: 16px;
   width: 426px;
   flex-shrink: 0;
-  padding-top: 41px;
+  padding-top: 0;
 }
 
 .event-attendees-header {
@@ -306,8 +326,10 @@
 .event-attendees-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   padding: 0 8px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .event-attendee-item {
@@ -317,8 +339,8 @@
 }
 
 .event-attendee-avatar {
-  width: 50px;
-  height: 50px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -338,7 +360,7 @@
   align-items: center;
   justify-content: center;
   font-family: "Lato", sans-serif;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   color: #a9abac;
 }
@@ -346,7 +368,7 @@
 .event-attendee-name {
   font-family: "Lato", sans-serif;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 100%;
   color: #1d1b20;
   opacity: 0.8;

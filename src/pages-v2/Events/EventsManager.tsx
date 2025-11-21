@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AssetIcon, SearchInput } from "../../components-v2";
+import { SearchInput, FilterDropdown } from "../../components-v2";
 import { EventTable, EventData } from "./components/EventTable";
 import { EventCalendar } from "./components/EventCalendar";
 import "./EventsManager.css";
@@ -19,6 +19,9 @@ const mockEvents: EventData[] = [
     eventTime: "12:45",
     attendees: 6,
     type: "public",
+    isFlagged: true,
+    flagReason:
+      "This event contains inappropriate content that violates community guidelines.",
   },
   {
     id: "2",
@@ -47,6 +50,9 @@ const mockEvents: EventData[] = [
     eventTime: "15:45",
     attendees: 0,
     type: "public",
+    isFlagged: true,
+    flagReason:
+      "Event details are misleading and may confuse attendees about the actual competition format.",
   },
 ];
 
@@ -99,70 +105,72 @@ export const EventsManager: React.FC = () => {
       </div>
 
       <div className="events-manager-content">
-        <div className="events-list-header">
-          <h2 className="events-list-title">List of Events</h2>
+        <div className="events-card">
+          {viewMode === "list" && (
+            <>
+              <h2 className="events-list-title-1">List of Events</h2>
 
-          <div className="events-filters">
-            <SearchInput
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="Search"
-              variant="secondary"
-            />
+              <div className="events-filters">
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search"
+                  variant="secondary"
+                />
 
-            <div className="type-filter-dropdown">
-              <select
-                aria-label="Filter events by type"
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="type-filter-select"
-              >
-                <option value="all">All types</option>
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
-              <AssetIcon name="arrow-down" size={10} color="#5B6168" />
-            </div>
-          </div>
-        </div>
-
-        {viewMode === "list" ? (
-          <>
-            <EventTable events={filteredEvents} />
-
-            <div className="events-pagination">
-              <p className="pagination-info">
-                Showing {filteredEvents.length} of {mockEvents.length} entries
-              </p>
-
-              <div className="pagination-controls">
-                <button
-                  data-testid="pagination-prev-btn"
-                  className="pagination-btn"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-
-                <div className="pagination-page-number active">
-                  <span>{currentPage}</span>
-                </div>
-
-                <button
-                  data-testid="pagination-next-btn"
-                  className="pagination-btn"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
+                <FilterDropdown
+                  value={typeFilter}
+                  onChange={setTypeFilter}
+                  options={[
+                    { value: "all", label: "All types" },
+                    { value: "public", label: "Public" },
+                    { value: "private", label: "Private" },
+                  ]}
+                  ariaLabel="Filter events by type"
+                  testId="event-type-filter"
+                />
               </div>
-            </div>
-          </>
-        ) : (
-          <EventCalendar />
-        )}
+            </>
+          )}
+
+          {viewMode === "list" ? (
+            <>
+              <EventTable events={filteredEvents} />
+
+              <div className="events-pagination">
+                <p className="pagination-info">
+                  Showing {filteredEvents.length} of {mockEvents.length} entries
+                </p>
+
+                <div className="pagination-controls">
+                  <button
+                    data-testid="pagination-prev-btn"
+                    className="pagination-btn"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+
+                  <div className="pagination-page-number active">
+                    <span>{currentPage}</span>
+                  </div>
+
+                  <button
+                    data-testid="pagination-next-btn"
+                    className="pagination-btn"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <EventCalendar />
+          )}
+        </div>
       </div>
     </div>
   );

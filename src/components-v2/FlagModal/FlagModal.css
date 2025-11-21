@@ -1,11 +1,11 @@
-.delete-modal-wrapper .modal-content {
+.flag-modal-wrapper .modal-content {
   border: none;
   border-radius: 14px;
   box-shadow: none;
   background: transparent;
 }
 
-.delete-modal-body {
+.flag-modal-body {
   padding: 32px;
   position: relative;
   background: #ffffff;
@@ -13,7 +13,7 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
-.delete-modal-close {
+.flag-modal-close {
   position: absolute;
   top: 24px;
   right: 24px;
@@ -27,11 +27,11 @@
   transition: opacity 0.2s;
 }
 
-.delete-modal-close:hover {
+.flag-modal-close:hover {
   opacity: 0.7;
 }
 
-.delete-modal-content {
+.flag-modal-content {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -39,7 +39,7 @@
   max-width: 100%;
 }
 
-.delete-modal-title {
+.flag-modal-title {
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 24px;
@@ -48,13 +48,13 @@
   margin: 0;
 }
 
-.delete-modal-message {
+.flag-modal-message {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.delete-modal-question {
+.flag-modal-question {
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 18px;
@@ -64,14 +64,14 @@
   margin: 0;
 }
 
-.delete-modal-question strong {
+.flag-modal-question strong {
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 18px;
   line-height: 100%;
 }
 
-.delete-modal-warning {
+.flag-modal-warning {
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 14px;
@@ -80,21 +80,21 @@
   margin: 0;
 }
 
-.delete-modal-reason {
+.flag-modal-reason {
   display: flex;
   flex-direction: column;
   gap: 4px;
   align-items: flex-end;
 }
 
-.delete-modal-input-wrapper {
+.flag-modal-input-wrapper {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
 
-.delete-modal-label {
+.flag-modal-label {
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 16px;
@@ -102,7 +102,7 @@
   color: #1d1b20;
 }
 
-.delete-modal-textarea {
+.flag-modal-textarea {
   width: 100%;
   min-height: 90px;
   padding: 16px;
@@ -118,16 +118,16 @@
   transition: border-color 0.2s;
 }
 
-.delete-modal-textarea::placeholder {
+.flag-modal-textarea::placeholder {
   color: #676d70;
 }
 
-.delete-modal-textarea:focus {
+.flag-modal-textarea:focus {
   outline: none;
   border-color: #546fd9;
 }
 
-.delete-modal-char-count {
+.flag-modal-char-count {
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 14px;
@@ -137,7 +137,7 @@
   text-align: right;
 }
 
-.delete-modal-actions {
+.flag-modal-actions {
   display: flex;
   gap: 20px;
   align-items: center;
@@ -145,7 +145,7 @@
   margin-top: 22px;
 }
 
-.delete-modal-cancel-btn {
+.flag-modal-cancel-btn {
   background: #ffffff;
   border: 1px solid #d2d2d3;
   border-radius: 12px;
@@ -163,12 +163,12 @@
   justify-content: center;
 }
 
-.delete-modal-cancel-btn:hover {
+.flag-modal-cancel-btn:hover {
   background: #f6f9ff;
   border-color: #546fd9;
 }
 
-.delete-modal-confirm-btn {
+.flag-modal-confirm-btn {
   background: #d53425;
   border: none;
   border-radius: 12px;
@@ -187,11 +187,11 @@
   box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
 }
 
-.delete-modal-confirm-btn:hover {
+.flag-modal-confirm-btn:hover {
   background: #b82a1e;
   box-shadow: 0px 4px 12px 0px rgba(115, 115, 115, 0.3);
 }
 
-.delete-modal-confirm-btn:active {
+.flag-modal-confirm-btn:active {
   transform: translateY(1px);
 }

@@ -4,6 +4,7 @@ import {
   DeleteAmbassadorModal,
   AddAmbassadorModal,
   CustomToast,
+  CopyableId,
 } from "../../../components-v2";
 import "./Ambassadors.css";
 
@@ -69,10 +70,6 @@ export const Ambassadors: React.FC = () => {
       status: "Active",
     },
   ];
-
-  const handleCopyStudentId = (studentId: string) => {
-    navigator.clipboard.writeText(studentId);
-  };
 
   const handleAddAmbassador = () => {
     setAddModalOpen(true);
@@ -177,19 +174,12 @@ export const Ambassadors: React.FC = () => {
                 <tr key={ambassador.id} className="ambassador-row">
                   {/* Student ID Column */}
                   <td className="ambassador-student-id">
-                    <div className="student-id-wrapper">
-                      <span className="student-id">{ambassador.studentId}</span>
-                      <button
-                        data-testid="copy-student-id-btn"
-                        className="copy-button"
-                        onClick={() =>
-                          handleCopyStudentId(ambassador.studentId)
-                        }
-                        title="Copy ID"
-                      >
-                        <AssetIcon name="copy-icon" size={16} />
-                      </button>
-                    </div>
+                    <CopyableId
+                      id={ambassador.studentId}
+                      label="Student ID"
+                      variant="primary"
+                      testId="copy-student-id"
+                    />
                   </td>
 
                   {/* Ambassador Column */}

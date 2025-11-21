@@ -1,18 +1,30 @@
 .event-table-wrapper {
   background-color: #ffffff;
-  border: 1px solid #eef0f1;
-  border-radius: 12px;
+  border: none;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .event-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .event-table thead tr {
   background-color: #f1f4f9;
   height: 53px;
+  border-radius: 12px;
+}
+
+.event-table th:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.event-table th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .event-table th {
@@ -41,13 +53,29 @@
 }
 
 .event-table tbody tr {
-  border-bottom: 1px solid #a9abac;
+  border-bottom: 0.4px solid rgba(169, 171, 172, 0.4);
   height: 73px;
   position: relative;
 }
 
-.event-table tbody tr:last-child {
+.event-table tbody tr.event-row-flagged {
+  background-color: #fff3f2;
   border-bottom: none;
+}
+
+.event-table tbody tr.event-row-flagged td {
+  background-color: #fff3f2;
+  position: relative;
+}
+
+.event-table tbody tr.event-row-flagged td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+.event-table tbody tr.event-row-flagged td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .event-table td {
@@ -68,6 +96,21 @@
   padding-left: 35px;
 }
 
+.event-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.event-flag-icon {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .event-name {
   font-family: "Lato", sans-serif;
   font-size: 14px;
@@ -80,6 +123,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .organizer-avatar {
@@ -121,6 +166,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 .student-id-badge {
@@ -157,6 +204,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 .event-date {
@@ -166,6 +215,7 @@
   color: #1d1b20;
   opacity: 0.8;
   line-height: 100%;
+  position: relative;
 }
 
 .event-time {
@@ -173,8 +223,9 @@
   font-size: 12px;
   font-weight: 400;
   color: #5b6168;
-  opacity: 0.8;
+  opacity: 1;
   line-height: 100%;
+  position: relative;
 }
 
 .attendees-badge {
@@ -186,6 +237,8 @@
   height: 22px;
   padding: 8px 10px;
   border-radius: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 .attendees-badge span {

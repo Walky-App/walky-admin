@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./ScheduledEventsModal.css";
-import { AssetIcon } from "../../components-v2";
+import { AssetIcon, SearchInput } from "../../components-v2";
 
 export interface ScheduledEventItem {
   id: string;
@@ -48,7 +48,7 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
           className="scheduled-events-close"
           aria-label="Close"
         >
-          <AssetIcon name="x-icon" size={16} color="#5B6168" />
+          <AssetIcon name="close-button" size={16} color="#5B6168" />
         </button>
 
         <div className="scheduled-events-content">
@@ -65,19 +65,13 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
           <div className="scheduled-events-list-container">
             {/* Search Input */}
             <div className="scheduled-events-search-wrapper">
-              <div className="scheduled-events-search">
-                <div className="search-input-container">
-                  <AssetIcon name="search-icon" size={12} color="#676D70" />
-                  <input
-                    data-testid="scheduled-events-search-input"
-                    type="text"
-                    placeholder="Search Event"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-input"
-                  />
-                </div>
-              </div>
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search Event"
+                variant="secondary"
+                testId="scheduled-events-search-input"
+              />
             </div>
 
             {/* Event Cards */}

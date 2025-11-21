@@ -211,15 +211,6 @@ const SidebarV2: React.FC = () => {
         },
       ],
     },
-    {
-      title: "SETTINGS",
-      items: [
-        {
-          label: "Administrators Roles",
-          submenu: [{ label: "Admin Roles", path: "/v2/administrators-roles" }],
-        },
-      ],
-    },
   ];
 
   const toggleMenu = (label: string) => {
