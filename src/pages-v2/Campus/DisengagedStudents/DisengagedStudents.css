@@ -1,0 +1,289 @@
+.disengaged-students-page {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  padding: 32px 32px 32px 0;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.disengaged-students-stats {
+  display: flex;
+  gap: 50px;
+  width: 100%;
+}
+
+.disengaged-students-content {
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 32px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+}
+
+.disengaged-students-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.disengaged-students-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.disengaged-students-title {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.disengaged-students-description {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  color: #5b6168;
+  margin: 0;
+}
+
+/* Table Styles */
+.disengaged-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.disengaged-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.disengaged-table-header {
+  background-color: #f1f4f9;
+  height: 48px;
+}
+
+.disengaged-table-header th {
+  padding: 16px;
+  text-align: left;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: normal;
+  color: #1d1b20;
+  white-space: nowrap;
+}
+
+.disengaged-table-header th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.disengaged-table-header th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.disengaged-table-row {
+  height: 73px;
+  border-bottom: 1px solid #5b6168;
+  transition: background-color 0.2s;
+}
+
+.disengaged-table-row:hover {
+  background-color: rgba(235, 241, 255, 0.3);
+}
+
+.disengaged-table-row td {
+  padding: 16px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #1d1b20;
+}
+
+.disengaged-student-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.disengaged-student-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.disengaged-student-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.disengaged-student-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #d2d2d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.disengaged-student-name {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #321fdb;
+  opacity: 0.8;
+}
+
+.disengaged-cell-value {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+.disengaged-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 18px;
+  border-radius: 14px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.disengaged-status-badge.reported {
+  background-color: #ffe5e4;
+  color: #a4181a;
+}
+
+.disengaged-status-badge.not-reported {
+  background-color: #eef0f1;
+  color: #5b6168;
+}
+
+.disengaged-send-outreach-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #321fdb;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  padding: 0;
+}
+
+.disengaged-send-outreach-button:hover {
+  opacity: 1;
+}
+
+/* Dark mode */
+[data-theme="dark"] .disengaged-students-page {
+  background-color: var(--v2-bg-app);
+}
+
+[data-theme="dark"] .disengaged-students-content {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .disengaged-students-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .disengaged-students-description {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .disengaged-table-header {
+  background-color: rgba(241, 244, 249, 0.1);
+}
+
+[data-theme="dark"] .disengaged-table-header th {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .disengaged-table-row {
+  border-bottom-color: #3a3a3a;
+}
+
+[data-theme="dark"] .disengaged-table-row:hover {
+  background-color: rgba(82, 106, 201, 0.1);
+}
+
+[data-theme="dark"] .disengaged-table-row td {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .disengaged-student-name {
+  color: #7b8fe8;
+}
+
+[data-theme="dark"] .disengaged-cell-value {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .disengaged-status-badge.not-reported {
+  background-color: rgba(238, 240, 241, 0.2);
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .disengaged-send-outreach-button {
+  color: #7b8fe8;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .disengaged-students-stats {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .disengaged-students-page {
+    padding: 16px;
+    gap: 32px;
+  }
+
+  .disengaged-students-content {
+    padding: 16px;
+  }
+
+  .disengaged-students-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .disengaged-table-wrapper {
+    overflow-x: scroll;
+  }
+
+  .disengaged-table {
+    min-width: 800px;
+  }
+}

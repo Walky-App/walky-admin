@@ -36,6 +36,7 @@ function generateTypesFile(iconNames) {
 
 export interface AssetIconProps {
   name: IconName;
+  fill?: string;
   size?: number | string;
   color?: string;
   strokeColor?: string;
@@ -182,11 +183,25 @@ console.log("  ✓ Generated AssetIcon.types.ts");
 generateIconMapFile(svgFiles);
 console.log("  ✓ Generated icons.generated.ts");
 
-generateComponentFile(iconNames);
-console.log("  ✓ Generated AssetIcon.tsx");
+// Only generate AssetIcon.tsx if it doesn't exist (preserve custom implementation)
+if (!fs.existsSync(ICON_COMPONENT_FILE)) {
+  generateComponentFile(iconNames);
+  console.log("  ✓ Generated AssetIcon.tsx");
+} else {
+  console.log(
+    "  ⏭  Skipped AssetIcon.tsx (already exists - preserving custom implementation)"
+  );
+}
 
-generateIndexFile();
-console.log("  ✓ Generated index.ts\n");
+// Skip index.ts generation if it already exists (preserve custom exports)
+if (!fs.existsSync(INDEX_FILE)) {
+  generateIndexFile();
+  console.log("  ✓ Generated index.ts");
+} else {
+  console.log(
+    "  ⏭  Skipped index.ts (already exists - preserving custom exports)"
+  );
+}
 
 console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 console.log("✨ Icon generation complete!\n");

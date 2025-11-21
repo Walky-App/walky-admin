@@ -150,23 +150,34 @@ const SidebarV2: React.FC = () => {
       items: [
         {
           label: "Manage Students",
-          submenu: [{ label: "All Students", path: "/v2/manage-students" }],
+          submenu: [
+            { label: "Active", path: "/v2/manage-students/active" },
+            { label: "Banned", path: "/v2/manage-students/banned" },
+            { label: "Deactivated", path: "/v2/manage-students/deactivated" },
+            { label: "Disengaged", path: "/v2/manage-students/disengaged" },
+          ],
         },
-        {
-          label: "Reported Content",
-          path: "/v2/reported-content",
-        },
+
         {
           label: "Events",
-          submenu: [{ label: "All Events", path: "/v2/events" }],
+          submenu: [
+            { label: "Events Manager", path: "/v2/events" },
+            { label: "Events Insights", path: "/v2/events/insights" },
+          ],
         },
         {
           label: "Spaces",
-          submenu: [{ label: "All Spaces", path: "/v2/spaces" }],
+          submenu: [
+            { label: "Spaces Manager", path: "/v2/spaces" },
+            { label: "Spaces Insights", path: "/v2/spaces/insights" },
+          ],
         },
         {
           label: "Ideas",
-          submenu: [{ label: "All Ideas", path: "/v2/ideas" }],
+          submenu: [
+            { label: "Ideas Manager", path: "/v2/ideas" },
+            { label: "Ideas Insights", path: "/v2/ideas/insights" },
+          ],
         },
       ],
     },
@@ -175,11 +186,11 @@ const SidebarV2: React.FC = () => {
       items: [
         {
           label: "Report & Safety",
-          submenu: [{ label: "All Reports", path: "/v2/report-safety" }],
+          path: "/v2/report-safety",
         },
         {
           label: "Report History",
-          submenu: [{ label: "History", path: "/v2/report-history" }],
+          path: "/v2/report-history",
         },
       ],
     },
@@ -188,15 +199,15 @@ const SidebarV2: React.FC = () => {
       items: [
         {
           label: "Campuses",
-          submenu: [{ label: "All Campuses", path: "/v2/campuses" }],
+          path: "/v2/campuses",
         },
         {
           label: "Ambassadors",
-          submenu: [{ label: "All Ambassadors", path: "/v2/ambassadors" }],
+          path: "/v2/ambassadors",
         },
         {
           label: "Role Management",
-          submenu: [{ label: "Manage Roles", path: "/v2/role-management" }],
+          path: "/v2/role-management",
         },
       ],
     },

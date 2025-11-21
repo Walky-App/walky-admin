@@ -1,0 +1,225 @@
+.spaces-manager-container {
+  padding: 32px 40px;
+  background-color: #f7f8fa;
+}
+
+.spaces-manager-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 42px;
+}
+
+.spaces-manager-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spaces-manager-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 100%;
+  background: linear-gradient(90deg, #555aec 0%, #486cb1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.spaces-manager-subtitle {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 100%;
+  color: #5b6168;
+  margin: 0;
+}
+
+.spaces-manager-content {
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 16px;
+  padding: 32px 26px 26px 26px;
+}
+
+.spaces-list-header {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.spaces-list-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 100%;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.spaces-filters {
+  display: flex;
+  gap: 17px;
+  align-items: center;
+}
+
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 375px;
+  height: 40px;
+  background-color: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 8px;
+  padding: 0 16px;
+  gap: 4px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: #1d1b20;
+}
+
+.search-input::placeholder {
+  color: #676d70;
+}
+
+.category-filter-dropdown {
+  position: relative;
+}
+
+.category-filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 136px;
+  height: 40px;
+  background-color: #fcfdfd;
+  border: 0.6px solid #a9abac;
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #5b6168;
+  cursor: pointer;
+}
+
+.category-dropdown-menu {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 218px;
+  background-color: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.category-dropdown-item {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: #1d1b20;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.category-dropdown-item:hover {
+  color: #526ac9;
+}
+
+.category-dropdown-item.active {
+  color: #526ac9;
+  background-color: #ebf1ff;
+  padding: 8px;
+  margin: -8px 0;
+  border-radius: 4px;
+}
+
+.category-dropdown-divider {
+  height: 1px;
+  background-color: #eef0f1;
+  margin: 8px 0;
+}
+
+.spaces-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 36px;
+  padding: 0 14px;
+}
+
+.pagination-info {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #5b6168;
+  margin: 0;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pagination-btn {
+  background-color: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #321fdb;
+  cursor: pointer;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f7f8fa;
+}
+
+.pagination-page-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 37px;
+  background-color: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 4px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #321fdb;
+}
+
+.pagination-page-number.active {
+  background-color: #ebf1ff;
+  border-color: #321fdb;
+}
