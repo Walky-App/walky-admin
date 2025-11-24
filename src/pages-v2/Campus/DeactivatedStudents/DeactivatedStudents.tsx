@@ -85,7 +85,7 @@ export const DeactivatedStudents: React.FC = () => {
   };
 
   return (
-    <div className="deactivated-students-page">
+    <main className="deactivated-students-page">
       <div className="deactivated-students-stats">
         <StatsCard
           title="Total deactivated students"
@@ -153,6 +153,6 @@ export const DeactivatedStudents: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </main>
   );
 };

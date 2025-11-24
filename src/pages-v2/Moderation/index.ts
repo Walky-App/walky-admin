@@ -1,2 +1,2 @@
-export { ReportSafety } from "./ReportSafety";
-export { ReportHistory } from "./ReportHistory";
+export { ReportSafety } from "./ReportSafety/ReportSafety";
+export { ReportHistory } from "./ReportHistory/ReportHistory";

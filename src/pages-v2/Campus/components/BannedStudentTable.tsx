@@ -9,6 +9,7 @@ import {
   FlagUserModal,
   ActionDropdown,
   CustomToast,
+  Divider,
 } from "../../../components-v2";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
@@ -329,69 +330,77 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {sortedStudents.map((student) => (
-            <tr
-              key={student.id}
-              className="student-table-row"
-              onClick={() => onStudentClick?.(student)}
-            >
-              {columns.map((column) => (
-                <td key={column} className="student-table-cell">
-                  {columnConfig[column].render(student)}
-                </td>
-              ))}
-              <td className="student-table-cell student-table-actions">
-                <ActionDropdown
-                  testId="banned-student-dropdown"
-                  items={[
-                    {
-                      label: "View profile",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleViewProfile(student);
+          {sortedStudents.map((student, index) => (
+            <React.Fragment key={student.id}>
+              <tr
+                className="student-table-row"
+                onClick={() => onStudentClick?.(student)}
+              >
+                {columns.map((column) => (
+                  <td key={column} className="student-table-cell">
+                    {columnConfig[column].render(student)}
+                  </td>
+                ))}
+                <td className="student-table-cell student-table-actions">
+                  <ActionDropdown
+                    testId="banned-student-dropdown"
+                    items={[
+                      {
+                        label: "View profile",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleViewProfile(student);
+                        },
                       },
-                    },
-                    {
-                      label: "Send email",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleSendEmail(student);
+                      {
+                        label: "Send email",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleSendEmail(student);
+                        },
                       },
-                    },
-                    {
-                      label: "Flag user",
-                      icon: "flag-icon",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleFlagUser(student);
+                      {
+                        label: "Flag user",
+                        icon: "flag-icon",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleFlagUser(student);
+                        },
                       },
-                    },
 
-                    {
-                      isDivider: true,
-                      label: "",
-                      onClick: () => {},
-                    },
-                    {
-                      label: "Deactivate user",
-                      variant: "danger",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleDeactivateUser(student);
+                      {
+                        isDivider: true,
+                        label: "",
+                        onClick: () => {},
                       },
-                    },
-                    {
-                      label: "Unban user",
-                      variant: "danger",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleUnbanUser(student);
+                      {
+                        label: "Deactivate user",
+                        variant: "danger",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleDeactivateUser(student);
+                        },
                       },
-                    },
-                  ]}
-                />
-              </td>
-            </tr>
+                      {
+                        label: "Unban user",
+                        variant: "danger",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleUnbanUser(student);
+                        },
+                      },
+                    ]}
+                  />
+                </td>
+              </tr>
+              {index < sortedStudents.length - 1 && (
+                <tr className="student-divider-row">
+                  <td colSpan={columns.length + 1}>
+                    <Divider />
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

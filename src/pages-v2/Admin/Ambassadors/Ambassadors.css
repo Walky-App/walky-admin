@@ -1,14 +1,14 @@
 /* Ambassadors Page Styles */
 .ambassadors-page {
-  width: 100%;
-  padding: 32px 40px;
-  background-color: #ffffff;
-  min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
 }
 
 .page-title {
@@ -20,7 +20,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin: 0 0 8px 0;
+  margin: 0;
+  text-align: left;
 }
 
 .page-subtitle {
@@ -30,6 +31,7 @@
   line-height: 1;
   color: #5b6168;
   margin: 0;
+  text-align: left;
 }
 
 /* Main Container */
@@ -103,16 +105,18 @@
 /* Table */
 .ambassadors-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 /* Table Header */
 .table-header-row {
   background-color: #f1f4f9;
+  height: 53px;
   border-radius: 12px;
 }
 
-.table-header {
+.ambassadors-table thead th {
   font-family: "Lato", sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -120,56 +124,57 @@
   color: #1d1b20;
   text-align: left;
   padding: 16px;
+  vertical-align: middle;
 }
 
-.table-header:first-child {
+.ambassadors-table th:first-child {
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
+  padding-left: 50px;
 }
 
-.table-header:last-child {
+.ambassadors-table th:last-child {
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
 }
 
-.table-header span {
-  display: inline-flex;
-  align-items: center;
-}
-
-.student-id-header {
-  padding-left: 50px;
-}
-
-.ambassador-header,
-.ambassador-since-header,
-.member-since-header,
-.status-header {
+.ambassador-header {
   display: flex;
   align-items: center;
-  gap: 0;
-}
-
-.actions-header {
-  width: 60px;
+  gap: 4px;
 }
 
 /* Table Rows */
-.ambassador-row {
-  border-bottom: 1px solid #5b6168;
+.ambassadors-table tbody tr {
+  height: 73px;
+  position: relative;
 }
 
 .ambassador-row td {
   padding: 12px 16px;
+  vertical-align: middle;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1b20;
+  opacity: 0.8;
 }
 
-.ambassador-row:last-child {
-  border-bottom: none;
+.ambassadors-table td:first-child {
+  padding-left: 50px;
+}
+
+.ambassador-divider-row {
+  height: 1px !important;
+}
+
+.ambassador-divider-row td {
+  padding: 0 !important;
+  height: 1px;
 }
 
 /* Student ID Cell */
 .ambassador-student-id {
-  padding-left: 50px !important;
   padding-top: 21.18px !important;
   padding-bottom: 21.18px !important;
 }
@@ -201,6 +206,7 @@
   justify-content: center;
   opacity: 0.6;
   transition: opacity 0.2s ease;
+  color: #acb6ba;
 }
 
 .copy-button:hover {
@@ -209,7 +215,6 @@
 
 /* Ambassador Name Cell */
 .ambassador-name-cell {
-  padding-left: 233px !important;
 }
 
 .ambassador-info {
@@ -221,8 +226,27 @@
 .ambassador-avatar {
   width: 48px;
   height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.ambassador-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 50%;
+  background-color: #d2d2d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1b20;
+  text-transform: uppercase;
 }
 
 .ambassador-name {
@@ -281,22 +305,24 @@
   background-color: #ffffff;
   border: 0.5px solid #f1f4f9;
   border-radius: 4px;
-  padding: 8px 4px;
+  padding: 4px;
+  width: 32px;
   height: 32px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .delete-button:hover {
   background-color: #ffe5e4;
+  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
 }
 
-.delete-icon {
-  font-size: 18px;
-  line-height: 1;
+.delete-button svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* Pagination */
@@ -381,9 +407,5 @@
 
   .ambassadors-table {
     font-size: 13px;
-  }
-
-  .ambassador-name-cell {
-    padding-left: 16px !important;
   }
 }

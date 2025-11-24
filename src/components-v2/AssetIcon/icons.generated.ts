@@ -9,6 +9,7 @@ import chatIcon from '../../assets-v2/svg/chat-icon.svg?react';
 import checkIcon from '../../assets-v2/svg/check-icon.svg?react';
 import closeButton from '../../assets-v2/svg/close-button.svg?react';
 import copyIcon from '../../assets-v2/svg/copy-icon.svg?react';
+import deleteIcon from '../../assets-v2/svg/delete-icon.svg?react';
 import doubleUsersIcon from '../../assets-v2/svg/double-users-icon.svg?react';
 import exportIcon from '../../assets-v2/svg/export-icon.svg?react';
 import flagIcon from '../../assets-v2/svg/flag-icon.svg?react';
@@ -19,8 +20,15 @@ import ideiaIcon from '../../assets-v2/svg/ideia-icon.svg?react';
 import locationIcon from '../../assets-v2/svg/location-icon.svg?react';
 import lockIcon from '../../assets-v2/svg/lock-icon.svg?react';
 import logoWalkyWhite from '../../assets-v2/svg/logo-walky-white.svg?react';
+import logoutIcon from '../../assets-v2/svg/logout-icon.svg?react';
 import mapIcon from '../../assets-v2/svg/map-icon.svg?react';
 import menuLogoWalky from '../../assets-v2/svg/menu-logo-walky.svg?react';
+import modEmptyTableIcon from '../../assets-v2/svg/mod-empty-table-icon.svg?react';
+import modFilterIcon from '../../assets-v2/svg/mod-filter-icon.svg?react';
+import modTableIcon from '../../assets-v2/svg/mod-table-icon.svg?react';
+import modTablePauseIcon from '../../assets-v2/svg/mod-table-pause-icon.svg?react';
+import modTableSearchIcon from '../../assets-v2/svg/mod-table-search-icon.svg?react';
+import plusIcon from '../../assets-v2/svg/plus-icon.svg?react';
 import popularEmojiIcon from '../../assets-v2/svg/popular-emoji-icon.svg?react';
 import priviteEventIcon from '../../assets-v2/svg/privite-event-icon.svg?react';
 import publicEventIcon from '../../assets-v2/svg/public-event-icon.svg?react';
@@ -55,6 +63,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'check-icon': checkIcon,
   'close-button': closeButton,
   'copy-icon': copyIcon,
+  'delete-icon': deleteIcon,
   'double-users-icon': doubleUsersIcon,
   'export-icon': exportIcon,
   'flag-icon': flagIcon,
@@ -65,8 +74,15 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'location-icon': locationIcon,
   'lock-icon': lockIcon,
   'logo-walky-white': logoWalkyWhite,
+  'logout-icon': logoutIcon,
   'map-icon': mapIcon,
   'menu-logo-walky': menuLogoWalky,
+  'mod-empty-table-icon': modEmptyTableIcon,
+  'mod-filter-icon': modFilterIcon,
+  'mod-table-icon': modTableIcon,
+  'mod-table-pause-icon': modTablePauseIcon,
+  'mod-table-search-icon': modTableSearchIcon,
+  'plus-icon': plusIcon,
   'popular-emoji-icon': popularEmojiIcon,
   'privite-event-icon': priviteEventIcon,
   'public-event-icon': publicEventIcon,

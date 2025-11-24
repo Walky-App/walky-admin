@@ -9,6 +9,7 @@ export interface SearchInputProps {
   variant?: "primary" | "secondary";
   className?: string;
   testId?: string;
+  onSearch?: () => void;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -18,6 +19,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   variant = "primary",
   className = "",
   testId = "search-input",
+  onSearch,
 }) => {
   return (
     <div className={`search-input-container ${variant} ${className}`}>
@@ -31,6 +33,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         value={value}
         aria-label={placeholder}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onSearch?.();
+          }
+        }}
         className="search-input-field"
       />
     </div>

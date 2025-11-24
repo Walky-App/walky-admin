@@ -199,15 +199,15 @@ const SidebarV2: React.FC = () => {
       items: [
         {
           label: "Campuses",
-          path: "/v2/campuses",
+          path: "/v2/admin/campuses",
         },
         {
           label: "Ambassadors",
-          path: "/v2/ambassadors",
+          path: "/v2/admin/ambassadors",
         },
         {
           label: "Role Management",
-          path: "/v2/role-management",
+          path: "/v2/admin/role-management",
         },
       ],
     },

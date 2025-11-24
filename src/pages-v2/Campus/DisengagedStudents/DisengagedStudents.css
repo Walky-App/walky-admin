@@ -95,7 +95,6 @@
 
 .disengaged-table-row {
   height: 73px;
-  border-bottom: 1px solid #5b6168;
   transition: background-color 0.2s;
 }
 
@@ -110,6 +109,15 @@
   font-weight: 600;
   line-height: normal;
   color: #1d1b20;
+}
+
+.disengaged-divider-row {
+  height: 1px !important;
+}
+
+.disengaged-divider-row td {
+  padding: 0 !important;
+  height: 1px;
 }
 
 .disengaged-student-info {

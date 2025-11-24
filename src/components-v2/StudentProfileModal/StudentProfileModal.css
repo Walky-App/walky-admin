@@ -47,12 +47,23 @@
 }
 
 .profile-avatar-large {
+  position: relative;
   width: 130px;
   height: 130px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
   border: 1px solid #e0e0e0;
+}
+
+.profile-flag-icon {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-avatar-large img {

@@ -422,10 +422,20 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 </div>
               </CDropdownToggle>
               <CDropdownMenu>
-                <CDropdownItem onClick={() => navigate("/v2/admin/settings")}>
-                  Administrator settings
+                <CDropdownItem
+                  onClick={() => navigate("/v2/admin/settings")}
+                  className="user-dropdown-item settings-item"
+                >
+                  <span>Administrator settings</span>
+                  <AssetIcon name="arrow-down" size={24} />
                 </CDropdownItem>
-                <CDropdownItem href="/logout">Logout</CDropdownItem>
+                <CDropdownItem
+                  href="/logout"
+                  className="user-dropdown-item logout-item"
+                >
+                  <span>Logout</span>
+                  <AssetIcon name="lock-icon" size={24} />
+                </CDropdownItem>
               </CDropdownMenu>
             </CDropdown>
           </div>

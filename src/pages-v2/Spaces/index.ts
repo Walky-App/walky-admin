@@ -1,4 +1,4 @@
-export { SpacesManager } from "./SpacesManager";
-export { SpacesInsights } from "./SpacesInsights";
-export type { SpaceData } from "./components/SpaceTable";
-export type { SpaceType } from "./components/SpaceTypeChip";
+export { SpacesManager } from "./SpacesManager/SpacesManager";
+export { SpacesInsights } from "./SpacesInsights/SpacesInsights";
+export type { SpaceData } from "./components/SpaceTable/SpaceTable";
+export type { SpaceType } from "./components/SpaceTypeChip/SpaceTypeChip";
