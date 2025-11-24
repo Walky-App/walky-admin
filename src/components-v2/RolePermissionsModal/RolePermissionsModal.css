@@ -9,7 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1050;
   padding: 20px;
 }
 
@@ -21,16 +21,18 @@
   width: 100%;
   max-width: 521px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Close button (X icon) */
 .role-permissions-close {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 20px;
+  right: 20px;
   background: none;
   border: none;
   cursor: pointer;
@@ -39,6 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .role-permissions-close:hover {

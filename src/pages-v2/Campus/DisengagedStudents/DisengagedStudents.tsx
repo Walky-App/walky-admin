@@ -5,6 +5,7 @@ import {
   StudentProfileModal,
   StudentProfileData,
   CustomToast,
+  Divider,
 } from "../../../components-v2";
 import { StatsCard } from "../components/StatsCard";
 import "./DisengagedStudents.css";
@@ -88,7 +89,7 @@ export const DisengagedStudents: React.FC = () => {
   };
 
   return (
-    <div className="disengaged-students-page">
+    <main className="disengaged-students-page">
       {/* Stats Cards */}
       <div className="disengaged-students-stats">
         <StatsCard
@@ -148,69 +149,79 @@ export const DisengagedStudents: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {mockStudents.map((student) => (
-                <tr key={student.id} className="disengaged-table-row">
-                  <td>
-                    <div className="disengaged-student-info">
-                      <div className="disengaged-student-avatar">
-                        {student.avatar && !student.avatar.match(/^https?:/) ? (
-                          <div className="disengaged-student-avatar-placeholder">
-                            {student.avatar}
-                          </div>
-                        ) : (
-                          <img src={student.avatar} alt={student.name} />
-                        )}
+              {mockStudents.map((student, index) => (
+                <React.Fragment key={student.id}>
+                  <tr className="disengaged-table-row">
+                    <td>
+                      <div className="disengaged-student-info">
+                        <div className="disengaged-student-avatar">
+                          {student.avatar &&
+                          !student.avatar.match(/^https?:/) ? (
+                            <div className="disengaged-student-avatar-placeholder">
+                              {student.avatar}
+                            </div>
+                          ) : (
+                            <img src={student.avatar} alt={student.name} />
+                          )}
+                        </div>
+                        <span
+                          className="disengaged-student-name"
+                          onClick={() => handleStudentClick(student)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {student.name}
+                        </span>
                       </div>
-                      <span
-                        className="disengaged-student-name"
-                        onClick={() => handleStudentClick(student)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {student.name}
+                    </td>
+                    <td>
+                      <span className="disengaged-cell-value">
+                        {student.peers}
                       </span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className="disengaged-cell-value">
-                      {student.peers}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="disengaged-cell-value">
-                      {student.ignoredInvitations}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="disengaged-cell-value">
-                      {student.memberSince}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="disengaged-cell-value">
-                      {student.email}
-                    </span>
-                  </td>
-                  <td>
-                    {student.reported ? (
-                      <div className="disengaged-status-badge reported">
-                        Reported
-                      </div>
-                    ) : (
-                      <div className="disengaged-status-badge not-reported">
-                        Not reported
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <button
-                      data-testid="send-outreach-btn"
-                      className="disengaged-send-outreach-button"
-                      onClick={() => handleSendOutreach(student)}
-                    >
-                      Send outreach
-                    </button>
-                  </td>
-                </tr>
+                    </td>
+                    <td>
+                      <span className="disengaged-cell-value">
+                        {student.ignoredInvitations}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="disengaged-cell-value">
+                        {student.memberSince}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="disengaged-cell-value">
+                        {student.email}
+                      </span>
+                    </td>
+                    <td>
+                      {student.reported ? (
+                        <div className="disengaged-status-badge reported">
+                          Reported
+                        </div>
+                      ) : (
+                        <div className="disengaged-status-badge not-reported">
+                          Not reported
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <button
+                        data-testid="send-outreach-btn"
+                        className="disengaged-send-outreach-button"
+                        onClick={() => handleSendOutreach(student)}
+                      >
+                        Send outreach
+                      </button>
+                    </td>
+                  </tr>
+                  {index < mockStudents.length - 1 && (
+                    <tr className="disengaged-divider-row">
+                      <td colSpan={7}>
+                        <Divider />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -245,6 +256,6 @@ export const DisengagedStudents: React.FC = () => {
           duration={3000}
         />
       )}
-    </div>
+    </main>
   );
 };

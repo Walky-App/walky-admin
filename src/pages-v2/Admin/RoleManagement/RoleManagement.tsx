@@ -1,6 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import AssetIcon from "../../../components-v2/AssetIcon/AssetIcon";
-import { SearchInput } from "../../../components-v2";
+import {
+  SearchInput,
+  Divider,
+  ActionDropdown,
+  FilterDropdown,
+} from "../../../components-v2";
 import {
   RolePermissionsModal,
   RemoveMemberModal,
@@ -26,6 +31,15 @@ interface MemberData {
   lastActive: string | null;
 }
 
+const getInitials = (name: string): string => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
 export const RoleManagement: React.FC = () => {
   const [currentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,8 +48,6 @@ export const RoleManagement: React.FC = () => {
     "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator" | null
   >(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
-  const [isRoleFilterOpen, setIsRoleFilterOpen] = useState(false);
-  const [openActionMenuId, setOpenActionMenuId] = useState<string | null>(null);
 
   // Action modals state
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
@@ -44,35 +56,6 @@ export const RoleManagement: React.FC = () => {
     useState(false);
   const [isCreateMemberModalOpen, setIsCreateMemberModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<MemberData | null>(null);
-
-  const roleFilterRef = useRef<HTMLDivElement>(null);
-  const actionMenuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // Close role filter dropdown
-      if (
-        roleFilterRef.current &&
-        !roleFilterRef.current.contains(event.target as Node)
-      ) {
-        setIsRoleFilterOpen(false);
-      }
-
-      // Close action menus
-      if (openActionMenuId) {
-        const actionMenuRef = actionMenuRefs.current[openActionMenuId];
-        if (actionMenuRef && !actionMenuRef.contains(event.target as Node)) {
-          setOpenActionMenuId(null);
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openActionMenuId]);
 
   // Mock data - replace with real data from API
   const mockMembers: MemberData[] = [
@@ -152,14 +135,6 @@ export const RoleManagement: React.FC = () => {
     setIsCreateMemberModalOpen(true);
   };
 
-  const handleMemberOptions = (id: string) => {
-    if (openActionMenuId === id) {
-      setOpenActionMenuId(null);
-    } else {
-      setOpenActionMenuId(id);
-    }
-  };
-
   const handleRoleClick = (
     role: "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator"
   ) => {
@@ -174,7 +149,6 @@ export const RoleManagement: React.FC = () => {
 
   const handleRoleFilterSelect = (role: string) => {
     setRoleFilter(role);
-    setIsRoleFilterOpen(false);
   };
 
   const handleChangeRole = (memberId: string) => {
@@ -183,7 +157,6 @@ export const RoleManagement: React.FC = () => {
       setSelectedMember(member);
       setIsChangeRoleModalOpen(true);
     }
-    setOpenActionMenuId(null);
   };
 
   const handleSendPasswordReset = (memberId: string) => {
@@ -192,7 +165,6 @@ export const RoleManagement: React.FC = () => {
       setSelectedMember(member);
       setIsPasswordResetModalOpen(true);
     }
-    setOpenActionMenuId(null);
   };
 
   const handleRemoveMember = (memberId: string) => {
@@ -201,7 +173,6 @@ export const RoleManagement: React.FC = () => {
       setSelectedMember(member);
       setIsRemoveMemberModalOpen(true);
     }
-    setOpenActionMenuId(null);
   };
 
   // Modal confirm handlers
@@ -242,7 +213,7 @@ export const RoleManagement: React.FC = () => {
   const totalMembers = mockMembers.length;
 
   return (
-    <div className="role-management-page">
+    <main className="role-management-page">
       {/* Page Header */}
       <div className="page-header">
         <h1 className="page-title">Role Management</h1>
@@ -262,55 +233,19 @@ export const RoleManagement: React.FC = () => {
                 placeholder="Search"
                 variant="secondary"
               />
-              <div className="role-filter-wrapper" ref={roleFilterRef}>
-                <button
-                  data-testid="role-filter-btn"
-                  className="role-filter-button"
-                  onClick={() => setIsRoleFilterOpen(!isRoleFilterOpen)}
-                >
-                  <span>{roleFilter}</span>
-                  <span className="filter-arrow">▼</span>
-                </button>
-                {isRoleFilterOpen && (
-                  <div className="role-filter-dropdown">
-                    <button
-                      data-testid="filter-all-roles"
-                      className="dropdown-item"
-                      onClick={() => handleRoleFilterSelect("All Roles")}
-                    >
-                      All Roles
-                    </button>
-                    <button
-                      data-testid="filter-walky-admin"
-                      className="dropdown-item"
-                      onClick={() => handleRoleFilterSelect("Walky Admin")}
-                    >
-                      Walky Admin
-                    </button>
-                    <button
-                      data-testid="filter-school-admin"
-                      className="dropdown-item"
-                      onClick={() => handleRoleFilterSelect("School Admin")}
-                    >
-                      School Admin
-                    </button>
-                    <button
-                      data-testid="filter-campus-admin"
-                      className="dropdown-item"
-                      onClick={() => handleRoleFilterSelect("Campus Admin")}
-                    >
-                      Campus Admin
-                    </button>
-                    <button
-                      data-testid="filter-moderator"
-                      className="dropdown-item"
-                      onClick={() => handleRoleFilterSelect("Moderator")}
-                    >
-                      Moderator
-                    </button>
-                  </div>
-                )}
-              </div>
+              <FilterDropdown
+                value={roleFilter}
+                onChange={handleRoleFilterSelect}
+                options={[
+                  { value: "All Roles", label: "All Roles" },
+                  { value: "Walky Admin", label: "Walky Admin" },
+                  { value: "School Admin", label: "School Admin" },
+                  { value: "Campus Admin", label: "Campus Admin" },
+                  { value: "Moderator", label: "Moderator" },
+                ]}
+                placeholder="All Roles"
+                testId="role-filter"
+              />
             </div>
           </div>
           <button
@@ -327,133 +262,148 @@ export const RoleManagement: React.FC = () => {
           <table className="members-table">
             <thead>
               <tr className="table-header-row">
-                <th className="table-header full-name-header">
-                  <span>Full Name</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="full-name-header">
+                    <span>Full Name</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header email-header">
+                <th>
                   <span>Institutional email</span>
                 </th>
-                <th className="table-header role-header">
+                <th>
                   <span>Role</span>
                 </th>
-                <th className="table-header assigned-by-header">
-                  <span>Assigned By</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="assigned-by-header">
+                    <span>Assigned By</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header invitation-status-header">
-                  <span>Invitation status</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="invitation-status-header">
+                    <span>Invitation status</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header last-active-header">
-                  <span>Last active</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="last-active-header">
+                    <span>Last active</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header actions-header"></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {mockMembers.map((member) => (
-                <tr key={member.id} className="member-row">
-                  {/* Full Name Column */}
-                  <td className="member-full-name">
-                    <div className="member-info">
-                      <img
-                        src={member.avatar}
-                        alt={member.name}
-                        className="member-avatar"
-                      />
-                      <div className="member-details">
-                        <p className="member-name">{member.name}</p>
-                        <p className="member-title">{member.title}</p>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Email Column */}
-                  <td className="member-email">{member.email}</td>
-
-                  {/* Role Column */}
-                  <td className="member-role">
-                    <button
-                      data-testid="role-badge-btn"
-                      className="role-badge"
-                      onClick={() => handleRoleClick(member.role)}
-                    >
-                      {member.role}
-                    </button>
-                  </td>
-
-                  {/* Assigned By Column */}
-                  <td className="member-assigned-by">
-                    <div className="assigned-by-info">
-                      <p className="assigned-by-name">
-                        {member.assignedBy.name}
-                      </p>
-                      <p className="assigned-by-email">
-                        {member.assignedBy.email}
-                      </p>
-                    </div>
-                  </td>
-
-                  {/* Invitation Status Column */}
-                  <td className="member-invitation-status">
-                    <span
-                      className={`status-badge ${member.invitationStatus.toLowerCase()}`}
-                    >
-                      {member.invitationStatus}
-                    </span>
-                  </td>
-
-                  {/* Last Active Column */}
-                  <td className="member-last-active">
-                    {member.lastActive || "--"}
-                  </td>
-
-                  {/* Actions Column */}
-                  <td className="member-actions">
-                    <div
-                      className="actions-wrapper"
-                      ref={(el) => {
-                        actionMenuRefs.current[member.id] = el;
-                      }}
-                    >
-                      <button
-                        data-testid="member-options-btn"
-                        className="options-button"
-                        onClick={() => handleMemberOptions(member.id)}
-                        title="More options"
-                      >
-                        <span className="options-dots">⋮</span>
-                      </button>
-                      {openActionMenuId === member.id && (
-                        <div className="actions-dropdown">
-                          <button
-                            data-testid="member-change-role-btn"
-                            className="action-item"
-                            onClick={() => handleChangeRole(member.id)}
-                          >
-                            Change role
-                          </button>
-                          <button
-                            data-testid="member-send-password-reset-btn"
-                            className="action-item"
-                            onClick={() => handleSendPasswordReset(member.id)}
-                          >
-                            Send a password reset
-                          </button>
-                          <button
-                            data-testid="member-remove-btn"
-                            className="action-item remove"
-                            onClick={() => handleRemoveMember(member.id)}
-                          >
-                            Remove member
-                          </button>
+              {mockMembers.map((member, index) => (
+                <React.Fragment key={member.id}>
+                  <tr className="member-row">
+                    {/* Full Name Column */}
+                    <td className="member-full-name">
+                      <div className="member-info">
+                        {member.avatar ? (
+                          <img
+                            src={member.avatar}
+                            alt={member.name}
+                            className="member-avatar"
+                          />
+                        ) : (
+                          <div className="member-avatar-placeholder">
+                            {getInitials(member.name)}
+                          </div>
+                        )}
+                        <div className="member-details">
+                          <p className="member-name">{member.name}</p>
+                          <p className="member-title">{member.title}</p>
                         </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
+                      </div>
+                    </td>
+
+                    {/* Email Column */}
+                    <td className="member-email">{member.email}</td>
+
+                    {/* Role Column */}
+                    <td className="member-role">
+                      <button
+                        data-testid="role-badge-btn"
+                        className="role-badge"
+                        onClick={() => handleRoleClick(member.role)}
+                      >
+                        {member.role}
+                      </button>
+                    </td>
+
+                    {/* Assigned By Column */}
+                    <td className="member-assigned-by">
+                      <div className="assigned-by-info">
+                        <p className="assigned-by-name">
+                          {member.assignedBy.name}
+                        </p>
+                        <p className="assigned-by-email">
+                          {member.assignedBy.email}
+                        </p>
+                      </div>
+                    </td>
+
+                    {/* Invitation Status Column */}
+                    <td className="member-invitation-status">
+                      <span
+                        className={`status-badge ${member.invitationStatus.toLowerCase()}`}
+                      >
+                        {member.invitationStatus}
+                      </span>
+                    </td>
+
+                    {/* Last Active Column */}
+                    <td className="member-last-active">
+                      {member.lastActive || "--"}
+                    </td>
+
+                    {/* Actions Column */}
+                    <td className="member-actions">
+                      <ActionDropdown
+                        testId="member-actions"
+                        items={[
+                          {
+                            label: "Change role",
+                            onClick: (e) => {
+                              e.stopPropagation();
+                              handleChangeRole(member.id);
+                            },
+                          },
+                          {
+                            label: "Send a password reset",
+                            onClick: (e) => {
+                              e.stopPropagation();
+                              handleSendPasswordReset(member.id);
+                            },
+                          },
+                          {
+                            label: "",
+                            isDivider: true,
+                            onClick: () => {},
+                          },
+                          {
+                            label: "Remove member",
+                            variant: "danger",
+                            onClick: (e) => {
+                              e.stopPropagation();
+                              handleRemoveMember(member.id);
+                            },
+                          },
+                        ]}
+                      />
+                    </td>
+                  </tr>
+                  {index < mockMembers.length - 1 && (
+                    <tr className="member-divider-row">
+                      <td colSpan={5}>
+                        <Divider />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -528,6 +478,6 @@ export const RoleManagement: React.FC = () => {
         onClose={() => setIsCreateMemberModalOpen(false)}
         onConfirm={handleConfirmCreateMember}
       />
-    </div>
+    </main>
   );
 };

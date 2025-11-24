@@ -66,8 +66,8 @@ import MainChart from "./components/MainChart.tsx";
 import API from "./API/index.ts";
 import Login from "./pages/Login.tsx";
 import LoginV2 from "./pages-v2/LoginV2/LoginV2";
-import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2";
 import { useSchool } from "./contexts/SchoolContext";
+import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2/RecoverPasswordV2.tsx";
 
 type DashboardProps = {
   theme: AppTheme;

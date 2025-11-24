@@ -122,15 +122,6 @@ export const AdministratorSettings: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
-    if (hasUnsavedChanges) {
-      setPendingNavigation("/logout");
-      setShowUnsavedModal(true);
-    } else {
-      window.location.href = "/logout";
-    }
-  };
-
   const handleLeaveWithoutSaving = () => {
     setShowUnsavedModal(false);
     setHasUnsavedChanges(false);
@@ -153,7 +144,7 @@ export const AdministratorSettings: React.FC = () => {
   });
 
   return (
-    <div className="administrator-settings-page">
+    <main className="administrator-settings-page">
       {/* Header */}
       <div className="settings-header">
         <div className="settings-header-content">
@@ -171,27 +162,6 @@ export const AdministratorSettings: React.FC = () => {
               Manage your account settings, security, and preferences
             </p>
           </div>
-        </div>
-
-        {/* Sidebar Menu */}
-        <div className="settings-sidebar-menu">
-          <button
-            className="sidebar-menu-item"
-            onClick={handleBackToPanel}
-            data-testid="sidebar-back-btn"
-          >
-            <span>Back to Admin panel</span>
-            <AssetIcon name="arrow-down" size={24} />
-          </button>
-          <div className="sidebar-divider" />
-          <button
-            className="sidebar-menu-item logout"
-            onClick={handleLogout}
-            data-testid="sidebar-logout-btn"
-          >
-            <span>Logout</span>
-            <AssetIcon name="lock-icon" size={24} />
-          </button>
         </div>
       </div>
 
@@ -581,6 +551,6 @@ export const AdministratorSettings: React.FC = () => {
         onClose={() => setShowLogoutAllModal(false)}
         onConfirm={handleConfirmLogoutAll}
       />
-    </div>
+    </main>
   );
 };

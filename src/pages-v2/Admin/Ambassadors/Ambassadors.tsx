@@ -4,7 +4,7 @@ import {
   DeleteAmbassadorModal,
   AddAmbassadorModal,
   CustomToast,
-  CopyableId,
+  Divider,
 } from "../../../components-v2";
 import "./Ambassadors.css";
 
@@ -43,7 +43,7 @@ export const Ambassadors: React.FC = () => {
       id: "1",
       studentId: "166g...fjhsgt",
       name: "Anni",
-      avatar: "https://via.placeholder.com/48",
+      avatar: "",
       major: "Biology",
       ambassadorSince: "Oct 7, 2025",
       memberSince: "Nov 10, 2024",
@@ -63,13 +63,22 @@ export const Ambassadors: React.FC = () => {
       id: "3",
       studentId: "166g...fjhsgt",
       name: "Austin",
-      avatar: "https://via.placeholder.com/48",
+      avatar: "",
       major: "Biology",
       ambassadorSince: "Oct 7, 2025",
       memberSince: "Nov 10, 2024",
       status: "Active",
     },
   ];
+
+  // Get initials from name
+  const getInitials = (name: string) => {
+    const names = name.split(" ");
+    if (names.length >= 2) {
+      return names[0][0] + names[1][0];
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
 
   const handleAddAmbassador = () => {
     setAddModalOpen(true);
@@ -111,10 +120,10 @@ export const Ambassadors: React.FC = () => {
   ).length;
 
   return (
-    <div className="ambassadors-page">
+    <main className="ambassadors-page">
       {/* Page Header */}
       <div className="page-header">
-        <h1 className="page-title">Ambassador Management</h1>
+        <h1 className="page-title">Ambassador directory</h1>
         <p className="page-subtitle">
           Manage campus ambassadors and student representatives
         </p>
@@ -125,7 +134,6 @@ export const Ambassadors: React.FC = () => {
         {/* Directory Header */}
         <div className="directory-header">
           <div className="directory-info">
-            <h2 className="directory-title">Ambassador directory</h2>
             <p className="directory-count">
               {activeAmbassadors} ambassadors active
             </p>
@@ -144,88 +152,123 @@ export const Ambassadors: React.FC = () => {
           <table className="ambassadors-table">
             <thead>
               <tr className="table-header-row">
-                <th className="table-header student-id-header">
+                <th>
                   <span>Student ID</span>
                 </th>
-                <th className="table-header ambassador-header">
-                  <span>Ambassador</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="ambassador-header">
+                    <span>Ambassador</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header major-header">
+                <th>
                   <span>Major</span>
                 </th>
-                <th className="table-header ambassador-since-header">
-                  <span>Ambassador since</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="ambassador-header">
+                    <span>Ambassador since</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header member-since-header">
-                  <span>Member since</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="ambassador-header">
+                    <span>Member since</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header status-header">
-                  <span>Status</span>
-                  <AssetIcon name="swap-arrows-icon" size={24} />
+                <th>
+                  <div className="ambassador-header">
+                    <span>Status</span>
+                    <AssetIcon name="swap-arrows-icon" size={24} />
+                  </div>
                 </th>
-                <th className="table-header actions-header"></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {mockAmbassadors.map((ambassador) => (
-                <tr key={ambassador.id} className="ambassador-row">
-                  {/* Student ID Column */}
-                  <td className="ambassador-student-id">
-                    <CopyableId
-                      id={ambassador.studentId}
-                      label="Student ID"
-                      variant="primary"
-                      testId="copy-student-id"
-                    />
-                  </td>
+              {mockAmbassadors.map((ambassador, index) => (
+                <React.Fragment key={ambassador.id}>
+                  <tr className="ambassador-row">
+                    {/* Student ID Column */}
+                    <td className="ambassador-student-id">
+                      <div className="student-id-wrapper">
+                        <div className="student-id">{ambassador.studentId}</div>
+                        <button
+                          className="copy-button"
+                          data-testid="copy-ambassador-id-btn"
+                          title="Copy Student ID"
+                          onClick={() => {
+                            navigator.clipboard.writeText(ambassador.studentId);
+                            setToastMessage("Student ID copied to clipboard");
+                            setShowToast(true);
+                            setTimeout(() => setShowToast(false), 3000);
+                          }}
+                        >
+                          <AssetIcon name="copy-icon" size={16} />
+                        </button>
+                      </div>
+                    </td>
 
-                  {/* Ambassador Column */}
-                  <td className="ambassador-name-cell">
-                    <div className="ambassador-info">
-                      <img
-                        src={ambassador.avatar}
-                        alt={ambassador.name}
-                        className="ambassador-avatar"
-                      />
-                      <span className="ambassador-name">{ambassador.name}</span>
-                    </div>
-                  </td>
+                    {/* Ambassador Column */}
+                    <td className="ambassador-name-cell">
+                      <div className="ambassador-info">
+                        {ambassador.avatar ? (
+                          <img
+                            src={ambassador.avatar}
+                            alt={ambassador.name}
+                            className="ambassador-avatar"
+                          />
+                        ) : (
+                          <div className="ambassador-avatar-placeholder">
+                            {getInitials(ambassador.name)}
+                          </div>
+                        )}
+                        <span className="ambassador-name">
+                          {ambassador.name}
+                        </span>
+                      </div>
+                    </td>
 
-                  {/* Major Column */}
-                  <td className="ambassador-major">{ambassador.major}</td>
+                    {/* Major Column */}
+                    <td className="ambassador-major">{ambassador.major}</td>
 
-                  {/* Ambassador Since Column */}
-                  <td className="ambassador-since">
-                    {ambassador.ambassadorSince}
-                  </td>
+                    {/* Ambassador Since Column */}
+                    <td className="ambassador-since">
+                      {ambassador.ambassadorSince}
+                    </td>
 
-                  {/* Member Since Column */}
-                  <td className="member-since">{ambassador.memberSince}</td>
+                    {/* Member Since Column */}
+                    <td className="member-since">{ambassador.memberSince}</td>
 
-                  {/* Status Column */}
-                  <td className="ambassador-status">
-                    <span
-                      className={`status-badge ${ambassador.status.toLowerCase()}`}
-                    >
-                      {ambassador.status}
-                    </span>
-                  </td>
+                    {/* Status Column */}
+                    <td className="ambassador-status">
+                      <span
+                        className={`status-badge ${ambassador.status.toLowerCase()}`}
+                      >
+                        {ambassador.status}
+                      </span>
+                    </td>
 
-                  {/* Actions Column */}
-                  <td className="ambassador-actions">
-                    <button
-                      data-testid="delete-ambassador-btn"
-                      className="delete-button"
-                      onClick={() => handleDeleteAmbassador(ambassador.id)}
-                      title="Delete ambassador"
-                    >
-                      <span className="delete-icon">🗑️</span>
-                    </button>
-                  </td>
-                </tr>
+                    {/* Actions Column */}
+                    <td className="ambassador-actions">
+                      <button
+                        data-testid="delete-ambassador-btn"
+                        className="delete-button"
+                        onClick={() => handleDeleteAmbassador(ambassador.id)}
+                        title="Delete ambassador"
+                      >
+                        <AssetIcon name="delete-icon" size={24} />
+                      </button>
+                    </td>
+                  </tr>
+                  {index < mockAmbassadors.length - 1 && (
+                    <tr className="ambassador-divider-row">
+                      <td colSpan={7}>
+                        <Divider />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -278,6 +321,6 @@ export const Ambassadors: React.FC = () => {
           onClose={() => setShowToast(false)}
         />
       )}
-    </div>
+    </main>
   );
 };

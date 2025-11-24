@@ -161,7 +161,7 @@ const RolePermissionsModal: React.FC<RolePermissionsModalProps> = ({
           onClick={onClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} />
+          <AssetIcon name="close-button" size={16} />
         </button>
 
         <div className="role-permissions-body">
@@ -179,13 +179,13 @@ const RolePermissionsModal: React.FC<RolePermissionsModalProps> = ({
                 <span className="role-permissions-section-title">
                   Permissions in the Admin Portal
                 </span>
-                <span
+                <AssetIcon
+                  name="arrow-down"
+                  size={16}
                   className={`role-permissions-chevron ${
                     isPermissionsOpen ? "open" : ""
                   }`}
-                >
-                  ▼
-                </span>
+                />
               </button>
 
               {isPermissionsOpen && (

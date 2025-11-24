@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import "./Campuses.css";
-import { AssetIcon, CopyableId } from "../../../components-v2";
+import { AssetIcon, CopyableId, Divider } from "../../../components-v2";
 import CampusBoundary from "../../../pages/CampusBoundary";
 
 interface CampusData {
@@ -19,6 +19,15 @@ interface CampusData {
     };
   } | null;
 }
+
+const getInitials = (name: string): string => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
 
 export const Campuses: React.FC = () => {
   const [searchQuery, _setSearchQuery] = useState("");
@@ -77,7 +86,7 @@ export const Campuses: React.FC = () => {
   const totalCampuses = mockCampuses.length;
 
   return (
-    <div className="campuses-page">
+    <main className="campuses-page">
       {/* Page Header */}
       <div className="page-header">
         <h1 className="page-title">Campus Management</h1>
@@ -108,17 +117,23 @@ export const Campuses: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredCampuses.map((campus) => (
+              {filteredCampuses.map((campus, index) => (
                 <React.Fragment key={campus.id}>
                   <tr className="campus-row">
                     {/* Campus Column with Avatar and Dropdown */}
                     <td className="campus-cell">
                       <div className="campus-info">
-                        <img
-                          src={campus.imageUrl}
-                          alt={campus.name}
-                          className="campus-avatar"
-                        />
+                        {campus.imageUrl ? (
+                          <img
+                            src={campus.imageUrl}
+                            alt={campus.name}
+                            className="campus-avatar"
+                          />
+                        ) : (
+                          <div className="campus-avatar-placeholder">
+                            {getInitials(campus.name)}
+                          </div>
+                        )}
                         <div className="campus-dropdown">
                           <button
                             data-testid="campus-dropdown-btn"
@@ -195,6 +210,13 @@ export const Campuses: React.FC = () => {
                       </td>
                     </tr>
                   )}
+                  {index < filteredCampuses.length - 1 && (
+                    <tr className="campus-divider-row">
+                      <td colSpan={5}>
+                        <Divider />
+                      </td>
+                    </tr>
+                  )}
                 </React.Fragment>
               ))}
             </tbody>
@@ -225,6 +247,6 @@ export const Campuses: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };

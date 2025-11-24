@@ -10,6 +10,7 @@ import {
   CustomToast,
   ActionDropdown,
   CopyableId,
+  Divider,
 } from "../../../components-v2";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
@@ -25,6 +26,7 @@ export interface StudentData {
   status: "active" | "banned" | "deactivated" | "disengaged";
   memberSince: string;
   onlineLast: string;
+  isFlagged?: boolean;
   // Profile fields
   areaOfStudy?: string;
   lastLogin?: string;
@@ -286,18 +288,25 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       label: "Student name",
       sortable: true,
       render: (student) => (
-        <div className="student-info">
-          <div className="student-avatar">
-            {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
-              <img src={student.avatar} alt={student.name} />
-            ) : (
-              <div className="student-avatar-placeholder">
-                {student.avatar || student.name.charAt(0)}
-              </div>
-            )}
+        <>
+          {student.isFlagged && (
+            <div className="student-flag-icon">
+              <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
+            </div>
+          )}
+          <div className="student-info">
+            <div className="student-avatar">
+              {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
+                <img src={student.avatar} alt={student.name} />
+              ) : (
+                <div className="student-avatar-placeholder">
+                  {student.avatar || student.name.charAt(0)}
+                </div>
+              )}
+            </div>
+            <span className="student-name">{student.name}</span>
           </div>
-          <span className="student-name">{student.name}</span>
-        </div>
+        </>
       ),
     },
     email: {
@@ -396,69 +405,81 @@ export const StudentTable: React.FC<StudentTableProps> = ({
             <th></th>
           </tr>
         </thead>
+
+        <div className="content-space-divider" />
         <tbody>
-          {sortedStudents.map((student) => (
-            <tr
-              key={student.id}
-              className="student-table-row"
-              onClick={() => onStudentClick?.(student)}
-            >
-              {columns.map((column) => (
-                <td key={column} className="student-table-cell">
-                  {columnConfig[column].render(student)}
+          {sortedStudents.map((student, index) => (
+            <React.Fragment key={student.id}>
+              <tr
+                className={`student-table-row ${
+                  student.isFlagged ? "student-row-flagged" : ""
+                }`}
+                onClick={() => onStudentClick?.(student)}
+              >
+                {columns.map((column) => (
+                  <td key={column} className="student-table-cell">
+                    {columnConfig[column].render(student)}
+                  </td>
+                ))}
+                <td className="student-table-cell student-table-actions">
+                  <ActionDropdown
+                    testId="student-dropdown"
+                    items={[
+                      {
+                        label: "View profile",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleViewProfile(student);
+                        },
+                      },
+                      {
+                        label: "Send email",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleSendEmail(student);
+                        },
+                      },
+                      {
+                        label: "Flag",
+                        icon: "flag-icon",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleFlagUser(student);
+                        },
+                      },
+                      {
+                        isDivider: true,
+                        label: "",
+                        onClick: () => {},
+                      },
+                      {
+                        label: "Ban user",
+                        variant: "danger",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleBanUser(student);
+                        },
+                      },
+                      {
+                        label: "Deactivate user",
+                        variant: "danger",
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          handleDeactivateUser(student);
+                        },
+                      },
+                    ]}
+                  />
                 </td>
-              ))}
-              <td className="student-table-cell student-table-actions">
-                <ActionDropdown
-                  testId="student-dropdown"
-                  items={[
-                    {
-                      label: "View profile",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleViewProfile(student);
-                      },
-                    },
-                    {
-                      label: "Send email",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleSendEmail(student);
-                      },
-                    },
-                    {
-                      label: "Flag",
-                      icon: "flag-icon",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleFlagUser(student);
-                      },
-                    },
-                    {
-                      isDivider: true,
-                      label: "",
-                      onClick: () => {},
-                    },
-                    {
-                      label: "Ban user",
-                      variant: "danger",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleBanUser(student);
-                      },
-                    },
-                    {
-                      label: "Deactivate user",
-                      variant: "danger",
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        handleDeactivateUser(student);
-                      },
-                    },
-                  ]}
-                />
-              </td>
-            </tr>
+              </tr>
+              {index < sortedStudents.length - 1 && (
+                <tr className="student-divider-row">
+                  <td colSpan={columns.length + 1}>
+                    <Divider />
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

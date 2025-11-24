@@ -39,7 +39,7 @@ const SendPasswordResetModal: React.FC<SendPasswordResetModalProps> = ({
           onClick={onClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} />
+          <AssetIcon name="close-button" size={16} />
         </button>
 
         <div className="send-password-body">

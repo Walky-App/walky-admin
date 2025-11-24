@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import "./ChangeRoleModal.css";
 
@@ -26,6 +27,47 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
 }) => {
   const [selectedRole, setSelectedRole] = useState<RoleType>(currentRole);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const roleButtonRef = useRef<HTMLButtonElement>(null);
+  const roleDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [roleMenuPosition, setRoleMenuPosition] = useState({
+    top: 0,
+    left: 0,
+    width: 0,
+  });
+
+  useEffect(() => {
+    if (isDropdownOpen && roleButtonRef.current) {
+      const rect = roleButtonRef.current.getBoundingClientRect();
+      setRoleMenuPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  }, [isDropdownOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        roleDropdownRef.current &&
+        !roleDropdownRef.current.contains(event.target as Node) &&
+        roleButtonRef.current &&
+        !roleButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   if (!isOpen) return null;
 
@@ -55,7 +97,7 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
           onClick={onClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} />
+          <AssetIcon name="close-button" size={16} />
         </button>
 
         <div className="change-role-body">
@@ -70,29 +112,41 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
             <label className="change-role-label">Select a role</label>
             <div className="change-role-dropdown-wrapper">
               <button
+                ref={roleButtonRef}
                 data-testid="change-role-dropdown-btn"
                 className="change-role-select"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <span>{selectedRole}</span>
-                <span className="change-role-arrow">▼</span>
+                <AssetIcon name="arrow-down" size={16} />
               </button>
-              {isDropdownOpen && (
-                <div className="change-role-dropdown">
-                  {roleOptions.map((role) => (
-                    <button
-                      data-testid="change-role-option-btn"
-                      key={role}
-                      className={`change-role-option ${
-                        role === selectedRole ? "selected" : ""
-                      }`}
-                      onClick={() => handleRoleSelect(role)}
-                    >
-                      {role}
-                    </button>
-                  ))}
-                </div>
-              )}
+              {isDropdownOpen &&
+                createPortal(
+                  <div
+                    ref={roleDropdownRef}
+                    className="change-role-dropdown"
+                    style={{
+                      position: "absolute",
+                      top: `${roleMenuPosition.top}px`,
+                      left: `${roleMenuPosition.left}px`,
+                      minWidth: `${roleMenuPosition.width}px`,
+                    }}
+                  >
+                    {roleOptions.map((role) => (
+                      <button
+                        data-testid="change-role-option-btn"
+                        key={role}
+                        className={`change-role-option ${
+                          role === selectedRole ? "selected" : ""
+                        }`}
+                        onClick={() => handleRoleSelect(role)}
+                      >
+                        {role}
+                      </button>
+                    ))}
+                  </div>,
+                  document.body
+                )}
             </div>
           </div>
 

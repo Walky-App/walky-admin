@@ -23,6 +23,7 @@ export const ActiveStudents: React.FC = () => {
       status: "active",
       memberSince: "Sep 28, 2025",
       onlineLast: "Active now",
+      isFlagged: true,
     },
     {
       id: "2",
@@ -43,6 +44,7 @@ export const ActiveStudents: React.FC = () => {
       status: "active",
       memberSince: "Sep 28, 2025",
       onlineLast: "3 hours ago",
+      isFlagged: true,
     },
     {
       id: "4",
@@ -142,7 +144,7 @@ export const ActiveStudents: React.FC = () => {
   };
 
   return (
-    <div className="active-students-page">
+    <main className="active-students-page">
       <div className="active-students-stats">
         <StatsCard
           title="Total students"
@@ -207,6 +209,6 @@ export const ActiveStudents: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </main>
   );
 };

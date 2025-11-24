@@ -2,7 +2,7 @@ import React from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./EventDetailsModal.css";
 import { AssetIcon, CopyableId } from "../../components-v2";
-import { EventTypeChip } from "../../pages-v2/Events/components/EventTypeChip";
+import { EventTypeChip } from "../../pages-v2/Events/components/EventTypeChip/EventTypeChip";
 
 export interface EventAttendee {
   id: string;

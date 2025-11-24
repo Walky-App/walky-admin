@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { SearchInput } from "../SearchInput/SearchInput";
 import "./AddAmbassadorModal.css";
 
 interface Student {
@@ -96,7 +97,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
           onClick={handleClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} />
+          <AssetIcon name="close-button" size={24} />
         </button>
 
         {/* Header */}
@@ -110,22 +111,17 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         {/* Search Container */}
         <div className="add-ambassador-search-container">
           <div className="add-ambassador-search-wrapper">
-            <div className="add-ambassador-search-input-wrapper">
-              <AssetIcon name="search-icon" size={12} />
-              <input
-                data-testid="add-ambassador-search-input"
-                type="text"
-                className="add-ambassador-search-input"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={handleSearch}
+              placeholder="Search"
+              testId="add-ambassador-search"
+            />
             <button
-              data-testid="add-ambassador-search-btn"
               className="add-ambassador-search-button"
               onClick={handleSearch}
+              data-testid="add-ambassador-search-button"
             >
               Search
             </button>
@@ -137,36 +133,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
               // Empty State
               <div className="add-ambassador-empty-state">
                 <div className="add-ambassador-empty-icon">
-                  <svg width="32" height="33" viewBox="0 0 32 33" fill="none">
-                    <path
-                      d="M11.6667 8.66667C11.6667 10.5076 13.1591 12 15 12C16.8409 12 18.3333 10.5076 18.3333 8.66667C18.3333 6.82572 16.8409 5.33334 15 5.33334C13.1591 5.33334 11.6667 6.82572 11.6667 8.66667Z"
-                      stroke="#8280FF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M8 17.6667C8 15.8257 9.49238 14.3333 11.3333 14.3333H18.6667C20.5076 14.3333 22 15.8257 22 17.6667V20.6667H8V17.6667Z"
-                      stroke="#8280FF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M23.3333 8.66667C23.3333 10.5076 24.8257 12 26.6667 12C28.5076 12 30 10.5076 30 8.66667C30 6.82572 28.5076 5.33334 26.6667 5.33334C24.8257 5.33334 23.3333 6.82572 23.3333 8.66667Z"
-                      stroke="#8280FF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M23.3333 20.6667V17.6667C23.3333 15.8257 24.8257 14.3333 26.6667 14.3333C28.5076 14.3333 30 15.8257 30 17.6667V20.6667"
-                      stroke="#8280FF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <AssetIcon name="double-users-icon" size={48} />
                 </div>
                 <p className="add-ambassador-empty-text">
                   The results will appear here once you enter a name

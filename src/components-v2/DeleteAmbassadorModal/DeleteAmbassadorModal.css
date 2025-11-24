@@ -1,6 +1,6 @@
 /* Delete Ambassador Modal Styles */
 
-.delete-modal-overlay {
+.dam-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,10 +10,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1050;
 }
 
-.delete-modal-content {
+.dam-content {
   background: #ffffff;
   border: 1px solid #cac4d0;
   border-radius: 14px;
@@ -24,7 +24,7 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.delete-modal-close {
+.dam-close-btn {
   position: absolute;
   top: 24px;
   right: 24px;
@@ -39,17 +39,17 @@
   transition: color 0.2s;
 }
 
-.delete-modal-close:hover {
+.dam-close-btn:hover {
   color: #1d1b20;
 }
 
-.delete-modal-body {
+.dam-body {
   display: flex;
   flex-direction: column;
   gap: 46px;
 }
 
-.delete-modal-title {
+.dam-title {
   font-family: "Lato", sans-serif;
   font-size: 24px;
   font-weight: 700;
@@ -58,13 +58,13 @@
   line-height: 1;
 }
 
-.delete-modal-message {
+.dam-message {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.delete-modal-question {
+.dam-question {
   font-family: "Lato", sans-serif;
   font-size: 18px;
   font-weight: 400;
@@ -74,12 +74,12 @@
   line-height: 1;
 }
 
-.delete-modal-question .ambassador-name {
+.dam-question .dam-name {
   font-family: "Lato", sans-serif;
   font-weight: 700;
 }
 
-.delete-modal-warning {
+.dam-warning {
   font-family: "Lato", sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -88,18 +88,17 @@
   line-height: 1;
 }
 
-.delete-modal-actions {
+.dam-actions {
   display: flex;
   gap: 20px;
   justify-content: flex-end;
 }
 
-.delete-modal-cancel,
-.delete-modal-confirm {
+.dam-cancel-btn,
+.dam-confirm-btn {
   font-family: "Lato", sans-serif;
   font-size: 16px;
   font-weight: 600;
-  padding: 9px 32px;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
@@ -110,19 +109,19 @@
   line-height: 1;
 }
 
-.delete-modal-cancel {
+.dam-cancel-btn {
   background: #ffffff;
   border: 1px solid #d2d2d3;
   color: #1d1b20;
   padding: 9px 32px;
 }
 
-.delete-modal-cancel:hover {
+.dam-cancel-btn:hover {
   background: #f5f5f5;
   border-color: #b0b0b0;
 }
 
-.delete-modal-confirm {
+.dam-confirm-btn {
   background: #d53425;
   border: none;
   color: #ffffff;
@@ -130,11 +129,11 @@
   box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
 }
 
-.delete-modal-confirm:hover {
+.dam-confirm-btn:hover {
   background: #c02d21;
   box-shadow: 0px 3px 10px 0px rgba(115, 115, 115, 0.3);
 }
 
-.delete-modal-confirm:active {
+.dam-confirm-btn:active {
   background: #b02819;
 }

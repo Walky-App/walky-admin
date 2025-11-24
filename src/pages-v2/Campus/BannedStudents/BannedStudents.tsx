@@ -199,7 +199,7 @@ export const BannedStudents: React.FC = () => {
   };
 
   return (
-    <div className="banned-students-page">
+    <main className="banned-students-page">
       <div className="banned-students-stats">
         <StatsCard
           title="Total banned students"
@@ -267,6 +267,6 @@ export const BannedStudents: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </main>
   );
 };

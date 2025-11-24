@@ -23,44 +23,39 @@ export const DeleteAmbassadorModal: React.FC<DeleteAmbassadorModalProps> = ({
   };
 
   return (
-    <div className="delete-modal-overlay" onClick={onClose}>
-      <div
-        className="delete-modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="dam-overlay" onClick={onClose}>
+      <div className="dam-content" onClick={(e) => e.stopPropagation()}>
         <button
           data-testid="delete-ambassador-close-btn"
-          className="delete-modal-close"
+          className="dam-close-btn"
           onClick={onClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="x-icon" size={16} />
+          <AssetIcon name="close-button" size={16} />
         </button>
 
-        <div className="delete-modal-body">
-          <h2 className="delete-modal-title">Delete Ambassador</h2>
+        <div className="dam-body">
+          <h2 className="dam-title">Delete Ambassador</h2>
 
-          <div className="delete-modal-message">
-            <p className="delete-modal-question">
+          <div className="dam-message">
+            <p className="dam-question">
               Are you sure you want to delete{" "}
-              <span className="ambassador-name">{ambassadorName}</span>?
+              <span className="dam-name">{ambassadorName}</span>?
             </p>
-            <p className="delete-modal-warning">
-              This action cannot be undone.
-            </p>
+            <p className="dam-warning">This action cannot be undone.</p>
           </div>
 
-          <div className="delete-modal-actions">
+          <div className="dam-actions">
             <button
               data-testid="delete-ambassador-cancel-btn"
-              className="delete-modal-cancel"
+              className="dam-cancel-btn"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
               data-testid="delete-ambassador-confirm-btn"
-              className="delete-modal-confirm"
+              className="dam-confirm-btn"
               onClick={handleConfirm}
             >
               Delete Ambassador

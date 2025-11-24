@@ -20,6 +20,7 @@ export interface StudentProfileData {
   totalPeers?: number;
   bio?: string;
   interests?: string[];
+  isFlagged?: boolean;
   // Ban specific info
   bannedBy?: string;
   bannedByEmail?: string;
@@ -313,6 +314,11 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           <div className="profile-header">
             <div className="profile-user-section">
               <div className="profile-avatar-large">
+                {student.isFlagged && (
+                  <div className="profile-flag-icon">
+                    <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
+                  </div>
+                )}
                 {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
                   <img src={student.avatar} alt={student.name} />
                 ) : (

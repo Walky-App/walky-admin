@@ -7,7 +7,7 @@ import {
   SearchInput,
   EventDetailsModal,
 } from "../../components-v2";
-import { SpaceTypeChip } from "../../pages-v2/Spaces/components/SpaceTypeChip";
+import { SpaceTypeChip } from "../../pages-v2/Spaces/components/SpaceTypeChip/SpaceTypeChip";
 import type { EventDetailsData } from "../../components-v2/EventDetailsModal/EventDetailsModal";
 
 export interface SpaceMember {
