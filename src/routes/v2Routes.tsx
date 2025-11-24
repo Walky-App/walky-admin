@@ -7,6 +7,20 @@ import DashboardUserInteractions from "../pages-v2/Dashboard/UserInteractions";
 import DashboardCommunity from "../pages-v2/Dashboard/Community";
 import DashboardStudentSafety from "../pages-v2/Dashboard/StudentSafety";
 import DashboardStudentBehavior from "../pages-v2/Dashboard/StudentBehavior";
+import { ActiveStudents } from "../pages-v2/Campus/ActiveStudents";
+import { BannedStudents } from "../pages-v2/Campus/BannedStudents";
+import { DeactivatedStudents } from "../pages-v2/Campus/DeactivatedStudents";
+import { DisengagedStudents } from "../pages-v2/Campus/DisengagedStudents";
+import { EventsManager, EventsInsights } from "../pages-v2/Events";
+import { SpacesManager, SpacesInsights } from "../pages-v2/Spaces";
+import { IdeasManager, IdeasInsights } from "../pages-v2/Ideas";
+import { ReportSafety, ReportHistory } from "../pages-v2/Moderation";
+import {
+  Campuses,
+  Ambassadors,
+  RoleManagement,
+  AdministratorSettings,
+} from "../pages-v2/Admin";
 import { CampusProvider } from "../contexts/CampusContext";
 
 /**
@@ -59,23 +73,51 @@ const V2Routes: React.FC = () => {
           />
 
           {/* Campus Routes */}
+          <Route path="manage-students/active" element={<ActiveStudents />} />
+          <Route path="manage-students/banned" element={<BannedStudents />} />
           <Route
-            path="manage-students"
-            element={<div>Manage Students - Coming Soon</div>}
+            path="manage-students/deactivated"
+            element={<DeactivatedStudents />}
           />
           <Route
-            path="reported-content"
-            element={<div>Reported Content - Coming Soon</div>}
+            path="manage-students/disengaged"
+            element={<DisengagedStudents />}
           />
-          <Route path="events" element={<div>Events - Coming Soon</div>} />
-          <Route path="spaces" element={<div>Spaces - Coming Soon</div>} />
-          <Route path="ideas" element={<div>Ideas - Coming Soon</div>} />
+
+          {/* Events Routes */}
+          <Route path="events" element={<EventsManager />} />
+          <Route path="events/insights" element={<EventsInsights />} />
+
+          {/* Spaces Routes */}
+          <Route path="spaces" element={<SpacesManager />} />
+          <Route path="spaces/insights" element={<SpacesInsights />} />
+
+          {/* Ideas Routes */}
+          <Route path="ideas" element={<IdeasManager />} />
+          <Route path="ideas/insights" element={<IdeasInsights />} />
+
+          {/* Moderation Routes */}
+          <Route path="report-safety" element={<ReportSafety />} />
+          <Route path="report-history" element={<ReportHistory />} />
 
           {/* Admin Routes */}
-          <Route path="campuses" element={<div>Campuses - Coming Soon</div>} />
+          <Route path="admin/campuses" element={<Campuses />} />
+          <Route path="admin/ambassadors" element={<Ambassadors />} />
+          <Route path="admin/role-management" element={<RoleManagement />} />
+          <Route path="admin/settings" element={<AdministratorSettings />} />
+
+          {/* Legacy Admin Routes (redirect to new paths) */}
+          <Route
+            path="campuses"
+            element={<Navigate to="/v2/admin/campuses" replace />}
+          />
           <Route
             path="ambassadors"
-            element={<div>Ambassadors - Coming Soon</div>}
+            element={<Navigate to="/v2/admin/ambassadors" replace />}
+          />
+          <Route
+            path="role-management"
+            element={<Navigate to="/v2/admin/role-management" replace />}
           />
 
           {/* Settings Routes */}

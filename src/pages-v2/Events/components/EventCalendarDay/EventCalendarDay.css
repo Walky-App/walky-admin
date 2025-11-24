@@ -1,0 +1,148 @@
+.event-calendar-day {
+  width: 100%;
+  height: 762px;
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.day-view-header {
+  background: #f1f4f9;
+  padding: 20px 24px;
+  border-bottom: 1px solid #eef0f1;
+}
+
+.day-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 100%;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.day-date {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: #5b6168;
+  margin: 0;
+}
+
+.day-view-grid {
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+
+.day-time-column {
+  width: 100px;
+  flex-shrink: 0;
+  border-right: 1px solid #eef0f1;
+  background: #f1f4f9;
+}
+
+.day-time-slot {
+  height: 80px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 8px 12px 0 0;
+  border-bottom: 1px solid #eef0f1;
+}
+
+.time-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #5b6168;
+}
+
+.day-events-column {
+  flex: 1;
+  position: relative;
+  padding: 0 12px;
+}
+
+.day-hour-row {
+  height: 80px;
+  position: relative;
+  border-bottom: 1px solid #eef0f1;
+}
+
+.hour-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #eef0f1;
+}
+
+.day-event-block {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 1;
+}
+
+.day-event-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(84, 111, 217, 0.2);
+}
+
+.day-event-block.public {
+  background: linear-gradient(
+    135deg,
+    rgba(84, 111, 217, 0.9) 0%,
+    rgba(84, 111, 217, 0.7) 100%
+  );
+  border-left: 4px solid #321fdb;
+}
+
+.day-event-block.private {
+  background: linear-gradient(
+    135deg,
+    rgba(14, 62, 184, 0.9) 0%,
+    rgba(14, 62, 184, 0.7) 100%
+  );
+  border-left: 4px solid #0e3eb8;
+}
+
+.event-time {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 100%;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.event-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 120%;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CContainer,
   CDropdown,
@@ -24,6 +25,7 @@ interface TopbarV2Props {
 }
 
 const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
+  const navigate = useNavigate();
   const [schoolModalOpen, setSchoolModalOpen] = useState(false);
   const [campusModalOpen, setCampusModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
@@ -420,7 +422,20 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 </div>
               </CDropdownToggle>
               <CDropdownMenu>
-                <CDropdownItem href="/logout">Logout</CDropdownItem>
+                <CDropdownItem
+                  onClick={() => navigate("/v2/admin/settings")}
+                  className="user-dropdown-item settings-item"
+                >
+                  <span>Administrator settings</span>
+                  <AssetIcon name="arrow-down" size={24} />
+                </CDropdownItem>
+                <CDropdownItem
+                  href="/logout"
+                  className="user-dropdown-item logout-item"
+                >
+                  <span>Logout</span>
+                  <AssetIcon name="lock-icon" size={24} />
+                </CDropdownItem>
               </CDropdownMenu>
             </CDropdown>
           </div>

@@ -1,0 +1,236 @@
+.stats-card {
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 0 0;
+  min-width: 0;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+}
+
+.stats-card-header {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.stats-card-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stats-card-tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.stats-card-tooltip-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.stats-card-tooltip-btn:hover {
+  opacity: 1;
+}
+
+.stats-card-tooltip-btn:focus {
+  outline: 2px solid #321fdb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.stats-card-tooltip-icon {
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.stats-card-tooltip-btn:hover .stats-card-tooltip-icon {
+  opacity: 0.7;
+}
+
+.stats-card-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  min-width: 280px;
+  max-width: 320px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  color: #1d1b20;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: normal;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  white-space: normal;
+  pointer-events: none;
+}
+
+.stats-card-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 6px 0 6px;
+  border-color: #ffffff transparent transparent transparent;
+}
+
+.stats-card-tooltip::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 7px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7px 7px 0 7px;
+  border-color: #e0e0e0 transparent transparent transparent;
+  z-index: -1;
+}
+
+/* Dark mode */
+[data-theme="dark"] .stats-card-tooltip {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .stats-card-tooltip::after {
+  border-color: #2a2a2a transparent transparent transparent;
+}
+
+[data-theme="dark"] .stats-card-tooltip::before {
+  border-color: #3a3a3a transparent transparent transparent;
+}
+
+.stats-card-title {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5b6168;
+}
+
+.stats-card-icon-container-main {
+  width: 64px;
+  height: 64px;
+  border-radius: 23px;
+  display: flex;
+  flex-shrink: 0;
+  flex: 1;
+}
+
+.stats-card-icon-container {
+  width: 64px;
+  height: 64px;
+  border-radius: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stats-card-value {
+  font-family: "Lato", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: normal;
+  color: #1d1b20;
+}
+
+.stats-card-trend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+.stats-card-trend-icon {
+  flex-shrink: 0;
+}
+
+.stats-card-trend-value {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.stats-card-trend-value.positive {
+  color: #18682c;
+}
+
+.stats-card-trend-value.negative {
+  color: #c41c1c;
+}
+
+.stats-card-trend-label {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5b6168;
+}
+
+/* Dark mode */
+[data-theme="dark"] .stats-card {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .stats-card-title {
+  color: #acb6ba;
+}
+
+[data-theme="dark"] .stats-card-value {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .stats-card-trend-label {
+  color: #acb6ba;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-card {
+    padding: 16px;
+  }
+
+  .stats-card-header {
+    gap: 20px;
+  }
+
+  .stats-card-icon-container {
+    width: 48px;
+    height: 48px;
+  }
+
+  .stats-card-title {
+    font-size: 14px;
+  }
+
+  .stats-card-value {
+    font-size: 24px;
+  }
+}

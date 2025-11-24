@@ -1,3 +1,4 @@
+ 
 import React, { useState, useEffect } from "react";
 import {
   CCard,
@@ -54,8 +55,11 @@ const BannedUsers: React.FC = () => {
   const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null);
-  
+  const [alert, setAlert] = useState<{
+    type: "success" | "danger";
+    message: string;
+  } | null>(null);
+
   // Search and pagination
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
@@ -64,7 +68,7 @@ const BannedUsers: React.FC = () => {
     total: 0,
     pages: 0,
   });
-  
+
   // Unban modal
   const [unbanModal, setUnbanModal] = useState<{
     show: boolean;
@@ -76,7 +80,7 @@ const BannedUsers: React.FC = () => {
     userName: "",
   });
   const [unbanReason, setUnbanReason] = useState("");
-  
+
   // Ban history modal
   const [historyModal, setHistoryModal] = useState<{
     show: boolean;
@@ -87,13 +91,16 @@ const BannedUsers: React.FC = () => {
     userId: null,
     userName: "",
   });
-  const [banHistory, setBanHistory] = useState<UserBanHistory | null>(null);
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [banHistory] = useState<UserBanHistory | null>(null);
+  const [loadingHistory] = useState(false);
   const [activeTab, setActiveTab] = useState("history");
 
   // Fetch banned users
   const fetchBannedUsers = async (page = 1) => {
-    console.log('🚫 BannedUsers: Fetching banned users for school:', selectedSchool?._id || 'all schools');
+    console.log(
+      "🚫 BannedUsers: Fetching banned users for school:",
+      selectedSchool?._id || "all schools"
+    );
     try {
       setLoading(true);
       const response = await reportService.getBannedUsers({
@@ -105,7 +112,8 @@ const BannedUsers: React.FC = () => {
       setPagination(response.pagination);
       setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch banned users";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch banned users";
       setError(errorMessage);
       console.error("Error fetching banned users:", err);
     } finally {
@@ -115,7 +123,7 @@ const BannedUsers: React.FC = () => {
 
   useEffect(() => {
     fetchBannedUsers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSchool?._id]);
 
   // Handle search
@@ -126,7 +134,7 @@ const BannedUsers: React.FC = () => {
   // Handle unban
   const handleUnban = async () => {
     if (!unbanModal.userId) return;
-    
+
     try {
       await reportService.unbanUser(unbanModal.userId, {
         unban_reason: unbanReason || undefined,
@@ -136,34 +144,10 @@ const BannedUsers: React.FC = () => {
       setUnbanReason("");
       fetchBannedUsers(pagination.page);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to unban user";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to unban user";
       setAlert({ type: "danger", message: errorMessage });
     }
-  };
-
-  // Fetch ban history
-  const fetchBanHistory = async (userId: string) => {
-    try {
-      setLoadingHistory(true);
-      const history = await reportService.getUserBanHistory(userId);
-      setBanHistory(history);
-    } catch (err) {
-      console.error("Error fetching ban history:", err);
-      setAlert({ type: "danger", message: "Failed to fetch ban history" });
-    } finally {
-      setLoadingHistory(false);
-    }
-  };
-
-  // Handle view history
-  const handleViewHistory = (user: BannedUser) => {
-    setHistoryModal({
-      show: true,
-      userId: user._id,
-      userName: `${user.first_name} ${user.last_name}`,
-    });
-    setActiveTab("history");
-    fetchBanHistory(user._id);
   };
 
   // Check if ban has expired
@@ -213,7 +197,10 @@ const BannedUsers: React.FC = () => {
                   <CButton color="primary" onClick={handleSearch}>
                     <CIcon icon={cilSearch} />
                   </CButton>
-                  <CButton color="secondary" onClick={() => fetchBannedUsers(pagination.page)}>
+                  <CButton
+                    color="secondary"
+                    onClick={() => fetchBannedUsers(pagination.page)}
+                  >
                     <CIcon icon={cilReload} />
                   </CButton>
                 </div>
@@ -254,11 +241,14 @@ const BannedUsers: React.FC = () => {
                                 size="sm"
                                 className="me-2"
                               >
-                                {!user.avatar_url && `${user.first_name?.[0]}${user.last_name?.[0]}`}
+                                {!user.avatar_url &&
+                                  `${user.first_name?.[0]}${user.last_name?.[0]}`}
                               </CAvatar>
                               <div>
                                 <div>{`${user.first_name} ${user.last_name}`}</div>
-                                <small className="text-muted">{user.email}</small>
+                                <small className="text-muted">
+                                  {user.email}
+                                </small>
                               </div>
                             </div>
                           </CTableDataCell>
@@ -280,7 +270,10 @@ const BannedUsers: React.FC = () => {
                                     : "warning"
                                 }
                               >
-                                {formatBanDuration(user.ban_duration, user.ban_expires_at)}
+                                {formatBanDuration(
+                                  user.ban_duration,
+                                  user.ban_expires_at
+                                )}
                               </CBadge>
                             </div>
                             <small className="text-muted">
@@ -295,7 +288,8 @@ const BannedUsers: React.FC = () => {
                           <CTableDataCell>
                             {user.banned_by ? (
                               <div>
-                                {user.banned_by.first_name} {user.banned_by.last_name}
+                                {user.banned_by.first_name}{" "}
+                                {user.banned_by.last_name}
                               </div>
                             ) : (
                               <span className="text-muted">System</span>
@@ -303,7 +297,9 @@ const BannedUsers: React.FC = () => {
                           </CTableDataCell>
                           <CTableDataCell>
                             {user.report_count ? (
-                              <CBadge color="warning">{user.report_count}</CBadge>
+                              <CBadge color="warning">
+                                {user.report_count}
+                              </CBadge>
                             ) : (
                               <span className="text-muted">0</span>
                             )}
@@ -324,15 +320,6 @@ const BannedUsers: React.FC = () => {
                             >
                               <CIcon icon={cilCheckCircle} />
                             </CButton>
-                            <CButton
-                              color="info"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleViewHistory(user)}
-                              title="View History"
-                            >
-                              <CIcon icon={cilHistory} />
-                            </CButton>
                           </CTableDataCell>
                         </CTableRow>
                       ))}
@@ -348,18 +335,20 @@ const BannedUsers: React.FC = () => {
                       >
                         Previous
                       </CPaginationItem>
-                      {[...Array(Math.min(5, pagination.pages))].map((_, index) => {
-                        const pageNum = index + 1;
-                        return (
-                          <CPaginationItem
-                            key={pageNum}
-                            active={pageNum === pagination.page}
-                            onClick={() => fetchBannedUsers(pageNum)}
-                          >
-                            {pageNum}
-                          </CPaginationItem>
-                        );
-                      })}
+                      {[...Array(Math.min(5, pagination.pages))].map(
+                        (_, index) => {
+                          const pageNum = index + 1;
+                          return (
+                            <CPaginationItem
+                              key={pageNum}
+                              active={pageNum === pagination.page}
+                              onClick={() => fetchBannedUsers(pageNum)}
+                            >
+                              {pageNum}
+                            </CPaginationItem>
+                          );
+                        }
+                      )}
                       {pagination.pages > 5 && (
                         <CPaginationItem disabled>...</CPaginationItem>
                       )}
@@ -379,12 +368,18 @@ const BannedUsers: React.FC = () => {
       </CRow>
 
       {/* Unban Modal */}
-      <CModal visible={unbanModal.show} onClose={() => setUnbanModal({ ...unbanModal, show: false })}>
+      <CModal
+        visible={unbanModal.show}
+        onClose={() => setUnbanModal({ ...unbanModal, show: false })}
+      >
         <CModalHeader>
           <CModalTitle>Unban User</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <p>Are you sure you want to unban <strong>{unbanModal.userName}</strong>?</p>
+          <p>
+            Are you sure you want to unban{" "}
+            <strong>{unbanModal.userName}</strong>?
+          </p>
           <div className="mb-3">
             <CFormLabel>Reason for Unbanning (Optional)</CFormLabel>
             <CFormTextarea
@@ -449,42 +444,65 @@ const BannedUsers: React.FC = () => {
 
               <CTabContent>
                 <CTabPane visible={activeTab === "history"}>
-                  {banHistory.ban_history && banHistory.ban_history.length > 0 ? (
+                  {banHistory.ban_history &&
+                  banHistory.ban_history.length > 0 ? (
                     <CListGroup>
                       {banHistory.ban_history.map((ban, index) => (
                         <CListGroupItem key={index}>
                           <div className="d-flex justify-content-between align-items-start">
                             <div>
                               <h6>
-                                {ban.duration ? `${ban.duration} Day Ban` : "Permanent Ban"}
+                                {ban.duration
+                                  ? `${ban.duration} Day Ban`
+                                  : "Permanent Ban"}
                               </h6>
                               <p className="mb-1">
                                 <strong>Reason:</strong> {ban.reason}
                               </p>
                               <small className="text-muted">
-                                Banned on {format(new Date(ban.banned_at), "MMM dd, yyyy HH:mm")}
+                                Banned on{" "}
+                                {format(
+                                  new Date(ban.banned_at),
+                                  "MMM dd, yyyy HH:mm"
+                                )}
                                 {ban.banned_by && (
-                                  <> by {ban.banned_by.first_name} {ban.banned_by.last_name}</>
+                                  <>
+                                    {" "}
+                                    by {ban.banned_by.first_name}{" "}
+                                    {ban.banned_by.last_name}
+                                  </>
                                 )}
                               </small>
                               {ban.unbanned_at && (
                                 <div className="mt-2">
                                   <CBadge color="success">Unbanned</CBadge>
                                   <small className="text-muted ms-2">
-                                    on {format(new Date(ban.unbanned_at), "MMM dd, yyyy HH:mm")}
+                                    on{" "}
+                                    {format(
+                                      new Date(ban.unbanned_at),
+                                      "MMM dd, yyyy HH:mm"
+                                    )}
                                     {ban.unbanned_by && (
-                                      <> by {ban.unbanned_by.first_name} {ban.unbanned_by.last_name}</>
+                                      <>
+                                        {" "}
+                                        by {ban.unbanned_by.first_name}{" "}
+                                        {ban.unbanned_by.last_name}
+                                      </>
                                     )}
                                   </small>
                                   {ban.unban_reason && (
                                     <p className="mb-0 mt-1">
-                                      <small>Unban reason: {ban.unban_reason}</small>
+                                      <small>
+                                        Unban reason: {ban.unban_reason}
+                                      </small>
                                     </p>
                                   )}
                                 </div>
                               )}
                             </div>
-                            <CBadge color={ban.unbanned_at ? "success" : "danger"}>
+                            <CBadge
+                              color={ban.unbanned_at ? "success" : "danger"}
+                            >
                               {ban.unbanned_at ? "Lifted" : "Active"}
                             </CBadge>
                           </div>
@@ -506,14 +524,20 @@ const BannedUsers: React.FC = () => {
                               <h6>
                                 {report.reason
                                   .split("_")
-                                  .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                                  .map(
+                                    (w) =>
+                                      w.charAt(0).toUpperCase() + w.slice(1)
+                                  )
                                   .join(" ")}
                               </h6>
                               <p className="mb-1">{report.description}</p>
                               <small className="text-muted">
                                 Reported by {report.reported_by.first_name}{" "}
                                 {report.reported_by.last_name} on{" "}
-                                {format(new Date(report.createdAt), "MMM dd, yyyy")}
+                                {format(
+                                  new Date(report.createdAt),
+                                  "MMM dd, yyyy"
+                                )}
                               </small>
                             </div>
                             <CBadge

@@ -1,0 +1,235 @@
+.ideas-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.ideas-table thead {
+  background-color: #ebf0fa;
+  border-radius: 12px;
+}
+
+.ideas-table thead tr th {
+  padding: 13.5px 0;
+  text-align: left;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ideas-table thead tr th:first-child {
+  padding-left: 35px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.ideas-table thead tr th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.ideas-table-header-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ideas-table tbody tr {
+  height: 73px;
+  position: relative;
+}
+
+.idea-divider-row {
+  height: 1px !important;
+}
+
+.idea-divider-row td {
+  padding: 0 !important;
+  height: 1px;
+}
+
+.ideas-table tbody tr.idea-row-flagged {
+  background-color: #fff3f2;
+  border-bottom: none;
+}
+
+.ideas-table tbody tr.idea-row-flagged td {
+  background-color: #fff3f2;
+  border-bottom: none;
+}
+
+.ideas-table tbody tr.idea-row-flagged td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  position: relative;
+}
+
+.ideas-table tbody tr.idea-row-flagged td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.ideas-table tbody td {
+  padding: 12px 0;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  opacity: 0.8;
+  vertical-align: middle;
+}
+
+.ideas-table tbody td:first-child {
+  padding-left: 35px;
+}
+
+.ideas-table tbody td:last-child {
+  position: relative;
+  z-index: 100;
+}
+
+.idea-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.idea-flag-icon {
+  position: absolute;
+  left: 12px;
+  top: 8px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ideas-table-idea-title {
+  display: block;
+  max-width: 230px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ideas-table-owner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.ideas-table-owner-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ideas-table-owner-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ideas-table-owner-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #eef0f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #5b6168;
+}
+
+.ideas-table-owner-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+.ideas-table-student-id {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ideas-table-student-id-box {
+  background-color: #f1f4f9;
+  padding: 0 8px;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  color: #321fdb;
+  opacity: 0.8;
+}
+
+.ideas-table-copy-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.ideas-table-copy-button:hover {
+  opacity: 0.7;
+}
+
+.ideas-table-collaborated-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #546fd9;
+  color: #ffffff;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 100%;
+  min-width: 22px;
+  height: 22px;
+}
+
+.ideas-table-date {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ideas-table-date-main {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+.ideas-table-date-time {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 100%;
+  color: #5b6168;
+}

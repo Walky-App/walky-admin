@@ -1,0 +1,197 @@
+.flag-modal-wrapper .modal-content {
+  border: none;
+  border-radius: 14px;
+  box-shadow: none;
+  background: transparent;
+}
+
+.flag-modal-body {
+  padding: 32px;
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.flag-modal-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.flag-modal-close:hover {
+  opacity: 0.7;
+}
+
+.flag-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 457px;
+  max-width: 100%;
+}
+
+.flag-modal-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 100%;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.flag-modal-message {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flag-modal-question {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 100%;
+  color: #1d1b20;
+  opacity: 0.826;
+  margin: 0;
+}
+
+.flag-modal-question strong {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+}
+
+.flag-modal-warning {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  color: #5b6168;
+  margin: 0;
+}
+
+.flag-modal-reason {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.flag-modal-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.flag-modal-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  color: #1d1b20;
+}
+
+.flag-modal-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 16px;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: #1d1b20;
+  background: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 8px;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.flag-modal-textarea::placeholder {
+  color: #676d70;
+}
+
+.flag-modal-textarea:focus {
+  outline: none;
+  border-color: #546fd9;
+}
+
+.flag-modal-char-count {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  color: #5b6168;
+  margin: 0;
+  text-align: right;
+}
+
+.flag-modal-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.flag-modal-cancel-btn {
+  background: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 12px;
+  padding: 9px 32px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: #1d1b20;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flag-modal-cancel-btn:hover {
+  background: #f6f9ff;
+  border-color: #546fd9;
+}
+
+.flag-modal-confirm-btn {
+  background: #d53425;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 20px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2);
+}
+
+.flag-modal-confirm-btn:hover {
+  background: #b82a1e;
+  box-shadow: 0px 4px 12px 0px rgba(115, 115, 115, 0.3);
+}
+
+.flag-modal-confirm-btn:active {
+  transform: translateY(1px);
+}

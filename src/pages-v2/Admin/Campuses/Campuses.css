@@ -1,0 +1,388 @@
+/* Campuses Page Styles */
+.campuses-page {
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.page-title {
+  font-family: "Lato", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(90deg, #555aec 0%, #486cb1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  text-align: left;
+}
+
+.page-subtitle {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+  text-align: left;
+}
+
+/* Main Container */
+.campuses-container {
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 32px 27px;
+}
+
+/* Directory Info */
+.directory-info {
+  margin-bottom: 24px;
+}
+
+.directory-title {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1d1b20;
+  margin: 0 0 17px 0;
+}
+
+.directory-count {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+/* Table Wrapper */
+.campuses-table-wrapper {
+  margin-bottom: 24px;
+}
+
+/* Table */
+.campuses-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table Header */
+.table-header-row {
+  background-color: #f1f4f9;
+  border-radius: 12px;
+}
+
+.table-header {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1d1b20;
+  text-align: left;
+  padding: 16px;
+}
+
+.table-header:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  padding-left: 35px;
+}
+
+.table-header:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Table Rows */
+.campus-row td {
+  padding: 12px 16px;
+}
+
+.campus-divider-row {
+  height: 1px !important;
+}
+
+.campus-divider-row td {
+  padding: 0 !important;
+  height: 1px;
+}
+
+/* Campus Cell */
+.campus-cell {
+  padding-left: 35px !important;
+}
+
+.campus-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.campus-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.campus-avatar-placeholder {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #d2d2d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1d1b20;
+  flex-shrink: 0;
+}
+
+.campus-dropdown {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.chevron-icon {
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.campus-name {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+/* Campus ID Cell */
+.campus-id-cell {
+  padding: 23px 16px !important;
+}
+
+.campus-id-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.campus-id {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #321fdb;
+  opacity: 0.8;
+  background-color: #f1f4f9;
+  padding: 0 8px;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.copy-button:hover {
+  opacity: 1;
+}
+
+/* Location & Address */
+.campus-location,
+.campus-address {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+/* Status Badge */
+.campus-status {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 18px;
+  border-radius: 14px;
+}
+
+.status-badge.active {
+  background-color: #edffed;
+  color: #18682c;
+}
+
+.status-badge.inactive {
+  background-color: #f4f5f7;
+  color: #676d70;
+}
+
+/* Sync Button */
+.campus-sync {
+  text-align: center;
+}
+
+.sync-button {
+  background-color: #ffffff;
+  border: 0.5px solid #f1f4f9;
+  border-radius: 4px;
+  padding: 8px 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.sync-button:hover {
+  background-color: #f1f4f9;
+}
+
+/* Boundary Row */
+.boundary-row {
+  background-color: #ffffff;
+}
+
+.boundary-cell {
+  padding: 0 35px 24px 35px !important;
+}
+
+.boundary-container {
+  width: 100%;
+}
+
+.boundary-title {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1d1b20;
+  opacity: 0.8;
+  margin: 0 0 8px 0;
+}
+
+.boundary-map {
+  width: 100%;
+  height: 385px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 26px;
+}
+
+.pagination-info {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-button {
+  background-color: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #321fdb;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.pagination-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-button:not(:disabled):hover {
+  background-color: #f1f4f9;
+}
+
+.page-number {
+  background-color: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 4px;
+  padding: 10px;
+  min-width: 30px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #321fdb;
+}
+
+.page-number.active {
+  background-color: #ebf1ff;
+  border-color: #321fdb;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .campuses-page {
+    padding: 24px 20px;
+  }
+
+  .campuses-table {
+    font-size: 13px;
+  }
+}
