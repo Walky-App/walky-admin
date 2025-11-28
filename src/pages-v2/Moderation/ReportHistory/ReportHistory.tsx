@@ -12,8 +12,10 @@ import {
   WriteNoteModal,
   ReportDetailModal,
   Divider,
+  FlagModal,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
+import { useTheme } from "../../../hooks/useTheme";
 
 interface HistoryReportData {
   id: string;
@@ -28,10 +30,11 @@ interface HistoryReportData {
     | "Harassment / Threats"
     | "Spam"
     | "Other";
-  status: "Resolved" | "Dismissed";
+  status: "Resolved" | "Dismissed" | "Pending review";
 }
 
 export const ReportHistory: React.FC = () => {
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -45,6 +48,7 @@ export const ReportHistory: React.FC = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] =
     useState<HistoryReportData | null>(null);
+  const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
 
   // Mock data - historical reports that have been resolved or dismissed
   const [historyReports, setHistoryReports] = useState<HistoryReportData[]>([
@@ -171,13 +175,27 @@ export const ReportHistory: React.FC = () => {
   ]);
 
   const handleStatusChange = (reportId: string, newStatus: string) => {
-    setHistoryReports((prevReports) =>
-      prevReports.map((report) =>
-        report.id === reportId
-          ? { ...report, status: newStatus as HistoryReportData["status"] }
-          : report
-      )
-    );
+    // If reopening, change status to "Pending review" which will move it to Report & Safety
+    if (newStatus === "Reopen") {
+      setHistoryReports((prevReports) =>
+        prevReports.map((report) =>
+          report.id === reportId
+            ? {
+                ...report,
+                status: "Pending review" as HistoryReportData["status"],
+              }
+            : report
+        )
+      );
+    } else {
+      setHistoryReports((prevReports) =>
+        prevReports.map((report) =>
+          report.id === reportId
+            ? { ...report, status: newStatus as HistoryReportData["status"] }
+            : report
+        )
+      );
+    }
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
@@ -202,6 +220,10 @@ export const ReportHistory: React.FC = () => {
   };
 
   const filteredReports = historyReports.filter((report) => {
+    // Exclude reopened reports (Pending review) from Report History
+    if (report.status === "Pending review") {
+      return false;
+    }
     const matchesSearch = report.description
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -263,7 +285,7 @@ export const ReportHistory: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="stats-cards-row">
-        <div className="stats-card">
+        <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
           <div className="stats-card-header">
             <h3 className="stats-card-title">History total</h3>
             <div className="stats-card-icon" style={{ background: "#e5e4ff" }}>
@@ -273,7 +295,7 @@ export const ReportHistory: React.FC = () => {
           <p className="stats-card-value">{totalReports}</p>
         </div>
 
-        <div className="stats-card">
+        <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
           <div className="stats-card-header">
             <h3 className="stats-card-title">Resolved</h3>
             <div className="stats-card-icon" style={{ background: "#e9fcf4" }}>
@@ -283,7 +305,7 @@ export const ReportHistory: React.FC = () => {
           <p className="stats-card-value">{resolvedReports}</p>
         </div>
 
-        <div className="stats-card">
+        <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
           <div className="stats-card-header">
             <h3 className="stats-card-title">Dismissed</h3>
             <div className="stats-card-icon" style={{ background: "#eef0f1" }}>
@@ -299,7 +321,7 @@ export const ReportHistory: React.FC = () => {
       </div>
 
       {/* Reports Container */}
-      <div className="reports-container">
+      <div className={`reports-container ${theme.isDark ? "dark-mode" : ""}`}>
         <div className="reports-header">
           <div className="reports-title-section">
             <h2 className="reports-title">
@@ -382,7 +404,13 @@ export const ReportHistory: React.FC = () => {
                       <td>
                         <div className="report-description-cell">
                           <div className="report-content-wrapper">
-                            <p className="report-description">
+                            <p
+                              className="report-description"
+                              onClick={() => {
+                                setSelectedReport(report);
+                                setIsDetailModalOpen(true);
+                              }}
+                            >
                               {report.description}
                             </p>
                             <CopyableId
@@ -424,12 +452,7 @@ export const ReportHistory: React.FC = () => {
                           onNoteRequired={(newStatus) =>
                             handleNoteRequired(report.id, newStatus)
                           }
-                          options={[
-                            "Pending review",
-                            "Under evaluation",
-                            "Resolved",
-                            "Dismissed",
-                          ]}
+                          options={["Reopen"]}
                           testId={`status-dropdown-${report.id}`}
                         />
                       </td>
@@ -438,7 +461,7 @@ export const ReportHistory: React.FC = () => {
                           testId="report-history-options"
                           items={[
                             {
-                              label: "View details",
+                              label: "Report details",
                               onClick: (e) => {
                                 e.stopPropagation();
                                 setSelectedReport(report);
@@ -446,10 +469,13 @@ export const ReportHistory: React.FC = () => {
                               },
                             },
                             {
-                              label: "Export",
+                              label: "Flag",
+                              icon: "flag-icon",
+                              iconSize: 18,
                               onClick: (e) => {
                                 e.stopPropagation();
-                                console.log("Export report", report);
+                                setSelectedReport(report);
+                                setIsFlagModalOpen(true);
                               },
                             },
                           ]}
@@ -600,6 +626,17 @@ export const ReportHistory: React.FC = () => {
           onBanUser={() => console.log("Ban user")}
         />
       )}
+
+      <FlagModal
+        isOpen={isFlagModalOpen}
+        onClose={() => setIsFlagModalOpen(false)}
+        onConfirm={(reason) => {
+          console.log("Flag report:", selectedReport?.id, "Reason:", reason);
+          setIsFlagModalOpen(false);
+        }}
+        itemName={selectedReport?.description || ""}
+        type="event"
+      />
     </main>
   );
 };

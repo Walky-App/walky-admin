@@ -87,7 +87,6 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
       <CModalBody
         style={{
           backgroundColor: theme.colors.cardBg,
-          padding: "0 32px 32px 32px",
         }}
       >
         {/* Reports List */}
@@ -198,23 +197,23 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             ))}
           </div>
         </div>
-
-        {/* Close Button */}
-        <div className="modal-footer">
-          <CButton
-            color="light"
-            onClick={onClose}
-            className="close-button"
-            style={{
-              backgroundColor: theme.colors.cardBg,
-              border: `1px solid ${theme.colors.borderColor}`,
-              color: theme.colors.bodyColor,
-            }}
-          >
-            Close
-          </CButton>
-        </div>
       </CModalBody>
+
+      {/* Footer outside body */}
+      <div className="custom-modal-footer">
+        <CButton
+          color="light"
+          onClick={onClose}
+          className="close-button"
+          style={{
+            backgroundColor: theme.colors.cardBg,
+            border: `1px solid ${theme.colors.borderColor}`,
+            color: theme.colors.bodyColor,
+          }}
+        >
+          Close
+        </CButton>
+      </div>
     </CModal>
   );
 };

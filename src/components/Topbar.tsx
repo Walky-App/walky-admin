@@ -130,7 +130,7 @@ export const Topbar = ({
                 <CAvatar
                   src="/owl.png"
                   size="lg"
-                  shape='rounded-circle'
+                  shape="rounded-circle"
                   style={{ width: "35px" }}
                 />
               </CDropdownToggle>

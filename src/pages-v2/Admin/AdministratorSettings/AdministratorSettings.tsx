@@ -7,6 +7,7 @@ import {
   LogoutAllDevicesModal,
 } from "../../../components-v2";
 import { useAuth } from "../../../hooks/useAuth";
+import { useTheme } from "../../../hooks/useTheme";
 import "./AdministratorSettings.css";
 
 type TabType = "personal" | "security" | "notifications" | "danger";
@@ -14,12 +15,13 @@ type TabType = "personal" | "security" | "notifications" | "danger";
 export const AdministratorSettings: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>("personal");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<string | null>(
-    null
-  );
+  const [pendingNavigation, setPendingNavigation] = useState<
+    string | number | null
+  >(null);
 
   // Modal states
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
@@ -115,10 +117,10 @@ export const AdministratorSettings: React.FC = () => {
 
   const handleBackToPanel = () => {
     if (hasUnsavedChanges) {
-      setPendingNavigation("/");
+      setPendingNavigation(-1);
       setShowUnsavedModal(true);
     } else {
-      navigate("/");
+      navigate(-1);
     }
   };
 
@@ -128,6 +130,8 @@ export const AdministratorSettings: React.FC = () => {
     if (pendingNavigation) {
       if (pendingNavigation === "/logout") {
         window.location.href = "/logout";
+      } else if (typeof pendingNavigation === "number") {
+        navigate(pendingNavigation);
       } else {
         navigate(pendingNavigation);
       }
@@ -144,7 +148,11 @@ export const AdministratorSettings: React.FC = () => {
   });
 
   return (
-    <main className="administrator-settings-page">
+    <main
+      className={`administrator-settings-page ${
+        theme.isDark ? "dark-mode" : ""
+      }`}
+    >
       {/* Header */}
       <div className="settings-header">
         <div className="settings-header-content">

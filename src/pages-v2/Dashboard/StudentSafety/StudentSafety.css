@@ -10,16 +10,14 @@
 /* Page Header Styles */
 .student-safety-page .page-header {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 30px;
+  gap: 12px;
   margin-bottom: 24px;
 }
 
 .student-safety-page .icon-container {
-  display: inline-grid;
-  grid-template-columns: max-content;
-  grid-template-rows: max-content;
-  justify-items: start;
+  display: flex;
   line-height: 0;
 }
 
@@ -31,6 +29,17 @@
   align-items: center;
   justify-content: center;
   background-color: var(--v2-icon-bg-red);
+  flex-shrink: 0;
+}
+
+.student-safety-page .student-safety-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  margin: 0;
+  color: var(--v2-body-color);
+  text-align: left !important;
 }
 
 .student-safety-page .page-title {
@@ -40,6 +49,7 @@
   line-height: 1;
   margin: 0;
   color: var(--v2-body-color);
+  text-align: left;
 }
 
 /* Reports Section */
@@ -63,6 +73,7 @@
     height: 48px;
   }
 
+  .student-safety-page .student-safety-title,
   .student-safety-page .page-title {
     font-size: 28px;
   }
@@ -84,6 +95,7 @@
     height: 40px;
   }
 
+  .student-safety-page .student-safety-title,
   .student-safety-page .page-title {
     font-size: 24px;
   }

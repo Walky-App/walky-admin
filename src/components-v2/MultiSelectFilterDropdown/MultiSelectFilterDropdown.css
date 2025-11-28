@@ -126,3 +126,49 @@
 .multi-select-divider:last-child {
   display: none;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .multi-select-filter-toggle {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .multi-select-filter-toggle:hover {
+  border-color: #4a4a4a;
+}
+
+[data-theme="dark"] .multi-select-filter-toggle:focus {
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .multi-select-filter-label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .multi-select-filter-menu {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .multi-select-checkbox {
+  background-color: #3a3a3a;
+  border-color: #5a5a5a;
+}
+
+[data-theme="dark"] .multi-select-checkbox.checked {
+  background-color: #7a8fff;
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .multi-select-filter-item:hover .multi-select-checkbox {
+  border-color: #b0b0b0;
+}
+
+[data-theme="dark"] .multi-select-option-label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .multi-select-divider {
+  background-color: #3a3a3a;
+}

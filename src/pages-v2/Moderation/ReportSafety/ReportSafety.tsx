@@ -12,8 +12,10 @@ import {
   WriteNoteModal,
   ReportDetailModal,
   Divider,
+  FlagModal,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
+import { useTheme } from "../../../hooks/useTheme";
 
 interface ReportData {
   id: string;
@@ -27,11 +29,12 @@ interface ReportData {
     | "Made Me Uncomfortable"
     | "Spam"
     | "Harassment";
-  status: "Pending review" | "Under evaluation" | "Resolved";
+  status: "Pending review" | "Under evaluation" | "Resolved" | "Dismissed";
   isFlagged?: boolean;
 }
 
 export const ReportSafety: React.FC = () => {
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -42,6 +45,7 @@ export const ReportSafety: React.FC = () => {
   } | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
+  const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
 
   // Mock data
   const [reports, setReports] = useState<ReportData[]>([
@@ -77,17 +81,6 @@ export const ReportSafety: React.FC = () => {
       reasonTag: "Spam",
       status: "Pending review",
       isFlagged: true,
-    },
-    {
-      id: "4",
-      description: "This space promotes discrimination",
-      studentId: "456k...wxyzab",
-      reportDate: "Oct 4, 2025",
-      type: "Space",
-      reason: "Discriminatory / Exclusionary",
-      reasonTag: "Harmful / Unsafe Behavior",
-      status: "Resolved",
-      isFlagged: false,
     },
     {
       id: "5",
@@ -132,17 +125,6 @@ export const ReportSafety: React.FC = () => {
       reasonTag: "Spam",
       status: "Pending review",
       isFlagged: true,
-    },
-    {
-      id: "9",
-      description: "User sending unwanted solicitations",
-      studentId: "890o...uvwxyz",
-      reportDate: "Sep 30, 2025",
-      type: "Message",
-      reason: "Solicitation or sales",
-      reasonTag: "Spam",
-      status: "Resolved",
-      isFlagged: false,
     },
     {
       id: "10",
@@ -200,6 +182,10 @@ export const ReportSafety: React.FC = () => {
   };
 
   const filteredReports = reports.filter((report) => {
+    // Exclude Resolved and Dismissed from Report & Safety
+    if (report.status === "Resolved" || report.status === "Dismissed") {
+      return false;
+    }
     const matchesSearch = report.description
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -225,7 +211,9 @@ export const ReportSafety: React.FC = () => {
     }
   };
 
-  const totalReports = reports.length;
+  const totalReports = reports.filter(
+    (r) => r.status !== "Resolved" && r.status !== "Dismissed"
+  ).length;
   const pendingReports = reports.filter(
     (r) => r.status === "Pending review"
   ).length;
@@ -256,7 +244,7 @@ export const ReportSafety: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="stats-cards-row">
-        <div className="stats-card">
+        <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
           <div className="stats-card-header">
             <p className="stats-card-title">Total</p>
             <div className="stats-card-icon" style={{ background: "#e5e4ff" }}>
@@ -266,7 +254,7 @@ export const ReportSafety: React.FC = () => {
           <p className="stats-card-value">{totalReports}</p>
         </div>
 
-        <div className="stats-card">
+        <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
           <div className="stats-card-header">
             <p className="stats-card-title">Pending review</p>
             <div className="stats-card-icon" style={{ background: "#eef0f1" }}>
@@ -280,7 +268,7 @@ export const ReportSafety: React.FC = () => {
           <p className="stats-card-value">{pendingReports}</p>
         </div>
 
-        <div className="stats-card">
+        <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
           <div className="stats-card-header">
             <p className="stats-card-title">Under evaluation</p>
             <div className="stats-card-icon" style={{ background: "#fff3d6" }}>
@@ -296,7 +284,7 @@ export const ReportSafety: React.FC = () => {
       </div>
 
       {/* Reports Table Container */}
-      <div className="reports-container">
+      <div className={`reports-container ${theme.isDark ? "dark-mode" : ""}`}>
         <div className="reports-header">
           <div className="reports-title-section">
             <h1 className="reports-title">Reported users & content</h1>
@@ -331,8 +319,6 @@ export const ReportSafety: React.FC = () => {
                   { value: "all", label: "All status" },
                   { value: "Pending review", label: "Pending review" },
                   { value: "Under evaluation", label: "Under evaluation" },
-                  { value: "Resolved", label: "Resolved" },
-                  { value: "Dismissed", label: "Dismissed" },
                 ]}
                 placeholder="All status"
                 testId="status-filter"
@@ -385,7 +371,13 @@ export const ReportSafety: React.FC = () => {
                             </div>
                           )}
                           <div className="report-content-wrapper">
-                            <p className="report-description">
+                            <p
+                              className="report-description"
+                              onClick={() => {
+                                setSelectedReport(report);
+                                setIsDetailModalOpen(true);
+                              }}
+                            >
                               {report.description}
                             </p>
                             <CopyableId
@@ -439,7 +431,7 @@ export const ReportSafety: React.FC = () => {
                           testId="report-options"
                           items={[
                             {
-                              label: "View details",
+                              label: "Report details",
                               onClick: (e) => {
                                 e.stopPropagation();
                                 setSelectedReport(report);
@@ -447,17 +439,13 @@ export const ReportSafety: React.FC = () => {
                               },
                             },
                             {
-                              label: "Resolve",
+                              label: "Flag",
+                              icon: "flag-icon",
+                              iconSize: 18,
                               onClick: (e) => {
                                 e.stopPropagation();
-                                console.log("Resolve report", report);
-                              },
-                            },
-                            {
-                              label: "Dismiss",
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                console.log("Dismiss report", report);
+                                setSelectedReport(report);
+                                setIsFlagModalOpen(true);
                               },
                             },
                           ]}
@@ -583,6 +571,17 @@ export const ReportSafety: React.FC = () => {
           onBanUser={() => console.log("Ban user")}
         />
       )}
+
+      <FlagModal
+        isOpen={isFlagModalOpen}
+        onClose={() => setIsFlagModalOpen(false)}
+        onConfirm={(reason) => {
+          console.log("Flag report:", selectedReport?.id, "Reason:", reason);
+          setIsFlagModalOpen(false);
+        }}
+        itemName={selectedReport?.description || ""}
+        type="event"
+      />
     </main>
   );
 };

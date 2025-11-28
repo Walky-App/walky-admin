@@ -6,6 +6,7 @@ import {
   ActionDropdown,
   FilterDropdown,
 } from "../../../components-v2";
+import { useTheme } from "../../../hooks/useTheme";
 import {
   RolePermissionsModal,
   RemoveMemberModal,
@@ -41,6 +42,7 @@ const getInitials = (name: string): string => {
 };
 
 export const RoleManagement: React.FC = () => {
+  const { theme } = useTheme();
   const [currentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All Roles");
@@ -221,7 +223,7 @@ export const RoleManagement: React.FC = () => {
       </div>
 
       {/* Main Content Container */}
-      <div className="members-container">
+      <div className={`members-container ${theme.isDark ? "dark-mode" : ""}`}>
         {/* Header with Filters and Create Button */}
         <div className="members-header">
           <div className="members-header-left">
@@ -398,7 +400,7 @@ export const RoleManagement: React.FC = () => {
                   </tr>
                   {index < mockMembers.length - 1 && (
                     <tr className="member-divider-row">
-                      <td colSpan={5}>
+                      <td colSpan={7}>
                         <Divider />
                       </td>
                     </tr>

@@ -322,3 +322,70 @@
 .event-dropdown-item-delete:hover {
   background-color: #ffded1;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .event-table-wrapper {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .event-table thead tr {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .event-table th {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .event-table tbody tr.event-row-flagged {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .event-table tbody tr.event-row-flagged td {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .event-table td {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .event-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .organizer-avatar-placeholder {
+  background-color: #3a3a3a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .organizer-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .student-id-badge {
+  background-color: #1a2840;
+}
+
+[data-theme="dark"] .student-id-badge span {
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .event-date {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .event-time {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .event-dropdown-menu {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .event-dropdown-item {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .event-dropdown-item:hover {
+  background-color: #3a3a3a;
+}

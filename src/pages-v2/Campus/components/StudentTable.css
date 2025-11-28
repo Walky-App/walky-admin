@@ -93,10 +93,11 @@
 }
 
 .student-table-row.student-row-flagged {
-  background-color: #fff3f2;
+  background-color: #fff3f2 !important;
 }
 
 .student-table-row.student-row-flagged td {
+  background-color: #fff3f2 !important;
   border-bottom: none;
 }
 
@@ -337,6 +338,14 @@
 
 [data-theme="dark"] .student-avatar-placeholder {
   background-color: #4a4a4a;
+}
+
+[data-theme="dark"] .student-table-row.student-row-flagged {
+  background-color: #2a1f1f !important;
+}
+
+[data-theme="dark"] .student-table-row.student-row-flagged td {
+  background-color: #2a1f1f !important;
 }
 
 /* Responsive */

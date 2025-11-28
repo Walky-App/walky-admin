@@ -547,3 +547,132 @@
   background: #f6f9ff;
   border-color: #546fd9;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .space-details-modal-wrapper .modal-content {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .space-details-modal-body {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .space-details-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-details-section-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-details-image-placeholder {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .space-logo-overlay {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .space-owner-avatar {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-owner-avatar-placeholder {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .space-owner-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-details-info-box {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-info-label,
+[data-theme="dark"] .space-info-value {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-info-flag-reason {
+  background-color: #2a1f1f;
+  border-color: #d53425;
+}
+
+[data-theme="dark"] .space-details-divider {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-tab-button {
+  background-color: #2a2a2a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .space-tab-button.active {
+  background-color: #546fd9;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .space-tab-button:hover:not(.active) {
+  background-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .space-tab-content {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-member-avatar {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-member-avatar-placeholder {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .space-member-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-no-events {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .space-event-card {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-event-card:hover {
+  background-color: #2a2a2a;
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .space-event-date {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .space-event-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-event-location {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .space-event-chevron-icon {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-details-close-btn {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-details-close-btn:hover {
+  background-color: #3a3a3a;
+  border-color: #7a8fff;
+}

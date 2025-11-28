@@ -324,6 +324,12 @@
   line-height: 100%;
   color: #546fd9;
   margin: 0;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.report-description:hover {
+  opacity: 0.8;
 }
 
 .student-id-container {
@@ -435,4 +441,61 @@
   .reports-filters {
     flex-wrap: wrap;
   }
+}
+
+/* Dark Mode Styles */
+.stats-card.dark-mode {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+.stats-card.dark-mode .stats-card-title {
+  color: #b0b0b0;
+}
+
+.stats-card.dark-mode .stats-card-value {
+  color: #e0e0e0;
+}
+
+.reports-container.dark-mode {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+.reports-container.dark-mode .reports-title {
+  color: #e0e0e0;
+}
+
+.reports-container.dark-mode .reports-table thead {
+  background-color: #1e1e1e;
+}
+
+.reports-container.dark-mode .reports-table thead th {
+  color: #e0e0e0;
+}
+
+.reports-container.dark-mode .reports-table tbody td {
+  color: #d0d0d0;
+}
+
+.reports-container.dark-mode .report-description {
+  color: #7a8fff;
+}
+
+.reports-container.dark-mode .flagged-row {
+  background-color: #3a2020;
+}
+
+.reports-container.dark-mode .status-dropdown-cell {
+  background-color: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #d0d0d0;
+}
+
+.reports-container.dark-mode .status-dropdown-cell:hover {
+  background-color: #4a4a4a;
+}
+
+.reports-container.dark-mode .options-button:hover {
+  opacity: 0.5;
 }

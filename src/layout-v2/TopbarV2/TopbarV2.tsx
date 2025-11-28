@@ -427,14 +427,22 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                   className="user-dropdown-item settings-item"
                 >
                   <span>Administrator settings</span>
-                  <AssetIcon name="arrow-down" size={24} />
+                  <AssetIcon
+                    name="arrow-down"
+                    size={24}
+                    color={theme.colors.bodyColor}
+                  />
                 </CDropdownItem>
                 <CDropdownItem
                   href="/logout"
                   className="user-dropdown-item logout-item"
                 >
                   <span>Logout</span>
-                  <AssetIcon name="lock-icon" size={24} />
+                  <AssetIcon
+                    name="logout-icon"
+                    size={24}
+                    color={theme.colors.bodyColor}
+                  />
                 </CDropdownItem>
               </CDropdownMenu>
             </CDropdown>

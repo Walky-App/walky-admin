@@ -81,6 +81,7 @@
   text-decoration: none;
   user-select: none;
   line-height: 100%;
+  min-width: 0;
 }
 
 .sidebar-v2 .sidebar-menu-item:hover {
