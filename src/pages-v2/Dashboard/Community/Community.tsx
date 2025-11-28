@@ -112,7 +112,7 @@ const Community: React.FC = () => {
             <AssetIcon name="popular-emoji-icon" color="#f69b39" size={30} />
           </div>
         </div>
-        <h1 className="page-title">Community Creation</h1>
+        <h1 className="community-title">Community Creation</h1>
       </div>
 
       {/* Creation Metrics Bar Chart */}

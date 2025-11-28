@@ -137,3 +137,40 @@
 .remove-member-confirm:hover {
   background: #b72a1f;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .remove-member-content {
+  background: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .remove-member-close {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .remove-member-close:hover {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .remove-member-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .remove-member-text {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .remove-member-warning {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .remove-member-cancel {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .remove-member-cancel:hover {
+  background: #4a4a4a;
+  border-color: #5a5a5a;
+}

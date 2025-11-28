@@ -199,6 +199,85 @@
   background-color: #f5f5f5;
 }
 
+.create-member-option.selected {
+  background-color: #ebf1ff;
+  font-weight: 600;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .create-member-content {
+  background: #2a2a2a;
+}
+
+[data-theme="dark"] .create-member-close {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .create-member-close:hover {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .create-member-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .create-member-subtitle {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .create-member-label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .create-member-input {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .create-member-input::placeholder {
+  color: #808080;
+}
+
+[data-theme="dark"] .create-member-input:focus {
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .create-member-input:hover {
+  border-color: #5a5a5a;
+}
+
+[data-theme="dark"] .create-member-select {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .create-member-select span.placeholder {
+  color: #808080;
+}
+
+[data-theme="dark"] .create-member-select:hover {
+  border-color: #5a5a5a;
+}
+
+[data-theme="dark"] .create-member-dropdown {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+}
+
+[data-theme="dark"] .create-member-option {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .create-member-option:hover {
+  background-color: #4a4a4a;
+}
+
+[data-theme="dark"] .create-member-option.selected {
+  background-color: #1a2840;
+}
+
 /* Buttons */
 .create-member-buttons {
   display: flex;
@@ -262,4 +341,27 @@
 
 .create-member-content::-webkit-scrollbar-thumb:hover {
   background: #5b6168;
+}
+
+[data-theme="dark"] .create-member-cancel {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .create-member-cancel:hover {
+  background: #4a4a4a;
+  border-color: #5a5a5a;
+}
+
+[data-theme="dark"] .create-member-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+[data-theme="dark"] .create-member-content::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+}
+
+[data-theme="dark"] .create-member-content::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
 }

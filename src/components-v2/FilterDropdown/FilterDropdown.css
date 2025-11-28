@@ -116,3 +116,44 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .filter-dropdown-toggle {
+  background-color: #2a2a2a !important;
+  border-color: #3a3a3a !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .filter-dropdown-toggle:hover,
+[data-theme="dark"] .filter-dropdown-toggle:focus,
+[data-theme="dark"] .filter-dropdown-toggle:active,
+[data-theme="dark"] .filter-dropdown-toggle.show {
+  background-color: #2a2a2a !important;
+  border-color: #3a3a3a !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .filter-dropdown-menu {
+  background-color: #2a2a2a !important;
+  border-color: #3a3a3a !important;
+}
+
+[data-theme="dark"] .filter-dropdown-menu .dropdown-item {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"]
+  .filter-dropdown-menu
+  .dropdown-item:not(:last-child)::after {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .filter-dropdown-menu .dropdown-item:hover {
+  background-color: #1a2840 !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .filter-dropdown-menu .dropdown-item.active {
+  background-color: #1a2840 !important;
+  color: #e0e0e0 !important;
+}

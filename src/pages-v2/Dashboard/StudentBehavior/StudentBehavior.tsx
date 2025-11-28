@@ -139,11 +139,11 @@ const StudentBehavior: React.FC = () => {
       {/* Header Section */}
       <div className="page-header">
         <div className="icon-container" aria-hidden="true">
-          <div className="icon-circle">
-            <AssetIcon name="trend-up-icon" color="#00c943" size={30} />
+          <div className="icon-circle-std">
+            <AssetIcon name="student-behavior-icon" color="#00c943" size={30} />
           </div>
         </div>
-        <h1 className="page-title">Student Behavior</h1>
+        <h1 className="student-behavior-title">Student Behavior</h1>
       </div>
 
       {/* Metric Cards */}

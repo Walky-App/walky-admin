@@ -233,3 +233,46 @@
   line-height: 100%;
   color: #5b6168;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .ideas-table thead {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .ideas-table thead tr th {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .ideas-table tbody tr.idea-row-flagged {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .ideas-table tbody tr.idea-row-flagged td {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .ideas-table tbody td {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .ideas-table-owner-avatar-placeholder {
+  background-color: #3a3a3a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .ideas-table-owner-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .ideas-table-student-id-box {
+  background-color: #1a2840;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .ideas-table-date-main {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .ideas-table-date-time {
+  color: #b0b0b0;
+}

@@ -7,6 +7,7 @@ import {
   Divider,
 } from "../../../components-v2";
 import "./Ambassadors.css";
+import { useTheme } from "../../../hooks/useTheme";
 
 interface AmbassadorData {
   id: string;
@@ -27,6 +28,7 @@ interface Student {
 }
 
 export const Ambassadors: React.FC = () => {
+  const { theme } = useTheme();
   const [currentPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ambassadorToDelete, setAmbassadorToDelete] = useState<{
@@ -130,7 +132,9 @@ export const Ambassadors: React.FC = () => {
       </div>
 
       {/* Main Content Container */}
-      <div className="ambassadors-container">
+      <div
+        className={`ambassadors-container ${theme.isDark ? "dark-mode" : ""}`}
+      >
         {/* Directory Header */}
         <div className="directory-header">
           <div className="directory-info">

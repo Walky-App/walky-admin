@@ -300,7 +300,7 @@ const StudentSafety: React.FC = () => {
             <AssetIcon name="lock-icon" color="#ef6161" size={30} />
           </div>
         </div>
-        <h1 className="page-title">Student Safety</h1>
+        <h1 className="student-safety-title">Student Safety</h1>
       </div>
 
       {/* Reports Bar Chart */}

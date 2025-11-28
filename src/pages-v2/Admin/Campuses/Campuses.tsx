@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import "./Campuses.css";
 import { AssetIcon, CopyableId, Divider } from "../../../components-v2";
 import CampusBoundary from "../../../pages/CampusBoundary";
+import { useTheme } from "../../../hooks/useTheme";
 
 interface CampusData {
   id: string;
@@ -30,6 +31,7 @@ const getInitials = (name: string): string => {
 };
 
 export const Campuses: React.FC = () => {
+  const { theme } = useTheme();
   const [searchQuery, _setSearchQuery] = useState("");
   const [expandedCampusId, setExpandedCampusId] = useState<string | null>(null);
   const [currentPage] = useState(1);
@@ -96,7 +98,7 @@ export const Campuses: React.FC = () => {
       </div>
 
       {/* Main Content Container */}
-      <div className="campuses-container">
+      <div className={`campuses-container ${theme.isDark ? "dark-mode" : ""}`}>
         {/* Directory Info */}
         <div className="directory-info">
           <h2 className="directory-title">Campus directory</h2>
@@ -195,24 +197,21 @@ export const Campuses: React.FC = () => {
                   {expandedCampusId === campus.id && (
                     <tr className="boundary-row">
                       <td colSpan={6} className="boundary-cell">
-                        <div className="boundary-container">
-                          <h3 className="boundary-title">Campus Boundary</h3>
-                          <div className="boundary-map">
-                            <CampusBoundary
-                              readOnly={true}
-                              initialBoundaryData={campus.boundaryData}
-                              onBoundaryChange={() => {
-                                // Read-only mode
-                              }}
-                            />
-                          </div>
+                        <div className="boundary-map">
+                          <CampusBoundary
+                            readOnly={true}
+                            initialBoundaryData={campus.boundaryData}
+                            onBoundaryChange={() => {
+                              // Read-only mode
+                            }}
+                          />
                         </div>
                       </td>
                     </tr>
                   )}
                   {index < filteredCampuses.length - 1 && (
                     <tr className="campus-divider-row">
-                      <td colSpan={5}>
+                      <td colSpan={6}>
                         <Divider />
                       </td>
                     </tr>

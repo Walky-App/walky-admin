@@ -38,12 +38,11 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   const hasSubmenu = item.submenu !== undefined;
 
   if (isSubmenuItem) {
+    const isExactMatch = location.pathname === item.path;
     return (
       <NavLink
         to={item.path || "#"}
-        className={({ isActive: navIsActive }) =>
-          `sidebar-submenu-item ${navIsActive ? "active" : ""}`
-        }
+        className={() => `sidebar-submenu-item ${isExactMatch ? "active" : ""}`}
       >
         {item.label}
       </NavLink>

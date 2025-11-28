@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   CDropdown,
   CDropdownToggle,
@@ -32,6 +32,27 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({
     item.onClick(e);
   };
 
+  // State to track dark mode
+  const [isDark, setIsDark] = useState(() => {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  });
+
+  // Listen for theme changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const iconColor = isDark ? "#e0e0e0" : "#1D1B20";
+
   return (
     <CDropdown
       alignment="end"
@@ -45,7 +66,7 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({
         caret={false}
         data-testid={`${testId}-toggle-btn`}
       >
-        <AssetIcon name="vertical-3-dots-icon" size={24} color="#1D1B20" />
+        <AssetIcon name="vertical-3-dots-icon" size={24} color={iconColor} />
       </CDropdownToggle>
       <CDropdownMenu className="action-dropdown-menu">
         {items.map((item, index) => {
@@ -65,7 +86,7 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({
                 <AssetIcon
                   name={item.icon}
                   size={item.iconSize || 18}
-                  color={item.variant === "danger" ? "#d53425" : "#1D1B20"}
+                  color={item.variant === "danger" ? "#d53425" : iconColor}
                 />
               )}
               <span>{item.label}</span>

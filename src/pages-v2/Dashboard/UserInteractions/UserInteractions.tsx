@@ -145,7 +145,7 @@ const UserInteractions: React.FC = () => {
             />
           </div>
         </div>
-        <h1 className="page-title">User Interactions</h1>
+        <h1 className="user-interactions-title">User Interactions</h1>
       </div>
 
       {/* Invitations Bar Chart */}

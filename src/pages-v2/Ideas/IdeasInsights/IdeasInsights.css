@@ -284,3 +284,87 @@
     max-height: none;
   }
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .stats-card {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .stats-card-title {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .stats-card-value {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .ideas-icon-bg {
+  background-color: #3a3020;
+}
+
+[data-theme="dark"] .user-icon-bg {
+  background-color: #2e2d40;
+}
+
+[data-theme="dark"] .conversion-icon-bg {
+  background-color: #1a3a2a;
+}
+
+[data-theme="dark"] .filter-label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .time-option {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .time-option.active {
+  background-color: #546fd9;
+  color: #ffffff;
+  border-color: #546fd9;
+}
+
+[data-theme="dark"] .time-card {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .time-card-title {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .time-card-value {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .chat-icon-bg {
+  background-color: #1a3030;
+}
+
+[data-theme="dark"] .trend-label {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .popular-ideas-card {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .popular-ideas-title {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .idea-rank {
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .idea-title {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .idea-collaborations {
+  color: #b0b0b0;
+}

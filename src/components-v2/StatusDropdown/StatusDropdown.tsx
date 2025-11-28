@@ -103,20 +103,16 @@ export const StatusDropdown: React.FC<StatusDropdownProps> = ({
             data-testid={`${testId}-menu`}
           >
             {options.map((option) => (
-              <React.Fragment key={option}>
-                <div
-                  className={`status-dropdown-item ${
-                    option === value ? "active" : ""
-                  }`}
-                  onClick={() => handleSelect(option)}
-                  data-testid={`${testId}-option-${option}`}
-                >
-                  {option}
-                </div>
-                {option !== options[options.length - 1] && (
-                  <div className="status-dropdown-divider" />
-                )}
-              </React.Fragment>
+              <div
+                key={option}
+                className={`status-dropdown-item ${
+                  option === value ? "active" : ""
+                }`}
+                onClick={() => handleSelect(option)}
+                data-testid={`${testId}-option-${option}`}
+              >
+                {option}
+              </div>
             ))}
           </div>,
           document.body
