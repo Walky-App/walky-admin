@@ -150,6 +150,7 @@ const Engagement: React.FC = () => {
       : monthLabels;
 
   const chartSubLabels = timePeriod === "month" ? weekSubLabels : undefined;
+
   const donutData = [
     {
       label: "Events organized by spaces",

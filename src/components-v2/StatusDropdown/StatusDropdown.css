@@ -66,8 +66,33 @@
   margin-right: -16px;
 }
 
-.status-dropdown-divider {
-  height: 1px;
-  background-color: #eef0f1;
-  width: 100%;
+/* Dark Mode Styles */
+[data-theme="dark"] .status-dropdown-cell {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .status-dropdown-cell:hover {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .status-dropdown-cell span {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .status-dropdown-menu {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .status-dropdown-item {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .status-dropdown-item:hover {
+  background-color: #1a2840;
+}
+
+[data-theme="dark"] .status-dropdown-item.active {
+  background-color: #1a2840;
 }

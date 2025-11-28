@@ -349,6 +349,85 @@
   background: #f7f8fa;
 }
 
+.idea-details-close-btn:hover {
+  background: #f7f8fa;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .idea-details-modal-wrapper .modal-content {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .idea-details-modal-body {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .idea-details-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .idea-details-section-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .idea-owner-avatar {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .idea-owner-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .idea-owner-id-badge {
+  background-color: #1a2840;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .idea-details-info-box {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .idea-info-row,
+[data-theme="dark"] .idea-info-description {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .idea-info-flag-reason {
+  background-color: #2a1f1f;
+  border-color: #d53425;
+}
+
+[data-theme="dark"] .idea-details-divider {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .idea-collaborators-header {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .idea-collaborators-title {
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .idea-collaborator-avatar {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .idea-collaborator-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .idea-details-close-btn {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .idea-details-close-btn:hover {
+  background-color: #3a3a3a;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .idea-details-main {

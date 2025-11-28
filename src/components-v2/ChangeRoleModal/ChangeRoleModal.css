@@ -193,3 +193,66 @@
 .change-role-confirm:hover {
   background: #4558b0;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .change-role-content {
+  background: #2a2a2a;
+}
+
+[data-theme="dark"] .change-role-close {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .change-role-close:hover {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .change-role-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .change-role-description {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .change-role-label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .change-role-select {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .change-role-select:hover {
+  border-color: #5a5a5a;
+}
+
+[data-theme="dark"] .change-role-dropdown {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+}
+
+[data-theme="dark"] .change-role-option {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .change-role-option:hover {
+  background-color: #4a4a4a;
+}
+
+[data-theme="dark"] .change-role-option.selected {
+  background-color: #1a2840;
+}
+
+[data-theme="dark"] .change-role-cancel {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .change-role-cancel:hover {
+  background: #4a4a4a;
+  border-color: #5a5a5a;
+}

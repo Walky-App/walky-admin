@@ -898,3 +898,209 @@
 .close-footer-button:hover {
   background-color: #f7f8fa;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .report-detail-modal .modal-content {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .report-detail-modal-body {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .close-button {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .close-button:hover {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .rdm-section-title,
+[data-theme="dark"] .subsection-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .user-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .user-id-badge {
+  background-color: #1a2840;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .report-detail-user-status-message {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .rdm-report-summary {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .rdm-label,
+[data-theme="dark"] .rdm-value {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .rdm-separator {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .rdm-status-dropdown-wrapper {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .rdm-report-description {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .rdm-reporting-user-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .rdm-id-badge {
+  background-color: #1a2840;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .content-container {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .event-card,
+[data-theme="dark"] .event-card-small {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .event-date {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .event-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .event-location {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .space-card {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-description {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .space-meta {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .divider-vertical {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .idea-card {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .idea-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .idea-by-label {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .idea-by-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .idea-description {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .message-bubble {
+  background-color: #1a2840;
+}
+
+[data-theme="dark"] .message-text {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .safety-tab {
+  background-color: #2a2a2a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .safety-tab.active {
+  background-color: #546fd9;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .safety-record-item {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .ban-duration,
+[data-theme="dark"] .ban-duration-label,
+[data-theme="dark"] .ban-expires {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .safety-reason {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .safety-meta {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .rdm-report-content-label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .rdm-report-content-name {
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .rdm-report-status-badge {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .block-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .block-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .block-date {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .close-footer-button {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .close-footer-button:hover {
+  background-color: #3a3a3a;
+}

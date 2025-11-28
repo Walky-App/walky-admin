@@ -137,3 +137,31 @@
 .unflag-modal-confirm-btn:active {
   transform: translateY(1px);
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .unflag-modal-body {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .unflag-modal-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .unflag-modal-question {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .unflag-modal-warning {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .unflag-modal-cancel-btn {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .unflag-modal-cancel-btn:hover {
+  background-color: #3a3a3a;
+  border-color: #7a8fff;
+}

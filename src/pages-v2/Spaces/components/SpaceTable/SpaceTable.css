@@ -337,3 +337,75 @@
   background-color: transparent;
   color: #d53425;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .space-table-wrapper {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .space-table thead {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .space-table thead tr th {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-table tbody tr.space-row-flagged {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .space-table tbody tr.space-row-flagged td {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .space-table tbody tr td {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .space-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .owner-avatar-placeholder {
+  background-color: #3a3a3a;
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .owner-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .student-id-badge {
+  background-color: #1a2840;
+}
+
+[data-theme="dark"] .student-id-badge span {
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .creation-date {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .creation-time {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .space-dropdown-menu {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-dropdown-title,
+[data-theme="dark"] .space-dropdown-item {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .space-dropdown-divider {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .space-dropdown-item-delete {
+  color: #ff6b6b;
+}

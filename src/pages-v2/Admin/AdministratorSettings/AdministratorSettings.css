@@ -623,3 +623,214 @@
     max-width: 100%;
   }
 }
+
+/* Dark Mode */
+[data-theme="dark"] .settings-back-btn {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .settings-subtitle {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .settings-sidebar-menu {
+  background: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .sidebar-menu-item {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .sidebar-menu-item:hover {
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .sidebar-menu-item.logout {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .sidebar-menu-item.logout:hover {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .sidebar-divider {
+  background: #3a3a3a;
+}
+
+[data-theme="dark"] .settings-tab {
+  background: #2a2a2a;
+  color: #b0b0b0;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .settings-tab:hover {
+  background: #3a3a3a;
+}
+
+[data-theme="dark"] .settings-tab.active {
+  background: #7a8fff;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .settings-content-container {
+  background: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .content-section-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .content-divider {
+  background: #3a3a3a;
+}
+
+[data-theme="dark"] .info-row {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .form-field label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .form-field.disabled label {
+  color: #5b6168;
+}
+
+[data-theme="dark"] .form-field input {
+  background: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .form-field.disabled input {
+  background: #1a1a1a;
+  color: #5b6168;
+}
+
+[data-theme="dark"] .form-field input:focus {
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .form-field input::placeholder {
+  color: #5b6168;
+}
+
+[data-theme="dark"] .save-changes-btn {
+  background: #7a8fff;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .save-changes-btn:hover:not(:disabled) {
+  background: #6a7eef;
+}
+
+[data-theme="dark"] .placeholder-text {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .section-subtitle {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .toggle-password-btn {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .toggle-password-btn:hover {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .change-password-btn {
+  background: #7a8fff;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .change-password-btn:hover {
+  background: #6a7eef;
+}
+
+[data-theme="dark"] .security-option {
+  background: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .option-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .option-description {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .toggle-slider {
+  background-color: #5b6168;
+}
+
+[data-theme="dark"] .toggle-switch input:checked + .toggle-slider {
+  background-color: #7a8fff;
+}
+
+[data-theme="dark"] .logout-all-btn {
+  background: #d53425;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .logout-all-btn:hover {
+  background: #b72a1f;
+}
+
+[data-theme="dark"] .danger-zone-section {
+  background: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .danger-title {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .danger-description {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .delete-reason-textarea {
+  background: #1e1e1e;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .delete-reason-textarea:focus {
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .delete-reason-textarea::placeholder {
+  color: #5b6168;
+}
+
+[data-theme="dark"] .danger-alert {
+  background: #2a1f1f;
+  border-color: #4a2a2a;
+}
+
+[data-theme="dark"] .danger-alert p {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .submit-delete-btn {
+  background: #d53425;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .submit-delete-btn:hover {
+  background: #b72a1f;
+}
+
+[data-theme="dark"] .profile-picture img {
+  border-color: #2a2a2a;
+}
+
+[data-theme="dark"] .profile-picture-edit {
+  background: #2a2a2a;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}

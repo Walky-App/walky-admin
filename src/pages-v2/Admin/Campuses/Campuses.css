@@ -280,7 +280,6 @@
 
 /* Boundary Row */
 .boundary-row {
-  background-color: #ffffff;
 }
 
 .boundary-cell {
@@ -374,6 +373,97 @@
 .page-number.active {
   background-color: #ebf1ff;
   border-color: #321fdb;
+}
+
+/* Dark Mode Styles */
+.campuses-container.dark-mode {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .directory-title {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .directory-count {
+  color: #b0b0b0;
+}
+
+.campuses-container.dark-mode .table-header-row {
+  background-color: #2a2a2a;
+}
+
+.campuses-container.dark-mode .table-header {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .campus-row {
+  background-color: #1e1e1e;
+}
+
+.campuses-container.dark-mode .campus-name {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .campus-location,
+.campuses-container.dark-mode .campus-address {
+  color: #d0d0d0;
+}
+
+.campuses-container.dark-mode .campus-avatar-placeholder {
+  background-color: #3a3a3a;
+  color: #d0d0d0;
+}
+
+.campuses-container.dark-mode .campus-id {
+  background-color: #1a2840;
+  color: #7a8fff;
+}
+
+.campuses-container.dark-mode .sync-button {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .sync-button:hover {
+  background-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .boundary-row {
+  background-color: #1e1e1e;
+}
+
+.campuses-container.dark-mode .boundary-cell {
+  background-color: #1e1e1e;
+}
+
+.campuses-container.dark-mode .boundary-title {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .pagination-info {
+  color: #b0b0b0;
+}
+
+.campuses-container.dark-mode .pagination-button {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+.campuses-container.dark-mode .pagination-button:not(:disabled):hover {
+  background-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .page-number {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+.campuses-container.dark-mode .page-number.active {
+  background-color: #1a2840;
+  border-color: #7a8fff;
 }
 
 /* Responsive */

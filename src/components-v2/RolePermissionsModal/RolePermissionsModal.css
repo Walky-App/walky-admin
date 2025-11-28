@@ -188,3 +188,63 @@
 .role-permissions-content::-webkit-scrollbar-thumb:hover {
   background: #5b6168;
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .role-permissions-content {
+  background: #2a2a2a;
+}
+
+[data-theme="dark"] .role-permissions-close {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .role-permissions-close:hover {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .role-permissions-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .role-permissions-description {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .role-permissions-section-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .role-permissions-chevron {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .role-permissions-item-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .role-permissions-item-actions {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .role-permissions-close-button {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .role-permissions-close-button:hover {
+  background: #4a4a4a;
+  border-color: #5a5a5a;
+}
+
+[data-theme="dark"] .role-permissions-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+[data-theme="dark"] .role-permissions-content::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+}
+
+[data-theme="dark"] .role-permissions-content::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}

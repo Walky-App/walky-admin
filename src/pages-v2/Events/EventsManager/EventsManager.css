@@ -1,5 +1,4 @@
 .events-manager-container {
-  background-color: #ffffff;
   min-height: 100vh;
 }
 
@@ -21,9 +20,9 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin: 0;
   display: inline-block;
   width: fit-content;
+  line-height: normal;
 }
 
 .events-manager-subtitle {
@@ -173,4 +172,70 @@
   font-family: "Lato", sans-serif;
   font-size: 18px;
   color: #5b6168;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .events-manager-container {
+}
+
+[data-theme="dark"] .events-manager-subtitle {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .view-toggle-btn {
+  border-color: #3a3a3a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .view-toggle-btn.active {
+  background-color: #546fd9;
+  color: #ffffff;
+  border-color: #546fd9;
+}
+
+[data-theme="dark"] .view-toggle-btn:hover:not(.active) {
+  background-color: rgba(84, 111, 217, 0.2);
+}
+
+[data-theme="dark"] .events-manager-content {
+  background-color: #1a1a1a;
+}
+
+[data-theme="dark"] .events-card {
+  background-color: #1e1e1e !important;
+  border-color: #3a3a3a !important;
+}
+
+[data-theme="dark"] .events-list-title-1 {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .pagination-info {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .pagination-btn {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .pagination-btn:hover:not(:disabled) {
+  background-color: #3a3a3a;
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .pagination-page-number {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .pagination-page-number.active {
+  background-color: #1a2840;
+  border-color: #7a8fff;
+}
+
+[data-theme="dark"] .calendar-view-placeholder {
+  color: #b0b0b0;
 }

@@ -10,16 +10,25 @@
 /* Page Header */
 .student-behavior-page .page-header {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: var(--v2-spacing-8);
+  gap: var(--v2-spacing-3);
   margin-bottom: var(--v2-spacing-6);
 }
 
+.student-behavior-page .icon-circle-std {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9fcf4;
+  flex-shrink: 0;
+}
+
 .student-behavior-page .icon-container {
-  display: inline-grid;
-  grid-template-columns: max-content;
-  grid-template-rows: max-content;
-  justify-items: start;
+  display: flex;
   line-height: 0;
 }
 
@@ -40,6 +49,18 @@
   line-height: var(--v2-line-height-tight);
   margin: 0;
   color: var(--v2-body-color);
+  text-align: left;
+}
+
+/* Unique title class with higher specificity */
+.student-behavior-page .student-behavior-title {
+  font-family: var(--v2-font-family-heading);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-3xl);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+  color: var(--v2-body-color);
+  text-align: left !important;
 }
 
 /* Metric Cards */
