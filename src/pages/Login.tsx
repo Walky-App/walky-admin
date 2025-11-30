@@ -75,7 +75,7 @@ const Login = ({ onLogin }: LoginProps) => {
 
       onLogin();
       navigate("/");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
     } catch (error: any) {
       console.error(
         "❌ Login failed:",

@@ -131,7 +131,7 @@ const RolesManagement: React.FC = () => {
     },
     onError: (error) => {
       console.error("Failed to delete role:", error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       alert((error as any)?.response?.data?.message || "Failed to delete role. Please try again.");
     },
   });
@@ -145,7 +145,7 @@ const RolesManagement: React.FC = () => {
     },
     onError: (error) => {
       console.error("Failed to assign role:", error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       alert((error as any)?.response?.data?.message || "Failed to assign role. Please try again.");
     },
   });

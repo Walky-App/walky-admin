@@ -387,7 +387,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
   const tooltipPlugin = {
     id: "customTooltip",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     afterDraw: (chart: any) => {
       const tooltipModel = chart.tooltip;
 

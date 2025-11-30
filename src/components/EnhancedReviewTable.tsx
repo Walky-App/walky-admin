@@ -125,9 +125,9 @@ const EnhancedReviewTable = () => {
 
   const sortedUsers = useMemo(() => {
     const sorted = [...users].sort((a, b) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       let aValue: any;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       let bValue: any;
 
       if (sortConfig.key === 'name') {
