@@ -16,37 +16,36 @@ interface SpaceItem {
   members: number;
 }
 
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
+
 export const SpacesInsights: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
 
-  // Mock data from Figma design - using emojis as placeholders for category icons
-  const categories: SpaceCategory[] = [
-    { name: "Clubs", emoji: "🎗️", spaces: 19, percentage: 7.1 },
-    { name: "Club Sports", emoji: "👕", spaces: 18, percentage: 6.7 },
-    { name: "IM Teams", emoji: "🏀", spaces: 16, percentage: 6.0 },
-    {
-      name: "Fraternities",
-      emoji: "Σ",
-      spaces: 16,
-      percentage: 6.0,
-    },
-    {
-      name: "Academics & Honors",
-      emoji: "📜",
-      spaces: 16,
-      percentage: 6.0,
-    },
-  ];
+  const { data: insightsData, isLoading } = useQuery({
+    queryKey: ['spacesInsights', timePeriod],
+    queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: timePeriod }),
+  });
 
-  const topSpaces: SpaceItem[] = [
-    { rank: 1, name: "Pi Lambda Phi", logo: "", members: 70 },
-    { rank: 2, name: "MMC Mountaineers", logo: "", members: 65 },
-    { rank: 3, name: "FIU Surfers", logo: "", members: 63 },
-    { rank: 4, name: "Future Leaders Council", logo: "", members: 60 },
-    { rank: 5, name: "Victory Nets Club", logo: "", members: 59 },
-  ];
+  const categories: SpaceCategory[] = (insightsData?.data.popularCategories || []).map((category: any) => ({
+    name: category.name,
+    emoji: category.emoji,
+    spaces: category.spaces,
+    percentage: category.percentage,
+  }));
+
+  const topSpaces: SpaceItem[] = (insightsData?.data.topSpaces || []).map((space: any) => ({
+    rank: space.rank,
+    name: space.name,
+    logo: space.logo || "",
+    members: space.members,
+  }));
+
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   return (
     <main className="spaces-insights-page">
@@ -66,7 +65,7 @@ export const SpacesInsights: React.FC = () => {
               <AssetIcon name="space-icon" size={35} color="#4A4CD9" />
             </div>
           </div>
-          <p className="stats-card-value">750</p>
+          <p className="stats-card-value">{insightsData?.data.totalEvents || 0}</p>
         </div>
 
         <div className="stats-card">
@@ -78,7 +77,7 @@ export const SpacesInsights: React.FC = () => {
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>
           </div>
-          <p className="stats-card-value">75089</p>
+          <p className="stats-card-value">{insightsData?.data.totalMembers || 0}</p>
         </div>
       </div>
 
@@ -89,9 +88,8 @@ export const SpacesInsights: React.FC = () => {
           <div className="time-selector">
             <button
               data-testid="time-all-btn"
-              className={`time-option first ${
-                timePeriod === "all" ? "active" : ""
-              }`}
+              className={`time-option first ${timePeriod === "all" ? "active" : ""
+                }`}
               onClick={() => setTimePeriod("all")}
             >
               All time
@@ -105,9 +103,8 @@ export const SpacesInsights: React.FC = () => {
             </button>
             <button
               data-testid="time-month-btn"
-              className={`time-option last ${
-                timePeriod === "month" ? "active" : ""
-              }`}
+              className={`time-option last ${timePeriod === "month" ? "active" : ""
+                }`}
               onClick={() => setTimePeriod("month")}
             >
               Month

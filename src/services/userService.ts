@@ -1,4 +1,4 @@
-import api from "../API";
+import { apiClient } from "../API";
 
 export interface User {
   _id: string;
@@ -60,16 +60,17 @@ export const userService = {
   getUsers: async (params?: UsersListParams): Promise<UsersListResponse> => {
     try {
       console.log("🚀 Fetching users with params:", params);
-      const queryParams = new URLSearchParams();
 
-      if (params?.page) queryParams.append("page", params.page.toString());
-      if (params?.limit) queryParams.append("limit", params.limit.toString());
-      if (params?.search) queryParams.append("search", params.search);
-      if (params?.school_id) queryParams.append("school_id", params.school_id);
-      if (params?.campus_id) queryParams.append("campus_id", params.campus_id);
-      if (params?.role) queryParams.append("role", params.role);
+      const response = await apiClient.api.adminUsersList({
+        page: params?.page,
+        limit: params?.limit,
+        search: params?.search,
+        school_id: params?.school_id,
+        role: params?.role,
+        // @ts-ignore - campus_id is missing in generated type but supported by backend
+        campus_id: params?.campus_id
+      }) as any;
 
-      const response = await api.get(`/admin/users?${queryParams.toString()}`);
       console.log("✅ Users response:", response.data);
 
       return {
@@ -91,7 +92,7 @@ export const userService = {
   searchUsers: async (query: string): Promise<User[]> => {
     try {
       console.log("🚀 Searching users with query:", query);
-      const response = await api.get(`/admin/users/search?q=${encodeURIComponent(query)}`);
+      const response = await apiClient.api.adminUsersSearchList({ q: query }) as any;
       console.log("✅ Search response:", response.data);
       return response.data.users || [];
     } catch (error) {
@@ -104,7 +105,7 @@ export const userService = {
   getUser: async (userId: string): Promise<UserWithRoles> => {
     try {
       console.log("🚀 Fetching user:", userId);
-      const response = await api.get(`/admin/users/${userId}`);
+      const response = await apiClient.api.adminUsersDetail(userId) as any;
       console.log("✅ User details response:", response.data);
       return response.data.user;
     } catch (error) {

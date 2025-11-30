@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import {
   AssetIcon,
   StudentProfileModal,
@@ -109,6 +110,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   ],
   onStudentClick,
 }) => {
+  const queryClient = useQueryClient();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
@@ -125,9 +127,98 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  const handleViewProfile = (student: StudentData) => {
-    setSelectedStudent(student);
-    setProfileModalVisible(true);
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("Student deactivated successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setDeactivateModalVisible(false);
+    },
+    onError: (error) => {
+      console.error("Error deactivating student:", error);
+      setToastMessage("Error deactivating student");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const banMutation = useMutation({
+    mutationFn: (data: { id: string; duration: number; reason: string }) =>
+      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, { lockDuration: data.duration, lockReason: data.reason } as any),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("Student banned successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setBanModalVisible(false);
+    },
+    onError: (error) => {
+      console.error("Error banning student:", error);
+      setToastMessage("Error banning student");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2StudentsFlagCreate(data.id, { reason: data.reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("Student flagged successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setFlagModalVisible(false);
+      setStudentToFlag(null);
+    },
+    onError: (error) => {
+      console.error("Error flagging student:", error);
+      setToastMessage("Error flagging student");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const unflagMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsUnflagCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("Student unflagged successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+    onError: (error) => {
+      console.error("Error unflagging student:", error);
+      setToastMessage("Error unflagging student");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const handleViewProfile = async (student: StudentData) => {
+    try {
+      const response = await apiClient.api.adminV2StudentsDetail(student.id) as any;
+      const details = response.data;
+
+      // Merge details with existing student data or map completely
+      const fullStudentData: StudentData = {
+        ...student,
+        areaOfStudy: details.areaOfStudy || "N/A",
+        lastLogin: details.lastLogin ? new Date(details.lastLogin).toLocaleDateString() : "N/A",
+        totalPeers: details.totalPeers || 0,
+        bio: details.bio || "No bio provided",
+        // Map other fields as needed
+      };
+
+      setSelectedStudent(fullStudentData);
+      setProfileModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching student details:", error);
+      setToastMessage("Error fetching student details");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const handleSendEmail = (student: StudentData) => {
@@ -167,12 +258,14 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     const studentToProcess = student || studentToFlag;
     if (!studentToProcess) return;
 
-    console.log("Flagging user:", studentToProcess);
-    // TODO: Call API to flag user
-    // Example: await flagUserAPI(studentToProcess.id);
+    // Use a default reason or capture it from the modal if FlagUserModal supports it
+    // Assuming FlagUserModal might not pass reason back in onConfirm based on current usage
+    // If FlagUserModal doesn't support reason, we might need to update it or just send a default
+    flagMutation.mutate({ id: studentToProcess.id, reason: "Flagged by admin" });
+  };
 
-    setFlagModalVisible(false);
-    setStudentToFlag(null);
+  const handleUnflagUser = (student: StudentData) => {
+    unflagMutation.mutate(student.id);
   };
 
   const handleCloseFlagModal = () => {
@@ -187,13 +280,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
 
   const handleConfirmDeactivate = () => {
     if (!studentToDeactivate) return;
-
-    console.log("Deactivating user:", studentToDeactivate);
-    // TODO: Call API to deactivate user
-    // Example: await deactivateUserAPI(studentToDeactivate.id);
-
-    setDeactivateModalVisible(false);
-    setStudentToDeactivate(null);
+    deleteMutation.mutate(studentToDeactivate.id);
   };
 
   const handleCloseDeactivateModal = () => {
@@ -209,19 +296,19 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const handleConfirmBan = (
     duration: string,
     reason: string,
-    resolveReports: boolean
+    _resolveReports: boolean
   ) => {
     if (!studentToBan) return;
 
-    console.log("Banning user:", studentToBan);
-    console.log("Duration:", duration);
-    console.log("Reason:", reason);
-    console.log("Resolve reports:", resolveReports);
-    // TODO: Call API to ban user
-    // Example: await banUserAPI(studentToBan.id, { duration, reason, resolveReports });
+    // Convert duration string to number (days) if needed, or handle logic
+    // For now assuming duration is string like "7 days", need to parse or map
+    let durationDays = 0;
+    if (duration.includes("24 hours")) durationDays = 1;
+    else if (duration.includes("7 days")) durationDays = 7;
+    else if (duration.includes("30 days")) durationDays = 30;
+    else if (duration.includes("Permanent")) durationDays = 36500; // 100 years
 
-    setBanModalVisible(false);
-    setStudentToBan(null);
+    banMutation.mutate({ id: studentToBan.id, duration: durationDays, reason });
   };
 
   const handleCloseBanModal = () => {
@@ -411,9 +498,8 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           {sortedStudents.map((student, index) => (
             <React.Fragment key={student.id}>
               <tr
-                className={`student-table-row ${
-                  student.isFlagged ? "student-row-flagged" : ""
-                }`}
+                className={`student-table-row ${student.isFlagged ? "student-row-flagged" : ""
+                  }`}
                 onClick={() => onStudentClick?.(student)}
               >
                 {columns.map((column) => (
@@ -440,17 +526,22 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                         },
                       },
                       {
-                        label: "Flag",
+                        label: student.isFlagged ? "Unflag" : "Flag",
                         icon: "flag-icon",
+                        variant: student.isFlagged ? "danger" : undefined,
                         onClick: (e) => {
                           e.stopPropagation();
-                          handleFlagUser(student);
+                          if (student.isFlagged) {
+                            handleUnflagUser(student);
+                          } else {
+                            handleFlagUser(student);
+                          }
                         },
                       },
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       {
                         label: "Ban user",

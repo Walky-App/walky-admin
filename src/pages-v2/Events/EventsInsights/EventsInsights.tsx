@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./EventsInsights.css";
 import { AssetIcon, ExportButton } from "../../../components-v2";
 import { DonutChart } from "../../Dashboard/components";
+import { apiClient } from "../../../API";
 
 interface Interest {
   name: string;
@@ -19,9 +20,19 @@ export const EventsInsights: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
+  const [loading, setLoading] = useState(true);
+
+  // Stats state
+  const [stats, setStats] = useState({
+    totalEvents: 0,
+    publicEvents: 0,
+    privateEvents: 0,
+    avgPublicAttendees: 0,
+    avgPrivateAttendees: 0,
+  });
 
   // Data for donut charts
-  const expandReachData = [
+  const [expandReachData] = useState([
     {
       label: "Without expand Event reach",
       value: 70.16,
@@ -34,9 +45,9 @@ export const EventsInsights: React.FC = () => {
       percentage: "29.84%",
       color: "#3B7809",
     },
-  ];
+  ]);
 
-  const usersVsSpacesData = [
+  const [usersVsSpacesData] = useState([
     {
       label: "Events organized by Spaces",
       value: 70.16,
@@ -49,56 +60,91 @@ export const EventsInsights: React.FC = () => {
       percentage: "29.84%",
       color: "#CACAEE",
     },
-  ];
+  ]);
 
-  // Mock interests data from Figma
-  const interests: Interest[] = [
-    { name: "Ballet", students: 19, percentage: 7.1 },
-    { name: "Basketball", students: 18, percentage: 6.7 },
-    { name: "Acting", students: 16, percentage: 6.0 },
-    { name: "Anime", students: 16, percentage: 6.0 },
-    { name: "Arcade", students: 16, percentage: 6.0 },
-    { name: "Soccer", students: 15, percentage: 5.6 },
-    { name: "Music", students: 14, percentage: 5.2 },
-    { name: "Photography", students: 13, percentage: 4.9 },
-    { name: "Coding", students: 12, percentage: 4.5 },
-    { name: "Art", students: 11, percentage: 4.1 },
-  ];
+  const [interests] = useState<Interest[]>([]);
+  const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
+  const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 
-  // Mock events data
-  const privateEvents: EventItem[] = [
-    { rank: 1, name: "4v4 Basketball game", attendees: 4 },
-    { rank: 2, name: "Top Golf Tuesdays", attendees: 3 },
-    {
-      rank: 3,
-      name: "FAU Tech Runway startup finals & Pitch Competition",
-      attendees: 3,
-    },
-    { rank: 4, name: "Top Golf Monday", attendees: 2 },
-    { rank: 5, name: "Top Golf Sunday", attendees: 1 },
-    { rank: 6, name: "Study Group Session", attendees: 5 },
-    { rank: 7, name: "Movie Night", attendees: 4 },
-    { rank: 8, name: "Board Game Evening", attendees: 3 },
-    { rank: 9, name: "Coffee Meetup", attendees: 2 },
-    { rank: 10, name: "Yoga Class", attendees: 1 },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch event counts
+        const [totalRes, publicRes, privateRes] = await Promise.all([
+          apiClient.api.adminAnalyticsEventsCountList({ filter: "total" } as any) as any,
+          apiClient.api.adminAnalyticsEventsCountList({ filter: "public" } as any) as any,
+          apiClient.api.adminAnalyticsEventsCountList({ filter: "private" } as any) as any,
+        ]);
 
-  const publicEvents: EventItem[] = [
-    { rank: 1, name: "4v4 Basketball game", attendees: 70 },
-    { rank: 2, name: "Top Golf Tuesdays", attendees: 65 },
-    {
-      rank: 3,
-      name: "FAU Tech Runway startup finals & Pitch Competition",
-      attendees: 63,
-    },
-    { rank: 4, name: "Top Golf Monday", attendees: 60 },
-    { rank: 5, name: "Top Golf Sunday", attendees: 59 },
-    { rank: 6, name: "Campus Concert", attendees: 58 },
-    { rank: 7, name: "Tech Workshop", attendees: 55 },
-    { rank: 8, name: "Career Fair", attendees: 52 },
-    { rank: 9, name: "Food Festival", attendees: 50 },
-    { rank: 10, name: "Sports Tournament", attendees: 48 },
-  ];
+        const total = totalRes.data.count || 0;
+        const publicCount = publicRes.data.count || 0;
+        const privateCount = privateRes.data.count || 0;
+
+        // Fetch top events (simulated by fetching list and sorting for now)
+        // Ideally backend should provide a "top events" endpoint
+        const eventsRes = await apiClient.api.adminV2EventsList({ limit: 100 } as any) as any;
+        const allEvents = eventsRes.data.data || [];
+
+        // Process Public Events
+        const publicEvts = allEvents
+          .filter((e: any) => e.is_public)
+          .sort((a: any, b: any) => (b.attendees_count || 0) - (a.attendees_count || 0))
+          .slice(0, 10)
+          .map((e: any, index: number) => ({
+            rank: index + 1,
+            name: e.title,
+            attendees: e.attendees_count || 0,
+          }));
+
+        // Process Private Events
+        const privateEvts = allEvents
+          .filter((e: any) => !e.is_public)
+          .sort((a: any, b: any) => (b.attendees_count || 0) - (a.attendees_count || 0))
+          .slice(0, 10)
+          .map((e: any, index: number) => ({
+            rank: index + 1,
+            name: e.title,
+            attendees: e.attendees_count || 0,
+          }));
+
+        // Calculate averages
+        const totalPublicAttendees = allEvents
+          .filter((e: any) => e.is_public)
+          .reduce((sum: number, e: any) => sum + (e.attendees_count || 0), 0);
+
+        const totalPrivateAttendees = allEvents
+          .filter((e: any) => !e.is_public)
+          .reduce((sum: number, e: any) => sum + (e.attendees_count || 0), 0);
+
+        const avgPublic = publicCount > 0 ? Math.round(totalPublicAttendees / publicCount) : 0;
+        const avgPrivate = privateCount > 0 ? Math.round(totalPrivateAttendees / privateCount) : 0;
+
+        setStats({
+          totalEvents: total,
+          publicEvents: publicCount,
+          privateEvents: privateCount,
+          avgPublicAttendees: avgPublic,
+          avgPrivateAttendees: avgPrivate,
+        });
+
+        setPublicEvents(publicEvts);
+        setPrivateEvents(privateEvts);
+
+        // Fetch Interests (simulated or from another endpoint)
+        // For now, we'll keep the mock interests or fetch if available
+        // const interestsRes = await apiClient.api.adminAnalyticsInterestsList() as any; 
+        // setInterests(...)
+
+      } catch (error) {
+        console.error("Failed to fetch events insights:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [timePeriod]);
 
   return (
     <main className="events-insights-page">
@@ -118,7 +164,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="calendar-icon" size={27} color="#FF6B35" />
             </div>
           </div>
-          <p className="stats-card-value">75089</p>
+          <p className="stats-card-value">{loading ? "..." : stats.totalEvents.toLocaleString()}</p>
         </div>
 
         <div className="stats-card">
@@ -128,7 +174,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
           </div>
-          <p className="stats-card-value">45780</p>
+          <p className="stats-card-value">{loading ? "..." : stats.publicEvents.toLocaleString()}</p>
         </div>
 
         <div className="stats-card">
@@ -140,7 +186,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
           </div>
-          <p className="stats-card-value">29309</p>
+          <p className="stats-card-value">{loading ? "..." : stats.privateEvents.toLocaleString()}</p>
         </div>
       </div>
 
@@ -167,7 +213,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
           </div>
-          <p className="stats-card-value">20</p>
+          <p className="stats-card-value">{loading ? "..." : stats.avgPublicAttendees}</p>
         </div>
 
         <div className="stats-card">
@@ -179,7 +225,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
           </div>
-          <p className="stats-card-value">3</p>
+          <p className="stats-card-value">{loading ? "..." : stats.avgPrivateAttendees}</p>
         </div>
       </div>
 
@@ -220,7 +266,7 @@ export const EventsInsights: React.FC = () => {
           </h2>
         </div>
         <div className="interests-list">
-          {interests.map((interest, index) => (
+          {interests.length > 0 ? interests.map((interest, index) => (
             <div key={index} className="interest-item">
               <div className="interest-icon">
                 <div className="icon-background">
@@ -245,7 +291,11 @@ export const EventsInsights: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="p-4 text-center text-muted">
+              No interest data available
+            </div>
+          )}
         </div>
       </div>
 

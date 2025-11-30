@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import {
   CCard,
   CCardBody,
-  
+
   CCol,
   CRow,
   CSpinner,
@@ -30,7 +30,7 @@ import {
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
 import { useSchool } from '../contexts/SchoolContext'
-import API from '../API'
+import { apiClient } from '../API'
 
 interface SocialHealthMetrics {
   // User Metrics
@@ -200,7 +200,7 @@ const SocialHealthOverview = () => {
       setError(null)
 
       try {
-        const response = await API.get(`/admin/analytics/social-health-metrics?period=${period}`)
+        const response = await apiClient.api.adminAnalyticsSocialHealthList({ period } as any) as any
         setMetrics(response.data)
         setError(null)
       } catch (err: unknown) {

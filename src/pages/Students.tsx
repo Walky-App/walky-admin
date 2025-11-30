@@ -2,7 +2,7 @@ import * as icon from '@coreui/icons'
 import { CCol, CRow } from '@coreui/react'
 import InfoStatWidget from '../components/InfoStatWidget'
 import EnhancedStudentTable from '../components/EnhancedStudentTable'
-import API from '../API/'
+import { apiClient } from '../API/'
 import { useState, useEffect } from 'react'
 
 const Students = () => {
@@ -15,30 +15,30 @@ const Students = () => {
     const fetchStats = async () => {
       try {
         // Fetch all users to calculate stats
-        const res = await API.get<{
-          users: {
+        const res = await apiClient.api.usersList({
+          query: { fields: '_id,is_active,is_verified,interest_ids,interestList' }
+        } as any) as any;
+
+        if (res && res.data && res.data.users) {
+          const users = res.data.users as {
             _id: string;
             is_active?: boolean;
             is_verified?: boolean;
             interest_ids?: Array<{ _id: string; name: string }>;
             interestList?: Array<{ _id: string; name: string }>;
           }[];
-        }>('/users/?fields=_id,is_active,is_verified,interest_ids,interestList');
-        
-        if (res && res.data && res.data.users) {
-          const users = res.data.users;
-          
+
           // Total users
           setTotalUsers(users.length);
-          
+
           // Active users
           const activeCount = users.filter(u => u.is_active).length;
           setActiveUsers(activeCount);
-          
+
           // Verified users
           const verifiedCount = users.filter(u => u.is_verified).length;
           setVerifiedUsers(verifiedCount);
-          
+
           // Unique interests across all users
           const uniqueInterests = new Set<string>();
           users.forEach(user => {
@@ -60,31 +60,31 @@ const Students = () => {
   }, [])
 
   const widgets = [
-    { 
-      icon: icon.cilPeople, 
-      value: totalUsers, 
-      label: 'Total Users', 
+    {
+      icon: icon.cilPeople,
+      value: totalUsers,
+      label: 'Total Users',
       tooltip: 'Total number of registered users',
       color: 'primary'
     },
-    { 
-      icon: icon.cilCheckCircle, 
-      value: activeUsers, 
-      label: 'Active Users', 
+    {
+      icon: icon.cilCheckCircle,
+      value: activeUsers,
+      label: 'Active Users',
       tooltip: 'Users with active accounts',
       color: 'success'
     },
-    { 
-      icon: icon.cilShieldAlt, 
-      value: verifiedUsers, 
-      label: 'Verified Users', 
+    {
+      icon: icon.cilShieldAlt,
+      value: verifiedUsers,
+      label: 'Verified Users',
       tooltip: 'Users with verified accounts',
       color: 'info'
     },
-    { 
-      icon: icon.cilStar, 
-      value: totalInterests, 
-      label: 'Unique Interests', 
+    {
+      icon: icon.cilStar,
+      value: totalInterests,
+      label: 'Unique Interests',
       tooltip: 'Number of unique interests selected by users',
       color: 'warning'
     },

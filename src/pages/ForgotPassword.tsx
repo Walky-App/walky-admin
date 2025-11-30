@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../API'
+import { apiClient } from '../API'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('')
@@ -14,13 +14,13 @@ const ForgotPassword = () => {
     e.preventDefault()
     setError('')
     try {
-      await API.post('/forgot-password', { email })
+      await apiClient.api.forgotPasswordCreate({ email })
       setSubmitted(true)
       navigate('/verify-code', { state: { email } })
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
       setError(message || 'Something went wrong. Please try again.')
-    }  
+    }
   }
 
   return (
@@ -110,8 +110,8 @@ const ForgotPassword = () => {
                 backgroundColor: isActive
                   ? '#5856D5'
                   : isHovered
-                  ? '#5b54f6'
-                  : '#6366f1',
+                    ? '#5b54f6'
+                    : '#6366f1',
                 transition: 'background-color 0.2s ease',
                 marginBottom: '1rem',
               }}

@@ -1,5 +1,5 @@
 import { Campus, CampusFormData } from "../types/campus";
-import API from "../API";
+import { apiClient } from "../API";
 
 // Interface for backend campus response (may have _id instead of id)
 interface BackendCampusResponse extends Omit<Campus, "id"> {
@@ -10,7 +10,7 @@ interface BackendCampusResponse extends Omit<Campus, "id"> {
 export const campusService = {
   getAll: async (): Promise<Campus[]> => {
     try {
-      const response = await API.get("/campus");
+      const response = await apiClient.api.campusesList() as any;
 
       console.log("📋 Fetched campuses raw response:", response);
       console.log("📋 Response data type:", typeof response.data);
@@ -75,10 +75,10 @@ export const campusService = {
         JSON.stringify(campusData, null, 2)
       );
 
-      const response = await API.post("/campus", campusData);
+      const response = await apiClient.api.campusesCreate(campusData as any) as any;
 
       console.log("✅ Campus created successfully:", response.data);
-      
+
       const campus = response.data.data || response.data;
 
       return {
@@ -128,7 +128,7 @@ export const campusService = {
     data: Partial<CampusFormData>
   ): Promise<Campus> => {
     try {
-      const response = await API.patch(`/campus/${id}`, data);
+      const response = await apiClient.api.campusesUpdate(id, data as any) as any;
 
       const campus = response.data.data || response.data;
       return {
@@ -146,7 +146,7 @@ export const campusService = {
       console.log("🗑️ Deleting campus with ID:", id);
       console.log("🔗 Making DELETE request to:", `/campus/${id}`);
 
-      const response = await API.delete(`/campus/${id}`);
+      const response = await apiClient.api.campusesDelete(id);
       console.log("✅ Delete response:", response);
     } catch (error) {
       console.error("❌ Failed to delete campus:", error);

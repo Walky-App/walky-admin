@@ -109,7 +109,7 @@ interface ReportDetailModalProps {
   onStatusChange?: (newStatus: ReportStatus) => void;
   onNoteRequired?: (newStatus: ReportStatus) => void;
   onDeactivateUser?: () => void;
-  onBanUser?: () => void;
+  onBanUser?: (duration: string, reason: string, resolveReports: boolean) => void;
 }
 
 export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
@@ -119,6 +119,8 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   reportData,
   onStatusChange,
   onNoteRequired,
+  onDeactivateUser,
+  onBanUser,
 }) => {
   const [activeTab, setActiveTab] = useState<SafetyTab>("ban");
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
@@ -133,8 +135,9 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   };
 
   const handleDeactivateConfirm = () => {
-    // Implementar lógica de deactivate
-    console.log("User deactivated:", reportData.associatedUser.name);
+    if (onDeactivateUser) {
+      onDeactivateUser();
+    }
     setIsDeactivateModalOpen(false);
   };
 
@@ -143,14 +146,9 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     reason: string,
     resolveReports: boolean
   ) => {
-    // Implementar lógica de ban
-    console.log(
-      "User banned:",
-      reportData.associatedUser.name,
-      duration,
-      reason,
-      resolveReports
-    );
+    if (onBanUser) {
+      onBanUser(duration, reason, resolveReports);
+    }
     setIsBanModalOpen(false);
   };
 
@@ -462,8 +460,8 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   const userStatusMessage = reportData.associatedUser.isBanned
     ? "This user is currently banned"
     : reportData.associatedUser.isDeactivated
-    ? "This user is currently deactivated"
-    : null;
+      ? "This user is currently deactivated"
+      : null;
 
   const buttonsDisabled =
     reportData.associatedUser.isBanned ||

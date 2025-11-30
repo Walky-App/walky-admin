@@ -30,7 +30,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import * as icon from '@coreui/icons';
-import API from '../API/';
+import { apiClient } from '../API/';
 
 interface User {
   _id: string;
@@ -62,17 +62,17 @@ const EnhancedReviewTable = () => {
     user: null,
     show: false,
   });
-  
+
   const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const res = await API.get<{ users: User[] }>(
-          '/users/?fields=_id,first_name,last_name,reason,createdAt,reportedOn,is_active,is_verified,interest_ids,interestList'
-        );
-        
+        const res = await apiClient.api.usersList({
+          query: { fields: '_id,first_name,last_name,reason,createdAt,reportedOn,is_active,is_verified,interest_ids,interestList' }
+        } as any) as any;
+
         if (res && res.data && res.data.users) {
           // Debug: Log first user to see data structure
           if (res.data.users.length > 0) {
@@ -80,7 +80,7 @@ const EnhancedReviewTable = () => {
             console.log('Interest IDs:', res.data.users[0].interest_ids);
             console.log('Interest List:', res.data.users[0].interestList);
           }
-          
+
           // For now, show all users to test the interests display
           // In production, filter only users that have been reported (have reportedOn field)
           // const reportedUsers = res.data.users.filter(user => user.reportedOn);
@@ -153,7 +153,7 @@ const EnhancedReviewTable = () => {
     return sortedUsers.filter((user) => {
       const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
       const searchLower = searchTerm.toLowerCase();
-      
+
       return (
         fullName.includes(searchLower) ||
         user._id.toLowerCase().includes(searchLower) ||
@@ -246,7 +246,7 @@ const EnhancedReviewTable = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </CInputGroup>
-              
+
               <CButton
                 color="primary"
                 variant="outline"
@@ -264,22 +264,22 @@ const EnhancedReviewTable = () => {
             <CTable hover responsive className="mb-0">
               <CTableHead>
                 <CTableRow>
-                  <CTableHeaderCell 
-                    scope="col" 
+                  <CTableHeaderCell
+                    scope="col"
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleSort('_id')}
                   >
                     ID {getSortIcon('_id')}
                   </CTableHeaderCell>
-                  <CTableHeaderCell 
-                    scope="col" 
+                  <CTableHeaderCell
+                    scope="col"
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleSort('name')}
                   >
                     Name {getSortIcon('name')}
                   </CTableHeaderCell>
-                  <CTableHeaderCell 
-                    scope="col" 
+                  <CTableHeaderCell
+                    scope="col"
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleSort('reason')}
                   >
@@ -287,15 +287,15 @@ const EnhancedReviewTable = () => {
                   </CTableHeaderCell>
                   <CTableHeaderCell scope="col">Status</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Interests</CTableHeaderCell>
-                  <CTableHeaderCell 
-                    scope="col" 
+                  <CTableHeaderCell
+                    scope="col"
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleSort('createdAt')}
                   >
                     Joined {getSortIcon('createdAt')}
                   </CTableHeaderCell>
-                  <CTableHeaderCell 
-                    scope="col" 
+                  <CTableHeaderCell
+                    scope="col"
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleSort('reportedOn')}
                   >
@@ -433,7 +433,7 @@ const EnhancedReviewTable = () => {
                   Showing {((currentPage - 1) * itemsPerPage) + 1} to{' '}
                   {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} entries
                 </span>
-                
+
                 <CPagination aria-label="Page navigation">
                   <CPaginationItem
                     disabled={currentPage === 1}
@@ -441,7 +441,7 @@ const EnhancedReviewTable = () => {
                   >
                     Previous
                   </CPaginationItem>
-                  
+
                   {[...Array(totalPages)].map((_, index) => {
                     const pageNum = index + 1;
                     if (
@@ -463,7 +463,7 @@ const EnhancedReviewTable = () => {
                     }
                     return null;
                   })}
-                  
+
                   <CPaginationItem
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage(currentPage + 1)}

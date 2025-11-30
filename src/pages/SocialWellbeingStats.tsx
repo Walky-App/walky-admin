@@ -27,7 +27,7 @@ import CIcon from '@coreui/icons-react'
 import {
   cilPeople,
   cilCalendar,
-  
+
   cilCompass,
   cilClock,
   cilWarning,
@@ -35,7 +35,7 @@ import {
   cilUser,
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
-import API from '../API'
+import { apiClient } from '../API'
 
 interface WellbeingMetrics {
   averagePeers: number
@@ -176,7 +176,7 @@ const SocialWellbeingStats = () => {
       setError(null)
 
       try {
-        const response = await API.get(`/admin/analytics/wellbeing-stats?period=${period}`)
+        const response = await apiClient.api.adminAnalyticsWellbeingList({ period } as any) as any
         setMetrics(response.data)
         setError(null)
       } catch (err: unknown) {

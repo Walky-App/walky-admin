@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AssetIcon } from "../../../components-v2";
 
 interface ResetPasswordStepProps {
-  onReset: (password: string) => void;
+  onReset: (password: string) => Promise<void> | void;
 }
 
 const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
@@ -26,15 +26,12 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
     }
 
     setIsLoading(true);
-
-    // TODO: Implement password reset logic
-    console.log("Password reset attempt");
-
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await onReset(newPassword);
+    } catch (err) {
+      console.error(err);
       setIsLoading(false);
-      onReset(newPassword);
-    }, 1000);
+    }
   };
 
   return (

@@ -9,6 +9,8 @@ import {
   FlagUserModal,
   Divider,
 } from "../../../components-v2";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
@@ -40,6 +42,37 @@ export const DeactivatedStudentTable: React.FC<
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  const queryClient = useQueryClient();
+
+  // Note: There's no specific "activate" endpoint, so we'll use DELETE to reactivate
+  // The backend should handle this based on current status
+  const activateMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("User activated successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to activate user");
+      setShowToast(true);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("User flagged successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to flag user");
+      setShowToast(true);
+    }
+  });
+
   const handleViewProfile = (student: StudentData) => {
     setSelectedStudent(student);
     setProfileModalVisible(true);
@@ -64,11 +97,7 @@ export const DeactivatedStudentTable: React.FC<
 
   const handleConfirmFlag = () => {
     if (!studentToFlag) return;
-
-    console.log("Flagging user:", studentToFlag);
-    // TODO: Call API to flag user
-    // Example: await flagUserAPI(studentToFlag.id);
-
+    flagMutation.mutate({ id: studentToFlag.id, reason: "Flagged by admin" });
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -90,11 +119,7 @@ export const DeactivatedStudentTable: React.FC<
 
   const handleConfirmActivate = () => {
     if (!studentToActivate) return;
-
-    console.log("Activating user:", studentToActivate);
-    // TODO: Call API to activate user
-    // Example: await activateUserAPI(studentToActivate.id);
-
+    activateMutation.mutate(studentToActivate.id);
     setActivateModalVisible(false);
     setStudentToActivate(null);
   };
@@ -323,7 +348,7 @@ export const DeactivatedStudentTable: React.FC<
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       {
                         label: "Activate user",

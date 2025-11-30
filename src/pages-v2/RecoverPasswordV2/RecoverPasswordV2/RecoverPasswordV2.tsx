@@ -8,41 +8,67 @@ import { AssetIcon } from "../../../components-v2";
 
 type RecoveryStep = "email" | "verify" | "reset";
 
+import { apiClient } from "../../../API";
+
 const RecoverPasswordV2: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<RecoveryStep>("email");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // TODO: Implement password recovery logic
-    console.log("Password recovery request:", { email });
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await apiClient.api.forgotPasswordCreate({ email });
       setCurrentStep("verify");
-    }, 1000);
+    } catch (err: any) {
+      console.error("Password recovery request failed:", err);
+      setError(err?.response?.data?.message || "Failed to send reset link.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerify = (code: string) => {
     console.log("Verification code:", code);
+    setOtp(parseInt(code));
     setCurrentStep("reset");
   };
 
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
     console.log("Resending code to:", email);
-    // TODO: Implement resend logic
+    try {
+      await apiClient.api.forgotPasswordCreate({ email });
+    } catch (err) {
+      console.error("Resend code failed:", err);
+    }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleReset = (_password: string) => {
-    console.log("Password reset complete");
-    // Navigate to login after successful reset
-    navigate("/login-v2");
+  const handleReset = async (password: string) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      await apiClient.api.resetPasswordCreate({
+        email,
+        otp: otp || 0,
+        password,
+        password_confirmed: password,
+      });
+      console.log("Password reset complete");
+      navigate("/login-v2");
+    } catch (err: any) {
+      console.error("Password reset failed:", err);
+      // If OTP is invalid, maybe go back to verify step?
+      // For now just show error
+      alert(err?.response?.data?.message || "Failed to reset password.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBackToLogin = () => {
@@ -96,6 +122,11 @@ const RecoverPasswordV2: React.FC = () => {
             data-testid="recover-email-form"
             aria-label="Password recovery form"
           >
+            {error && (
+              <div className="error-message" style={{ color: "red", marginBottom: "1rem", textAlign: "center" }}>
+                {error}
+              </div>
+            )}
             <div className="form-group">
               <label htmlFor="email" className="form-label">
                 Email

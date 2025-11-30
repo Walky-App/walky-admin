@@ -12,7 +12,7 @@ import { cilBuilding, cilCheckAlt, cilGlobeAlt } from '@coreui/icons';
 import { useCampus } from '../contexts/CampusContext';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
-import API from '../API';
+import { apiClient } from '../API';
 
 export const CampusSelector: React.FC = () => {
   const { theme } = useTheme();
@@ -38,11 +38,11 @@ export const CampusSelector: React.FC = () => {
 
         if (isSuperAdmin()) {
           // Super admin can see all campuses
-          const response = await API.get('/admin/campuses');
-          campuses = response.data?.data || response.data?.campuses || [];
+          const response = await apiClient.api.campusesList() as any;
+          campuses = response.data?.data || response.data?.campuses || response.data || [];
         } else if (user.campus_id) {
           // Campus admin or staff - only their campus
-          const response = await API.get(`/admin/campuses/${user.campus_id}`);
+          const response = await apiClient.api.campusesDetail(user.campus_id) as any;
           const campus = response.data || response.data?.data || response.data?.campus;
           campuses = campus ? [campus] : [];
         }

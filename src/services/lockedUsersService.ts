@@ -1,4 +1,4 @@
-import API from "../API";
+import { apiClient } from "../API";
 
 interface GetLockedUsersParams {
   page?: number;
@@ -25,9 +25,7 @@ interface UpdateLockSettingsParams {
 class LockedUsersService {
   async getLockedUsers(params: GetLockedUsersParams = {}) {
     try {
-      const response = await API.get("/admin/users/locked", {
-        params,
-      });
+      const response = await apiClient.api.adminLockedUsersList(params) as any;
       return response.data;
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,10 +35,7 @@ class LockedUsersService {
 
   async unlockUser(userId: string, params: UnlockUserParams = {}) {
     try {
-      const response = await API.post(
-        `/admin/users/${userId}/unlock`,
-        params
-      );
+      const response = await apiClient.api.adminUnlockUserCreate(userId, params) as any;
       return response.data;
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,10 +45,7 @@ class LockedUsersService {
 
   async bulkUnlockUsers(params: BulkUnlockParams) {
     try {
-      const response = await API.post(
-        "/admin/users/bulk-unlock",
-        params
-      );
+      const response = await apiClient.api.adminBulkUnlockUsersCreate(params) as any;
       return response.data;
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,7 +55,7 @@ class LockedUsersService {
 
   async getUnlockStats() {
     try {
-      const response = await API.get("/admin/users/unlock-stats");
+      const response = await apiClient.api.adminUnlockStatsList() as any;
       return response.data;
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,10 +65,7 @@ class LockedUsersService {
 
   async updateLockSettings(userId: string, params: UpdateLockSettingsParams) {
     try {
-      const response = await API.put(
-        `/admin/users/${userId}/lock-settings`,
-        params
-      );
+      const response = await apiClient.api.adminLockSettingsUpdate(userId, params) as any;
       return response.data;
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

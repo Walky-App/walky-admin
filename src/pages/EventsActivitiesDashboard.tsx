@@ -38,7 +38,7 @@ import {
   cilStar,
 } from '@coreui/icons'
 // import { useTheme } from '../hooks/useTheme' // Not currently used
-import API from '../API'
+import { apiClient } from '../API'
 
 interface KPIs {
   topEvent: {
@@ -94,7 +94,7 @@ const EventsActivitiesDashboard = () => {
 
   const fetchKPIs = async () => {
     try {
-      const response = await API.get('/admin/analytics/activities/kpis')
+      const response = await apiClient.api.adminAnalyticsActivitiesKpisList() as any
       setKPIs(response.data)
       setError(null)
     } catch (err: unknown) {
@@ -109,14 +109,16 @@ const EventsActivitiesDashboard = () => {
     setLoading(true)
     try {
       if (activeTab === 'events') {
-        const response = await API.get('/admin/events', {
-          params: { page: currentPage, limit: itemsPerPage },
-        })
+        const response = await apiClient.api.adminEventsList({
+          page: currentPage,
+          limit: itemsPerPage,
+        }) as any
         setEvents(response.data.events)
       } else if (activeTab === 'spaces') {
-        const response = await API.get('/admin/spaces', {
-          params: { page: currentPage, limit: itemsPerPage },
-        })
+        const response = await apiClient.api.adminSpacesList({
+          page: currentPage,
+          limit: itemsPerPage,
+        }) as any
         setSpaces(response.data.spaces)
       }
       setError(null)

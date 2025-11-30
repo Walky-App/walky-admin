@@ -40,7 +40,7 @@ import {
   cilSettings,
 } from '@coreui/icons'
 // import { useTheme } from '../hooks/useTheme' // Not currently used
-import API from '../API'
+import { apiClient } from '../API'
 
 interface AdminProfile {
   _id: string
@@ -102,7 +102,7 @@ const AdminSettings = () => {
   const fetchProfile = async () => {
     setLoading(true)
     try {
-      const response = await API.get('/admin/profile')
+      const response = await apiClient.api.adminProfileList() as any
       const profileData = response.data
 
       setProfile(profileData)
@@ -155,7 +155,7 @@ const AdminSettings = () => {
     setErrorMessage(null)
 
     try {
-      await API.patch('/admin/profile', {
+      await apiClient.api.adminProfileUpdate({
         first_name: firstName,
         last_name: lastName,
         email,
@@ -187,7 +187,7 @@ const AdminSettings = () => {
     setErrorMessage(null)
 
     try {
-      await API.post('/admin/change-password', {
+      await apiClient.api.adminProfileChangePasswordCreate({
         currentPassword,
         newPassword,
       })
@@ -212,12 +212,12 @@ const AdminSettings = () => {
     try {
       if (!twoFactorEnabled) {
         // Enable 2FA
-        await API.post('/admin/enable-2fa')
+        await apiClient.api.adminProfile2FaEnableCreate()
         setTwoFactorEnabled(true)
         setSuccessMessage('Two-factor authentication enabled')
       } else {
         // Disable 2FA
-        await API.post('/admin/disable-2fa')
+        await apiClient.api.adminProfile2FaDisableCreate()
         setTwoFactorEnabled(false)
         setSuccessMessage('Two-factor authentication disabled')
       }
@@ -235,10 +235,10 @@ const AdminSettings = () => {
     setErrorMessage(null)
 
     try {
-      await API.patch('/admin/notification-settings', {
+      await apiClient.api.adminProfileNotificationsUpdate({
         emailNotifications,
         securityAlerts,
-      })
+      } as any)
 
       setSuccessMessage('Notification settings updated')
     } catch (error) {
@@ -252,7 +252,7 @@ const AdminSettings = () => {
   const handleLogoutAllDevices = async () => {
     setSaving(true)
     try {
-      await API.post('/admin/logout-all-devices')
+      await apiClient.api.adminProfileLogoutAllCreate()
       setSuccessMessage('Logged out of all devices successfully')
       setShowLogoutAllModal(false)
     } catch (error) {
@@ -271,7 +271,7 @@ const AdminSettings = () => {
 
     setSaving(true)
     try {
-      await API.delete('/admin/account')
+      await apiClient.api.adminProfileDeleteDelete({ password: "" })
       // Redirect to login or home page after deletion
       window.location.href = '/login'
     } catch (error) {

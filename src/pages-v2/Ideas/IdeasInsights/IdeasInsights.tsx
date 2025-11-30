@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./IdeasInsights.css";
 import { AssetIcon, ExportButton } from "../../../components-v2";
+import { apiClient } from "../../../API";
 
 interface PopularIdea {
   rank: number;
@@ -16,50 +17,67 @@ export const IdeasInsights: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
+  const [loading, setLoading] = useState(true);
 
-  // Mock data from Figma design
-  const popularIdeas: PopularIdea[] = [
-    {
-      rank: 1,
-      title: "Children's App",
-      owner: {
-        name: "Tamika",
-        avatar:
-          "https://www.figma.com/api/mcp/asset/c7761cf3-44c4-4af2-b819-aff487d3fd85",
-      },
-      collaborations: 70,
-    },
-    {
-      rank: 2,
-      title: "Language Exchange",
-      owner: {
-        name: "Mariana",
-        avatar:
-          "https://www.figma.com/api/mcp/asset/e92fcc5c-2808-41d5-850b-f8accc18ceee",
-      },
-      collaborations: 65,
-    },
-    {
-      rank: 3,
-      title: "LSAT Study Group",
-      owner: {
-        name: "Julian",
-        avatar:
-          "https://www.figma.com/api/mcp/asset/1eedfcfe-3a3f-4264-bd43-a4eeaa32ff9a",
-      },
-      collaborations: 63,
-    },
-    {
-      rank: 4,
-      title: "Form a Band",
-      owner: {
-        name: "Arturo",
-        avatar:
-          "https://www.figma.com/api/mcp/asset/3540c7ce-300e-40ca-82e2-c3007bcd6bae",
-      },
-      collaborations: 60,
-    },
-  ];
+  const [stats, setStats] = useState({
+    totalIdeas: 0,
+    totalCollaborations: 0,
+    conversionRate: 0,
+  });
+
+  const [popularIdeas, setPopularIdeas] = useState<PopularIdea[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch counts
+        const [totalRes, collaboratedRes] = await Promise.all([
+          apiClient.api.adminAnalyticsIdeasCountList({ type: "total" } as any) as any,
+          apiClient.api.adminAnalyticsIdeasCountList({ type: "collaborated" } as any) as any,
+        ]);
+
+        const total = totalRes.data.count || 0;
+        const collaborated = collaboratedRes.data.count || 0;
+
+        // Calculate conversion rate (collaborated / total) * 100
+        const conversion = total > 0 ? Math.round((collaborated / total) * 100) : 0;
+
+        setStats({
+          totalIdeas: total,
+          totalCollaborations: collaborated, // Assuming this endpoint returns total collaborations or ideas with collaborations
+          conversionRate: conversion,
+        });
+
+        // Fetch popular ideas
+        const ideasRes = await apiClient.api.adminV2IdeasList({ limit: 100 } as any) as any;
+        const allIdeas = ideasRes.data.data || [];
+
+        // Sort by collaborations (assuming there is a field for it, or we use participants count)
+        const sortedIdeas = allIdeas
+          .sort((a: any, b: any) => (b.participants_count || 0) - (a.participants_count || 0))
+          .slice(0, 4)
+          .map((idea: any, index: number) => ({
+            rank: index + 1,
+            title: idea.title,
+            owner: {
+              name: idea.user?.name || "Unknown",
+              avatar: idea.user?.avatar || "",
+            },
+            collaborations: idea.participants_count || 0,
+          }));
+
+        setPopularIdeas(sortedIdeas);
+
+      } catch (error) {
+        console.error("Failed to fetch ideas insights:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [timePeriod]);
 
   return (
     <main className="ideas-insights-page">
@@ -77,7 +95,7 @@ export const IdeasInsights: React.FC = () => {
               <AssetIcon name="ideia-icon" size={30} color="#FFB800" />
             </div>
           </div>
-          <p className="stats-card-value">8502</p>
+          <p className="stats-card-value">{loading ? "..." : stats.totalIdeas.toLocaleString()}</p>
         </div>
 
         <div className="stats-card">
@@ -89,7 +107,7 @@ export const IdeasInsights: React.FC = () => {
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>
           </div>
-          <p className="stats-card-value">75089</p>
+          <p className="stats-card-value">{loading ? "..." : stats.totalCollaborations.toLocaleString()}</p>
         </div>
 
         <div className="stats-card">
@@ -99,7 +117,7 @@ export const IdeasInsights: React.FC = () => {
               <AssetIcon name="stats-icon" size={30} color="#00C943" />
             </div>
           </div>
-          <p className="stats-card-value">80%</p>
+          <p className="stats-card-value">{loading ? "..." : `${stats.conversionRate}%`}</p>
         </div>
       </div>
 
@@ -110,9 +128,8 @@ export const IdeasInsights: React.FC = () => {
           <div className="time-selector">
             <button
               data-testid="time-all-btn"
-              className={`time-option first ${
-                timePeriod === "all" ? "active" : ""
-              }`}
+              className={`time-option first ${timePeriod === "all" ? "active" : ""
+                }`}
               onClick={() => setTimePeriod("all")}
             >
               All time
@@ -126,9 +143,8 @@ export const IdeasInsights: React.FC = () => {
             </button>
             <button
               data-testid="time-month-btn"
-              className={`time-option last ${
-                timePeriod === "month" ? "active" : ""
-              }`}
+              className={`time-option last ${timePeriod === "month" ? "active" : ""
+                }`}
               onClick={() => setTimePeriod("month")}
             >
               Month

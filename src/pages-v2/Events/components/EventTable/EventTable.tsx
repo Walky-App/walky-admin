@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../../API";
 import {
   DeleteModal,
   CustomToast,
@@ -38,6 +40,7 @@ type SortField = "eventName" | "organizer" | "eventDate" | "attendees";
 type SortDirection = "asc" | "desc";
 
 export const EventTable: React.FC<EventTableProps> = ({ events }) => {
+  const queryClient = useQueryClient();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -53,6 +56,57 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
     null
   );
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2EventsDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      setToastMessage(`Event deleted successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setDeleteModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting event:", error);
+      setToastMessage("Error deleting event");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      setToastMessage(`Event flagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setFlagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error flagging event:", error);
+      setToastMessage("Error flagging event");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const unflagMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2EventsUnflagCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      setToastMessage(`Event unflagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setUnflagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error unflagging event:", error);
+      setToastMessage("Error unflagging event");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -67,55 +121,51 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = (reason: string) => {
+  const handleDeleteConfirm = (_reason: string) => {
     if (eventToDelete) {
-      console.log(
-        "Deleting event:",
-        eventToDelete.eventName,
-        "Reason:",
-        reason
-      );
-      // TODO: Call API to delete event
-      setToastMessage(
-        `Event "${eventToDelete.eventName}" deleted successfully`
-      );
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      deleteMutation.mutate(eventToDelete.id);
     }
   };
 
-  const handleViewEvent = (event: EventData, e: React.MouseEvent) => {
+  const handleViewEvent = async (event: EventData, e: React.MouseEvent) => {
     e.stopPropagation();
-    // Convert EventData to EventDetailsData
-    const eventDetails: EventDetailsData = {
-      id: event.id,
-      eventName: event.eventName,
-      organizer: {
-        name: event.organizer.name,
-        avatar: event.organizer.avatar,
-        studentId: event.studentId,
-      },
-      date: event.eventDate,
-      time: event.eventTime,
-      place: "S. Campus Basketball Courts", // Mock data
-      type: event.type,
-      description:
-        "A fun 4v4 basketball game for students. Bring your A-game and let's have some competitive fun on the courts!", // Mock data
-      attendees: [
-        { id: "1", name: event.organizer.name, avatar: event.organizer.avatar },
-        { id: "2", name: "Ben Thompson", avatar: undefined },
-        { id: "3", name: "Leo Martinez", avatar: undefined },
-        { id: "4", name: "Mariana Silva", avatar: undefined },
-        { id: "5", name: "Anni Schmidt", avatar: undefined },
-        { id: "6", name: "Justin Park", avatar: undefined },
-      ],
-      maxAttendees: 8,
-      eventImage: undefined, // Mock data - no image
-      isFlagged: event.isFlagged,
-      flagReason: event.flagReason,
-    };
-    setSelectedEvent(eventDetails);
-    setDetailsModalOpen(true);
+    try {
+      const response = await apiClient.api.adminV2EventsDetail(event.id) as any;
+      const details = response.data;
+
+      // Map API response to EventDetailsData
+      const eventDetails: EventDetailsData = {
+        id: details.id,
+        eventName: details.name,
+        eventImage: details.image_url,
+        organizer: {
+          name: details.owner?.name || 'Unknown',
+          studentId: details.owner?.studentId || 'N/A', // Assuming backend returns this structure or similar
+          avatar: details.owner?.avatar,
+        },
+        date: new Date(details.date_and_time).toLocaleDateString(),
+        time: new Date(details.date_and_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        place: details.location,
+        type: details.visibility as "public" | "private",
+        description: details.description,
+        attendees: (details.participants || []).map((p: any) => ({
+          id: p.user_id,
+          name: p.name || 'Unknown', // Backend needs to populate this
+          avatar: p.avatar_url
+        })),
+        maxAttendees: details.slots,
+        isFlagged: details.isFlagged, // Placeholder from backend
+        flagReason: details.flagReason, // Placeholder from backend
+      };
+
+      setSelectedEvent(eventDetails);
+      setDetailsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching event details:", error);
+      setToastMessage("Error fetching event details");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const handleFlagEvent = (event: EventData, e: React.MouseEvent) => {
@@ -126,11 +176,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
 
   const handleFlagConfirm = (reason: string) => {
     if (eventToFlag) {
-      console.log("Flagging event:", eventToFlag.eventName, "Reason:", reason);
-      // TODO: Call API to flag event
-      setToastMessage(`Event "${eventToFlag.eventName}" flagged successfully`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      flagMutation.mutate({ id: eventToFlag.id, reason });
     }
   };
 
@@ -142,13 +188,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
 
   const handleUnflagConfirm = () => {
     if (eventToUnflag) {
-      console.log("Unflagging event:", eventToUnflag.eventName);
-      // TODO: Call API to unflag event
-      setToastMessage(
-        `Event "${eventToUnflag.eventName}" unflagged successfully`
-      );
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      unflagMutation.mutate(eventToUnflag.id);
     }
   };
 
@@ -304,20 +344,20 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       event.isFlagged
                         ? {
-                            label: "Unflag",
-                            icon: "flag-icon",
-                            variant: "danger",
-                            onClick: (e) => handleUnflagEvent(event, e),
-                          }
+                          label: "Unflag",
+                          icon: "flag-icon",
+                          variant: "danger",
+                          onClick: (e) => handleUnflagEvent(event, e),
+                        }
                         : {
-                            label: "Flag event",
-                            icon: "flag-icon",
-                            onClick: (e) => handleFlagEvent(event, e),
-                          },
+                          label: "Flag event",
+                          icon: "flag-icon",
+                          onClick: (e) => handleFlagEvent(event, e),
+                        },
                       {
                         label: "Delete event",
                         variant: "danger",

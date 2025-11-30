@@ -1,7 +1,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import API from "../API";
+import { apiClient } from "../API";
 
 //login page
 type LoginProps = {
@@ -26,10 +26,10 @@ const Login = ({ onLogin }: LoginProps) => {
     }
 
     try {
-      const response = await API.post("/login", {
+      const response = await apiClient.api.loginCreate({
         email,
         password,
-      });
+      }) as any;
 
       const token = response?.data?.access_token;
       const userData = response?.data;
@@ -221,8 +221,8 @@ const Login = ({ onLogin }: LoginProps) => {
               backgroundColor: isContinueActive
                 ? "#5856D5"
                 : isContinueHovered
-                ? "#5b54f6"
-                : "#6366f1",
+                  ? "#5b54f6"
+                  : "#6366f1",
               transition: "background-color 0.2s ease",
             }}
           >

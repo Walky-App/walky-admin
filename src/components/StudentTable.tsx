@@ -12,7 +12,7 @@ import {
   CDropdownItem,
   CBadge,
 } from '@coreui/react'
-import API from '../API/'
+import { apiClient } from '../API/'
 import { useTheme } from '../hooks/useTheme'
 
 interface Student {
@@ -31,35 +31,28 @@ const StudentTable = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await API.get<{
-          users: {
-            _id: string
-            first_name: string
-            last_name: string
-            email: string
-            createdAt: string
-            updatedAt: string
-          }[]
-        }>('/users/?fields=_id,first_name,last_name,email,createdAt,updatedAt')
-  
-        const transformed = res.data.users.map((user) => ({
+        const res = await apiClient.api.usersList({
+          query: { fields: '_id,first_name,last_name,email,createdAt,updatedAt' }
+        } as any) as any
+
+        const transformed = res.data.users.map((user: any) => ({
           id: user._id,
           name: `${user.first_name} ${user.last_name}`,
           email: user.email,
           joined: user.createdAt,
           lastUpdate: user.updatedAt,
         }))
-  
+
         setStudents(transformed)
       } catch (err) {
         console.error('❌ Failed to fetch student data:', err)
       }
     }
-  
+
     fetchStudents()
   }, [])
-  
-  
+
+
 
   const handleToggleFlagUser = (id: string) => {
     setFlaggedUsers((prev) =>
@@ -77,21 +70,21 @@ const StudentTable = () => {
         padding: '0',
         overflow: 'hidden',
         background: theme.colors.cardBg,
-        boxShadow: theme.isDark 
-          ? "0 4px 20px rgba(0,0,0,0.2)" 
+        boxShadow: theme.isDark
+          ? "0 4px 20px rgba(0,0,0,0.2)"
           : "0 4px 20px rgba(0,0,0,0.05)",
       }}
     >
       <CTable hover responsive className="left-align mb-0">
         <CTableHead>
-          <CTableRow 
+          <CTableRow
             style={{
-              background: theme.isDark 
+              background: theme.isDark
                 ? `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`
                 : `linear-gradient(135deg, ${theme.colors.primary}08, ${theme.colors.info}05)`,
             }}
           >
-            <CTableHeaderCell 
+            <CTableHeaderCell
               scope="col"
               style={{
                 fontWeight: "600",
@@ -103,7 +96,7 @@ const StudentTable = () => {
             >
               Student ID
             </CTableHeaderCell>
-            <CTableHeaderCell 
+            <CTableHeaderCell
               scope="col"
               style={{
                 fontWeight: "600",
@@ -115,7 +108,7 @@ const StudentTable = () => {
             >
               Full Name
             </CTableHeaderCell>
-            <CTableHeaderCell 
+            <CTableHeaderCell
               scope="col"
               style={{
                 fontWeight: "600",
@@ -127,7 +120,7 @@ const StudentTable = () => {
             >
               Email Address
             </CTableHeaderCell>
-            <CTableHeaderCell 
+            <CTableHeaderCell
               scope="col"
               style={{
                 fontWeight: "600",
@@ -139,7 +132,7 @@ const StudentTable = () => {
             >
               Join Date
             </CTableHeaderCell>
-            <CTableHeaderCell 
+            <CTableHeaderCell
               scope="col"
               style={{
                 fontWeight: "600",
@@ -151,7 +144,7 @@ const StudentTable = () => {
             >
               Last Activity
             </CTableHeaderCell>
-            <CTableHeaderCell 
+            <CTableHeaderCell
               scope="col"
               style={{
                 fontWeight: "600",
@@ -171,15 +164,15 @@ const StudentTable = () => {
             <CTableRow
               key={student.id}
               style={{
-                backgroundColor: flaggedUsers.includes(student.id) 
-                  ? `${theme.colors.danger}15` 
+                backgroundColor: flaggedUsers.includes(student.id)
+                  ? `${theme.colors.danger}15`
                   : 'transparent',
                 borderBottom: `1px solid ${theme.colors.borderColor}30`,
                 transition: "all 0.2s ease",
               }}
               className="custom-table-hover"
             >
-              <CTableHeaderCell 
+              <CTableHeaderCell
                 scope="row"
                 style={{
                   fontWeight: "500",
@@ -238,7 +231,7 @@ const StudentTable = () => {
                   padding: "16px 20px",
                 }}
               >
-                <CBadge 
+                <CBadge
                   color="success"
                   style={{
                     backgroundColor: `${theme.colors.success}20`,
@@ -264,7 +257,7 @@ const StudentTable = () => {
                   padding: "16px 20px",
                 }}
               >
-                <CBadge 
+                <CBadge
                   color="info"
                   style={{
                     backgroundColor: `${theme.colors.info}20`,
@@ -311,8 +304,8 @@ const StudentTable = () => {
                     style={{
                       borderRadius: "12px",
                       border: `1px solid ${theme.colors.borderColor}`,
-                      boxShadow: theme.isDark 
-                        ? "0 8px 32px rgba(0,0,0,0.4)" 
+                      boxShadow: theme.isDark
+                        ? "0 8px 32px rgba(0,0,0,0.4)"
                         : "0 8px 32px rgba(0,0,0,0.15)",
                       backgroundColor: theme.colors.cardBg,
                     }}
@@ -327,7 +320,7 @@ const StudentTable = () => {
                     >
                       📧 Send Email
                     </CDropdownItem>
-                    <CDropdownItem 
+                    <CDropdownItem
                       onClick={() => handleToggleFlagUser(student.id)}
                       style={{
                         color: flaggedUsers.includes(student.id) ? theme.colors.success : theme.colors.warning,

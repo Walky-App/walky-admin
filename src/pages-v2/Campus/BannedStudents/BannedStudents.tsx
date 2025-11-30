@@ -7,188 +7,65 @@ import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData } from "../components/StudentTable";
 import "./BannedStudents.css";
 
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
+
 export const BannedStudents: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const entriesPerPage = 10;
 
-  // Mock data - replace with API call
-  const mockStudents: StudentData[] = [
-    {
-      id: "1",
-      userId: "166g...fjhsgt",
-      name: "Austin Smith",
-      email: "Austin@FIU.edu.co",
-      status: "banned" as const,
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Active now",
-      bannedDate: "Sep 28, 2025",
-      bannedBy: "Admin User",
-      bannedByEmail: "admin@FIU.edu.co",
-      bannedTime: "12:14",
-      reason: "Inappropriate behavior",
-      duration: "Permanent",
-      avatar: "A",
-      areaOfStudy: "Applied Math & Physics",
-      lastLogin: "Oct 20, 2025",
-      totalPeers: 5,
-      bio: "I like gaming with my friends while eating cheetos",
-      interests: [
-        "Ballet",
-        "Billiards",
-        "Pickleball",
-        "Volleyball",
-        "Golf",
-        "Football",
-        "Hockey",
-        "Swimming",
-      ],
-      banHistory: [
-        {
-          title: "3 Day ban",
-          duration: "3 Days",
-          expiresIn: "Expires in about 20 hours",
-          reason: "Spam",
-          bannedDate: "Oct 07, 2025",
-          bannedTime: "12:14",
-          bannedBy: "Admin Name",
-        },
-        {
-          title: "3 Day ban",
-          duration: "3 Days",
-          reason: "Spam",
-          bannedDate: "Oct 07, 2025",
-          bannedTime: "12:14",
-          bannedBy: "Admin Name",
-        },
-      ],
-      blockedByUsers: [
-        {
-          id: "1",
-          name: "Ben",
-          avatar: "B",
-          date: "Oct 7, 2025",
-          time: "12:45",
-        },
-        {
-          id: "2",
-          name: "Leo",
-          avatar: "L",
-          date: "Oct 7, 2025",
-          time: "12:45",
-        },
-        {
-          id: "3",
-          name: "Mariana",
-          avatar: "M",
-          date: "Oct 7, 2025",
-          time: "12:45",
-        },
-      ],
-      reportHistory: [
-        {
-          reportedIdea: "Children's App",
-          reportId: "166g...fjhsgt",
-          reason: "Intellectual property",
-          description: "Review the idea because it is the topic of my thesis.",
-          reportedDate: "March 07, 2025",
-          reportedTime: "12:14",
-          reportedBy: "Jackie Smith",
-          status: "Pending" as const,
-        },
-        {
-          reportedIdea: "Children's App",
-          reportId: "166g...fjhsgt",
-          reason: "Intellectual property",
-          description: "Review the idea because it is the topic of my thesis.",
-          reportedDate: "March 07, 2025",
-          reportedTime: "12:14",
-          reportedBy: "Jackie Smith",
-          status: "Resolved" as const,
-        },
-      ],
-    },
-    {
-      id: "2",
-      userId: "266g...fjhsgt",
-      name: "Leo Johnson",
-      email: "Leo@FIU.edu.co",
-      status: "banned" as const,
-      memberSince: "Sep 25, 2025",
-      onlineLast: "2 minutes ago",
-      bannedDate: "Sep 25, 2025",
-      bannedBy: "Admin User",
-      reason: "Spam content",
-      duration: "30 days",
-      avatar: "L",
-    },
-    {
-      id: "3",
-      userId: "366g...fjhsgt",
-      name: "Natasha Brown",
-      email: "Natasha@FIU.edu.co",
-      status: "banned" as const,
-      memberSince: "Sep 20, 2025",
-      onlineLast: "3 hours ago",
-      bannedDate: "Sep 20, 2025",
-      bannedBy: "Moderator",
-      reason: "Harassment",
-      duration: "Permanent",
-      avatar: "N",
-    },
-    {
-      id: "4",
-      userId: "466g...fjhsgt",
-      name: "Nataly Taylor",
-      email: "Nataly@FIU.edu.co",
-      status: "banned" as const,
-      memberSince: "Sep 15, 2025",
-      onlineLast: "3 days ago",
-      bannedDate: "Sep 15, 2025",
-      bannedBy: "Admin User",
-      reason: "Multiple violations",
-      duration: "90 days",
-      avatar: "N",
-    },
-    {
-      id: "5",
-      userId: "566g...fjhsgt",
-      name: "Marcus Davis",
-      email: "Marcus@FIU.edu.co",
-      status: "banned" as const,
-      memberSince: "Sep 10, 2025",
-      onlineLast: "1 week ago",
-      bannedDate: "Sep 10, 2025",
-      bannedBy: "Admin User",
-      reason: "Inappropriate content",
-      duration: "Permanent",
-      avatar: "M",
-    },
-  ];
+  const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
+    queryKey: ['students', currentPage, searchQuery, 'banned'],
+    queryFn: () => apiClient.api.adminV2StudentsList({
+      page: currentPage,
+      limit: entriesPerPage,
+      search: searchQuery,
+      status: 'banned'
+    }),
+  });
 
-  // Duplicate data to reach 42 total students
-  const allStudents: StudentData[] = Array.from({ length: 42 }, (_, i) => ({
-    ...mockStudents[i % mockStudents.length],
-    id: `${i + 1}`,
-    userId: `${100 + i}g...fjhsgt`,
+
+
+  const { data: statsData } = useQuery({
+    queryKey: ['studentStats'],
+    queryFn: () => apiClient.api.adminV2StudentsStatsList(),
+  });
+
+  const isLoading = isStudentsLoading;
+
+  const students = (studentsData?.data.data || []).map((student: any) => ({
+    id: student.id,
+    userId: student.userId,
+    name: student.name,
+    email: student.email,
+    status: student.status,
+    interests: student.interests || [],
+    bannedDate: student.bannedDate,
+    bannedBy: student.bannedBy,
+    bannedByEmail: student.bannedByEmail,
+    bannedTime: student.bannedTime,
+    reason: student.reason,
+    duration: student.duration,
+    memberSince: student.memberSince,
+    onlineLast: student.onlineLast,
+    avatar: student.avatar,
+    areaOfStudy: student.areaOfStudy,
+    lastLogin: student.lastLogin,
+    totalPeers: student.totalPeers,
+    bio: student.bio,
+    banHistory: student.banHistory,
+    blockedByUsers: student.blockedByUsers,
+    reportHistory: student.reportHistory,
   }));
 
-  // Filter students based on search query
-  const filteredStudents = allStudents.filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.userId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (student.reason &&
-        student.reason.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const paginatedStudents = students;
 
-  // Pagination
-  const totalPages = Math.ceil(filteredStudents.length / entriesPerPage);
-  const startIndex = (currentPage - 1) * entriesPerPage;
-  const endIndex = startIndex + entriesPerPage;
-  const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   const handleExport = () => {
     console.log("Export banned students data");
@@ -203,7 +80,7 @@ export const BannedStudents: React.FC = () => {
       <div className="banned-students-stats">
         <StatsCard
           title="Total banned students"
-          value="42"
+          value={studentsData?.data.total?.toString() || "0"}
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
@@ -215,7 +92,7 @@ export const BannedStudents: React.FC = () => {
         />
         <StatsCard
           title="Permanent bans"
-          value="28"
+          value={statsData?.data.totalPermanentBans?.toString() || "0"}
           iconName="lock-icon"
           iconBgColor="#FFF3E0"
           iconColor="#F69B39"
@@ -261,7 +138,7 @@ export const BannedStudents: React.FC = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            totalEntries={filteredStudents.length}
+            totalEntries={studentsData?.data.total || 0}
             entriesPerPage={entriesPerPage}
             onPageChange={setCurrentPage}
           />

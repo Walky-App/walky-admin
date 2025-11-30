@@ -1,4 +1,4 @@
-import API from "../API";
+import { apiClient } from "../API";
 
 export interface School {
   id: string;
@@ -11,13 +11,13 @@ export interface School {
 
 export const schoolService = {
   getAll: async (): Promise<School[]> => {
-    const response = await API.get("/school");
+    const response = await apiClient.api.schoolList() as any;
     // Backend may return an array or an object with data
     const payload = Array.isArray(response.data)
       ? response.data
       : Array.isArray(response.data?.data)
-      ? response.data.data
-      : [];
+        ? response.data.data
+        : [];
 
     return payload.map((s: School) => ({
       ...s,

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useCampus } from '../contexts/CampusContext';
-import API from '../API';
+import { apiClient } from '../API';
 
 /**
  * Hook to automatically add campus_id to API requests
@@ -12,7 +12,7 @@ export const useCampusFilter = () => {
 
   useEffect(() => {
     // Add request interceptor
-    const requestInterceptor = API.interceptors.request.use(
+    const requestInterceptor = apiClient.http.instance.interceptors.request.use(
       (config) => {
         // Only add campus_id if a campus is selected
         if (campusId) {
@@ -42,7 +42,7 @@ export const useCampusFilter = () => {
 
     // Cleanup interceptor on unmount or when campus ID changes
     return () => {
-      API.interceptors.request.eject(requestInterceptor);
+      apiClient.http.instance.interceptors.request.eject(requestInterceptor);
     };
   }, [campusId]); // Use campusId instead of selectedCampus object
 
