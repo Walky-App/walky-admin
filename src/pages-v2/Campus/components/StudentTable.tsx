@@ -296,7 +296,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const handleConfirmBan = (
     duration: string,
     reason: string,
-    _resolveReports: boolean
+    _resolveReports: boolean,
   ) => {
     if (!studentToBan) return;
 

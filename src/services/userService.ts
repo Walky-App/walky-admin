@@ -67,7 +67,7 @@ export const userService = {
         search: params?.search,
         school_id: params?.school_id,
         role: params?.role,
-        // @ts-ignore - campus_id is missing in generated type but supported by backend
+        // @ts-expect-error - campus_id is missing in generated type but supported by backend
         campus_id: params?.campus_id
       }) as any;
 

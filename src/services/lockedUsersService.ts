@@ -28,7 +28,7 @@ class LockedUsersService {
       const response = await apiClient.api.adminLockedUsersList(params) as any;
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       throw new Error((error as any).response?.data?.error || "Failed to fetch locked users");
     }
   }
@@ -38,7 +38,7 @@ class LockedUsersService {
       const response = await apiClient.api.adminUnlockUserCreate(userId, params) as any;
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       throw new Error((error as any).response?.data?.error || "Failed to unlock user");
     }
   }
@@ -48,7 +48,7 @@ class LockedUsersService {
       const response = await apiClient.api.adminBulkUnlockUsersCreate(params) as any;
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       throw new Error((error as any).response?.data?.error || "Failed to bulk unlock users");
     }
   }
@@ -58,7 +58,7 @@ class LockedUsersService {
       const response = await apiClient.api.adminUnlockStatsList() as any;
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       throw new Error((error as any).response?.data?.error || "Failed to fetch unlock stats");
     }
   }
@@ -68,7 +68,7 @@ class LockedUsersService {
       const response = await apiClient.api.adminLockSettingsUpdate(userId, params) as any;
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       throw new Error((error as any).response?.data?.error || "Failed to update lock settings");
     }
   }
