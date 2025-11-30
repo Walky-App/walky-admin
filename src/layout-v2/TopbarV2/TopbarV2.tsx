@@ -17,7 +17,7 @@ import { useCampus, Campus } from "../../contexts/CampusContext";
 import { useTheme } from "../../hooks/useTheme";
 import { useAuth } from "../../hooks/useAuth";
 import { AssetIcon } from "../../components-v2";
-import API from "../../API";
+import { apiClient } from "../../API";
 import "./TopbarV2.css";
 
 interface TopbarV2Props {
@@ -70,39 +70,16 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     const fetchSchools = async () => {
       setIsLoadingSchools(true);
 
-      // Determine which API endpoint to call
-      const endpoint = isSuperAdmin()
-        ? "/admin/schools"
-        : `/admin/schools/${user.school_id}`;
-
-      const shouldFetch = isSuperAdmin() || user.school_id;
-
-      if (!shouldFetch) {
-        setIsLoadingSchools(false);
-        return;
-      }
-
       try {
-        const response = await API.get(endpoint);
-
-        // Process response with simple assignments only
-        let schools;
         const isSuper = isSuperAdmin();
+        let schools: any[] = [];
 
         if (isSuper) {
-          const data = response.data;
-          if (data) {
-            schools = data;
-          } else {
-            schools = [];
-          }
+          const response = await apiClient.api.adminV2SchoolsList() as any;
+          schools = response.data || [];
         } else {
-          const data = response.data;
-          if (data) {
-            schools = [data];
-          } else {
-            schools = [];
-          }
+          const response = await apiClient.api.schoolDetail(user.school_id!) as any;
+          schools = response.data ? [response.data] : [];
         }
 
         setAvailableSchools(schools);
@@ -140,65 +117,29 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     const fetchCampuses = async () => {
       setIsLoadingCampuses(true);
 
-      // Determine which API endpoint to call
-      const endpoint = isSuperAdmin()
-        ? "/admin/campuses"
-        : `/admin/campuses/${user.campus_id}`;
-
-      const shouldFetch = isSuperAdmin() || user.campus_id;
-
-      if (!shouldFetch) {
-        setIsLoadingCampuses(false);
-        return;
-      }
-
       try {
-        const response = await API.get(endpoint);
-
-        // Process response with simple assignments only
-        let campuses;
         const isSuper = isSuperAdmin();
+        let campuses: any[] = [];
 
         if (isSuper) {
+          const response = await apiClient.api.campusesList() as any;
           const responseData = response.data;
-          let dataData;
-          let dataCampuses;
 
-          if (responseData) {
-            dataData = responseData.data;
-            dataCampuses = responseData.campuses;
-          }
-
-          if (dataData) {
-            campuses = dataData;
-          } else if (dataCampuses) {
-            campuses = dataCampuses;
-          } else {
-            campuses = [];
+          if (responseData && Array.isArray(responseData)) {
+            campuses = responseData;
+          } else if (responseData && responseData.data) {
+            campuses = responseData.data;
+          } else if (responseData && responseData.campuses) {
+            campuses = responseData.campuses;
           }
         } else {
+          const response = await apiClient.api.campusesDetail(user.campus_id!) as any;
           const data = response.data;
-          let dataData;
-          let dataCampus;
 
           if (data) {
-            dataData = data.data;
-            dataCampus = data.campus;
-          }
-
-          let campus;
-          if (data) {
-            campus = data;
-          } else if (dataData) {
-            campus = dataData;
-          } else if (dataCampus) {
-            campus = dataCampus;
-          }
-
-          if (campus) {
-            campuses = [campus];
-          } else {
-            campuses = [];
+            if (data.data) campuses = [data.data];
+            else if (data.campus) campuses = [data.campus];
+            else campuses = [data];
           }
         }
 
@@ -234,8 +175,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
   const userAvatar =
     user?.avatar_url ||
     "https://ui-avatars.com/api/?name=" +
-      encodeURIComponent(userName) +
-      "&background=4A5568&color=fff";
+    encodeURIComponent(userName) +
+    "&background=4A5568&color=fff";
 
   return (
     <div className="topbar-v2">
@@ -468,9 +409,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {availableSchools.map((school: School) => (
               <button
                 key={school._id}
-                className={`modal-list-item ${
-                  selectedSchool?._id === school._id ? "active" : ""
-                }`}
+                className={`modal-list-item ${selectedSchool?._id === school._id ? "active" : ""
+                  }`}
                 onClick={() => {
                   setSelectedSchool(school);
                   setSchoolModalOpen(false);
@@ -501,9 +441,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {availableCampuses.map((campus: Campus) => (
               <button
                 key={campus._id}
-                className={`modal-list-item ${
-                  selectedCampus?._id === campus._id ? "active" : ""
-                }`}
+                className={`modal-list-item ${selectedCampus?._id === campus._id ? "active" : ""
+                  }`}
                 onClick={() => {
                   setSelectedCampus(campus);
                   setCampusModalOpen(false);

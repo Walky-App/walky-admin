@@ -1,59 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { AssetIcon, SearchInput } from "../../../components-v2";
-import { SpaceTable, SpaceData } from "../components/SpaceTable/SpaceTable";
+import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import "./SpacesManager.css";
-
-// Mock data - replace with API call
-const mockSpaces: SpaceData[] = [
-  {
-    id: "1",
-    spaceName: "Honduras Club",
-    owner: {
-      name: "Becky",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/98913cc9-2a1e-4c0d-a65f-dcc8042102ba",
-    },
-    studentId: "166g...fjhsgt",
-    events: 1,
-    members: 6,
-    creationDate: "Oct 7, 2025",
-    creationTime: "12:45",
-    category: "clubs",
-    isFlagged: true,
-    flagReason:
-      "Space contains inappropriate content and violates community guidelines.",
-  },
-  {
-    id: "2",
-    spaceName: "Pi Lambda Phi",
-    owner: {
-      name: "Jackie",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/f6300f43-2a73-4f74-8c0c-397c021dac02",
-    },
-    studentId: "166g...fjhsgt",
-    events: 1,
-    members: 0,
-    creationDate: "Oct 7, 2025",
-    creationTime: "12:45",
-    category: "fraternities",
-  },
-  {
-    id: "3",
-    spaceName: "Sisters of Unity",
-    owner: {
-      name: "Mariana",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/f2681962-f3fd-481e-b2bb-eedbb7cc1e8c",
-    },
-    studentId: "166g...fjhsgt",
-    events: 1,
-    members: 0,
-    creationDate: "Oct 7, 2025",
-    creationTime: "12:45",
-    category: "sororities",
-  },
-];
 
 export const SpacesManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,16 +28,31 @@ export const SpacesManager: React.FC = () => {
     };
   }, []);
 
-  const filteredSpaces = mockSpaces.filter((space) => {
-    const matchesSearch = space.spaceName
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      categoryFilter === "all" || space.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+  const { data: spacesData, isLoading } = useQuery({
+    queryKey: ['spaces', currentPage, searchQuery, categoryFilter],
+    queryFn: () => apiClient.api.adminV2SpacesList({ page: currentPage, limit: 10, search: searchQuery, category: categoryFilter }),
   });
 
-  const totalPages = Math.ceil(filteredSpaces.length / 10);
+  const filteredSpaces = (spacesData?.data.data || []).map((space: any) => ({
+    id: space.id,
+    spaceName: space.spaceName,
+    owner: space.owner,
+    studentId: space.studentId,
+    events: space.events,
+    members: space.members,
+    creationDate: space.creationDate,
+    creationTime: space.creationTime,
+    category: space.category,
+    isFlagged: space.isFlagged,
+    flagReason: space.flagReason,
+  }));
+
+  const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
+  const totalEntries = spacesData?.data.total || 0;
+
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   return (
     <main className="spaces-manager-container">
@@ -123,31 +88,30 @@ export const SpacesManager: React.FC = () => {
                   {categoryFilter === "all"
                     ? "All categorys"
                     : categoryFilter === "clubs"
-                    ? "Clubs"
-                    : categoryFilter === "club-sports"
-                    ? "Club Sports"
-                    : categoryFilter === "im-teams"
-                    ? "IM Teams"
-                    : categoryFilter === "sororities"
-                    ? "Sororities"
-                    : categoryFilter === "fraternities"
-                    ? "Fraternities"
-                    : categoryFilter === "volunteer"
-                    ? "Volunteer"
-                    : categoryFilter === "academics"
-                    ? "Academics & Honors"
-                    : categoryFilter === "leadership"
-                    ? "Leadership & Government"
-                    : "Cultural & Diversity"}
+                      ? "Clubs"
+                      : categoryFilter === "club-sports"
+                        ? "Club Sports"
+                        : categoryFilter === "im-teams"
+                          ? "IM Teams"
+                          : categoryFilter === "sororities"
+                            ? "Sororities"
+                            : categoryFilter === "fraternities"
+                              ? "Fraternities"
+                              : categoryFilter === "volunteer"
+                                ? "Volunteer"
+                                : categoryFilter === "academics"
+                                  ? "Academics & Honors"
+                                  : categoryFilter === "leadership"
+                                    ? "Leadership & Government"
+                                    : "Cultural & Diversity"}
                 </span>
                 <AssetIcon name="arrow-down" size={10} color="#5B6168" />
               </button>
               {categoryDropdownOpen && (
                 <div className="category-dropdown-menu">
                   <div
-                    className={`category-dropdown-item ${
-                      categoryFilter === "all" ? "active" : ""
-                    }`}
+                    className={`category-dropdown-item ${categoryFilter === "all" ? "active" : ""
+                      }`}
                     onClick={() => {
                       setCategoryFilter("all");
                       setCategoryDropdownOpen(false);
@@ -255,7 +219,7 @@ export const SpacesManager: React.FC = () => {
 
         <div className="spaces-pagination">
           <p className="pagination-info">
-            Showing {filteredSpaces.length} of {mockSpaces.length} entries
+            Showing {filteredSpaces.length} of {totalEntries} entries
           </p>
 
           <div className="pagination-controls">

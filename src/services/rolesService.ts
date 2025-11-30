@@ -1,4 +1,4 @@
-import api from "../API";
+import { apiClient } from "../API";
 import {
   Role,
   GroupedPermissions,
@@ -18,7 +18,7 @@ export const rolesService = {
   getRoles: async (): Promise<{ success: boolean; roles: Role[] }> => {
     try {
       console.log("🚀 Fetching roles");
-      const response = await api.get("/admin/roles");
+      const response = await apiClient.api.adminRolesList() as any;
       console.log("✅ Roles response:", response.data);
       return response.data;
     } catch (error) {
@@ -31,7 +31,7 @@ export const rolesService = {
   getPermissions: async (): Promise<{ success: boolean; permissions: GroupedPermissions }> => {
     try {
       console.log("🚀 Fetching permissions");
-      const response = await api.get("/admin/permissions");
+      const response = await apiClient.api.adminPermissionsList() as any;
       console.log("✅ Permissions response:", response.data);
       return response.data;
     } catch (error) {
@@ -44,7 +44,7 @@ export const rolesService = {
   getUserRoles: async (userId: string): Promise<{ success: boolean; user: UserRole }> => {
     try {
       console.log("🚀 Fetching user roles for:", userId);
-      const response = await api.get(`/admin/users/${userId}/roles`);
+      const response = await apiClient.api.adminUsersRolesList(userId) as any;
       console.log("✅ User roles response:", response.data);
       return response.data;
     } catch (error) {
@@ -57,7 +57,7 @@ export const rolesService = {
   assignRole: async (userId: string, data: AssignRoleRequest): Promise<{ success: boolean; message: string; user: UserRole }> => {
     try {
       console.log("🚀 Assigning role to user:", userId, data);
-      const response = await api.post(`/admin/users/${userId}/assign-role`, data);
+      const response = await apiClient.api.adminUsersAssignRoleCreate(userId, data as any) as any;
       console.log("✅ Assign role response:", response.data);
       return response.data;
     } catch (error) {
@@ -70,7 +70,7 @@ export const rolesService = {
   removeRole: async (userId: string, data: RemoveRoleRequest): Promise<{ success: boolean; message: string }> => {
     try {
       console.log("🚀 Removing role from user:", userId, data);
-      const response = await api.delete(`/admin/users/${userId}/remove-role`, { data });
+      const response = await apiClient.api.adminUsersRemoveRoleDelete(userId, data) as any;
       console.log("✅ Remove role response:", response.data);
       return response.data;
     } catch (error) {
@@ -83,7 +83,7 @@ export const rolesService = {
   checkPermission: async (userId: string, data: CheckPermissionRequest): Promise<CheckPermissionResponse> => {
     try {
       console.log("🚀 Checking user permission:", userId, data);
-      const response = await api.post(`/admin/users/${userId}/check-permission`, data);
+      const response = await apiClient.api.adminUsersCheckPermissionCreate(userId, data) as any;
       console.log("✅ Check permission response:", response.data);
       return response.data;
     } catch (error) {
@@ -96,7 +96,7 @@ export const rolesService = {
   createRole: async (data: CreateRoleRequest): Promise<{ success: boolean; role: Role; message: string }> => {
     try {
       console.log("🚀 Creating new role:", data);
-      const response = await api.post("/admin/roles", data);
+      const response = await apiClient.api.adminRolesCreate(data) as any;
       console.log("✅ Create role response:", response.data);
       return response.data;
     } catch (error) {
@@ -109,7 +109,7 @@ export const rolesService = {
   updateRole: async (roleId: string, data: UpdateRoleRequest): Promise<{ success: boolean; role: Role; message: string }> => {
     try {
       console.log("🚀 Updating role:", roleId, data);
-      const response = await api.put(`/admin/roles/${roleId}`, data);
+      const response = await apiClient.api.adminRolesUpdate(roleId, data) as any;
       console.log("✅ Update role response:", response.data);
       return response.data;
     } catch (error) {
@@ -122,7 +122,7 @@ export const rolesService = {
   deleteRole: async (roleId: string): Promise<{ success: boolean; message: string }> => {
     try {
       console.log("🚀 Deleting role:", roleId);
-      const response = await api.delete(`/admin/roles/${roleId}`);
+      const response = await apiClient.api.adminRolesDelete(roleId) as any;
       console.log("✅ Delete role response:", response.data);
       return response.data;
     } catch (error) {
@@ -135,7 +135,7 @@ export const rolesService = {
   createPermission: async (data: CreatePermissionRequest): Promise<{ success: boolean; permission: Permission; message: string }> => {
     try {
       console.log("🚀 Creating new permission:", data);
-      const response = await api.post("/admin/permissions", data);
+      const response = await apiClient.api.adminPermissionsCreate(data as any) as any;
       console.log("✅ Create permission response:", response.data);
       return response.data;
     } catch (error) {
@@ -148,7 +148,7 @@ export const rolesService = {
   deletePermission: async (permissionId: string): Promise<{ success: boolean; message: string }> => {
     try {
       console.log("🚀 Deleting permission:", permissionId);
-      const response = await api.delete(`/admin/permissions/${permissionId}`);
+      const response = await apiClient.api.adminPermissionsDelete(permissionId) as any;
       console.log("✅ Delete permission response:", response.data);
       return response.data;
     } catch (error) {

@@ -27,7 +27,7 @@ import {
   cilChart,
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
-import API from '../API'
+import { apiClient } from '../API'
 
 export type AlertSeverity = 'critical' | 'warning' | 'info'
 export type AlertCategory =
@@ -99,7 +99,7 @@ const AlertsInsights: React.FC<AlertsInsightsProps> = ({
         params.categories = categories.join(',')
       }
 
-      const response = await API.get('/admin/alerts', { params })
+      const response = await apiClient.api.adminAlertsList(params as any) as any
       setAlerts(response.data.alerts)
     } catch (error) {
       console.error('Failed to fetch alerts:', error)
@@ -202,7 +202,7 @@ const AlertsInsights: React.FC<AlertsInsightsProps> = ({
 
   const dismissAlert = async (alertId: string) => {
     try {
-      await API.patch(`/api/admin/alerts/${alertId}/dismiss`)
+      await apiClient.api.adminAlertsDismissPartialUpdate(alertId)
       setAlerts((prev) => prev.filter((alert) => alert._id !== alertId))
     } catch (error) {
       console.error('Failed to dismiss alert:', error)

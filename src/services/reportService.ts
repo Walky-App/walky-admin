@@ -1,4 +1,5 @@
-import api from "../API";
+import { apiClient } from "../API";
+import { ContentType } from "../API/WalkyAPI";
 import {
   Report,
   ReportDetails,
@@ -15,16 +16,8 @@ export const reportService = {
   getReports: async (filters?: ReportFilters) => {
     try {
       console.log("🚀 Fetching reports with filters:", filters);
-      const params = new URLSearchParams();
 
-      if (filters?.status) params.append("status", filters.status);
-      if (filters?.report_type)
-        params.append("report_type", filters.report_type);
-      if (filters?.school_id) params.append("school_id", filters.school_id);
-      if (filters?.page) params.append("page", filters.page.toString());
-      if (filters?.limit) params.append("limit", filters.limit.toString());
-
-      const response = await api.get(`/admin/reports?${params.toString()}`);
+      const response = await apiClient.api.adminReportsList(filters as any) as any;
       console.log("✅ Reports response:", response.data);
 
       return {
@@ -46,7 +39,7 @@ export const reportService = {
   getReportDetails: async (reportId: string): Promise<ReportDetails> => {
     try {
       console.log("🚀 Fetching report details for:", reportId);
-      const response = await api.get(`/admin/reports/${reportId}`);
+      const response = await apiClient.api.adminReportsDetail(reportId) as any;
       console.log("✅ Report details response:", response.data);
       return response.data;
     } catch (error) {
@@ -62,7 +55,7 @@ export const reportService = {
   ): Promise<Report> => {
     try {
       console.log("🚀 Updating report status:", reportId, data);
-      const response = await api.put(`/admin/reports/${reportId}/status`, data);
+      const response = await apiClient.api.adminReportsStatusPartialUpdate(reportId, data) as any;
       console.log("✅ Update status response:", response.data);
       return response.data.report;
     } catch (error) {
@@ -75,10 +68,7 @@ export const reportService = {
   banUserFromReport: async (reportId: string, data: BanUserRequest) => {
     try {
       console.log("🚀 Banning user from report:", reportId, data);
-      const response = await api.post(
-        `/admin/reports/${reportId}/ban-user`,
-        data
-      );
+      const response = await apiClient.api.adminReportsBanUserCreate(reportId, data) as any;
       console.log("✅ Ban user response:", response.data);
       return response.data;
     } catch (error) {
@@ -91,7 +81,7 @@ export const reportService = {
   bulkUpdateReports: async (data: BulkUpdateReportsRequest) => {
     try {
       console.log("🚀 Bulk updating reports:", data);
-      const response = await api.put(`/admin/reports/bulk-update`, data);
+      const response = await apiClient.api.adminReportsBulkPartialUpdate(data) as any;
       console.log("✅ Bulk update response:", response.data);
       return response.data;
     } catch (error) {
@@ -108,15 +98,8 @@ export const reportService = {
   }) => {
     try {
       console.log("🚀 Fetching banned users:", params);
-      const queryParams = new URLSearchParams();
 
-      if (params?.page) queryParams.append("page", params.page.toString());
-      if (params?.limit) queryParams.append("limit", params.limit.toString());
-      if (params?.search) queryParams.append("search", params.search);
-
-      const response = await api.get(
-        `/admin/users/banned?${queryParams.toString()}`
-      );
+      const response = await apiClient.api.adminUsersBannedList(params) as any;
       console.log("✅ Banned users response:", response.data);
 
       return {
@@ -138,10 +121,7 @@ export const reportService = {
   unbanUser: async (userId: string, data?: UnbanUserRequest) => {
     try {
       console.log("🚀 Unbanning user:", userId, data);
-      const response = await api.post(
-        `/admin/users/${userId}/unban`,
-        data || {}
-      );
+      const response = await apiClient.api.adminUsersUnbanCreate(userId, data || {}) as any;
       console.log("✅ Unban response:", response.data);
       return response.data;
     } catch (error) {
@@ -154,7 +134,7 @@ export const reportService = {
   getUserBanHistory: async (userId: string): Promise<UserBanHistory> => {
     try {
       console.log("🚀 Fetching ban history for user:", userId);
-      const response = await api.get(`/admin/users/${userId}/ban-history`);
+      const response = await apiClient.api.adminUsersBanHistoryList(userId) as any;
       console.log("✅ Ban history response:", response.data);
       return response.data;
     } catch (error) {
@@ -167,8 +147,12 @@ export const reportService = {
   removeUser: async (userId: string, reason: string, sendEmail = true) => {
     try {
       console.log("🚀 Removing user:", userId);
-      const response = await api.delete(`/admin/users/${userId}/remove`, {
-        data: { reason, sendEmail },
+      const response = await apiClient.http.request({
+        path: `/api/admin/users/${userId}/remove`,
+        method: "DELETE",
+        body: { reason, sendEmail },
+        secure: true,
+        type: ContentType.Json,
       });
       console.log("✅ Remove user response:", response.data);
       return response.data;

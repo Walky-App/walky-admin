@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
-import API from '../API'
+import { apiClient } from '../API'
 
 const VerifyCode = () => {
   const navigate = useNavigate()
@@ -26,7 +26,7 @@ const VerifyCode = () => {
     console.log('🔐 Verifying with:', { email, otp: Number(otp) })
 
     try {
-      const res = await API.post('/verify', {
+      const res = await apiClient.api.verifyCreate({
         otp: Number(otp),
         email,
       })
@@ -53,7 +53,7 @@ const VerifyCode = () => {
     }
 
     try {
-      await API.post('/reset-password', {
+      await apiClient.api.resetPasswordCreate({
         email,
         password,
         password_confirmed: confirmPassword,
@@ -66,17 +66,17 @@ const VerifyCode = () => {
         console.error('❌ Reset failed:', err.message)
       }
       setError('Could not reset password. Try again or request a new code.')
-    }    
+    }
   }
 
   const handleResendCode = async () => {
     if (resendCooldown > 0) return
-  
+
     try {
-      await API.post('/forgot-password', { email })
+      await apiClient.api.forgotPasswordCreate({ email })
       setError('A new verification code was sent to your email.')
       setResendCooldown(30)
-  
+
       // Start cooldown countdown
       const interval = setInterval(() => {
         setResendCooldown((prev) => {
@@ -92,7 +92,7 @@ const VerifyCode = () => {
       setError(message || 'Failed to resend code. Please try again.')
     }
   }
-  
+
 
   return (
     <div
@@ -156,8 +156,8 @@ const VerifyCode = () => {
                   backgroundColor: isActive
                     ? '#5856D5'
                     : isHovered
-                    ? '#5b54f6'
-                    : '#6366f1',
+                      ? '#5b54f6'
+                      : '#6366f1',
                   transition: 'background-color 0.2s ease',
                 }}
               >
@@ -220,8 +220,8 @@ const VerifyCode = () => {
                   backgroundColor: isActive
                     ? '#5856D5'
                     : isHovered
-                    ? '#5b54f6'
-                    : '#6366f1',
+                      ? '#5b54f6'
+                      : '#6366f1',
                   transition: 'background-color 0.2s ease',
                 }}
               >
@@ -235,29 +235,29 @@ const VerifyCode = () => {
           <p style={{ marginTop: '1rem', color: 'salmon', textAlign: 'center' }}>{error}</p>
         )}
 
-{step === 'verify' && (
-  <button
-    type="button"
-    onClick={handleResendCode}
-    disabled={resendCooldown > 0}
-    style={{
-      marginTop: '1rem',
-      background: 'none',
-      border: 'none',
-      color: resendCooldown > 0 ? '#64748b' : '#94a3b8',
-      textDecoration: 'underline',
-      cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer',
-      fontSize: '0.95rem',
-      display: 'block',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-    }}
-  >
-    {resendCooldown > 0
-      ? `Resend available in ${resendCooldown}s`
-      : 'Resend verification code'}
-  </button>
-)}
+        {step === 'verify' && (
+          <button
+            type="button"
+            onClick={handleResendCode}
+            disabled={resendCooldown > 0}
+            style={{
+              marginTop: '1rem',
+              background: 'none',
+              border: 'none',
+              color: resendCooldown > 0 ? '#64748b' : '#94a3b8',
+              textDecoration: 'underline',
+              cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer',
+              fontSize: '0.95rem',
+              display: 'block',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            {resendCooldown > 0
+              ? `Resend available in ${resendCooldown}s`
+              : 'Resend verification code'}
+          </button>
+        )}
 
       </div>
     </div>

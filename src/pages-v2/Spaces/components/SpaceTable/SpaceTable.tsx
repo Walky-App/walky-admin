@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../../API";
 import {
   DeleteModal,
   CustomToast,
@@ -39,6 +41,7 @@ type SortField = "spaceName" | "owner" | "events" | "members" | "creationDate";
 type SortDirection = "asc" | "desc";
 
 export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
+  const queryClient = useQueryClient();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -54,6 +57,57 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2SpacesDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      setToastMessage(`Space deleted successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setDeleteModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting space:", error);
+      setToastMessage("Error deleting space");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2SpacesFlagCreate(data.id, { reason: data.reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      setToastMessage(`Space flagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setFlagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error flagging space:", error);
+      setToastMessage("Error flagging space");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const unflagMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2SpacesUnflagCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      setToastMessage(`Space unflagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setUnflagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error unflagging space:", error);
+      setToastMessage("Error unflagging space");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -68,102 +122,66 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = (reason: string) => {
+  const handleDeleteConfirm = (_reason: string) => {
     if (spaceToDelete) {
-      console.log(
-        "Deleting space:",
-        spaceToDelete.spaceName,
-        "Reason:",
-        reason
-      );
-      // TODO: Call API to delete space
-      setToastMessage(
-        `Space "${spaceToDelete.spaceName}" deleted successfully`
-      );
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      deleteMutation.mutate(spaceToDelete.id);
     }
   };
 
-  const handleViewSpaceDetails = (space: SpaceData, e: React.MouseEvent) => {
+  const handleViewSpaceDetails = async (space: SpaceData, e: React.MouseEvent) => {
     e.stopPropagation();
-    // Convert SpaceData to SpaceDetailsData
-    const spaceDetails: SpaceDetailsData = {
-      id: space.id,
-      spaceName: space.spaceName,
-      owner: {
-        name: space.owner.name,
-        avatar: space.owner.avatar,
-        studentId: space.studentId,
-      },
-      creationDate: space.creationDate,
-      creationTime: space.creationTime,
-      category: space.category,
-      chapter: "FIU Official",
-      contact: "fiuhonduras@gmail.com",
-      about:
-        "Our club is a space to connect, share, and meet new people. It's all about building community, having good conversations, and enjoying time together.",
-      howWeUse:
-        "We post events and offer general information about how to get involved. If you are interested in joining or want to recommend someone please contact us and we'll get back to you!",
-      description:
-        "A vibrant community space for students to connect and share their culture.",
-      events: [
-        {
-          id: "1",
-          title: "4v4 Basketball game",
-          date: "OCT 16, 2025",
-          time: "2:00 PM",
-          location: "S. Campus Basketball Courts",
-          image:
-            "https://www.figma.com/api/mcp/asset/86606deb-9b9b-4ceb-ad63-93bf44dcac72",
+    try {
+      const response = await apiClient.api.adminV2SpacesDetail(space.id) as any;
+      const details = response.data;
+
+      // Map API response to SpaceDetailsData
+      const spaceDetails: SpaceDetailsData = {
+        id: details.id,
+        spaceName: details.name,
+        owner: {
+          name: details.owner?.name || 'Unknown',
+          avatar: details.owner?.avatar,
+          studentId: details.owner?.studentId || 'N/A',
         },
-      ],
-      members: [
-        {
-          id: "1",
-          name: "Anni",
-          avatar:
-            "https://www.figma.com/api/mcp/asset/a5bd2efd-d2f7-4634-9ac4-fcb1ccb6d939",
-        },
-        {
-          id: "2",
-          name: "Ben",
-          avatar:
-            "https://www.figma.com/api/mcp/asset/7c38d015-cf9a-408b-88a1-d8cd58c5e8a3",
-        },
-        {
-          id: "3",
-          name: "Justin",
-          avatar:
-            "https://www.figma.com/api/mcp/asset/65ed9095-436b-4458-84be-7878e60e56ea",
-        },
-        {
-          id: "4",
-          name: "Austin",
-          avatar:
-            "https://www.figma.com/api/mcp/asset/0324e47a-ecc7-439a-a8ea-513c8588e1f2",
-        },
-        {
-          id: "5",
-          name: "Nataly",
-          avatar:
-            "https://www.figma.com/api/mcp/asset/f283a2e1-c53a-470c-8da7-f8c85f6c8551",
-        },
-        { id: "6", name: "Becky", avatar: space.owner.avatar },
-      ],
-      spaceImage:
-        "https://www.figma.com/api/mcp/asset/edc87584-5c7e-4e17-9c9c-95b0f48140f2",
-      spaceLogo:
-        "https://www.figma.com/api/mcp/asset/df84a020-2c75-41bf-9ec0-ab7d12ff8e15",
-      memberRange: "1-10",
-      yearEstablished: "2024",
-      governingBody: "Interfraternity",
-      primaryFocus: "Social",
-      isFlagged: space.isFlagged,
-      flagReason: space.flagReason,
-    };
-    setSelectedSpace(spaceDetails);
-    setDetailsModalOpen(true);
+        creationDate: new Date(details.createdAt).toLocaleDateString(),
+        creationTime: new Date(details.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        category: details.category?.name || "Other",
+        chapter: "FIU Official", // Placeholder
+        contact: "fiuhonduras@gmail.com", // Placeholder
+        about: details.description || "No description provided.",
+        howWeUse: "We post events and offer general information about how to get involved.", // Placeholder
+        description: details.description,
+        events: (details.events || []).map((ev: any) => ({
+          id: ev.id,
+          title: ev.name,
+          date: new Date(ev.date).toLocaleDateString(),
+          time: new Date(ev.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          location: ev.location || "TBD",
+          image: ev.image_url
+        })),
+        members: (details.members || []).map((m: any) => ({
+          id: m.user_id,
+          name: m.name || 'Unknown',
+          avatar: m.avatar_url
+        })),
+        spaceImage: details.cover_image_url,
+        spaceLogo: details.logo_url,
+        memberRange: "1-10", // Placeholder or calculate
+        yearEstablished: new Date(details.createdAt).getFullYear().toString(),
+        governingBody: "Interfraternity", // Placeholder
+        primaryFocus: "Social", // Placeholder
+        isFlagged: details.isFlagged,
+        flagReason: details.flagReason,
+      };
+
+      setSelectedSpace(spaceDetails);
+      setDetailsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching space details:", error);
+      setToastMessage("Error fetching space details");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const handleFlagSpace = (space: SpaceData, e: React.MouseEvent) => {
@@ -174,11 +192,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
 
   const handleFlagConfirm = (reason: string) => {
     if (spaceToFlag) {
-      console.log("Flagging space:", spaceToFlag.spaceName, "Reason:", reason);
-      // TODO: Call API to flag space
-      setToastMessage(`Space "${spaceToFlag.spaceName}" flagged successfully`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      flagMutation.mutate({ id: spaceToFlag.id, reason });
     }
   };
 
@@ -190,13 +204,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
 
   const handleUnflagConfirm = () => {
     if (spaceToUnflag) {
-      console.log("Unflagging space:", spaceToUnflag.spaceName);
-      // TODO: Call API to unflag space
-      setToastMessage(
-        `Space "${spaceToUnflag.spaceName}" unflagged successfully`
-      );
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      unflagMutation.mutate(spaceToUnflag.id);
     }
   };
 
@@ -365,20 +373,20 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       space.isFlagged
                         ? {
-                            label: "Unflag",
-                            icon: "flag-icon",
-                            variant: "danger",
-                            onClick: (e) => handleUnflagSpace(space, e),
-                          }
+                          label: "Unflag",
+                          icon: "flag-icon",
+                          variant: "danger",
+                          onClick: (e) => handleUnflagSpace(space, e),
+                        }
                         : {
-                            label: "Flag",
-                            icon: "flag-icon",
-                            onClick: (e) => handleFlagSpace(space, e),
-                          },
+                          label: "Flag",
+                          icon: "flag-icon",
+                          onClick: (e) => handleFlagSpace(space, e),
+                        },
                       {
                         label: "Delete Space",
                         variant: "danger",

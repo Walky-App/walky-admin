@@ -11,6 +11,8 @@ import {
   CustomToast,
   Divider,
 } from "../../../components-v2";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
@@ -56,6 +58,48 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  const queryClient = useQueryClient();
+
+  const deactivateMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("User deactivated successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to deactivate user");
+      setShowToast(true);
+    }
+  });
+
+  const unbanMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsUnbanCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("User unbanned successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to unban user");
+      setShowToast(true);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("User flagged successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to flag user");
+      setShowToast(true);
+    }
+  });
+
   const handleViewProfile = (student: StudentData) => {
     setSelectedStudent(student);
     setProfileModalVisible(true);
@@ -80,11 +124,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const handleConfirmDeactivate = () => {
     if (!studentToDeactivate) return;
-
-    console.log("Deactivating user:", studentToDeactivate);
-    // TODO: Call API to deactivate user
-    // Example: await deactivateUserAPI(studentToDeactivate.id);
-
+    deactivateMutation.mutate(studentToDeactivate.id);
     setDeactivateModalVisible(false);
     setStudentToDeactivate(null);
   };
@@ -101,11 +141,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const handleConfirmFlag = () => {
     if (!studentToFlag) return;
-
-    console.log("Flagging user:", studentToFlag);
-    // TODO: Call API to flag user
-    // Example: await flagUserAPI(studentToFlag.id);
-
+    flagMutation.mutate({ id: studentToFlag.id, reason: "Flagged by admin" });
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -127,11 +163,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const handleConfirmUnban = () => {
     if (!studentToUnban) return;
-
-    console.log("Unbanning user:", studentToUnban);
-    // TODO: Call API to unban user
-    // Example: await unbanUserAPI(studentToUnban.id);
-
+    unbanMutation.mutate(studentToUnban.id);
     setUnbanModalVisible(false);
     setStudentToUnban(null);
   };
@@ -371,7 +403,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       {
                         label: "Deactivate user",

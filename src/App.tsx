@@ -63,7 +63,7 @@ import "./styles/visibility-fixes.css";
 
 import MainChart from "./components/MainChart.tsx";
 
-import API from "./API/index.ts";
+import { apiClient } from "./API/index.ts";
 import Login from "./pages/Login.tsx";
 import LoginV2 from "./pages-v2/LoginV2/LoginV2";
 import { useSchool } from "./contexts/SchoolContext";
@@ -199,7 +199,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
     const getIdeasData = async () => {
       try {
-        const response = await API.get("/ideas/count?groupBy=month");
+        const response = await apiClient.api.adminAnalyticsIdeasCountList({
+          query: { groupBy: "month" }
+        } as any) as any;
 
         if (response?.data?.monthlyData) {
           const monthlyData = response.data.monthlyData as IdeaMonthData[];
@@ -250,9 +252,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
     const getEventsData = async () => {
       try {
-        const response = await API.get(
-          "/events/eventEngagement-count?timeFrame=last6months"
-        );
+        const response = await apiClient.api.adminAnalyticsEventsCountList({
+          query: { timeFrame: "last6months" }
+        } as any) as any;
 
         if (response?.data?.data) {
           // The data array contains monthly data
@@ -313,7 +315,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
     const getWalksData = async () => {
       try {
         // Use the groupBy=month parameter to get monthly data
-        const response = await API.get("/walks/count?groupBy=month");
+        const response = await apiClient.api.adminAnalyticsWalksCountList({
+          query: { groupBy: "month" }
+        } as any) as any;
 
         if (response?.data?.monthlyData) {
           // Get the last 6 months of data (or fewer if less data is available)
@@ -436,12 +440,10 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
       const position = chart.canvas.getBoundingClientRect();
       tooltipEl.style.opacity = "1";
-      tooltipEl.style.left = `${
-        position.left + window.pageXOffset + tooltipModel.caretX
-      }px`;
-      tooltipEl.style.top = `${
-        position.top + window.pageYOffset + tooltipModel.caretY
-      }px`;
+      tooltipEl.style.left = `${position.left + window.pageXOffset + tooltipModel.caretX
+        }px`;
+      tooltipEl.style.top = `${position.top + window.pageYOffset + tooltipModel.caretY
+        }px`;
     },
   };
 

@@ -4,20 +4,74 @@ import AssetIcon from "../../components-v2/AssetIcon/AssetIcon";
 import AssetImage from "../../components-v2/AssetImage/AssetImage";
 import "./LoginV2.css";
 
+import { apiClient } from "../../API";
+
 const LoginV2: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // TODO: Implement login logic
-    console.log("Login attempt:", { email, password });
+    try {
+      const response = await apiClient.api.loginCreate({
+        email,
+        password,
+      });
 
-    setIsLoading(false);
+      const responseData = response.data as any;
+      const token = responseData.access_token;
+      const userData = responseData;
+
+      if (!token) {
+        throw new Error("Token not found in response.");
+      }
+
+      // Validate user role - only allow admin roles
+      const adminRoles = [
+        "super_admin",
+        "campus_admin",
+        "editor",
+        "moderator",
+        "staff",
+        "viewer",
+      ];
+      const userRole = userData?.role;
+
+      if (!userRole || !adminRoles.includes(userRole)) {
+        setError("Access denied: You are not authorized for the admin panel.");
+        return;
+      }
+
+      // Store token and user data in localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          _id: userData._id,
+          email: userData.email,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          role: userData.role,
+          avatar_url: userData.avatar_url,
+          campus_id: userData.campus_id,
+          school_id: userData.school_id,
+        })
+      );
+
+      // Reload to update auth state (since useAuth reads from localStorage on mount)
+      window.location.href = "/";
+    } catch (err: any) {
+      console.error("Login failed:", err);
+      setError(err?.response?.data?.message || "Invalid email or password.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
@@ -42,6 +96,11 @@ const LoginV2: React.FC = () => {
             data-testid="login-form"
             aria-label="Login form"
           >
+            {error && (
+              <div className="error-message" style={{ color: "red", marginBottom: "1rem", textAlign: "center" }}>
+                {error}
+              </div>
+            )}
             <div className="form-group">
               <label htmlFor="email" className="form-label">
                 Email

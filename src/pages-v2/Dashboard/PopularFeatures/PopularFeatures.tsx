@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { CRow, CCol } from "@coreui/react";
 import {
   AssetIcon,
@@ -31,199 +33,28 @@ const PopularFeatures: React.FC = () => {
     interestsModalVisible
   );
 
-  // Mock data - would come from API
-  const topInterests = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Food",
-      iconBgColor: "#ebf1ff",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Basketball",
-      iconBgColor: "#ebf1ff",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Gym",
-      iconBgColor: "#ebf1ff",
-    },
-  ];
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: ['popularFeatures', timePeriod],
+    queryFn: () => apiClient.api.adminV2DashboardPopularFeaturesList({ period: timePeriod }),
+  });
 
-  const popularWaysToConnect = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Walk",
-      iconBgColor: "#e4eefe",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Food",
-      iconBgColor: "#e4eefe",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Surprise",
-      iconBgColor: "#e4eefe",
-    },
-  ];
+  const data = (apiData?.data || {}) as any;
 
-  const visitedPlaces = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/40x30",
-      label: "Burger King",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/40x30",
-      label: "Dunkin Donuts",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/40x30",
-      label: "Graham Center",
-    },
-  ];
+  const topInterests = data.topInterests || [];
+  const popularWaysToConnect = data.popularWaysToConnect || [];
+  const visitedPlaces = data.visitedPlaces || [];
+  const topInvitationCategories = data.topInvitationCategories || [];
+  const mostEngaged = data.mostEngaged || [];
+  const commonInterests = data.commonInterests || [];
+  const topFieldsOfStudy = data.topFieldsOfStudy || [];
 
-  const topInvitationCategories = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Food",
-      iconBgColor: "#ebf1ff",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Studying",
-      iconBgColor: "#e4eefe",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Coffee",
-      iconBgColor: "#e4eefe",
-    },
-  ];
-
-  const mostEngaged = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Brett Semon",
-      iconBgColor: undefined,
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Nataly Reynolds",
-      iconBgColor: undefined,
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Ben Mackee",
-      iconBgColor: undefined,
-    },
-  ];
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   const handleExport = () => {
     console.log("Exporting data...");
   };
-
-  // Mock data for list view
-  const commonInterests = [
-    {
-      rank: 1,
-      name: "Ballet",
-      students: 19,
-      percentage: 7.1,
-      barWidth: 88,
-      rankColor: "#8f5400",
-      rankBgColor: "#fff3d6",
-    },
-    {
-      rank: 2,
-      name: "Basketball",
-      students: 18,
-      percentage: 6.7,
-      barWidth: 88,
-      rankColor: "#4a4cd9",
-      rankBgColor: "#d9e3f7",
-    },
-    {
-      rank: 3,
-      name: "Acting",
-      students: 16,
-      percentage: 6.0,
-      barWidth: 88,
-      rankColor: "#ba5630",
-      rankBgColor: "#ffebe9",
-    },
-    {
-      rank: 4,
-      name: "3D modeling",
-      students: 14,
-      percentage: 5.2,
-      barWidth: 81,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 4,
-      name: "Baking",
-      students: 14,
-      percentage: 5.2,
-      barWidth: 81,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 5,
-      name: "Billiards",
-      students: 13,
-      percentage: 4.9,
-      barWidth: 69,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 6,
-      name: "Books",
-      students: 10,
-      percentage: 3.7,
-      barWidth: 55,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 7,
-      name: "Brewing",
-      students: 9,
-      percentage: 3.4,
-      barWidth: 41,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-  ];
-
-  const topFieldsOfStudy = [
-    {
-      rank: 1,
-      name: "Applied Math & Physics",
-      students: 20,
-      avgInteractions: 1.7,
-      rankColor: "#8f5400",
-      rankBgColor: "#fff3d6",
-    },
-  ];
 
   return (
     <main
@@ -384,7 +215,7 @@ const PopularFeatures: React.FC = () => {
           console.log("Modal close clicked!");
           setInterestsModalVisible(false);
         }}
-        interests={commonInterests.map((interest) => ({
+        interests={commonInterests.map((interest: any) => ({
           rank: interest.rank,
           name: interest.name,
           icon: "https://via.placeholder.com/32",

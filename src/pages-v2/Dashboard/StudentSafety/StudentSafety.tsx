@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import {
   AssetIcon,
   FilterBar,
@@ -18,253 +20,70 @@ const StudentSafety: React.FC = () => {
     console.log("Exporting student safety data...");
   };
 
-  const handleBarClick = (_legendKey: string, legendLabel: string) => {
-    setSelectedReportType(legendLabel.replace("Reported ", ""));
-    setModalVisible(true);
+  const [modalReports, setModalReports] = useState<any[]>([]);
+  const [modalLoading, setModalLoading] = useState(false);
+
+  const fetchModalReports = async (type: string) => {
+    setModalLoading(true);
+    try {
+      // Map legend label to API type
+      let apiType = "";
+      if (type.includes("Messages")) apiType = "Message";
+      else if (type.includes("Ideas")) apiType = "Idea";
+      else if (type.includes("Spaces")) apiType = "Space";
+      else if (type.includes("Events")) apiType = "Event";
+      else if (type.includes("People")) apiType = "User";
+
+      const res = await apiClient.api.adminV2ReportsList({
+        type: apiType,
+        limit: 10,
+      } as any) as any;
+
+      const reports = res.data.data || [];
+      const transformedReports = reports.map((r: any) => ({
+        id: r.id,
+        reportedItemName: r.description || "Unknown Item", // Ideally backend provides item name
+        reportId: r.studentId || "Unknown",
+        reason: r.reason || "unknown",
+        reasonTag: r.reasonTag || "Other",
+        description: r.description || "",
+        reportedOn: new Date(r.reportDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        reportedBy: "Unknown", // Backend might not provide this in list view
+        status: (r.status || "resolved").toLowerCase(),
+      }));
+
+      setModalReports(transformedReports);
+    } catch (error) {
+      console.error("Failed to fetch modal reports:", error);
+      setModalReports([]);
+    } finally {
+      setModalLoading(false);
+    }
   };
 
-  // Mock reports data
-  const mockReports = [
-    {
-      id: "1",
-      reportedItemName: "Children's App",
-      reportId: "166g...fjhsgt",
-      reason: "intellectual-property",
-      reasonTag: "Intellectual property",
-      description: "Review the idea because it is the topic of my thesis.",
-      reportedOn: "October 20, 2025 - 12:14",
-      reportedBy: "Jackie",
-      status: "resolved" as const,
-    },
-    {
-      id: "2",
-      reportedItemName: "Form a Band",
-      reportId: "166g...fjhsgt",
-      reason: "harassment-threats",
-      reasonTag: "Harassment / Threats",
-      description:
-        "I am reporting this idea because it includes threatening language toward other students and makes me feel unsafe participating",
-      reportedOn: "October 20, 2025 - 12:14",
-      reportedBy: "Jackie",
-      status: "resolved" as const,
-    },
-  ];
+  const handleBarClick = (_legendKey: string, legendLabel: string) => {
+    const type = legendLabel.replace("Reported ", "");
+    setSelectedReportType(type);
+    setModalVisible(true);
+    fetchModalReports(legendLabel);
+  };
 
-  // Mock data for different time periods
-  // All time data (11 months)
-  const monthLabels = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-  ];
-  const reportsDataMonth = [
-    {
-      reportedPeople: 20,
-      reportedEvents: 15,
-      reportedSpaces: 12,
-      reportedIdeas: 10,
-      reportedMessages: 18,
-    },
-    {
-      reportedPeople: 22,
-      reportedEvents: 16,
-      reportedSpaces: 14,
-      reportedIdeas: 12,
-      reportedMessages: 20,
-    },
-    {
-      reportedPeople: 25,
-      reportedEvents: 18,
-      reportedSpaces: 15,
-      reportedIdeas: 14,
-      reportedMessages: 22,
-    },
-    {
-      reportedPeople: 28,
-      reportedEvents: 20,
-      reportedSpaces: 16,
-      reportedIdeas: 15,
-      reportedMessages: 24,
-    },
-    {
-      reportedPeople: 30,
-      reportedEvents: 22,
-      reportedSpaces: 18,
-      reportedIdeas: 16,
-      reportedMessages: 26,
-    },
-    {
-      reportedPeople: 32,
-      reportedEvents: 24,
-      reportedSpaces: 20,
-      reportedIdeas: 18,
-      reportedMessages: 28,
-    },
-    {
-      reportedPeople: 35,
-      reportedEvents: 26,
-      reportedSpaces: 22,
-      reportedIdeas: 20,
-      reportedMessages: 30,
-    },
-    {
-      reportedPeople: 38,
-      reportedEvents: 28,
-      reportedSpaces: 24,
-      reportedIdeas: 22,
-      reportedMessages: 32,
-    },
-    {
-      reportedPeople: 40,
-      reportedEvents: 30,
-      reportedSpaces: 26,
-      reportedIdeas: 24,
-      reportedMessages: 34,
-    },
-    {
-      reportedPeople: 42,
-      reportedEvents: 32,
-      reportedSpaces: 28,
-      reportedIdeas: 26,
-      reportedMessages: 36,
-    },
-    {
-      reportedPeople: 45,
-      reportedEvents: 35,
-      reportedSpaces: 30,
-      reportedIdeas: 28,
-      reportedMessages: 38,
-    },
-  ];
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: ['studentSafety', timePeriod],
+    queryFn: () => apiClient.api.adminV2DashboardStudentSafetyList({ period: timePeriod }),
+  });
 
-  // Week data (5 weeks)
-  const weekLabels = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
-  const weekSubLabels = [
-    "Oct 1 - Oct 5",
-    "Oct 6 - Oct 12",
-    "Oct 13 - Oct 19",
-    "Oct 20 - Oct 26",
-    "Oct 27 - Oct 31",
-  ];
-  const reportsDataWeek = [
-    {
-      reportedPeople: 3,
-      reportedEvents: 2,
-      reportedSpaces: 2,
-      reportedIdeas: 2,
-      reportedMessages: 2,
-    },
-    {
-      reportedPeople: 3,
-      reportedEvents: 2,
-      reportedSpaces: 2,
-      reportedIdeas: 2,
-      reportedMessages: 2,
-    },
-    {
-      reportedPeople: 3,
-      reportedEvents: 2,
-      reportedSpaces: 2,
-      reportedIdeas: 2,
-      reportedMessages: 2,
-    },
-    {
-      reportedPeople: 3,
-      reportedEvents: 2,
-      reportedSpaces: 2,
-      reportedIdeas: 2,
-      reportedMessages: 2,
-    },
-    {
-      reportedPeople: 3,
-      reportedEvents: 2,
-      reportedSpaces: 2,
-      reportedIdeas: 2,
-      reportedMessages: 2,
-    },
-  ];
+  const data = (apiData?.data || {}) as any;
+  const chartLabels = data.labels || [];
+  const chartSubLabels = data.subLabels;
+  const reportsData = data.reportsData || [];
 
-  // Day data (7 days)
-  const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const reportsDataDay = [
-    {
-      reportedPeople: 1,
-      reportedEvents: 1,
-      reportedSpaces: 0,
-      reportedIdeas: 1,
-      reportedMessages: 1,
-    },
-    {
-      reportedPeople: 2,
-      reportedEvents: 1,
-      reportedSpaces: 1,
-      reportedIdeas: 1,
-      reportedMessages: 1,
-    },
-    {
-      reportedPeople: 1,
-      reportedEvents: 2,
-      reportedSpaces: 1,
-      reportedIdeas: 0,
-      reportedMessages: 2,
-    },
-    {
-      reportedPeople: 2,
-      reportedEvents: 1,
-      reportedSpaces: 1,
-      reportedIdeas: 1,
-      reportedMessages: 1,
-    },
-    {
-      reportedPeople: 3,
-      reportedEvents: 2,
-      reportedSpaces: 1,
-      reportedIdeas: 2,
-      reportedMessages: 2,
-    },
-    {
-      reportedPeople: 2,
-      reportedEvents: 2,
-      reportedSpaces: 2,
-      reportedIdeas: 1,
-      reportedMessages: 1,
-    },
-    {
-      reportedPeople: 1,
-      reportedEvents: 1,
-      reportedSpaces: 1,
-      reportedIdeas: 1,
-      reportedMessages: 2,
-    },
-  ];
-
-  // Select data based on time period
-  const chartLabels =
-    timePeriod === "week"
-      ? dayLabels
-      : timePeriod === "month"
-      ? weekLabels
-      : monthLabels;
-
-  const chartSubLabels = timePeriod === "month" ? weekSubLabels : undefined;
-
-  const reportsData =
-    timePeriod === "week"
-      ? reportsDataDay
-      : timePeriod === "month"
-      ? reportsDataWeek
-      : reportsDataMonth;
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   // Format data for StackedBarChart component
-  const weeksFormatted = chartLabels.map((label, index) => ({
+  const weeksFormatted = chartLabels.map((label: string, index: number) => ({
     label,
     dateRange: chartSubLabels?.[index] || "",
   }));
@@ -322,9 +141,10 @@ const StudentSafety: React.FC = () => {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         reportType={selectedReportType}
-        reports={mockReports}
-        totalCount={2}
-        period="March"
+        reports={modalReports}
+        totalCount={modalReports.length}
+        period={timePeriod === "month" ? "Month" : timePeriod === "week" ? "Week" : "All Time"}
+        loading={modalLoading}
       />
     </main>
   );

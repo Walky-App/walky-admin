@@ -12,7 +12,7 @@ import { cilEducation, cilCheckAlt, cilGlobeAlt } from '@coreui/icons';
 import { useSchool } from '../contexts/SchoolContext';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
-import API from '../API';
+import { apiClient } from '../API';
 
 export const SchoolSelector: React.FC = () => {
   const { theme } = useTheme();
@@ -38,11 +38,11 @@ export const SchoolSelector: React.FC = () => {
 
         if (isSuperAdmin()) {
           // Super admin can see all schools
-          const response = await API.get('/admin/schools');
+          const response = await apiClient.api.adminV2SchoolsList() as any;
           schools = response.data || [];
         } else if (user.school_id) {
           // School admin or staff - only their school
-          const response = await API.get(`/admin/schools/${user.school_id}`);
+          const response = await apiClient.api.schoolDetail(user.school_id) as any;
           const school = response.data;
           schools = school ? [school] : [];
         }
