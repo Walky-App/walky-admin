@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import "./IdeasManager.css";
 import { IdeaData, IdeasTable } from "../components/IdeasTable/IdeasTable";
 import { SearchInput } from "../../../components-v2";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 // Mock data - replace with API call
 const mockIdeas: IdeaData[] = [
@@ -51,6 +52,7 @@ const mockIdeas: IdeaData[] = [
 ];
 
 export const IdeasManager: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -84,7 +86,12 @@ export const IdeasManager: React.FC = () => {
               <div className="ideas-manager-search">
                 <SearchInput
                   value={searchQuery}
-                  onChange={setSearchQuery}
+                  onChange={(value) => {
+                    setSearchQuery(value);
+                    trackEvent("Ideas Manager - Search Input Changed", {
+                      query: value,
+                    });
+                  }}
                   placeholder="Search"
                   variant="secondary"
                 />
@@ -93,7 +100,7 @@ export const IdeasManager: React.FC = () => {
           </div>
 
           <div className="ideas-manager-table-container">
-            <IdeasTable ideas={filteredIdeas} />
+            <IdeasTable ideas={filteredIdeas} pageContext="Ideas Manager" />
           </div>
 
           <div className="ideas-manager-pagination">
@@ -105,7 +112,12 @@ export const IdeasManager: React.FC = () => {
                 data-testid="pagination-prev-btn"
                 className="ideas-manager-pagination-button"
                 disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
+                onClick={() => {
+                  setCurrentPage(currentPage - 1);
+                  trackEvent("Ideas Manager - Page Changed", {
+                    page: currentPage - 1,
+                  });
+                }}
               >
                 Previous
               </button>
@@ -119,7 +131,12 @@ export const IdeasManager: React.FC = () => {
                 data-testid="pagination-next-btn"
                 className="ideas-manager-pagination-button"
                 disabled={currentPage >= totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
+                onClick={() => {
+                  setCurrentPage(currentPage + 1);
+                  trackEvent("Ideas Manager - Page Changed", {
+                    page: currentPage + 1,
+                  });
+                }}
               >
                 Next
               </button>

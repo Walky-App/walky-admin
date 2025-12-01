@@ -9,6 +9,7 @@ import {
   FlagUserModal,
   Divider,
 } from "../../../components-v2";
+import { useMixpanel } from "../../../hooks";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
@@ -18,6 +19,7 @@ interface DeactivatedStudentTableProps {
   students: StudentData[];
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
+  pageContext?: string;
 }
 
 type SortField = StudentTableColumn;
@@ -25,7 +27,13 @@ type SortDirection = "asc" | "desc";
 
 export const DeactivatedStudentTable: React.FC<
   DeactivatedStudentTableProps
-> = ({ students, columns = ["userId", "name", "email"], onStudentClick }) => {
+> = ({
+  students,
+  columns = ["userId", "name", "email"],
+  onStudentClick,
+  pageContext = "Deactivated Students",
+}) => {
+  const { trackEvent } = useMixpanel();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
@@ -43,6 +51,11 @@ export const DeactivatedStudentTable: React.FC<
   const handleViewProfile = (student: StudentData) => {
     setSelectedStudent(student);
     setProfileModalVisible(true);
+    trackEvent(`${pageContext} - View Profile Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+      student_status: student.status,
+    });
   };
 
   const handleSendEmail = async (student: StudentData) => {
@@ -50,6 +63,11 @@ export const DeactivatedStudentTable: React.FC<
       await navigator.clipboard.writeText(student.email);
       setToastMessage("Email copied to clipboard");
       setShowToast(true);
+      trackEvent(`${pageContext} - Send Email Action`, {
+        student_id: student.userId,
+        student_name: student.name,
+        student_email: student.email,
+      });
     } catch (error) {
       console.error("Failed to copy email:", error);
       setToastMessage("Failed to copy email");
@@ -60,6 +78,11 @@ export const DeactivatedStudentTable: React.FC<
   const handleFlagUser = (student: StudentData) => {
     setStudentToFlag(student);
     setFlagModalVisible(true);
+    trackEvent(`${pageContext} - Flag User Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+      already_flagged: student.isFlagged || false,
+    });
   };
 
   const handleConfirmFlag = () => {
@@ -69,11 +92,22 @@ export const DeactivatedStudentTable: React.FC<
     // TODO: Call API to flag user
     // Example: await flagUserAPI(studentToFlag.id);
 
+    trackEvent(`${pageContext} - Flag User Confirmed`, {
+      student_id: studentToFlag.userId,
+      student_name: studentToFlag.name,
+    });
+
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
 
   const handleCloseFlagModal = () => {
+    if (studentToFlag) {
+      trackEvent(`${pageContext} - Flag User Modal Closed`, {
+        student_id: studentToFlag.userId,
+        student_name: studentToFlag.name,
+      });
+    }
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -86,6 +120,10 @@ export const DeactivatedStudentTable: React.FC<
   const handleActivateUser = (student: StudentData) => {
     setStudentToActivate(student);
     setActivateModalVisible(true);
+    trackEvent(`${pageContext} - Activate User Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+    });
   };
 
   const handleConfirmActivate = () => {
@@ -95,18 +133,38 @@ export const DeactivatedStudentTable: React.FC<
     // TODO: Call API to activate user
     // Example: await activateUserAPI(studentToActivate.id);
 
+    trackEvent(`${pageContext} - Activate User Confirmed`, {
+      student_id: studentToActivate.userId,
+      student_name: studentToActivate.name,
+    });
+
     setActivateModalVisible(false);
     setStudentToActivate(null);
   };
 
   const handleCloseActivateModal = () => {
+    if (studentToActivate) {
+      trackEvent(`${pageContext} - Activate User Modal Closed`, {
+        student_id: studentToActivate.userId,
+        student_name: studentToActivate.name,
+      });
+    }
     setActivateModalVisible(false);
     setStudentToActivate(null);
   };
 
   const handleSort = (field: SortField) => {
+    const newDirection =
+      sortField === field ? (sortDirection === "asc" ? "desc" : "asc") : "asc";
+
+    trackEvent(`${pageContext} - Table Sorted`, {
+      sort_field: field,
+      sort_direction: newDirection,
+      previous_field: sortField || "none",
+    });
+
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(newDirection);
     } else {
       setSortField(field);
       setSortDirection("asc");
@@ -115,6 +173,9 @@ export const DeactivatedStudentTable: React.FC<
 
   const handleCopyUserId = (userId: string) => {
     navigator.clipboard.writeText(userId);
+    trackEvent(`${pageContext} - User ID Copied`, {
+      user_id: userId,
+    });
   };
 
   const sortedStudents = React.useMemo(() => {
@@ -355,6 +416,7 @@ export const DeactivatedStudentTable: React.FC<
         onClose={handleCloseProfile}
         onBanUser={(student) => console.log("Ban user", student)}
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        pageContext={pageContext}
       />
 
       <ActivateUserModal

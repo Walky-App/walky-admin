@@ -1,5 +1,6 @@
 import React from "react";
 import { useTheme } from "../../hooks/useTheme";
+import { useMixpanel } from "../../hooks/useMixpanel";
 import "./LastUpdated.css";
 
 interface LastUpdatedProps {
@@ -8,6 +9,15 @@ interface LastUpdatedProps {
 
 export const LastUpdated: React.FC<LastUpdatedProps> = ({ className = "" }) => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
+
+  const handleSuggestClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    trackEvent("Footer - Suggest Data Link Clicked", {
+      location: "footer",
+    });
+    // TODO: Open suggestion modal or redirect to feedback form
+  };
 
   return (
     <div className={`footer-container ${className}`}>
@@ -24,6 +34,7 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({ className = "" }) => {
             href="#"
             className="suggest-link"
             style={{ color: theme.colors.primary }}
+            onClick={handleSuggestClick}
           >
             Suggest here
           </a>

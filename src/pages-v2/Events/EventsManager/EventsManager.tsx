@@ -3,6 +3,7 @@ import { SearchInput, FilterDropdown } from "../../../components-v2";
 import { EventTable, EventData } from "../components/EventTable/EventTable";
 import "./EventsManager.css";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 // Mock data - replace with API call
 const mockEvents: EventData[] = [
@@ -56,10 +57,9 @@ const mockEvents: EventData[] = [
   },
 ];
 
-type ViewMode = "list" | "calendar";
-
 export const EventsManager: React.FC = () => {
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const { trackEvent } = useMixpanel();
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,7 +89,12 @@ export const EventsManager: React.FC = () => {
         <button
           data-testid="view-list-btn"
           className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
-          onClick={() => setViewMode("list")}
+          onClick={() => {
+            setViewMode("list");
+            trackEvent("Events Manager - View Mode Changed", {
+              viewMode: "list",
+            });
+          }}
         >
           List view
         </button>
@@ -98,7 +103,12 @@ export const EventsManager: React.FC = () => {
           className={`view-toggle-btn ${
             viewMode === "calendar" ? "active" : ""
           }`}
-          onClick={() => setViewMode("calendar")}
+          onClick={() => {
+            setViewMode("calendar");
+            trackEvent("Events Manager - View Mode Changed", {
+              viewMode: "calendar",
+            });
+          }}
         >
           Calendar view
         </button>
@@ -113,14 +123,24 @@ export const EventsManager: React.FC = () => {
               <div className="events-filters">
                 <SearchInput
                   value={searchQuery}
-                  onChange={setSearchQuery}
+                  onChange={(value) => {
+                    setSearchQuery(value);
+                    trackEvent("Events Manager - Search Input Changed", {
+                      query: value,
+                    });
+                  }}
                   placeholder="Search"
                   variant="secondary"
                 />
 
                 <FilterDropdown
                   value={typeFilter}
-                  onChange={setTypeFilter}
+                  onChange={(value) => {
+                    setTypeFilter(value);
+                    trackEvent("Events Manager - Type Filter Changed", {
+                      filter: value,
+                    });
+                  }}
                   options={[
                     { value: "all", label: "All types" },
                     { value: "public", label: "Public" },
@@ -135,7 +155,10 @@ export const EventsManager: React.FC = () => {
 
           {viewMode === "list" ? (
             <>
-              <EventTable events={filteredEvents} />
+              <EventTable
+                events={filteredEvents}
+                pageContext="Events Manager"
+              />
 
               <div className="events-pagination">
                 <p className="pagination-info">
@@ -146,7 +169,12 @@ export const EventsManager: React.FC = () => {
                   <button
                     data-testid="pagination-prev-btn"
                     className="pagination-btn"
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                    onClick={() => {
+                      setCurrentPage(currentPage - 1);
+                      trackEvent("Events Manager - Page Changed", {
+                        page: currentPage - 1,
+                      });
+                    }}
                     disabled={currentPage === 1}
                   >
                     Previous
@@ -159,7 +187,12 @@ export const EventsManager: React.FC = () => {
                   <button
                     data-testid="pagination-next-btn"
                     className="pagination-btn"
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                    onClick={() => {
+                      setCurrentPage(currentPage + 1);
+                      trackEvent("Events Manager - Page Changed", {
+                        page: currentPage + 1,
+                      });
+                    }}
                     disabled={currentPage === totalPages}
                   >
                     Next

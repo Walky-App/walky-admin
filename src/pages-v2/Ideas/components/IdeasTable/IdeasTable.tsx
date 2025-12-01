@@ -11,6 +11,7 @@ import {
   UnflagModal,
   Divider,
 } from "../../../../components-v2";
+import { useMixpanel } from "../../../../hooks/useMixpanel";
 
 export interface IdeaData {
   id: string;
@@ -36,12 +37,17 @@ export interface IdeaData {
 
 interface IdeasTableProps {
   ideas: IdeaData[];
+  pageContext?: string;
 }
 
 type SortField = "ideaTitle" | "owner" | "collaborated" | "creationDate";
 type SortDirection = "asc" | "desc";
 
-export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
+export const IdeasTable: React.FC<IdeasTableProps> = ({
+  ideas,
+  pageContext = "Ideas",
+}) => {
+  const { trackEvent } = useMixpanel();
   const [sortField, setSortField] = useState<SortField>("creationDate");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -58,9 +64,17 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      trackEvent(`${pageContext} - Table Sorted`, {
+        sortField: field,
+        sortDirection: sortDirection === "asc" ? "desc" : "asc",
+      });
     } else {
       setSortField(field);
       setSortDirection("asc");
+      trackEvent(`${pageContext} - Table Sorted`, {
+        sortField: field,
+        sortDirection: "asc",
+      });
     }
   };
 
@@ -96,6 +110,10 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
   const handleViewIdeaDetails = (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
+    trackEvent(`${pageContext} - View Idea Details Action`, {
+      ideaId: idea.id,
+      ideaTitle: idea.ideaTitle,
+    });
     setSelectedIdea(idea);
     setDetailsModalOpen(true);
   };
@@ -104,11 +122,20 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     e.stopPropagation();
     setIdeaToFlag(idea);
     setFlagModalOpen(true);
+    trackEvent(`${pageContext} - Flag Idea Action`, {
+      ideaId: idea.id,
+      ideaTitle: idea.ideaTitle,
+    });
   };
 
   const handleFlagConfirm = (reason: string) => {
     if (ideaToFlag) {
       console.log("Flagging idea:", ideaToFlag.ideaTitle, "Reason:", reason);
+      trackEvent(`${pageContext} - Flag Idea Confirmed`, {
+        ideaId: ideaToFlag.id,
+        ideaTitle: ideaToFlag.ideaTitle,
+        reason,
+      });
       // TODO: Call API to flag idea
       setToastMessage(`Idea "${ideaToFlag.ideaTitle}" flagged successfully`);
       setShowToast(true);
@@ -120,11 +147,19 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     e.stopPropagation();
     setIdeaToUnflag(idea);
     setUnflagModalOpen(true);
+    trackEvent(`${pageContext} - Unflag Idea Action`, {
+      ideaId: idea.id,
+      ideaTitle: idea.ideaTitle,
+    });
   };
 
   const handleUnflagConfirm = () => {
     if (ideaToUnflag) {
       console.log("Unflagging idea:", ideaToUnflag.ideaTitle);
+      trackEvent(`${pageContext} - Unflag Idea Confirmed`, {
+        ideaId: ideaToUnflag.id,
+        ideaTitle: ideaToUnflag.ideaTitle,
+      });
       // TODO: Call API to unflag idea
       setToastMessage(
         `Idea "${ideaToUnflag.ideaTitle}" unflagged successfully`
@@ -138,11 +173,20 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     e.stopPropagation();
     setIdeaToDelete(idea);
     setDeleteModalOpen(true);
+    trackEvent(`${pageContext} - Delete Idea Action`, {
+      ideaId: idea.id,
+      ideaTitle: idea.ideaTitle,
+    });
   };
 
   const handleDeleteConfirm = (reason: string) => {
     if (ideaToDelete) {
       console.log("Deleting idea:", ideaToDelete, "Reason:", reason);
+      trackEvent(`${pageContext} - Delete Idea Confirmed`, {
+        ideaId: ideaToDelete.id,
+        ideaTitle: ideaToDelete.ideaTitle,
+        reason,
+      });
       // TODO: Implement actual delete API call
       setToastMessage(`"${ideaToDelete.ideaTitle}" has been deleted`);
       setShowToast(true);
@@ -295,7 +339,10 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
       <UnflagModal
         isOpen={unflagModalOpen}
-        onClose={() => setUnflagModalOpen(false)}
+        onClose={() => {
+          setUnflagModalOpen(false);
+          trackEvent(`${pageContext} - Unflag Idea Modal Closed`);
+        }}
         onConfirm={handleUnflagConfirm}
         itemName={ideaToUnflag?.ideaTitle || ""}
         type="idea"
@@ -303,7 +350,10 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
       <FlagModal
         isOpen={flagModalOpen}
-        onClose={() => setFlagModalOpen(false)}
+        onClose={() => {
+          setFlagModalOpen(false);
+          trackEvent(`${pageContext} - Flag Idea Modal Closed`);
+        }}
         onConfirm={handleFlagConfirm}
         itemName={ideaToFlag?.ideaTitle || ""}
         type="idea"
@@ -311,7 +361,10 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
       <DeleteModal
         isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          trackEvent(`${pageContext} - Delete Idea Modal Closed`);
+        }}
         onConfirm={handleDeleteConfirm}
         itemName={ideaToDelete?.ideaTitle || ""}
         type="idea"

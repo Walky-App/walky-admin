@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AssetIcon } from "../../../components-v2";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 interface VerifyCodeStepProps {
   email: string;
   onVerify: (code: string) => void;
@@ -11,12 +12,18 @@ const VerifyCodeStep: React.FC<VerifyCodeStepProps> = ({
   onVerify,
   onResendCode,
 }) => {
+  const { trackEvent } = useMixpanel();
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    trackEvent("Recover Password V2 - Verification Code Submitted", { email });
+    console.log("✅ Recover Password V2 - Verification Code Submitted", {
+      email,
+    });
 
     // TODO: Implement verification logic
     console.log("Verification attempt:", { email, verificationCode });
@@ -29,6 +36,10 @@ const VerifyCodeStep: React.FC<VerifyCodeStepProps> = ({
   };
 
   const handleResend = () => {
+    trackEvent("Recover Password V2 - Resend Code Button Clicked", { email });
+    console.log("✅ Recover Password V2 - Resend Code Button Clicked", {
+      email,
+    });
     onResendCode();
   };
 
@@ -81,7 +92,15 @@ const VerifyCodeStep: React.FC<VerifyCodeStepProps> = ({
               className="form-input"
               placeholder="Enter Code"
               value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
+              onChange={(e) => {
+                trackEvent(
+                  "Recover Password V2 - Verification Code Input Changed"
+                );
+                console.log(
+                  "✅ Recover Password V2 - Verification Code Input Changed"
+                );
+                setVerificationCode(e.target.value);
+              }}
               required
               data-testid="verification-code-input"
               aria-label="Verification code"

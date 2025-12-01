@@ -8,13 +8,26 @@ import {
 } from "../../../components-v2";
 import { LineChart } from "../components";
 import { BarChart } from "./components/BarChart";
+import { useMixpanel } from "../../../hooks";
 import "./UserInteractions.css";
 
 const UserInteractions: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { trackEvent } = useMixpanel();
+
+  const handleTimePeriodChange = (newTimePeriod: TimePeriod) => {
+    setTimePeriod(newTimePeriod);
+    trackEvent("User Interactions - Filter Time Period Changed", {
+      time_period: newTimePeriod,
+      previous_period: timePeriod,
+    });
+  };
 
   const handleExport = () => {
     console.log("Exporting data...");
+    trackEvent("User Interactions - Data Exported", {
+      time_period: timePeriod,
+    });
   };
 
   // Mock data for different time periods
@@ -130,7 +143,7 @@ const UserInteractions: React.FC = () => {
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
+        onTimePeriodChange={handleTimePeriodChange}
         onExport={handleExport}
       />
 

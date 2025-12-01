@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AssetIcon from "../../components-v2/AssetIcon/AssetIcon";
 import AssetImage from "../../components-v2/AssetImage/AssetImage";
+import { useMixpanel } from "../../hooks/useMixpanel";
 import "./LoginV2.css";
 
 const LoginV2: React.FC = () => {
   const navigate = useNavigate();
+  const { trackEvent } = useMixpanel();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -14,6 +16,9 @@ const LoginV2: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    trackEvent("Login V2 - Form Submitted", { email });
+    console.log("✅ Login V2 - Form Submitted", { email });
+
     // TODO: Implement login logic
     console.log("Login attempt:", { email, password });
 
@@ -21,6 +26,8 @@ const LoginV2: React.FC = () => {
   };
 
   const handleForgotPassword = () => {
+    trackEvent("Login V2 - Forgot Password Clicked");
+    console.log("✅ Login V2 - Forgot Password Clicked");
     navigate("/recover-password");
   };
 
@@ -52,7 +59,11 @@ const LoginV2: React.FC = () => {
                 className="form-input"
                 placeholder="Email address"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  trackEvent("Login V2 - Email Input Changed");
+                  console.log("✅ Login V2 - Email Input Changed");
+                  setEmail(e.target.value);
+                }}
                 required
                 data-testid="email-input"
                 aria-label="Email address"
@@ -71,7 +82,11 @@ const LoginV2: React.FC = () => {
                 className="form-input"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  trackEvent("Login V2 - Password Input Changed");
+                  console.log("✅ Login V2 - Password Input Changed");
+                  setPassword(e.target.value);
+                }}
                 required
                 data-testid="password-input"
                 aria-label="Password"

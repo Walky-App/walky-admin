@@ -13,6 +13,7 @@ import {
 } from "../../../../components-v2";
 import { SpaceTypeChip, SpaceType } from "../SpaceTypeChip/SpaceTypeChip";
 import "./SpaceTable.css";
+import { useMixpanel } from "../../../../hooks/useMixpanel";
 
 export interface SpaceData {
   id: string;
@@ -33,12 +34,17 @@ export interface SpaceData {
 
 interface SpaceTableProps {
   spaces: SpaceData[];
+  pageContext?: string;
 }
 
 type SortField = "spaceName" | "owner" | "events" | "members" | "creationDate";
 type SortDirection = "asc" | "desc";
 
-export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
+export const SpaceTable: React.FC<SpaceTableProps> = ({
+  spaces,
+  pageContext = "Spaces",
+}) => {
+  const { trackEvent } = useMixpanel();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -57,15 +63,27 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      trackEvent(`${pageContext} - Table Sorted`, {
+        sortField: field,
+        sortDirection: sortDirection === "asc" ? "desc" : "asc",
+      });
     } else {
       setSortField(field);
       setSortDirection("asc");
+      trackEvent(`${pageContext} - Table Sorted`, {
+        sortField: field,
+        sortDirection: "asc",
+      });
     }
   };
 
   const handleDeleteClick = (space: SpaceData) => {
     setSpaceToDelete(space);
     setDeleteModalOpen(true);
+    trackEvent(`${pageContext} - Delete Space Action`, {
+      spaceId: space.id,
+      spaceName: space.spaceName,
+    });
   };
 
   const handleDeleteConfirm = (reason: string) => {
@@ -76,6 +94,11 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         "Reason:",
         reason
       );
+      trackEvent(`${pageContext} - Delete Space Confirmed`, {
+        spaceId: spaceToDelete.id,
+        spaceName: spaceToDelete.spaceName,
+        reason,
+      });
       // TODO: Call API to delete space
       setToastMessage(
         `Space "${spaceToDelete.spaceName}" deleted successfully`
@@ -87,6 +110,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
 
   const handleViewSpaceDetails = (space: SpaceData, e: React.MouseEvent) => {
     e.stopPropagation();
+    trackEvent(`${pageContext} - View Space Details Action`, {
+      spaceId: space.id,
+      spaceName: space.spaceName,
+    });
     // Convert SpaceData to SpaceDetailsData
     const spaceDetails: SpaceDetailsData = {
       id: space.id,
@@ -170,11 +197,20 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     e.stopPropagation();
     setSpaceToFlag(space);
     setFlagModalOpen(true);
+    trackEvent(`${pageContext} - Flag Space Action`, {
+      spaceId: space.id,
+      spaceName: space.spaceName,
+    });
   };
 
   const handleFlagConfirm = (reason: string) => {
     if (spaceToFlag) {
       console.log("Flagging space:", spaceToFlag.spaceName, "Reason:", reason);
+      trackEvent(`${pageContext} - Flag Space Confirmed`, {
+        spaceId: spaceToFlag.id,
+        spaceName: spaceToFlag.spaceName,
+        reason,
+      });
       // TODO: Call API to flag space
       setToastMessage(`Space "${spaceToFlag.spaceName}" flagged successfully`);
       setShowToast(true);
@@ -186,11 +222,19 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     e.stopPropagation();
     setSpaceToUnflag(space);
     setUnflagModalOpen(true);
+    trackEvent(`${pageContext} - Unflag Space Action`, {
+      spaceId: space.id,
+      spaceName: space.spaceName,
+    });
   };
 
   const handleUnflagConfirm = () => {
     if (spaceToUnflag) {
       console.log("Unflagging space:", spaceToUnflag.spaceName);
+      trackEvent(`${pageContext} - Unflag Space Confirmed`, {
+        spaceId: spaceToUnflag.id,
+        spaceName: spaceToUnflag.spaceName,
+      });
       // TODO: Call API to unflag space
       setToastMessage(
         `Space "${spaceToUnflag.spaceName}" unflagged successfully`
@@ -405,7 +449,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
 
       <UnflagModal
         isOpen={unflagModalOpen}
-        onClose={() => setUnflagModalOpen(false)}
+        onClose={() => {
+          setUnflagModalOpen(false);
+          trackEvent(`${pageContext} - Unflag Space Modal Closed`);
+        }}
         onConfirm={handleUnflagConfirm}
         itemName={spaceToUnflag?.spaceName || ""}
         type="space"
@@ -413,7 +460,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
 
       <FlagModal
         isOpen={flagModalOpen}
-        onClose={() => setFlagModalOpen(false)}
+        onClose={() => {
+          setFlagModalOpen(false);
+          trackEvent(`${pageContext} - Flag Space Modal Closed`);
+        }}
         onConfirm={handleFlagConfirm}
         itemName={spaceToFlag?.spaceName || ""}
         type="space"
@@ -421,7 +471,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
 
       <DeleteModal
         isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          trackEvent(`${pageContext} - Delete Space Modal Closed`);
+        }}
         onConfirm={handleDeleteConfirm}
         itemName={spaceToDelete?.spaceName || ""}
         type="space"

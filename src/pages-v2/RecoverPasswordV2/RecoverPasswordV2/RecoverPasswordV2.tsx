@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useMixpanel } from "../../../hooks/useMixpanel";
 import "./RecoverPasswordV2.css";
 import VerifyCodeStep from "../VerifyCodeStep/VerifyCodeStep";
 import ResetPasswordStep from "../ResetPasswordStep/ResetPasswordStep";
@@ -10,6 +10,7 @@ type RecoveryStep = "email" | "verify" | "reset";
 
 const RecoverPasswordV2: React.FC = () => {
   const navigate = useNavigate();
+  const { trackEvent } = useMixpanel();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<RecoveryStep>("email");
@@ -17,6 +18,9 @@ const RecoverPasswordV2: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    trackEvent("Recover Password V2 - Email Submitted", { email });
+    console.log("✅ Recover Password V2 - Email Submitted", { email });
 
     // TODO: Implement password recovery logic
     console.log("Password recovery request:", { email });
@@ -29,23 +33,31 @@ const RecoverPasswordV2: React.FC = () => {
   };
 
   const handleVerify = (code: string) => {
+    trackEvent("Recover Password V2 - Code Verified", { email });
+    console.log("✅ Recover Password V2 - Code Verified", { email });
     console.log("Verification code:", code);
     setCurrentStep("reset");
   };
 
   const handleResendCode = () => {
+    trackEvent("Recover Password V2 - Resend Code Clicked", { email });
+    console.log("✅ Recover Password V2 - Resend Code Clicked", { email });
     console.log("Resending code to:", email);
     // TODO: Implement resend logic
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleReset = (_password: string) => {
+    trackEvent("Recover Password V2 - Password Reset Complete", { email });
+    console.log("✅ Recover Password V2 - Password Reset Complete", { email });
     console.log("Password reset complete");
     // Navigate to login after successful reset
     navigate("/login-v2");
   };
 
   const handleBackToLogin = () => {
+    trackEvent("Recover Password V2 - Back to Login Clicked");
+    console.log("✅ Recover Password V2 - Back to Login Clicked");
     navigate("/login-v2");
   };
 
@@ -106,7 +118,11 @@ const RecoverPasswordV2: React.FC = () => {
                 className="form-input"
                 placeholder="Email address"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  trackEvent("Recover Password V2 - Email Input Changed");
+                  console.log("✅ Recover Password V2 - Email Input Changed");
+                  setEmail(e.target.value);
+                }}
                 required
                 data-testid="recover-email-input"
                 aria-label="Email address"

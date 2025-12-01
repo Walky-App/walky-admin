@@ -12,6 +12,7 @@ import {
   CopyableId,
   Divider,
 } from "../../../components-v2";
+import { useMixpanel } from "../../../hooks";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
@@ -91,6 +92,7 @@ interface StudentTableProps {
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
   onActionClick?: (student: StudentData) => void;
+  pageContext?: string;
 }
 
 type SortField = StudentTableColumn;
@@ -108,7 +110,9 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     "onlineLast",
   ],
   onStudentClick,
+  pageContext = "Students",
 }) => {
+  const { trackEvent } = useMixpanel();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
@@ -128,6 +132,11 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const handleViewProfile = (student: StudentData) => {
     setSelectedStudent(student);
     setProfileModalVisible(true);
+    trackEvent(`${pageContext} - View Profile Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+      student_status: student.status,
+    });
   };
 
   const handleSendEmail = (student: StudentData) => {
@@ -137,6 +146,13 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     // Show toast
     setToastMessage("Email copied to clipboard");
     setShowToast(true);
+
+    // Track event
+    trackEvent(`${pageContext} - Send Email Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+      student_email: student.email,
+    });
 
     // Auto-hide after 3 seconds
     setTimeout(() => {
@@ -150,6 +166,13 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   };
 
   const handleFlagUser = (student: StudentData) => {
+    // Track event
+    trackEvent(`${pageContext} - Flag User Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+      already_flagged: student.isFlagged || false,
+    });
+
     // Check if user has opted out of the modal
     const shouldSkip =
       localStorage.getItem("walky-admin-flag-user-hide-message") === "true";
@@ -171,11 +194,22 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     // TODO: Call API to flag user
     // Example: await flagUserAPI(studentToProcess.id);
 
+    trackEvent(`${pageContext} - Flag User Confirmed`, {
+      student_id: studentToProcess.userId,
+      student_name: studentToProcess.name,
+    });
+
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
 
   const handleCloseFlagModal = () => {
+    if (studentToFlag) {
+      trackEvent(`${pageContext} - Flag User Modal Closed`, {
+        student_id: studentToFlag.userId,
+        student_name: studentToFlag.name,
+      });
+    }
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -183,6 +217,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const handleDeactivateUser = (student: StudentData) => {
     setStudentToDeactivate(student);
     setDeactivateModalVisible(true);
+    trackEvent(`${pageContext} - Deactivate User Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+    });
   };
 
   const handleConfirmDeactivate = () => {
@@ -192,11 +230,22 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     // TODO: Call API to deactivate user
     // Example: await deactivateUserAPI(studentToDeactivate.id);
 
+    trackEvent(`${pageContext} - Deactivate User Confirmed`, {
+      student_id: studentToDeactivate.userId,
+      student_name: studentToDeactivate.name,
+    });
+
     setDeactivateModalVisible(false);
     setStudentToDeactivate(null);
   };
 
   const handleCloseDeactivateModal = () => {
+    if (studentToDeactivate) {
+      trackEvent(`${pageContext} - Deactivate User Modal Closed`, {
+        student_id: studentToDeactivate.userId,
+        student_name: studentToDeactivate.name,
+      });
+    }
     setDeactivateModalVisible(false);
     setStudentToDeactivate(null);
   };
@@ -204,6 +253,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const handleBanUser = (student: StudentData) => {
     setStudentToBan(student);
     setBanModalVisible(true);
+    trackEvent(`${pageContext} - Ban User Action`, {
+      student_id: student.userId,
+      student_name: student.name,
+    });
   };
 
   const handleConfirmBan = (
@@ -220,18 +273,41 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     // TODO: Call API to ban user
     // Example: await banUserAPI(studentToBan.id, { duration, reason, resolveReports });
 
+    trackEvent(`${pageContext} - Ban User Confirmed`, {
+      student_id: studentToBan.userId,
+      student_name: studentToBan.name,
+      duration: duration,
+      reason: reason,
+      resolve_reports: resolveReports,
+    });
+
     setBanModalVisible(false);
     setStudentToBan(null);
   };
 
   const handleCloseBanModal = () => {
+    if (studentToBan) {
+      trackEvent(`${pageContext} - Ban User Modal Closed`, {
+        student_id: studentToBan.userId,
+        student_name: studentToBan.name,
+      });
+    }
     setBanModalVisible(false);
     setStudentToBan(null);
   };
 
   const handleSort = (field: SortField) => {
+    const newDirection =
+      sortField === field ? (sortDirection === "asc" ? "desc" : "asc") : "asc";
+
+    trackEvent(`${pageContext} - Table Sorted`, {
+      sort_field: field,
+      sort_direction: newDirection,
+      previous_field: sortField || "none",
+    });
+
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(newDirection);
     } else {
       setSortField(field);
       setSortDirection("asc");
@@ -490,6 +566,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         onClose={handleCloseProfile}
         onBanUser={(student) => console.log("Ban user", student)}
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        pageContext={pageContext}
       />
 
       <FlagUserModal

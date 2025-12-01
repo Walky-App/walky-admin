@@ -5,13 +5,24 @@ import { StatsCard } from "../components/StatsCard";
 import { Pagination } from "../components/Pagination";
 import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData } from "../components/StudentTable";
+import { useMixpanel } from "../../../hooks";
 import "./BannedStudents.css";
 
 export const BannedStudents: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const entriesPerPage = 10;
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (value.length > 0) {
+      trackEvent("Banned Students - Search Input", {
+        search_query: value,
+      });
+    }
+  };
 
   // Mock data - replace with API call
   const mockStudents: StudentData[] = [
@@ -192,6 +203,9 @@ export const BannedStudents: React.FC = () => {
 
   const handleExport = () => {
     console.log("Export banned students data");
+    trackEvent("Banned Students - Data Exported", {
+      total_students: filteredStudents.length,
+    });
   };
 
   const handleStudentClick = (student: StudentData) => {
@@ -235,7 +249,7 @@ export const BannedStudents: React.FC = () => {
             </h1>
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={handleSearchChange}
               placeholder="Search"
               variant="primary"
             />
@@ -264,6 +278,7 @@ export const BannedStudents: React.FC = () => {
             totalEntries={filteredStudents.length}
             entriesPerPage={entriesPerPage}
             onPageChange={setCurrentPage}
+            pageContext="Banned Students"
           />
         </div>
       </div>

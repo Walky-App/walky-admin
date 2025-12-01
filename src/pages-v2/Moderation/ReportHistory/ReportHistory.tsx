@@ -16,6 +16,7 @@ import {
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 interface HistoryReportData {
   id: string;
@@ -35,6 +36,7 @@ interface HistoryReportData {
 
 export const ReportHistory: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -330,14 +332,25 @@ export const ReportHistory: React.FC = () => {
             <div className="reports-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={(value) => {
+                  setSearchQuery(value);
+                  trackEvent("Report History - Search Input Changed", {
+                    query: value,
+                  });
+                }}
                 placeholder="Search"
                 variant="secondary"
               />
 
               <MultiSelectFilterDropdown
                 selectedValues={selectedTypes}
-                onChange={setSelectedTypes}
+                onChange={(values) => {
+                  setSelectedTypes(values);
+                  trackEvent("Report History - Type Filter Changed", {
+                    selectedTypes: values.join(", "),
+                    count: values.length,
+                  });
+                }}
                 options={[
                   { value: "User", label: "User" },
                   { value: "Message", label: "Message" },
@@ -353,7 +366,12 @@ export const ReportHistory: React.FC = () => {
 
               <FilterDropdown
                 value={selectedStatus}
-                onChange={setSelectedStatus}
+                onChange={(value) => {
+                  setSelectedStatus(value);
+                  trackEvent("Report History - Status Filter Changed", {
+                    status: value,
+                  });
+                }}
                 options={[
                   { value: "all", label: "All status" },
                   { value: "Pending review", label: "Pending review" },
@@ -368,7 +386,9 @@ export const ReportHistory: React.FC = () => {
             </div>
           </div>
 
-          <ExportButton />
+          <ExportButton
+            onClick={() => trackEvent("Report History - Data Exported")}
+          />
         </div>
 
         {/* Reports Table */}
@@ -409,6 +429,13 @@ export const ReportHistory: React.FC = () => {
                               onClick={() => {
                                 setSelectedReport(report);
                                 setIsDetailModalOpen(true);
+                                trackEvent(
+                                  "Report History - Report Details Opened",
+                                  {
+                                    reportId: report.id,
+                                    reportType: report.type,
+                                  }
+                                );
                               }}
                             >
                               {report.description}
@@ -446,12 +473,21 @@ export const ReportHistory: React.FC = () => {
                       <td>
                         <StatusDropdown
                           value={report.status}
-                          onChange={(newStatus) =>
-                            handleStatusChange(report.id, newStatus)
-                          }
-                          onNoteRequired={(newStatus) =>
-                            handleNoteRequired(report.id, newStatus)
-                          }
+                          onChange={(newStatus) => {
+                            handleStatusChange(report.id, newStatus);
+                            trackEvent("Report History - Status Changed", {
+                              reportId: report.id,
+                              oldStatus: report.status,
+                              newStatus: newStatus,
+                            });
+                          }}
+                          onNoteRequired={(newStatus) => {
+                            handleNoteRequired(report.id, newStatus);
+                            trackEvent("Report History - Note Required", {
+                              reportId: report.id,
+                              newStatus: newStatus,
+                            });
+                          }}
                           options={["Reopen"]}
                           testId={`status-dropdown-${report.id}`}
                         />
@@ -466,6 +502,13 @@ export const ReportHistory: React.FC = () => {
                                 e.stopPropagation();
                                 setSelectedReport(report);
                                 setIsDetailModalOpen(true);
+                                trackEvent(
+                                  "Report History - Report Details Clicked (Action)",
+                                  {
+                                    reportId: report.id,
+                                    reportType: report.type,
+                                  }
+                                );
                               },
                             },
                             {
@@ -476,6 +519,9 @@ export const ReportHistory: React.FC = () => {
                                 e.stopPropagation();
                                 setSelectedReport(report);
                                 setIsFlagModalOpen(true);
+                                trackEvent("Report History - Flag Clicked", {
+                                  reportId: report.id,
+                                });
                               },
                             },
                           ]}
@@ -506,7 +552,12 @@ export const ReportHistory: React.FC = () => {
               data-testid="pagination-prev-btn"
               className="pagination-button"
               disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
+              onClick={() => {
+                setCurrentPage(currentPage - 1);
+                trackEvent("Report History - Page Changed", {
+                  page: currentPage - 1,
+                });
+              }}
             >
               Previous
             </button>
@@ -515,7 +566,12 @@ export const ReportHistory: React.FC = () => {
               data-testid="pagination-next-btn"
               className="pagination-button"
               disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage(currentPage + 1)}
+              onClick={() => {
+                setCurrentPage(currentPage + 1);
+                trackEvent("Report History - Page Changed", {
+                  page: currentPage + 1,
+                });
+              }}
             >
               Next
             </button>
@@ -525,8 +581,17 @@ export const ReportHistory: React.FC = () => {
 
       <WriteNoteModal
         isOpen={isNoteModalOpen}
-        onClose={handleNoteClose}
-        onConfirm={handleNoteConfirm}
+        onClose={() => {
+          handleNoteClose();
+          trackEvent("Report History - Write Note Modal Closed");
+        }}
+        onConfirm={(note) => {
+          handleNoteConfirm(note);
+          trackEvent("Report History - Note Confirmed", {
+            reportId: pendingStatusChange?.reportId,
+            newStatus: pendingStatusChange?.newStatus,
+          });
+        }}
       />
 
       {selectedReport && (
@@ -535,7 +600,9 @@ export const ReportHistory: React.FC = () => {
           onClose={() => {
             setIsDetailModalOpen(false);
             setSelectedReport(null);
+            trackEvent("Report History - Report Detail Modal Closed");
           }}
+          pageContext="Report History"
           reportType={selectedReport.type as ReportType}
           reportData={{
             associatedUser: {
@@ -622,16 +689,35 @@ export const ReportHistory: React.FC = () => {
               handleNoteRequired(selectedReport.id, newStatus);
             }
           }}
-          onDeactivateUser={() => console.log("Deactivate user")}
-          onBanUser={() => console.log("Ban user")}
+          onDeactivateUser={() => {
+            console.log("Deactivate user");
+            trackEvent("Report History - Deactivate User Action", {
+              reportId: selectedReport?.id,
+              userId: selectedReport?.studentId,
+            });
+          }}
+          onBanUser={() => {
+            console.log("Ban user");
+            trackEvent("Report History - Ban User Action", {
+              reportId: selectedReport?.id,
+              userId: selectedReport?.studentId,
+            });
+          }}
         />
       )}
 
       <FlagModal
         isOpen={isFlagModalOpen}
-        onClose={() => setIsFlagModalOpen(false)}
+        onClose={() => {
+          setIsFlagModalOpen(false);
+          trackEvent("Report History - Flag Modal Closed");
+        }}
         onConfirm={(reason) => {
           console.log("Flag report:", selectedReport?.id, "Reason:", reason);
+          trackEvent("Report History - Flag Report Confirmed", {
+            reportId: selectedReport?.id,
+            reason: reason,
+          });
           setIsFlagModalOpen(false);
         }}
         itemName={selectedReport?.description || ""}

@@ -6,6 +6,7 @@ import {
   LastUpdated,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks";
 import { CRow, CCol } from "@coreui/react";
 import "./StudentBehavior.css";
 
@@ -30,11 +31,23 @@ interface CompletionMetric {
 
 const StudentBehavior: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [hoveredTooltip, setHoveredTooltip] = useState<number | null>(null);
 
+  const handleTimePeriodChange = (newTimePeriod: TimePeriod) => {
+    setTimePeriod(newTimePeriod);
+    trackEvent("Student Behavior - Filter Time Period Changed", {
+      time_period: newTimePeriod,
+      previous_period: timePeriod,
+    });
+  };
+
   const handleExport = () => {
     console.log("Exporting student behavior data...");
+    trackEvent("Student Behavior - Data Exported", {
+      time_period: timePeriod,
+    });
   };
 
   const metricCards: MetricCard[] = [
@@ -131,7 +144,7 @@ const StudentBehavior: React.FC = () => {
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
+        onTimePeriodChange={handleTimePeriodChange}
         dateRange="October 1 – October 31"
         onExport={handleExport}
       />

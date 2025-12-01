@@ -15,10 +15,12 @@ import {
 } from "../../../components-v2";
 import { StatsCard, LineChart, DonutChart } from "../components";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 import "./Engagement.css";
 
 const Engagement: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [selectedMetric, setSelectedMetric] = useState("user-engagement");
 
@@ -166,7 +168,27 @@ const Engagement: React.FC = () => {
     },
   ];
 
+  const handleTimePeriodChange = (newPeriod: TimePeriod) => {
+    trackEvent("Engagement - Filter Time Period Changed", {
+      previous_value: timePeriod,
+      new_value: newPeriod,
+    });
+    setTimePeriod(newPeriod);
+  };
+
+  const handleMetricChange = (metric: string) => {
+    trackEvent("Engagement - Metric View Changed", {
+      metric_type: metric,
+      previous_metric: selectedMetric,
+    });
+    setSelectedMetric(metric);
+  };
+
   const handleExport = () => {
+    trackEvent("Engagement - Data Exported", {
+      time_period: timePeriod,
+      selected_metric: selectedMetric,
+    });
     console.log("Exporting data...");
     // Implement export logic here
   };
@@ -176,7 +198,7 @@ const Engagement: React.FC = () => {
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
+        onTimePeriodChange={handleTimePeriodChange}
         onExport={handleExport}
       />
 
@@ -290,13 +312,13 @@ const Engagement: React.FC = () => {
           </CDropdownToggle>
           <CDropdownMenu>
             <CDropdownItem
-              onClick={() => setSelectedMetric("user-engagement")}
+              onClick={() => handleMetricChange("user-engagement")}
               active={selectedMetric === "user-engagement"}
             >
               User engagement over time
             </CDropdownItem>
             <CDropdownItem
-              onClick={() => setSelectedMetric("new-retention")}
+              onClick={() => handleMetricChange("new-retention")}
               active={selectedMetric === "new-retention"}
             >
               New users & retention

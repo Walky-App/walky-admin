@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./EventsInsights.css";
 import { AssetIcon, ExportButton } from "../../../components-v2";
 import { DonutChart } from "../../Dashboard/components";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 interface Interest {
   name: string;
@@ -16,6 +17,7 @@ interface EventItem {
 }
 
 export const EventsInsights: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
@@ -104,7 +106,9 @@ export const EventsInsights: React.FC = () => {
     <main className="events-insights-page">
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton />
+        <ExportButton
+          onClick={() => trackEvent("Events Insights - Data Exported")}
+        />
       </div>
 
       {/* Top 3 Stats Cards */}
@@ -190,21 +194,36 @@ export const EventsInsights: React.FC = () => {
           <button
             data-testid="time-all-btn"
             className={`time-option ${timePeriod === "all" ? "active" : ""}`}
-            onClick={() => setTimePeriod("all")}
+            onClick={() => {
+              setTimePeriod("all");
+              trackEvent("Events Insights - Time Period Changed", {
+                timePeriod: "all",
+              });
+            }}
           >
             All time
           </button>
           <button
             data-testid="time-week-btn"
             className={`time-option ${timePeriod === "week" ? "active" : ""}`}
-            onClick={() => setTimePeriod("week")}
+            onClick={() => {
+              setTimePeriod("week");
+              trackEvent("Events Insights - Time Period Changed", {
+                timePeriod: "week",
+              });
+            }}
           >
             Week
           </button>
           <button
             data-testid="time-month-btn"
             className={`time-option ${timePeriod === "month" ? "active" : ""}`}
-            onClick={() => setTimePeriod("month")}
+            onClick={() => {
+              setTimePeriod("month");
+              trackEvent("Events Insights - Time Period Changed", {
+                timePeriod: "month",
+              });
+            }}
           >
             Month
           </button>

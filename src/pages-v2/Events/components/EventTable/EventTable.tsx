@@ -13,6 +13,7 @@ import {
 } from "../../../../components-v2";
 import { EventTypeChip, EventType } from "../EventTypeChip/EventTypeChip";
 import "./EventTable.css";
+import { useMixpanel } from "../../../../hooks/useMixpanel";
 
 export interface EventData {
   id: string;
@@ -32,12 +33,17 @@ export interface EventData {
 
 interface EventTableProps {
   events: EventData[];
+  pageContext?: string;
 }
 
 type SortField = "eventName" | "organizer" | "eventDate" | "attendees";
 type SortDirection = "asc" | "desc";
 
-export const EventTable: React.FC<EventTableProps> = ({ events }) => {
+export const EventTable: React.FC<EventTableProps> = ({
+  events,
+  pageContext = "Events",
+}) => {
+  const { trackEvent } = useMixpanel();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -56,15 +62,27 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      trackEvent(`${pageContext} - Table Sorted`, {
+        sortField: field,
+        sortDirection: sortDirection === "asc" ? "desc" : "asc",
+      });
     } else {
       setSortField(field);
       setSortDirection("asc");
+      trackEvent(`${pageContext} - Table Sorted`, {
+        sortField: field,
+        sortDirection: "asc",
+      });
     }
   };
 
   const handleDeleteClick = (event: EventData) => {
     setEventToDelete(event);
     setDeleteModalOpen(true);
+    trackEvent(`${pageContext} - Delete Event Action`, {
+      eventId: event.id,
+      eventName: event.eventName,
+    });
   };
 
   const handleDeleteConfirm = (reason: string) => {
@@ -75,6 +93,11 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
         "Reason:",
         reason
       );
+      trackEvent(`${pageContext} - Delete Event Confirmed`, {
+        eventId: eventToDelete.id,
+        eventName: eventToDelete.eventName,
+        reason,
+      });
       // TODO: Call API to delete event
       setToastMessage(
         `Event "${eventToDelete.eventName}" deleted successfully`
@@ -86,6 +109,10 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
 
   const handleViewEvent = (event: EventData, e: React.MouseEvent) => {
     e.stopPropagation();
+    trackEvent(`${pageContext} - View Event Action`, {
+      eventId: event.id,
+      eventName: event.eventName,
+    });
     // Convert EventData to EventDetailsData
     const eventDetails: EventDetailsData = {
       id: event.id,
@@ -122,11 +149,20 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
     e.stopPropagation();
     setEventToFlag(event);
     setFlagModalOpen(true);
+    trackEvent(`${pageContext} - Flag Event Action`, {
+      eventId: event.id,
+      eventName: event.eventName,
+    });
   };
 
   const handleFlagConfirm = (reason: string) => {
     if (eventToFlag) {
       console.log("Flagging event:", eventToFlag.eventName, "Reason:", reason);
+      trackEvent(`${pageContext} - Flag Event Confirmed`, {
+        eventId: eventToFlag.id,
+        eventName: eventToFlag.eventName,
+        reason,
+      });
       // TODO: Call API to flag event
       setToastMessage(`Event "${eventToFlag.eventName}" flagged successfully`);
       setShowToast(true);
@@ -138,11 +174,19 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
     e.stopPropagation();
     setEventToUnflag(event);
     setUnflagModalOpen(true);
+    trackEvent(`${pageContext} - Unflag Event Action`, {
+      eventId: event.id,
+      eventName: event.eventName,
+    });
   };
 
   const handleUnflagConfirm = () => {
     if (eventToUnflag) {
       console.log("Unflagging event:", eventToUnflag.eventName);
+      trackEvent(`${pageContext} - Unflag Event Confirmed`, {
+        eventId: eventToUnflag.id,
+        eventName: eventToUnflag.eventName,
+      });
       // TODO: Call API to unflag event
       setToastMessage(
         `Event "${eventToUnflag.eventName}" unflagged successfully`
@@ -344,7 +388,10 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
 
       <DeleteModal
         isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          trackEvent(`${pageContext} - Delete Event Modal Closed`);
+        }}
         onConfirm={handleDeleteConfirm}
         itemName={eventToDelete?.eventName || ""}
         type="event"
@@ -352,7 +399,10 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
 
       <UnflagModal
         isOpen={unflagModalOpen}
-        onClose={() => setUnflagModalOpen(false)}
+        onClose={() => {
+          setUnflagModalOpen(false);
+          trackEvent(`${pageContext} - Unflag Event Modal Closed`);
+        }}
         onConfirm={handleUnflagConfirm}
         itemName={eventToUnflag?.eventName || ""}
         type="event"
@@ -360,7 +410,10 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
 
       <FlagModal
         isOpen={flagModalOpen}
-        onClose={() => setFlagModalOpen(false)}
+        onClose={() => {
+          setFlagModalOpen(false);
+          trackEvent(`${pageContext} - Flag Event Modal Closed`);
+        }}
         onConfirm={handleFlagConfirm}
         itemName={eventToFlag?.eventName || ""}
         type="event"

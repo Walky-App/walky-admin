@@ -8,6 +8,7 @@ import {
   Divider,
 } from "../../../components-v2";
 import { StatsCard } from "../components/StatsCard";
+import { useMixpanel } from "../../../hooks";
 import "./DisengagedStudents.css";
 
 interface DisengagedStudent {
@@ -22,6 +23,7 @@ interface DisengagedStudent {
 }
 
 export const DisengagedStudents: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [selectedStudent, setSelectedStudent] =
     useState<DisengagedStudent | null>(null);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
@@ -67,6 +69,12 @@ export const DisengagedStudents: React.FC = () => {
       await navigator.clipboard.writeText(student.email);
       setToastMessage("Email copied to clipboard");
       setShowToast(true);
+      trackEvent("Disengaged Students - Send Outreach Action", {
+        student_name: student.name,
+        student_email: student.email,
+        peers_count: student.peers,
+        ignored_invitations: student.ignoredInvitations,
+      });
     } catch (error) {
       console.error("Failed to copy email:", error);
       setToastMessage("Failed to copy email");
@@ -77,6 +85,12 @@ export const DisengagedStudents: React.FC = () => {
   const handleStudentClick = (student: DisengagedStudent) => {
     setSelectedStudent(student);
     setProfileModalVisible(true);
+    trackEvent("Disengaged Students - View Profile Action", {
+      student_name: student.name,
+      peers_count: student.peers,
+      ignored_invitations: student.ignoredInvitations,
+      is_reported: student.reported,
+    });
   };
 
   const handleCloseProfile = () => {
@@ -86,6 +100,9 @@ export const DisengagedStudents: React.FC = () => {
 
   const handleExport = () => {
     console.log("Export clicked");
+    trackEvent("Disengaged Students - Data Exported", {
+      total_students: mockStudents.length,
+    });
   };
 
   return (

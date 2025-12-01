@@ -4,6 +4,7 @@ import "./Campuses.css";
 import { AssetIcon, CopyableId, Divider } from "../../../components-v2";
 import CampusBoundary from "../../../pages/CampusBoundary";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 interface CampusData {
   id: string;
@@ -32,6 +33,7 @@ const getInitials = (name: string): string => {
 
 export const Campuses: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [searchQuery, _setSearchQuery] = useState("");
   const [expandedCampusId, setExpandedCampusId] = useState<string | null>(null);
   const [currentPage] = useState(1);
@@ -80,8 +82,14 @@ export const Campuses: React.FC = () => {
   const handleToggleExpand = (campusId: string) => {
     if (expandedCampusId === campusId) {
       setExpandedCampusId(null);
+      trackEvent("Campuses - Campus Collapsed", {
+        campusId: campusId,
+      });
     } else {
       setExpandedCampusId(campusId);
+      trackEvent("Campuses - Campus Expanded", {
+        campusId: campusId,
+      });
     }
   };
 
@@ -187,6 +195,12 @@ export const Campuses: React.FC = () => {
                         className="sync-button"
                         title="Sync places"
                         aria-label="Sync places for campus"
+                        onClick={() => {
+                          trackEvent("Campuses - Sync Places Clicked", {
+                            campusId: campus.id,
+                            campusName: campus.name,
+                          });
+                        }}
                       >
                         <AssetIcon name="swap-arrows-icon" size={16} />
                       </button>

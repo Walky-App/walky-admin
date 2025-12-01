@@ -7,20 +7,46 @@ import {
   LastUpdated,
   ReportDetailsModal,
 } from "../../../components-v2";
+import { useMixpanel } from "../../../hooks";
 import "./StudentSafety.css";
 
 const StudentSafety: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReportType, setSelectedReportType] = useState("");
 
+  const handleTimePeriodChange = (newTimePeriod: TimePeriod) => {
+    setTimePeriod(newTimePeriod);
+    trackEvent("Student Safety - Filter Time Period Changed", {
+      time_period: newTimePeriod,
+      previous_period: timePeriod,
+    });
+  };
+
   const handleExport = () => {
     console.log("Exporting student safety data...");
+    trackEvent("Student Safety - Data Exported", {
+      time_period: timePeriod,
+    });
   };
 
   const handleBarClick = (_legendKey: string, legendLabel: string) => {
-    setSelectedReportType(legendLabel.replace("Reported ", ""));
+    const reportType = legendLabel.replace("Reported ", "");
+    setSelectedReportType(reportType);
     setModalVisible(true);
+    trackEvent("Student Safety - Report History Modal Opened", {
+      report_type: reportType,
+      time_period: timePeriod,
+    });
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    trackEvent("Student Safety - Report History Modal Closed", {
+      report_type: selectedReportType,
+      time_period: timePeriod,
+    });
   };
 
   // Mock reports data
@@ -289,7 +315,7 @@ const StudentSafety: React.FC = () => {
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
+        onTimePeriodChange={handleTimePeriodChange}
         onExport={handleExport}
       />
 
@@ -320,7 +346,7 @@ const StudentSafety: React.FC = () => {
       {/* Report Details Modal */}
       <ReportDetailsModal
         visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={handleModalClose}
         reportType={selectedReportType}
         reports={mockReports}
         totalCount={2}

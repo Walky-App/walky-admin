@@ -6,13 +6,26 @@ import {
   LastUpdated,
 } from "../../../components-v2";
 import { BarChart } from "./components/BarChart";
+import { useMixpanel } from "../../../hooks";
 import "./Community.css";
 
 const Community: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { trackEvent } = useMixpanel();
+
+  const handleTimePeriodChange = (newTimePeriod: TimePeriod) => {
+    setTimePeriod(newTimePeriod);
+    trackEvent("Community - Filter Time Period Changed", {
+      time_period: newTimePeriod,
+      previous_period: timePeriod,
+    });
+  };
 
   const handleExport = () => {
     console.log("Exporting community data...");
+    trackEvent("Community - Data Exported", {
+      time_period: timePeriod,
+    });
   };
 
   // Mock data for different time periods
@@ -101,7 +114,7 @@ const Community: React.FC = () => {
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
+        onTimePeriodChange={handleTimePeriodChange}
         onExport={handleExport}
       />
 

@@ -7,6 +7,7 @@ import {
   FilterDropdown,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 import {
   RolePermissionsModal,
   RemoveMemberModal,
@@ -43,6 +44,7 @@ const getInitials = (name: string): string => {
 
 export const RoleManagement: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [currentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All Roles");
@@ -135,6 +137,7 @@ export const RoleManagement: React.FC = () => {
 
   const handleCreateMember = () => {
     setIsCreateMemberModalOpen(true);
+    trackEvent("Role Management - Create Member Button Clicked");
   };
 
   const handleRoleClick = (
@@ -142,15 +145,24 @@ export const RoleManagement: React.FC = () => {
   ) => {
     setSelectedRole(role);
     setIsRoleModalOpen(true);
+    trackEvent("Role Management - Role Badge Clicked", {
+      role: role,
+    });
   };
 
   const handleCloseRoleModal = () => {
     setIsRoleModalOpen(false);
+    trackEvent("Role Management - Role Permissions Modal Closed", {
+      role: selectedRole,
+    });
     setSelectedRole(null);
   };
 
   const handleRoleFilterSelect = (role: string) => {
     setRoleFilter(role);
+    trackEvent("Role Management - Role Filter Changed", {
+      role: role,
+    });
   };
 
   const handleChangeRole = (memberId: string) => {
@@ -158,6 +170,11 @@ export const RoleManagement: React.FC = () => {
     if (member) {
       setSelectedMember(member);
       setIsChangeRoleModalOpen(true);
+      trackEvent("Role Management - Change Role Action Clicked", {
+        memberId: memberId,
+        memberName: member.name,
+        currentRole: member.role,
+      });
     }
   };
 
@@ -166,6 +183,10 @@ export const RoleManagement: React.FC = () => {
     if (member) {
       setSelectedMember(member);
       setIsPasswordResetModalOpen(true);
+      trackEvent("Role Management - Send Password Reset Action Clicked", {
+        memberId: memberId,
+        memberEmail: member.email,
+      });
     }
   };
 
@@ -174,12 +195,20 @@ export const RoleManagement: React.FC = () => {
     if (member) {
       setSelectedMember(member);
       setIsRemoveMemberModalOpen(true);
+      trackEvent("Role Management - Remove Member Action Clicked", {
+        memberId: memberId,
+        memberName: member.name,
+      });
     }
   };
 
   // Modal confirm handlers
   const handleConfirmRemoveMember = () => {
     console.log("Remove member confirmed:", selectedMember?.name);
+    trackEvent("Role Management - Member Removed", {
+      memberId: selectedMember?.id,
+      memberName: selectedMember?.name,
+    });
     // TODO: API call to remove member
     setIsRemoveMemberModalOpen(false);
     setSelectedMember(null);
@@ -189,6 +218,12 @@ export const RoleManagement: React.FC = () => {
     newRole: "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator"
   ) => {
     console.log("Change role confirmed:", selectedMember?.name, "to", newRole);
+    trackEvent("Role Management - Role Changed", {
+      memberId: selectedMember?.id,
+      memberName: selectedMember?.name,
+      oldRole: selectedMember?.role,
+      newRole: newRole,
+    });
     // TODO: API call to change member role
     setIsChangeRoleModalOpen(false);
     setSelectedMember(null);
@@ -201,6 +236,11 @@ export const RoleManagement: React.FC = () => {
       "Don't show again:",
       dontShowAgain
     );
+    trackEvent("Role Management - Password Reset Sent", {
+      memberId: selectedMember?.id,
+      memberEmail: selectedMember?.email,
+      dontShowAgain: dontShowAgain,
+    });
     // TODO: API call to send password reset
     setIsPasswordResetModalOpen(false);
     setSelectedMember(null);
@@ -208,6 +248,10 @@ export const RoleManagement: React.FC = () => {
 
   const handleConfirmCreateMember = (memberData: MemberFormData) => {
     console.log("Create member confirmed:", memberData);
+    trackEvent("Role Management - Member Created", {
+      email: memberData.email,
+      role: memberData.role,
+    });
     // TODO: API call to create new member
     setIsCreateMemberModalOpen(false);
   };
@@ -231,7 +275,12 @@ export const RoleManagement: React.FC = () => {
             <div className="members-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={(value) => {
+                  setSearchQuery(value);
+                  trackEvent("Role Management - Search Input Changed", {
+                    query: value,
+                  });
+                }}
                 placeholder="Search"
                 variant="secondary"
               />
@@ -449,7 +498,10 @@ export const RoleManagement: React.FC = () => {
       {selectedMember && (
         <RemoveMemberModal
           isOpen={isRemoveMemberModalOpen}
-          onClose={() => setIsRemoveMemberModalOpen(false)}
+          onClose={() => {
+            setIsRemoveMemberModalOpen(false);
+            trackEvent("Role Management - Remove Member Modal Closed");
+          }}
           onConfirm={handleConfirmRemoveMember}
           memberName={selectedMember.name}
         />
@@ -459,7 +511,10 @@ export const RoleManagement: React.FC = () => {
       {selectedMember && (
         <ChangeRoleModal
           isOpen={isChangeRoleModalOpen}
-          onClose={() => setIsChangeRoleModalOpen(false)}
+          onClose={() => {
+            setIsChangeRoleModalOpen(false);
+            trackEvent("Role Management - Change Role Modal Closed");
+          }}
           onConfirm={handleConfirmChangeRole}
           currentRole={selectedMember.role}
         />
@@ -469,7 +524,10 @@ export const RoleManagement: React.FC = () => {
       {selectedMember && (
         <SendPasswordResetModal
           isOpen={isPasswordResetModalOpen}
-          onClose={() => setIsPasswordResetModalOpen(false)}
+          onClose={() => {
+            setIsPasswordResetModalOpen(false);
+            trackEvent("Role Management - Password Reset Modal Closed");
+          }}
           onConfirm={handleConfirmPasswordReset}
         />
       )}
@@ -477,7 +535,10 @@ export const RoleManagement: React.FC = () => {
       {/* Create Member Modal */}
       <CreateMemberModal
         isOpen={isCreateMemberModalOpen}
-        onClose={() => setIsCreateMemberModalOpen(false)}
+        onClose={() => {
+          setIsCreateMemberModalOpen(false);
+          trackEvent("Role Management - Create Member Modal Closed");
+        }}
         onConfirm={handleConfirmCreateMember}
       />
     </main>

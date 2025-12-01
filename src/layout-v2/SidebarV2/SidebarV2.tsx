@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AssetIcon } from "../../components-v2";
+import { useMixpanel } from "../../hooks/useMixpanel";
 import "./SidebarV2.css";
 
 // Walky Logo component
@@ -26,6 +27,10 @@ interface SidebarMenuItemProps {
   isSubmenuItem?: boolean;
   onToggle?: () => void;
   isOpen?: boolean;
+  trackEvent?: (
+    eventName: string,
+    properties?: Record<string, string | number | boolean | null | undefined>
+  ) => void;
 }
 
 const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
@@ -33,6 +38,7 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   isSubmenuItem = false,
   onToggle,
   isOpen = false,
+  trackEvent,
 }) => {
   const location = useLocation();
   const hasSubmenu = item.submenu !== undefined;
@@ -43,6 +49,14 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
       <NavLink
         to={item.path || "#"}
         className={() => `sidebar-submenu-item ${isExactMatch ? "active" : ""}`}
+        onClick={() => {
+          if (trackEvent) {
+            trackEvent("Sidebar - Submenu Item Clicked", {
+              label: item.label,
+              path: item.path,
+            });
+          }
+        }}
       >
         {item.label}
       </NavLink>
@@ -64,6 +78,12 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
           onClick={() => {
             if (onToggle) {
               onToggle();
+              if (trackEvent) {
+                trackEvent("Sidebar - Menu Toggled", {
+                  label: item.label,
+                  action: isOpen ? "collapsed" : "expanded",
+                });
+              }
             }
           }}
         >
@@ -90,7 +110,12 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
         {isOpen && item.submenu && item.submenu.length > 0 && (
           <div className="sidebar-submenu">
             {item.submenu.map((subItem, index) => (
-              <SidebarMenuItem key={index} item={subItem} isSubmenuItem />
+              <SidebarMenuItem
+                key={index}
+                item={subItem}
+                isSubmenuItem
+                trackEvent={trackEvent}
+              />
             ))}
           </div>
         )}
@@ -104,6 +129,14 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
       className={({ isActive: navIsActive }) =>
         `sidebar-menu-item ${navIsActive ? "active" : ""}`
       }
+      onClick={() => {
+        if (trackEvent) {
+          trackEvent("Sidebar - Menu Item Clicked", {
+            label: item.label,
+            path: item.path,
+          });
+        }
+      }}
     >
       {({ isActive: navIsActive }) => (
         <>
@@ -116,6 +149,7 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
 };
 
 const SidebarV2: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   const menuSections: MenuSection[] = [
@@ -234,6 +268,7 @@ const SidebarV2: React.FC = () => {
                   item={item}
                   isOpen={openMenus[item.label]}
                   onToggle={() => item.submenu && toggleMenu(item.label)}
+                  trackEvent={trackEvent}
                 />
               ))}
             </div>

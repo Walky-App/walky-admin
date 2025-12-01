@@ -8,6 +8,7 @@ import {
 } from "../../../components-v2";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 interface AmbassadorData {
   id: string;
@@ -29,6 +30,7 @@ interface Student {
 
 export const Ambassadors: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [currentPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ambassadorToDelete, setAmbassadorToDelete] = useState<{
@@ -84,11 +86,15 @@ export const Ambassadors: React.FC = () => {
 
   const handleAddAmbassador = () => {
     setAddModalOpen(true);
+    trackEvent("Ambassadors - Add Ambassador Button Clicked");
   };
 
   const confirmAddAmbassadors = (selectedStudents: Student[]) => {
     // TODO: Implement actual add API call
     console.log("Adding ambassadors:", selectedStudents);
+    trackEvent("Ambassadors - Ambassadors Added", {
+      count: selectedStudents.length,
+    });
     setToastMessage(
       `${selectedStudents.length} ambassador${
         selectedStudents.length > 1 ? "s" : ""
@@ -103,6 +109,10 @@ export const Ambassadors: React.FC = () => {
     if (ambassador) {
       setAmbassadorToDelete({ id: ambassador.id, name: ambassador.name });
       setDeleteModalOpen(true);
+      trackEvent("Ambassadors - Delete Ambassador Button Clicked", {
+        ambassadorId: id,
+        ambassadorName: ambassador.name,
+      });
     }
   };
 
@@ -110,6 +120,10 @@ export const Ambassadors: React.FC = () => {
     if (ambassadorToDelete) {
       // TODO: Implement actual delete API call
       console.log("Deleting ambassador:", ambassadorToDelete.id);
+      trackEvent("Ambassadors - Ambassador Deleted", {
+        ambassadorId: ambassadorToDelete.id,
+        ambassadorName: ambassadorToDelete.name,
+      });
       setToastMessage("Ambassador deleted successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -203,6 +217,9 @@ export const Ambassadors: React.FC = () => {
                           title="Copy Student ID"
                           onClick={() => {
                             navigator.clipboard.writeText(ambassador.studentId);
+                            trackEvent("Ambassadors - Student ID Copied", {
+                              ambassadorId: ambassador.id,
+                            });
                             setToastMessage("Student ID copied to clipboard");
                             setShowToast(true);
                             setTimeout(() => setShowToast(false), 3000);
@@ -306,14 +323,20 @@ export const Ambassadors: React.FC = () => {
       {/* Add Ambassador Modal */}
       <AddAmbassadorModal
         isOpen={addModalOpen}
-        onClose={() => setAddModalOpen(false)}
+        onClose={() => {
+          setAddModalOpen(false);
+          trackEvent("Ambassadors - Add Ambassador Modal Closed");
+        }}
         onConfirm={confirmAddAmbassadors}
       />
 
       {/* Delete Confirmation Modal */}
       <DeleteAmbassadorModal
         isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          trackEvent("Ambassadors - Delete Ambassador Modal Closed");
+        }}
         onConfirm={confirmDeleteAmbassador}
         ambassadorName={ambassadorToDelete?.name || ""}
       />

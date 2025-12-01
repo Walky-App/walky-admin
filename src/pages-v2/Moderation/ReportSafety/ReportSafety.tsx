@@ -16,6 +16,7 @@ import {
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 interface ReportData {
   id: string;
@@ -35,6 +36,7 @@ interface ReportData {
 
 export const ReportSafety: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -291,14 +293,25 @@ export const ReportSafety: React.FC = () => {
             <div className="reports-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={(value) => {
+                  setSearchQuery(value);
+                  trackEvent("Report Safety - Search Input Changed", {
+                    query: value,
+                  });
+                }}
                 placeholder="Search"
                 variant="secondary"
               />
 
               <MultiSelectFilterDropdown
                 selectedValues={selectedTypes}
-                onChange={setSelectedTypes}
+                onChange={(values) => {
+                  setSelectedTypes(values);
+                  trackEvent("Report Safety - Type Filter Changed", {
+                    selectedTypes: values.join(", "),
+                    count: values.length,
+                  });
+                }}
                 options={[
                   { value: "User", label: "User" },
                   { value: "Message", label: "Message" },
@@ -314,7 +327,12 @@ export const ReportSafety: React.FC = () => {
 
               <FilterDropdown
                 value={selectedStatus}
-                onChange={setSelectedStatus}
+                onChange={(value) => {
+                  setSelectedStatus(value);
+                  trackEvent("Report Safety - Status Filter Changed", {
+                    status: value,
+                  });
+                }}
                 options={[
                   { value: "all", label: "All status" },
                   { value: "Pending review", label: "Pending review" },
@@ -326,7 +344,9 @@ export const ReportSafety: React.FC = () => {
               />
             </div>
           </div>
-          <ExportButton />
+          <ExportButton
+            onClick={() => trackEvent("Report Safety - Data Exported")}
+          />
         </div>
 
         {/* Reports Table */}
@@ -376,6 +396,13 @@ export const ReportSafety: React.FC = () => {
                               onClick={() => {
                                 setSelectedReport(report);
                                 setIsDetailModalOpen(true);
+                                trackEvent(
+                                  "Report Safety - Report Details Opened",
+                                  {
+                                    reportId: report.id,
+                                    reportType: report.type,
+                                  }
+                                );
                               }}
                             >
                               {report.description}
@@ -411,12 +438,21 @@ export const ReportSafety: React.FC = () => {
                       <td>
                         <StatusDropdown
                           value={report.status}
-                          onChange={(newStatus) =>
-                            handleStatusChange(report.id, newStatus)
-                          }
-                          onNoteRequired={(newStatus) =>
-                            handleNoteRequired(report.id, newStatus)
-                          }
+                          onChange={(newStatus) => {
+                            handleStatusChange(report.id, newStatus);
+                            trackEvent("Report Safety - Status Changed", {
+                              reportId: report.id,
+                              oldStatus: report.status,
+                              newStatus: newStatus,
+                            });
+                          }}
+                          onNoteRequired={(newStatus) => {
+                            handleNoteRequired(report.id, newStatus);
+                            trackEvent("Report Safety - Note Required", {
+                              reportId: report.id,
+                              newStatus: newStatus,
+                            });
+                          }}
                           options={[
                             "Pending review",
                             "Under evaluation",
@@ -436,6 +472,13 @@ export const ReportSafety: React.FC = () => {
                                 e.stopPropagation();
                                 setSelectedReport(report);
                                 setIsDetailModalOpen(true);
+                                trackEvent(
+                                  "Report Safety - Report Details Clicked (Action)",
+                                  {
+                                    reportId: report.id,
+                                    reportType: report.type,
+                                  }
+                                );
                               },
                             },
                             {
@@ -446,6 +489,9 @@ export const ReportSafety: React.FC = () => {
                                 e.stopPropagation();
                                 setSelectedReport(report);
                                 setIsFlagModalOpen(true);
+                                trackEvent("Report Safety - Flag Clicked", {
+                                  reportId: report.id,
+                                });
                               },
                             },
                           ]}
@@ -470,8 +516,17 @@ export const ReportSafety: React.FC = () => {
 
       <WriteNoteModal
         isOpen={isNoteModalOpen}
-        onClose={handleNoteClose}
-        onConfirm={handleNoteConfirm}
+        onClose={() => {
+          handleNoteClose();
+          trackEvent("Report Safety - Write Note Modal Closed");
+        }}
+        onConfirm={(note) => {
+          handleNoteConfirm(note);
+          trackEvent("Report Safety - Note Confirmed", {
+            reportId: pendingStatusChange?.reportId,
+            newStatus: pendingStatusChange?.newStatus,
+          });
+        }}
       />
 
       {selectedReport && (
@@ -480,7 +535,9 @@ export const ReportSafety: React.FC = () => {
           onClose={() => {
             setIsDetailModalOpen(false);
             setSelectedReport(null);
+            trackEvent("Report Safety - Report Detail Modal Closed");
           }}
+          pageContext="Report Safety"
           reportType={selectedReport.type as ReportType}
           reportData={{
             associatedUser: {
@@ -567,16 +624,35 @@ export const ReportSafety: React.FC = () => {
               handleNoteRequired(selectedReport.id, newStatus);
             }
           }}
-          onDeactivateUser={() => console.log("Deactivate user")}
-          onBanUser={() => console.log("Ban user")}
+          onDeactivateUser={() => {
+            console.log("Deactivate user");
+            trackEvent("Report Safety - Deactivate User Action", {
+              reportId: selectedReport?.id,
+              userId: selectedReport?.studentId,
+            });
+          }}
+          onBanUser={() => {
+            console.log("Ban user");
+            trackEvent("Report Safety - Ban User Action", {
+              reportId: selectedReport?.id,
+              userId: selectedReport?.studentId,
+            });
+          }}
         />
       )}
 
       <FlagModal
         isOpen={isFlagModalOpen}
-        onClose={() => setIsFlagModalOpen(false)}
+        onClose={() => {
+          setIsFlagModalOpen(false);
+          trackEvent("Report Safety - Flag Modal Closed");
+        }}
         onConfirm={(reason) => {
           console.log("Flag report:", selectedReport?.id, "Reason:", reason);
+          trackEvent("Report Safety - Flag Report Confirmed", {
+            reportId: selectedReport?.id,
+            reason: reason,
+          });
           setIsFlagModalOpen(false);
         }}
         itemName={selectedReport?.description || ""}

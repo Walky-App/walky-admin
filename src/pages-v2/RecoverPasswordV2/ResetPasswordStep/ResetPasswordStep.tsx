@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { AssetIcon } from "../../../components-v2";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 interface ResetPasswordStepProps {
   onReset: (password: string) => void;
 }
 
 const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
+  const { trackEvent } = useMixpanel();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,15 +19,30 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
 
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
+      trackEvent("Recover Password V2 - Reset Password Error", {
+        error: "Passwords do not match",
+      });
+      console.log(
+        "✅ Recover Password V2 - Reset Password Error: Passwords do not match"
+      );
       return;
     }
 
     if (newPassword.length < 8) {
       setError("Password must be at least 8 characters");
+      trackEvent("Recover Password V2 - Reset Password Error", {
+        error: "Password too short",
+      });
+      console.log(
+        "✅ Recover Password V2 - Reset Password Error: Password too short"
+      );
       return;
     }
 
     setIsLoading(true);
+
+    trackEvent("Recover Password V2 - Reset Password Submitted");
+    console.log("✅ Recover Password V2 - Reset Password Submitted");
 
     // TODO: Implement password reset logic
     console.log("Password reset attempt");
@@ -81,7 +98,13 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
               className="form-input"
               placeholder="New password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) => {
+                trackEvent("Recover Password V2 - New Password Input Changed");
+                console.log(
+                  "✅ Recover Password V2 - New Password Input Changed"
+                );
+                setNewPassword(e.target.value);
+              }}
               required
               data-testid="new-password-input"
               aria-label="New password"
@@ -102,7 +125,15 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
               className="form-input"
               placeholder="Confirm password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                trackEvent(
+                  "Recover Password V2 - Confirm Password Input Changed"
+                );
+                console.log(
+                  "✅ Recover Password V2 - Confirm Password Input Changed"
+                );
+                setConfirmPassword(e.target.value);
+              }}
               required
               data-testid="confirm-password-input"
               aria-label="Confirm password"

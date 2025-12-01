@@ -5,13 +5,24 @@ import { StatsCard } from "../components/StatsCard";
 import { Pagination } from "../components/Pagination";
 import { StudentData } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
+import { useMixpanel } from "../../../hooks";
 import "./DeactivatedStudents.css";
 
 export const DeactivatedStudents: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const entriesPerPage = 10;
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (value.length > 0) {
+      trackEvent("Deactivated Students - Search Input", {
+        search_query: value,
+      });
+    }
+  };
 
   // Mock data
   const mockStudents: StudentData[] = [
@@ -82,6 +93,9 @@ export const DeactivatedStudents: React.FC = () => {
 
   const handleExport = () => {
     console.log("Export clicked");
+    trackEvent("Deactivated Students - Data Exported", {
+      total_students: filteredStudents.length,
+    });
   };
 
   return (
@@ -121,7 +135,7 @@ export const DeactivatedStudents: React.FC = () => {
             </h1>
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={handleSearchChange}
               placeholder="Search"
               variant="primary"
             />
@@ -150,6 +164,7 @@ export const DeactivatedStudents: React.FC = () => {
             totalEntries={filteredStudents.length}
             entriesPerPage={entriesPerPage}
             onPageChange={setCurrentPage}
+            pageContext="Deactivated Students"
           />
         </div>
       </div>

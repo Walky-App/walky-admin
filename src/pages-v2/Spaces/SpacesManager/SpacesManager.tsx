@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { AssetIcon, SearchInput } from "../../../components-v2";
 import { SpaceTable, SpaceData } from "../components/SpaceTable/SpaceTable";
 import "./SpacesManager.css";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 
 // Mock data - replace with API call
 const mockSpaces: SpaceData[] = [
@@ -56,6 +57,7 @@ const mockSpaces: SpaceData[] = [
 ];
 
 export const SpacesManager: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -108,7 +110,12 @@ export const SpacesManager: React.FC = () => {
           <div className="spaces-filters">
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={(value) => {
+                setSearchQuery(value);
+                trackEvent("Spaces Manager - Search Input Changed", {
+                  query: value,
+                });
+              }}
               placeholder="Search"
               variant="secondary"
             />
@@ -151,6 +158,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("all");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "all",
+                      });
                     }}
                   >
                     All Categorys
@@ -161,6 +171,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("clubs");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "clubs",
+                      });
                     }}
                   >
                     Clubs
@@ -171,6 +184,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("club-sports");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "club-sports",
+                      });
                     }}
                   >
                     Club Sports
@@ -181,6 +197,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("im-teams");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "im-teams",
+                      });
                     }}
                   >
                     IM Teams
@@ -191,6 +210,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("sororities");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "sororities",
+                      });
                     }}
                   >
                     Sororities
@@ -201,6 +223,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("fraternities");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "fraternities",
+                      });
                     }}
                   >
                     Fraternities
@@ -211,6 +236,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("volunteer");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "volunteer",
+                      });
                     }}
                   >
                     Volunteer
@@ -221,6 +249,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("academics");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "academics",
+                      });
                     }}
                   >
                     Academics & Honors
@@ -231,6 +262,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("leadership");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "leadership",
+                      });
                     }}
                   >
                     Leadership & Government
@@ -241,6 +275,9 @@ export const SpacesManager: React.FC = () => {
                     onClick={() => {
                       setCategoryFilter("cultural");
                       setCategoryDropdownOpen(false);
+                      trackEvent("Spaces Manager - Category Filter Changed", {
+                        category: "cultural",
+                      });
                     }}
                   >
                     Cultural & Diversity
@@ -251,7 +288,7 @@ export const SpacesManager: React.FC = () => {
           </div>
         </div>
 
-        <SpaceTable spaces={filteredSpaces} />
+        <SpaceTable spaces={filteredSpaces} pageContext="Spaces Manager" />
 
         <div className="spaces-pagination">
           <p className="pagination-info">
@@ -262,7 +299,12 @@ export const SpacesManager: React.FC = () => {
             <button
               data-testid="pagination-prev-btn"
               className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage - 1)}
+              onClick={() => {
+                setCurrentPage(currentPage - 1);
+                trackEvent("Spaces Manager - Page Changed", {
+                  page: currentPage - 1,
+                });
+              }}
               disabled={currentPage === 1}
             >
               Previous
@@ -275,7 +317,12 @@ export const SpacesManager: React.FC = () => {
             <button
               data-testid="pagination-next-btn"
               className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage + 1)}
+              onClick={() => {
+                setCurrentPage(currentPage + 1);
+                trackEvent("Spaces Manager - Page Changed", {
+                  page: currentPage + 1,
+                });
+              }}
               disabled={currentPage === totalPages}
             >
               Next

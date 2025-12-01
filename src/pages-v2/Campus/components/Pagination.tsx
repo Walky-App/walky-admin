@@ -1,4 +1,5 @@
 import React from "react";
+import { useMixpanel } from "../../../hooks";
 import "./Pagination.css";
 
 interface PaginationProps {
@@ -7,6 +8,7 @@ interface PaginationProps {
   totalEntries: number;
   entriesPerPage: number;
   onPageChange: (page: number) => void;
+  pageContext?: string;
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
@@ -15,9 +17,21 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalEntries,
   entriesPerPage,
   onPageChange,
+  pageContext = "Students",
 }) => {
+  const { trackEvent } = useMixpanel();
   const startEntry = (currentPage - 1) * entriesPerPage + 1;
   const endEntry = Math.min(currentPage * entriesPerPage, totalEntries);
+
+  const handlePageChange = (page: number) => {
+    onPageChange(page);
+    trackEvent(`${pageContext} - Page Changed`, {
+      previous_page: currentPage,
+      new_page: page,
+      total_pages: totalPages,
+      total_entries: totalEntries,
+    });
+  };
 
   const renderPageNumbers = () => {
     const pages = [];
@@ -37,7 +51,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           className={`pagination-button pagination-number ${
             i === currentPage ? "active" : ""
           }`}
-          onClick={() => onPageChange(i)}
+          onClick={() => handlePageChange(i)}
         >
           {i}
         </button>
@@ -56,7 +70,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           data-testid="pagination-prev-btn"
           className="pagination-button pagination-prev"
-          onClick={() => onPageChange(currentPage - 1)}
+          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
           Previous
@@ -65,7 +79,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           data-testid="pagination-next-btn"
           className="pagination-button pagination-next"
-          onClick={() => onPageChange(currentPage + 1)}
+          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
           Next

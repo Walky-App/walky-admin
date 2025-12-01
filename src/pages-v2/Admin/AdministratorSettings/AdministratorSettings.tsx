@@ -8,6 +8,7 @@ import {
 } from "../../../components-v2";
 import { useAuth } from "../../../hooks/useAuth";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 import "./AdministratorSettings.css";
 
 type TabType = "personal" | "security" | "notifications" | "danger";
@@ -16,6 +17,7 @@ export const AdministratorSettings: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [activeTab, setActiveTab] = useState<TabType>("personal");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
@@ -158,7 +160,15 @@ export const AdministratorSettings: React.FC = () => {
         <div className="settings-header-content">
           <button
             className="settings-back-btn"
-            onClick={handleBackToPanel}
+            onClick={() => {
+              trackEvent("Administrator Settings - Back Button Clicked", {
+                hasUnsavedChanges,
+              });
+              console.log("✅ Administrator Settings - Back Button Clicked", {
+                hasUnsavedChanges,
+              });
+              handleBackToPanel();
+            }}
             data-testid="settings-back-btn"
             aria-label="Back to admin panel"
           >
@@ -178,14 +188,30 @@ export const AdministratorSettings: React.FC = () => {
         <button
           data-testid="tab-personal"
           className={`settings-tab ${activeTab === "personal" ? "active" : ""}`}
-          onClick={() => setActiveTab("personal")}
+          onClick={() => {
+            trackEvent("Administrator Settings - Tab Switched", {
+              tab: "Personal Information",
+            });
+            console.log(
+              "✅ Administrator Settings - Tab Switched: Personal Information"
+            );
+            setActiveTab("personal");
+          }}
         >
           Personal Information
         </button>
         <button
           data-testid="tab-security"
           className={`settings-tab ${activeTab === "security" ? "active" : ""}`}
-          onClick={() => setActiveTab("security")}
+          onClick={() => {
+            trackEvent("Administrator Settings - Tab Switched", {
+              tab: "Security Settings",
+            });
+            console.log(
+              "✅ Administrator Settings - Tab Switched: Security Settings"
+            );
+            setActiveTab("security");
+          }}
         >
           Security Settings
         </button>
@@ -194,14 +220,30 @@ export const AdministratorSettings: React.FC = () => {
           className={`settings-tab ${
             activeTab === "notifications" ? "active" : ""
           }`}
-          onClick={() => setActiveTab("notifications")}
+          onClick={() => {
+            trackEvent("Administrator Settings - Tab Switched", {
+              tab: "Notification Preferences",
+            });
+            console.log(
+              "✅ Administrator Settings - Tab Switched: Notification Preferences"
+            );
+            setActiveTab("notifications");
+          }}
         >
           Notification Preferences
         </button>
         <button
           data-testid="tab-danger"
           className={`settings-tab ${activeTab === "danger" ? "active" : ""}`}
-          onClick={() => setActiveTab("danger")}
+          onClick={() => {
+            trackEvent("Administrator Settings - Tab Switched", {
+              tab: "Danger Zone",
+            });
+            console.log(
+              "✅ Administrator Settings - Tab Switched: Danger Zone"
+            );
+            setActiveTab("danger");
+          }}
         >
           Danger Zone
         </button>
@@ -250,6 +292,14 @@ export const AdministratorSettings: React.FC = () => {
                   />
                   <button
                     className="profile-picture-edit"
+                    onClick={() => {
+                      trackEvent(
+                        "Administrator Settings - Profile Picture Edit Clicked"
+                      );
+                      console.log(
+                        "✅ Administrator Settings - Profile Picture Edit Clicked"
+                      );
+                    }}
                     data-testid="profile-picture-edit-btn"
                     aria-label="Edit profile picture"
                   >
@@ -293,9 +343,15 @@ export const AdministratorSettings: React.FC = () => {
                   type="text"
                   value={formData.position}
                   data-testid="input-position"
-                  onChange={(e) =>
-                    handleInputChange("position", e.target.value)
-                  }
+                  onChange={(e) => {
+                    trackEvent(
+                      "Administrator Settings - Position Input Changed"
+                    );
+                    console.log(
+                      "✅ Administrator Settings - Position Input Changed"
+                    );
+                    handleInputChange("position", e.target.value);
+                  }}
                   placeholder="CPO"
                 />
               </div>
@@ -315,7 +371,13 @@ export const AdministratorSettings: React.FC = () => {
               {/* Save Button */}
               <button
                 className="save-changes-btn"
-                onClick={handleSaveChanges}
+                onClick={() => {
+                  trackEvent("Administrator Settings - Save Changes Clicked");
+                  console.log(
+                    "✅ Administrator Settings - Save Changes Clicked"
+                  );
+                  handleSaveChanges();
+                }}
                 disabled={!hasUnsavedChanges}
                 data-testid="save-changes-btn"
               >
@@ -342,9 +404,15 @@ export const AdministratorSettings: React.FC = () => {
                       type="password"
                       value={securityData.currentPassword}
                       data-testid="input-current-password"
-                      onChange={(e) =>
-                        handleSecurityChange("currentPassword", e.target.value)
-                      }
+                      onChange={(e) => {
+                        trackEvent(
+                          "Administrator Settings - Current Password Input Changed"
+                        );
+                        console.log(
+                          "✅ Administrator Settings - Current Password Input Changed"
+                        );
+                        handleSecurityChange("currentPassword", e.target.value);
+                      }}
                       placeholder="Current password"
                     />
                   </div>
@@ -358,9 +426,15 @@ export const AdministratorSettings: React.FC = () => {
                         type="password"
                         value={securityData.newPassword}
                         data-testid="input-new-password"
-                        onChange={(e) =>
-                          handleSecurityChange("newPassword", e.target.value)
-                        }
+                        onChange={(e) => {
+                          trackEvent(
+                            "Administrator Settings - New Password Input Changed"
+                          );
+                          console.log(
+                            "✅ Administrator Settings - New Password Input Changed"
+                          );
+                          handleSecurityChange("newPassword", e.target.value);
+                        }}
                         placeholder="New password"
                       />
                     </div>
@@ -373,12 +447,18 @@ export const AdministratorSettings: React.FC = () => {
                         type="password"
                         value={securityData.confirmPassword}
                         data-testid="input-confirm-password"
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          trackEvent(
+                            "Administrator Settings - Confirm Password Input Changed"
+                          );
+                          console.log(
+                            "✅ Administrator Settings - Confirm Password Input Changed"
+                          );
                           handleSecurityChange(
                             "confirmPassword",
                             e.target.value
-                          )
-                        }
+                          );
+                        }}
                         placeholder="Confirm new password"
                       />
                     </div>
@@ -387,7 +467,15 @@ export const AdministratorSettings: React.FC = () => {
 
                 <button
                   className="change-password-btn"
-                  onClick={handleChangePassword}
+                  onClick={() => {
+                    trackEvent(
+                      "Administrator Settings - Change Password Clicked"
+                    );
+                    console.log(
+                      "✅ Administrator Settings - Change Password Clicked"
+                    );
+                    handleChangePassword();
+                  }}
                   data-testid="change-password-btn"
                 >
                   Change password
@@ -406,9 +494,20 @@ export const AdministratorSettings: React.FC = () => {
                     type="checkbox"
                     checked={securityData.twoFactorEnabled}
                     data-testid="toggle-two-factor"
-                    onChange={(e) =>
-                      handleSecurityChange("twoFactorEnabled", e.target.checked)
-                    }
+                    onChange={(e) => {
+                      trackEvent(
+                        "Administrator Settings - Two-Factor Toggle Changed",
+                        { enabled: e.target.checked }
+                      );
+                      console.log(
+                        "✅ Administrator Settings - Two-Factor Toggle Changed",
+                        { enabled: e.target.checked }
+                      );
+                      handleSecurityChange(
+                        "twoFactorEnabled",
+                        e.target.checked
+                      );
+                    }}
                   />
                   <span className="toggle-slider"></span>
                 </label>
@@ -424,7 +523,15 @@ export const AdministratorSettings: React.FC = () => {
                 <h3 className="option-title">Logout all devices</h3>
                 <button
                   className="logout-all-btn"
-                  onClick={handleLogoutAllDevices}
+                  onClick={() => {
+                    trackEvent(
+                      "Administrator Settings - Logout All Devices Clicked"
+                    );
+                    console.log(
+                      "✅ Administrator Settings - Logout All Devices Clicked"
+                    );
+                    handleLogoutAllDevices();
+                  }}
                   data-testid="logout-all-btn"
                 >
                   Logout all
@@ -451,12 +558,20 @@ export const AdministratorSettings: React.FC = () => {
                     type="checkbox"
                     checked={notificationData.emailNotifications}
                     data-testid="toggle-email-notifications"
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      trackEvent(
+                        "Administrator Settings - Email Notifications Toggle Changed",
+                        { enabled: e.target.checked }
+                      );
+                      console.log(
+                        "✅ Administrator Settings - Email Notifications Toggle Changed",
+                        { enabled: e.target.checked }
+                      );
                       handleNotificationChange(
                         "emailNotifications",
                         e.target.checked
-                      )
-                    }
+                      );
+                    }}
                   />
                   <span className="toggle-slider"></span>
                 </label>
@@ -475,12 +590,20 @@ export const AdministratorSettings: React.FC = () => {
                     type="checkbox"
                     checked={notificationData.securityAlerts}
                     data-testid="toggle-security-alerts"
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      trackEvent(
+                        "Administrator Settings - Security Alerts Toggle Changed",
+                        { enabled: e.target.checked }
+                      );
+                      console.log(
+                        "✅ Administrator Settings - Security Alerts Toggle Changed",
+                        { enabled: e.target.checked }
+                      );
                       handleNotificationChange(
                         "securityAlerts",
                         e.target.checked
-                      )
-                    }
+                      );
+                    }}
                   />
                   <span className="toggle-slider"></span>
                 </label>
@@ -511,7 +634,15 @@ export const AdministratorSettings: React.FC = () => {
                 <textarea
                   className="delete-reason-textarea"
                   value={deleteReason}
-                  onChange={(e) => setDeleteReason(e.target.value)}
+                  onChange={(e) => {
+                    trackEvent(
+                      "Administrator Settings - Delete Reason Input Changed"
+                    );
+                    console.log(
+                      "✅ Administrator Settings - Delete Reason Input Changed"
+                    );
+                    setDeleteReason(e.target.value);
+                  }}
                   placeholder="Write a explanation"
                   rows={4}
                 />
@@ -526,7 +657,15 @@ export const AdministratorSettings: React.FC = () => {
 
               <button
                 className="submit-delete-btn"
-                onClick={handleSubmitDeleteRequest}
+                onClick={() => {
+                  trackEvent(
+                    "Administrator Settings - Submit Delete Request Clicked"
+                  );
+                  console.log(
+                    "✅ Administrator Settings - Submit Delete Request Clicked"
+                  );
+                  handleSubmitDeleteRequest();
+                }}
                 data-testid="submit-delete-btn"
               >
                 Submit request
@@ -540,24 +679,62 @@ export const AdministratorSettings: React.FC = () => {
       <UnsavedChangesModal
         isOpen={showUnsavedModal}
         onClose={() => {
+          trackEvent("Administrator Settings - Unsaved Changes Modal Closed", {
+            action: "stay",
+          });
+          console.log(
+            "✅ Administrator Settings - Unsaved Changes Modal Closed: stay"
+          );
           setShowUnsavedModal(false);
           setPendingNavigation(null);
         }}
-        onLeave={handleLeaveWithoutSaving}
+        onLeave={() => {
+          trackEvent(
+            "Administrator Settings - Unsaved Changes Modal Leave Clicked"
+          );
+          console.log(
+            "✅ Administrator Settings - Unsaved Changes Modal Leave Clicked"
+          );
+          handleLeaveWithoutSaving();
+        }}
       />
 
       {/* Delete Account Modal */}
       <DeleteAccountModal
         isOpen={showDeleteAccountModal}
-        onClose={() => setShowDeleteAccountModal(false)}
-        onConfirm={handleConfirmDeleteAccount}
+        onClose={() => {
+          trackEvent("Administrator Settings - Delete Account Modal Closed");
+          console.log(
+            "✅ Administrator Settings - Delete Account Modal Closed"
+          );
+          setShowDeleteAccountModal(false);
+        }}
+        onConfirm={() => {
+          trackEvent("Administrator Settings - Delete Account Confirmed");
+          console.log("✅ Administrator Settings - Delete Account Confirmed");
+          handleConfirmDeleteAccount();
+        }}
       />
 
       {/* Logout All Devices Modal */}
       <LogoutAllDevicesModal
         isOpen={showLogoutAllModal}
-        onClose={() => setShowLogoutAllModal(false)}
-        onConfirm={handleConfirmLogoutAll}
+        onClose={() => {
+          trackEvent(
+            "Administrator Settings - Logout All Devices Modal Closed"
+          );
+          console.log(
+            "✅ Administrator Settings - Logout All Devices Modal Closed"
+          );
+          setShowLogoutAllModal(false);
+        }}
+        onConfirm={() => {
+          trackEvent("Administrator Settings - Logout All Devices Confirmed");
+          console.log(
+            "✅ Administrator Settings - Logout All Devices Confirmed"
+          );
+          handleConfirmLogoutAll();
+        }}
       />
     </main>
   );

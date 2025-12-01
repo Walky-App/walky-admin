@@ -8,6 +8,7 @@ import {
   SeeAllInterestsModal,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { useMixpanel } from "../../../hooks/useMixpanel";
 import {
   FeatureCard,
   PopularitySelector,
@@ -21,10 +22,12 @@ type ViewType = "grid" | "list";
 
 const PopularFeatures: React.FC = () => {
   const { theme } = useTheme();
+  const { trackEvent } = useMixpanel();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [popularity, setPopularity] = useState<PopularityOption>("most");
   const [viewType, setViewType] = useState<ViewType>("grid");
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
+  const [currentModalCategory, setCurrentModalCategory] = useState<string>("");
 
   console.log(
     "PopularFeatures - interestsModalVisible:",
@@ -135,7 +138,53 @@ const PopularFeatures: React.FC = () => {
   ];
 
   const handleExport = () => {
+    trackEvent("Popular Features - Data Exported", {
+      time_period: timePeriod,
+      popularity: popularity,
+      view_type: viewType,
+    });
     console.log("Exporting data...");
+  };
+
+  const handleTimePeriodChange = (newPeriod: TimePeriod) => {
+    trackEvent("Popular Features - Filter Time Period Changed", {
+      previous_value: timePeriod,
+      new_value: newPeriod,
+    });
+    setTimePeriod(newPeriod);
+  };
+
+  const handlePopularityChange = (newPopularity: PopularityOption) => {
+    trackEvent("Popular Features - Filter Popularity Changed", {
+      previous_value: popularity,
+      new_value: newPopularity,
+    });
+    setPopularity(newPopularity);
+  };
+
+  const handleViewToggle = (newView: ViewType) => {
+    trackEvent("Popular Features - View Type Toggle", {
+      previous_value: viewType,
+      new_value: newView,
+    });
+    setViewType(newView);
+  };
+
+  const handleSeeAllClick = (category: string) => {
+    trackEvent("Popular Features - See All Button Clicked", {
+      category: category,
+      view_type: viewType,
+    });
+    setCurrentModalCategory(category);
+    setInterestsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    trackEvent("Popular Features - Interests Modal Closed", {
+      category: currentModalCategory,
+    });
+    setInterestsModalVisible(false);
+    setCurrentModalCategory("");
   };
 
   // Mock data for list view
@@ -233,7 +282,7 @@ const PopularFeatures: React.FC = () => {
       {/* Filter Bar - single row with export button */}
       <FilterBar
         timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
+        onTimePeriodChange={handleTimePeriodChange}
         dateRange="October 1 – October 31"
         onExport={handleExport}
       />
@@ -258,8 +307,11 @@ const PopularFeatures: React.FC = () => {
           </h1>
         </div>
         <div className="header-controls">
-          <PopularitySelector selected={popularity} onChange={setPopularity} />
-          <ViewToggle selected={viewType} onChange={setViewType} />
+          <PopularitySelector
+            selected={popularity}
+            onChange={handlePopularityChange}
+          />
+          <ViewToggle selected={viewType} onChange={handleViewToggle} />
         </div>
       </div>
 
@@ -278,10 +330,7 @@ const PopularFeatures: React.FC = () => {
                   />
                 }
                 items={topInterests}
-                onSeeAll={() => {
-                  console.log("See all Top interests clicked!");
-                  setInterestsModalVisible(true);
-                }}
+                onSeeAll={() => handleSeeAllClick("Top interests")}
               />
             </CCol>
             <CCol xs={12} md={6} lg={4}>
@@ -295,10 +344,7 @@ const PopularFeatures: React.FC = () => {
                   />
                 }
                 items={popularWaysToConnect}
-                onSeeAll={() => {
-                  console.log("See all ways clicked!");
-                  setInterestsModalVisible(true);
-                }}
+                onSeeAll={() => handleSeeAllClick("Popular ways to connect")}
               />
             </CCol>
             <CCol xs={12} md={6} lg={4}>
@@ -312,10 +358,7 @@ const PopularFeatures: React.FC = () => {
                   />
                 }
                 items={visitedPlaces}
-                onSeeAll={() => {
-                  console.log("See all places clicked!");
-                  setInterestsModalVisible(true);
-                }}
+                onSeeAll={() => handleSeeAllClick("Visited places")}
               />
             </CCol>
           </CRow>
@@ -333,10 +376,7 @@ const PopularFeatures: React.FC = () => {
                   />
                 }
                 items={topInvitationCategories}
-                onSeeAll={() => {
-                  console.log("See all categories clicked!");
-                  setInterestsModalVisible(true);
-                }}
+                onSeeAll={() => handleSeeAllClick("Top invitation categories")}
               />
             </CCol>
             <CCol xs={12} md={6}>
@@ -350,10 +390,7 @@ const PopularFeatures: React.FC = () => {
                   />
                 }
                 items={mostEngaged}
-                onSeeAll={() => {
-                  console.log("See all engaged clicked!");
-                  setInterestsModalVisible(true);
-                }}
+                onSeeAll={() => handleSeeAllClick("Most Engaged")}
               />
             </CCol>
           </CRow>
@@ -380,10 +417,7 @@ const PopularFeatures: React.FC = () => {
       {/* Interests Modal */}
       <SeeAllInterestsModal
         visible={interestsModalVisible}
-        onClose={() => {
-          console.log("Modal close clicked!");
-          setInterestsModalVisible(false);
-        }}
+        onClose={handleModalClose}
         interests={commonInterests.map((interest) => ({
           rank: interest.rank,
           name: interest.name,

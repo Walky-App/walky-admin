@@ -5,6 +5,7 @@ import { StatusBadge } from "../../pages-v2/Campus/components/StatusBadge";
 import { CustomToast } from "../CustomToast/CustomToast";
 import { BanUserModal } from "../BanUserModal/BanUserModal";
 import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
+import { useMixpanel } from "../../hooks";
 import "./StudentProfileModal.css";
 
 export interface StudentProfileData {
@@ -65,6 +66,7 @@ interface StudentProfileModalProps {
   onClose: () => void;
   onBanUser?: (student: StudentProfileData) => void;
   onDeactivateUser?: (student: StudentProfileData) => void;
+  pageContext?: string;
 }
 
 type HistoryTab = "ban" | "report" | "block";
@@ -75,7 +77,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   onClose,
   onBanUser,
   onDeactivateUser,
+  pageContext = "Students",
 }) => {
+  const { trackEvent } = useMixpanel();
   const [activeTab, setActiveTab] = useState<HistoryTab>("ban");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -88,18 +92,41 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
     navigator.clipboard.writeText(student.email);
     setToastMessage("Email copied to clipboard");
     setShowToast(true);
+    trackEvent(`${pageContext} - Profile Email Copied`, {
+      student_id: student.userId,
+      student_name: student.name,
+    });
   };
 
   const handleCopyUserId = () => {
     navigator.clipboard.writeText(student.userId);
     setToastMessage("User ID copied to clipboard");
     setShowToast(true);
+    trackEvent(`${pageContext} - Profile User ID Copied`, {
+      student_id: student.userId,
+      student_name: student.name,
+    });
   };
 
   const handleCopyReportId = (reportId: string) => {
     navigator.clipboard.writeText(reportId);
     setToastMessage("Report ID copied to clipboard");
     setShowToast(true);
+    trackEvent(`${pageContext} - Profile Report ID Copied`, {
+      report_id: reportId,
+      student_id: student.userId,
+      student_name: student.name,
+    });
+  };
+
+  const handleTabChange = (tab: HistoryTab) => {
+    setActiveTab(tab);
+    trackEvent(`${pageContext} - Profile Tab Changed`, {
+      tab: tab,
+      previous_tab: activeTab,
+      student_id: student.userId,
+      student_name: student.name,
+    });
   };
 
   const handleBanClick = () => {
@@ -466,7 +493,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 className={`profile-history-tab ${
                   activeTab === "ban" ? "active" : ""
                 }`}
-                onClick={() => setActiveTab("ban")}
+                onClick={() => handleTabChange("ban")}
               >
                 Ban history
               </button>
@@ -475,7 +502,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 className={`profile-history-tab ${
                   activeTab === "report" ? "active" : ""
                 }`}
-                onClick={() => setActiveTab("report")}
+                onClick={() => handleTabChange("report")}
               >
                 Report history
               </button>
@@ -484,7 +511,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 className={`profile-history-tab ${
                   activeTab === "block" ? "active" : ""
                 }`}
-                onClick={() => setActiveTab("block")}
+                onClick={() => handleTabChange("block")}
               >
                 Block history
               </button>

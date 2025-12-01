@@ -4,13 +4,24 @@ import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { StudentTable, StudentData } from "../components/StudentTable";
 import { Pagination } from "../components/Pagination";
+import { useMixpanel } from "../../../hooks";
 import "./ActiveStudents.css";
 
 export const ActiveStudents: React.FC = () => {
+  const { trackEvent } = useMixpanel();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const entriesPerPage = 10;
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (value.length > 0) {
+      trackEvent("Active Students - Search Input", {
+        search_query: value,
+      });
+    }
+  };
 
   // Mock data - replace with API call
   const mockStudents: StudentData[] = [
@@ -133,6 +144,9 @@ export const ActiveStudents: React.FC = () => {
 
   const handleExport = () => {
     console.log("Export clicked");
+    trackEvent("Active Students - Data Exported", {
+      total_students: filteredStudents.length,
+    });
   };
 
   const handleStudentClick = (student: StudentData) => {
@@ -185,7 +199,7 @@ export const ActiveStudents: React.FC = () => {
             </h1>
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={handleSearchChange}
               placeholder="Search"
               variant="primary"
             />
@@ -197,6 +211,7 @@ export const ActiveStudents: React.FC = () => {
           students={paginatedStudents}
           onStudentClick={handleStudentClick}
           onActionClick={handleActionClick}
+          pageContext="Active Students"
         />
 
         <div className="active-students-pagination">
@@ -206,6 +221,7 @@ export const ActiveStudents: React.FC = () => {
             totalEntries={filteredStudents.length}
             entriesPerPage={entriesPerPage}
             onPageChange={setCurrentPage}
+            pageContext="Active Students"
           />
         </div>
       </div>

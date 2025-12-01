@@ -10,6 +10,7 @@ import {
   CInputGroupText,
 } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { useMixpanel } from "../../hooks/useMixpanel";
 import "./SeeAllInterestsModal.css";
 
 interface Interest {
@@ -34,6 +35,7 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
   subtitle = "Interests ranked by popularity",
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { trackEvent } = useMixpanel();
 
   const filteredInterests = useMemo(() => {
     if (!searchTerm.trim()) return interests;
@@ -41,6 +43,18 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
       interest.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [interests, searchTerm]);
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+
+    if (value.trim().length > 0) {
+      trackEvent("Popular Features - Modal Search Input", {
+        search_query: value,
+        results_count: filteredInterests.length,
+        modal_title: title,
+      });
+    }
+  };
 
   const handleClose = () => {
     setSearchTerm("");
@@ -81,7 +95,7 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
               <CFormInput
                 placeholder="Search"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="see-all-interests-search-field"
                 data-testid="interests-search-input"
               />

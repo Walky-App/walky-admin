@@ -6,6 +6,7 @@ import { CopyableId } from "../CopyableId/CopyableId";
 import { StatusDropdown } from "../StatusDropdown/StatusDropdown";
 import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
 import { BanUserModal } from "../BanUserModal/BanUserModal";
+import { useMixpanel } from "../../hooks/useMixpanel";
 
 export type ReportType =
   | "Event"
@@ -110,6 +111,7 @@ interface ReportDetailModalProps {
   onNoteRequired?: (newStatus: ReportStatus) => void;
   onDeactivateUser?: () => void;
   onBanUser?: () => void;
+  pageContext?: string;
 }
 
 export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
@@ -119,7 +121,9 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   reportData,
   onStatusChange,
   onNoteRequired,
+  pageContext = "Unknown Page",
 }) => {
+  const { trackEvent } = useMixpanel();
   const [activeTab, setActiveTab] = useState<SafetyTab>("ban");
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
@@ -435,21 +439,36 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
           <button
             data-testid="safety-tab-ban"
             className={`safety-tab ${activeTab === "ban" ? "active" : ""}`}
-            onClick={() => setActiveTab("ban")}
+            onClick={() => {
+              setActiveTab("ban");
+              trackEvent(`${pageContext} - Safety Tab Changed`, {
+                tab: "ban",
+              });
+            }}
           >
             Ban history ({banHistory.length})
           </button>
           <button
             data-testid="safety-tab-report"
             className={`safety-tab ${activeTab === "report" ? "active" : ""}`}
-            onClick={() => setActiveTab("report")}
+            onClick={() => {
+              setActiveTab("report");
+              trackEvent(`${pageContext} - Safety Tab Changed`, {
+                tab: "report",
+              });
+            }}
           >
             Report history ({reportHistory.length})
           </button>
           <button
             data-testid="safety-tab-block"
             className={`safety-tab ${activeTab === "block" ? "active" : ""}`}
-            onClick={() => setActiveTab("block")}
+            onClick={() => {
+              setActiveTab("block");
+              trackEvent(`${pageContext} - Safety Tab Changed`, {
+                tab: "block",
+              });
+            }}
           >
             Block history ({blockHistory.length})
           </button>

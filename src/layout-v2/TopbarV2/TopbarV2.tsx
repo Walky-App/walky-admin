@@ -16,6 +16,7 @@ import { useSchool, School } from "../../contexts/SchoolContext";
 import { useCampus, Campus } from "../../contexts/CampusContext";
 import { useTheme } from "../../hooks/useTheme";
 import { useAuth } from "../../hooks/useAuth";
+import { useMixpanel } from "../../hooks/useMixpanel";
 import { AssetIcon } from "../../components-v2";
 import API from "../../API";
 import "./TopbarV2.css";
@@ -26,6 +27,7 @@ interface TopbarV2Props {
 
 const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
+  const { trackEvent } = useMixpanel();
   const [schoolModalOpen, setSchoolModalOpen] = useState(false);
   const [campusModalOpen, setCampusModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
@@ -243,7 +245,12 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         {/* Hamburger Menu */}
         <button
           className="hamburger-btn"
-          onClick={onToggleSidebar}
+          onClick={() => {
+            if (onToggleSidebar) {
+              onToggleSidebar();
+            }
+            trackEvent("Topbar - Hamburger Menu Clicked");
+          }}
           aria-label="Toggle navigation menu"
         >
           <AssetIcon name="hamburguer-icon" color="#1d1b20" />
@@ -258,7 +265,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 {/* Mobile: Icon buttons with text */}
                 <button
                   className="selector-icon-btn"
-                  onClick={() => setSchoolModalOpen(true)}
+                  onClick={() => {
+                    setSchoolModalOpen(true);
+                    trackEvent("Topbar - School Selector Opened (Mobile)");
+                  }}
                   aria-label="Select school"
                 >
                   <AssetIcon
@@ -272,7 +282,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 </button>
                 <button
                   className="selector-icon-btn"
-                  onClick={() => setCampusModalOpen(true)}
+                  onClick={() => {
+                    setCampusModalOpen(true);
+                    trackEvent("Topbar - Campus Selector Opened (Mobile)");
+                  }}
                   aria-label="Select campus"
                 >
                   <AssetIcon
@@ -322,7 +335,13 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                         {availableSchools.map((school: School) => (
                           <CDropdownItem
                             key={school._id}
-                            onClick={() => setSelectedSchool(school)}
+                            onClick={() => {
+                              setSelectedSchool(school);
+                              trackEvent("Topbar - School Selected", {
+                                schoolId: school._id,
+                                schoolName: school.school_name,
+                              });
+                            }}
                             active={selectedSchool?._id === school._id}
                           >
                             {school.school_name}
@@ -368,7 +387,13 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                         {availableCampuses.map((campus: Campus) => (
                           <CDropdownItem
                             key={campus._id}
-                            onClick={() => setSelectedCampus(campus)}
+                            onClick={() => {
+                              setSelectedCampus(campus);
+                              trackEvent("Topbar - Campus Selected", {
+                                campusId: campus._id,
+                                campusName: campus.campus_name,
+                              });
+                            }}
                             active={selectedCampus?._id === campus._id}
                           >
                             {campus.campus_name}
@@ -393,7 +418,12 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {/* Theme Toggle */}
             <button
               className="theme-toggle-btn"
-              onClick={toggleTheme}
+              onClick={() => {
+                toggleTheme();
+                trackEvent("Topbar - Theme Toggled", {
+                  newTheme: theme.isDark ? "light" : "dark",
+                });
+              }}
               aria-label="Toggle color theme"
             >
               <AssetIcon
@@ -423,7 +453,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
               </CDropdownToggle>
               <CDropdownMenu>
                 <CDropdownItem
-                  onClick={() => navigate("/v2/admin/settings")}
+                  onClick={() => {
+                    navigate("/v2/admin/settings");
+                    trackEvent("Topbar - Administrator Settings Clicked");
+                  }}
                   className="user-dropdown-item settings-item"
                 >
                   <span>Administrator settings</span>
@@ -435,6 +468,9 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 </CDropdownItem>
                 <CDropdownItem
                   href="/logout"
+                  onClick={() => {
+                    trackEvent("Topbar - Logout Clicked");
+                  }}
                   className="user-dropdown-item logout-item"
                 >
                   <span>Logout</span>
@@ -456,7 +492,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
       {/* School Modal (Mobile) */}
       <CModal
         visible={schoolModalOpen}
-        onClose={() => setSchoolModalOpen(false)}
+        onClose={() => {
+          setSchoolModalOpen(false);
+          trackEvent("Topbar - School Selector Modal Closed (Mobile)");
+        }}
         alignment="center"
         className="selector-modal"
       >
@@ -474,6 +513,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 onClick={() => {
                   setSelectedSchool(school);
                   setSchoolModalOpen(false);
+                  trackEvent("Topbar - School Selected (Mobile)", {
+                    schoolId: school._id,
+                    schoolName: school.school_name,
+                  });
                 }}
               >
                 {school.school_name}
@@ -489,7 +532,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
       {/* Campus Modal (Mobile) */}
       <CModal
         visible={campusModalOpen}
-        onClose={() => setCampusModalOpen(false)}
+        onClose={() => {
+          setCampusModalOpen(false);
+          trackEvent("Topbar - Campus Selector Modal Closed (Mobile)");
+        }}
         alignment="center"
         className="selector-modal"
       >
@@ -507,6 +553,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                 onClick={() => {
                   setSelectedCampus(campus);
                   setCampusModalOpen(false);
+                  trackEvent("Topbar - Campus Selected (Mobile)", {
+                    campusId: campus._id,
+                    campusName: campus.campus_name,
+                  });
                 }}
               >
                 {campus.campus_name}
