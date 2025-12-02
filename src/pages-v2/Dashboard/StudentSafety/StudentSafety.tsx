@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import API from "../../../API";
 import {
   AssetIcon,
   FilterBar,
@@ -16,8 +17,25 @@ const StudentSafety: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReportType, setSelectedReportType] = useState("");
 
-  const handleExport = () => {
-    console.log("Exporting student safety data...");
+  // ... (inside component)
+
+  const handleExport = async () => {
+    try {
+      const response = await API.get('/admin/v2/dashboard/student-safety', {
+        params: { period: timePeriod, export: 'true' },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `student_safety_stats_${timePeriod}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
 
   const [modalReports, setModalReports] = useState<any[]>([]);

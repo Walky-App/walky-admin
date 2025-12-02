@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import API from "../../../API";
 import { CRow, CCol } from "@coreui/react";
 import {
   AssetIcon,
@@ -15,8 +16,25 @@ import "./UserInteractions.css";
 const UserInteractions: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
-  const handleExport = () => {
-    console.log("Exporting data...");
+  // ... (inside component)
+
+  const handleExport = async () => {
+    try {
+      const response = await API.get('/admin/v2/dashboard/user-interactions', {
+        params: { period: timePeriod, export: 'true' },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `user_interactions_stats_${timePeriod}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
 
   // Mock data for different time periods
