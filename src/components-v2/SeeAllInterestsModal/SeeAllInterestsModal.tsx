@@ -5,11 +5,9 @@ import {
   CModalBody,
   CModalFooter,
   CButton,
-  CFormInput,
-  CInputGroup,
-  CInputGroupText,
 } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { SearchInput } from "../SearchInput/SearchInput";
 import "./SeeAllInterestsModal.css";
 
 interface Interest {
@@ -74,18 +72,13 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
         <div className="see-all-interests-container">
           {/* Search Input */}
           <div className="see-all-interests-search-container">
-            <CInputGroup className="see-all-interests-search-input">
-              <CInputGroupText className="see-all-interests-search-icon">
-                <AssetIcon name="search-icon" />
-              </CInputGroupText>
-              <CFormInput
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="see-all-interests-search-field"
-                data-testid="interests-search-input"
-              />
-            </CInputGroup>
+            <SearchInput
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder="Search"
+              variant="primary"
+              testId="interests-search-input"
+            />
           </div>
 
           {/* Interest List */}

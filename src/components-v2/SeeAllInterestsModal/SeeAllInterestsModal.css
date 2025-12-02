@@ -17,9 +17,9 @@
 
 .see-all-interests-modal .modal-content {
   border-radius: 14px;
-  border: 1px solid #cac4d0;
+  border: 1px solid var(--v2-border-outline);
   box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
-  background-color: #ffffff !important;
+  background-color: var(--v2-bg-card) !important;
   position: relative;
   z-index: 10000;
   overflow: visible;
@@ -43,6 +43,12 @@
   opacity: 1;
   filter: none;
   background-size: 16px;
+  box-shadow: none !important;
+}
+
+/* Dark mode close button */
+[data-theme="dark"] .see-all-interests-modal .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 .see-all-interests-header-content {
@@ -90,8 +96,8 @@
 
 /* Main Container with border */
 .see-all-interests-container {
-  background-color: #ffffff;
-  border: 1px solid #eef0f1;
+  background-color: var(--v2-bg-card);
+  border: 1px solid var(--v2-border-light);
   border-radius: 12px;
   padding: var(--v2-spacing-4) var(--v2-spacing-4) 0 0;
   display: flex;
@@ -105,51 +111,16 @@
   padding: var(--v2-spacing-6) var(--v2-spacing-6) 0 var(--v2-spacing-6);
 }
 
-.see-all-interests-search-input {
-  background-color: #ffffff;
-  border: 1px solid #cac4d0;
-  border-radius: 8px;
-  height: 48px;
+.see-all-interests-search-container .search-input-container {
+  min-width: auto;
   width: 100%;
-}
-
-.see-all-interests-search-input:focus-within {
-  border-color: var(--v2-focus-ring);
-  box-shadow: none;
-}
-
-.see-all-interests-search-icon {
-  background: transparent;
-  border: none;
-  color: var(--v2-text-muted);
-  padding-left: var(--v2-spacing-4);
-  padding-right: var(--v2-spacing-2);
-}
-
-.see-all-interests-search-field {
-  background: transparent;
-  border: none;
-  font-family: var(--v2-font-family);
-  font-weight: var(--v2-font-weight-normal);
-  font-size: var(--v2-font-size-md);
-  color: var(--v2-body-color);
-  padding: var(--v2-spacing-3) var(--v2-spacing-4) var(--v2-spacing-3) 0;
-}
-
-.see-all-interests-search-field::placeholder {
-  color: var(--v2-text-muted);
-}
-
-.see-all-interests-search-field:focus {
-  box-shadow: none;
-  outline: none;
 }
 
 /* Interest List Container */
 .see-all-interests-list-container {
   position: relative;
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--v2-bg-card);
   padding: 0 var(--v2-spacing-4) 0 0;
 }
 
@@ -161,7 +132,7 @@
 
   /* Custom Scrollbar */
   scrollbar-width: thin;
-  scrollbar-color: #acb6ba transparent;
+  scrollbar-color: var(--v2-neutral-grey-medium) transparent;
 }
 
 .see-all-interests-list-scroll::-webkit-scrollbar {
@@ -173,12 +144,12 @@
 }
 
 .see-all-interests-list-scroll::-webkit-scrollbar-thumb {
-  background-color: #acb6ba;
+  background-color: var(--v2-neutral-grey-medium);
   border-radius: 2px;
 }
 
 .see-all-interests-list-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: #8a9499;
+  background-color: var(--v2-neutral-grey-hover);
 }
 
 /* Interest List */
@@ -209,7 +180,7 @@
   font-weight: var(--v2-font-weight-bold);
   font-size: var(--v2-font-size-md);
   line-height: var(--v2-line-height-normal);
-  color: #526ac9;
+  color: var(--v2-primary-purple-main);
   min-width: 28px;
   flex-shrink: 0;
 }
@@ -222,7 +193,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #ebf1ff;
+  background-color: var(--v2-bg-select);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -239,7 +210,7 @@
   font-family: var(--v2-font-family);
   font-weight: var(--v2-font-weight-bold);
   font-size: var(--v2-font-size-sm);
-  color: #526ac9;
+  color: var(--v2-primary-purple-main);
 }
 
 .see-all-interests-name {
@@ -286,16 +257,16 @@
   padding: 0px var(--v2-spacing-24);
   border-radius: 12px;
   height: 40px;
-  background-color: #ffffff !important;
-  border: 1px solid #d2d2d3;
-  color: #1d1b20;
+  background-color: var(--v2-bg-card) !important;
+  border: 1px solid var(--v2-border-divider);
+  color: var(--v2-text-primary);
   transition: opacity 0.2s;
 }
 
 .see-all-interests-close-button:hover {
   opacity: 0.8;
-  background-color: #ffffff !important;
-  border-color: #d2d2d3;
+  background-color: var(--v2-bg-card) !important;
+  border-color: var(--v2-border-divider);
 }
 
 .see-all-interests-close-button:focus {

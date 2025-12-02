@@ -43,6 +43,7 @@
   --v2-bg-sidebar: #f6f9ff;
   --v2-bg-topbar: #f6f9ff;
   --v2-tooltip-bg: #4d4d4d;
+  --v2-tooltip-text: #ffffff;
   --v2-overlay-bg: rgba(0, 0, 0, 0.5);
 
   /* ========================================
@@ -202,6 +203,8 @@
   --v2-bg-dropdown: #1a1a1d;
   --v2-bg-hover: #1f1f23;
   --v2-bg-table: #1a1a1d;
+  --v2-tooltip-bg: #fafafa;
+  --v2-tooltip-text: #0a0a0b;
 
   /* V2 Text - Dark Mode */
   --v2-text-primary: #fafafa;
