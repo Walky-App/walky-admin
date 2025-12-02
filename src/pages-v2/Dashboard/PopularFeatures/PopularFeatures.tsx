@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import API from "../../../API";
 import { CRow, CCol } from "@coreui/react";
 import {
   AssetIcon,
@@ -27,6 +28,10 @@ const PopularFeatures: React.FC = () => {
   const [popularity, setPopularity] = useState<PopularityOption>("most");
   const [viewType, setViewType] = useState<ViewType>("grid");
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
+  const [modalData, setModalData] = useState<{ title: string; items: any[] }>({
+    title: "Top interests",
+    items: []
+  });
 
   console.log(
     "PopularFeatures - interestsModalVisible:",
@@ -48,12 +53,29 @@ const PopularFeatures: React.FC = () => {
   const commonInterests = data.commonInterests || [];
   const topFieldsOfStudy = data.topFieldsOfStudy || [];
 
+  console.log('Visited Places data:', visitedPlaces);
+
   if (isLoading) {
     return <div className="p-4">Loading...</div>;
   }
 
-  const handleExport = () => {
-    console.log("Exporting data...");
+  const handleExport = async () => {
+    try {
+      const response = await API.get('/admin/v2/dashboard/popular-features', {
+        params: { period: timePeriod, export: 'true' },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `popular_features_stats_${timePeriod}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
 
   return (
@@ -111,6 +133,10 @@ const PopularFeatures: React.FC = () => {
                 items={topInterests}
                 onSeeAll={() => {
                   console.log("See all Top interests clicked!");
+                  setModalData({
+                    title: "Top interests",
+                    items: topInterests
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -128,6 +154,10 @@ const PopularFeatures: React.FC = () => {
                 items={popularWaysToConnect}
                 onSeeAll={() => {
                   console.log("See all ways clicked!");
+                  setModalData({
+                    title: "Popular ways to connect",
+                    items: popularWaysToConnect
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -143,8 +173,13 @@ const PopularFeatures: React.FC = () => {
                   />
                 }
                 items={visitedPlaces}
+                maxItems={visitedPlaces.length}
                 onSeeAll={() => {
                   console.log("See all places clicked!");
+                  setModalData({
+                    title: "Visited places",
+                    items: visitedPlaces
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -166,6 +201,10 @@ const PopularFeatures: React.FC = () => {
                 items={topInvitationCategories}
                 onSeeAll={() => {
                   console.log("See all categories clicked!");
+                  setModalData({
+                    title: "Top invitation categories",
+                    items: topInvitationCategories
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -183,6 +222,10 @@ const PopularFeatures: React.FC = () => {
                 items={mostEngaged}
                 onSeeAll={() => {
                   console.log("See all engaged clicked!");
+                  setModalData({
+                    title: "Most Engaged",
+                    items: mostEngaged
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -215,10 +258,11 @@ const PopularFeatures: React.FC = () => {
           console.log("Modal close clicked!");
           setInterestsModalVisible(false);
         }}
-        interests={commonInterests.map((interest: any) => ({
-          rank: interest.rank,
-          name: interest.name,
-          icon: "https://via.placeholder.com/32",
+        title={modalData.title}
+        interests={modalData.items.map((item: any) => ({
+          rank: item.rank,
+          name: item.label || item.name,
+          icon: item.icon || "",
         }))}
       />
     </main>

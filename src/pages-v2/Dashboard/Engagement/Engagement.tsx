@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import API from "../../../API";
 import {
   CRow,
   CCol,
@@ -66,9 +67,31 @@ const Engagement: React.FC = () => {
     return <div className="p-4">Loading...</div>;
   }
 
-  const handleExport = () => {
-    console.log("Exporting data...");
-    // Implement export logic here
+  const handleExport = async () => {
+    try {
+      const endpoint = selectedMetric === "user-engagement"
+        ? '/admin/v2/dashboard/engagement'
+        : '/admin/v2/dashboard/retention';
+
+      const filename = selectedMetric === "user-engagement"
+        ? `engagement_stats_${timePeriod}.csv`
+        : `retention_stats_${timePeriod}.csv`;
+
+      const response = await API.get(endpoint, {
+        params: { period: timePeriod, export: 'true' },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
 
   return (
