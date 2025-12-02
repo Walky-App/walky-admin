@@ -49,6 +49,8 @@ export const ReportHistory: React.FC = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] =
     useState<HistoryReportData | null>(null);
+  const [reportDetails, setReportDetails] = useState<any>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -171,6 +173,22 @@ export const ReportHistory: React.FC = () => {
   const handleNoteClose = () => {
     setIsNoteModalOpen(false);
     setPendingStatusChange(null);
+  };
+
+  const handleViewReportDetails = async (report: HistoryReportData) => {
+    setSelectedReport(report);
+    setIsDetailModalOpen(true);
+    setDetailsLoading(true);
+    setReportDetails(null); // Reset previous details
+
+    try {
+      const res = await apiClient.api.adminV2ReportsDetail(report.id) as any;
+      setReportDetails(res.data);
+    } catch (error) {
+      console.error("Failed to fetch report details:", error);
+    } finally {
+      setDetailsLoading(false);
+    }
   };
 
   // Filter logic is now handled by API, but we keep this for client-side filtering if needed
@@ -401,10 +419,7 @@ export const ReportHistory: React.FC = () => {
                             <div className="report-content-wrapper">
                               <p
                                 className="report-description"
-                                onClick={() => {
-                                  setSelectedReport(report);
-                                  setIsDetailModalOpen(true);
-                                }}
+                                onClick={() => handleViewReportDetails(report)}
                               >
                                 {report.description}
                               </p>
@@ -459,8 +474,7 @@ export const ReportHistory: React.FC = () => {
                                 label: "Report details",
                                 onClick: (e) => {
                                   e.stopPropagation();
-                                  setSelectedReport(report);
-                                  setIsDetailModalOpen(true);
+                                  handleViewReportDetails(report);
                                 },
                               },
                               {
@@ -530,79 +544,32 @@ export const ReportHistory: React.FC = () => {
           onClose={() => {
             setIsDetailModalOpen(false);
             setSelectedReport(null);
+            setReportDetails(null);
           }}
+          isLoading={detailsLoading}
           reportType={selectedReport.type as ReportType}
           reportData={{
             associatedUser: {
-              name: "Austin",
-              id: "166g...fjhsgt",
-              avatar:
-                "https://www.figma.com/api/mcp/asset/e83b2a68-fa91-4f81-99c7-4d3b01197ac8",
-              isBanned: false,
-              isDeactivated: false,
+              name: reportDetails?.associatedUser?.name || "Unknown User",
+              id: reportDetails?.studentId || selectedReport.studentId,
+              avatar: reportDetails?.associatedUser?.avatar || "",
+              isBanned: reportDetails?.associatedUser?.isBanned || false,
+              isDeactivated: reportDetails?.associatedUser?.isDeactivated || false,
             },
-            status: selectedReport.status as ReportStatus,
-            reason: selectedReport.reason,
+            status: (reportDetails?.status || selectedReport.status) as ReportStatus,
+            reason: reportDetails?.reason || selectedReport.reason,
             reasonColor: "red",
-            reportDate: selectedReport.reportDate,
-            contentId: selectedReport.id,
-            description: selectedReport.description,
+            reportDate: reportDetails?.reportDate ? new Date(reportDetails.reportDate).toLocaleDateString() : selectedReport.reportDate,
+            contentId: reportDetails?.contentId || reportDetails?.id || selectedReport.id,
+            description: reportDetails?.description || selectedReport.description,
             reportingUser: {
-              name: "Jackie",
-              id: "166g...fjhsgt",
-              avatar:
-                "https://www.figma.com/api/mcp/asset/16f9b692-7d5e-4cff-b5dd-d15f87a0d1fc",
+              name: reportDetails?.reportingUser?.name || "Unknown Reporter",
+              id: reportDetails?.reportingUser?.id || "N/A",
+              avatar: reportDetails?.reportingUser?.avatar || "",
             },
-            content: {
-              event:
-                selectedReport.type === "Event"
-                  ? {
-                    image:
-                      "https://www.figma.com/api/mcp/asset/faaf4e36-54ea-43fd-a9db-64987f8b6a57",
-                    date: "FEB 12, 2025 | 2:00 PM",
-                    title: "4v4 Basketball game",
-                    location: "S. Campus Basketball Courts",
-                  }
-                  : undefined,
-              space:
-                selectedReport.type === "Space"
-                  ? {
-                    image:
-                      "https://www.figma.com/api/mcp/asset/faaf4e36-54ea-43fd-a9db-64987f8b6a57",
-                    title: "Sisters of Unity",
-                    description: "Strength in sisterhood, power in unity.",
-                    category: "Sororities",
-                    memberCount: "1-10 Members",
-                  }
-                  : undefined,
-              idea:
-                selectedReport.type === "Idea"
-                  ? {
-                    title: "Children's App",
-                    tag: "Looking For",
-                    description:
-                      "Marketing Junior year, Design students, and all business majors interested in a ne...",
-                    ideaBy: "You",
-                    avatar: "https://via.placeholder.com/24",
-                  }
-                  : undefined,
-              message:
-                selectedReport.type === "Message"
-                  ? {
-                    text: "top bothering me, you're annoying",
-                    timestamp: "Oct 7, 2025 - 12:45",
-                  }
-                  : undefined,
-            },
-            safetyRecord: {
-              banHistory: [
-                {
-                  duration: "3 Day ban",
-                  reason: "Spam",
-                  bannedOn: "Banned on Oct 07, 2025 - 12:14",
-                  bannedBy: "Admin Name",
-                },
-              ],
+            content: reportDetails?.content || {},
+            safetyRecord: reportDetails?.safetyRecord || {
+              banHistory: [],
               reportHistory: [],
               blockHistory: [],
             },

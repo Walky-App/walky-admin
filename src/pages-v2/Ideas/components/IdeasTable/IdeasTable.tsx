@@ -407,44 +407,9 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
               },
               creationDate: selectedIdea.creationDate,
               creationTime: selectedIdea.creationTime,
-              description:
-                selectedIdea.description ||
-                "This idea is built around kids games to help kids improve their vocab. I'm looking for 3 people to join my team, and possibly a fourth. I'm a programmer.",
-              lookingFor:
-                selectedIdea.lookingFor ||
-                "Marketing Junior year, Design students, and all business majors interested in a new app",
-              collaborators: selectedIdea.collaborators || [
-                {
-                  id: "1",
-                  name: "Ben",
-                  avatar:
-                    "https://www.figma.com/api/mcp/asset/2eb15d6f-b35b-4b33-92d6-9a3598f9b948",
-                },
-                {
-                  id: "2",
-                  name: "Leo",
-                  avatar:
-                    "https://www.figma.com/api/mcp/asset/9b3a5b2a-9bbe-4e92-9b64-5955454b1e9b",
-                },
-                {
-                  id: "3",
-                  name: "Mariana",
-                  avatar:
-                    "https://www.figma.com/api/mcp/asset/9fa58bd8-6b2c-48e5-910f-6322680cb6af",
-                },
-                {
-                  id: "4",
-                  name: "Anni",
-                  avatar:
-                    "https://www.figma.com/api/mcp/asset/ef015d1a-dbcd-47c5-b159-04c06a37a7d1",
-                },
-                {
-                  id: "5",
-                  name: "Justin",
-                  avatar:
-                    "https://www.figma.com/api/mcp/asset/720d3983-b06d-4bcb-9fd8-03d3510897d8",
-                },
-              ],
+              description: selectedIdea.description || "No description provided",
+              lookingFor: selectedIdea.lookingFor || "N/A",
+              collaborators: selectedIdea.collaborators || [],
               isFlagged: selectedIdea.isFlagged,
               flagReason: selectedIdea.flagReason,
             }

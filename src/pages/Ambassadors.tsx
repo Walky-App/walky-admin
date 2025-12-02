@@ -23,6 +23,7 @@ import { ambassadorService } from "../services/ambassadorService";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../lib/queryClient";
+import { CopyableId } from "../components/CopyableId";
 
 const Ambassadors: React.FC = () => {
   const { theme } = useTheme();
@@ -602,14 +603,15 @@ const Ambassadors: React.FC = () => {
                                   <div className="fw-semibold">
                                     {ambassador.name}
                                   </div>
-                                  <small className="text-muted">
-                                    {ambassador.student_id
-                                      ? `ID: ${ambassador.student_id}`
-                                      : `Sys ID: ${ambassador.id?.substring(
-                                          0,
-                                          8
-                                        )}...`}
-                                  </small>
+                                  <div style={{ marginTop: "4px" }}>
+                                    {ambassador.student_id ? (
+                                      <CopyableId id={ambassador.student_id} />
+                                    ) : (
+                                      ambassador.id && (
+                                        <CopyableId id={ambassador.id} />
+                                      )
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </CTableDataCell>

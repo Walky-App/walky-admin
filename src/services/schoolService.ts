@@ -3,9 +3,12 @@ import { apiClient } from "../API";
 export interface School {
   id: string;
   _id?: string;
+  name?: string;
   school_name?: string;
   display_name?: string;
+  domain?: string;
   email_domain?: string;
+  logo_url?: string;
   is_active?: boolean;
 }
 
