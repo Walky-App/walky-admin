@@ -125,20 +125,20 @@ const SidebarV2: React.FC = () => {
         {
           label: "Campus Analytics",
           submenu: [
-            { label: "Engagement", path: "/v2/dashboard/engagement" },
+            { label: "Engagement", path: "/dashboard/engagement" },
             {
               label: "Popular Features",
-              path: "/v2/dashboard/popular-features",
+              path: "/dashboard/popular-features",
             },
             {
               label: "User Interactions",
-              path: "/v2/dashboard/user-interactions",
+              path: "/dashboard/user-interactions",
             },
-            { label: "Community", path: "/v2/dashboard/community" },
-            { label: "Student safety", path: "/v2/dashboard/student-safety" },
+            { label: "Community", path: "/dashboard/community" },
+            { label: "Student safety", path: "/dashboard/student-safety" },
             {
               label: "Student Behavior",
-              path: "/v2/dashboard/student-behavior",
+              path: "/dashboard/student-behavior",
             },
           ],
         },
@@ -150,32 +150,32 @@ const SidebarV2: React.FC = () => {
         {
           label: "Manage Students",
           submenu: [
-            { label: "Active", path: "/v2/manage-students/active" },
-            { label: "Banned", path: "/v2/manage-students/banned" },
-            { label: "Deactivated", path: "/v2/manage-students/deactivated" },
-            { label: "Disengaged", path: "/v2/manage-students/disengaged" },
+            { label: "Active", path: "/manage-students/active" },
+            { label: "Banned", path: "/manage-students/banned" },
+            { label: "Deactivated", path: "/manage-students/deactivated" },
+            { label: "Disengaged", path: "/manage-students/disengaged" },
           ],
         },
 
         {
           label: "Events",
           submenu: [
-            { label: "Events Manager", path: "/v2/events" },
-            { label: "Events Insights", path: "/v2/events/insights" },
+            { label: "Events Manager", path: "/events" },
+            { label: "Events Insights", path: "/events/insights" },
           ],
         },
         {
           label: "Spaces",
           submenu: [
-            { label: "Spaces Manager", path: "/v2/spaces" },
-            { label: "Spaces Insights", path: "/v2/spaces/insights" },
+            { label: "Spaces Manager", path: "/spaces" },
+            { label: "Spaces Insights", path: "/spaces/insights" },
           ],
         },
         {
           label: "Ideas",
           submenu: [
-            { label: "Ideas Manager", path: "/v2/ideas" },
-            { label: "Ideas Insights", path: "/v2/ideas/insights" },
+            { label: "Ideas Manager", path: "/ideas" },
+            { label: "Ideas Insights", path: "/ideas/insights" },
           ],
         },
       ],
@@ -185,11 +185,11 @@ const SidebarV2: React.FC = () => {
       items: [
         {
           label: "Report & Safety",
-          path: "/v2/report-safety",
+          path: "/report-safety",
         },
         {
           label: "Report History",
-          path: "/v2/report-history",
+          path: "/report-history",
         },
       ],
     },
@@ -198,15 +198,15 @@ const SidebarV2: React.FC = () => {
       items: [
         {
           label: "Campuses",
-          path: "/v2/admin/campuses",
+          path: "/admin/campuses",
         },
         {
           label: "Ambassadors",
-          path: "/v2/admin/ambassadors",
+          path: "/admin/ambassadors",
         },
         {
           label: "Role Management",
-          path: "/v2/admin/role-management",
+          path: "/admin/role-management",
         },
       ],
     },

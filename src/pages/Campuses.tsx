@@ -34,6 +34,7 @@ import { queryKeys } from "../lib/queryClient";
 import CampusBoundary from "./CampusBoundary";
 import { CampusTableSkeleton } from "../components";
 import "../components/SyncButton.css";
+import { CopyableId } from "../components/CopyableId";
 
 const Campuses: React.FC = () => {
   const { theme } = useTheme();
@@ -671,9 +672,9 @@ const Campuses: React.FC = () => {
                                       />
                                       {campus.campus_name || campus.name}
                                     </div>
-                                    <small className="text-muted">
-                                      ID: {campus.id?.substring(0, 8)}...
-                                    </small>
+                                    <div style={{ marginTop: "4px" }}>
+                                      {campus.id && <CopyableId id={campus.id} />}
+                                    </div>
                                   </div>
                                 </div>
                               </CTableDataCell>

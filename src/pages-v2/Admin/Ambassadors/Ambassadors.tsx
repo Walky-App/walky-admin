@@ -55,14 +55,14 @@ export const Ambassadors: React.FC = () => {
       const data = res.data.data || [];
 
       const transformedAmbassadors = data.map((a: any) => ({
-        id: a.id,
-        studentId: a.student_id || "Unknown",
-        name: a.user?.name || "Unknown",
-        avatar: a.user?.avatar || "",
-        major: a.user?.major || "Unknown",
-        ambassadorSince: new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        memberSince: a.user?.created_at ? new Date(a.user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown",
-        status: a.status === 'active' ? "Active" : "Inactive",
+        id: a._id,
+        studentId: a._id || "Unknown",
+        name: a.name || "Unknown",
+        avatar: a.avatar_url || "",
+        major: a.major || "Unknown",
+        ambassadorSince: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown",
+        memberSince: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown",
+        status: a.is_active ? "Active" : "Inactive",
       }));
 
       setAmbassadors(transformedAmbassadors);

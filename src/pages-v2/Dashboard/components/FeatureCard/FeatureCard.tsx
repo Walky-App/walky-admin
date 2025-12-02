@@ -15,6 +15,7 @@ interface FeatureCardProps {
   icon: React.ReactNode;
   items: FeatureItem[];
   onSeeAll?: () => void;
+  maxItems?: number;
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
@@ -22,10 +23,16 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   icon,
   items,
   onSeeAll,
+  maxItems = 5,
 }) => {
   const { theme } = useTheme();
 
   const headingId = `feature-card-${title.replace(/\s+/g, "-").toLowerCase()}`;
+  const displayItems = items.slice(0, maxItems);
+
+  const getIconFallback = (label: string) => {
+    return label.charAt(0).toUpperCase();
+  };
 
   return (
     <CCard
@@ -55,7 +62,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
           {/* Items List */}
           <ol className="feature-items-list" aria-label={`${title} ranking`}>
-            {items.map((item) => (
+            {displayItems.map((item) => (
               <li key={item.rank} className="feature-item">
                 <span
                   className="feature-rank"
@@ -64,7 +71,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                 >
                   {item.rank}.
                 </span>
-                {item.iconBgColor ? (
+                {item.icon && item.iconBgColor ? (
                   <div
                     className="feature-item-icon-bg"
                     style={{ backgroundColor: item.iconBgColor }}
@@ -72,12 +79,31 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                   >
                     <img src={item.icon} alt="" className="feature-item-icon" />
                   </div>
-                ) : (
+                ) : item.icon ? (
                   <img
                     src={item.icon}
                     alt={`${item.label} icon`}
                     className="feature-item-img"
                   />
+                ) : (
+                  <div
+                    className="feature-item-icon-bg"
+                    style={{
+                      backgroundColor: theme.colors.primary + "20",
+                      color: theme.colors.primary,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "14px",
+                    }}
+                    aria-hidden="true"
+                  >
+                    {getIconFallback(item.label)}
+                  </div>
                 )}
                 <span
                   className="feature-label"

@@ -19,7 +19,7 @@ import { CChartBar, CChartLine } from "@coreui/react-chartjs";
 
 import { useState, useEffect } from "react";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import { useTheme } from "./hooks/useTheme";
 
@@ -1175,6 +1175,13 @@ const Dashboard = ({ theme }: DashboardProps) => {
   );
 };
 
+// Component to handle /v2/* redirects
+const V2RedirectHandler = () => {
+  const pathname = window.location.pathname;
+  const newPath = pathname.replace('/v2', '');
+  return <Navigate to={newPath} replace />;
+};
+
 function App() {
   const { theme } = useTheme();
   useEffect(() => {
@@ -1223,12 +1230,15 @@ function App() {
       <Route path="/login-v2" element={<LoginV2 />} />
       <Route path="/recover-password" element={<RecoverPasswordV2 />} />
 
-      {/* V2 Layout Routes - New Design System */}
-      <Route path="/v2/*" element={<V2Routes />} />
+      {/* Redirect old /v2/* paths to new root paths */}
+      <Route path="/v2/*" element={<V2RedirectHandler />} />
 
-      {/* Protected routes inside admin layout */}
+      {/* V2 Layout Routes - New Design System (Default) */}
+      <Route path="/*" element={<V2Routes />} />
+
+      {/* Legacy routes inside old admin layout */}
       <Route
-        path="*"
+        path="/legacy/*"
         element={
           <ExampleAdminLayout>
             <Routes>

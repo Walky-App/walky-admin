@@ -46,6 +46,7 @@ import {
 } from "../types/report";
 import { reportService } from "../services/reportService";
 import { format } from "date-fns";
+import { CopyableId } from "../components/CopyableId";
 
 const ReportDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -311,9 +312,9 @@ const ReportDetails: React.FC = () => {
                         <CCardHeader>Report Information</CCardHeader>
                         <CCardBody>
                           <CListGroup flush>
-                            <CListGroupItem className="d-flex justify-content-between">
+                            <CListGroupItem className="d-flex justify-content-between align-items-center">
                               <strong>Report ID:</strong>
-                              <span className="text-muted">{report._id}</span>
+                              <CopyableId id={report._id} />
                             </CListGroupItem>
                             <CListGroupItem className="d-flex justify-content-between">
                               <strong>Type:</strong>
@@ -496,9 +497,11 @@ const ReportDetails: React.FC = () => {
                           </CCol>
                           <CCol md={8}>
                             <CListGroup flush>
-                              <CListGroupItem>
-                                <strong>User ID:</strong>{" "}
-                                {(report.reportedItem as ReportedUser)._id}
+                              <CListGroupItem className="d-flex justify-content-between align-items-center">
+                                <strong>User ID:</strong>
+                                <CopyableId
+                                  id={(report.reportedItem as ReportedUser)._id}
+                                />
                               </CListGroupItem>
                               {(report.reportedItem as ReportedUser)
                                 .profile_bio && (

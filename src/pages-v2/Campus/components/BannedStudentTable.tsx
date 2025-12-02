@@ -10,6 +10,7 @@ import {
   ActionDropdown,
   CustomToast,
   Divider,
+  CopyableId,
 } from "../../../components-v2";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
@@ -182,10 +183,6 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     }
   };
 
-  const handleCopyUserId = (userId: string) => {
-    navigator.clipboard.writeText(userId);
-  };
-
   const sortedStudents = React.useMemo(() => {
     if (!sortField) return students;
 
@@ -229,22 +226,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       label: "User ID",
       sortable: true,
       render: (student) => (
-        <div className="student-userid">
-          <div className="student-userid-badge">
-            <span className="student-userid-text">{student.userId}</span>
-          </div>
-          <button
-            data-testid="copy-user-id-btn"
-            className="student-userid-copy"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCopyUserId(student.userId);
-            }}
-            title="Copy User ID"
-          >
-            <AssetIcon name="copy-icon" size={16} color="#321FDB" />
-          </button>
-        </div>
+        <CopyableId id={student.userId} label="User ID" testId="copy-user-id" />
       ),
     },
     name: {

@@ -14,6 +14,7 @@ export interface CopyableIdProps {
   toastMessage?: string;
   className?: string;
   testId?: string;
+  collapsed?: boolean;
 }
 
 export const CopyableId: React.FC<CopyableIdProps> = ({
@@ -27,6 +28,7 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
   toastMessage = "ID copied to clipboard",
   className = "",
   testId = "copyable-id",
+  collapsed = true,
 }) => {
   const [toastVisible, setToastVisible] = useState(false);
 
@@ -42,6 +44,15 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
     }
   };
 
+  const formatId = (id: string): string => {
+    if (!collapsed || id.length <= 12) {
+      return id;
+    }
+    const first4 = id.slice(0, 4);
+    const last4 = id.slice(-4);
+    return `${first4}...${last4}`;
+  };
+
   return (
     <>
       <div
@@ -49,7 +60,9 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
         data-testid={testId}
       >
         <div className="copyable-id-badge">
-          <span className="copyable-id-text">{id}</span>
+          <span className="copyable-id-text" style={{ fontFamily: "monospace" }}>
+            {formatId(id)}
+          </span>
         </div>
         <button
           data-testid={`${testId}-copy-btn`}

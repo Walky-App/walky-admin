@@ -336,6 +336,7 @@
   height: 1px;
   margin-top: var(--v2-spacing-16);
   width: 100%;
+  background-color: var(--v2-border-divider);
 }
 
 /* Dropdown Menus */

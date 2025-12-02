@@ -314,7 +314,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           <div className="profile-header">
             <div className="profile-user-section">
               <div className="profile-avatar-large">
-                {student.isFlagged && (
+                {Boolean(student.isFlagged) && (
                   <div className="profile-flag-icon">
                     <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
                   </div>

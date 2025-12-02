@@ -376,7 +376,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       sortable: true,
       render: (student) => (
         <>
-          {student.isFlagged && (
+          {Boolean(student.isFlagged) && (
             <div className="student-flag-icon">
               <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
             </div>

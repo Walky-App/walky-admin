@@ -76,12 +76,39 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
         if (isSuper) {
           const response = await apiClient.api.adminV2SchoolsList() as any;
-          schools = response.data || [];
+          console.log('Schools API response:', response);
+
+          let rawSchools: any[] = [];
+          if (Array.isArray(response.data)) {
+            rawSchools = response.data;
+          } else if (response.data && Array.isArray(response.data.data)) {
+            rawSchools = response.data.data;
+          } else if (Array.isArray(response)) {
+            rawSchools = response;
+          }
+
+          schools = rawSchools.map((s: any) => ({
+            ...s,
+            school_name: s.school_name || s.name || "Unknown School",
+            _id: s._id || s.id,
+            id: s.id || s._id,
+          }));
+          console.log('Parsed schools:', schools);
         } else {
           const response = await apiClient.api.schoolDetail(user.school_id!) as any;
-          schools = response.data ? [response.data] : [];
+          console.log('School detail API response:', response);
+          const data = response.data || response;
+          const rawSchools = data ? [data] : [];
+
+          schools = rawSchools.map((s: any) => ({
+            ...s,
+            school_name: s.school_name || s.name || "Unknown School",
+            _id: s._id || s.id,
+            id: s.id || s._id,
+          }));
         }
 
+        console.log('Setting available schools:', schools);
         setAvailableSchools(schools);
 
         // Auto-select first school for non-super admins
@@ -101,13 +128,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     };
 
     fetchSchools();
-  }, [
-    user,
-    isSuperAdmin,
-    setIsLoadingSchools,
-    setAvailableSchools,
-    setSelectedSchool,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // Fetch campuses on mount
   useEffect(() => {
@@ -125,22 +147,38 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           const response = await apiClient.api.campusesList() as any;
           const responseData = response.data;
 
+          let rawCampuses: any[] = [];
           if (responseData && Array.isArray(responseData)) {
-            campuses = responseData;
-          } else if (responseData && responseData.data) {
-            campuses = responseData.data;
-          } else if (responseData && responseData.campuses) {
-            campuses = responseData.campuses;
+            rawCampuses = responseData;
+          } else if (responseData && Array.isArray(responseData.data)) {
+            rawCampuses = responseData.data;
+          } else if (responseData && Array.isArray(responseData.campuses)) {
+            rawCampuses = responseData.campuses;
           }
+
+          campuses = rawCampuses.map((c: any) => ({
+            ...c,
+            campus_name: c.campus_name || c.name || "Unknown Campus",
+            _id: c._id || c.id,
+            id: c.id || c._id,
+          }));
         } else {
           const response = await apiClient.api.campusesDetail(user.campus_id!) as any;
-          const data = response.data;
+          const data = response.data || response;
+          let rawCampuses: any[] = [];
 
           if (data) {
-            if (data.data) campuses = [data.data];
-            else if (data.campus) campuses = [data.campus];
-            else campuses = [data];
+            if (data.data) rawCampuses = [data.data];
+            else if (data.campus) rawCampuses = [data.campus];
+            else rawCampuses = [data];
           }
+
+          campuses = rawCampuses.map((c: any) => ({
+            ...c,
+            campus_name: c.campus_name || c.name || "Unknown Campus",
+            _id: c._id || c.id,
+            id: c.id || c._id,
+          }));
         }
 
         setAvailableCampuses(campuses);
@@ -162,13 +200,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     };
 
     fetchCampuses();
-  }, [
-    user,
-    isSuperAdmin,
-    setIsLoadingCampuses,
-    setAvailableCampuses,
-    setSelectedCampus,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // Get user display name and avatar
   const userName = user ? `${user.first_name} ${user.last_name}` : "Admin Name";
@@ -364,7 +397,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
               </CDropdownToggle>
               <CDropdownMenu>
                 <CDropdownItem
-                  onClick={() => navigate("/v2/admin/settings")}
+                  onClick={() => navigate("/admin/settings")}
                   className="user-dropdown-item settings-item"
                 >
                   <span>Administrator settings</span>

@@ -109,15 +109,15 @@ const V2Routes: React.FC = () => {
           {/* Legacy Admin Routes (redirect to new paths) */}
           <Route
             path="campuses"
-            element={<Navigate to="/v2/admin/campuses" replace />}
+            element={<Navigate to="/admin/campuses" replace />}
           />
           <Route
             path="ambassadors"
-            element={<Navigate to="/v2/admin/ambassadors" replace />}
+            element={<Navigate to="/admin/ambassadors" replace />}
           />
           <Route
             path="role-management"
-            element={<Navigate to="/v2/admin/role-management" replace />}
+            element={<Navigate to="/admin/role-management" replace />}
           />
 
           {/* Settings Routes */}

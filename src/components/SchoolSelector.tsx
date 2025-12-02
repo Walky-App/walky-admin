@@ -39,6 +39,8 @@ export const SchoolSelector: React.FC = () => {
         if (isSuperAdmin()) {
           // Super admin can see all schools
           const response = await apiClient.api.adminV2SchoolsList() as any;
+          console.log('📚 Raw API response:', response);
+          console.log('📚 response.data:', response.data);
           schools = response.data || [];
         } else if (user.school_id) {
           // School admin or staff - only their school
@@ -47,10 +49,14 @@ export const SchoolSelector: React.FC = () => {
           schools = school ? [school] : [];
         }
 
+        console.log('📚 Fetched schools array:', schools);
+        console.log('📚 Schools array length:', schools.length);
+        console.log('📚 First school structure:', schools[0]);
         setAvailableSchools(schools);
 
         // Auto-select for non-super admins only if no school is selected
         if (!isSuperAdmin() && schools.length > 0 && !selectedSchool) {
+          console.log('🎯 Auto-selecting school:', schools[0]);
           setSelectedSchool(schools[0]);
         }
       } catch (error) {
@@ -76,12 +82,22 @@ export const SchoolSelector: React.FC = () => {
   }
 
   const handleSelectSchool = (school: typeof selectedSchool) => {
+    console.log('🏫 Selected school:', school);
+    console.log('🏫 School name field:', school?.name);
+    console.log('🏫 School display_name field:', school?.display_name);
+    console.log('🏫 School school_name field:', school?.school_name);
     setSelectedSchool(school);
   };
 
   const handleClearSelection = () => {
     clearSchoolSelection();
   };
+
+  // Debug logging for selected school display
+  const selectedSchoolName = selectedSchool
+    ? (selectedSchool.name || selectedSchool.display_name || selectedSchool.school_name || 'Unknown School')
+    : 'All Schools';
+  console.log('🎯 Dropdown toggle display:', { selectedSchool, selectedSchoolName });
 
   return (
     <div
@@ -128,7 +144,7 @@ export const SchoolSelector: React.FC = () => {
                 whiteSpace: 'nowrap',
               }}
             >
-              {selectedSchool ? selectedSchool.school_name : 'All Schools'}
+              {selectedSchoolName}
             </span>
           </div>
         </CDropdownToggle>
@@ -175,35 +191,46 @@ export const SchoolSelector: React.FC = () => {
           />
 
           {/* School List */}
-          {availableSchools.map((school) => (
-            <CDropdownItem
-              key={school._id}
-              onClick={() => handleSelectSchool(school)}
-              style={{
-                backgroundColor:
-                  selectedSchool?._id === school._id
-                    ? theme.isDark
-                      ? 'rgba(255,255,255,0.1)'
-                      : 'rgba(0,0,0,0.05)'
-                    : 'transparent',
-                color: theme.colors.bodyColor,
-              }}
-            >
-              <div className="d-flex align-items-center justify-content-between">
-                <div className="d-flex flex-column">
-                  <span style={{ fontWeight: '600' }}>{school.school_name}</span>
-                  {school.display_name && school.display_name !== school.school_name && (
-                    <small style={{ color: theme.colors.textMuted }}>
-                      {school.display_name}
-                    </small>
+          {availableSchools.map((school) => {
+            const schoolId = school.id || school._id;
+            const schoolName = school.name || school.display_name || school.school_name || 'Unknown School';
+            const selectedId = selectedSchool?.id || selectedSchool?._id;
+            const isSelected = selectedId === schoolId;
+
+            console.log('🏫 Rendering school:', { schoolId, schoolName, school });
+
+            return (
+              <CDropdownItem
+                key={schoolId}
+                onClick={() => handleSelectSchool(school)}
+                style={{
+                  backgroundColor:
+                    isSelected
+                      ? theme.isDark
+                        ? 'rgba(255,255,255,0.1)'
+                        : 'rgba(0,0,0,0.05)'
+                      : 'transparent',
+                  color: theme.colors.bodyColor,
+                }}
+              >
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex flex-column">
+                    <span style={{ fontWeight: '600' }}>
+                      {schoolName}
+                    </span>
+                    {school.school_name && school.display_name && school.display_name !== school.school_name && (
+                      <small style={{ color: theme.colors.textMuted }}>
+                        {school.school_name}
+                      </small>
+                    )}
+                  </div>
+                  {isSelected && (
+                    <CIcon icon={cilCheckAlt} style={{ color: theme.colors.success }} />
                   )}
                 </div>
-                {selectedSchool?._id === school._id && (
-                  <CIcon icon={cilCheckAlt} style={{ color: theme.colors.success }} />
-                )}
-              </div>
-            </CDropdownItem>
-          ))}
+              </CDropdownItem>
+            );
+          })}
 
           {availableSchools.length === 0 && !isLoadingSchools && (
             <CDropdownItem disabled style={{ color: theme.colors.textMuted }}>

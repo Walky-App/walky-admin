@@ -8,6 +8,7 @@ import {
   CustomToast,
   FlagUserModal,
   Divider,
+  CopyableId,
 } from "../../../components-v2";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
@@ -138,10 +139,6 @@ export const DeactivatedStudentTable: React.FC<
     }
   };
 
-  const handleCopyUserId = (userId: string) => {
-    navigator.clipboard.writeText(userId);
-  };
-
   const sortedStudents = React.useMemo(() => {
     if (!sortField) return students;
 
@@ -174,22 +171,7 @@ export const DeactivatedStudentTable: React.FC<
       label: "User ID",
       sortable: true,
       render: (student) => (
-        <div className="student-userid">
-          <div className="student-userid-badge">
-            <span className="student-userid-text">{student.userId}</span>
-          </div>
-          <button
-            data-testid="copy-user-id-btn"
-            className="student-userid-copy"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCopyUserId(student.userId);
-            }}
-            aria-label="Copy user ID"
-          >
-            <AssetIcon name="copy-icon" size={16} color="#321FDB" />
-          </button>
-        </div>
+        <CopyableId id={student.userId} label="User ID" testId="copy-user-id" />
       ),
     },
     name: {
