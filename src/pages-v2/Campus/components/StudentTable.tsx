@@ -146,7 +146,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
 
   const banMutation = useMutation({
     mutationFn: (data: { id: string; duration: number; reason: string }) =>
-      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, { lockDuration: data.duration, lockReason: data.reason } as any),
+      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, { isLocked: true, lockReason: data.reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       setToastMessage("Student banned successfully");

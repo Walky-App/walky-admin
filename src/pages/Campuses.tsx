@@ -111,24 +111,24 @@ const Campuses: React.FC = () => {
         newSet.delete(id);
         return newSet;
       });
-      
-      const campus = campuses.find(c => c.id === id);
-      const campusName = campus?.campus_name || campus?.name || 'Campus';
-      
-      if (result.sync_status === 'completed') {
-        setAlert({ 
-          type: "success", 
-          message: `${campusName} places synced successfully! Added: ${result.places_added}, Updated: ${result.places_updated}, Removed: ${result.places_removed}` 
+
+      const campus = campuses.find((c) => c.id === id);
+      const campusName = campus?.campus_name || campus?.name || "Campus";
+
+      if (result.sync_status === "completed") {
+        setAlert({
+          type: "success",
+          message: `${campusName} places synced successfully! Added: ${result.places_added}, Updated: ${result.places_updated}, Removed: ${result.places_removed}`,
         });
-      } else if (result.sync_status === 'partial') {
-        setAlert({ 
-          type: "success", 
-          message: `${campusName} places partially synced. Added: ${result.places_added}, Updated: ${result.places_updated}, Removed: ${result.places_removed}. Some errors occurred.` 
+      } else if (result.sync_status === "partial") {
+        setAlert({
+          type: "success",
+          message: `${campusName} places partially synced. Added: ${result.places_added}, Updated: ${result.places_updated}, Removed: ${result.places_removed}. Some errors occurred.`,
         });
       } else {
-        setAlert({ 
-          type: "danger", 
-          message: `${campusName} places sync failed. Please try again.` 
+        setAlert({
+          type: "danger",
+          message: `${campusName} places sync failed. Please try again.`,
         });
       }
       setTimeout(() => setAlert(null), 5000);
@@ -140,10 +140,10 @@ const Campuses: React.FC = () => {
         newSet.delete(id);
         return newSet;
       });
-      
-      const campus = campuses.find(c => c.id === id);
-      const campusName = campus?.campus_name || campus?.name || 'Campus';
-      
+
+      const campus = campuses.find((c) => c.id === id);
+      const campusName = campus?.campus_name || campus?.name || "Campus";
+
       console.error("Failed to sync campus places:", error);
       setAlert({
         type: "danger",
@@ -256,12 +256,14 @@ const Campuses: React.FC = () => {
       return;
     }
 
-    const campus = campuses.find(c => c.id === id);
-    const campusName = campus?.campus_name || campus?.name || 'Campus';
+    const campus = campuses.find((c) => c.id === id);
+    const campusName = campus?.campus_name || campus?.name || "Campus";
 
-    if (!window.confirm(
-      `Are you sure you want to sync places for ${campusName}? This will fetch the latest places data from Google Places API.`
-    )) {
+    if (
+      !window.confirm(
+        `Are you sure you want to sync places for ${campusName}? This will fetch the latest places data from Google Places API.`
+      )
+    ) {
       return;
     }
 
@@ -274,9 +276,9 @@ const Campuses: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       {/* Modern Page Header */}
-      <div 
+      <div
         className="mb-5 dashboard-header"
         style={{
           background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`,
@@ -284,14 +286,14 @@ const Campuses: React.FC = () => {
           padding: "24px 32px",
           border: `1px solid ${theme.colors.borderColor}20`,
           backdropFilter: "blur(10px)",
-          boxShadow: theme.isDark 
-            ? "0 8px 32px rgba(0,0,0,0.3)" 
+          boxShadow: theme.isDark
+            ? "0 8px 32px rgba(0,0,0,0.3)"
             : "0 8px 32px rgba(0,0,0,0.08)",
         }}
       >
         <div className="d-flex justify-content-between align-items-center">
           <div>
-            <h1 
+            <h1
               style={{
                 fontSize: "28px",
                 fontWeight: "700",
@@ -300,11 +302,12 @@ const Campuses: React.FC = () => {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                lineHeight: "normal",
               }}
             >
               🏫 Campus Management
             </h1>
-            <p 
+            <p
               style={{
                 margin: 0,
                 color: theme.colors.textMuted,
@@ -337,21 +340,21 @@ const Campuses: React.FC = () => {
 
       <CRow>
         <CCol xs={12}>
-          <CCard 
+          <CCard
             className="main-chart"
             style={{
               borderRadius: "20px",
               border: "none",
-              boxShadow: theme.isDark 
-                ? "0 12px 40px rgba(0,0,0,0.3)" 
+              boxShadow: theme.isDark
+                ? "0 12px 40px rgba(0,0,0,0.3)"
                 : "0 12px 40px rgba(0,0,0,0.08)",
-              background: theme.isDark 
+              background: theme.isDark
                 ? `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}05)`
                 : `linear-gradient(135deg, ${theme.colors.cardBg}, ${theme.colors.primary}02)`,
               backdropFilter: "blur(10px)",
             }}
           >
-            <CCardHeader 
+            <CCardHeader
               style={{
                 background: "transparent",
                 border: "none",
@@ -360,7 +363,7 @@ const Campuses: React.FC = () => {
             >
               <div className="d-flex justify-content-between align-items-center">
                 <div>
-                  <h3 
+                  <h3
                     style={{
                       fontSize: "24px",
                       fontWeight: "700",
@@ -370,7 +373,7 @@ const Campuses: React.FC = () => {
                   >
                     📍 Campus Directory
                   </h3>
-                  <p 
+                  <p
                     style={{
                       margin: 0,
                       color: theme.colors.textMuted,
@@ -378,21 +381,22 @@ const Campuses: React.FC = () => {
                       fontWeight: "500",
                     }}
                   >
-                    {campuses.length} campus{campuses.length !== 1 ? 'es' : ''} configured
+                    {campuses.length} campus{campuses.length !== 1 ? "es" : ""}{" "}
+                    configured
                   </p>
                 </div>
               </div>
             </CCardHeader>
             <CCardBody style={{ padding: "32px" }}>
               {alert && (
-                <CAlert 
-                  color={alert.type} 
+                <CAlert
+                  color={alert.type}
                   className="mb-4"
                   style={{
                     borderRadius: "12px",
                     border: "none",
-                    boxShadow: theme.isDark 
-                      ? "0 4px 20px rgba(0,0,0,0.2)" 
+                    boxShadow: theme.isDark
+                      ? "0 4px 20px rgba(0,0,0,0.2)"
                       : "0 4px 20px rgba(0,0,0,0.05)",
                   }}
                 >
@@ -400,27 +404,27 @@ const Campuses: React.FC = () => {
                 </CAlert>
               )}
 
-              <div 
+              <div
                 className="table-responsive"
                 style={{
-                  borderRadius: '16px',
-                  overflow: 'hidden',
+                  borderRadius: "16px",
+                  overflow: "hidden",
                   background: theme.colors.cardBg,
-                  boxShadow: theme.isDark 
-                    ? "0 4px 20px rgba(0,0,0,0.2)" 
+                  boxShadow: theme.isDark
+                    ? "0 4px 20px rgba(0,0,0,0.2)"
                     : "0 4px 20px rgba(0,0,0,0.05)",
                 }}
               >
                 <CTable hover className="mb-0">
                   <CTableHead>
-                    <CTableRow 
+                    <CTableRow
                       style={{
-                        background: theme.isDark 
+                        background: theme.isDark
                           ? `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.info}10)`
                           : `linear-gradient(135deg, ${theme.colors.primary}08, ${theme.colors.info}05)`,
                       }}
                     >
-                      <CTableHeaderCell 
+                      <CTableHeaderCell
                         style={{
                           fontWeight: "600",
                           fontSize: "14px",
@@ -431,7 +435,7 @@ const Campuses: React.FC = () => {
                       >
                         🏫 Campus
                       </CTableHeaderCell>
-                      <CTableHeaderCell 
+                      <CTableHeaderCell
                         style={{
                           fontWeight: "600",
                           fontSize: "14px",
@@ -442,7 +446,7 @@ const Campuses: React.FC = () => {
                       >
                         📍 Location
                       </CTableHeaderCell>
-                      <CTableHeaderCell 
+                      <CTableHeaderCell
                         style={{
                           fontWeight: "600",
                           fontSize: "14px",
@@ -453,7 +457,7 @@ const Campuses: React.FC = () => {
                       >
                         🏠 Address
                       </CTableHeaderCell>
-                      <CTableHeaderCell 
+                      <CTableHeaderCell
                         style={{
                           fontWeight: "600",
                           fontSize: "14px",
@@ -465,7 +469,7 @@ const Campuses: React.FC = () => {
                       >
                         ⚡ Status
                       </CTableHeaderCell>
-                      <CTableHeaderCell 
+                      <CTableHeaderCell
                         style={{
                           fontWeight: "600",
                           fontSize: "14px",
@@ -494,8 +498,8 @@ const Campuses: React.FC = () => {
                         >
                           <div>
                             <div
-                              style={{ 
-                                fontSize: "64px", 
+                              style={{
+                                fontSize: "64px",
                                 marginBottom: "24px",
                                 opacity: 0.8,
                               }}
@@ -503,8 +507,8 @@ const Campuses: React.FC = () => {
                               🏫
                             </div>
                             <h4
-                              style={{ 
-                                marginBottom: "12px", 
+                              style={{
+                                marginBottom: "12px",
                                 color: theme.colors.bodyColor,
                                 fontWeight: "600",
                               }}
@@ -512,8 +516,8 @@ const Campuses: React.FC = () => {
                               No Campuses Found
                             </h4>
                             <p
-                              style={{ 
-                                marginBottom: "32px", 
+                              style={{
+                                marginBottom: "32px",
                                 color: theme.colors.textMuted,
                                 fontSize: "16px",
                               }}
@@ -703,7 +707,7 @@ const Campuses: React.FC = () => {
                                     : "Inactive"}
                                 </CBadge>
                               </CTableDataCell>
-                              <CTableDataCell 
+                              <CTableDataCell
                                 style={{
                                   border: "none",
                                   padding: "16px 20px",
@@ -722,8 +726,8 @@ const Campuses: React.FC = () => {
                                       );
                                     }}
                                     disabled={
-                                      loading || 
-                                      syncCampusMutation.isPending || 
+                                      loading ||
+                                      syncCampusMutation.isPending ||
                                       isBeingSynced ||
                                       isBeingDeleted
                                     }
@@ -738,12 +742,14 @@ const Campuses: React.FC = () => {
                                       transition: "all 0.2s ease",
                                     }}
                                   >
-                                    <CIcon 
-                                      icon={cilSync} 
-                                      size="sm" 
+                                    <CIcon
+                                      icon={cilSync}
+                                      size="sm"
                                       className={isBeingSynced ? "fa-spin" : ""}
                                       style={{
-                                        animation: isBeingSynced ? "spin 1s linear infinite" : "none"
+                                        animation: isBeingSynced
+                                          ? "spin 1s linear infinite"
+                                          : "none",
                                       }}
                                     />
                                   </CButton>
@@ -755,7 +761,9 @@ const Campuses: React.FC = () => {
                                       e.stopPropagation();
                                       handleEditCampus(campus);
                                     }}
-                                    disabled={loading || isBeingSynced || isBeingDeleted}
+                                    disabled={
+                                      loading || isBeingSynced || isBeingDeleted
+                                    }
                                     title="Edit Campus"
                                     style={{
                                       borderRadius: "8px",
@@ -780,7 +788,7 @@ const Campuses: React.FC = () => {
                                       );
                                     }}
                                     disabled={
-                                      loading || 
+                                      loading ||
                                       deleteCampusMutation.isPending ||
                                       isBeingSynced ||
                                       isBeingDeleted
