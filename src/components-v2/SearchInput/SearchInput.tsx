@@ -24,7 +24,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   return (
     <div className={`search-input-container ${variant} ${className}`}>
       <div className="container-lupa">
-        <AssetIcon name="search-icon" size={24} color="#676d70" />
+        <AssetIcon name="search-icon" size={24} className="search-icon-color" />
       </div>
       <input
         data-testid={testId}

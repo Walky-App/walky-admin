@@ -10,6 +10,67 @@
   background-color: #ffffff;
   border-radius: 12px;
   position: relative;
+  overflow: hidden;
+}
+
+/* View Transition Animations */
+.report-view-container,
+.modal-view-container {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.view-active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  visibility: visible;
+  position: relative;
+}
+
+.view-hidden {
+  opacity: 0;
+  transform: translateX(-30px) scale(0.95);
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.view-transitioning {
+  transition-duration: 0.2s;
+}
+
+.modal-view-container {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Wrapper único para modais embedded no ReportDetailModal */
+.report-detail-embedded-wrapper {
+  padding: 0;
+  margin: 0;
+}
+
+.report-detail-embedded-wrapper .ban-user-modal-body,
+.report-detail-embedded-wrapper .deactivate-user-modal-body {
+  padding: 0 !important;
+}
+
+/* Garantir que modais embedded tenham a mesma aparência */
+.modal-view-container .ban-user-modal-body.embedded,
+.modal-view-container .deactivate-user-modal-body.embedded {
+  padding: 0;
+}
+
+.modal-view-container .ban-modal-content,
+.modal-view-container .deactivate-modal-content {
+  width: auto;
 }
 
 .close-button {
@@ -22,10 +83,16 @@
   padding: 0;
   z-index: 10;
   color: #5b6168;
+  box-shadow: none;
 }
 
 .close-button:hover {
   color: #1d1b20;
+}
+
+/* Dark mode */
+[data-theme="dark"] .close-button {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 .modal-content-wrapper {

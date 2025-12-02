@@ -68,6 +68,7 @@ interface StudentProfileModalProps {
 }
 
 type HistoryTab = "ban" | "report" | "block";
+type ModalView = "profile" | "ban" | "deactivate";
 
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   visible,
@@ -79,8 +80,8 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   const [activeTab, setActiveTab] = useState<HistoryTab>("ban");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [showBanModal, setShowBanModal] = useState(false);
-  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [currentView, setCurrentView] = useState<ModalView>("profile");
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   if (!student) return null;
 
@@ -103,11 +104,27 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   };
 
   const handleBanClick = () => {
-    setShowBanModal(true);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentView("ban");
+      setIsTransitioning(false);
+    }, 300);
   };
 
   const handleDeactivateClick = () => {
-    setShowDeactivateModal(true);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentView("deactivate");
+      setIsTransitioning(false);
+    }, 300);
+  };
+
+  const handleBackToProfile = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentView("profile");
+      setIsTransitioning(false);
+    }, 300);
   };
 
   const handleConfirmBan = (reason: string, duration: string) => {
@@ -119,18 +136,20 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
       "Duration:",
       duration
     );
-    setShowBanModal(false);
     onBanUser?.(student);
-    // Optionally close the profile modal too
-    // onClose();
+    handleBackToProfile();
   };
 
   const handleConfirmDeactivate = () => {
     console.log("Deactivating user:", student);
-    setShowDeactivateModal(false);
     onDeactivateUser?.(student);
-    // Optionally close the profile modal too
-    // onClose();
+    handleBackToProfile();
+  };
+
+  const handleModalClose = () => {
+    setCurrentView("profile");
+    setIsTransitioning(false);
+    onClose();
   };
 
   const renderHistoryContent = () => {
@@ -295,7 +314,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   return (
     <CModal
       visible={visible}
-      onClose={onClose}
+      onClose={handleModalClose}
       alignment="center"
       size="lg"
       className="student-profile-modal"
@@ -304,13 +323,18 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         <button
           data-testid="profile-close-icon"
           className="profile-close-icon"
-          onClick={onClose}
+          onClick={handleModalClose}
           aria-label="Close modal"
         >
           <AssetIcon name="close-button" size={16} color="#5B6168" />
         </button>
 
-        <div className="profile-container">
+        {/* View de Profile */}
+        <div
+          className={`profile-container ${
+            currentView === "profile" ? "view-active" : "view-hidden"
+          } ${isTransitioning ? "view-transitioning" : ""}`}
+        >
           <div className="profile-header">
             <div className="profile-user-section">
               <div className="profile-avatar-large">
@@ -499,11 +523,45 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
             <button
               data-testid="profile-close-footer-btn"
               className="profile-close-button"
-              onClick={onClose}
+              onClick={handleModalClose}
             >
               Close
             </button>
           </div>
+        </div>
+
+        {/* View de Ban User */}
+        <div
+          className={`modal-view-container ${
+            currentView === "ban" ? "view-active" : "view-hidden"
+          } ${isTransitioning ? "view-transitioning" : ""}`}
+        >
+          {currentView === "ban" && (
+            <BanUserModal
+              visible={true}
+              onClose={handleBackToProfile}
+              onConfirm={handleConfirmBan}
+              userName={student.name}
+              embedded={true}
+            />
+          )}
+        </div>
+
+        {/* View de Deactivate User */}
+        <div
+          className={`modal-view-container ${
+            currentView === "deactivate" ? "view-active" : "view-hidden"
+          } ${isTransitioning ? "view-transitioning" : ""}`}
+        >
+          {currentView === "deactivate" && (
+            <DeactivateUserModal
+              visible={true}
+              onClose={handleBackToProfile}
+              onConfirm={handleConfirmDeactivate}
+              userName={student.name}
+              embedded={true}
+            />
+          )}
         </div>
       </CModalBody>
 
@@ -513,20 +571,6 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           onClose={() => setShowToast(false)}
         />
       )}
-
-      <BanUserModal
-        visible={showBanModal}
-        onClose={() => setShowBanModal(false)}
-        onConfirm={handleConfirmBan}
-        userName={student.name}
-      />
-
-      <DeactivateUserModal
-        visible={showDeactivateModal}
-        onClose={() => setShowDeactivateModal(false)}
-        onConfirm={handleConfirmDeactivate}
-        userName={student.name}
-      />
     </CModal>
   );
 };
