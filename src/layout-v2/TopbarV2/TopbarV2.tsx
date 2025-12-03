@@ -79,12 +79,14 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           console.log('Schools API response:', response);
 
           let rawSchools: any[] = [];
-          if (Array.isArray(response.data)) {
-            rawSchools = response.data;
-          } else if (response.data && Array.isArray(response.data.data)) {
-            rawSchools = response.data.data;
-          } else if (Array.isArray(response)) {
+
+          // Handle different response structures
+          if (Array.isArray(response)) {
             rawSchools = response;
+          } else if (response && Array.isArray(response.data)) {
+            rawSchools = response.data;
+          } else if (response && response.data && Array.isArray(response.data.data)) {
+            rawSchools = response.data.data;
           }
 
           schools = rawSchools.map((s: any) => ({

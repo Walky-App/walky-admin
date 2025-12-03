@@ -16,31 +16,51 @@ import {
   TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
-import { StatsCard, LineChart, DonutChart } from "../components";
+import { StatsCard, LineChart, DonutChart, DashboardSkeleton } from "../components";
 import { useTheme } from "../../../hooks/useTheme";
 import "./Engagement.css";
 
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 const Engagement: React.FC = () => {
   const { theme } = useTheme();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [selectedMetric, setSelectedMetric] = useState("user-engagement");
 
   const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
-    queryKey: ['engagementStats', timePeriod],
-    queryFn: () => apiClient.api.adminV2DashboardEngagementList({ period: timePeriod }),
+    queryKey: ['engagementStats', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardEngagementList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
 
   const { data: retentionData, isLoading: isRetentionLoading } = useQuery({
-    queryKey: ['retentionStats', timePeriod],
-    queryFn: () => apiClient.api.adminV2DashboardRetentionList({ period: timePeriod }),
+    queryKey: ['retentionStats', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardRetentionList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
 
   const { data: dashboardStats, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['dashboardStats'],
-    queryFn: () => apiClient.api.adminV2DashboardStatsList(),
+    queryKey: ['dashboardStats', selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardStatsList({
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
 
   const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
   // Engagement Data
   const userEngagementData = engagementData?.data.userEngagement || [];
@@ -78,7 +98,12 @@ const Engagement: React.FC = () => {
         : `retention_stats_${timePeriod}.csv`;
 
       const response = await API.get(endpoint, {
-        params: { period: timePeriod, export: 'true' },
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
         responseType: 'blob',
       });
 

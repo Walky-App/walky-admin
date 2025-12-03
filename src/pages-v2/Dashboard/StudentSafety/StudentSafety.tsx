@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { DashboardSkeleton } from "../components";
 import { apiClient } from "../../../API";
 import API from "../../../API";
 import {
@@ -12,7 +13,12 @@ import {
 } from "../../../components-v2";
 import "./StudentSafety.css";
 
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 const StudentSafety: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReportType, setSelectedReportType] = useState("");
@@ -22,7 +28,12 @@ const StudentSafety: React.FC = () => {
   const handleExport = async () => {
     try {
       const response = await API.get('/admin/v2/dashboard/student-safety', {
-        params: { period: timePeriod, export: 'true' },
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
         responseType: 'blob',
       });
 
@@ -55,7 +66,9 @@ const StudentSafety: React.FC = () => {
       const res = await apiClient.api.adminV2ReportsList({
         type: apiType,
         limit: 10,
-      } as any) as any;
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id
+      }) as any;
 
       const reports = res.data.data || [];
       const transformedReports = reports.map((r: any) => ({
@@ -87,8 +100,12 @@ const StudentSafety: React.FC = () => {
   };
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['studentSafety', timePeriod],
-    queryFn: () => apiClient.api.adminV2DashboardStudentSafetyList({ period: timePeriod }),
+    queryKey: ['studentSafety', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardStudentSafetyList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
 
   const data = (apiData?.data || {}) as any;
@@ -97,7 +114,7 @@ const StudentSafety: React.FC = () => {
   const reportsData = data.reportsData || [];
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <DashboardSkeleton />;
   }
 
   // Format data for StackedBarChart component

@@ -7,3 +7,4 @@ export { default as PopularitySelector } from "./PopularitySelector/PopularitySe
 export { default as ViewToggle } from "./ViewToggle/ViewToggle";
 export { default as CommonInterests } from "./CommonInterests";
 export { default as TopFieldsOfStudy } from "./TopFieldsOfStudy";
+export { DashboardSkeleton } from "./DashboardSkeleton";

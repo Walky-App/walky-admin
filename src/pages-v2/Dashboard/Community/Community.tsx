@@ -9,14 +9,24 @@ import {
   LastUpdated,
 } from "../../../components-v2";
 import { BarChart } from "./components/BarChart";
+import { DashboardSkeleton } from "../components";
 import "./Community.css";
 
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 const Community: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['communityCreation', timePeriod],
-    queryFn: () => apiClient.api.adminV2DashboardCommunityCreationList({ period: timePeriod }),
+    queryKey: ['communityCreation', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardCommunityCreationList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
 
   // ... (inside component)
@@ -24,7 +34,12 @@ const Community: React.FC = () => {
   const handleExport = async () => {
     try {
       const response = await API.get('/admin/v2/dashboard/community-creation', {
-        params: { period: timePeriod, export: 'true' },
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
         responseType: 'blob',
       });
 
@@ -55,7 +70,7 @@ const Community: React.FC = () => {
   }));
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <DashboardSkeleton />;
   }
 
   return (
