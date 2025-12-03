@@ -37,7 +37,7 @@ export interface SpaceDetailsData {
   };
   creationDate: string;
   creationTime: string;
-  category: "clubs" | "fraternities" | "sororities";
+  category: string;
   chapter: string;
   contact: string;
   about: string;
@@ -248,27 +248,24 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
               <div className="space-tabs-navigation">
                 <button
                   data-testid="space-tab-members-btn"
-                  className={`space-tab-button ${
-                    activeTab === "members" ? "active" : ""
-                  }`}
+                  className={`space-tab-button ${activeTab === "members" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("members")}
                 >
                   Members
                 </button>
                 <button
                   data-testid="space-tab-events-btn"
-                  className={`space-tab-button ${
-                    activeTab === "events" ? "active" : ""
-                  }`}
+                  className={`space-tab-button ${activeTab === "events" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("events")}
                 >
                   Events
                 </button>
                 <button
                   data-testid="space-tab-details-btn"
-                  className={`space-tab-button ${
-                    activeTab === "details" ? "active" : ""
-                  }`}
+                  className={`space-tab-button ${activeTab === "details" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("details")}
                 >
                   More details
@@ -314,7 +311,7 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                   <div className="space-tab-panel space-events-tab">
                     <div className="space-events-list">
                       {Array.isArray(spaceData.events) &&
-                      spaceData.events.length > 0 ? (
+                        spaceData.events.length > 0 ? (
                         spaceData.events.map((event) => (
                           <div
                             key={event.id}

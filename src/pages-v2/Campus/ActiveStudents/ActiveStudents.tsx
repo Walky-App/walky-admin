@@ -32,6 +32,7 @@ export const ActiveStudents: React.FC = () => {
     name: student.name,
     email: student.email,
     interests: student.interests || [],
+    avatar: student.avatar,
     status: student.status,
     memberSince: student.memberSince,
     onlineLast: student.onlineLast,

@@ -6,6 +6,7 @@ import {
   CustomToast,
   Divider,
 } from "../../../components-v2";
+import { CopyableId } from "../../../components-v2/CopyableId";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
 import { apiClient } from "../../../API";
@@ -233,22 +234,11 @@ export const Ambassadors: React.FC = () => {
                     <tr className="ambassador-row">
                       {/* Student ID Column */}
                       <td className="ambassador-student-id">
-                        <div className="student-id-wrapper">
-                          <div className="student-id">{ambassador.studentId}</div>
-                          <button
-                            className="copy-button"
-                            data-testid="copy-ambassador-id-btn"
-                            title="Copy Student ID"
-                            onClick={() => {
-                              navigator.clipboard.writeText(ambassador.studentId);
-                              setToastMessage("Student ID copied to clipboard");
-                              setShowToast(true);
-                              setTimeout(() => setShowToast(false), 3000);
-                            }}
-                          >
-                            <AssetIcon name="copy-icon" size={16} />
-                          </button>
-                        </div>
+                        <CopyableId
+                          id={ambassador.studentId}
+                          label="Student ID"
+                          testId="copy-ambassador-id"
+                        />
                       </td>
 
                       {/* Ambassador Column */}

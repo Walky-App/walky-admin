@@ -64,7 +64,7 @@ import "./styles/visibility-fixes.css";
 import MainChart from "./components/MainChart.tsx";
 
 import { apiClient } from "./API/index.ts";
-import Login from "./pages/Login.tsx";
+
 import LoginV2 from "./pages-v2/LoginV2/LoginV2";
 import { useSchool } from "./contexts/SchoolContext";
 import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2/RecoverPasswordV2.tsx";
@@ -387,7 +387,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
   const tooltipPlugin = {
     id: "customTooltip",
-     
+
     afterDraw: (chart: any) => {
       const tooltipModel = chart.tooltip;
 
@@ -1188,12 +1188,7 @@ function App() {
     document.body.classList.toggle("dark-mode", theme.isDark);
   }, [theme.isDark]);
 
-  // Keep track of login state for the Login component callback
-  const [, setIsLoggedIn] = useState(() => {
-    // Initialize state based on token presence
-    const token = localStorage.getItem("token");
-    return !!token;
-  });
+
 
   // Define role constants for clarity
   const SUPER_ADMIN = ["super_admin"];
@@ -1217,17 +1212,13 @@ function App() {
   return (
     <Routes>
       {/* Public routes */}
-      <Route
-        path="/login"
-        element={<Login onLogin={() => setIsLoggedIn(true)} />}
-      />
+      <Route path="/login" element={<LoginV2 />} />
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/* V2 Auth Routes */}
-      <Route path="/login-v2" element={<LoginV2 />} />
       <Route path="/recover-password" element={<RecoverPasswordV2 />} />
 
       {/* Redirect old /v2/* paths to new root paths */}

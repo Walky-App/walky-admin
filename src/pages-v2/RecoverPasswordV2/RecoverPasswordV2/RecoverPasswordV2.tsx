@@ -60,7 +60,7 @@ const RecoverPasswordV2: React.FC = () => {
         password_confirmed: password,
       });
       console.log("Password reset complete");
-      navigate("/login-v2");
+      navigate("/login");
     } catch (err: any) {
       console.error("Password reset failed:", err);
       // If OTP is invalid, maybe go back to verify step?
@@ -72,7 +72,7 @@ const RecoverPasswordV2: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    navigate("/login-v2");
+    navigate("/login");
   };
 
   if (currentStep === "verify") {

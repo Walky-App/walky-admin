@@ -6,7 +6,6 @@ import { CRow, CCol } from "@coreui/react";
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
   SeeAllInterestsModal,
 } from "../../../components-v2";
@@ -23,6 +22,7 @@ import "./PopularFeatures.css";
 type PopularityOption = "least" | "most";
 type ViewType = "grid" | "list";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
@@ -30,7 +30,7 @@ const PopularFeatures: React.FC = () => {
   const { theme } = useTheme();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { timePeriod, setTimePeriod } = useDashboard();
   const [popularity, setPopularity] = useState<PopularityOption>("most");
   const [viewType, setViewType] = useState<ViewType>("grid");
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
@@ -45,11 +45,12 @@ const PopularFeatures: React.FC = () => {
   );
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['popularFeatures', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryKey: ['popularFeatures', timePeriod, selectedSchool?._id, selectedCampus?._id, popularity],
     queryFn: () => apiClient.api.adminV2DashboardPopularFeaturesList({
       period: timePeriod,
       schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
+      campusId: selectedCampus?._id,
+      sortBy: popularity === 'most' ? 'most_popular' : 'least_popular'
     }),
   });
 
@@ -76,7 +77,8 @@ const PopularFeatures: React.FC = () => {
           period: timePeriod,
           export: 'true',
           schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
+          campusId: selectedCampus?._id,
+          sortBy: popularity === 'most' ? 'most_popular' : 'least_popular'
         },
         responseType: 'blob',
       });

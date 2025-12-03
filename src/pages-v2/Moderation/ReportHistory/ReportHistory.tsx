@@ -31,14 +31,14 @@ interface HistoryReportData {
   | "Harassment / Threats"
   | "Spam"
   | "Other";
-  status: "Resolved" | "Dismissed" | "Pending review";
+  status: "Resolved" | "Dismissed" | "Pending review" | "Under evaluation";
 }
 
 export const ReportHistory: React.FC = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("Resolved,Dismissed");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -359,13 +359,11 @@ export const ReportHistory: React.FC = () => {
                 value={selectedStatus}
                 onChange={setSelectedStatus}
                 options={[
-                  { value: "all", label: "All status" },
-                  { value: "Pending review", label: "Pending review" },
-                  { value: "Under evaluation", label: "Under evaluation" },
+                  { value: "Resolved,Dismissed", label: "All history" },
                   { value: "Resolved", label: "Resolved" },
                   { value: "Dismissed", label: "Dismissed" },
                 ]}
-                placeholder="All status"
+                placeholder="All history"
                 testId="status-filter"
                 ariaLabel="Filter by status"
               />
@@ -462,7 +460,12 @@ export const ReportHistory: React.FC = () => {
                             onNoteRequired={(newStatus) =>
                               handleNoteRequired(report.id, newStatus)
                             }
-                            options={["Reopen"]}
+                            options={[
+                              "Pending review",
+                              "Under evaluation",
+                              "Resolved",
+                              "Dismissed",
+                            ]}
                             testId={`status-dropdown-${report.id}`}
                           />
                         </td>

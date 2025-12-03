@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import API from "../../../API";
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
 import { BarChart } from "./components/BarChart";
 import { DashboardSkeleton } from "../components";
 import "./Community.css";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const Community: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { timePeriod, setTimePeriod } = useDashboard();
 
   const { data: apiData, isLoading } = useQuery({
     queryKey: ['communityCreation', timePeriod, selectedSchool?._id, selectedCampus?._id],

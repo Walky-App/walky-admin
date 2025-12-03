@@ -8,8 +8,8 @@ import {
   CustomToast,
   FlagUserModal,
   Divider,
-  CopyableId,
 } from "../../../components-v2";
+import { CopyableId } from "../../../components-v2/CopyableId";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { StatusBadge } from "./StatusBadge";
@@ -179,7 +179,15 @@ export const DeactivatedStudentTable: React.FC<
       sortable: true,
       render: (student) => (
         <div className="student-name-cell">
-          <div className="student-avatar">{student.avatar}</div>
+          <div className="student-avatar">
+            {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
+              <img src={student.avatar} alt={student.name} />
+            ) : (
+              <div className="student-avatar-placeholder">
+                {student.avatar || student.name.charAt(0)}
+              </div>
+            )}
+          </div>
           <span>{student.name}</span>
         </div>
       ),

@@ -1,7 +1,7 @@
 import React from "react";
 import "./SpaceTypeChip.css";
 
-export type SpaceType = "clubs" | "fraternities" | "sororities";
+export type SpaceType = string;
 
 interface SpaceTypeChipProps {
   type: SpaceType;
@@ -9,20 +9,20 @@ interface SpaceTypeChipProps {
 
 export const SpaceTypeChip: React.FC<SpaceTypeChipProps> = ({ type }) => {
   const getLabel = () => {
-    switch (type) {
-      case "clubs":
-        return "Clubs";
-      case "fraternities":
-        return "Fraternities";
-      case "sororities":
-        return "Sororities";
-      default:
-        return "";
-    }
+    if (!type) return "Uncategorized";
+    // Capitalize first letter of each word if needed, or just return type
+    return type;
+  };
+
+  const getClassName = () => {
+    if (!type) return "space-type-chip-default";
+    // Sanitize type for CSS class: lowercase, replace spaces/special chars with dashes
+    const sanitized = type.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    return `space-type-chip-${sanitized}`;
   };
 
   return (
-    <div className={`space-type-chip space-type-chip-${type}`}>
+    <div className={`space-type-chip ${getClassName()}`}>
       <span>{getLabel()}</span>
     </div>
   );

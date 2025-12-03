@@ -10,9 +10,9 @@ import {
   BanUserModal,
   CustomToast,
   ActionDropdown,
-  CopyableId,
   Divider,
 } from "../../../components-v2";
+import { CopyableId } from "../../../components-v2/CopyableId";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
@@ -493,7 +493,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           </tr>
         </thead>
 
-        <div className="content-space-divider" />
+
         <tbody>
           {sortedStudents.map((student, index) => (
             <React.Fragment key={student.id}>
