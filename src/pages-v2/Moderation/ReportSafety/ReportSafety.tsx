@@ -25,6 +25,7 @@ interface ReportData {
   id: string;
   description: string;
   studentId: string;
+  reportedItemId: string;
   reportDate: string;
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
@@ -106,10 +107,36 @@ export const ReportSafety: React.FC = () => {
     }
   });
 
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; type: string; reason: string }) => {
+      switch (data.type.toLowerCase()) {
+        case 'user': return apiClient.api.adminV2StudentsFlagCreate(data.id, { reason: data.reason });
+        case 'event': return apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason });
+        case 'idea': return apiClient.api.adminV2IdeasFlagCreate(data.id, { reason: data.reason });
+        case 'space': return apiClient.api.adminV2SpacesFlagCreate(data.id, { reason: data.reason });
+        default: throw new Error(`Cannot flag type: ${data.type}`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      setToastMessage("Item flagged successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setIsFlagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error flagging item:", error);
+      setToastMessage("Error flagging item");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
   const reports = (reportsData?.data.data || []).map((report: any) => ({
     id: report.id,
     description: report.description,
     studentId: report.studentId,
+    reportedItemId: report.reportedItemId,
     reportDate: report.reportDate,
     type: report.type,
     reason: report.reason,
@@ -565,8 +592,13 @@ export const ReportSafety: React.FC = () => {
         isOpen={isFlagModalOpen}
         onClose={() => setIsFlagModalOpen(false)}
         onConfirm={(reason) => {
-          console.log("Flag report:", selectedReport?.id, "Reason:", reason);
-          setIsFlagModalOpen(false);
+          if (selectedReport && selectedReport.reportedItemId) {
+            flagMutation.mutate({
+              id: selectedReport.reportedItemId,
+              type: selectedReport.type,
+              reason
+            });
+          }
         }}
         itemName={selectedReport?.description || ""}
         type="event"

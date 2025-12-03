@@ -26,7 +26,7 @@ export const EventsManager: React.FC = () => {
     studentId: event.studentId,
     eventDate: event.eventDate,
     eventTime: event.eventTime,
-    attendees: event.attendees,
+    attendees: event.attendeesCount,
     type: event.type,
     isFlagged: event.isFlagged,
     flagReason: event.flagReason,

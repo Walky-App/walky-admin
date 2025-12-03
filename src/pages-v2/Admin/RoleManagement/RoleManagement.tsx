@@ -75,7 +75,7 @@ export const RoleManagement: React.FC = () => {
     }),
   });
 
-  const mockMembers: MemberData[] = (membersData?.data.data || []).map((member: any) => ({
+  const members: MemberData[] = (membersData?.data.data || []).map((member: any) => ({
     id: member.id,
     name: member.name,
     title: member.title,
@@ -112,7 +112,7 @@ export const RoleManagement: React.FC = () => {
   };
 
   const handleChangeRole = (memberId: string) => {
-    const member = mockMembers.find((m) => m.id === memberId);
+    const member = members.find((m) => m.id === memberId);
     if (member) {
       setSelectedMember(member);
       setIsChangeRoleModalOpen(true);
@@ -120,7 +120,7 @@ export const RoleManagement: React.FC = () => {
   };
 
   const handleSendPasswordReset = (memberId: string) => {
-    const member = mockMembers.find((m) => m.id === memberId);
+    const member = members.find((m) => m.id === memberId);
     if (member) {
       setSelectedMember(member);
       setIsPasswordResetModalOpen(true);
@@ -128,7 +128,7 @@ export const RoleManagement: React.FC = () => {
   };
 
   const handleRemoveMember = (memberId: string) => {
-    const member = mockMembers.find((m) => m.id === memberId);
+    const member = members.find((m) => m.id === memberId);
     if (member) {
       setSelectedMember(member);
       setIsRemoveMemberModalOpen(true);
@@ -282,7 +282,7 @@ export const RoleManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {mockMembers.map((member, index) => (
+              {members.map((member, index) => (
                 <React.Fragment key={member.id}>
                   <tr className="member-row">
                     {/* Full Name Column */}
@@ -382,7 +382,7 @@ export const RoleManagement: React.FC = () => {
                       />
                     </td>
                   </tr>
-                  {index < mockMembers.length - 1 && (
+                  {index < members.length - 1 && (
                     <tr className="member-divider-row">
                       <td colSpan={7}>
                         <Divider />
@@ -398,7 +398,7 @@ export const RoleManagement: React.FC = () => {
         {/* Pagination */}
         <div className="pagination-container">
           <p className="pagination-info">
-            Showing {mockMembers.length} of {membersData?.data.total || 0} entries
+            Showing {members.length} of {membersData?.data.total || 0} entries
           </p>
           <div className="pagination-controls">
             <button

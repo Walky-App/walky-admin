@@ -579,8 +579,20 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         visible={profileModalVisible}
         student={selectedStudent as StudentProfileData | null}
         onClose={handleCloseProfile}
-        onBanUser={(student) => console.log("Ban user", student)}
-        onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        onBanUser={(student, duration, reason) => {
+          let durationDays = 0;
+          if (duration.includes("24 hours")) durationDays = 1;
+          else if (duration.includes("7 days")) durationDays = 7;
+          else if (duration.includes("30 days")) durationDays = 30;
+          else if (duration.includes("Permanent")) durationDays = 36500;
+
+          banMutation.mutate({ id: student.id, duration: durationDays, reason });
+          handleCloseProfile();
+        }}
+        onDeactivateUser={(student) => {
+          deleteMutation.mutate(student.id);
+          handleCloseProfile();
+        }}
       />
 
       <FlagUserModal

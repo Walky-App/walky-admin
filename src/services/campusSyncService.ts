@@ -77,13 +77,13 @@ export interface CampusBoundaryPreview {
 export const campusSyncService = {
   // Trigger sync for a specific campus
   syncCampus: async (campusId: string): Promise<SyncResult> => {
-    const response = await apiClient.admin.campusSyncSyncCreate(campusId, {}) as any;
+    const response = await apiClient.api.adminCampusSyncSyncCreate(campusId, {}) as any;
     return response.data.data;
   },
 
   // Trigger sync for all campuses
   syncAllCampuses: async (): Promise<{ summary: { total: number; totalPlacesAdded: number; totalPlacesUpdated: number; totalPlacesRemoved: number }; results: SyncResult[] }> => {
-    const response = await apiClient.admin.campusSyncSyncAllCreate() as any;
+    const response = await apiClient.api.adminCampusSyncSyncAllCreate() as any;
     return response.data.data;
   },
 
@@ -94,19 +94,19 @@ export const campusSyncService = {
     limit?: number;
     offset?: number;
   }): Promise<{ logs: SyncLog[]; pagination: { total: number; limit: number; offset: number } }> => {
-    const response = await apiClient.admin.campusSyncLogsList(params as any) as any;
+    const response = await apiClient.api.adminCampusSyncLogsList(params as any) as any;
     return response.data.data;
   },
 
   // Get campuses with sync status
   getCampusesWithSyncStatus: async (): Promise<CampusSyncStatus[]> => {
-    const response = await apiClient.admin.campusSyncCampusesList() as any;
+    const response = await apiClient.api.adminCampusSyncCampusesList() as any;
     return response.data.data;
   },
 
   // Preview campus boundary and search points
   previewCampusBoundary: async (campusId: string): Promise<CampusBoundaryPreview> => {
-    const response = await apiClient.admin.campusSyncCampusPreviewList(campusId) as any;
+    const response = await apiClient.api.adminCampusSyncCampusPreviewList(campusId) as any;
     return response.data.data;
   }
 };

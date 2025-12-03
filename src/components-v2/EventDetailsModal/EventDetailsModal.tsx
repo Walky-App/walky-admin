@@ -34,12 +34,18 @@ interface EventDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   eventData: EventDetailsData | null;
+  onDelete?: (event: EventDetailsData) => void;
+  onFlag?: (event: EventDetailsData) => void;
+  onUnflag?: (event: EventDetailsData) => void;
 }
 
 export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   isOpen,
   onClose,
   eventData,
+  onDelete,
+  onFlag,
+  onUnflag,
 }) => {
   if (!eventData) return null;
 
@@ -212,6 +218,35 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
 
           {/* Footer */}
           <div className="event-details-footer">
+            <div className="event-details-footer-actions">
+              {onDelete && (
+                <button
+                  className="event-details-action-btn delete-btn"
+                  onClick={() => onDelete(eventData)}
+                >
+                  Delete event
+                </button>
+              )}
+              {eventData.isFlagged ? (
+                onUnflag && (
+                  <button
+                    className="event-details-action-btn unflag-btn"
+                    onClick={() => onUnflag(eventData)}
+                  >
+                    Unflag event
+                  </button>
+                )
+              ) : (
+                onFlag && (
+                  <button
+                    className="event-details-action-btn flag-btn"
+                    onClick={() => onFlag(eventData)}
+                  >
+                    Flag event
+                  </button>
+                )
+              )}
+            </div>
             <button
               data-testid="event-details-close-footer-btn"
               className="event-details-close-btn"

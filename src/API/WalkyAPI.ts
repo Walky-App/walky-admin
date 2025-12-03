@@ -464,6 +464,10 @@ export interface Event {
      * @format objectId
      */
     user_id?: string;
+    /** Full name of the participant */
+    name?: string;
+    /** URL to user avatar image */
+    avatar_url?: string;
     /** Participation status */
     status?: "confirmed" | "pending" | "notgoing";
   }[];
@@ -1454,7 +1458,7 @@ export class Api<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Returns total number of walks created
+     * @description Returns total number of walks created or monthly data when groupBy=month
      *
      * @tags Admin - Analytics
      * @name AdminAnalyticsWalksCountList
@@ -1465,14 +1469,29 @@ export class Api<SecurityDataType extends unknown> {
     adminAnalyticsWalksCountList: (
       query?: {
         school_id?: string;
+        /** Group results by month to get time-series data */
+        groupBy?: "month";
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        | {
+            totalWalksCreated?: number;
+          }
+        | {
+            monthlyData?: {
+              month?: string;
+              year?: number;
+              count?: number;
+            }[];
+          },
+        void
+      >({
         path: `/api/admin/analytics/walks/count`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -1569,7 +1588,7 @@ export class Api<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Returns count of events filtered by type (total, outdoor, indoor, public, private)
+     * @description Returns count of events filtered by type (total, outdoor, indoor, public, private) or time-series data when timeFrame is specified
      *
      * @tags Admin - Analytics
      * @name AdminAnalyticsEventsCountList
@@ -1578,22 +1597,36 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAnalyticsEventsCountList: (
-      query: {
+      query?: {
         school_id?: string;
-        filter: "total" | "outdoor" | "indoor" | "public" | "private";
+        filter?: "total" | "outdoor" | "indoor" | "public" | "private";
+        /** Get time-series data for specified timeframe */
+        timeFrame?: "last6months" | "last12months" | "last30days";
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        | {
+            count?: number;
+          }
+        | {
+            data?: {
+              month?: string;
+              totalCount?: number;
+            }[];
+          },
+        void
+      >({
         path: `/api/admin/analytics/events/count`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
     /**
-     * @description Returns count of ideas filtered by type (total, active, inactive, collaborated)
+     * @description Returns count of ideas filtered by type (total, active, inactive, collaborated) or monthly data when groupBy=month
      *
      * @tags Admin - Analytics
      * @name AdminAnalyticsIdeasCountList
@@ -1602,17 +1635,35 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAnalyticsIdeasCountList: (
-      query: {
+      query?: {
         school_id?: string;
-        type: "total" | "active" | "inactive" | "collaborated";
+        type?: "total" | "active" | "inactive" | "collaborated";
+        /** Group results by month to get time-series data */
+        groupBy?: "month";
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        | {
+            totalIdeasCreated?: number;
+            activeIdeasCount?: number;
+            inactiveIdeasCount?: number;
+            collaboratedIdeasCount?: number;
+          }
+        | {
+            monthlyData?: {
+              month?: string;
+              year?: string;
+              count?: number;
+            }[];
+          },
+        void
+      >({
         path: `/api/admin/analytics/ideas/count`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -2614,6 +2665,40 @@ export class Api<SecurityDataType extends unknown> {
      * No description
      *
      * @tags AdminV2
+     * @name AdminV2DashboardEventsInsightsList
+     * @summary Get events insights stats
+     * @request GET:/api/admin/v2/dashboard/events-insights
+     * @secure
+     */
+    adminV2DashboardEventsInsightsList: (
+      query?: {
+        period?: "week" | "month" | "all-time";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          stats?: object;
+          expandReachData?: any[];
+          usersVsSpacesData?: any[];
+          interests?: any[];
+          publicEventsList?: any[];
+          privateEventsList?: any[];
+        },
+        any
+      >({
+        path: `/api/admin/v2/dashboard/events-insights`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AdminV2
      * @name AdminV2DashboardStudentSafetyList
      * @summary Get student safety stats
      * @request GET:/api/admin/v2/dashboard/student-safety
@@ -2689,6 +2774,12 @@ export class Api<SecurityDataType extends unknown> {
         limit?: number;
         search?: string;
         type?: string;
+        /** @format date-time */
+        startDate?: string;
+        /** @format date-time */
+        endDate?: string;
+        campusId?: string;
+        schoolId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -3839,6 +3930,37 @@ export class Api<SecurityDataType extends unknown> {
       }),
 
     /**
+     * No description
+     *
+     * @tags Analytics
+     * @name AnalyticsLogCreate
+     * @summary Log user activity
+     * @request POST:/api/analytics/log
+     * @secure
+     */
+    analyticsLogCreate: (
+      data: {
+        activityType?:
+          | "idea_viewed"
+          | "event_viewed"
+          | "space_viewed"
+          | "profile_viewed";
+        entityId?: string;
+        entityType?: "idea" | "event" | "space" | "user";
+        details?: object;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, any>({
+        path: `/api/analytics/log`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
      * @description Returns combined download stats from both App Store and Google Play Store
      *
      * @tags App Downloads
@@ -4244,7 +4366,13 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/campuses
      * @secure
      */
-    campusesList: (params: RequestParams = {}) =>
+    campusesList: (
+      query?: {
+        /** Filter campuses by school ID */
+        school_id?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.http.request<
         {
           success?: boolean;
@@ -4266,6 +4394,7 @@ export class Api<SecurityDataType extends unknown> {
       >({
         path: `/api/campuses`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -4649,6 +4778,143 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts/mark-all-read`,
         method: "PATCH",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Admin - Campus Sync
+     * @name AdminCampusSyncSyncCreate
+     * @summary Trigger sync for a specific campus
+     * @request POST:/api/admin/campus-sync/sync/{campus_id}
+     * @secure
+     */
+    adminCampusSyncSyncCreate: (
+      campusId: string,
+      data: {
+        /** Force a full sync even if recent sync exists */
+        forceFullSync?: boolean;
+        /** Include detailed place information */
+        includeDetails?: boolean;
+        /** Maximum number of API calls to use */
+        maxApiCalls?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, void>({
+        path: `/api/admin/campus-sync/sync/${campusId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Admin - Campus Sync
+     * @name AdminCampusSyncSyncAllCreate
+     * @summary Trigger sync for all active campuses
+     * @request POST:/api/admin/campus-sync/sync-all
+     * @secure
+     */
+    adminCampusSyncSyncAllCreate: (params: RequestParams = {}) =>
+      this.http.request<void, void>({
+        path: `/api/admin/campus-sync/sync-all`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Admin - Campus Sync
+     * @name AdminCampusSyncLogsList
+     * @summary Get sync logs
+     * @request GET:/api/admin/campus-sync/logs
+     * @secure
+     */
+    adminCampusSyncLogsList: (
+      query?: {
+        /** Filter by campus ID */
+        campus_id?: string;
+        /** Filter by sync status */
+        sync_status?: "completed" | "failed" | "partial" | "in_progress";
+        /**
+         * Number of logs to return
+         * @default 50
+         */
+        limit?: number;
+        /**
+         * Number of logs to skip
+         * @default 0
+         */
+        offset?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, void>({
+        path: `/api/admin/campus-sync/logs`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Admin - Campus Sync
+     * @name AdminCampusSyncCampusesList
+     * @summary Get list of campuses with sync status
+     * @request GET:/api/admin/campus-sync/campuses
+     * @secure
+     */
+    adminCampusSyncCampusesList: (params: RequestParams = {}) =>
+      this.http.request<void, void>({
+        path: `/api/admin/campus-sync/campuses`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Admin - Campus Sync
+     * @name AdminCampusSyncCampusPreviewList
+     * @summary Preview campus boundary and search points
+     * @request GET:/api/admin/campus-sync/campus/{campus_id}/preview
+     * @secure
+     */
+    adminCampusSyncCampusPreviewList: (
+      campusId: string,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, void>({
+        path: `/api/admin/campus-sync/campus/${campusId}/preview`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Admin - Campus Sync
+     * @name AdminCampusSyncSchedulerStatusList
+     * @summary Get sync scheduler status
+     * @request GET:/api/admin/campus-sync/scheduler/status
+     * @secure
+     */
+    adminCampusSyncSchedulerStatusList: (params: RequestParams = {}) =>
+      this.http.request<void, any>({
+        path: `/api/admin/campus-sync/scheduler/status`,
+        method: "GET",
         secure: true,
         ...params,
       }),
@@ -11762,143 +12028,6 @@ export class Api<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Admin - Campus Sync
-     * @name CampusSyncSyncCreate
-     * @summary Trigger sync for a specific campus
-     * @request POST:/admin/campus-sync/sync/{campus_id}
-     * @secure
-     */
-    campusSyncSyncCreate: (
-      campusId: string,
-      data: {
-        /** Force a full sync even if recent sync exists */
-        forceFullSync?: boolean;
-        /** Include detailed place information */
-        includeDetails?: boolean;
-        /** Maximum number of API calls to use */
-        maxApiCalls?: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<void, void>({
-        path: `/admin/campus-sync/sync/${campusId}`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Admin - Campus Sync
-     * @name CampusSyncSyncAllCreate
-     * @summary Trigger sync for all active campuses
-     * @request POST:/admin/campus-sync/sync-all
-     * @secure
-     */
-    campusSyncSyncAllCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
-        path: `/admin/campus-sync/sync-all`,
-        method: "POST",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Admin - Campus Sync
-     * @name CampusSyncLogsList
-     * @summary Get sync logs
-     * @request GET:/admin/campus-sync/logs
-     * @secure
-     */
-    campusSyncLogsList: (
-      query?: {
-        /** Filter by campus ID */
-        campus_id?: string;
-        /** Filter by sync status */
-        sync_status?: "completed" | "failed" | "partial" | "in_progress";
-        /**
-         * Number of logs to return
-         * @default 50
-         */
-        limit?: number;
-        /**
-         * Number of logs to skip
-         * @default 0
-         */
-        offset?: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<void, void>({
-        path: `/admin/campus-sync/logs`,
-        method: "GET",
-        query: query,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Admin - Campus Sync
-     * @name CampusSyncCampusesList
-     * @summary Get list of campuses with sync status
-     * @request GET:/admin/campus-sync/campuses
-     * @secure
-     */
-    campusSyncCampusesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
-        path: `/admin/campus-sync/campuses`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Admin - Campus Sync
-     * @name CampusSyncCampusPreviewList
-     * @summary Preview campus boundary and search points
-     * @request GET:/admin/campus-sync/campus/{campus_id}/preview
-     * @secure
-     */
-    campusSyncCampusPreviewList: (
-      campusId: string,
-      params: RequestParams = {},
-    ) =>
-      this.http.request<void, void>({
-        path: `/admin/campus-sync/campus/${campusId}/preview`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Admin - Campus Sync
-     * @name CampusSyncSchedulerStatusList
-     * @summary Get sync scheduler status
-     * @request GET:/admin/campus-sync/scheduler/status
-     * @secure
-     */
-    campusSyncSchedulerStatusList: (params: RequestParams = {}) =>
-      this.http.request<void, any>({
-        path: `/admin/campus-sync/scheduler/status`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
      * @tags Admin - Monitoring
      * @name MonitoringDashboardList
      * @summary Get monitoring dashboard data
@@ -12390,7 +12519,10 @@ export class Api<SecurityDataType extends unknown> {
      */
     syncTriggerCreate: (
       data: {
+        /** Array of Region IDs (deprecated, use campus_ids) */
         region_ids: string[];
+        /** Array of Campus IDs */
+        campus_ids?: string[];
         force_full_sync?: boolean;
         include_details?: boolean;
         max_api_calls?: number;
