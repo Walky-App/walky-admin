@@ -57,11 +57,11 @@ const StudentSafety: React.FC = () => {
     try {
       // Map legend label to API type
       let apiType = "";
-      if (type.includes("Messages")) apiType = "Message";
-      else if (type.includes("Ideas")) apiType = "Idea";
-      else if (type.includes("Spaces")) apiType = "Space";
-      else if (type.includes("Events")) apiType = "Event";
-      else if (type.includes("People")) apiType = "User";
+      if (type.includes("Messages")) apiType = "message";
+      else if (type.includes("Ideas")) apiType = "idea";
+      else if (type.includes("Spaces")) apiType = "space";
+      else if (type.includes("Events")) apiType = "event";
+      else if (type.includes("People")) apiType = "user";
 
       const res = await apiClient.api.adminV2ReportsList({
         type: apiType,
