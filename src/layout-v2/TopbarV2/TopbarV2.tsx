@@ -148,7 +148,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             query.school_id = selectedSchool._id || selectedSchool.id;
           }
 
-          const response = await apiClient.api.campusesList(query) as any;
+          const response = await apiClient.api.adminV2CampusesList({ query } as any) as any;
           const responseData = response.data || response;
 
           let rawCampuses: any[] = [];
@@ -165,6 +165,9 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             campus_name: c.campus_name || c.name || "Unknown Campus",
             _id: c._id || c.id,
             id: c.id || c._id,
+            school_id: c.school_id || c.schoolId,
+            is_active: c.is_active ?? (c.status === 'Active'),
+            image_url: c.image_url || c.imageUrl,
           }));
         } else {
           const response = await apiClient.api.campusesDetail(user.campus_id!) as any;

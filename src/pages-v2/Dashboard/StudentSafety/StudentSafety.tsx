@@ -6,20 +6,20 @@ import API from "../../../API";
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   StackedBarChart,
   LastUpdated,
   ReportDetailsModal,
 } from "../../../components-v2";
 import "./StudentSafety.css";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const StudentSafety: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { timePeriod, setTimePeriod } = useDashboard();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReportType, setSelectedReportType] = useState("");
 

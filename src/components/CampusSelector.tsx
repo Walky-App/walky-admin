@@ -192,9 +192,9 @@ export const CampusSelector: React.FC = () => {
               <div className="d-flex align-items-center justify-content-between">
                 <div className="d-flex flex-column">
                   <span style={{ fontWeight: '600' }}>{campus.campus_name}</span>
-                  {campus.school_id && (
+                  {campus.school_id && typeof campus.school_id === 'object' && 'school_name' in campus.school_id && (
                     <small style={{ color: theme.colors.textMuted }}>
-                      {campus.school_id.school_name}
+                      {(campus.school_id as any).school_name}
                     </small>
                   )}
                 </div>

@@ -13,6 +13,7 @@ interface EventItem {
   rank: number;
   name: string;
   attendees: number;
+  image?: string;
 }
 
 import {
@@ -283,7 +284,11 @@ export const EventsInsights: React.FC = () => {
               <div key={event.rank} className="event-list-item">
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
-                  <div className="event-image-placeholder" />
+                  {event.image ? (
+                    <img src={event.image} alt={event.name} className="event-image" />
+                  ) : (
+                    <div className="event-image-placeholder" />
+                  )}
                   <p className="event-name">{event.name}</p>
                 </div>
                 <p className="event-attendees">{event.attendees} Attendees</p>
@@ -307,7 +312,11 @@ export const EventsInsights: React.FC = () => {
               <div key={event.rank} className="event-list-item">
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
-                  <div className="event-image-placeholder" />
+                  {event.image ? (
+                    <img src={event.image} alt={event.name} className="event-image" />
+                  ) : (
+                    <div className="event-image-placeholder" />
+                  )}
                   <p className="event-name">{event.name}</p>
                 </div>
                 <p className="event-attendees">{event.attendees} Attendees</p>

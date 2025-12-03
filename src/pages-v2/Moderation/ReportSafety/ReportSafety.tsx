@@ -43,7 +43,7 @@ export const ReportSafety: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("Pending review,Under evaluation");
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState<{
     reportId: string;
@@ -304,11 +304,11 @@ export const ReportSafety: React.FC = () => {
                 value={selectedStatus}
                 onChange={setSelectedStatus}
                 options={[
-                  { value: "all", label: "All status" },
+                  { value: "Pending review,Under evaluation", label: "All active" },
                   { value: "Pending review", label: "Pending review" },
                   { value: "Under evaluation", label: "Under evaluation" },
                 ]}
-                placeholder="All status"
+                placeholder="All active"
                 testId="status-filter"
                 ariaLabel="Filter by status"
               />

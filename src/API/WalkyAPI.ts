@@ -2628,6 +2628,7 @@ export class Api<SecurityDataType extends unknown> {
         period?: "week" | "month" | "all-time";
         schoolId?: string;
         campusId?: string;
+        sortBy?: "most_popular" | "least_popular";
       },
       params: RequestParams = {},
     ) =>

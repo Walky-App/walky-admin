@@ -6,13 +6,13 @@ import API from "../../../API";
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import { CRow, CCol } from "@coreui/react";
 import "./StudentBehavior.css";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
@@ -39,7 +39,7 @@ const StudentBehavior: React.FC = () => {
   const { theme } = useTheme();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { timePeriod, setTimePeriod } = useDashboard();
   const [hoveredTooltip, setHoveredTooltip] = useState<number | null>(null);
 
   const { data: apiData, isLoading } = useQuery({

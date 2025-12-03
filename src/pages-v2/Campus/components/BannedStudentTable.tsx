@@ -1,4 +1,4 @@
- 
+
 import React, { useState } from "react";
 import {
   AssetIcon,
@@ -101,9 +101,25 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     }
   });
 
-  const handleViewProfile = (student: StudentData) => {
-    setSelectedStudent(student);
-    setProfileModalVisible(true);
+  const handleViewProfile = async (student: StudentData) => {
+    try {
+      const response = await apiClient.api.adminV2StudentsDetail(student.id) as any;
+      const details = response.data;
+
+      // Merge details with existing student data
+      const fullStudentData: StudentData = {
+        ...student,
+        ...details,
+        banHistory: details.banHistory || [],
+      };
+
+      setSelectedStudent(fullStudentData);
+      setProfileModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching student details:", error);
+      setToastMessage("Error fetching student details");
+      setShowToast(true);
+    }
   };
 
   const handleSendEmail = async (student: StudentData) => {

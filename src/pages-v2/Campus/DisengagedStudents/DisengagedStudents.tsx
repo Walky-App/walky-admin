@@ -180,13 +180,12 @@ export const DisengagedStudents: React.FC = () => {
                     <td>
                       <div className="disengaged-student-info">
                         <div className="disengaged-student-avatar">
-                          {student.avatar &&
-                            !student.avatar.match(/^https?:/) ? (
-                            <div className="disengaged-student-avatar-placeholder">
-                              {student.avatar}
-                            </div>
-                          ) : (
+                          {student.avatar && student.avatar.match(/^https?:/) ? (
                             <img src={student.avatar} alt={student.name} />
+                          ) : (
+                            <div className="disengaged-student-avatar-placeholder">
+                              {student.avatar || student.name.charAt(0)}
+                            </div>
                           )}
                         </div>
                         <span

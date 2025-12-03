@@ -13,13 +13,13 @@ import {
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
 import { StatsCard, LineChart, DonutChart, DashboardSkeleton } from "../components";
 import { useTheme } from "../../../hooks/useTheme";
 import "./Engagement.css";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
@@ -27,7 +27,7 @@ const Engagement: React.FC = () => {
   const { theme } = useTheme();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { timePeriod, setTimePeriod } = useDashboard();
   const [selectedMetric, setSelectedMetric] = useState("user-engagement");
 
   const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
@@ -264,7 +264,6 @@ const Engagement: React.FC = () => {
                 subLabels={chartSubLabels}
                 color="#00b69b"
                 backgroundColor="rgba(0, 182, 155, 0.2)"
-                maxValue={100000}
               />
             </CCol>
             <CCol xs={12} lg={6}>

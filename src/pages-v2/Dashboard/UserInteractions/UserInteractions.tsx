@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import API from "../../../API";
@@ -6,20 +6,20 @@ import { CRow, CCol } from "@coreui/react";
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
 import { DashboardSkeleton, LineChart } from "../components";
 import { BarChart } from "./components/BarChart";
 import "./UserInteractions.css";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const UserInteractions: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { timePeriod, setTimePeriod } = useDashboard();
 
   // ... (inside component)
 
