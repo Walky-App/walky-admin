@@ -20,7 +20,6 @@ export type ReportStatus =
   | "Resolved"
   | "Dismissed";
 export type SafetyTab = "ban" | "report" | "block";
-export type ModalView = "report" | "ban" | "deactivate";
 
 interface ReportDetailModalProps {
   isOpen: boolean;
@@ -126,31 +125,15 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   isLoading,
 }) => {
   const [activeTab, setActiveTab] = useState<SafetyTab>("ban");
-  const [currentView, setCurrentView] = useState<ModalView>("report");
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isBanModalOpen, setIsBanModalOpen] = useState(false);
 
   const handleDeactivateUser = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("deactivate");
-      setIsTransitioning(false);
-    }, 300);
+    setIsDeactivateModalOpen(true);
   };
 
   const handleBanUser = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("ban");
-      setIsTransitioning(false);
-    }, 300);
-  };
-
-  const handleBackToReport = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("report");
-      setIsTransitioning(false);
-    }, 300);
+    setIsBanModalOpen(true);
   };
 
   const handleDeactivateConfirm = () => {
@@ -496,7 +479,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     <>
       <CModal
         visible={isOpen}
-        onClose={handleModalClose}
+        onClose={onClose}
         size="xl"
         alignment="center"
         className="report-detail-modal"
@@ -505,7 +488,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
         <CModalBody className="report-detail-modal-body">
           <button
             className="close-button"
-            onClick={handleModalClose}
+            onClick={onClose}
             data-testid="report-detail-modal-close-btn"
             aria-label="Close modal"
           >
@@ -718,6 +701,22 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
           )}
         </CModalBody>
       </CModal>
+
+      {/* Deactivate User Modal */}
+      <DeactivateUserModal
+        visible={isDeactivateModalOpen}
+        onClose={() => setIsDeactivateModalOpen(false)}
+        onConfirm={handleDeactivateConfirm}
+        userName={reportData.associatedUser.name}
+      />
+
+      {/* Ban User Modal */}
+      <BanUserModal
+        visible={isBanModalOpen}
+        onClose={() => setIsBanModalOpen(false)}
+        onConfirm={handleBanConfirm}
+        userName={reportData.associatedUser.name}
+      />
     </>
   );
 };
