@@ -83,67 +83,80 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
           {/* Bars */}
           <div className="stacked-bar-bars-container">
-            {data.map((weekData, weekIndex) => (
-              <div key={weekIndex} className="stacked-bar-week-bars">
-                <div className="stacked-bar-bars-group">
-                  {legend.map((legendItem, barIndex) => {
-                    const value = weekData[legendItem.key] || 0;
-                    const isTopBar = barIndex === legend.length - 1;
-                    return (
-                      <div
-                        key={legendItem.key}
-                        className="stacked-bar-bar"
-                        style={{
-                          height: `${getBarHeight(value)}%`,
-                          backgroundColor: legendItem.color,
-                          borderTopLeftRadius: isTopBar ? "8px" : "0",
-                          borderTopRightRadius: isTopBar ? "8px" : "0",
-                          cursor: onBarClick ? "pointer" : "default",
-                        }}
-                        onClick={() =>
-                          onBarClick?.(legendItem.key, legendItem.label)
-                        }
-                        onMouseEnter={() =>
-                          setHoveredBar({
-                            weekIndex,
-                            barKey: legendItem.key,
-                            value,
-                          })
-                        }
-                        onMouseLeave={() => setHoveredBar(null)}
-                        data-testid={`bar-${weekIndex}-${legendItem.key}`}
-                      >
-                        <span
-                          className="stacked-bar-value"
+            {data.map((weekData, weekIndex) => {
+              // Filter legend items that have a non-zero value for this week to determine the top bar
+              const visibleLegendItems = legend.filter(
+                (item) => (weekData[item.key] || 0) > 0
+              );
+
+              return (
+                <div key={weekIndex} className="stacked-bar-week-bars">
+                  <div className="stacked-bar-bars-group">
+                    {legend.map((legendItem) => {
+                      const value = weekData[legendItem.key] || 0;
+                      if (value === 0) return null;
+
+                      const isTopBar =
+                        visibleLegendItems.length > 0 &&
+                        legendItem.key ===
+                        visibleLegendItems[visibleLegendItems.length - 1].key;
+
+                      return (
+                        <div
+                          key={legendItem.key}
+                          className="stacked-bar-bar"
                           style={{
-                            color:
-                              legendItem.color === "#576cc2"
-                                ? "#ffffff"
-                                : "#1d1b20",
+                            height: `${getBarHeight(value)}%`,
+                            backgroundColor: legendItem.color,
+                            borderTopLeftRadius: isTopBar ? "8px" : "0",
+                            borderTopRightRadius: isTopBar ? "8px" : "0",
+                            cursor: onBarClick ? "pointer" : "default",
                           }}
+                          onClick={() =>
+                            onBarClick?.(legendItem.key, legendItem.label)
+                          }
+                          onMouseEnter={() =>
+                            setHoveredBar({
+                              weekIndex,
+                              barKey: legendItem.key,
+                              value,
+                            })
+                          }
+                          onMouseLeave={() => setHoveredBar(null)}
+                          data-testid={`bar-${weekIndex}-${legendItem.key}`}
                         >
-                          {value}
-                        </span>
-                        {hoveredBar?.weekIndex === weekIndex &&
-                          hoveredBar?.barKey === legendItem.key && (
-                            <div
-                              className="stacked-bar-tooltip"
-                              style={{
-                                backgroundColor: theme.colors.tooltipBg,
-                                color: theme.colors.tooltipText,
-                                borderColor: theme.colors.tooltipBorder,
-                                border: "1px solid",
-                              }}
-                            >
-                              {legendItem.label}: {value.toLocaleString()}
-                            </div>
-                          )}
-                      </div>
-                    );
-                  })}
+                          <span
+                            className="stacked-bar-value"
+                            style={{
+                              color:
+                                legendItem.color === "#576cc2"
+                                  ? "#ffffff"
+                                  : "#1d1b20",
+                            }}
+                          >
+                            {value}
+                          </span>
+                          {hoveredBar?.weekIndex === weekIndex &&
+                            hoveredBar?.barKey === legendItem.key && (
+                              <div
+                                className="stacked-bar-tooltip"
+                                style={{
+                                  backgroundColor: theme.colors.tooltipBg,
+                                  color: theme.colors.tooltipText,
+                                  borderColor: theme.colors.tooltipBorder,
+                                  border: "1px solid",
+                                }}
+                              >
+                                {legendItem.label}: {value.toLocaleString()}
+                              </div>
+                            )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
