@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./EventsInsights.css";
-import { AssetIcon, ExportButton } from "../../../components-v2";
+import { AssetIcon, ExportButton, EventDetailsModal, EventDetailsData } from "../../../components-v2";
 import API, { apiClient } from "../../../API";
 
 interface Interest {
@@ -11,6 +11,7 @@ interface Interest {
 
 interface EventItem {
   rank: number;
+  id: string;
   name: string;
   attendees: number;
   image?: string;
@@ -73,6 +74,46 @@ export const EventsInsights: React.FC = () => {
   const [interests, setInterests] = useState<Interest[]>([]);
   const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
+
+  // Modal state
+  const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEventClick = async (eventId: string) => {
+    try {
+      const res = await apiClient.api.adminV2EventsDetail(eventId);
+      const event = res.data as any;
+
+      // Transform API data to EventDetailsData
+      const eventDetails: EventDetailsData = {
+        id: event.id,
+        eventName: event.name,
+        eventImage: event.image_url,
+        organizer: {
+          name: event.created_by ? `${event.created_by.first_name} ${event.created_by.last_name}` : 'Unknown',
+          studentId: event.created_by?._id || '',
+          avatar: event.created_by?.avatar_url
+        },
+        date: new Date(event.date_and_time).toLocaleDateString(),
+        time: new Date(event.date_and_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        place: event.location || event.address || 'Unknown location',
+        type: event.visibility,
+        description: event.description || '',
+        attendees: (event.participants || []).map((p: any) => ({
+          id: p.user_id?._id || p._id,
+          name: p.user_id ? `${p.user_id.first_name} ${p.user_id.last_name}` : 'Unknown',
+          avatar: p.user_id?.avatar_url
+        })),
+        maxAttendees: event.slots || 0,
+        isFlagged: false // Backend doesn't seem to provide this yet
+      };
+
+      setSelectedEvent(eventDetails);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch event details:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -281,7 +322,12 @@ export const EventsInsights: React.FC = () => {
           </div>
           <div className="events-list">
             {privateEvents.map((event) => (
-              <div key={event.rank} className="event-list-item">
+              <div
+                key={event.rank}
+                className="event-list-item clickable"
+                onClick={() => handleEventClick(event.id)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
                   {event.image ? (
@@ -309,7 +355,12 @@ export const EventsInsights: React.FC = () => {
           </div>
           <div className="events-list">
             {publicEvents.map((event) => (
-              <div key={event.rank} className="event-list-item">
+              <div
+                key={event.rank}
+                className="event-list-item clickable"
+                onClick={() => handleEventClick(event.id)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
                   {event.image ? (
@@ -325,6 +376,11 @@ export const EventsInsights: React.FC = () => {
           </div>
         </div>
       </div>
-    </main>
+      <EventDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        eventData={selectedEvent}
+      />
+    </main >
   );
 };
