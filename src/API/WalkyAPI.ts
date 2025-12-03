@@ -3356,10 +3356,44 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2SpacesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.http.request<
+        {
+          id?: string;
+          name?: string;
+          description?: string;
+          logo_url?: string;
+          cover_image_url?: string;
+          owner?: {
+            name?: string;
+            avatar?: string;
+            studentId?: string;
+          };
+          category?: {
+            name?: string;
+          };
+          campusName?: string;
+          members?: {
+            user_id?: string;
+            name?: string;
+            avatar_url?: string;
+          }[];
+          events?: {
+            id?: string;
+            name?: string;
+            date?: string;
+            location?: string;
+            image_url?: string;
+          }[];
+          createdAt?: string;
+          isFlagged?: boolean;
+          flagReason?: string;
+        },
+        any
+      >({
         path: `/api/admin/v2/spaces/${id}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 

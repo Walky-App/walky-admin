@@ -131,43 +131,44 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
   const handleViewSpaceDetails = async (space: SpaceData, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await apiClient.api.adminV2SpacesDetail(space.id) as any;
+      const response = await apiClient.api.adminV2SpacesDetail(space.id);
       const details = response.data;
+      console.log("API Space Details Response:", details);
 
       // Map API response to SpaceDetailsData
       const spaceDetails: SpaceDetailsData = {
-        id: details.id,
-        spaceName: details.name,
+        id: details.id || "",
+        spaceName: details.name || "Unknown Space",
         owner: {
           name: details.owner?.name || 'Unknown',
           avatar: details.owner?.avatar,
           studentId: details.owner?.studentId || 'N/A',
         },
-        creationDate: new Date(details.createdAt).toLocaleDateString(),
-        creationTime: new Date(details.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        creationDate: details.createdAt ? new Date(details.createdAt).toLocaleDateString() : "N/A",
+        creationTime: details.createdAt ? new Date(details.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A",
         category: details.category?.name || "Other",
         chapter: "FIU Official", // Placeholder
         contact: "fiuhonduras@gmail.com", // Placeholder
         about: details.description || "No description provided.",
         howWeUse: "We post events and offer general information about how to get involved.", // Placeholder
-        description: details.description,
+        description: details.description || "",
         events: (details.events || []).map((ev: any) => ({
-          id: ev.id,
-          title: ev.name,
-          date: new Date(ev.date).toLocaleDateString(),
-          time: new Date(ev.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          id: ev.id || "",
+          title: ev.name || "Untitled Event",
+          date: ev.date ? new Date(ev.date).toLocaleDateString() : "TBD",
+          time: ev.date ? new Date(ev.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "TBD",
           location: ev.location || "TBD",
           image: ev.image_url
         })),
         members: (details.members || []).map((m: any) => ({
-          id: m.user_id,
+          id: m.user_id || "",
           name: m.name || 'Unknown',
           avatar: m.avatar_url
         })),
         spaceImage: details.cover_image_url,
         spaceLogo: details.logo_url,
         memberRange: "1-10", // Placeholder or calculate
-        yearEstablished: new Date(details.createdAt).getFullYear().toString(),
+        yearEstablished: details.createdAt ? new Date(details.createdAt).getFullYear().toString() : "N/A",
         governingBody: "Interfraternity", // Placeholder
         primaryFocus: "Social", // Placeholder
         isFlagged: details.isFlagged,
