@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./EventCalendar.css";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../../API";
+import { useCampus } from "../../../../contexts/CampusContext";
 
 import {
   AssetIcon,
@@ -7,27 +10,123 @@ import {
   ScheduledEventItem,
   EventDetailsModal,
   EventDetailsData,
+  DeleteModal,
+  FlagModal,
+  UnflagModal,
+  CustomToast,
 } from "../../../../components-v2";
 import { EventCalendarDay } from "../EventCalendarDay/EventCalendarDay";
 import { EventCalendarWeek } from "../EventCalendarWeek/EventCalendarWeek";
 
-interface CalendarEvent {
-  date: number;
-  count: number;
-}
-
 type CalendarView = "day" | "week" | "month";
 
 export const EventCalendar: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 9, 10)); // October 10, 2025
+  const { selectedCampus } = useCampus();
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<CalendarView>("month");
-  const today = 10;
+  const today = new Date().getDate();
   const [scheduledEventsModalOpen, setScheduledEventsModalOpen] =
     useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false);
   const [selectedEventDetails, setSelectedEventDetails] =
     useState<EventDetailsData | null>(null);
+  const queryClient = useQueryClient();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState<EventDetailsData | null>(null);
+  const [flagModalOpen, setFlagModalOpen] = useState(false);
+  const [eventToFlag, setEventToFlag] = useState<EventDetailsData | null>(null);
+  const [unflagModalOpen, setUnflagModalOpen] = useState(false);
+  const [eventToUnflag, setEventToUnflag] = useState<EventDetailsData | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2EventsDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+      setToastMessage(`Event deleted successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setDeleteModalOpen(false);
+      setEventDetailsModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting event:", error);
+      setToastMessage("Error deleting event");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+      setToastMessage(`Event flagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setFlagModalOpen(false);
+      setEventDetailsModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error flagging event:", error);
+      setToastMessage("Error flagging event");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const unflagMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2EventsUnflagCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+      setToastMessage(`Event unflagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setUnflagModalOpen(false);
+      setEventDetailsModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error unflagging event:", error);
+      setToastMessage("Error unflagging event");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const handleDeleteClick = (event: EventDetailsData) => {
+    setEventToDelete(event);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (_reason: string) => {
+    if (eventToDelete) {
+      deleteMutation.mutate(eventToDelete.id);
+    }
+  };
+
+  const handleFlagClick = (event: EventDetailsData) => {
+    setEventToFlag(event);
+    setFlagModalOpen(true);
+  };
+
+  const handleFlagConfirm = (reason: string) => {
+    if (eventToFlag) {
+      flagMutation.mutate({ id: eventToFlag.id, reason });
+    }
+  };
+
+  const handleUnflagClick = (event: EventDetailsData) => {
+    setEventToUnflag(event);
+    setUnflagModalOpen(true);
+  };
+
+  const handleUnflagConfirm = () => {
+    if (eventToUnflag) {
+      unflagMutation.mutate(eventToUnflag.id);
+    }
+  };
 
   // Close modals when view mode changes
   useEffect(() => {
@@ -36,225 +135,13 @@ export const EventCalendar: React.FC = () => {
   }, [viewMode]);
 
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
   ];
 
   const dayHeaders = ["MON", "TUE", "WED", "THE", "FRI", "SAT", "SUN"];
 
-  // Events data from Figma
-  const events: CalendarEvent[] = [
-    { date: 9, count: 2 },
-    { date: 16, count: 4 },
-    { date: 25, count: 3 },
-    { date: 28, count: 2 },
-  ];
-
-  // Mock detailed events data for the modal
-  const getEventsForDate = (day: number): ScheduledEventItem[] => {
-    if (day === 9) {
-      return [
-        {
-          id: "101",
-          eventName: "Morning Coffee Meetup",
-          date: "OCT 9, 2025",
-          time: "9:00 AM",
-          location: "Student Union Café",
-          eventImage: undefined,
-        },
-        {
-          id: "102",
-          eventName: "Study Group - Biology",
-          date: "OCT 9, 2025",
-          time: "3:00 PM",
-          location: "Library Room 204",
-          eventImage: undefined,
-        },
-      ];
-    }
-    if (day === 16) {
-      return [
-        {
-          id: "1",
-          eventName: "4v4 Basketball game",
-          date: "OCT 16, 2025",
-          time: "2:00 PM",
-          location: "S. Campus Basketball Courts",
-          eventImage: undefined,
-        },
-        {
-          id: "2",
-          eventName: "Top Golf Tuesdays",
-          date: "OCT 16, 2025",
-          time: "5:00 PM",
-          location: "Top Golf Miami",
-          eventImage: undefined,
-        },
-        {
-          id: "3",
-          eventName: "FAU Tech Runway startup finals & Pitch Competition",
-          date: "OCT 16, 2025",
-          time: "8:00 PM",
-          location: "Burns Auditorium",
-          eventImage: undefined,
-        },
-        {
-          id: "4",
-          eventName: "Yoga in the park",
-          date: "OCT 16, 2025",
-          time: "8:00 AM",
-          location: "Gibbons Park",
-          eventImage: undefined,
-        },
-      ];
-    }
-    if (day === 25) {
-      return [
-        {
-          id: "201",
-          eventName: "Movie Night - Classic Films",
-          date: "OCT 25, 2025",
-          time: "7:00 PM",
-          location: "Student Theater",
-          eventImage: undefined,
-        },
-        {
-          id: "202",
-          eventName: "Coding Workshop",
-          date: "OCT 25, 2025",
-          time: "2:00 PM",
-          location: "Computer Lab A",
-          eventImage: undefined,
-        },
-        {
-          id: "203",
-          eventName: "Art Exhibition Opening",
-          date: "OCT 25, 2025",
-          time: "6:00 PM",
-          location: "University Gallery",
-          eventImage: undefined,
-        },
-      ];
-    }
-    if (day === 28) {
-      return [
-        {
-          id: "301",
-          eventName: "Career Fair 2025",
-          date: "OCT 28, 2025",
-          time: "10:00 AM",
-          location: "Main Hall",
-          eventImage: undefined,
-        },
-        {
-          id: "302",
-          eventName: "Music Jam Session",
-          date: "OCT 28, 2025",
-          time: "4:00 PM",
-          location: "Music Building",
-          eventImage: undefined,
-        },
-      ];
-    }
-    // Return empty array for other dates
-    return [];
-  };
-
-  const handleDayClick = (day: number) => {
-    const event = getEventForDay(day);
-    if (event && event.count > 0) {
-      setSelectedDate(day);
-      setScheduledEventsModalOpen(true);
-    }
-  };
-
-  const handleEventClick = (eventId: string) => {
-    console.log("handleEventClick called with eventId:", eventId);
-    // For Day and Week views, we need to create event details on the fly
-    // since those views have their own mock events
-    const eventDetails: EventDetailsData = {
-      id: eventId,
-      eventName: "Event Details",
-      organizer: {
-        name: "Becky",
-        studentId: "166g...fjhsgt",
-        avatar: undefined,
-      },
-      date: currentDate
-        .toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })
-        .toUpperCase()
-        .replace(",", ""),
-      time: "2:00 PM",
-      place: "Campus Location",
-      type: "public",
-      description:
-        "A fun event for students. Bring your A-game and let's have some competitive fun!",
-      attendees: [
-        { id: "1", name: "Becky", avatar: undefined },
-        { id: "2", name: "Ben Thompson", avatar: undefined },
-        { id: "3", name: "Leo Martinez", avatar: undefined },
-        { id: "4", name: "Mariana Silva", avatar: undefined },
-      ],
-      maxAttendees: 8,
-      eventImage: undefined,
-    };
-
-    console.log("Opening event details modal");
-    setSelectedEventDetails(eventDetails);
-    setEventDetailsModalOpen(true);
-  };
-
-  const handleMonthEventClick = (eventId: string) => {
-    // Get the event details from scheduled events and open the details modal
-    const events = selectedDate ? getEventsForDate(selectedDate) : [];
-    const event = events.find((e) => e.id === eventId);
-
-    if (event) {
-      const eventDetails: EventDetailsData = {
-        id: event.id,
-        eventName: event.eventName,
-        organizer: {
-          name: "Becky",
-          studentId: "166g...fjhsgt",
-          avatar: undefined,
-        },
-        date: event.date,
-        time: event.time,
-        place: event.location,
-        type: "public",
-        description:
-          "A fun event for students. Bring your A-game and let's have some competitive fun!",
-        attendees: [
-          { id: "1", name: "Becky", avatar: undefined },
-          { id: "2", name: "Ben Thompson", avatar: undefined },
-          { id: "3", name: "Leo Martinez", avatar: undefined },
-          { id: "4", name: "Mariana Silva", avatar: undefined },
-          { id: "5", name: "Anni Schmidt", avatar: undefined },
-          { id: "6", name: "Justin Park", avatar: undefined },
-        ],
-        maxAttendees: 8,
-        eventImage: undefined,
-      };
-      setSelectedEventDetails(eventDetails);
-      setScheduledEventsModalOpen(false);
-      setEventDetailsModalOpen(true);
-    }
-  };
-
+  // Calculate date range for fetching
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -265,8 +152,104 @@ export const EventCalendar: React.FC = () => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
-    // Convert Sunday (0) to 7 for our Monday-start week
     return firstDay === 0 ? 6 : firstDay - 1;
+  };
+
+  const daysInMonth = getDaysInMonth(currentDate);
+  const firstDayOffset = getFirstDayOfMonth(currentDate);
+
+  // Calculate start and end dates for the API call
+  // We need to cover the previous month days and next month days shown in the grid
+  const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  startDate.setDate(startDate.getDate() - firstDayOffset);
+
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 35); // 5 weeks * 7 days
+
+  const { data: eventsData } = useQuery({
+    queryKey: ['calendarEvents', currentDate.getMonth(), currentDate.getFullYear(), selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2EventsList({
+      limit: 1000, // Fetch enough events
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      campusId: selectedCampus?._id
+    }),
+    enabled: !!selectedCampus?._id
+  });
+
+  // Process events into a map by day
+  const eventsByDay = new Map<number, ScheduledEventItem[]>();
+
+  (eventsData?.data.data || []).forEach((event: any) => {
+    const eventDate = new Date(event.eventDate);
+    // Only care if it's in the current month for the main view counters
+    // But for the grid we might need to handle prev/next month days correctly if we want to show dots there too
+    // For simplicity, let's focus on the current month for now, or map by full date string
+
+    if (eventDate.getMonth() === currentDate.getMonth() && eventDate.getFullYear() === currentDate.getFullYear()) {
+      const day = eventDate.getDate();
+      const existing = eventsByDay.get(day) || [];
+      existing.push({
+        id: event.id,
+        eventName: event.eventName,
+        date: new Date(event.eventDate).toLocaleDateString(),
+        time: event.eventTime,
+        location: "Campus", // API doesn't seem to return location in the list, might need details
+        eventImage: undefined,
+      });
+      eventsByDay.set(day, existing);
+    }
+  });
+
+  const getEventsForDate = (day: number): ScheduledEventItem[] => {
+    return eventsByDay.get(day) || [];
+  };
+
+  const handleDayClick = (day: number) => {
+    const events = getEventsForDate(day);
+    if (events.length > 0) {
+      setSelectedDate(day);
+      setScheduledEventsModalOpen(true);
+    }
+  };
+
+  const handleEventClick = async (eventId: string) => {
+    try {
+      const res = await apiClient.api.adminV2EventsDetail(eventId);
+      const event = res.data as any;
+      if (event) {
+        const eventDetails: EventDetailsData = {
+          id: event.id || event._id || "",
+          eventName: event.eventName || "",
+          organizer: {
+            name: event.organizer?.name || "Unknown",
+            studentId: "",
+            avatar: event.organizer?.avatar,
+          },
+          date: event.eventDate || "",
+          time: event.eventTime || "",
+          place: "Campus", // Missing in detail?
+          type: (event.type as any) || "public",
+          description: event.description || "No description",
+          attendees: (event.participants || []).map((p: any) => ({
+            id: p.user_id,
+            name: p.name || 'Unknown',
+            avatar: p.avatar_url
+          })),
+          maxAttendees: event.slots || 0,
+          eventImage: event.image_url,
+        };
+        setSelectedEventDetails(eventDetails);
+        setEventDetailsModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch event details", error);
+    }
+  };
+
+  const handleMonthEventClick = (eventId: string) => {
+    handleEventClick(eventId);
+    setScheduledEventsModalOpen(false);
   };
 
   const getPreviousMonthDays = (date: Date, count: number) => {
@@ -291,10 +274,7 @@ export const EventCalendar: React.FC = () => {
     );
   };
 
-  const daysInMonth = getDaysInMonth(currentDate);
-  const firstDayOffset = getFirstDayOfMonth(currentDate);
   const previousMonthDays = getPreviousMonthDays(currentDate, firstDayOffset);
-
   const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   const totalCells = 35; // 5 weeks
@@ -305,9 +285,61 @@ export const EventCalendar: React.FC = () => {
     (_, i) => i + 1
   );
 
-  const getEventForDay = (day: number) => {
-    return events.find((event) => event.date === day);
+  // Helper to calculate end time (default 1 hour duration)
+  const getEndTime = (startTime: string) => {
+    if (!startTime) return "12:00";
+    const [hours, minutes] = startTime.split(":").map(Number);
+    const endHour = (hours + 1) % 24;
+    return `${endHour.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
   };
+
+  const dayEvents = (eventsData?.data.data || [])
+    .filter((event: any) => {
+      const eventDate = new Date(event.eventDate);
+      return (
+        eventDate.getDate() === currentDate.getDate() &&
+        eventDate.getMonth() === currentDate.getMonth() &&
+        eventDate.getFullYear() === currentDate.getFullYear()
+      );
+    })
+    .map((event: any) => ({
+      id: event.id,
+      title: event.eventName,
+      startTime: event.eventTime || "10:00",
+      endTime: getEndTime(event.eventTime || "10:00"),
+      type: (event.type as "public" | "private") || "public",
+    }));
+
+  const weekEvents = (eventsData?.data.data || [])
+    .filter((event: any) => {
+      // Filter logic for week view is handled by the component itself based on 'day' index,
+      // but we should pass events that fall within the current week range if possible.
+      // For simplicity, passing all events and letting the component filter by day index (0-6)
+      // might be risky if we have events from other weeks with same day index.
+      // Ideally, we should check if the event date is within the current week.
+
+      const eventDate = new Date(event.eventDate);
+      const weekStart = new Date(currentDate);
+      const day = weekStart.getDay();
+      const diff = weekStart.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
+      const monday = new Date(weekStart.setDate(diff));
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      return eventDate >= monday && eventDate <= sunday;
+    })
+    .map((event: any) => {
+      const date = new Date(event.eventDate);
+      const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1; // Mon=0, Sun=6
+      return {
+        id: event.id,
+        title: event.eventName,
+        day: dayIndex,
+        startTime: event.eventTime || "10:00",
+        endTime: getEndTime(event.eventTime || "10:00"),
+        type: (event.type as "public" | "private") || "public",
+      };
+    });
 
   // Render the appropriate view based on viewMode
   if (viewMode === "day") {
@@ -376,7 +408,7 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
         </div>
-        <EventCalendarDay date={currentDate} onEventClick={handleEventClick} />
+        <EventCalendarDay date={currentDate} events={dayEvents} onEventClick={handleEventClick} />
 
         {/* Event Details Modal */}
         {selectedEventDetails && (
@@ -384,6 +416,40 @@ export const EventCalendar: React.FC = () => {
             isOpen={eventDetailsModalOpen}
             onClose={() => setEventDetailsModalOpen(false)}
             eventData={selectedEventDetails}
+            onDelete={handleDeleteClick}
+            onFlag={handleFlagClick}
+            onUnflag={handleUnflagClick}
+          />
+        )}
+
+        <DeleteModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={handleDeleteConfirm}
+          itemName={eventToDelete?.eventName || ""}
+          type="event"
+        />
+
+        <FlagModal
+          isOpen={flagModalOpen}
+          onClose={() => setFlagModalOpen(false)}
+          onConfirm={handleFlagConfirm}
+          itemName={eventToFlag?.eventName || ""}
+          type="event"
+        />
+
+        <UnflagModal
+          isOpen={unflagModalOpen}
+          onClose={() => setUnflagModalOpen(false)}
+          onConfirm={handleUnflagConfirm}
+          itemName={eventToUnflag?.eventName || ""}
+          type="event"
+        />
+
+        {showToast && (
+          <CustomToast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
           />
         )}
       </div>
@@ -456,7 +522,7 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
         </div>
-        <EventCalendarWeek date={currentDate} onEventClick={handleEventClick} />
+        <EventCalendarWeek date={currentDate} events={weekEvents} onEventClick={handleEventClick} />
 
         {/* Event Details Modal */}
         {selectedEventDetails && (
@@ -464,6 +530,40 @@ export const EventCalendar: React.FC = () => {
             isOpen={eventDetailsModalOpen}
             onClose={() => setEventDetailsModalOpen(false)}
             eventData={selectedEventDetails}
+            onDelete={handleDeleteClick}
+            onFlag={handleFlagClick}
+            onUnflag={handleUnflagClick}
+          />
+        )}
+
+        <DeleteModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={handleDeleteConfirm}
+          itemName={eventToDelete?.eventName || ""}
+          type="event"
+        />
+
+        <FlagModal
+          isOpen={flagModalOpen}
+          onClose={() => setFlagModalOpen(false)}
+          onConfirm={handleFlagConfirm}
+          itemName={eventToFlag?.eventName || ""}
+          type="event"
+        />
+
+        <UnflagModal
+          isOpen={unflagModalOpen}
+          onClose={() => setUnflagModalOpen(false)}
+          onConfirm={handleUnflagConfirm}
+          itemName={eventToUnflag?.eventName || ""}
+          type="event"
+        />
+
+        {showToast && (
+          <CustomToast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
           />
         )}
       </div>
@@ -555,15 +655,14 @@ export const EventCalendar: React.FC = () => {
 
           {/* Current month days */}
           {currentMonthDays.map((day) => {
-            const event = getEventForDay(day);
-            const isToday = day === today;
+            const events = getEventsForDate(day);
+            const isToday = day === today && currentDate.getMonth() === new Date().getMonth() && currentDate.getFullYear() === new Date().getFullYear();
 
             return (
               <div
                 key={day}
-                className={`calendar-day ${isToday ? "today" : ""} ${
-                  event ? "has-events" : ""
-                }`}
+                className={`calendar-day ${isToday ? "today" : ""} ${events.length > 0 ? "has-events" : ""
+                  }`}
                 onClick={() => handleDayClick(day)}
               >
                 {isToday ? (
@@ -571,11 +670,11 @@ export const EventCalendar: React.FC = () => {
                 ) : (
                   <span className="day-number">{day}</span>
                 )}
-                {event && (
+                {events.length > 0 && (
                   <div className="event-indicator">
                     <div className="event-bar"></div>
                     <span className="event-count">
-                      {event.count} scheduled Events
+                      {events.length} scheduled Events
                     </span>
                   </div>
                 )}
@@ -614,6 +713,40 @@ export const EventCalendar: React.FC = () => {
             setScheduledEventsModalOpen(true);
           }}
           eventData={selectedEventDetails}
+          onDelete={handleDeleteClick}
+          onFlag={handleFlagClick}
+          onUnflag={handleUnflagClick}
+        />
+      )}
+
+      <DeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        itemName={eventToDelete?.eventName || ""}
+        type="event"
+      />
+
+      <FlagModal
+        isOpen={flagModalOpen}
+        onClose={() => setFlagModalOpen(false)}
+        onConfirm={handleFlagConfirm}
+        itemName={eventToFlag?.eventName || ""}
+        type="event"
+      />
+
+      <UnflagModal
+        isOpen={unflagModalOpen}
+        onClose={() => setUnflagModalOpen(false)}
+        onConfirm={handleUnflagConfirm}
+        itemName={eventToUnflag?.eventName || ""}
+        type="event"
+      />
+
+      {showToast && (
+        <CustomToast
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
         />
       )}
     </div>

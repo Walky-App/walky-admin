@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./EventsInsights.css";
 import { AssetIcon, ExportButton } from "../../../components-v2";
 import { DonutChart } from "../../Dashboard/components";
-import { apiClient } from "../../../API";
+import API, { apiClient } from "../../../API";
 
 interface Interest {
   name: string;
@@ -15,6 +15,8 @@ interface EventItem {
   name: string;
   attendees: number;
 }
+
+// ... (existing imports)
 
 export const EventsInsights: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
@@ -31,38 +33,30 @@ export const EventsInsights: React.FC = () => {
     avgPrivateAttendees: 0,
   });
 
+  const handleExport = async () => {
+    try {
+      const response = await API.get('/admin/v2/dashboard/events-insights', {
+        params: { period: timePeriod, export: 'true' },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `events_insights_stats_${timePeriod}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
+  };
+
   // Data for donut charts
-  const [expandReachData] = useState([
-    {
-      label: "Without expand Event reach",
-      value: 70.16,
-      percentage: "70.16%",
-      color: "#D6E9C7",
-    },
-    {
-      label: "With expand Event reach",
-      value: 29.84,
-      percentage: "29.84%",
-      color: "#3B7809",
-    },
-  ]);
+  const [expandReachData, setExpandReachData] = useState<any[]>([]);
+  const [usersVsSpacesData, setUsersVsSpacesData] = useState<any[]>([]);
 
-  const [usersVsSpacesData] = useState([
-    {
-      label: "Events organized by Spaces",
-      value: 70.16,
-      percentage: "70.16%",
-      color: "#546FD9",
-    },
-    {
-      label: "Events organized by Users",
-      value: 29.84,
-      percentage: "29.84%",
-      color: "#CACAEE",
-    },
-  ]);
-
-  const [interests] = useState<Interest[]>([]);
+  const [interests, setInterests] = useState<Interest[]>([]);
   const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 
@@ -70,72 +64,24 @@ export const EventsInsights: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch event counts
-        const [totalRes, publicRes, privateRes] = await Promise.all([
-          apiClient.api.adminAnalyticsEventsCountList({ filter: "total" } as any) as any,
-          apiClient.api.adminAnalyticsEventsCountList({ filter: "public" } as any) as any,
-          apiClient.api.adminAnalyticsEventsCountList({ filter: "private" } as any) as any,
-        ]);
+        const res = await apiClient.api.adminV2DashboardEventsInsightsList({ period: timePeriod } as any) as any;
+        const data = res.data;
 
-        const total = totalRes.data.count || 0;
-        const publicCount = publicRes.data.count || 0;
-        const privateCount = privateRes.data.count || 0;
+        if (data) {
+          setStats({
+            totalEvents: data.stats?.totalEvents || 0,
+            publicEvents: data.stats?.publicEvents || 0,
+            privateEvents: data.stats?.privateEvents || 0,
+            avgPublicAttendees: data.stats?.avgPublicAttendees || 0,
+            avgPrivateAttendees: data.stats?.avgPrivateAttendees || 0,
+          });
 
-        // Fetch top events (simulated by fetching list and sorting for now)
-        // Ideally backend should provide a "top events" endpoint
-        const eventsRes = await apiClient.api.adminV2EventsList({ limit: 100 } as any) as any;
-        const allEvents = eventsRes.data.data || [];
-
-        // Process Public Events
-        const publicEvts = allEvents
-          .filter((e: any) => e.is_public)
-          .sort((a: any, b: any) => (b.attendees_count || 0) - (a.attendees_count || 0))
-          .slice(0, 10)
-          .map((e: any, index: number) => ({
-            rank: index + 1,
-            name: e.title,
-            attendees: e.attendees_count || 0,
-          }));
-
-        // Process Private Events
-        const privateEvts = allEvents
-          .filter((e: any) => !e.is_public)
-          .sort((a: any, b: any) => (b.attendees_count || 0) - (a.attendees_count || 0))
-          .slice(0, 10)
-          .map((e: any, index: number) => ({
-            rank: index + 1,
-            name: e.title,
-            attendees: e.attendees_count || 0,
-          }));
-
-        // Calculate averages
-        const totalPublicAttendees = allEvents
-          .filter((e: any) => e.is_public)
-          .reduce((sum: number, e: any) => sum + (e.attendees_count || 0), 0);
-
-        const totalPrivateAttendees = allEvents
-          .filter((e: any) => !e.is_public)
-          .reduce((sum: number, e: any) => sum + (e.attendees_count || 0), 0);
-
-        const avgPublic = publicCount > 0 ? Math.round(totalPublicAttendees / publicCount) : 0;
-        const avgPrivate = privateCount > 0 ? Math.round(totalPrivateAttendees / privateCount) : 0;
-
-        setStats({
-          totalEvents: total,
-          publicEvents: publicCount,
-          privateEvents: privateCount,
-          avgPublicAttendees: avgPublic,
-          avgPrivateAttendees: avgPrivate,
-        });
-
-        setPublicEvents(publicEvts);
-        setPrivateEvents(privateEvts);
-
-        // Fetch Interests (simulated or from another endpoint)
-        // For now, we'll keep the mock interests or fetch if available
-        // const interestsRes = await apiClient.api.adminAnalyticsInterestsList() as any; 
-        // setInterests(...)
-
+          setExpandReachData(data.expandReachData || []);
+          setUsersVsSpacesData(data.usersVsSpacesData || []);
+          setInterests(data.interests || []);
+          setPublicEvents(data.publicEventsList || []);
+          setPrivateEvents(data.privateEventsList || []);
+        }
       } catch (error) {
         console.error("Failed to fetch events insights:", error);
       } finally {
@@ -146,11 +92,13 @@ export const EventsInsights: React.FC = () => {
     fetchData();
   }, [timePeriod]);
 
+  // ... (useEffect)
+
   return (
     <main className="events-insights-page">
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton />
+        <ExportButton onClick={handleExport} />
       </div>
 
       {/* Top 3 Stats Cards */}

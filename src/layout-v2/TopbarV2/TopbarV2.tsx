@@ -111,12 +111,10 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         console.log('Setting available schools:', schools);
         setAvailableSchools(schools);
 
-        // Auto-select first school for non-super admins
+        // Auto-select first school if none selected
         const hasSchools = schools.length > 0;
-        if (!isSuper) {
-          if (hasSchools) {
-            setSelectedSchool(schools[0]);
-          }
+        if (hasSchools && !selectedSchool) {
+          setSelectedSchool(schools[0]);
         }
         setIsLoadingSchools(false);
         hasInitializedSchools.current = true;
@@ -131,9 +129,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // Fetch campuses on mount
+  // Fetch campuses when user or selectedSchool changes
   useEffect(() => {
-    if (hasInitializedCampuses.current) return;
     if (!user) return;
 
     const fetchCampuses = async () => {
@@ -144,8 +141,13 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         let campuses: any[] = [];
 
         if (isSuper) {
-          const response = await apiClient.api.campusesList() as any;
-          const responseData = response.data;
+          const query: any = {};
+          if (selectedSchool) {
+            query.school_id = selectedSchool._id || selectedSchool.id;
+          }
+
+          const response = await apiClient.api.campusesList(query) as any;
+          const responseData = response.data || response;
 
           let rawCampuses: any[] = [];
           if (responseData && Array.isArray(responseData)) {
@@ -183,13 +185,21 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
         setAvailableCampuses(campuses);
 
-        // Auto-select first campus for non-super admins
+        // Auto-select first campus if current selection is invalid or empty
+        // Or if we just switched schools and need to reset
         const hasCampuses = campuses.length > 0;
-        if (!isSuper) {
+
+        // If we have a selected campus, check if it's in the new list
+        const isSelectedInList = selectedCampus && campuses.some(c => c._id === selectedCampus._id);
+
+        if (!isSelectedInList) {
           if (hasCampuses) {
             setSelectedCampus(campuses[0]);
+          } else {
+            setSelectedCampus(null);
           }
         }
+
         setIsLoadingCampuses(false);
         hasInitializedCampuses.current = true;
       } catch (error) {
@@ -201,7 +211,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
     fetchCampuses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, selectedSchool]);
 
   // Get user display name and avatar
   const userName = user ? `${user.first_name} ${user.last_name}` : "Admin Name";

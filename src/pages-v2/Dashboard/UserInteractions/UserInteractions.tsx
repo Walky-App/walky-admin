@@ -37,8 +37,6 @@ const UserInteractions: React.FC = () => {
     }
   };
 
-  // Mock data for different time periods
-  // All time data (11 months)
   const { data: apiData, isLoading } = useQuery({
     queryKey: ['userInteractions', timePeriod],
     queryFn: () => apiClient.api.adminV2DashboardUserInteractionsList({ period: timePeriod }),

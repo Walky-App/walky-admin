@@ -1,7 +1,7 @@
 import React from "react";
 import "./EventCalendarDay.css";
 
-interface DayEvent {
+export interface DayEvent {
   id: string;
   title: string;
   startTime: string;
@@ -11,39 +11,16 @@ interface DayEvent {
 
 interface EventCalendarDayProps {
   date: Date;
+  events: DayEvent[];
   onEventClick?: (eventId: string) => void;
 }
 
 export const EventCalendarDay: React.FC<EventCalendarDayProps> = ({
   date,
+  events,
   onEventClick,
 }) => {
   const hours = Array.from({ length: 13 }, (_, i) => i + 8); // 8am to 8pm
-
-  // Mock events for the day
-  const events: DayEvent[] = [
-    {
-      id: "1",
-      title: "4v4 Basketball Game",
-      startTime: "10:00",
-      endTime: "12:00",
-      type: "public",
-    },
-    {
-      id: "2",
-      title: "Study Group",
-      startTime: "14:00",
-      endTime: "16:00",
-      type: "private",
-    },
-    {
-      id: "3",
-      title: "Campus Tour",
-      startTime: "16:30",
-      endTime: "18:00",
-      type: "public",
-    },
-  ];
 
   const formatHour = (hour: number) => {
     if (hour === 12) return "12:00 PM";
@@ -169,9 +146,8 @@ export const EventCalendarDay: React.FC<EventCalendarDayProps> = ({
               className={`day-event-block ${event.type}`}
               style={{
                 top: `${getEventPosition(event.startTime) * 80}px`,
-                height: `${
-                  getEventHeight(event.startTime, event.endTime) * 80
-                }px`,
+                height: `${getEventHeight(event.startTime, event.endTime) * 80
+                  }px`,
                 left: `${(column / totalColumns) * 100}%`,
                 width: `${100 / totalColumns}%`,
                 cursor: onEventClick ? "pointer" : "default",

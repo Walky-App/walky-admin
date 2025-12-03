@@ -64,8 +64,6 @@ export const DisengagedStudents: React.FC = () => {
     return <div className="p-4">Loading...</div>;
   }
 
-  const mockStudents = students;
-
   const handleSendOutreach = async (student: DisengagedStudent) => {
     try {
       await navigator.clipboard.writeText(student.email);
@@ -88,8 +86,31 @@ export const DisengagedStudents: React.FC = () => {
     setSelectedStudent(null);
   };
 
-  const handleExport = () => {
-    console.log("Export clicked");
+  const handleExport = async () => {
+    try {
+      const response = await apiClient.http.request({
+        path: '/api/admin/v2/students',
+        method: 'GET',
+        query: {
+          status: 'disengaged',
+          export: 'true'
+        },
+        format: 'blob',
+      });
+
+      // @ts-ignore
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `disengaged_students.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+      setToastMessage("Export failed");
+      setShowToast(true);
+    }
   };
 
   return (
@@ -153,7 +174,7 @@ export const DisengagedStudents: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {mockStudents.map((student, index) => (
+              {students.map((student, index) => (
                 <React.Fragment key={student.id}>
                   <tr className="disengaged-table-row">
                     <td>
@@ -218,7 +239,7 @@ export const DisengagedStudents: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                  {index < mockStudents.length - 1 && (
+                  {index < students.length - 1 && (
                     <tr className="disengaged-divider-row">
                       <td colSpan={7}>
                         <Divider />

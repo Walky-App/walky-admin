@@ -1,7 +1,7 @@
 import React from "react";
 import "./EventCalendarWeek.css";
 
-interface WeekEvent {
+export interface WeekEvent {
   id: string;
   title: string;
   day: number; // 0-6 (Mon-Sun)
@@ -12,11 +12,13 @@ interface WeekEvent {
 
 interface EventCalendarWeekProps {
   date: Date;
+  events: WeekEvent[];
   onEventClick?: (eventId: string) => void;
 }
 
 export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
   date,
+  events,
   onEventClick,
 }) => {
   const hours = Array.from({ length: 13 }, (_, i) => i + 8); // 8am to 8pm
@@ -36,42 +38,6 @@ export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
   });
 
   const dayNames = ["MON", "TUE", "WED", "THE", "FRI", "SAT", "SUN"];
-
-  // Mock events for the week
-  const events: WeekEvent[] = [
-    {
-      id: "1",
-      title: "Basketball",
-      day: 0, // Monday
-      startTime: "10:00",
-      endTime: "12:00",
-      type: "public",
-    },
-    {
-      id: "2",
-      title: "Study Group",
-      day: 1, // Tuesday
-      startTime: "14:00",
-      endTime: "16:00",
-      type: "private",
-    },
-    {
-      id: "3",
-      title: "Campus Tour",
-      day: 3, // Thursday
-      startTime: "16:00",
-      endTime: "18:00",
-      type: "public",
-    },
-    {
-      id: "4",
-      title: "Yoga Class",
-      day: 4, // Friday
-      startTime: "9:00",
-      endTime: "10:30",
-      type: "public",
-    },
-  ];
 
   const formatHour = (hour: number) => {
     if (hour === 12) return "12:00 PM";
@@ -201,9 +167,8 @@ export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
                     className={`week-event-block ${event.type}`}
                     style={{
                       top: `${getEventPosition(event.startTime) * 60}px`,
-                      height: `${
-                        getEventHeight(event.startTime, event.endTime) * 60
-                      }px`,
+                      height: `${getEventHeight(event.startTime, event.endTime) * 60
+                        }px`,
                       left: `${(column / totalColumns) * 100}%`,
                       width: `${100 / totalColumns}%`,
                       cursor: onEventClick ? "pointer" : "default",

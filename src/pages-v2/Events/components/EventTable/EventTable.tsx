@@ -150,7 +150,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
         description: details.description,
         attendees: (details.participants || []).map((p: any) => ({
           id: p.user_id,
-          name: p.name || 'Unknown', // Backend needs to populate this
+          name: p.name || 'Unknown',
           avatar: p.avatar_url
         })),
         maxAttendees: details.slots,
@@ -274,7 +274,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
             <th></th>
           </tr>
         </thead>
-        <div className="content-space-divider" />
+
 
         <tbody>
           {sortedEvents.map((event, index) => (
