@@ -7,6 +7,54 @@
 .student-profile-modal-body {
   padding: 50px 40px;
   position: relative;
+  overflow: hidden;
+}
+
+/* View Transition Animations */
+.profile-container,
+.modal-view-container {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.view-active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  visibility: visible;
+  position: relative;
+}
+
+.view-hidden {
+  opacity: 0;
+  transform: translateX(-30px) scale(0.95);
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.view-transitioning {
+  transition-duration: 0.2s;
+}
+
+.modal-view-container {
+  min-height: 400px;
+}
+
+/* Garantir que modais embedded tenham a mesma aparência */
+.modal-view-container .ban-user-modal-body.embedded,
+.modal-view-container .deactivate-user-modal-body.embedded {
+  padding: 0;
+}
+
+.modal-view-container .ban-modal-content,
+.modal-view-container .deactivate-modal-content {
+  padding: 0;
+  width: 100%;
 }
 
 .profile-close-icon {
@@ -21,6 +69,7 @@
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s;
+  box-shadow: none;
 }
 
 .profile-close-icon:hover {

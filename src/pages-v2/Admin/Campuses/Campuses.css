@@ -15,7 +15,7 @@
   font-family: "Lato", sans-serif;
   font-size: 32px;
   font-weight: 700;
-  line-height: 1;
+  line-height: normal;
   background: linear-gradient(90deg, #555aec 0%, #486cb1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

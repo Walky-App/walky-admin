@@ -8,6 +8,7 @@ export interface DeactivateUserModalProps {
   onClose: () => void;
   onConfirm: () => void;
   userName?: string;
+  embedded?: boolean;
 }
 
 export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
@@ -15,6 +16,7 @@ export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
   onClose,
   onConfirm,
   userName,
+  embedded = false,
 }) => {
   const handleConfirm = () => {
     onConfirm();
@@ -24,16 +26,10 @@ export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
     onClose();
   };
 
-  return (
-    <CModal
-      visible={visible}
-      onClose={onClose}
-      alignment="center"
-      backdrop="static"
-      className="deactivate-user-modal"
-    >
-      <CModalBody className="deactivate-user-modal-body">
-        {/* Close button */}
+  const content = (
+    <div className={`deactivate-user-modal-body ${embedded ? "embedded" : ""}`}>
+      {/* Close button - only show when not embedded */}
+      {!embedded && (
         <button
           data-testid="deactivate-modal-close-btn"
           className="deactivate-modal-close-icon"
@@ -42,48 +38,64 @@ export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
         >
           <AssetIcon name="close-button" size={16} color="#5B6168" />
         </button>
+      )}
 
-        <div className="deactivate-modal-content">
-          {/* Content Section */}
-          <div>
-            {/* Title */}
-            <h2 className="deactivate-modal-title">Deactivate user</h2>
+      <div className="deactivate-modal-content">
+        {/* Content Section */}
+        <div>
+          {/* Title */}
+          <h2 className="deactivate-modal-title">Deactivate user</h2>
 
-            {/* Message Container */}
-            <div className="deactivate-modal-message-container">
-              <p className="deactivate-modal-question">
-                Are you sure you want to deactivate{" "}
-                <span className="deactivate-modal-username">
-                  {userName || "this user"}
-                </span>
-                ?
-              </p>
-              <p className="deactivate-modal-description">
-                The selected student will be notified via email about the
-                deactivation of their account. This action can be reversed later
-                if needed.
-              </p>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="deactivate-modal-button-container">
-            <CButton
-              color="light"
-              onClick={handleCancel}
-              className="deactivate-modal-cancel-button"
-            >
-              Cancel
-            </CButton>
-            <CButton
-              onClick={handleConfirm}
-              className="deactivate-modal-confirm-button"
-            >
-              Deactivate user
-            </CButton>
+          {/* Message Container */}
+          <div className="deactivate-modal-message-container">
+            <p className="deactivate-modal-question">
+              Are you sure you want to deactivate{" "}
+              <span className="deactivate-modal-username">
+                {userName || "this user"}
+              </span>
+              ?
+            </p>
+            <p className="deactivate-modal-description">
+              The selected student will be notified via email about the
+              deactivation of their account. This action can be reversed later
+              if needed.
+            </p>
           </div>
         </div>
-      </CModalBody>
+
+        {/* Buttons */}
+        <div className="deactivate-modal-button-container">
+          <CButton
+            color="light"
+            onClick={handleCancel}
+            className="deactivate-modal-cancel-button"
+          >
+            Cancel
+          </CButton>
+          <CButton
+            onClick={handleConfirm}
+            className="deactivate-modal-confirm-button"
+          >
+            Deactivate user
+          </CButton>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (embedded) {
+    return content;
+  }
+
+  return (
+    <CModal
+      visible={visible}
+      onClose={onClose}
+      alignment="center"
+      backdrop="static"
+      className="deactivate-user-modal"
+    >
+      <CModalBody>{content}</CModalBody>
     </CModal>
   );
 };

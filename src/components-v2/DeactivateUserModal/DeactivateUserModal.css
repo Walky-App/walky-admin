@@ -13,6 +13,16 @@
   position: relative;
 }
 
+/* Embedded mode improvements */
+.deactivate-user-modal-body.embedded {
+  padding: 0;
+}
+
+.deactivate-user-modal-body.embedded .deactivate-modal-content {
+  padding: 0;
+  width: 100%;
+}
+
 /* Close Icon */
 .deactivate-modal-close-icon {
   position: absolute;
@@ -41,6 +51,12 @@
   width: 457px;
 }
 
+/* Embedded mode - adjust width */
+.deactivate-user-modal-body.embedded .deactivate-modal-content {
+  width: 100%;
+  gap: 46px;
+}
+
 /* Content Inner */
 .deactivate-modal-content > div:first-child {
   display: flex;
@@ -53,7 +69,7 @@
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 24px;
-  line-height: 100%;
+  line-height: 130%;
   color: var(--v2-neutral-black);
   margin: 0;
   white-space: pre-wrap;
@@ -65,14 +81,14 @@
   flex-direction: column;
   gap: var(--v2-spacing-16);
   white-space: pre-wrap;
-  line-height: 100%;
+  line-height: 150%;
 }
 
 .deactivate-modal-question {
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 18px;
-  line-height: 100%;
+  line-height: 150%;
   color: var(--v2-neutral-black);
   opacity: 0.826;
   margin: 0;
@@ -82,7 +98,7 @@
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 18px;
-  line-height: 100%;
+  line-height: 150%;
   color: var(--v2-neutral-black);
 }
 
@@ -90,7 +106,7 @@
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 14px;
-  line-height: 100%;
+  line-height: 160%;
   color: var(--v2-neutral-dark-grey);
   margin: 0;
 }

@@ -63,6 +63,12 @@
   height: 16px;
   opacity: 1;
   filter: none;
+  box-shadow: none !important;
+}
+
+/* Dark mode close button */
+[data-theme="dark"] .report-details-modal .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 .report-details-modal .modal-title {

@@ -43,7 +43,7 @@
   font-family: "Lato", sans-serif;
   font-weight: 700;
   font-size: 32px;
-  line-height: 1;
+  line-height: normal;
   margin: 0;
   background: linear-gradient(90deg, #555aec 0%, #486cb1 100%);
   -webkit-background-clip: text;
