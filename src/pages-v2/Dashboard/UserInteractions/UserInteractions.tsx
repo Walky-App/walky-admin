@@ -9,11 +9,16 @@ import {
   TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
-import { LineChart } from "../components";
+import { DashboardSkeleton, LineChart } from "../components";
 import { BarChart } from "./components/BarChart";
 import "./UserInteractions.css";
 
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 const UserInteractions: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   // ... (inside component)
@@ -21,7 +26,12 @@ const UserInteractions: React.FC = () => {
   const handleExport = async () => {
     try {
       const response = await API.get('/admin/v2/dashboard/user-interactions', {
-        params: { period: timePeriod, export: 'true' },
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
         responseType: 'blob',
       });
 
@@ -38,8 +48,12 @@ const UserInteractions: React.FC = () => {
   };
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['userInteractions', timePeriod],
-    queryFn: () => apiClient.api.adminV2DashboardUserInteractionsList({ period: timePeriod }),
+    queryKey: ['userInteractions', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardUserInteractionsList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
 
   const data = (apiData?.data || {}) as any;
@@ -50,7 +64,7 @@ const UserInteractions: React.FC = () => {
   const eventsClicksData = data.eventsClicksData || [];
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <DashboardSkeleton />;
   }
 
   // Format weeks data for BarChart component

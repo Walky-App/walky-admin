@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./EventsInsights.css";
 import { AssetIcon, ExportButton } from "../../../components-v2";
-import { DonutChart } from "../../Dashboard/components";
 import API, { apiClient } from "../../../API";
 
 interface Interest {
@@ -16,9 +15,18 @@ interface EventItem {
   attendees: number;
 }
 
-// ... (existing imports)
+import {
+  DonutChart,
+  DashboardSkeleton
+} from "../../Dashboard/components";
+import "./EventsInsights.css";
+
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 export const EventsInsights: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
@@ -36,7 +44,12 @@ export const EventsInsights: React.FC = () => {
   const handleExport = async () => {
     try {
       const response = await API.get('/admin/v2/dashboard/events-insights', {
-        params: { period: timePeriod, export: 'true' },
+        params: {
+          period: timePeriod === 'all' ? 'all-time' : timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
         responseType: 'blob',
       });
 
@@ -64,8 +77,12 @@ export const EventsInsights: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.api.adminV2DashboardEventsInsightsList({ period: timePeriod } as any) as any;
-        const data = res.data;
+        const res = await apiClient.api.adminV2DashboardEventsInsightsList({
+          period: timePeriod === 'all' ? 'all-time' : timePeriod,
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        });
+        const data = res.data as any;
 
         if (data) {
           setStats({
@@ -90,9 +107,11 @@ export const EventsInsights: React.FC = () => {
     };
 
     fetchData();
-  }, [timePeriod]);
+  }, [timePeriod, selectedSchool, selectedCampus]);
 
-  // ... (useEffect)
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <main className="events-insights-page">

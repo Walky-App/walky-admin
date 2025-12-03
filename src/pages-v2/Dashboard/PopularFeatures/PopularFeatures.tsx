@@ -17,13 +17,19 @@ import {
   ViewToggle,
   CommonInterests,
   TopFieldsOfStudy,
+  DashboardSkeleton,
 } from "../components";
 import "./PopularFeatures.css";
 type PopularityOption = "least" | "most";
 type ViewType = "grid" | "list";
 
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 const PopularFeatures: React.FC = () => {
   const { theme } = useTheme();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [popularity, setPopularity] = useState<PopularityOption>("most");
   const [viewType, setViewType] = useState<ViewType>("grid");
@@ -39,8 +45,12 @@ const PopularFeatures: React.FC = () => {
   );
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['popularFeatures', timePeriod],
-    queryFn: () => apiClient.api.adminV2DashboardPopularFeaturesList({ period: timePeriod }),
+    queryKey: ['popularFeatures', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardPopularFeaturesList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
 
   const data = (apiData?.data || {}) as any;
@@ -56,13 +66,18 @@ const PopularFeatures: React.FC = () => {
   console.log('Visited Places data:', visitedPlaces);
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <DashboardSkeleton />;
   }
 
   const handleExport = async () => {
     try {
       const response = await API.get('/admin/v2/dashboard/popular-features', {
-        params: { period: timePeriod, export: 'true' },
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
         responseType: 'blob',
       });
 

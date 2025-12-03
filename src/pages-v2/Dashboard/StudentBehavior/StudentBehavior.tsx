@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { DashboardSkeleton } from "../components";
 import { apiClient } from "../../../API";
 import API from "../../../API";
 import {
@@ -11,6 +12,9 @@ import {
 import { useTheme } from "../../../hooks/useTheme";
 import { CRow, CCol } from "@coreui/react";
 import "./StudentBehavior.css";
+
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 interface MetricCard {
   title: string;
@@ -33,20 +37,29 @@ interface CompletionMetric {
 
 const StudentBehavior: React.FC = () => {
   const { theme } = useTheme();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [hoveredTooltip, setHoveredTooltip] = useState<number | null>(null);
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['studentBehavior', timePeriod],
-    queryFn: () => apiClient.api.adminV2DashboardStudentBehaviorList({ period: timePeriod }),
+    queryKey: ['studentBehavior', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardStudentBehaviorList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
   });
-
-  // ... (inside component)
 
   const handleExport = async () => {
     try {
       const response = await API.get('/admin/v2/dashboard/student-behavior', {
-        params: { period: timePeriod, export: 'true' },
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
         responseType: 'blob',
       });
 
@@ -67,7 +80,7 @@ const StudentBehavior: React.FC = () => {
   const completionMetrics: CompletionMetric[] = data.completionMetrics || [];
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <DashboardSkeleton />;
   }
 
   return (

@@ -476,6 +476,11 @@ export interface Event {
    * @format objectId
    */
   school_id: string;
+  /**
+   * Campus ID that the event is associated with
+   * @format objectId
+   */
+  campusId?: string;
   /** Maximum number of participants allowed */
   slots: number;
   /** Type of event (outdoor or indoor) */
@@ -2474,6 +2479,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardCommunityCreationList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2509,6 +2516,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardEngagementList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2548,6 +2557,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardRetentionList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2579,7 +2590,13 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/admin/v2/dashboard/stats
      * @secure
      */
-    adminV2DashboardStatsList: (params: RequestParams = {}) =>
+    adminV2DashboardStatsList: (
+      query?: {
+        schoolId?: string;
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.http.request<
         {
           totalUsers?: number;
@@ -2591,6 +2608,7 @@ export class Api<SecurityDataType extends unknown> {
       >({
         path: `/api/admin/v2/dashboard/stats`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2608,6 +2626,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardPopularFeaturesList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2643,6 +2663,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardStudentBehaviorList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2673,6 +2695,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardEventsInsightsList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2707,6 +2731,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardStudentSafetyList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2738,6 +2764,8 @@ export class Api<SecurityDataType extends unknown> {
     adminV2DashboardUserInteractionsList: (
       query?: {
         period?: "week" | "month" | "all-time";
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -2945,6 +2973,8 @@ export class Api<SecurityDataType extends unknown> {
         search?: string;
         type?: string;
         status?: string;
+        schoolId?: string;
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
