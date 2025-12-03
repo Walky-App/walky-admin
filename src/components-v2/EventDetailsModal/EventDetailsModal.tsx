@@ -221,6 +221,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             <div className="event-details-footer-actions">
               {onDelete && (
                 <button
+                  data-testid="event-details-delete-btn"
                   className="event-details-action-btn delete-btn"
                   onClick={() => onDelete(eventData)}
                 >
@@ -230,6 +231,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               {eventData.isFlagged ? (
                 onUnflag && (
                   <button
+                    data-testid="event-details-unflag-btn"
                     className="event-details-action-btn unflag-btn"
                     onClick={() => onUnflag(eventData)}
                   >
@@ -239,6 +241,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               ) : (
                 onFlag && (
                   <button
+                    data-testid="event-details-flag-btn"
                     className="event-details-action-btn flag-btn"
                     onClick={() => onFlag(eventData)}
                   >
