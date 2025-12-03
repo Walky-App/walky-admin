@@ -128,8 +128,8 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   };
 
   const handleConfirmBan = (reason: string, duration: string) => {
-    setShowBanModal(false);
     onBanUser?.(student, duration, reason);
+    handleBackToProfile();
   };
 
   const handleConfirmDeactivate = () => {
