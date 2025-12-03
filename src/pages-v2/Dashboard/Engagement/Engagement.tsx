@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
+import API from "../../../API";
 import {
   CRow,
   CCol,
@@ -10,165 +13,110 @@ import {
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
-import { StatsCard, LineChart, DonutChart } from "../components";
+import { StatsCard, LineChart, DonutChart, DashboardSkeleton } from "../components";
 import { useTheme } from "../../../hooks/useTheme";
 import "./Engagement.css";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 const Engagement: React.FC = () => {
   const { theme } = useTheme();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
+  const { timePeriod, setTimePeriod } = useDashboard();
   const [selectedMetric, setSelectedMetric] = useState("user-engagement");
 
-  // Mock data for charts - User engagement over time (all months from Jan to Nov 2025)
-  const userEngagementDataMonth = [
-    10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000, 75089,
-  ];
-  const sessionDurationDataMonth = [
-    8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 15.25,
-  ];
-  const totalChatsDataMonth = [30, 35, 40, 45, 50, 55, 60, 65, 70, 72, 75];
-  const monthLabels = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-  ];
+  const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
+    queryKey: ['engagementStats', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardEngagementList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
+  });
 
-  // Mock data for week period (7 days)
-  const userEngagementDataWeek = [
-    20000, 25000, 30000, 28000, 35000, 50000, 45000,
-  ];
-  const sessionDurationDataWeek = [10, 12, 13, 11, 14, 15, 14];
-  const totalChatsDataWeek = [50, 55, 60, 58, 65, 70, 68];
+  const { data: retentionData, isLoading: isRetentionLoading } = useQuery({
+    queryKey: ['retentionStats', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardRetentionList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
+  });
 
-  // Labels for week view (days of the week)
-  const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const { data: dashboardStats, isLoading: isStatsLoading } = useQuery({
+    queryKey: ['dashboardStats', selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardStatsList({
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
+  });
 
-  // Mock data for New users & retention - Week labels and data (5 weeks)
-  const weekLabels = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
-  const weekSubLabels = [
-    "Oct 1 - Oct 5",
-    "Oct 6 - Oct 12",
-    "Oct 13 - Oct 19",
-    "Oct 20 - Oct 26",
-    "Oct 27 - Oct 31",
-  ];
+  const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
 
-  // Connection rate data
-  const connectionRateDataWeek = [20, 25, 30, 28, 35, 40, 38];
-  const connectionRateDataMonth = [20, 30, 35, 40, 60];
-  const connectionRateDataAllTime = [
-    15, 20, 25, 30, 35, 40, 45, 50, 55, 65, 75,
-  ];
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
-  // Inactive signups data
-  const inactiveSignupsDataWeek = [2, 3, 4, 5, 6, 7, 6];
-  const inactiveSignupsDataMonth = [3, 5, 4, 6, 7];
-  const inactiveSignupsDataAllTime = [1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 7];
+  // Engagement Data
+  const userEngagementData = engagementData?.data.userEngagement || [];
+  const sessionDurationData = engagementData?.data.sessionDuration || [];
+  const totalChatsData = engagementData?.data.totalChats || [];
+  const donutData = (engagementData?.data.donutData || []).map((item: any) => ({
+    label: item.label || '',
+    value: item.value || 0,
+    percentage: item.percentage || '0%',
+    color: item.color || '#000',
+  }));
+  const chartLabels = engagementData?.data.labels || [];
+  const chartSubLabels = engagementData?.data.subLabels;
 
-  // New registrations data
-  const newRegistrationsDataWeek = [3000, 4000, 5000, 6000, 7000, 8000, 7500];
-  const newRegistrationsDataMonth = [20000, 30000, 25000, 35000, 40000];
-  const newRegistrationsDataAllTime = [
-    5000, 8000, 12000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000,
-  ];
+  // Retention Data
+  const connectionRateData = retentionData?.data.connectionRate || [];
+  const inactiveSignupsData = retentionData?.data.inactiveSignups || [];
+  const newRegistrationsData = retentionData?.data.newRegistrations || [];
+  const avgAppOpensData = retentionData?.data.avgAppOpens || [];
+  const retentionLabels = retentionData?.data.labels || [];
+  const retentionSubLabels = retentionData?.data.subLabels;
 
-  // Average app opens data
-  const avgAppOpensDataWeek = [25, 30, 40, 45, 50, 55, 52];
-  const avgAppOpensDataMonth = [30, 45, 55, 60, 70];
-  const avgAppOpensDataAllTime = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70];
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
-  // Select retention data based on time period
-  const connectionRateData =
-    timePeriod === "week"
-      ? connectionRateDataWeek
-      : timePeriod === "month"
-      ? connectionRateDataMonth
-      : connectionRateDataAllTime;
+  const handleExport = async () => {
+    try {
+      const endpoint = selectedMetric === "user-engagement"
+        ? '/admin/v2/dashboard/engagement'
+        : '/admin/v2/dashboard/retention';
 
-  const inactiveSignupsData =
-    timePeriod === "week"
-      ? inactiveSignupsDataWeek
-      : timePeriod === "month"
-      ? inactiveSignupsDataMonth
-      : inactiveSignupsDataAllTime;
+      const filename = selectedMetric === "user-engagement"
+        ? `engagement_stats_${timePeriod}.csv`
+        : `retention_stats_${timePeriod}.csv`;
 
-  const newRegistrationsData =
-    timePeriod === "week"
-      ? newRegistrationsDataWeek
-      : timePeriod === "month"
-      ? newRegistrationsDataMonth
-      : newRegistrationsDataAllTime;
+      const response = await API.get(endpoint, {
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
+        responseType: 'blob',
+      });
 
-  const avgAppOpensData =
-    timePeriod === "week"
-      ? avgAppOpensDataWeek
-      : timePeriod === "month"
-      ? avgAppOpensDataMonth
-      : avgAppOpensDataAllTime;
-
-  // Labels for retention charts
-  const retentionLabels =
-    timePeriod === "week"
-      ? dayLabels
-      : timePeriod === "month"
-      ? weekLabels
-      : monthLabels;
-
-  const retentionSubLabels = timePeriod === "month" ? weekSubLabels : undefined;
-
-  // For month view, show weekly data. For week view, show daily data. For all-time, show monthly data
-  const userEngagementData =
-    timePeriod === "all-time"
-      ? userEngagementDataMonth
-      : userEngagementDataWeek;
-  const sessionDurationData =
-    timePeriod === "all-time"
-      ? sessionDurationDataMonth
-      : sessionDurationDataWeek;
-  const totalChatsData =
-    timePeriod === "all-time" ? totalChatsDataMonth : totalChatsDataWeek;
-
-  // Week: days of the week (Mon, Tue, Wed, etc.) - NO sub-labels
-  // Month: weeks (Week 1, Week 2, etc.) - WITH date sub-labels
-  // All-time: months (Jan, Feb, etc.) - NO sub-labels
-  const chartLabels =
-    timePeriod === "week"
-      ? dayLabels
-      : timePeriod === "month"
-      ? weekLabels
-      : monthLabels;
-
-  const chartSubLabels = timePeriod === "month" ? weekSubLabels : undefined;
-
-  const donutData = [
-    {
-      label: "Events organized by spaces",
-      value: 70.16,
-      percentage: "70.16%",
-      color: "#526ac9",
-    },
-    {
-      label: "Events organized by users",
-      value: 29.84,
-      percentage: "29.84%",
-      color: "#321fdb",
-    },
-  ];
-
-  const handleExport = () => {
-    console.log("Exporting data...");
-    // Implement export logic here
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
 
   return (
@@ -185,7 +133,7 @@ const Engagement: React.FC = () => {
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
             title="Total User"
-            value="75089"
+            value={dashboardStats?.data.totalUsers?.toString() || "0"}
             icon={
               <AssetIcon
                 name="double-users-icon"
@@ -203,7 +151,7 @@ const Engagement: React.FC = () => {
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
             title="Total Active Events"
-            value="10293"
+            value={dashboardStats?.data.totalActiveEvents?.toString() || "0"}
             icon={
               <AssetIcon name="calendar-icon" color={theme.colors.iconOrange} />
             }
@@ -218,7 +166,7 @@ const Engagement: React.FC = () => {
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
             title="Total Spaces Created"
-            value="2040"
+            value={dashboardStats?.data.totalSpaces?.toString() || "0"}
             icon={<AssetIcon name="space-icon" color={theme.colors.iconBlue} />}
             iconBgColor="#d9e3f7"
             trend={{
@@ -231,7 +179,7 @@ const Engagement: React.FC = () => {
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
             title="Total Ideas Created"
-            value="10293"
+            value={dashboardStats?.data.totalIdeas?.toString() || "0"}
             icon={<AssetIcon name="ideas-icons" color="#ffb830" />}
             iconBgColor="#fff3d6"
             trend={{
@@ -268,9 +216,8 @@ const Engagement: React.FC = () => {
             color="link"
             className="engagement-metric-toggle"
             style={{
-              border: `1px solid ${
-                theme.isDark ? theme.colors.dropdownBorder : "#CAC4D0"
-              }`,
+              border: `1px solid ${theme.isDark ? theme.colors.dropdownBorder : "#CAC4D0"
+                }`,
               borderRadius: "8px",
               padding: "12px 16px",
               backgroundColor: theme.colors.cardBg,
@@ -317,7 +264,6 @@ const Engagement: React.FC = () => {
                 subLabels={chartSubLabels}
                 color="#00b69b"
                 backgroundColor="rgba(0, 182, 155, 0.2)"
-                maxValue={100000}
               />
             </CCol>
             <CCol xs={12} lg={6}>

@@ -1,13 +1,20 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { DashboardSkeleton } from "../components";
+import { apiClient } from "../../../API";
+import API from "../../../API";
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import { CRow, CCol } from "@coreui/react";
 import "./StudentBehavior.css";
+
+import { useDashboard } from "../../../contexts/DashboardContext";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 interface MetricCard {
   title: string;
@@ -30,98 +37,51 @@ interface CompletionMetric {
 
 const StudentBehavior: React.FC = () => {
   const { theme } = useTheme();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
+  const { timePeriod, setTimePeriod } = useDashboard();
   const [hoveredTooltip, setHoveredTooltip] = useState<number | null>(null);
 
-  const handleExport = () => {
-    console.log("Exporting student behavior data...");
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: ['studentBehavior', timePeriod, selectedSchool?._id, selectedCampus?._id],
+    queryFn: () => apiClient.api.adminV2DashboardStudentBehaviorList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id
+    }),
+  });
+
+  const handleExport = async () => {
+    try {
+      const response = await API.get('/admin/v2/dashboard/student-behavior', {
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `student_behavior_stats_${timePeriod}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
 
-  const metricCards: MetricCard[] = [
-    {
-      title: "Average peers per student",
-      value: "4.2",
-      unit: "Peers",
-      change: "Up from last month",
-      changeDirection: "up",
-      changePercentage: "8.5%",
-      hasTooltip: false,
-    },
-    {
-      title: "Average time to first interaction",
-      value: "1.2",
-      unit: "Days",
-      change: "Down from last month",
-      changeDirection: "down",
-      changePercentage: "3.2%",
-      hasTooltip: true,
-      tooltipText: "Average time from registration to first interaction.",
-    },
-    {
-      title: "Students who met in person",
-      value: "20",
-      unit: "%",
-      change: "Up from last month",
-      changeDirection: "up",
-      changePercentage: "5.1%",
-      hasTooltip: true,
-      tooltipText:
-        "Percentage of students with at least one accepted and completed invitation",
-    },
-    {
-      title: "Students who joined a Space",
-      value: "20",
-      unit: "%",
-      change: "Up from last month",
-      changeDirection: "up",
-      changePercentage: "12.3%",
-      hasTooltip: true,
-      tooltipText: "Percentage of students who joined at least one space.",
-    },
-  ];
+  const data = (apiData?.data || {}) as any;
+  const metricCards: MetricCard[] = data.metricCards || [];
+  const completionMetrics: CompletionMetric[] = data.completionMetrics || [];
 
-  const completionMetrics: CompletionMetric[] = [
-    {
-      label: "New connections invited",
-      percentage: 13.1,
-      description:
-        "Percentage of students who completed the invitation flow by inviting someone they did n't already know.",
-      color: "#00c943",
-      textColor: "#18682c",
-    },
-    {
-      label: " Invited from Peers",
-      percentage: 13.1,
-      description:
-        "Percentage of students who completed the invitation flow by inviting someone already in their peer list.",
-      color: "#00c943",
-      textColor: "#18682c",
-    },
-    {
-      label: "Event participation rate",
-      percentage: 13.1,
-      description:
-        "Percentage of users who opened an event and clicked 'Going' vs those who only viewed it.",
-      color: "#ff9871",
-      textColor: "#ba5630",
-    },
-    {
-      label: "Space join rate",
-      percentage: 13.1,
-      description:
-        "Percentage of users who entered a space and clicked 'Join' vs those who just viewed it",
-      color: "#576cc2",
-      textColor: "#4a4cd9",
-    },
-    {
-      label: "Idea collaboration rate",
-      percentage: 13.1,
-      description:
-        "Percentage of users who opened an idea and clicked 'Collaborate' vs those who only viewed it.",
-      color: "#ebb129",
-      textColor: "#8a6818",
-    },
-  ];
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <main
@@ -225,9 +185,8 @@ const StudentBehavior: React.FC = () => {
                 key={index}
                 xs={12}
                 md={3}
-                className={`completion-metric-col ${
-                  index === 4 ? "single-metric" : ""
-                }`}
+                className={`completion-metric-col ${index === 4 ? "single-metric" : ""
+                  }`}
               >
                 <div className="completion-metric">
                   <div className="completion-metric-header">

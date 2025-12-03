@@ -1,5 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import "./Campuses.css";
 import { AssetIcon, CopyableId, Divider } from "../../../components-v2";
 import CampusBoundary from "../../../pages/CampusBoundary";
@@ -36,46 +38,30 @@ export const Campuses: React.FC = () => {
   const [expandedCampusId, setExpandedCampusId] = useState<string | null>(null);
   const [currentPage] = useState(1);
 
-  // Mock data - replace with real data from API
-  const mockCampuses: CampusData[] = [
-    {
-      id: "1",
-      name: "FIU",
-      campusId: "166g...fjhsgt",
-      location: "Miami, FL",
-      address: "11200 SW 8th St, Miami, FL 33199",
-      status: "Active",
-      imageUrl: "https://via.placeholder.com/38",
-      boundaryData: null, // Will have real boundary data
-    },
-    {
-      id: "2",
-      name: "FIU",
-      campusId: "166g...fjhsgt",
-      location: "Miami, FL",
-      address: "11200 SW 8th St, Miami, FL 33199",
-      status: "Active",
-      imageUrl: "https://via.placeholder.com/38",
-      boundaryData: null,
-    },
-    {
-      id: "3",
-      name: "FIU",
-      campusId: "166g...fjhsgt",
-      location: "Miami, FL",
-      address: "11200 SW 8th St, Miami, FL 33199",
-      status: "Active",
-      imageUrl: "https://via.placeholder.com/38",
-      boundaryData: null,
-    },
-  ];
+  const { data: campusesData, isLoading } = useQuery({
+    queryKey: ['campuses'],
+    queryFn: () => apiClient.api.adminV2CampusesList(),
+  });
 
-  const filteredCampuses = mockCampuses.filter((campus) => {
+  const campuses: CampusData[] = (campusesData?.data || []).map((campus: any) => ({
+    id: campus.id,
+    name: campus.name,
+    campusId: campus.id, // Using ID as campusId for display
+    location: campus.location,
+    address: campus.address,
+    status: campus.status as "Active" | "Inactive",
+    imageUrl: campus.imageUrl,
+    boundaryData: campus.boundaryData,
+  }));
+
+  const filteredCampuses = campuses.filter((campus) => {
     const matchesSearch = campus.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
+
+  const totalCampuses = campuses.length;
 
   const handleToggleExpand = (campusId: string) => {
     if (expandedCampusId === campusId) {
@@ -85,7 +71,9 @@ export const Campuses: React.FC = () => {
     }
   };
 
-  const totalCampuses = mockCampuses.length;
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   return (
     <main className="campuses-page">
@@ -145,9 +133,8 @@ export const Campuses: React.FC = () => {
                             <AssetIcon
                               name="arrow-down"
                               size={10}
-                              className={`chevron-icon ${
-                                expandedCampusId === campus.id ? "expanded" : ""
-                              }`}
+                              className={`chevron-icon ${expandedCampusId === campus.id ? "expanded" : ""
+                                }`}
                             />
                             <span className="campus-name">{campus.name}</span>
                           </button>

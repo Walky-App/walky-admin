@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ReportHistory.css";
 import {
   AssetIcon,
@@ -16,6 +16,7 @@ import {
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { apiClient } from "../../../API";
 
 interface HistoryReportData {
   id: string;
@@ -25,19 +26,19 @@ interface HistoryReportData {
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
   reasonTag:
-    | "Self-Injury / Harmful Behavior"
-    | "Inappropriate or offensive"
-    | "Harassment / Threats"
-    | "Spam"
-    | "Other";
-  status: "Resolved" | "Dismissed" | "Pending review";
+  | "Self-Injury / Harmful Behavior"
+  | "Inappropriate or offensive"
+  | "Harassment / Threats"
+  | "Spam"
+  | "Other";
+  status: "Resolved" | "Dismissed" | "Pending review" | "Under evaluation";
 }
 
 export const ReportHistory: React.FC = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("Resolved,Dismissed");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -48,153 +49,99 @@ export const ReportHistory: React.FC = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] =
     useState<HistoryReportData | null>(null);
+  const [reportDetails, setReportDetails] = useState<any>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - historical reports that have been resolved or dismissed
-  const [historyReports, setHistoryReports] = useState<HistoryReportData[]>([
-    {
-      id: "1",
-      description: "I'm concerned this person might be breaking the rules...",
-      studentId: "166g...fjhsgt",
-      reportDate: "Oct 7, 2025",
-      type: "User",
-      reason: "Self-Injury / Harmful Behavior",
-      reasonTag: "Self-Injury / Harmful Behavior",
-      status: "Resolved",
-    },
-    {
-      id: "2",
-      description: "This event contains explicit content",
-      studentId: "234h...klmnop",
-      reportDate: "Oct 6, 2025",
-      type: "Event",
-      reason: "Explicit / Nudity / Inappropriate",
-      reasonTag: "Inappropriate or offensive",
-      status: "Resolved",
-    },
-    {
-      id: "3",
-      description: "Harassment messages from this user",
-      studentId: "345j...qrstuv",
-      reportDate: "Oct 5, 2025",
-      type: "Message",
-      reason: "Harassment / Threats",
-      reasonTag: "Harassment / Threats",
-      status: "Dismissed",
-    },
-    {
-      id: "4",
-      description: "Spam in this space",
-      studentId: "456k...wxyzab",
-      reportDate: "Oct 4, 2025",
-      type: "Space",
-      reason: "Spam, Fake Profile, or Misuse",
-      reasonTag: "Spam",
-      status: "Resolved",
-    },
-    {
-      id: "5",
-      description: "This idea promotes harmful behavior",
-      studentId: "567l...cdefgh",
-      reportDate: "Oct 3, 2025",
-      type: "Idea",
-      reason: "Inappropriate or offensive",
-      reasonTag: "Inappropriate or offensive",
-      status: "Resolved",
-    },
-    {
-      id: "6",
-      description: "Hate speech in event description",
-      studentId: "678m...ijklmn",
-      reportDate: "Oct 2, 2025",
-      type: "Event",
-      reason: "Hate Speech / Offensive",
-      reasonTag: "Harassment / Threats",
-      status: "Dismissed",
-    },
-    {
-      id: "7",
-      description: "Discriminatory content in space",
-      studentId: "789n...opqrst",
-      reportDate: "Oct 1, 2025",
-      type: "Space",
-      reason: "Discriminatory / Exclusionary",
-      reasonTag: "Harassment / Threats",
-      status: "Resolved",
-    },
-    {
-      id: "8",
-      description: "Solicitation messages",
-      studentId: "890o...uvwxyz",
-      reportDate: "Sep 30, 2025",
-      type: "Message",
-      reason: "Solicitation or sales",
-      reasonTag: "Spam",
-      status: "Resolved",
-    },
-    {
-      id: "9",
-      description: "Duplicate event posted",
-      studentId: "901p...abcdef",
-      reportDate: "Sep 29, 2025",
-      type: "Event",
-      reason: "Duplicate Event",
-      reasonTag: "Spam",
-      status: "Dismissed",
-    },
-    {
-      id: "10",
-      description: "Misinformation spread",
-      studentId: "012q...ghijkl",
-      reportDate: "Sep 28, 2025",
-      type: "Idea",
-      reason: "Misinformation (false or misleading)",
-      reasonTag: "Other",
-      status: "Resolved",
-    },
-    {
-      id: "11",
-      description: "Unsafe behavior reported",
-      studentId: "123r...mnopqr",
-      reportDate: "Sep 27, 2025",
-      type: "User",
-      reason: "Unsafe or harmful behavior",
-      reasonTag: "Self-Injury / Harmful Behavior",
-      status: "Resolved",
-    },
-    {
-      id: "12",
-      description: "Inappropriate content in space",
-      studentId: "234s...stuvwx",
-      reportDate: "Sep 26, 2025",
-      type: "Space",
-      reason: "Inappropriate or offensive",
-      reasonTag: "Inappropriate or offensive",
-      status: "Dismissed",
-    },
-  ]);
+  // Stats state
+  const [stats, setStats] = useState({
+    total: 0,
+    resolved: 0,
+    dismissed: 0,
+  });
 
-  const handleStatusChange = (reportId: string, newStatus: string) => {
-    // If reopening, change status to "Pending review" which will move it to Report & Safety
-    if (newStatus === "Reopen") {
+  // Reports state
+  const [historyReports, setHistoryReports] = useState<HistoryReportData[]>([]);
+
+  const fetchReports = async () => {
+    setLoading(true);
+    try {
+      // Fetch stats
+      const statsRes = await apiClient.api.adminV2ReportsStatsList() as any;
+      setStats({
+        total: statsRes.data.total || 0,
+        resolved: statsRes.data.resolved || 0,
+        dismissed: statsRes.data.dismissed || 0,
+      });
+
+      // Fetch reports
+      const reportsRes = await apiClient.api.adminV2ReportsList({
+        page: currentPage,
+        limit: itemsPerPage,
+        search: searchQuery,
+        type: selectedTypes.length > 0 ? selectedTypes.join(',') : undefined,
+        status: selectedStatus !== 'all' ? selectedStatus : undefined,
+      } as any) as any;
+
+      const reports = reportsRes.data.data || [];
+
+      // Transform API data to component format
+      const transformedReports = reports.map((r: any) => ({
+        id: r.id,
+        description: r.description || "No description",
+        studentId: r.studentId || "Unknown",
+        reportDate: new Date(r.reportDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        type: r.type as any,
+        reason: r.reason || "Unknown",
+        reasonTag: r.reasonTag as any || "Other",
+        status: r.status as any,
+      }));
+
+      setHistoryReports(transformedReports);
+
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, [currentPage, searchQuery, selectedTypes, selectedStatus]);
+
+  const handleStatusChange = async (reportId: string, newStatus: string) => {
+    try {
+      // If reopening, change status to "Pending review" which will move it to Report & Safety
+      const statusToSend = newStatus === "Reopen" ? "Pending review" : newStatus;
+
+      await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
+        status: statusToSend
+      });
+
+      // Update local state
       setHistoryReports((prevReports) =>
         prevReports.map((report) =>
           report.id === reportId
             ? {
-                ...report,
-                status: "Pending review" as HistoryReportData["status"],
-              }
+              ...report,
+              status: statusToSend as HistoryReportData["status"],
+            }
             : report
         )
       );
-    } else {
-      setHistoryReports((prevReports) =>
-        prevReports.map((report) =>
-          report.id === reportId
-            ? { ...report, status: newStatus as HistoryReportData["status"] }
-            : report
-        )
-      );
+
+      // Refresh stats
+      const statsRes = await apiClient.api.adminV2ReportsStatsList() as any;
+      setStats({
+        total: statsRes.data.total || 0,
+        resolved: statsRes.data.resolved || 0,
+        dismissed: statsRes.data.dismissed || 0,
+      });
+
+    } catch (error) {
+      console.error("Failed to update status:", error);
     }
   };
 
@@ -203,14 +150,23 @@ export const ReportHistory: React.FC = () => {
     setIsNoteModalOpen(true);
   };
 
-  const handleNoteConfirm = (note: string) => {
+  const handleNoteConfirm = async (note: string) => {
     if (pendingStatusChange) {
-      handleStatusChange(
-        pendingStatusChange.reportId,
-        pendingStatusChange.newStatus
-      );
-      console.log("Note saved:", note);
-      setPendingStatusChange(null);
+      try {
+        // Save note first
+        await apiClient.api.adminV2ReportsNoteCreate(pendingStatusChange.reportId, { note } as any);
+
+        // Then update status
+        await handleStatusChange(
+          pendingStatusChange.reportId,
+          pendingStatusChange.newStatus
+        );
+        console.log("Note saved:", note);
+      } catch (error) {
+        console.error("Failed to save note:", error);
+      } finally {
+        setPendingStatusChange(null);
+      }
     }
   };
 
@@ -219,25 +175,39 @@ export const ReportHistory: React.FC = () => {
     setPendingStatusChange(null);
   };
 
+  const handleViewReportDetails = async (report: HistoryReportData) => {
+    setSelectedReport(report);
+    setIsDetailModalOpen(true);
+    setDetailsLoading(true);
+    setReportDetails(null); // Reset previous details
+
+    try {
+      const res = await apiClient.api.adminV2ReportsDetail(report.id) as any;
+      setReportDetails(res.data);
+    } catch (error) {
+      console.error("Failed to fetch report details:", error);
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  // Filter logic is now handled by API, but we keep this for client-side filtering if needed
+  // or for filtering out "Pending review" if API returns them
   const filteredReports = historyReports.filter((report) => {
-    // Exclude reopened reports (Pending review) from Report History
     if (report.status === "Pending review") {
       return false;
     }
-    const matchesSearch = report.description
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesType =
-      selectedTypes.length === 0 || selectedTypes.includes(report.type);
-    const matchesStatus =
-      selectedStatus === "all" || report.status === selectedStatus;
-    return matchesSearch && matchesType && matchesStatus;
+    return true;
   });
 
-  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentReports = filteredReports.slice(startIndex, endIndex);
+  // Pagination is now handled by API, so we don't slice here if API returns paginated data
+  // But since we are fetching per page, we just use the data as is.
+  // However, the original code used client-side pagination on a full list.
+  // We'll assume the API returns the correct page.
+  const currentReports = filteredReports;
+  // Note: totalPages calculation needs total count from API
+  // For now, we'll assume infinite scroll or just basic next/prev
+  const totalPages = Math.ceil(stats.total / itemsPerPage);
 
   const getReasonColor = (reason: string) => {
     switch (reason) {
@@ -254,13 +224,47 @@ export const ReportHistory: React.FC = () => {
     }
   };
 
-  const totalReports = historyReports.length;
-  const resolvedReports = historyReports.filter(
-    (r) => r.status === "Resolved"
-  ).length;
-  const dismissedReports = historyReports.filter(
-    (r) => r.status === "Dismissed"
-  ).length;
+  const handleDeactivateUser = async () => {
+    if (selectedReport) {
+      try {
+        await apiClient.api.adminV2StudentsDelete(selectedReport.studentId);
+        console.log("User deactivated:", selectedReport.studentId);
+        // Refresh reports
+        fetchReports();
+      } catch (error) {
+        console.error("Failed to deactivate user:", error);
+      }
+    }
+  };
+
+  const handleBanUser = async (duration: string, reason: string, resolveReports: boolean) => {
+    if (selectedReport) {
+      try {
+        // Parse duration
+        let durationDays = 0;
+        if (duration.includes("24 hours")) durationDays = 1;
+        else if (duration.includes("3 days")) durationDays = 3;
+        else if (duration.includes("7 days")) durationDays = 7;
+        else if (duration.includes("30 days")) durationDays = 30;
+        else if (duration.includes("Permanent")) durationDays = 36500;
+
+        await apiClient.api.adminV2ReportsBanUserCreate(selectedReport.id, {
+          reason,
+          duration: durationDays
+        });
+
+        if (resolveReports) {
+          await handleStatusChange(selectedReport.id, "Resolved");
+        }
+
+        console.log("User banned:", selectedReport.studentId);
+        // Refresh reports
+        fetchReports();
+      } catch (error) {
+        console.error("Failed to ban user:", error);
+      }
+    }
+  };
 
   return (
     <main className="report-history-page">
@@ -292,7 +296,7 @@ export const ReportHistory: React.FC = () => {
               <AssetIcon name="mod-table-icon" size={30} color="#8280FF" />
             </div>
           </div>
-          <p className="stats-card-value">{totalReports}</p>
+          <p className="stats-card-value">{loading ? "..." : stats.total}</p>
         </div>
 
         <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
@@ -302,7 +306,7 @@ export const ReportHistory: React.FC = () => {
               <AssetIcon name="check-icon" size={30} color="#00c48c" />
             </div>
           </div>
-          <p className="stats-card-value">{resolvedReports}</p>
+          <p className="stats-card-value">{loading ? "..." : stats.resolved}</p>
         </div>
 
         <div className={`stats-card ${theme.isDark ? "dark-mode" : ""}`}>
@@ -316,7 +320,7 @@ export const ReportHistory: React.FC = () => {
               />
             </div>
           </div>
-          <p className="stats-card-value">{dismissedReports}</p>
+          <p className="stats-card-value">{loading ? "..." : stats.dismissed}</p>
         </div>
       </div>
 
@@ -355,13 +359,11 @@ export const ReportHistory: React.FC = () => {
                 value={selectedStatus}
                 onChange={setSelectedStatus}
                 options={[
-                  { value: "all", label: "All status" },
-                  { value: "Pending review", label: "Pending review" },
-                  { value: "Under evaluation", label: "Under evaluation" },
+                  { value: "Resolved,Dismissed", label: "All history" },
                   { value: "Resolved", label: "Resolved" },
                   { value: "Dismissed", label: "Dismissed" },
                 ]}
-                placeholder="All status"
+                placeholder="All history"
                 testId="status-filter"
                 ariaLabel="Filter by status"
               />
@@ -396,102 +398,112 @@ export const ReportHistory: React.FC = () => {
             <div className="content-space-divider" />
 
             <tbody>
-              {currentReports.map((report, index) => {
-                const reasonColors = getReasonColor(report.reasonTag);
-                return (
-                  <React.Fragment key={report.id}>
-                    <tr>
-                      <td>
-                        <div className="report-description-cell">
-                          <div className="report-content-wrapper">
-                            <p
-                              className="report-description"
-                              onClick={() => {
-                                setSelectedReport(report);
-                                setIsDetailModalOpen(true);
-                              }}
-                            >
-                              {report.description}
-                            </p>
-                            <CopyableId
-                              id={report.studentId}
-                              label="Student ID"
-                              variant="secondary"
-                              iconColor="#ACB6BA"
-                              testId="copy-student-id"
-                            />
+              {loading ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
+                </tr>
+              ) : currentReports.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>No reports found</td>
+                </tr>
+              ) : (
+                currentReports.map((report, index) => {
+                  const reasonColors = getReasonColor(report.reasonTag);
+                  return (
+                    <React.Fragment key={report.id}>
+                      <tr>
+                        <td>
+                          <div className="report-description-cell">
+                            <div className="report-content-wrapper">
+                              <p
+                                className="report-description"
+                                onClick={() => handleViewReportDetails(report)}
+                              >
+                                {report.description}
+                              </p>
+                              <CopyableId
+                                id={report.studentId}
+                                label="Student ID"
+                                variant="secondary"
+                                iconColor="#ACB6BA"
+                                testId="copy-student-id"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="report-date">{report.reportDate}</td>
-                      <td className="report-type">{report.type}</td>
-                      <td>
-                        <div
-                          className="reason-badge"
-                          style={{
-                            background: reasonColors.bg,
-                            color: reasonColors.text,
-                          }}
-                        >
-                          {report.reasonTag.split("/").map((line, idx) => (
-                            <span key={idx}>
-                              {line}
-                              {idx === 0 &&
-                                report.reasonTag.includes("/") &&
-                                " /"}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        <StatusDropdown
-                          value={report.status}
-                          onChange={(newStatus) =>
-                            handleStatusChange(report.id, newStatus)
-                          }
-                          onNoteRequired={(newStatus) =>
-                            handleNoteRequired(report.id, newStatus)
-                          }
-                          options={["Reopen"]}
-                          testId={`status-dropdown-${report.id}`}
-                        />
-                      </td>
-                      <td>
-                        <ActionDropdown
-                          testId="report-history-options"
-                          items={[
-                            {
-                              label: "Report details",
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                setSelectedReport(report);
-                                setIsDetailModalOpen(true);
+                        </td>
+                        <td className="report-date">{report.reportDate}</td>
+                        <td className="report-type">{report.type}</td>
+                        <td>
+                          <div
+                            className="reason-badge"
+                            style={{
+                              background: reasonColors.bg,
+                              color: reasonColors.text,
+                            }}
+                          >
+                            {report.reasonTag.split("/").map((line, idx) => (
+                              <span key={idx}>
+                                {line}
+                                {idx === 0 &&
+                                  report.reasonTag.includes("/") &&
+                                  " /"}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td>
+                          <StatusDropdown
+                            value={report.status}
+                            onChange={(newStatus) =>
+                              handleStatusChange(report.id, newStatus)
+                            }
+                            onNoteRequired={(newStatus) =>
+                              handleNoteRequired(report.id, newStatus)
+                            }
+                            options={[
+                              "Pending review",
+                              "Under evaluation",
+                              "Resolved",
+                              "Dismissed",
+                            ]}
+                            testId={`status-dropdown-${report.id}`}
+                          />
+                        </td>
+                        <td>
+                          <ActionDropdown
+                            testId="report-history-options"
+                            items={[
+                              {
+                                label: "Report details",
+                                onClick: (e) => {
+                                  e.stopPropagation();
+                                  handleViewReportDetails(report);
+                                },
                               },
-                            },
-                            {
-                              label: "Flag",
-                              icon: "flag-icon",
-                              iconSize: 18,
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                setSelectedReport(report);
-                                setIsFlagModalOpen(true);
+                              {
+                                label: "Flag",
+                                icon: "flag-icon",
+                                iconSize: 18,
+                                onClick: (e) => {
+                                  e.stopPropagation();
+                                  setSelectedReport(report);
+                                  setIsFlagModalOpen(true);
+                                },
                               },
-                            },
-                          ]}
-                        />
-                      </td>
-                    </tr>
-                    {index < currentReports.length - 1 && (
-                      <tr className="report-divider-row">
-                        <td colSpan={5}>
-                          <Divider />
+                            ]}
+                          />
                         </td>
                       </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
+                      {index < currentReports.length - 1 && (
+                        <tr className="report-divider-row">
+                          <td colSpan={5}>
+                            <Divider />
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                }))}
             </tbody>
           </table>
         </div>
@@ -499,7 +511,7 @@ export const ReportHistory: React.FC = () => {
         {/* Pagination */}
         <div className="pagination-container">
           <p className="pagination-info">
-            Showing {startIndex + 1} of {filteredReports.length} entries
+            Showing {(currentPage - 1) * itemsPerPage + 1} of {stats.total} entries
           </p>
           <div className="pagination-controls">
             <button
@@ -514,7 +526,7 @@ export const ReportHistory: React.FC = () => {
             <button
               data-testid="pagination-next-btn"
               className="pagination-button"
-              disabled={currentPage === totalPages || totalPages === 0}
+              disabled={currentPage >= totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
             >
               Next
@@ -535,79 +547,32 @@ export const ReportHistory: React.FC = () => {
           onClose={() => {
             setIsDetailModalOpen(false);
             setSelectedReport(null);
+            setReportDetails(null);
           }}
+          isLoading={detailsLoading}
           reportType={selectedReport.type as ReportType}
           reportData={{
             associatedUser: {
-              name: "Austin",
-              id: "166g...fjhsgt",
-              avatar:
-                "https://www.figma.com/api/mcp/asset/e83b2a68-fa91-4f81-99c7-4d3b01197ac8",
-              isBanned: false,
-              isDeactivated: false,
+              name: reportDetails?.associatedUser?.name || "Unknown User",
+              id: reportDetails?.studentId || selectedReport.studentId,
+              avatar: reportDetails?.associatedUser?.avatar || "",
+              isBanned: reportDetails?.associatedUser?.isBanned || false,
+              isDeactivated: reportDetails?.associatedUser?.isDeactivated || false,
             },
-            status: selectedReport.status as ReportStatus,
-            reason: selectedReport.reason,
+            status: (reportDetails?.status || selectedReport.status) as ReportStatus,
+            reason: reportDetails?.reason || selectedReport.reason,
             reasonColor: "red",
-            reportDate: selectedReport.reportDate,
-            contentId: selectedReport.id,
-            description: selectedReport.description,
+            reportDate: reportDetails?.reportDate ? new Date(reportDetails.reportDate).toLocaleDateString() : selectedReport.reportDate,
+            contentId: reportDetails?.contentId || reportDetails?.id || selectedReport.id,
+            description: reportDetails?.description || selectedReport.description,
             reportingUser: {
-              name: "Jackie",
-              id: "166g...fjhsgt",
-              avatar:
-                "https://www.figma.com/api/mcp/asset/16f9b692-7d5e-4cff-b5dd-d15f87a0d1fc",
+              name: reportDetails?.reportingUser?.name || "Unknown Reporter",
+              id: reportDetails?.reportingUser?.id || "N/A",
+              avatar: reportDetails?.reportingUser?.avatar || "",
             },
-            content: {
-              event:
-                selectedReport.type === "Event"
-                  ? {
-                      image:
-                        "https://www.figma.com/api/mcp/asset/faaf4e36-54ea-43fd-a9db-64987f8b6a57",
-                      date: "FEB 12, 2025 | 2:00 PM",
-                      title: "4v4 Basketball game",
-                      location: "S. Campus Basketball Courts",
-                    }
-                  : undefined,
-              space:
-                selectedReport.type === "Space"
-                  ? {
-                      image:
-                        "https://www.figma.com/api/mcp/asset/faaf4e36-54ea-43fd-a9db-64987f8b6a57",
-                      title: "Sisters of Unity",
-                      description: "Strength in sisterhood, power in unity.",
-                      category: "Sororities",
-                      memberCount: "1-10 Members",
-                    }
-                  : undefined,
-              idea:
-                selectedReport.type === "Idea"
-                  ? {
-                      title: "Children's App",
-                      tag: "Looking For",
-                      description:
-                        "Marketing Junior year, Design students, and all business majors interested in a ne...",
-                      ideaBy: "You",
-                      avatar: "https://via.placeholder.com/24",
-                    }
-                  : undefined,
-              message:
-                selectedReport.type === "Message"
-                  ? {
-                      text: "top bothering me, you're annoying",
-                      timestamp: "Oct 7, 2025 - 12:45",
-                    }
-                  : undefined,
-            },
-            safetyRecord: {
-              banHistory: [
-                {
-                  duration: "3 Day ban",
-                  reason: "Spam",
-                  bannedOn: "Banned on Oct 07, 2025 - 12:14",
-                  bannedBy: "Admin Name",
-                },
-              ],
+            content: reportDetails?.content || {},
+            safetyRecord: reportDetails?.safetyRecord || {
+              banHistory: [],
               reportHistory: [],
               blockHistory: [],
             },
@@ -622,8 +587,8 @@ export const ReportHistory: React.FC = () => {
               handleNoteRequired(selectedReport.id, newStatus);
             }
           }}
-          onDeactivateUser={() => console.log("Deactivate user")}
-          onBanUser={() => console.log("Ban user")}
+          onDeactivateUser={handleDeactivateUser}
+          onBanUser={handleBanUser}
         />
       )}
 

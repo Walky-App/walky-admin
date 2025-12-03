@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../../API";
 import "./IdeasTable.css";
 import {
   AssetIcon,
@@ -42,6 +44,7 @@ type SortField = "ideaTitle" | "owner" | "collaborated" | "creationDate";
 type SortDirection = "asc" | "desc";
 
 export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
+  const queryClient = useQueryClient();
   const [sortField, setSortField] = useState<SortField>("creationDate");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -54,6 +57,57 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState<IdeaData | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2IdeasDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      setToastMessage(`Idea deleted successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setDeleteModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting idea:", error);
+      setToastMessage("Error deleting idea");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2IdeasFlagCreate(data.id, { reason: data.reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      setToastMessage(`Idea flagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setFlagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error flagging idea:", error);
+      setToastMessage("Error flagging idea");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const unflagMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2IdeasUnflagCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      setToastMessage(`Idea unflagged successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setUnflagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error unflagging idea:", error);
+      setToastMessage("Error unflagging idea");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -94,10 +148,43 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     return 0;
   });
 
-  const handleViewIdeaDetails = (idea: IdeaData, e: React.MouseEvent) => {
+  const handleViewIdeaDetails = async (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedIdea(idea);
-    setDetailsModalOpen(true);
+    try {
+      const response = await apiClient.api.adminV2IdeasDetail(idea.id) as any;
+      const details = response.data;
+
+      // Map API response to IdeaData structure for the modal
+      const ideaDetails: IdeaData = {
+        id: details.id,
+        ideaTitle: details.title,
+        owner: {
+          name: details.creator?.name || 'Unknown',
+          avatar: details.creator?.avatar,
+        },
+        studentId: details.creator?.studentId || 'N/A',
+        collaborated: details.collaborators?.length || 0,
+        creationDate: new Date(details.createdAt).toLocaleDateString(),
+        creationTime: new Date(details.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        description: details.description,
+        lookingFor: details.lookingFor || "N/A", // Assuming backend might return this
+        collaborators: (details.collaborators || []).map((c: any) => ({
+          id: c.user_id,
+          name: c.name || 'Unknown',
+          avatar: c.avatar_url
+        })),
+        isFlagged: details.isFlagged,
+        flagReason: details.flagReason,
+      };
+
+      setSelectedIdea(ideaDetails);
+      setDetailsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching idea details:", error);
+      setToastMessage("Error fetching idea details");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const handleFlagIdea = (idea: IdeaData, e: React.MouseEvent) => {
@@ -108,11 +195,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
   const handleFlagConfirm = (reason: string) => {
     if (ideaToFlag) {
-      console.log("Flagging idea:", ideaToFlag.ideaTitle, "Reason:", reason);
-      // TODO: Call API to flag idea
-      setToastMessage(`Idea "${ideaToFlag.ideaTitle}" flagged successfully`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      flagMutation.mutate({ id: ideaToFlag.id, reason });
     }
   };
 
@@ -124,13 +207,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
   const handleUnflagConfirm = () => {
     if (ideaToUnflag) {
-      console.log("Unflagging idea:", ideaToUnflag.ideaTitle);
-      // TODO: Call API to unflag idea
-      setToastMessage(
-        `Idea "${ideaToUnflag.ideaTitle}" unflagged successfully`
-      );
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      unflagMutation.mutate(ideaToUnflag.id);
     }
   };
 
@@ -140,14 +217,9 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = (reason: string) => {
+  const handleDeleteConfirm = (_reason: string) => {
     if (ideaToDelete) {
-      console.log("Deleting idea:", ideaToDelete, "Reason:", reason);
-      // TODO: Implement actual delete API call
-      setToastMessage(`"${ideaToDelete.ideaTitle}" has been deleted`);
-      setShowToast(true);
-      setDeleteModalOpen(false);
-      setIdeaToDelete(null);
+      deleteMutation.mutate(ideaToDelete.id);
     }
   };
 
@@ -258,20 +330,20 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       idea.isFlagged
                         ? {
-                            label: "Unflag",
-                            icon: "flag-icon",
-                            variant: "danger",
-                            onClick: (e) => handleUnflagIdea(idea, e),
-                          }
+                          label: "Unflag",
+                          icon: "flag-icon",
+                          variant: "danger",
+                          onClick: (e) => handleUnflagIdea(idea, e),
+                        }
                         : {
-                            label: "Flag",
-                            icon: "flag-icon",
-                            onClick: (e) => handleFlagIdea(idea, e),
-                          },
+                          label: "Flag",
+                          icon: "flag-icon",
+                          onClick: (e) => handleFlagIdea(idea, e),
+                        },
                       {
                         label: "Delete Idea",
                         variant: "danger",
@@ -326,56 +398,21 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
         ideaData={
           selectedIdea
             ? {
-                id: selectedIdea.id,
-                title: selectedIdea.ideaTitle,
-                owner: {
-                  name: selectedIdea.owner.name,
-                  studentId: selectedIdea.studentId,
-                  avatar: selectedIdea.owner.avatar,
-                },
-                creationDate: selectedIdea.creationDate,
-                creationTime: selectedIdea.creationTime,
-                description:
-                  selectedIdea.description ||
-                  "This idea is built around kids games to help kids improve their vocab. I'm looking for 3 people to join my team, and possibly a fourth. I'm a programmer.",
-                lookingFor:
-                  selectedIdea.lookingFor ||
-                  "Marketing Junior year, Design students, and all business majors interested in a new app",
-                collaborators: selectedIdea.collaborators || [
-                  {
-                    id: "1",
-                    name: "Ben",
-                    avatar:
-                      "https://www.figma.com/api/mcp/asset/2eb15d6f-b35b-4b33-92d6-9a3598f9b948",
-                  },
-                  {
-                    id: "2",
-                    name: "Leo",
-                    avatar:
-                      "https://www.figma.com/api/mcp/asset/9b3a5b2a-9bbe-4e92-9b64-5955454b1e9b",
-                  },
-                  {
-                    id: "3",
-                    name: "Mariana",
-                    avatar:
-                      "https://www.figma.com/api/mcp/asset/9fa58bd8-6b2c-48e5-910f-6322680cb6af",
-                  },
-                  {
-                    id: "4",
-                    name: "Anni",
-                    avatar:
-                      "https://www.figma.com/api/mcp/asset/ef015d1a-dbcd-47c5-b159-04c06a37a7d1",
-                  },
-                  {
-                    id: "5",
-                    name: "Justin",
-                    avatar:
-                      "https://www.figma.com/api/mcp/asset/720d3983-b06d-4bcb-9fd8-03d3510897d8",
-                  },
-                ],
-                isFlagged: selectedIdea.isFlagged,
-                flagReason: selectedIdea.flagReason,
-              }
+              id: selectedIdea.id,
+              title: selectedIdea.ideaTitle,
+              owner: {
+                name: selectedIdea.owner.name,
+                studentId: selectedIdea.studentId,
+                avatar: selectedIdea.owner.avatar,
+              },
+              creationDate: selectedIdea.creationDate,
+              creationTime: selectedIdea.creationTime,
+              description: selectedIdea.description || "No description provided",
+              lookingFor: selectedIdea.lookingFor || "N/A",
+              collaborators: selectedIdea.collaborators || [],
+              isFlagged: selectedIdea.isFlagged,
+              flagReason: selectedIdea.flagReason,
+            }
             : null
         }
       />

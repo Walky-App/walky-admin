@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
@@ -13,68 +15,43 @@ export const DeactivatedStudents: React.FC = () => {
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const entriesPerPage = 10;
 
-  // Mock data
-  const mockStudents: StudentData[] = [
-    {
-      id: "1",
-      userId: "166g...fjhsgt",
-      name: "Austin Smith",
-      email: "Austin@FIU.edu.co",
-      status: "deactivated" as const,
-      interests: ["Ballet", "Billiards", "Chess"],
-      deactivatedDate: "Sep 28, 2025",
-      deactivatedBy: "Self",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Active now",
-      avatar: "A",
-    },
-    {
-      id: "2",
-      userId: "266g...fjhsgt",
-      name: "Leo Johnson",
-      email: "Leo@FIU.edu.co",
-      status: "deactivated" as const,
-      interests: ["Ballet", "Billiards", "Swimming"],
-      deactivatedDate: "Sep 28, 2025",
-      deactivatedBy: "Admin",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "2 minutes ago",
-      avatar: "L",
-    },
-    {
-      id: "3",
-      userId: "366g...fjhsgt",
-      name: "Natasha Brown",
-      email: "Natasha@FIU.edu.co",
-      status: "deactivated" as const,
-      interests: ["Ballet", "Billiards", "Art"],
-      deactivatedDate: "Sep 28, 2025",
-      deactivatedBy: "Self",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "3 hours ago",
-      avatar: "N",
-    },
-  ];
+  const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
+    queryKey: ['students', currentPage, searchQuery, 'deactivated'],
+    queryFn: () => apiClient.api.adminV2StudentsList({
+      page: currentPage,
+      limit: entriesPerPage,
+      search: searchQuery,
+      status: 'deactivated'
+    }),
+  });
 
-  // Duplicate data to have more entries
-  const allStudents = Array.from({ length: 87 }, (_, index) => ({
-    ...mockStudents[index % mockStudents.length],
-    id: `${index + 1}`,
-    userId: `${100 + index}g...fjhsgt`,
+  const { data: statsData, isLoading: isStatsLoading } = useQuery({
+    queryKey: ['studentStats'],
+    queryFn: () => apiClient.api.adminV2StudentsStatsList(),
+  });
+
+  const isLoading = isStudentsLoading || isStatsLoading;
+
+  const students = (studentsData?.data.data || []).map((student: any) => ({
+    id: student.id,
+    userId: student.userId,
+    name: student.name,
+    email: student.email,
+    status: student.status,
+    interests: student.interests || [],
+    deactivatedDate: student.deactivatedDate,
+    deactivatedBy: student.deactivatedBy,
+    memberSince: student.memberSince,
+    onlineLast: student.onlineLast,
+    avatar: student.avatar,
   }));
 
-  const filteredStudents = allStudents.filter((student) =>
-    Object.values(student).some((value) =>
-      value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const paginatedStudents = students;
 
-  const totalPages = Math.ceil(filteredStudents.length / entriesPerPage);
-  const startIndex = (currentPage - 1) * entriesPerPage;
-  const paginatedStudents = filteredStudents.slice(
-    startIndex,
-    startIndex + entriesPerPage
-  );
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   const handleStudentClick = (student: StudentData) => {
     console.log("Student clicked:", student);
@@ -89,7 +66,7 @@ export const DeactivatedStudents: React.FC = () => {
       <div className="deactivated-students-stats">
         <StatsCard
           title="Total deactivated students"
-          value="87"
+          value={statsData?.data.totalStudents?.toString() || "0"}
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
@@ -147,7 +124,7 @@ export const DeactivatedStudents: React.FC = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            totalEntries={filteredStudents.length}
+            totalEntries={studentsData?.data.total || 0}
             entriesPerPage={entriesPerPage}
             onPageChange={setCurrentPage}
           />

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./EventsInsights.css";
 import { AssetIcon, ExportButton } from "../../../components-v2";
-import { DonutChart } from "../../Dashboard/components";
+import API, { apiClient } from "../../../API";
 
 interface Interest {
   name: string;
@@ -13,98 +13,112 @@ interface EventItem {
   rank: number;
   name: string;
   attendees: number;
+  image?: string;
 }
 
+import {
+  DonutChart,
+  DashboardSkeleton
+} from "../../Dashboard/components";
+import "./EventsInsights.css";
+
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 export const EventsInsights: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
+  const [loading, setLoading] = useState(true);
+
+  // Stats state
+  const [stats, setStats] = useState({
+    totalEvents: 0,
+    publicEvents: 0,
+    privateEvents: 0,
+    avgPublicAttendees: 0,
+    avgPrivateAttendees: 0,
+  });
+
+  const handleExport = async () => {
+    try {
+      const response = await API.get('/admin/v2/dashboard/events-insights', {
+        params: {
+          period: timePeriod === 'all' ? 'all-time' : timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `events_insights_stats_${timePeriod}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
+  };
 
   // Data for donut charts
-  const expandReachData = [
-    {
-      label: "Without expand Event reach",
-      value: 70.16,
-      percentage: "70.16%",
-      color: "#D6E9C7",
-    },
-    {
-      label: "With expand Event reach",
-      value: 29.84,
-      percentage: "29.84%",
-      color: "#3B7809",
-    },
-  ];
+  const [expandReachData, setExpandReachData] = useState<any[]>([]);
+  const [usersVsSpacesData, setUsersVsSpacesData] = useState<any[]>([]);
 
-  const usersVsSpacesData = [
-    {
-      label: "Events organized by Spaces",
-      value: 70.16,
-      percentage: "70.16%",
-      color: "#546FD9",
-    },
-    {
-      label: "Events organized by Users",
-      value: 29.84,
-      percentage: "29.84%",
-      color: "#CACAEE",
-    },
-  ];
+  const [interests, setInterests] = useState<Interest[]>([]);
+  const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
+  const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 
-  // Mock interests data from Figma
-  const interests: Interest[] = [
-    { name: "Ballet", students: 19, percentage: 7.1 },
-    { name: "Basketball", students: 18, percentage: 6.7 },
-    { name: "Acting", students: 16, percentage: 6.0 },
-    { name: "Anime", students: 16, percentage: 6.0 },
-    { name: "Arcade", students: 16, percentage: 6.0 },
-    { name: "Soccer", students: 15, percentage: 5.6 },
-    { name: "Music", students: 14, percentage: 5.2 },
-    { name: "Photography", students: 13, percentage: 4.9 },
-    { name: "Coding", students: 12, percentage: 4.5 },
-    { name: "Art", students: 11, percentage: 4.1 },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await apiClient.api.adminV2DashboardEventsInsightsList({
+          period: timePeriod === 'all' ? 'all-time' : timePeriod,
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id
+        });
+        const data = res.data as any;
 
-  // Mock events data
-  const privateEvents: EventItem[] = [
-    { rank: 1, name: "4v4 Basketball game", attendees: 4 },
-    { rank: 2, name: "Top Golf Tuesdays", attendees: 3 },
-    {
-      rank: 3,
-      name: "FAU Tech Runway startup finals & Pitch Competition",
-      attendees: 3,
-    },
-    { rank: 4, name: "Top Golf Monday", attendees: 2 },
-    { rank: 5, name: "Top Golf Sunday", attendees: 1 },
-    { rank: 6, name: "Study Group Session", attendees: 5 },
-    { rank: 7, name: "Movie Night", attendees: 4 },
-    { rank: 8, name: "Board Game Evening", attendees: 3 },
-    { rank: 9, name: "Coffee Meetup", attendees: 2 },
-    { rank: 10, name: "Yoga Class", attendees: 1 },
-  ];
+        if (data) {
+          setStats({
+            totalEvents: data.stats?.totalEvents || 0,
+            publicEvents: data.stats?.publicEvents || 0,
+            privateEvents: data.stats?.privateEvents || 0,
+            avgPublicAttendees: data.stats?.avgPublicAttendees || 0,
+            avgPrivateAttendees: data.stats?.avgPrivateAttendees || 0,
+          });
 
-  const publicEvents: EventItem[] = [
-    { rank: 1, name: "4v4 Basketball game", attendees: 70 },
-    { rank: 2, name: "Top Golf Tuesdays", attendees: 65 },
-    {
-      rank: 3,
-      name: "FAU Tech Runway startup finals & Pitch Competition",
-      attendees: 63,
-    },
-    { rank: 4, name: "Top Golf Monday", attendees: 60 },
-    { rank: 5, name: "Top Golf Sunday", attendees: 59 },
-    { rank: 6, name: "Campus Concert", attendees: 58 },
-    { rank: 7, name: "Tech Workshop", attendees: 55 },
-    { rank: 8, name: "Career Fair", attendees: 52 },
-    { rank: 9, name: "Food Festival", attendees: 50 },
-    { rank: 10, name: "Sports Tournament", attendees: 48 },
-  ];
+          setExpandReachData(data.expandReachData || []);
+          setUsersVsSpacesData(data.usersVsSpacesData || []);
+          setInterests(data.interests || []);
+          setPublicEvents(data.publicEventsList || []);
+          setPrivateEvents(data.privateEventsList || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch events insights:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [timePeriod, selectedSchool, selectedCampus]);
+
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <main className="events-insights-page">
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton />
+        <ExportButton onClick={handleExport} />
       </div>
 
       {/* Top 3 Stats Cards */}
@@ -118,7 +132,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="calendar-icon" size={27} color="#FF6B35" />
             </div>
           </div>
-          <p className="stats-card-value">75089</p>
+          <p className="stats-card-value">{loading ? "..." : stats.totalEvents.toLocaleString()}</p>
         </div>
 
         <div className="stats-card">
@@ -128,7 +142,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
           </div>
-          <p className="stats-card-value">45780</p>
+          <p className="stats-card-value">{loading ? "..." : stats.publicEvents.toLocaleString()}</p>
         </div>
 
         <div className="stats-card">
@@ -140,7 +154,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
           </div>
-          <p className="stats-card-value">29309</p>
+          <p className="stats-card-value">{loading ? "..." : stats.privateEvents.toLocaleString()}</p>
         </div>
       </div>
 
@@ -167,7 +181,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
           </div>
-          <p className="stats-card-value">20</p>
+          <p className="stats-card-value">{loading ? "..." : stats.avgPublicAttendees}</p>
         </div>
 
         <div className="stats-card">
@@ -179,7 +193,7 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
           </div>
-          <p className="stats-card-value">3</p>
+          <p className="stats-card-value">{loading ? "..." : stats.avgPrivateAttendees}</p>
         </div>
       </div>
 
@@ -220,7 +234,7 @@ export const EventsInsights: React.FC = () => {
           </h2>
         </div>
         <div className="interests-list">
-          {interests.map((interest, index) => (
+          {interests.length > 0 ? interests.map((interest, index) => (
             <div key={index} className="interest-item">
               <div className="interest-icon">
                 <div className="icon-background">
@@ -245,7 +259,11 @@ export const EventsInsights: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="p-4 text-center text-muted">
+              No interest data available
+            </div>
+          )}
         </div>
       </div>
 
@@ -266,7 +284,11 @@ export const EventsInsights: React.FC = () => {
               <div key={event.rank} className="event-list-item">
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
-                  <div className="event-image-placeholder" />
+                  {event.image ? (
+                    <img src={event.image} alt={event.name} className="event-image" />
+                  ) : (
+                    <div className="event-image-placeholder" />
+                  )}
                   <p className="event-name">{event.name}</p>
                 </div>
                 <p className="event-attendees">{event.attendees} Attendees</p>
@@ -290,7 +312,11 @@ export const EventsInsights: React.FC = () => {
               <div key={event.rank} className="event-list-item">
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
-                  <div className="event-image-placeholder" />
+                  {event.image ? (
+                    <img src={event.image} alt={event.name} className="event-image" />
+                  ) : (
+                    <div className="event-image-placeholder" />
+                  )}
                   <p className="event-name">{event.name}</p>
                 </div>
                 <p className="event-attendees">{event.attendees} Attendees</p>

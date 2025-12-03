@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiClient } from "../../../API";
 import { useNavigate } from "react-router-dom";
 import AssetIcon from "../../../components-v2/AssetIcon/AssetIcon";
 import {
@@ -8,6 +9,7 @@ import {
 } from "../../../components-v2";
 import { useAuth } from "../../../hooks/useAuth";
 import { useTheme } from "../../../hooks/useTheme";
+import toast from "react-hot-toast";
 import "./AdministratorSettings.css";
 
 type TabType = "personal" | "security" | "notifications" | "danger";
@@ -81,38 +83,66 @@ export const AdministratorSettings: React.FC = () => {
     setNotificationData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSaveChanges = () => {
-    console.log("Save changes:", formData);
-    // TODO: API call to save changes
-    setHasUnsavedChanges(false);
+  // ... (imports)
+
+  const handleSaveChanges = async () => {
+    try {
+      await apiClient.api.adminV2SettingsProfileUpdate({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        position: formData.position,
+      });
+      setHasUnsavedChanges(false);
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error("Error saving changes:", error);
+      toast.error("Failed to update profile");
+    }
   };
 
-  const handleChangePassword = () => {
-    console.log("Change password:", securityData);
-    // TODO: API call to change password
-    // Show toast after success
+  const handleChangePassword = async () => {
+    try {
+      await apiClient.api.adminV2SettingsPasswordUpdate({
+        currentPassword: securityData.currentPassword,
+        newPassword: securityData.newPassword,
+      });
+      toast.success("Password updated successfully");
+      setSecurityData(prev => ({ ...prev, currentPassword: "", newPassword: "", confirmPassword: "" }));
+    } catch (error) {
+      console.error("Error changing password:", error);
+      toast.error("Failed to update password");
+    }
   };
 
   const handleLogoutAllDevices = () => {
     setShowLogoutAllModal(true);
   };
 
-  const handleConfirmLogoutAll = () => {
-    console.log("Logout all devices");
-    // TODO: API call to logout all devices
-    setShowLogoutAllModal(false);
-    // Show toast after success
+  const handleConfirmLogoutAll = async () => {
+    try {
+      await apiClient.api.adminV2SettingsLogoutAllCreate();
+      setShowLogoutAllModal(false);
+      toast.success("Logged out from all devices");
+      // Optional: Redirect to login or logout current session as well
+    } catch (error) {
+      console.error("Error logging out all devices:", error);
+      toast.error("Failed to logout all devices");
+    }
   };
 
   const handleSubmitDeleteRequest = () => {
     setShowDeleteAccountModal(true);
   };
 
-  const handleConfirmDeleteAccount = () => {
-    console.log("Delete account request:", deleteReason);
-    // TODO: API call to submit deletion request
-    setShowDeleteAccountModal(false);
-    // Show toast after success
+  const handleConfirmDeleteAccount = async () => {
+    try {
+      await apiClient.api.adminV2SettingsDeleteAccountCreate({ reason: deleteReason });
+      setShowDeleteAccountModal(false);
+      toast.success("Account deletion requested");
+    } catch (error) {
+      console.error("Error requesting account deletion:", error);
+      toast.error("Failed to request account deletion");
+    }
   };
 
   const handleBackToPanel = () => {
@@ -139,8 +169,8 @@ export const AdministratorSettings: React.FC = () => {
     }
   };
 
-  const accountCreatedDate = "20/5/2025"; // TODO: Get from user data
-  const lastLoginDate = "20/10/2025 | 21:00:03"; // TODO: Get from user data
+  const accountCreatedDate = (user as any)?.createdAt ? new Date((user as any).createdAt).toLocaleDateString() : "N/A";
+  const lastLoginDate = (user as any)?.lastLogin ? new Date((user as any).lastLogin).toLocaleString() : "N/A";
 
   console.log("Rendering AdministratorSettings", {
     activeTab,
@@ -149,9 +179,8 @@ export const AdministratorSettings: React.FC = () => {
 
   return (
     <main
-      className={`administrator-settings-page ${
-        theme.isDark ? "dark-mode" : ""
-      }`}
+      className={`administrator-settings-page ${theme.isDark ? "dark-mode" : ""
+        }`}
     >
       {/* Header */}
       <div className="settings-header">
@@ -191,9 +220,8 @@ export const AdministratorSettings: React.FC = () => {
         </button>
         <button
           data-testid="tab-notifications"
-          className={`settings-tab ${
-            activeTab === "notifications" ? "active" : ""
-          }`}
+          className={`settings-tab ${activeTab === "notifications" ? "active" : ""
+            }`}
           onClick={() => setActiveTab("notifications")}
         >
           Notification Preferences
@@ -241,10 +269,10 @@ export const AdministratorSettings: React.FC = () => {
                     src={
                       user?.avatar_url ||
                       "https://ui-avatars.com/api/?name=" +
-                        encodeURIComponent(
-                          user?.first_name + " " + user?.last_name
-                        ) +
-                        "&background=546fd9&color=fff"
+                      encodeURIComponent(
+                        user?.first_name + " " + user?.last_name
+                      ) +
+                      "&background=546fd9&color=fff"
                     }
                     alt="Profile"
                   />

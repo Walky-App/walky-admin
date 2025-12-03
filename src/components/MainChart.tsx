@@ -5,7 +5,7 @@ import { useTheme } from "../hooks/useTheme";
 
 
 const MainChart = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const chartRef = useRef<any>(null);
   const { theme } = useTheme();
 
@@ -14,7 +14,7 @@ const MainChart = () => {
   // Combined tooltip plugin that shows both values
   const tooltipPlugin = {
     id: "customTooltip",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     afterDraw: (chart: any) => {
       const tooltipModel = chart.tooltip;
       let tooltipEl = document.getElementById("chartjs-tooltip");

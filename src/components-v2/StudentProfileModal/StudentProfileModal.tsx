@@ -63,7 +63,7 @@ interface StudentProfileModalProps {
   visible: boolean;
   student: StudentProfileData | null;
   onClose: () => void;
-  onBanUser?: (student: StudentProfileData) => void;
+  onBanUser?: (student: StudentProfileData, duration: string, reason: string) => void;
   onDeactivateUser?: (student: StudentProfileData) => void;
 }
 
@@ -128,15 +128,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   };
 
   const handleConfirmBan = (reason: string, duration: string) => {
-    console.log(
-      "Banning user:",
-      student,
-      "Reason:",
-      reason,
-      "Duration:",
-      duration
-    );
-    onBanUser?.(student);
+    onBanUser?.(student, duration, reason);
     handleBackToProfile();
   };
 
@@ -338,7 +330,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           <div className="profile-header">
             <div className="profile-user-section">
               <div className="profile-avatar-large">
-                {student.isFlagged && (
+                {Boolean(student.isFlagged) && (
                   <div className="profile-flag-icon">
                     <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
                   </div>
@@ -487,27 +479,24 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
             <div className="profile-history-tabs">
               <button
                 data-testid="profile-history-ban-tab"
-                className={`profile-history-tab ${
-                  activeTab === "ban" ? "active" : ""
-                }`}
+                className={`profile-history-tab ${activeTab === "ban" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("ban")}
               >
                 Ban history
               </button>
               <button
                 data-testid="profile-history-report-tab"
-                className={`profile-history-tab ${
-                  activeTab === "report" ? "active" : ""
-                }`}
+                className={`profile-history-tab ${activeTab === "report" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("report")}
               >
                 Report history
               </button>
               <button
                 data-testid="profile-history-block-tab"
-                className={`profile-history-tab ${
-                  activeTab === "block" ? "active" : ""
-                }`}
+                className={`profile-history-tab ${activeTab === "block" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("block")}
               >
                 Block history

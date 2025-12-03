@@ -18,14 +18,10 @@ const VerifyCodeStep: React.FC<VerifyCodeStepProps> = ({
     e.preventDefault();
     setIsLoading(true);
 
-    // TODO: Implement verification logic
-    console.log("Verification attempt:", { email, verificationCode });
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      onVerify(verificationCode);
-    }, 1000);
+    // Pass the code to the parent component. 
+    // Actual verification happens during the password reset step as the API verifies OTP and resets password in one request.
+    onVerify(verificationCode);
+    setIsLoading(false);
   };
 
   const handleResend = () => {

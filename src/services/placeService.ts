@@ -1,31 +1,31 @@
 import { Place, PlacesFilters, PlacesResponse } from "../types/place";
-import API from "../API";
+import { apiClient } from "../API";
 
 // Removed unused interface BackendPlaceResponse
 
 export const placeService = {
   getAll: async (filters: PlacesFilters = {}): Promise<PlacesResponse> => {
     try {
-      const params = new URLSearchParams();
-      
-      if (filters.campus_id) params.append("campus_id", filters.campus_id);
+      const queryParams: any = {};
+
+      if (filters.campus_id) queryParams.campus_id = filters.campus_id;
       // Note: region_id is deprecated, using campus_id directly
-      if (filters.search) params.append("search", filters.search);
-      if (filters.categories?.length) params.append("categories", filters.categories.join(","));
-      if (filters.place_category) params.append("place_category", filters.place_category);
-      if (filters.hierarchy_level !== undefined) params.append("hierarchy_level", String(filters.hierarchy_level));
-      if (filters.parent_place_id !== undefined) params.append("parent_place_id", filters.parent_place_id === null ? "" : filters.parent_place_id);
-      if (filters.is_deleted !== undefined) params.append("is_deleted", String(filters.is_deleted));
+      if (filters.search) queryParams.search = filters.search;
+      if (filters.categories?.length) queryParams.categories = filters.categories.join(",");
+      if (filters.place_category) queryParams.place_category = filters.place_category;
+      if (filters.hierarchy_level !== undefined) queryParams.hierarchy_level = String(filters.hierarchy_level);
+      if (filters.parent_place_id !== undefined) queryParams.parent_place_id = filters.parent_place_id === null ? "" : filters.parent_place_id;
+      if (filters.is_deleted !== undefined) queryParams.is_deleted = String(filters.is_deleted);
       // Convert page to offset for backend
       if (filters.page && filters.limit) {
         const offset = (filters.page - 1) * filters.limit;
-        params.append("offset", String(offset));
+        queryParams.offset = offset;
       }
-      if (filters.limit) params.append("limit", String(filters.limit));
-      if (filters.sort) params.append("sort", filters.sort);
-      if (filters.order) params.append("order", filters.order);
+      if (filters.limit) queryParams.limit = filters.limit;
+      if (filters.sort) queryParams.sort = filters.sort;
+      if (filters.order) queryParams.order = filters.order;
 
-      const response = await API.get(`/admin/places?${params.toString()}`);
+      const response = await apiClient.admin.placesList(queryParams) as any;
 
       // Handle success response with nested data structure
       if (response.data.success && response.data.data && response.data.data.places && Array.isArray(response.data.data.places)) {
@@ -70,7 +70,7 @@ export const placeService = {
       };
     } catch (error) {
       console.error("Failed to fetch places:", error);
-      
+
       // Handle 404 specifically (no places found)
       if (error instanceof Error && "response" in error) {
         const axiosError = error as { response?: { status?: number } };
@@ -85,14 +85,14 @@ export const placeService = {
           };
         }
       }
-      
+
       throw error;
     }
   },
 
   updateCategories: async (placeId: string, categories: string[]): Promise<Place> => {
     try {
-      const response = await API.put(`/admin/places/${placeId}/categories`, { categories });
+      const response = await apiClient.admin.placesCategoriesUpdate(placeId, { app_categories: categories } as any) as any;
       return response.data;
     } catch (error) {
       console.error("Failed to update place categories:", error);
@@ -102,7 +102,7 @@ export const placeService = {
 
   delete: async (placeId: string): Promise<void> => {
     try {
-      await API.delete(`/admin/places/${placeId}`);
+      await apiClient.admin.placesDelete(placeId);
     } catch (error) {
       console.error("Failed to delete place:", error);
       throw error;
@@ -111,7 +111,7 @@ export const placeService = {
 
   restore: async (placeId: string): Promise<Place> => {
     try {
-      const response = await API.post(`/admin/places/${placeId}/restore`);
+      const response = await apiClient.admin.placesRestoreCreate(placeId) as any;
       return response.data;
     } catch (error) {
       console.error("Failed to restore place:", error);
@@ -121,7 +121,7 @@ export const placeService = {
 
   syncPhotos: async (placeId: string): Promise<void> => {
     try {
-      await API.post(`/admin/places/${placeId}/sync-photos`);
+      await apiClient.admin.placesSyncPhotosCreate(placeId);
     } catch (error) {
       console.error("Failed to sync place photos:", error);
       throw error;
@@ -130,7 +130,7 @@ export const placeService = {
 
   batchSyncPhotos: async (placeIds: string[]): Promise<void> => {
     try {
-      await API.post("/admin/places/photo-sync/batch", { place_ids: placeIds });
+      await apiClient.admin.placesPhotoSyncBatchCreate({ place_ids: placeIds } as any);
     } catch (error) {
       console.error("Failed to batch sync photos:", error);
       throw error;
@@ -150,16 +150,12 @@ export const placeService = {
     };
   }> => {
     try {
-      const params = new URLSearchParams();
-      params.append("limit", String(limit));
-      params.append("offset", String(offset));
+      const response = await apiClient.admin.placesNestedList(placeId, { limit, offset }) as any;
 
-      const response = await API.get(`/admin/places/${placeId}/nested?${params.toString()}`);
-      
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
-      
+
       throw new Error("Invalid response structure");
     } catch (error) {
       console.error("Failed to fetch nested places:", error);

@@ -23,6 +23,7 @@ interface ReportDetailsModalProps {
   reports: Report[];
   totalCount: number;
   period: string;
+  loading?: boolean;
 }
 
 const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
@@ -32,6 +33,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   reports,
   totalCount,
   period,
+  loading,
 }) => {
   const { theme } = useTheme();
 
@@ -92,109 +94,119 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
         {/* Reports List */}
         <div className="reports-list-container">
           <div className="reports-list">
-            {reports.map((report) => (
-              <div
-                key={report.id}
-                className="report-item"
-                style={{
-                  backgroundColor: theme.colors.cardBg,
-                  borderColor: theme.colors.borderColor,
-                }}
-              >
-                {/* Status Badge */}
+            {loading ? (
+              <div style={{ textAlign: "center", padding: "20px", color: theme.colors.textMuted }}>
+                Loading...
+              </div>
+            ) : reports.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "20px", color: theme.colors.textMuted }}>
+                No reports found
+              </div>
+            ) : (
+              reports.map((report) => (
                 <div
-                  className="report-status-badge"
+                  key={report.id}
+                  className="report-item"
                   style={{
-                    backgroundColor: `${getStatusColor(report.status)}20`,
-                    color: getStatusColor(report.status),
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.borderColor,
                   }}
                 >
-                  {report.status.charAt(0).toUpperCase() +
-                    report.status.slice(1)}
-                </div>
-
-                {/* Reported Item */}
-                <div className="report-field">
-                  <span
-                    className="report-field-label"
-                    style={{ color: theme.colors.bodyColor }}
-                  >
-                    Reported {reportType.toLowerCase().slice(0, -1)}:
-                  </span>
-                  <a
-                    href="#"
-                    className="report-field-link"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    {report.reportedItemName}
-                  </a>
-                </div>
-
-                {/* Report ID */}
-                <div className="report-field">
-                  <span
-                    className="report-field-label"
-                    style={{ color: theme.colors.bodyColor }}
-                  >
-                    Report ID:
-                  </span>
-                  <CopyableId
-                    id={report.reportId}
-                    label="Report ID"
-                    variant="secondary"
-                    size="small"
-                    iconSize={14}
-                    iconColor="#acb6ba"
-                    testId="copy-report-id"
-                  />
-                </div>
-
-                {/* Reason */}
-                <div className="report-field">
-                  <span
-                    className="report-field-label"
-                    style={{ color: theme.colors.bodyColor }}
-                  >
-                    Reason
-                  </span>
-                  <span
-                    className="reason-tag"
+                  {/* Status Badge */}
+                  <div
+                    className="report-status-badge"
                     style={{
-                      backgroundColor: getReasonTagColor(report.reasonTag).bg,
-                      color: getReasonTagColor(report.reasonTag).text,
+                      backgroundColor: `${getStatusColor(report.status)}20`,
+                      color: getStatusColor(report.status),
                     }}
                   >
-                    {report.reasonTag}
-                  </span>
-                </div>
+                    {report.status.charAt(0).toUpperCase() +
+                      report.status.slice(1)}
+                  </div>
 
-                {/* Description */}
-                <div className="report-field">
-                  <span
-                    className="report-field-label"
-                    style={{ color: theme.colors.bodyColor }}
-                  >
-                    Description:
-                  </span>
-                  <p
-                    className="report-description"
-                    style={{ color: theme.colors.bodyColor }}
-                  >
-                    {report.description}
-                  </p>
-                </div>
+                  {/* Reported Item */}
+                  <div className="report-field">
+                    <span
+                      className="report-field-label"
+                      style={{ color: theme.colors.bodyColor }}
+                    >
+                      Reported {reportType.toLowerCase().slice(0, -1)}:
+                    </span>
+                    <a
+                      href="#"
+                      className="report-field-link"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {report.reportedItemName}
+                    </a>
+                  </div>
 
-                {/* Reported On */}
-                <div className="report-footer">
-                  <p
-                    className="report-footer-text"
-                    style={{ color: theme.colors.textMuted }}
-                  >
-                    Reported on {report.reportedOn} by {report.reportedBy}
-                  </p>
+                  {/* Report ID */}
+                  <div className="report-field">
+                    <span
+                      className="report-field-label"
+                      style={{ color: theme.colors.bodyColor }}
+                    >
+                      Report ID:
+                    </span>
+                    <CopyableId
+                      id={report.reportId}
+                      label="Report ID"
+                      variant="secondary"
+                      size="small"
+                      iconSize={14}
+                      iconColor="#acb6ba"
+                      testId="copy-report-id"
+                    />
+                  </div>
+
+                  {/* Reason */}
+                  <div className="report-field">
+                    <span
+                      className="report-field-label"
+                      style={{ color: theme.colors.bodyColor }}
+                    >
+                      Reason
+                    </span>
+                    <span
+                      className="reason-tag"
+                      style={{
+                        backgroundColor: getReasonTagColor(report.reasonTag).bg,
+                        color: getReasonTagColor(report.reasonTag).text,
+                      }}
+                    >
+                      {report.reasonTag}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <div className="report-field">
+                    <span
+                      className="report-field-label"
+                      style={{ color: theme.colors.bodyColor }}
+                    >
+                      Description:
+                    </span>
+                    <p
+                      className="report-description"
+                      style={{ color: theme.colors.bodyColor }}
+                    >
+                      {report.description}
+                    </p>
+                  </div>
+
+                  {/* Reported On */}
+                  <div className="report-footer">
+                    <p
+                      className="report-footer-text"
+                      style={{ color: theme.colors.textMuted }}
+                    >
+                      Reported on {report.reportedOn} by {report.reportedBy}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </CModalBody>

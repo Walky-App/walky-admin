@@ -1,68 +1,38 @@
 import React, { useState } from "react";
-
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import "./IdeasManager.css";
-import { IdeaData, IdeasTable } from "../components/IdeasTable/IdeasTable";
+import { IdeasTable } from "../components/IdeasTable/IdeasTable";
 import { SearchInput } from "../../../components-v2";
-
-// Mock data - replace with API call
-const mockIdeas: IdeaData[] = [
-  {
-    id: "1",
-    ideaTitle: "Children's Application",
-    owner: {
-      name: "Becky",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/ad6fd3e4-fd5c-4025-b613-e25336e7ceda",
-    },
-    studentId: "166g...fjhsgt",
-    collaborated: 10,
-    creationDate: "Oct 7, 2025",
-    creationTime: "12:45",
-  },
-  {
-    id: "2",
-    ideaTitle: "Form a Band",
-    owner: {
-      name: "Jackie",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/57cdf5bf-3b9a-44e6-9bf1-0dcc9a5929f1",
-    },
-    studentId: "166g...fjhsgt",
-    collaborated: 8,
-    creationDate: "Oct 7, 2025",
-    creationTime: "12:45",
-    isFlagged: true,
-    flagReason:
-      "Idea description includes spam or promotional content that is not relevant to the campus community.",
-  },
-  {
-    id: "3",
-    ideaTitle: "Language Exchange",
-    owner: {
-      name: "Mariana",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/2787b2ef-9d4e-400a-a571-0d9e810469d7",
-    },
-    studentId: "166g...fjhsgt",
-    collaborated: 3,
-    creationDate: "Oct 7, 2025",
-    creationTime: "12:45",
-  },
-];
 
 export const IdeasManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredIdeas = mockIdeas.filter((idea) => {
-    const matchesSearch = idea.ideaTitle
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return matchesSearch;
+  const { data: ideasData, isLoading } = useQuery({
+    queryKey: ['ideas', currentPage, searchQuery],
+    queryFn: () => apiClient.api.adminV2IdeasList({ page: currentPage, limit: 10, search: searchQuery }),
   });
 
-  const totalPages = Math.ceil(filteredIdeas.length / 10);
+  const filteredIdeas = (ideasData?.data.data || []).map((idea: any) => ({
+    id: idea.id,
+    ideaTitle: idea.ideaTitle,
+    owner: idea.owner,
+    studentId: idea.studentId,
+    collaborated: idea.collaborated,
+    creationDate: idea.creationDate,
+    creationTime: idea.creationTime,
+    isFlagged: idea.isFlagged,
+    flagReason: idea.flagReason,
+  }));
+
+  const totalPages = Math.ceil((ideasData?.data.total || 0) / 10);
   const startEntry = (currentPage - 1) * 10 + 1;
+  const totalEntries = ideasData?.data.total || 0;
+
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   return (
     <main className="ideas-manager-container">
@@ -98,7 +68,7 @@ export const IdeasManager: React.FC = () => {
 
           <div className="ideas-manager-pagination">
             <p className="ideas-manager-pagination-info">
-              Showing {startEntry} of {filteredIdeas.length} entries
+              Showing {startEntry} of {totalEntries} entries
             </p>
             <div className="ideas-manager-pagination-controls">
               <button

@@ -1,4 +1,4 @@
-import API from '../API';
+import { apiClient } from '../API';
 
 export interface SyncResult {
   campus_id: string;
@@ -64,6 +64,10 @@ export interface CampusBoundaryPreview {
   center: {
     lat: number;
     lng: number;
+    center: {
+      lat: number;
+      lng: number;
+    };
   };
   area_sqm: number;
   area_acres: number;
@@ -73,19 +77,13 @@ export interface CampusBoundaryPreview {
 export const campusSyncService = {
   // Trigger sync for a specific campus
   syncCampus: async (campusId: string): Promise<SyncResult> => {
-    const response = await API.post(
-      `/admin/campus-sync/sync/${campusId}`,
-      {}
-    );
+    const response = await apiClient.api.adminCampusSyncSyncCreate(campusId, {}) as any;
     return response.data.data;
   },
 
   // Trigger sync for all campuses
   syncAllCampuses: async (): Promise<{ summary: { total: number; totalPlacesAdded: number; totalPlacesUpdated: number; totalPlacesRemoved: number }; results: SyncResult[] }> => {
-    const response = await API.post(
-      `/admin/campus-sync/sync-all`,
-      {}
-    );
+    const response = await apiClient.api.adminCampusSyncSyncAllCreate() as any;
     return response.data.data;
   },
 
@@ -96,28 +94,19 @@ export const campusSyncService = {
     limit?: number;
     offset?: number;
   }): Promise<{ logs: SyncLog[]; pagination: { total: number; limit: number; offset: number } }> => {
-    const response = await API.get(
-      `/admin/campus-sync/logs`,
-      {
-        params
-      }
-    );
+    const response = await apiClient.api.adminCampusSyncLogsList(params as any) as any;
     return response.data.data;
   },
 
   // Get campuses with sync status
   getCampusesWithSyncStatus: async (): Promise<CampusSyncStatus[]> => {
-    const response = await API.get(
-      `/admin/campus-sync/campuses`
-    );
+    const response = await apiClient.api.adminCampusSyncCampusesList() as any;
     return response.data.data;
   },
 
   // Preview campus boundary and search points
   previewCampusBoundary: async (campusId: string): Promise<CampusBoundaryPreview> => {
-    const response = await API.get(
-      `/admin/campus-sync/campus/${campusId}/preview`
-    );
+    const response = await apiClient.api.adminCampusSyncCampusPreviewList(campusId) as any;
     return response.data.data;
   }
 };

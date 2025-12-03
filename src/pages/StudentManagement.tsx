@@ -36,15 +36,16 @@ import {
 import CIcon from '@coreui/icons-react'
 import {
   cilSearch,
-  
-  
+
+
   cilMagnifyingGlass,
   cilX,
-  
+
 } from '@coreui/icons'
 import { useTheme } from '../hooks/useTheme'
 import { useSchool } from '../contexts/SchoolContext'
-import API from '../API'
+import { apiClient } from '../API'
+import { CopyableId } from '../components/CopyableId'
 
 interface Student {
   _id: string
@@ -90,14 +91,12 @@ const StudentManagement = () => {
     console.log('👥 StudentManagement: Fetching students for school:', selectedSchool?._id || 'all schools')
     setLoading(true)
     try {
-      const response = await API.get('/admin/analytics/students', {
-        params: {
-          page: currentPage,
-          limit: studentsPerPage,
-          search: searchTerm,
-          status: statusFilter === 'all' ? undefined : statusFilter,
-        },
-      })
+      const response = await apiClient.api.adminAnalyticsStudentsList({
+        page: currentPage,
+        limit: studentsPerPage,
+        search: searchTerm,
+        status: statusFilter as any,
+      }) as any
 
       setStudents(response.data.students)
       setTotalPages(response.data.pagination.pages)
@@ -392,6 +391,9 @@ const StudentManagement = () => {
                   <p className="mb-1" style={{ color: '#6B7280' }}>
                     {selectedStudent.email}
                   </p>
+                  <div className="mb-2">
+                    <CopyableId id={selectedStudent._id} />
+                  </div>
                   <div className="d-flex gap-2">
                     <CBadge color={selectedStudent.isActive ? 'success' : 'secondary'}>
                       {selectedStudent.isActive ? 'Active' : 'Inactive'}

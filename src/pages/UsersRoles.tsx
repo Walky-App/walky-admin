@@ -92,7 +92,7 @@ const UsersRoles: React.FC = () => {
     },
     onError: (error) => {
       console.error("Failed to assign role:", error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       alert((error as any)?.response?.data?.message || "Failed to assign role. Please try again.");
     },
   });
@@ -109,7 +109,7 @@ const UsersRoles: React.FC = () => {
     },
     onError: (error) => {
       console.error("Failed to remove role:", error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       alert((error as any)?.response?.data?.message || "Failed to remove role. Please try again.");
     },
   });

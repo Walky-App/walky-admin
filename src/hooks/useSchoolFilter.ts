@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSchool } from '../contexts/SchoolContext';
-import API from '../API';
+import { apiClient } from '../API';
 
 /**
  * Hook to automatically add school_id to API requests and refetch data when school changes
@@ -16,7 +16,7 @@ export const useSchoolFilter = () => {
 
   useEffect(() => {
     // Add request interceptor
-    const requestInterceptor = API.interceptors.request.use(
+    const requestInterceptor = apiClient.http.instance.interceptors.request.use(
       (config) => {
         // Only add school_id if a school is selected
         if (schoolId) {
@@ -65,7 +65,7 @@ export const useSchoolFilter = () => {
 
     // Cleanup interceptor on unmount or when school ID changes
     return () => {
-      API.interceptors.request.eject(requestInterceptor);
+      apiClient.http.instance.interceptors.request.eject(requestInterceptor);
     };
   }, [schoolId, queryClient]);
 

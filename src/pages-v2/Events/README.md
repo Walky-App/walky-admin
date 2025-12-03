@@ -82,8 +82,8 @@ import { EventsManager } from "../pages-v2/Events";
 
 ## TODO
 
-- [ ] Connect to real API
-- [ ] Implement Calendar view
+- [x] Connect to real API
+- [x] Implement Calendar view
 - [ ] Add create event functionality
 - [ ] Add edit event modal
 - [ ] Add delete confirmation modal

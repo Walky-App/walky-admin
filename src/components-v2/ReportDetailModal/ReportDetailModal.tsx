@@ -20,7 +20,6 @@ export type ReportStatus =
   | "Resolved"
   | "Dismissed";
 export type SafetyTab = "ban" | "report" | "block";
-export type ModalView = "report" | "ban" | "deactivate";
 
 interface ReportDetailModalProps {
   isOpen: boolean;
@@ -110,7 +109,8 @@ interface ReportDetailModalProps {
   onStatusChange?: (newStatus: ReportStatus) => void;
   onNoteRequired?: (newStatus: ReportStatus) => void;
   onDeactivateUser?: () => void;
-  onBanUser?: () => void;
+  onBanUser?: (duration: string, reason: string, resolveReports: boolean) => void;
+  isLoading?: boolean;
 }
 
 export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
@@ -120,39 +120,27 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   reportData,
   onStatusChange,
   onNoteRequired,
+  onDeactivateUser,
+  onBanUser,
+  isLoading,
 }) => {
   const [activeTab, setActiveTab] = useState<SafetyTab>("ban");
-  const [currentView, setCurrentView] = useState<ModalView>("report");
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isBanModalOpen, setIsBanModalOpen] = useState(false);
 
   const handleDeactivateUser = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("deactivate");
-      setIsTransitioning(false);
-    }, 300);
+    setIsDeactivateModalOpen(true);
   };
 
   const handleBanUser = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("ban");
-      setIsTransitioning(false);
-    }, 300);
-  };
-
-  const handleBackToReport = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("report");
-      setIsTransitioning(false);
-    }, 300);
+    setIsBanModalOpen(true);
   };
 
   const handleDeactivateConfirm = () => {
-    // Implementar lógica de deactivate
-    console.log("User deactivated:", reportData.associatedUser.name);
-    handleBackToReport();
+    if (onDeactivateUser) {
+      onDeactivateUser();
+    }
+    setIsDeactivateModalOpen(false);
   };
 
   const handleBanConfirm = (
@@ -160,21 +148,10 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     reason: string,
     resolveReports: boolean
   ) => {
-    // Implementar lógica de ban
-    console.log(
-      "User banned:",
-      reportData.associatedUser.name,
-      duration,
-      reason,
-      resolveReports
-    );
-    handleBackToReport();
-  };
-
-  const handleModalClose = () => {
-    setCurrentView("report");
-    setIsTransitioning(false);
-    onClose();
+    if (onBanUser) {
+      onBanUser(duration, reason, resolveReports);
+    }
+    setIsBanModalOpen(false);
   };
 
   const renderReasonChip = (
@@ -485,8 +462,8 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   const userStatusMessage = reportData.associatedUser.isBanned
     ? "This user is currently banned"
     : reportData.associatedUser.isDeactivated
-    ? "This user is currently deactivated"
-    : null;
+      ? "This user is currently deactivated"
+      : null;
 
   const buttonsDisabled =
     reportData.associatedUser.isBanned ||
@@ -496,7 +473,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     <>
       <CModal
         visible={isOpen}
-        onClose={handleModalClose}
+        onClose={onClose}
         size="xl"
         alignment="center"
         className="report-detail-modal"
@@ -505,19 +482,18 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
         <CModalBody className="report-detail-modal-body">
           <button
             className="close-button"
-            onClick={handleModalClose}
+            onClick={onClose}
             data-testid="report-detail-modal-close-btn"
             aria-label="Close modal"
           >
             <AssetIcon name="close-button" size={24} />
           </button>
 
-          {/* Report View */}
-          <div
-            className={`report-view-container ${
-              currentView === "report" ? "view-active" : "view-hidden"
-            } ${isTransitioning ? "view-transitioning" : ""}`}
-          >
+          {isLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', fontSize: '1.2rem', color: '#666' }}>
+              Loading report details...
+            </div>
+          ) : (
             <div className="modal-content-wrapper">
               {/* Associated User */}
               <div className="associated-user-section">
@@ -605,10 +581,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
                   <div className="rdm-report-reason-row">
                     <span className="rdm-label">Reason:</span>
-                    {renderReasonChip(
-                      reportData.reason,
-                      reportData.reasonColor
-                    )}
+                    {renderReasonChip(reportData.reason, reportData.reasonColor)}
                   </div>
 
                   <div className="rdm-report-date-row">
@@ -670,49 +643,31 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                 <button
                   className="close-footer-button"
                   data-testid="report-detail-close-footer-button"
-                  onClick={handleModalClose}
+                  onClick={onClose}
                 >
                   Close
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* Ban View */}
-          <div
-            className={`modal-view-container ${
-              currentView === "ban" ? "view-active" : "view-hidden"
-            } ${isTransitioning ? "view-transitioning" : ""}`}
-          >
-            <div className="report-detail-embedded-wrapper">
-              <BanUserModal
-                visible={true}
-                onClose={handleBackToReport}
-                onConfirm={handleBanConfirm}
-                userName={reportData.associatedUser.name}
-                embedded={true}
-              />
-            </div>
-          </div>
-
-          {/* Deactivate View */}
-          <div
-            className={`modal-view-container ${
-              currentView === "deactivate" ? "view-active" : "view-hidden"
-            } ${isTransitioning ? "view-transitioning" : ""}`}
-          >
-            <div className="report-detail-embedded-wrapper">
-              <DeactivateUserModal
-                visible={true}
-                onClose={handleBackToReport}
-                onConfirm={handleDeactivateConfirm}
-                userName={reportData.associatedUser.name}
-                embedded={true}
-              />
-            </div>
-          </div>
+          )}
         </CModalBody>
       </CModal>
+
+      {/* Deactivate User Modal */}
+      <DeactivateUserModal
+        visible={isDeactivateModalOpen}
+        onClose={() => setIsDeactivateModalOpen(false)}
+        onConfirm={handleDeactivateConfirm}
+        userName={reportData.associatedUser.name}
+      />
+
+      {/* Ban User Modal */}
+      <BanUserModal
+        visible={isBanModalOpen}
+        onClose={() => setIsBanModalOpen(false)}
+        onConfirm={handleBanConfirm}
+        userName={reportData.associatedUser.name}
+      />
     </>
   );
 };

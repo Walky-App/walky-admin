@@ -10,6 +10,9 @@ import {
 import { StatsCard } from "../components/StatsCard";
 import "./DisengagedStudents.css";
 
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
+
 interface DisengagedStudent {
   id: string;
   name: string;
@@ -27,40 +30,39 @@ export const DisengagedStudents: React.FC = () => {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [currentPage] = useState(1);
+  const entriesPerPage = 10;
 
-  // Mock data
-  const mockStudents: DisengagedStudent[] = [
-    {
-      id: "1",
-      name: "Austin",
-      avatar: "A",
-      peers: 0,
-      ignoredInvitations: 10,
-      memberSince: "Sep 28, 2025",
-      email: "Austin@FIU.edu.co",
-      reported: false,
-    },
-    {
-      id: "2",
-      name: "Leo",
-      avatar: "L",
-      peers: 1,
-      ignoredInvitations: 15,
-      memberSince: "Sep 28, 2025",
-      email: "Leo@FIU.edu.co",
-      reported: true,
-    },
-    {
-      id: "3",
-      name: "Natasha",
-      avatar: "N",
-      peers: 1,
-      ignoredInvitations: 12,
-      memberSince: "Sep 28, 2025",
-      email: "Natasha@FIU.edu.co",
-      reported: false,
-    },
-  ];
+  const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
+    queryKey: ['students', currentPage, 'disengaged'],
+    queryFn: () => apiClient.api.adminV2StudentsList({
+      page: currentPage,
+      limit: entriesPerPage,
+      status: 'disengaged'
+    }),
+  });
+
+  const { data: statsData, isLoading: isStatsLoading } = useQuery({
+    queryKey: ['studentStats'],
+    queryFn: () => apiClient.api.adminV2StudentsStatsList(),
+  });
+
+  const isLoading = isStudentsLoading || isStatsLoading;
+
+  const students: DisengagedStudent[] = (studentsData?.data.data || []).map((student: any) => ({
+    id: student.id,
+    name: student.name,
+    avatar: student.avatar,
+    peers: student.peers || 0,
+    ignoredInvitations: student.ignoredInvitations || 0,
+    memberSince: student.memberSince,
+    email: student.email,
+    reported: student.isFlagged || false,
+  }));
+
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   const handleSendOutreach = async (student: DisengagedStudent) => {
     try {
@@ -84,8 +86,31 @@ export const DisengagedStudents: React.FC = () => {
     setSelectedStudent(null);
   };
 
-  const handleExport = () => {
-    console.log("Export clicked");
+  const handleExport = async () => {
+    try {
+      const response = await apiClient.http.request({
+        path: '/api/admin/v2/students',
+        method: 'GET',
+        query: {
+          status: 'disengaged',
+          export: 'true'
+        },
+        format: 'blob',
+      });
+
+      // @ts-ignore
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `disengaged_students.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+      setToastMessage("Export failed");
+      setShowToast(true);
+    }
   };
 
   return (
@@ -94,7 +119,7 @@ export const DisengagedStudents: React.FC = () => {
       <div className="disengaged-students-stats">
         <StatsCard
           title="Total students"
-          value="264"
+          value={statsData?.data.totalStudents?.toString() || "0"}
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
@@ -106,7 +131,7 @@ export const DisengagedStudents: React.FC = () => {
         />
         <StatsCard
           title="Disengaged students"
-          value="3"
+          value={studentsData?.data.total?.toString() || "0"}
           // @ts-ignore
           iconName="x-icon"
           iconBgColor="#FCE9E9"
@@ -149,19 +174,18 @@ export const DisengagedStudents: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {mockStudents.map((student, index) => (
+              {students.map((student, index) => (
                 <React.Fragment key={student.id}>
                   <tr className="disengaged-table-row">
                     <td>
                       <div className="disengaged-student-info">
                         <div className="disengaged-student-avatar">
-                          {student.avatar &&
-                          !student.avatar.match(/^https?:/) ? (
-                            <div className="disengaged-student-avatar-placeholder">
-                              {student.avatar}
-                            </div>
-                          ) : (
+                          {student.avatar && student.avatar.match(/^https?:/) ? (
                             <img src={student.avatar} alt={student.name} />
+                          ) : (
+                            <div className="disengaged-student-avatar-placeholder">
+                              {student.avatar || student.name.charAt(0)}
+                            </div>
                           )}
                         </div>
                         <span
@@ -214,7 +238,7 @@ export const DisengagedStudents: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                  {index < mockStudents.length - 1 && (
+                  {index < students.length - 1 && (
                     <tr className="disengaged-divider-row">
                       <td colSpan={7}>
                         <Divider />
@@ -233,15 +257,15 @@ export const DisengagedStudents: React.FC = () => {
         student={
           selectedStudent
             ? ({
-                userId: selectedStudent.id,
-                name: selectedStudent.name,
-                email: selectedStudent.email,
-                avatar: selectedStudent.avatar,
-                status: "disengaged" as const,
-                interests: [],
-                memberSince: selectedStudent.memberSince,
-                onlineLast: "-",
-              } as unknown as StudentProfileData)
+              userId: selectedStudent.id,
+              name: selectedStudent.name,
+              email: selectedStudent.email,
+              avatar: selectedStudent.avatar,
+              status: "disengaged" as const,
+              interests: [],
+              memberSince: selectedStudent.memberSince,
+              onlineLast: "-",
+            } as unknown as StudentProfileData)
             : null
         }
         onClose={handleCloseProfile}

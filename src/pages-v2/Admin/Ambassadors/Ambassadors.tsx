@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AssetIcon,
   DeleteAmbassadorModal,
@@ -6,8 +6,10 @@ import {
   CustomToast,
   Divider,
 } from "../../../components-v2";
+import { CopyableId } from "../../../components-v2/CopyableId";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
+import { apiClient } from "../../../API";
 
 interface AmbassadorData {
   id: string;
@@ -29,7 +31,7 @@ interface Student {
 
 export const Ambassadors: React.FC = () => {
   const { theme } = useTheme();
-  const [currentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ambassadorToDelete, setAmbassadorToDelete] = useState<{
     id: string;
@@ -38,40 +40,43 @@ export const Ambassadors: React.FC = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with real data from API
-  const mockAmbassadors: AmbassadorData[] = [
-    {
-      id: "1",
-      studentId: "166g...fjhsgt",
-      name: "Anni",
-      avatar: "",
-      major: "Biology",
-      ambassadorSince: "Oct 7, 2025",
-      memberSince: "Nov 10, 2024",
-      status: "Active",
-    },
-    {
-      id: "2",
-      studentId: "166g...fjhsgt",
-      name: "Ben",
-      avatar: "https://via.placeholder.com/48",
-      major: "Biology",
-      ambassadorSince: "Oct 7, 2025",
-      memberSince: "Nov 10, 2024",
-      status: "Active",
-    },
-    {
-      id: "3",
-      studentId: "166g...fjhsgt",
-      name: "Austin",
-      avatar: "",
-      major: "Biology",
-      ambassadorSince: "Oct 7, 2025",
-      memberSince: "Nov 10, 2024",
-      status: "Active",
-    },
-  ];
+  // Ambassadors state
+  const [ambassadors, setAmbassadors] = useState<AmbassadorData[]>([]);
+
+  const fetchAmbassadors = async () => {
+    setLoading(true);
+    try {
+      const res = await apiClient.ambassadors.ambassadorsList({
+        page: currentPage,
+        limit: 10,
+      } as any) as any;
+
+      const data = res.data.data || [];
+
+      const transformedAmbassadors = data.map((a: any) => ({
+        id: a._id,
+        studentId: a._id || "Unknown",
+        name: a.name || "Unknown",
+        avatar: a.avatar_url || "",
+        major: a.major || "Unknown",
+        ambassadorSince: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown",
+        memberSince: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown",
+        status: a.is_active ? "Active" : "Inactive",
+      }));
+
+      setAmbassadors(transformedAmbassadors);
+    } catch (error) {
+      console.error("Failed to fetch ambassadors:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAmbassadors();
+  }, [currentPage]);
 
   // Get initials from name
   const getInitials = (name: string) => {
@@ -86,38 +91,63 @@ export const Ambassadors: React.FC = () => {
     setAddModalOpen(true);
   };
 
-  const confirmAddAmbassadors = (selectedStudents: Student[]) => {
-    // TODO: Implement actual add API call
-    console.log("Adding ambassadors:", selectedStudents);
-    setToastMessage(
-      `${selectedStudents.length} ambassador${
-        selectedStudents.length > 1 ? "s" : ""
-      } added successfully`
-    );
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+  const confirmAddAmbassadors = async (selectedStudents: Student[]) => {
+    try {
+      // Add each selected student as ambassador
+      await Promise.all(selectedStudents.map(student =>
+        apiClient.ambassadors.ambassadorsCreate({ user_id: student.id } as any)
+      ));
+
+      console.log("Adding ambassadors:", selectedStudents);
+      setToastMessage(
+        `${selectedStudents.length} ambassador${selectedStudents.length > 1 ? "s" : ""
+        } added successfully`
+      );
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+
+      // Refresh list
+      fetchAmbassadors();
+    } catch (error) {
+      console.error("Failed to add ambassadors:", error);
+      setToastMessage("Failed to add ambassadors");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const handleDeleteAmbassador = (id: string) => {
-    const ambassador = mockAmbassadors.find((a) => a.id === id);
+    const ambassador = ambassadors.find((a) => a.id === id);
     if (ambassador) {
       setAmbassadorToDelete({ id: ambassador.id, name: ambassador.name });
       setDeleteModalOpen(true);
     }
   };
 
-  const confirmDeleteAmbassador = () => {
+  const confirmDeleteAmbassador = async () => {
     if (ambassadorToDelete) {
-      // TODO: Implement actual delete API call
-      console.log("Deleting ambassador:", ambassadorToDelete.id);
-      setToastMessage("Ambassador deleted successfully");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      try {
+        await apiClient.ambassadors.ambassadorsDelete(ambassadorToDelete.id);
+        console.log("Deleting ambassador:", ambassadorToDelete.id);
+        setToastMessage("Ambassador deleted successfully");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+
+        // Refresh list
+        fetchAmbassadors();
+      } catch (error) {
+        console.error("Failed to delete ambassador:", error);
+        setToastMessage("Failed to delete ambassador");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      } finally {
+        setDeleteModalOpen(false);
+        setAmbassadorToDelete(null);
+      }
     }
   };
 
-  const totalAmbassadors = mockAmbassadors.length;
-  const activeAmbassadors = mockAmbassadors.filter(
+  const activeAmbassadors = ambassadors.filter(
     (a) => a.status === "Active"
   ).length;
 
@@ -190,90 +220,88 @@ export const Ambassadors: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {mockAmbassadors.map((ambassador, index) => (
-                <React.Fragment key={ambassador.id}>
-                  <tr className="ambassador-row">
-                    {/* Student ID Column */}
-                    <td className="ambassador-student-id">
-                      <div className="student-id-wrapper">
-                        <div className="student-id">{ambassador.studentId}</div>
-                        <button
-                          className="copy-button"
-                          data-testid="copy-ambassador-id-btn"
-                          title="Copy Student ID"
-                          onClick={() => {
-                            navigator.clipboard.writeText(ambassador.studentId);
-                            setToastMessage("Student ID copied to clipboard");
-                            setShowToast(true);
-                            setTimeout(() => setShowToast(false), 3000);
-                          }}
+              {loading ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
+                </tr>
+              ) : ambassadors.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>No ambassadors found</td>
+                </tr>
+              ) : (
+                ambassadors.map((ambassador, index) => (
+                  <React.Fragment key={ambassador.id}>
+                    <tr className="ambassador-row">
+                      {/* Student ID Column */}
+                      <td className="ambassador-student-id">
+                        <CopyableId
+                          id={ambassador.studentId}
+                          label="Student ID"
+                          testId="copy-ambassador-id"
+                        />
+                      </td>
+
+                      {/* Ambassador Column */}
+                      <td className="ambassador-name-cell">
+                        <div className="ambassador-info">
+                          {ambassador.avatar ? (
+                            <img
+                              src={ambassador.avatar}
+                              alt={ambassador.name}
+                              className="ambassador-avatar"
+                            />
+                          ) : (
+                            <div className="ambassador-avatar-placeholder">
+                              {getInitials(ambassador.name)}
+                            </div>
+                          )}
+                          <span className="ambassador-name">
+                            {ambassador.name}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Major Column */}
+                      <td className="ambassador-major">{ambassador.major}</td>
+
+                      {/* Ambassador Since Column */}
+                      <td className="ambassador-since">
+                        {ambassador.ambassadorSince}
+                      </td>
+
+                      {/* Member Since Column */}
+                      <td className="member-since">{ambassador.memberSince}</td>
+
+                      {/* Status Column */}
+                      <td className="ambassador-status">
+                        <span
+                          className={`status-badge ${ambassador.status.toLowerCase()}`}
                         >
-                          <AssetIcon name="copy-icon" size={16} />
-                        </button>
-                      </div>
-                    </td>
-
-                    {/* Ambassador Column */}
-                    <td className="ambassador-name-cell">
-                      <div className="ambassador-info">
-                        {ambassador.avatar ? (
-                          <img
-                            src={ambassador.avatar}
-                            alt={ambassador.name}
-                            className="ambassador-avatar"
-                          />
-                        ) : (
-                          <div className="ambassador-avatar-placeholder">
-                            {getInitials(ambassador.name)}
-                          </div>
-                        )}
-                        <span className="ambassador-name">
-                          {ambassador.name}
+                          {ambassador.status}
                         </span>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Major Column */}
-                    <td className="ambassador-major">{ambassador.major}</td>
-
-                    {/* Ambassador Since Column */}
-                    <td className="ambassador-since">
-                      {ambassador.ambassadorSince}
-                    </td>
-
-                    {/* Member Since Column */}
-                    <td className="member-since">{ambassador.memberSince}</td>
-
-                    {/* Status Column */}
-                    <td className="ambassador-status">
-                      <span
-                        className={`status-badge ${ambassador.status.toLowerCase()}`}
-                      >
-                        {ambassador.status}
-                      </span>
-                    </td>
-
-                    {/* Actions Column */}
-                    <td className="ambassador-actions">
-                      <button
-                        data-testid="delete-ambassador-btn"
-                        className="delete-button"
-                        onClick={() => handleDeleteAmbassador(ambassador.id)}
-                        title="Delete ambassador"
-                      >
-                        <AssetIcon name="delete-icon" size={24} />
-                      </button>
-                    </td>
-                  </tr>
-                  {index < mockAmbassadors.length - 1 && (
-                    <tr className="ambassador-divider-row">
-                      <td colSpan={7}>
-                        <Divider />
+                      {/* Actions Column */}
+                      <td className="ambassador-actions">
+                        <button
+                          data-testid="delete-ambassador-btn"
+                          className="delete-button"
+                          onClick={() => handleDeleteAmbassador(ambassador.id)}
+                          title="Delete ambassador"
+                        >
+                          <AssetIcon name="delete-icon" size={24} />
+                        </button>
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
+                    {index < ambassadors.length - 1 && (
+                      <tr className="ambassador-divider-row">
+                        <td colSpan={7}>
+                          <Divider />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                )))}
             </tbody>
           </table>
         </div>
@@ -281,13 +309,14 @@ export const Ambassadors: React.FC = () => {
         {/* Pagination */}
         <div className="pagination-container">
           <p className="pagination-info">
-            Showing {mockAmbassadors.length} of {totalAmbassadors} entries
+            Showing {ambassadors.length} entries
           </p>
           <div className="pagination-controls">
             <button
               data-testid="pagination-prev-btn"
               className="pagination-button"
-              disabled
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
             >
               Previous
             </button>
@@ -295,7 +324,8 @@ export const Ambassadors: React.FC = () => {
             <button
               data-testid="pagination-next-btn"
               className="pagination-button"
-              disabled
+              disabled={ambassadors.length < 10} // Simple check for next page availability
+              onClick={() => setCurrentPage(currentPage + 1)}
             >
               Next
             </button>

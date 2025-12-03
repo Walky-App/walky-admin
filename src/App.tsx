@@ -19,7 +19,7 @@ import { CChartBar, CChartLine } from "@coreui/react-chartjs";
 
 import { useState, useEffect } from "react";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import { useTheme } from "./hooks/useTheme";
 
@@ -63,8 +63,8 @@ import "./styles/visibility-fixes.css";
 
 import MainChart from "./components/MainChart.tsx";
 
-import API from "./API/index.ts";
-import Login from "./pages/Login.tsx";
+import { apiClient } from "./API/index.ts";
+
 import LoginV2 from "./pages-v2/LoginV2/LoginV2";
 import { useSchool } from "./contexts/SchoolContext";
 import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2/RecoverPasswordV2.tsx";
@@ -199,7 +199,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
     const getIdeasData = async () => {
       try {
-        const response = await API.get("/ideas/count?groupBy=month");
+        const response = await apiClient.api.adminAnalyticsIdeasCountList({
+          query: { groupBy: "month" }
+        } as any) as any;
 
         if (response?.data?.monthlyData) {
           const monthlyData = response.data.monthlyData as IdeaMonthData[];
@@ -250,9 +252,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
     const getEventsData = async () => {
       try {
-        const response = await API.get(
-          "/events/eventEngagement-count?timeFrame=last6months"
-        );
+        const response = await apiClient.api.adminAnalyticsEventsCountList({
+          query: { timeFrame: "last6months" }
+        } as any) as any;
 
         if (response?.data?.data) {
           // The data array contains monthly data
@@ -313,7 +315,9 @@ const Dashboard = ({ theme }: DashboardProps) => {
     const getWalksData = async () => {
       try {
         // Use the groupBy=month parameter to get monthly data
-        const response = await API.get("/walks/count?groupBy=month");
+        const response = await apiClient.api.adminAnalyticsWalksCountList({
+          query: { groupBy: "month" }
+        } as any) as any;
 
         if (response?.data?.monthlyData) {
           // Get the last 6 months of data (or fewer if less data is available)
@@ -383,7 +387,7 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
   const tooltipPlugin = {
     id: "customTooltip",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     afterDraw: (chart: any) => {
       const tooltipModel = chart.tooltip;
 
@@ -436,12 +440,10 @@ const Dashboard = ({ theme }: DashboardProps) => {
 
       const position = chart.canvas.getBoundingClientRect();
       tooltipEl.style.opacity = "1";
-      tooltipEl.style.left = `${
-        position.left + window.pageXOffset + tooltipModel.caretX
-      }px`;
-      tooltipEl.style.top = `${
-        position.top + window.pageYOffset + tooltipModel.caretY
-      }px`;
+      tooltipEl.style.left = `${position.left + window.pageXOffset + tooltipModel.caretX
+        }px`;
+      tooltipEl.style.top = `${position.top + window.pageYOffset + tooltipModel.caretY
+        }px`;
     },
   };
 
@@ -1173,18 +1175,20 @@ const Dashboard = ({ theme }: DashboardProps) => {
   );
 };
 
+// Component to handle /v2/* redirects
+const V2RedirectHandler = () => {
+  const pathname = window.location.pathname;
+  const newPath = pathname.replace('/v2', '');
+  return <Navigate to={newPath} replace />;
+};
+
 function App() {
   const { theme } = useTheme();
   useEffect(() => {
     document.body.classList.toggle("dark-mode", theme.isDark);
   }, [theme.isDark]);
 
-  // Keep track of login state for the Login component callback
-  const [, setIsLoggedIn] = useState(() => {
-    // Initialize state based on token presence
-    const token = localStorage.getItem("token");
-    return !!token;
-  });
+
 
   // Define role constants for clarity
   const SUPER_ADMIN = ["super_admin"];
@@ -1208,25 +1212,24 @@ function App() {
   return (
     <Routes>
       {/* Public routes */}
-      <Route
-        path="/login"
-        element={<Login onLogin={() => setIsLoggedIn(true)} />}
-      />
+      <Route path="/login" element={<LoginV2 />} />
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/* V2 Auth Routes */}
-      <Route path="/login-v2" element={<LoginV2 />} />
       <Route path="/recover-password" element={<RecoverPasswordV2 />} />
 
-      {/* V2 Layout Routes - New Design System */}
-      <Route path="/v2/*" element={<V2Routes />} />
+      {/* Redirect old /v2/* paths to new root paths */}
+      <Route path="/v2/*" element={<V2RedirectHandler />} />
 
-      {/* Protected routes inside admin layout */}
+      {/* V2 Layout Routes - New Design System (Default) */}
+      <Route path="/*" element={<V2Routes />} />
+
+      {/* Legacy routes inside old admin layout */}
       <Route
-        path="*"
+        path="/legacy/*"
         element={
           <ExampleAdminLayout>
             <Routes>

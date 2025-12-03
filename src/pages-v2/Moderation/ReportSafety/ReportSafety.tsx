@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import "./ReportSafety.css";
 import {
   AssetIcon,
@@ -13,6 +15,8 @@ import {
   ReportDetailModal,
   Divider,
   FlagModal,
+  CustomToast,
+  BanUserModal,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
@@ -21,23 +25,25 @@ interface ReportData {
   id: string;
   description: string;
   studentId: string;
+  reportedItemId: string;
   reportDate: string;
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
   reasonTag:
-    | "Harmful / Unsafe Behavior"
-    | "Made Me Uncomfortable"
-    | "Spam"
-    | "Harassment";
+  | "Harmful / Unsafe Behavior"
+  | "Made Me Uncomfortable"
+  | "Spam"
+  | "Harassment";
   status: "Pending review" | "Under evaluation" | "Resolved" | "Dismissed";
   isFlagged?: boolean;
 }
 
 export const ReportSafety: React.FC = () => {
   const { theme } = useTheme();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("Pending review,Under evaluation");
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState<{
     reportId: string;
@@ -45,119 +51,107 @@ export const ReportSafety: React.FC = () => {
   } | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
+  const [selectedReportDetails, setSelectedReportDetails] = useState<any>(null);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
+  const [isBanModalOpen, setIsBanModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  // Mock data
-  const [reports, setReports] = useState<ReportData[]>([
-    {
-      id: "1",
-      description: "I'm concerned this person might be breaking the rules...",
-      studentId: "166g...fjhsgt",
-      reportDate: "Oct 7, 2025",
-      type: "Event",
-      reason: "Harmful / Unsafe Behavior",
-      reasonTag: "Harmful / Unsafe Behavior",
-      status: "Pending review",
-      isFlagged: true,
-    },
-    {
-      id: "2",
-      description: "This event contains inappropriate content",
-      studentId: "234h...klmnop",
-      reportDate: "Oct 6, 2025",
-      type: "Event",
-      reason: "Explicit / Nudity / Inappropriate",
-      reasonTag: "Harmful / Unsafe Behavior",
-      status: "Under evaluation",
-      isFlagged: false,
-    },
-    {
-      id: "3",
-      description: "Spam messages in this space",
-      studentId: "345j...qrstuv",
-      reportDate: "Oct 5, 2025",
-      type: "Space",
-      reason: "Spam, Fake Profile, or Misuse",
-      reasonTag: "Spam",
-      status: "Pending review",
-      isFlagged: true,
-    },
-    {
-      id: "5",
-      description: "I'm concerned this person might be breaking the rules...",
-      studentId: "166g...fjhsgt",
-      reportDate: "Oct 7, 2025",
-      type: "Message",
-      reason: "Made Me Uncomfortable",
-      reasonTag: "Made Me Uncomfortable",
-      status: "Under evaluation",
-      isFlagged: false,
-    },
-    {
-      id: "6",
-      description: "Received threatening messages from this user",
-      studentId: "567l...cdefgh",
-      reportDate: "Oct 3, 2025",
-      type: "Message",
-      reason: "Harassment / Threats",
-      reasonTag: "Harassment",
-      status: "Pending review",
-      isFlagged: true,
-    },
-    {
-      id: "7",
-      description: "This idea contains hate speech",
-      studentId: "678m...ijklmn",
-      reportDate: "Oct 2, 2025",
-      type: "Event",
-      reason: "Hate Speech / Offensive",
-      reasonTag: "Harmful / Unsafe Behavior",
-      status: "Under evaluation",
-      isFlagged: false,
-    },
-    {
-      id: "8",
-      description: "Duplicate event posted multiple times",
-      studentId: "789n...opqrst",
-      reportDate: "Oct 1, 2025",
-      type: "Event",
-      reason: "Duplicate Event",
-      reasonTag: "Spam",
-      status: "Pending review",
-      isFlagged: true,
-    },
-    {
-      id: "10",
-      description: "False information being spread in this space",
-      studentId: "901p...abcdef",
-      reportDate: "Sep 29, 2025",
-      type: "Space",
-      reason: "Misinformation (false or misleading)",
-      reasonTag: "Harmful / Unsafe Behavior",
-      status: "Under evaluation",
-      isFlagged: true,
-    },
-    {
-      id: "11",
-      description: "This idea contains inappropriate content",
-      studentId: "102q...rstuvw",
-      reportDate: "Sep 28, 2025",
-      type: "Idea",
-      reason: "Inappropriate or offensive",
-      reasonTag: "Harmful / Unsafe Behavior",
-      status: "Pending review",
-      isFlagged: false,
-    },
-  ]);
+  const { data: reportsData, isLoading: isReportsLoading, refetch } = useQuery({
+    queryKey: ['reports', currentPage, searchQuery, selectedTypes, selectedStatus],
+    queryFn: () => apiClient.api.adminV2ReportsList({
+      page: currentPage,
+      limit: 10,
+      search: searchQuery,
+      type: selectedTypes.join(','),
+      status: selectedStatus
+    }),
+  });
 
-  const handleStatusChange = (reportId: string, newStatus: string) => {
-    setReports((prevReports) =>
-      prevReports.map((report) =>
-        report.id === reportId
-          ? { ...report, status: newStatus as ReportData["status"] }
-          : report
-      )
-    );
+  const { data: statsData, isLoading: isStatsLoading } = useQuery({
+    queryKey: ['reportStats'],
+    queryFn: () => apiClient.api.adminV2ReportsStatsList(),
+  });
+
+  const deleteStudentMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      setToastMessage("User deactivated successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+    onError: (error) => {
+      console.error("Error deactivating user:", error);
+      setToastMessage("Error deactivating user");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const banStudentMutation = useMutation({
+    mutationFn: (data: { id: string; duration: number; reason: string }) =>
+      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, { lockDuration: data.duration, lockReason: data.reason } as any),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      setToastMessage("User banned successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+    onError: (error) => {
+      console.error("Error banning user:", error);
+      setToastMessage("Error banning user");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; type: string; reason: string }) => {
+      switch (data.type.toLowerCase()) {
+        case 'user': return apiClient.api.adminV2StudentsFlagCreate(data.id, { reason: data.reason });
+        case 'event': return apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason });
+        case 'idea': return apiClient.api.adminV2IdeasFlagCreate(data.id, { reason: data.reason });
+        case 'space': return apiClient.api.adminV2SpacesFlagCreate(data.id, { reason: data.reason });
+        default: throw new Error(`Cannot flag type: ${data.type}`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      setToastMessage("Item flagged successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setIsFlagModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error flagging item:", error);
+      setToastMessage("Error flagging item");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  });
+
+  const reports = (reportsData?.data.data || []).map((report: any) => ({
+    id: report.id,
+    description: report.description,
+    studentId: report.studentId,
+    reportedItemId: report.reportedItemId,
+    reportDate: report.reportDate,
+    type: report.type,
+    reason: report.reason,
+    reasonTag: report.reasonTag,
+    status: report.status,
+    isFlagged: report.isFlagged,
+  }));
+
+  const totalReports = statsData?.data.total || 0;
+  const pendingReports = statsData?.data.pending || 0;
+  const underEvaluationReports = statsData?.data.underEvaluation || 0;
+
+  const handleStatusChange = async (reportId: string, newStatus: string) => {
+    await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, { status: newStatus });
+    refetch();
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
@@ -165,9 +159,10 @@ export const ReportSafety: React.FC = () => {
     setIsNoteModalOpen(true);
   };
 
-  const handleNoteConfirm = (note: string) => {
+  const handleNoteConfirm = async (note: string) => {
     if (pendingStatusChange) {
-      handleStatusChange(
+      await apiClient.api.adminV2ReportsNoteCreate(pendingStatusChange.reportId, { note });
+      await handleStatusChange(
         pendingStatusChange.reportId,
         pendingStatusChange.newStatus
       );
@@ -181,20 +176,19 @@ export const ReportSafety: React.FC = () => {
     setPendingStatusChange(null);
   };
 
-  const filteredReports = reports.filter((report) => {
-    // Exclude Resolved and Dismissed from Report & Safety
-    if (report.status === "Resolved" || report.status === "Dismissed") {
-      return false;
+  const handleViewReport = async (report: ReportData) => {
+    try {
+      const response = await apiClient.api.adminV2ReportsDetail(report.id);
+      setSelectedReportDetails(response.data);
+      setSelectedReport(report);
+      setIsDetailModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching report details:", error);
+      setToastMessage("Error fetching report details");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     }
-    const matchesSearch = report.description
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesType =
-      selectedTypes.length === 0 || selectedTypes.includes(report.type);
-    const matchesStatus =
-      selectedStatus === "all" || report.status === selectedStatus;
-    return matchesSearch && matchesType && matchesStatus;
-  });
+  };
 
   const getReasonColor = (reason: string) => {
     switch (reason) {
@@ -211,15 +205,9 @@ export const ReportSafety: React.FC = () => {
     }
   };
 
-  const totalReports = reports.filter(
-    (r) => r.status !== "Resolved" && r.status !== "Dismissed"
-  ).length;
-  const pendingReports = reports.filter(
-    (r) => r.status === "Pending review"
-  ).length;
-  const underEvaluationReports = reports.filter(
-    (r) => r.status === "Under evaluation"
-  ).length;
+  if (isReportsLoading || isStatsLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   return (
     <main className="report-safety-page">
@@ -316,11 +304,11 @@ export const ReportSafety: React.FC = () => {
                 value={selectedStatus}
                 onChange={setSelectedStatus}
                 options={[
-                  { value: "all", label: "All status" },
+                  { value: "Pending review,Under evaluation", label: "All active" },
                   { value: "Pending review", label: "Pending review" },
                   { value: "Under evaluation", label: "Under evaluation" },
                 ]}
-                placeholder="All status"
+                placeholder="All active"
                 testId="status-filter"
                 ariaLabel="Filter by status"
               />
@@ -354,7 +342,7 @@ export const ReportSafety: React.FC = () => {
             <div className="content-space-divider" />
 
             <tbody>
-              {filteredReports.map((report, index) => {
+              {reports.map((report, index) => {
                 const reasonColors = getReasonColor(report.reasonTag);
                 return (
                   <React.Fragment key={report.id}>
@@ -373,10 +361,7 @@ export const ReportSafety: React.FC = () => {
                           <div className="report-content-wrapper">
                             <p
                               className="report-description"
-                              onClick={() => {
-                                setSelectedReport(report);
-                                setIsDetailModalOpen(true);
-                              }}
+                              onClick={() => handleViewReport(report)}
                             >
                               {report.description}
                             </p>
@@ -400,7 +385,7 @@ export const ReportSafety: React.FC = () => {
                             color: reasonColors.text,
                           }}
                         >
-                          {report.reasonTag.split("/").map((line, idx) => (
+                          {report.reasonTag.split("/").map((line: string, idx: number) => (
                             <span key={idx}>
                               {line}
                               {idx === 0 && "/"}
@@ -434,8 +419,7 @@ export const ReportSafety: React.FC = () => {
                               label: "Report details",
                               onClick: (e) => {
                                 e.stopPropagation();
-                                setSelectedReport(report);
-                                setIsDetailModalOpen(true);
+                                handleViewReport(report);
                               },
                             },
                             {
@@ -452,7 +436,7 @@ export const ReportSafety: React.FC = () => {
                         />
                       </td>
                     </tr>
-                    {index < filteredReports.length - 1 &&
+                    {index < reports.length - 1 &&
                       !report.isFlagged && (
                         <tr className="report-divider-row">
                           <td colSpan={5}>
@@ -466,6 +450,35 @@ export const ReportSafety: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        <div className="reports-pagination" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <p className="pagination-info">
+            Showing {reports.length} of {totalReports} entries
+          </p>
+          <div className="pagination-controls" style={{ display: 'flex', gap: '10px' }}>
+            <button
+              data-testid="report-safety-pagination-prev-btn"
+              className="pagination-btn"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: 'pointer' }}
+            >
+              Previous
+            </button>
+            <div className="pagination-page-number active" style={{ padding: '8px 16px', background: '#f0f0f0', borderRadius: '4px' }}>
+              <span>{currentPage}</span>
+            </div>
+            <button
+              data-testid="report-safety-pagination-next-btn"
+              className="pagination-btn"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={reports.length < 10}
+              style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: 'pointer' }}
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
 
       <WriteNoteModal
@@ -474,22 +487,22 @@ export const ReportSafety: React.FC = () => {
         onConfirm={handleNoteConfirm}
       />
 
-      {selectedReport && (
+      {selectedReport && selectedReportDetails && (
         <ReportDetailModal
           isOpen={isDetailModalOpen}
           onClose={() => {
             setIsDetailModalOpen(false);
             setSelectedReport(null);
+            setSelectedReportDetails(null);
           }}
           reportType={selectedReport.type as ReportType}
           reportData={{
             associatedUser: {
-              name: "Austin",
-              id: "166g...fjhsgt",
-              avatar:
-                "https://www.figma.com/api/mcp/asset/e83b2a68-fa91-4f81-99c7-4d3b01197ac8",
-              isBanned: false,
-              isDeactivated: false,
+              name: selectedReportDetails.reportedUser?.name || "Unknown",
+              id: selectedReportDetails.reportedUser?.id || "N/A",
+              avatar: selectedReportDetails.reportedUser?.avatar,
+              isBanned: selectedReportDetails.reportedUser?.isBanned || false,
+              isDeactivated: selectedReportDetails.reportedUser?.isDeactivated || false,
             },
             status: selectedReport.status as ReportStatus,
             reason: selectedReport.reason,
@@ -498,61 +511,34 @@ export const ReportSafety: React.FC = () => {
             contentId: selectedReport.id,
             description: selectedReport.description,
             reportingUser: {
-              name: "Jackie",
-              id: "166g...fjhsgt",
-              avatar:
-                "https://www.figma.com/api/mcp/asset/16f9b692-7d5e-4cff-b5dd-d15f87a0d1fc",
+              name: selectedReportDetails.reporter?.name || "Unknown",
+              id: selectedReportDetails.reporter?.id || "N/A",
+              avatar: selectedReportDetails.reporter?.avatar,
             },
             content: {
-              event:
-                selectedReport.type === "Event"
-                  ? {
-                      image:
-                        "https://www.figma.com/api/mcp/asset/faaf4e36-54ea-43fd-a9db-64987f8b6a57",
-                      date: "FEB 12, 2025 | 2:00 PM",
-                      title: "4v4 Basketball game",
-                      location: "S. Campus Basketball Courts",
-                    }
-                  : undefined,
-              space:
-                selectedReport.type === "Space"
-                  ? {
-                      image:
-                        "https://www.figma.com/api/mcp/asset/faaf4e36-54ea-43fd-a9db-64987f8b6a57",
-                      title: "Sisters of Unity",
-                      description: "Strength in sisterhood, power in unity.",
-                      category: "Sororities",
-                      memberCount: "1-10 Members",
-                    }
-                  : undefined,
-              idea:
-                selectedReport.type === "Idea"
-                  ? {
-                      title: "New Campus Initiative",
-                      tag: "Campus Life",
-                      description: "A proposal to improve student engagement",
-                      ideaBy: "Austin",
-                      avatar:
-                        "https://www.figma.com/api/mcp/asset/e83b2a68-fa91-4f81-99c7-4d3b01197ac8",
-                    }
-                  : undefined,
-              message:
-                selectedReport.type === "Message"
-                  ? {
-                      text: "top bothering me, you're annoying",
-                      timestamp: "Oct 7, 2025 - 12:45",
-                    }
-                  : undefined,
+              event: selectedReport.type === "Event" ? {
+                image: selectedReportDetails.content?.image_url,
+                date: selectedReportDetails.content?.date,
+                title: selectedReportDetails.content?.name,
+                location: selectedReportDetails.content?.location
+              } : undefined,
+              idea: selectedReport.type === "Idea" ? {
+                title: selectedReportDetails.content?.title,
+                tag: selectedReportDetails.content?.looking_for || "N/A",
+                description: selectedReportDetails.content?.description,
+                ideaBy: selectedReportDetails.reportedUser?.name || "Unknown",
+                avatar: selectedReportDetails.reportedUser?.avatar || "",
+              } : undefined,
+              space: selectedReport.type === "Space" ? {
+                title: selectedReportDetails.content?.name,
+                description: selectedReportDetails.content?.description,
+                image: selectedReportDetails.content?.image_url,
+                category: "Other", // Placeholder
+                memberCount: "0", // Placeholder
+              } : undefined,
             },
             safetyRecord: {
-              banHistory: [
-                {
-                  duration: "3 Day ban",
-                  reason: "Spam",
-                  bannedOn: "Banned on Oct 07, 2025 - 12:14",
-                  bannedBy: "Admin Name",
-                },
-              ],
+              banHistory: selectedReportDetails.reportedUser?.banHistory || [],
               reportHistory: [],
               blockHistory: [],
             },
@@ -567,21 +553,63 @@ export const ReportSafety: React.FC = () => {
               handleNoteRequired(selectedReport.id, newStatus);
             }
           }}
-          onDeactivateUser={() => console.log("Deactivate user")}
-          onBanUser={() => console.log("Ban user")}
+          onDeactivateUser={() => {
+            if (selectedReportDetails?.reportedUser?.id) {
+              deleteStudentMutation.mutate(selectedReportDetails.reportedUser.id);
+            }
+          }}
+          onBanUser={() => {
+            if (selectedReportDetails?.reportedUser?.id) {
+              setIsBanModalOpen(true);
+            }
+          }}
         />
       )}
+
+      <BanUserModal
+        visible={isBanModalOpen}
+        onClose={() => setIsBanModalOpen(false)}
+        onConfirm={(duration, reason) => {
+          if (selectedReportDetails?.reportedUser?.id) {
+            let durationDays = 0;
+            if (duration.includes("24 hours")) durationDays = 1;
+            else if (duration.includes("7 days")) durationDays = 7;
+            else if (duration.includes("30 days")) durationDays = 30;
+            else if (duration.includes("Permanent")) durationDays = 36500;
+
+            banStudentMutation.mutate({
+              id: selectedReportDetails.reportedUser.id,
+              duration: durationDays,
+              reason
+            });
+            setIsBanModalOpen(false);
+          }
+        }}
+        userName={selectedReportDetails?.reportedUser?.name}
+      />
 
       <FlagModal
         isOpen={isFlagModalOpen}
         onClose={() => setIsFlagModalOpen(false)}
         onConfirm={(reason) => {
-          console.log("Flag report:", selectedReport?.id, "Reason:", reason);
-          setIsFlagModalOpen(false);
+          if (selectedReport && selectedReport.reportedItemId) {
+            flagMutation.mutate({
+              id: selectedReport.reportedItemId,
+              type: selectedReport.type,
+              reason
+            });
+          }
         }}
         itemName={selectedReport?.description || ""}
         type="event"
       />
+
+      {showToast && (
+        <CustomToast
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </main>
   );
 };

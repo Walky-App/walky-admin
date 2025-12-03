@@ -9,6 +9,9 @@ import {
   FlagUserModal,
   Divider,
 } from "../../../components-v2";
+import { CopyableId } from "../../../components-v2/CopyableId";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
@@ -40,6 +43,37 @@ export const DeactivatedStudentTable: React.FC<
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  const queryClient = useQueryClient();
+
+  // Note: There's no specific "activate" endpoint, so we'll use DELETE to reactivate
+  // The backend should handle this based on current status
+  const activateMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("User activated successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to activate user");
+      setShowToast(true);
+    }
+  });
+
+  const flagMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setToastMessage("User flagged successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to flag user");
+      setShowToast(true);
+    }
+  });
+
   const handleViewProfile = (student: StudentData) => {
     setSelectedStudent(student);
     setProfileModalVisible(true);
@@ -64,11 +98,7 @@ export const DeactivatedStudentTable: React.FC<
 
   const handleConfirmFlag = () => {
     if (!studentToFlag) return;
-
-    console.log("Flagging user:", studentToFlag);
-    // TODO: Call API to flag user
-    // Example: await flagUserAPI(studentToFlag.id);
-
+    flagMutation.mutate({ id: studentToFlag.id, reason: "Flagged by admin" });
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -90,11 +120,7 @@ export const DeactivatedStudentTable: React.FC<
 
   const handleConfirmActivate = () => {
     if (!studentToActivate) return;
-
-    console.log("Activating user:", studentToActivate);
-    // TODO: Call API to activate user
-    // Example: await activateUserAPI(studentToActivate.id);
-
+    activateMutation.mutate(studentToActivate.id);
     setActivateModalVisible(false);
     setStudentToActivate(null);
   };
@@ -111,10 +137,6 @@ export const DeactivatedStudentTable: React.FC<
       setSortField(field);
       setSortDirection("asc");
     }
-  };
-
-  const handleCopyUserId = (userId: string) => {
-    navigator.clipboard.writeText(userId);
   };
 
   const sortedStudents = React.useMemo(() => {
@@ -149,22 +171,7 @@ export const DeactivatedStudentTable: React.FC<
       label: "User ID",
       sortable: true,
       render: (student) => (
-        <div className="student-userid">
-          <div className="student-userid-badge">
-            <span className="student-userid-text">{student.userId}</span>
-          </div>
-          <button
-            data-testid="copy-user-id-btn"
-            className="student-userid-copy"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCopyUserId(student.userId);
-            }}
-            aria-label="Copy user ID"
-          >
-            <AssetIcon name="copy-icon" size={16} color="#321FDB" />
-          </button>
-        </div>
+        <CopyableId id={student.userId} label="User ID" testId="copy-user-id" />
       ),
     },
     name: {
@@ -172,7 +179,15 @@ export const DeactivatedStudentTable: React.FC<
       sortable: true,
       render: (student) => (
         <div className="student-name-cell">
-          <div className="student-avatar">{student.avatar}</div>
+          <div className="student-avatar">
+            {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
+              <img src={student.avatar} alt={student.name} />
+            ) : (
+              <div className="student-avatar-placeholder">
+                {student.avatar || student.name.charAt(0)}
+              </div>
+            )}
+          </div>
           <span>{student.name}</span>
         </div>
       ),
@@ -323,7 +338,7 @@ export const DeactivatedStudentTable: React.FC<
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       {
                         label: "Activate user",

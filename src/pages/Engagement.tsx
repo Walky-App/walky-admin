@@ -22,7 +22,7 @@ import {
 import { useTheme } from "../hooks/useTheme";
 import { useSchool } from "../contexts/SchoolContext";
 import { useSchoolFilter } from "../hooks/useSchoolFilter";
-import API from "../API";
+import { apiClient } from "../API";
 
 // Modern Stat Card Component
 const StatCard = ({
@@ -58,9 +58,8 @@ const StatCard = ({
       className="h-100"
       style={{
         background: isDark ? "var(--modern-card-bg)" : "#FFFFFF",
-        border: `1px solid ${
-          isDark ? "var(--modern-border-primary)" : "#E5E7EB"
-        }`,
+        border: `1px solid ${isDark ? "var(--modern-border-primary)" : "#E5E7EB"
+          }`,
         borderRadius: "12px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
         transition: "all 0.2s ease",
@@ -170,9 +169,8 @@ const ProgressCard = ({
     <CCard
       style={{
         background: isDark ? "var(--modern-card-bg)" : "#FFFFFF",
-        border: `1px solid ${
-          isDark ? "var(--modern-border-primary)" : "#E5E7EB"
-        }`,
+        border: `1px solid ${isDark ? "var(--modern-border-primary)" : "#E5E7EB"
+          }`,
         borderRadius: "12px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
       }}
@@ -180,9 +178,8 @@ const ProgressCard = ({
       <CCardHeader
         style={{
           background: "transparent",
-          borderBottom: `1px solid ${
-            isDark ? "var(--modern-border-primary)" : "#E5E7EB"
-          }`,
+          borderBottom: `1px solid ${isDark ? "var(--modern-border-primary)" : "#E5E7EB"
+            }`,
           padding: "1.25rem",
         }}
       >
@@ -319,7 +316,7 @@ const Engagement = () => {
   useEffect(() => {
     const fetchWalksDistribution = async () => {
       try {
-        const response = await API.get("/admin/analytics/walks/distribution");
+        const response = await apiClient.api.adminAnalyticsWalksDistributionList() as any;
         console.log("📊 Walks Distribution Response:", response.data);
         setWalksDistribution(response.data);
       } catch (err) {
@@ -361,11 +358,11 @@ const Engagement = () => {
       try {
         const [totalRes, pendingRes, activeRes, completedRes, cancelledRes] =
           await Promise.all([
-            API.get("/admin/analytics/walks/count"),
-            API.get("/admin/analytics/walks/pending"),
-            API.get("/admin/analytics/walks/active"),
-            API.get("/admin/analytics/walks/completed"),
-            API.get("/admin/analytics/walks/cancelled"),
+            apiClient.api.adminAnalyticsWalksCountList() as any,
+            apiClient.api.adminAnalyticsWalksPendingList() as any,
+            apiClient.api.adminAnalyticsWalksActiveList() as any,
+            apiClient.api.adminAnalyticsWalksCompletedList() as any,
+            apiClient.api.adminAnalyticsWalksCancelledList() as any,
           ]);
 
         setWalks({
@@ -383,11 +380,11 @@ const Engagement = () => {
       try {
         const [total, outdoor, indoor, publicEvt, privateEvt] =
           await Promise.all([
-            API.get("/admin/analytics/events/count?filter=total"),
-            API.get("/admin/analytics/events/count?filter=outdoor"),
-            API.get("/admin/analytics/events/count?filter=indoor"),
-            API.get("/admin/analytics/events/count?filter=public"),
-            API.get("/admin/analytics/events/count?filter=private"),
+            apiClient.api.adminAnalyticsEventsCountList({ filter: "total" } as any) as any,
+            apiClient.api.adminAnalyticsEventsCountList({ filter: "outdoor" } as any) as any,
+            apiClient.api.adminAnalyticsEventsCountList({ filter: "indoor" } as any) as any,
+            apiClient.api.adminAnalyticsEventsCountList({ filter: "public" } as any) as any,
+            apiClient.api.adminAnalyticsEventsCountList({ filter: "private" } as any) as any,
           ]);
 
         setEvents({
@@ -404,10 +401,10 @@ const Engagement = () => {
       // Fetch Ideas from admin analytics endpoints
       try {
         const [total, active, inactive, collaborated] = await Promise.all([
-          API.get("/admin/analytics/ideas/count?type=total"),
-          API.get("/admin/analytics/ideas/count?type=active"),
-          API.get("/admin/analytics/ideas/count?type=inactive"),
-          API.get("/admin/analytics/ideas/count?type=collaborated"),
+          apiClient.api.adminAnalyticsIdeasCountList({ type: "total" } as any) as any,
+          apiClient.api.adminAnalyticsIdeasCountList({ type: "active" } as any) as any,
+          apiClient.api.adminAnalyticsIdeasCountList({ type: "inactive" } as any) as any,
+          apiClient.api.adminAnalyticsIdeasCountList({ type: "collaborated" } as any) as any,
         ]);
 
         setIdeas({
@@ -502,7 +499,7 @@ const Engagement = () => {
             title="Engagement Rate"
             value={`${Math.round(
               ((walks.active + ideas.active) / (walks.total + ideas.total)) *
-                100
+              100
             )}%`}
             icon={cilChartLine}
             color="#34C759"
@@ -694,7 +691,7 @@ const Engagement = () => {
                             style={{
                               backgroundColor:
                                 value ===
-                                Math.max(...walksDistribution.chartData)
+                                  Math.max(...walksDistribution.chartData)
                                   ? "#5E5CE6"
                                   : "rgba(94, 92, 230, 0.7)",
                               borderRadius: "8px 8px 0 0",
@@ -764,7 +761,7 @@ const Engagement = () => {
                           walksDistribution.chartData.indexOf(maxValue);
                         const peakMonth =
                           maxIndex >= 0 &&
-                          maxIndex < walksDistribution.chartLabels.length
+                            maxIndex < walksDistribution.chartLabels.length
                             ? walksDistribution.chartLabels[maxIndex]
                             : "-";
                         return `${peakMonth}: ${maxValue || 0}`;
@@ -784,9 +781,9 @@ const Engagement = () => {
                     >
                       {walksDistribution.chartData.length > 0
                         ? Math.round(
-                            walksDistribution.totalWalksCreated /
-                              walksDistribution.chartData.length
-                          )
+                          walksDistribution.totalWalksCreated /
+                          walksDistribution.chartData.length
+                        )
                         : 0}
                     </div>
                   </div>

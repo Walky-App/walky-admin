@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
+import API from "../../../API";
 import { CRow, CCol } from "@coreui/react";
 import {
   AssetIcon,
   FilterBar,
-  TimePeriod,
   LastUpdated,
   SeeAllInterestsModal,
 } from "../../../components-v2";
@@ -14,216 +16,84 @@ import {
   ViewToggle,
   CommonInterests,
   TopFieldsOfStudy,
+  DashboardSkeleton,
 } from "../components";
 import "./PopularFeatures.css";
 type PopularityOption = "least" | "most";
 type ViewType = "grid" | "list";
 
+import { useDashboard } from "../../../contexts/DashboardContext";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
 const PopularFeatures: React.FC = () => {
   const { theme } = useTheme();
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
+  const { timePeriod, setTimePeriod } = useDashboard();
   const [popularity, setPopularity] = useState<PopularityOption>("most");
   const [viewType, setViewType] = useState<ViewType>("grid");
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
+  const [modalData, setModalData] = useState<{ title: string; items: any[] }>({
+    title: "Top interests",
+    items: []
+  });
 
   console.log(
     "PopularFeatures - interestsModalVisible:",
     interestsModalVisible
   );
 
-  // Mock data - would come from API
-  const topInterests = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Food",
-      iconBgColor: "#ebf1ff",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Basketball",
-      iconBgColor: "#ebf1ff",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Gym",
-      iconBgColor: "#ebf1ff",
-    },
-  ];
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: ['popularFeatures', timePeriod, selectedSchool?._id, selectedCampus?._id, popularity],
+    queryFn: () => apiClient.api.adminV2DashboardPopularFeaturesList({
+      period: timePeriod,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id,
+      sortBy: popularity === 'most' ? 'most_popular' : 'least_popular'
+    }),
+  });
 
-  const popularWaysToConnect = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Walk",
-      iconBgColor: "#e4eefe",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Food",
-      iconBgColor: "#e4eefe",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Surprise",
-      iconBgColor: "#e4eefe",
-    },
-  ];
+  const data = (apiData?.data || {}) as any;
 
-  const visitedPlaces = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/40x30",
-      label: "Burger King",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/40x30",
-      label: "Dunkin Donuts",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/40x30",
-      label: "Graham Center",
-    },
-  ];
+  const topInterests = data.topInterests || [];
+  const popularWaysToConnect = data.popularWaysToConnect || [];
+  const visitedPlaces = data.visitedPlaces || [];
+  const topInvitationCategories = data.topInvitationCategories || [];
+  const mostEngaged = data.mostEngaged || [];
+  const commonInterests = data.commonInterests || [];
+  const topFieldsOfStudy = data.topFieldsOfStudy || [];
 
-  const topInvitationCategories = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Food",
-      iconBgColor: "#ebf1ff",
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Studying",
-      iconBgColor: "#e4eefe",
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Coffee",
-      iconBgColor: "#e4eefe",
-    },
-  ];
+  console.log('Visited Places data:', visitedPlaces);
 
-  const mostEngaged = [
-    {
-      rank: 1,
-      icon: "https://via.placeholder.com/32",
-      label: "Brett Semon",
-      iconBgColor: undefined,
-    },
-    {
-      rank: 2,
-      icon: "https://via.placeholder.com/32",
-      label: "Nataly Reynolds",
-      iconBgColor: undefined,
-    },
-    {
-      rank: 3,
-      icon: "https://via.placeholder.com/32",
-      label: "Ben Mackee",
-      iconBgColor: undefined,
-    },
-  ];
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
-  const handleExport = () => {
-    console.log("Exporting data...");
+  const handleExport = async () => {
+    try {
+      const response = await API.get('/admin/v2/dashboard/popular-features', {
+        params: {
+          period: timePeriod,
+          export: 'true',
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id,
+          sortBy: popularity === 'most' ? 'most_popular' : 'least_popular'
+        },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `popular_features_stats_${timePeriod}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
-
-  // Mock data for list view
-  const commonInterests = [
-    {
-      rank: 1,
-      name: "Ballet",
-      students: 19,
-      percentage: 7.1,
-      barWidth: 88,
-      rankColor: "#8f5400",
-      rankBgColor: "#fff3d6",
-    },
-    {
-      rank: 2,
-      name: "Basketball",
-      students: 18,
-      percentage: 6.7,
-      barWidth: 88,
-      rankColor: "#4a4cd9",
-      rankBgColor: "#d9e3f7",
-    },
-    {
-      rank: 3,
-      name: "Acting",
-      students: 16,
-      percentage: 6.0,
-      barWidth: 88,
-      rankColor: "#ba5630",
-      rankBgColor: "#ffebe9",
-    },
-    {
-      rank: 4,
-      name: "3D modeling",
-      students: 14,
-      percentage: 5.2,
-      barWidth: 81,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 4,
-      name: "Baking",
-      students: 14,
-      percentage: 5.2,
-      barWidth: 81,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 5,
-      name: "Billiards",
-      students: 13,
-      percentage: 4.9,
-      barWidth: 69,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 6,
-      name: "Books",
-      students: 10,
-      percentage: 3.7,
-      barWidth: 55,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-    {
-      rank: 7,
-      name: "Brewing",
-      students: 9,
-      percentage: 3.4,
-      barWidth: 41,
-      rankColor: "#676d70",
-      rankBgColor: "#f4f5f7",
-    },
-  ];
-
-  const topFieldsOfStudy = [
-    {
-      rank: 1,
-      name: "Applied Math & Physics",
-      students: 20,
-      avgInteractions: 1.7,
-      rankColor: "#8f5400",
-      rankBgColor: "#fff3d6",
-    },
-  ];
 
   return (
     <main
@@ -280,6 +150,10 @@ const PopularFeatures: React.FC = () => {
                 items={topInterests}
                 onSeeAll={() => {
                   console.log("See all Top interests clicked!");
+                  setModalData({
+                    title: "Top interests",
+                    items: topInterests
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -297,6 +171,10 @@ const PopularFeatures: React.FC = () => {
                 items={popularWaysToConnect}
                 onSeeAll={() => {
                   console.log("See all ways clicked!");
+                  setModalData({
+                    title: "Popular ways to connect",
+                    items: popularWaysToConnect
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -312,8 +190,13 @@ const PopularFeatures: React.FC = () => {
                   />
                 }
                 items={visitedPlaces}
+                maxItems={visitedPlaces.length}
                 onSeeAll={() => {
                   console.log("See all places clicked!");
+                  setModalData({
+                    title: "Visited places",
+                    items: visitedPlaces
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -335,6 +218,10 @@ const PopularFeatures: React.FC = () => {
                 items={topInvitationCategories}
                 onSeeAll={() => {
                   console.log("See all categories clicked!");
+                  setModalData({
+                    title: "Top invitation categories",
+                    items: topInvitationCategories
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -352,6 +239,10 @@ const PopularFeatures: React.FC = () => {
                 items={mostEngaged}
                 onSeeAll={() => {
                   console.log("See all engaged clicked!");
+                  setModalData({
+                    title: "Most Engaged",
+                    items: mostEngaged
+                  });
                   setInterestsModalVisible(true);
                 }}
               />
@@ -384,10 +275,11 @@ const PopularFeatures: React.FC = () => {
           console.log("Modal close clicked!");
           setInterestsModalVisible(false);
         }}
-        interests={commonInterests.map((interest) => ({
-          rank: interest.rank,
-          name: interest.name,
-          icon: "https://via.placeholder.com/32",
+        title={modalData.title}
+        interests={modalData.items.map((item: any) => ({
+          rank: item.rank,
+          name: item.label || item.name,
+          icon: item.icon || "",
         }))}
       />
     </main>

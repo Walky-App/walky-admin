@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
@@ -12,124 +14,37 @@ export const ActiveStudents: React.FC = () => {
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const entriesPerPage = 10;
 
-  // Mock data - replace with API call
-  const mockStudents: StudentData[] = [
-    {
-      id: "1",
-      userId: "166g...fjhsgt",
-      name: "Austin Smith",
-      email: "Austin@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Chess", "Swimming", "Art"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Active now",
-      isFlagged: true,
-    },
-    {
-      id: "2",
-      userId: "266g...fjhsgt",
-      name: "Leo Johnson",
-      email: "Leo@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Tennis"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "2 minutes ago",
-    },
-    {
-      id: "3",
-      userId: "366g...fjhsgt",
-      name: "Natasha Brown",
-      email: "Natasha@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Yoga"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "3 hours ago",
-      isFlagged: true,
-    },
-    {
-      id: "4",
-      userId: "466g...fjhsgt",
-      name: "Nataly Taylor",
-      email: "Nataly@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Dance"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "3 days ago",
-    },
-    {
-      id: "5",
-      userId: "566g...fjhsgt",
-      name: "Mariana Wilson",
-      email: "Mariana@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Photography"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Oct 7, 2025",
-    },
-    {
-      id: "6",
-      userId: "489g...fjhsgt",
-      name: "Andras Davis",
-      email: "Andras@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Music"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Oct 7, 2025",
-    },
-    {
-      id: "7",
-      userId: "785g...fjhsgt",
-      name: "Anni Campbell",
-      email: "Anni@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Reading"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Oct 7, 2025",
-    },
-    {
-      id: "8",
-      userId: "514g...fjhsgt",
-      name: "Arturo Díaz",
-      email: "Arturo@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Cooking"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Oct 7, 2025",
-    },
-    {
-      id: "9",
-      userId: "212g...fjhsgt",
-      name: "Becky Gordon",
-      email: "Becky@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Gaming"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Oct 7, 2025",
-    },
-    {
-      id: "10",
-      userId: "244g...fjhsgt",
-      name: "Ben Harris",
-      email: "Ben@FIU.edu.co",
-      interests: ["Ballet", "Billiards", "Sports"],
-      status: "active",
-      memberSince: "Sep 28, 2025",
-      onlineLast: "Oct 7, 2025",
-    },
-  ];
+  const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
+    queryKey: ['students', currentPage, searchQuery],
+    queryFn: () => apiClient.api.adminV2StudentsList({ page: currentPage, limit: entriesPerPage, search: searchQuery }),
+  });
 
-  const filteredStudents = mockStudents.filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.userId.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const { data: statsData, isLoading: isStatsLoading } = useQuery({
+    queryKey: ['studentStats'],
+    queryFn: () => apiClient.api.adminV2StudentsStatsList(),
+  });
 
-  const totalPages = Math.ceil(filteredStudents.length / entriesPerPage);
-  const paginatedStudents = filteredStudents.slice(
-    (currentPage - 1) * entriesPerPage,
-    currentPage * entriesPerPage
-  );
+  const isLoading = isStudentsLoading || isStatsLoading;
+
+  const students = (studentsData?.data.data || []).map((student: any) => ({
+    id: student.id,
+    userId: student.userId,
+    name: student.name,
+    email: student.email,
+    interests: student.interests || [],
+    avatar: student.avatar,
+    status: student.status,
+    memberSince: student.memberSince,
+    onlineLast: student.onlineLast,
+    isFlagged: student.isFlagged,
+  }));
+
+  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const paginatedStudents = students; // API already returns paginated data
+
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   const handleExport = () => {
     console.log("Export clicked");
@@ -148,7 +63,7 @@ export const ActiveStudents: React.FC = () => {
       <div className="active-students-stats">
         <StatsCard
           title="Total students"
-          value="264"
+          value={statsData?.data.totalStudents?.toString() || "0"}
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
@@ -160,7 +75,7 @@ export const ActiveStudents: React.FC = () => {
         />
         <StatsCard
           title="Students with app access"
-          value="261"
+          value={statsData?.data.studentsWithAppAccess?.toString() || "0"}
           iconName="check-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
@@ -203,7 +118,7 @@ export const ActiveStudents: React.FC = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            totalEntries={filteredStudents.length}
+            totalEntries={studentsData?.data.total || 0}
             entriesPerPage={entriesPerPage}
             onPageChange={setCurrentPage}
           />

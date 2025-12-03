@@ -1,60 +1,10 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
 import { SearchInput, FilterDropdown } from "../../../components-v2";
-import { EventTable, EventData } from "../components/EventTable/EventTable";
+import { EventTable } from "../components/EventTable/EventTable";
 import "./EventsManager.css";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
-
-// Mock data - replace with API call
-const mockEvents: EventData[] = [
-  {
-    id: "1",
-    eventName: "4v4 Basketball Game",
-    organizer: {
-      name: "Becky",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/eca2a7a9-bd0c-4f7c-9e7a-4c5d74bbe390",
-    },
-    studentId: "166g...fjhsgt",
-    eventDate: "Oct 7, 2025",
-    eventTime: "12:45",
-    attendees: 6,
-    type: "public",
-    isFlagged: true,
-    flagReason:
-      "This event contains inappropriate content that violates community guidelines.",
-  },
-  {
-    id: "2",
-    eventName: "Top Golf Tuesdays",
-    organizer: {
-      name: "Jackie",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/3f9c570a-5175-4895-9e32-29deddbc337a",
-    },
-    studentId: "166g...fjhsgt",
-    eventDate: "Oct 18, 2025",
-    eventTime: "12:45",
-    attendees: 0,
-    type: "private",
-  },
-  {
-    id: "3",
-    eventName: "FAU Tech Runway startup finals & Pitch Competition",
-    organizer: {
-      name: "Mariana",
-      avatar:
-        "https://www.figma.com/api/mcp/asset/8ee5925a-f2ee-49d4-aace-97f26c25cf4d",
-    },
-    studentId: "166g...fjhsgt",
-    eventDate: "Oct 18, 2025",
-    eventTime: "15:45",
-    attendees: 0,
-    type: "public",
-    isFlagged: true,
-    flagReason:
-      "Event details are misleading and may confuse attendees about the actual competition format.",
-  },
-];
 
 type ViewMode = "list" | "calendar";
 
@@ -64,15 +14,30 @@ export const EventsManager: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredEvents = mockEvents.filter((event) => {
-    const matchesSearch = event.eventName
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesType = typeFilter === "all" || event.type === typeFilter;
-    return matchesSearch && matchesType;
+  const { data: eventsData, isLoading } = useQuery({
+    queryKey: ['events', currentPage, searchQuery, typeFilter],
+    queryFn: () => apiClient.api.adminV2EventsList({ page: currentPage, limit: 10, search: searchQuery, type: typeFilter }),
   });
 
-  const totalPages = Math.ceil(filteredEvents.length / 10);
+  const filteredEvents = (eventsData?.data.data || []).map((event: any) => ({
+    id: event.id,
+    eventName: event.eventName,
+    organizer: event.organizer,
+    studentId: event.studentId,
+    eventDate: event.eventDate,
+    eventTime: event.eventTime,
+    attendees: event.attendeesCount,
+    type: event.type,
+    isFlagged: event.isFlagged,
+    flagReason: event.flagReason,
+  }));
+
+  const totalPages = Math.ceil((eventsData?.data.total || 0) / 10);
+  const totalEntries = eventsData?.data.total || 0;
+
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   return (
     <main className="events-manager-container">
@@ -95,9 +60,8 @@ export const EventsManager: React.FC = () => {
         </button>
         <button
           data-testid="view-calendar-btn"
-          className={`view-toggle-btn ${
-            viewMode === "calendar" ? "active" : ""
-          }`}
+          className={`view-toggle-btn ${viewMode === "calendar" ? "active" : ""
+            }`}
           onClick={() => setViewMode("calendar")}
         >
           Calendar view
@@ -139,7 +103,7 @@ export const EventsManager: React.FC = () => {
 
               <div className="events-pagination">
                 <p className="pagination-info">
-                  Showing {filteredEvents.length} of {mockEvents.length} entries
+                  Showing {filteredEvents.length} of {totalEntries} entries
                 </p>
 
                 <div className="pagination-controls">

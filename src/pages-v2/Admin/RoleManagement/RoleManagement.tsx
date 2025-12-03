@@ -41,15 +41,21 @@ const getInitials = (name: string): string => {
     .slice(0, 2);
 };
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../../../API";
+import toast from "react-hot-toast";
+
 export const RoleManagement: React.FC = () => {
   const { theme } = useTheme();
-  const [currentPage] = useState(1);
+  const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All Roles");
   const [selectedRole, setSelectedRole] = useState<
     "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator" | null
   >(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const entriesPerPage = 10;
 
   // Action modals state
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
@@ -59,79 +65,31 @@ export const RoleManagement: React.FC = () => {
   const [isCreateMemberModalOpen, setIsCreateMemberModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<MemberData | null>(null);
 
-  // Mock data - replace with real data from API
-  const mockMembers: MemberData[] = [
-    {
-      id: "1",
-      name: "Emily Carter",
-      title: "Dean of Student Wellbeing",
-      email: "Emily@FIU.edu.co",
-      avatar: "https://via.placeholder.com/38",
-      role: "School Admin",
-      assignedBy: {
-        name: "Admin Name",
-        email: "Admin@FIU.edu.co",
-      },
-      invitationStatus: "Accepted",
-      lastActive: "Oct 7, 2025",
-    },
-    {
-      id: "2",
-      name: "James Thompson",
-      title: "Campus Administrator",
-      email: "James@FIU.edu.co",
-      avatar: "https://via.placeholder.com/38",
-      role: "Campus Admin",
-      assignedBy: {
-        name: "Admin Name",
-        email: "Admin@FIU.edu.co",
-      },
-      invitationStatus: "Pending",
-      lastActive: null,
-    },
-    {
-      id: "3",
-      name: "Olivia Bennett",
-      title: "Academic Advisor",
-      email: "Olivia@FIU.edu.co",
-      avatar: "https://via.placeholder.com/38",
-      role: "Moderator",
-      assignedBy: {
-        name: "Admin Name",
-        email: "Admin@FIU.edu.co",
-      },
-      invitationStatus: "Expired",
-      lastActive: null,
-    },
-    {
-      id: "4",
-      name: "Ethan Miller",
-      title: "Financial Aid Officer",
-      email: "Ethan@FIU.edu.co",
-      avatar: "https://via.placeholder.com/38",
-      role: "School Admin",
-      assignedBy: {
-        name: "Admin Name",
-        email: "Admin@FIU.edu.co",
-      },
-      invitationStatus: "Accepted",
-      lastActive: "Oct 7, 2025",
-    },
-    {
-      id: "5",
-      name: "Jeremiah Newman",
-      title: "CPO",
-      email: "jeremiah@walkyapp.com",
-      avatar: "https://via.placeholder.com/38",
-      role: "Walky Admin",
-      assignedBy: {
-        name: "Admin Name",
-        email: "Admin@FIU.edu.co",
-      },
-      invitationStatus: "Accepted",
-      lastActive: "Oct 7, 2025",
-    },
-  ];
+  const { data: membersData, isLoading } = useQuery({
+    queryKey: ['members', currentPage, searchQuery, roleFilter],
+    queryFn: () => apiClient.api.adminV2MembersList({
+      page: currentPage,
+      limit: entriesPerPage,
+      search: searchQuery,
+      role: roleFilter
+    }),
+  });
+
+  const members: MemberData[] = (membersData?.data.data || []).map((member: any) => ({
+    id: member.id,
+    name: member.name,
+    title: member.title,
+    email: member.email,
+    avatar: member.avatar,
+    role: member.role,
+    assignedBy: member.assignedBy,
+    invitationStatus: member.invitationStatus,
+    lastActive: member.lastActive,
+  }));
+
+  if (isLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   const handleCreateMember = () => {
     setIsCreateMemberModalOpen(true);
@@ -154,7 +112,7 @@ export const RoleManagement: React.FC = () => {
   };
 
   const handleChangeRole = (memberId: string) => {
-    const member = mockMembers.find((m) => m.id === memberId);
+    const member = members.find((m) => m.id === memberId);
     if (member) {
       setSelectedMember(member);
       setIsChangeRoleModalOpen(true);
@@ -162,7 +120,7 @@ export const RoleManagement: React.FC = () => {
   };
 
   const handleSendPasswordReset = (memberId: string) => {
-    const member = mockMembers.find((m) => m.id === memberId);
+    const member = members.find((m) => m.id === memberId);
     if (member) {
       setSelectedMember(member);
       setIsPasswordResetModalOpen(true);
@@ -170,7 +128,7 @@ export const RoleManagement: React.FC = () => {
   };
 
   const handleRemoveMember = (memberId: string) => {
-    const member = mockMembers.find((m) => m.id === memberId);
+    const member = members.find((m) => m.id === memberId);
     if (member) {
       setSelectedMember(member);
       setIsRemoveMemberModalOpen(true);
@@ -178,41 +136,67 @@ export const RoleManagement: React.FC = () => {
   };
 
   // Modal confirm handlers
-  const handleConfirmRemoveMember = () => {
-    console.log("Remove member confirmed:", selectedMember?.name);
-    // TODO: API call to remove member
+  const handleConfirmRemoveMember = async () => {
+    if (!selectedMember) return;
+    try {
+      await apiClient.api.adminV2MembersDelete(selectedMember.id);
+      toast.success(`Member ${selectedMember.name} removed successfully`);
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+    } catch (error) {
+      console.error("Failed to remove member:", error);
+      toast.error("Failed to remove member");
+    }
     setIsRemoveMemberModalOpen(false);
     setSelectedMember(null);
   };
 
-  const handleConfirmChangeRole = (
+  const handleConfirmChangeRole = async (
     newRole: "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator"
   ) => {
-    console.log("Change role confirmed:", selectedMember?.name, "to", newRole);
-    // TODO: API call to change member role
+    if (!selectedMember) return;
+    try {
+      await apiClient.api.adminV2MembersRolePartialUpdate(selectedMember.id, { role: newRole });
+      toast.success(`Role updated to ${newRole} for ${selectedMember.name}`);
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+    } catch (error) {
+      console.error("Failed to update role:", error);
+      toast.error("Failed to update role");
+    }
     setIsChangeRoleModalOpen(false);
     setSelectedMember(null);
   };
 
-  const handleConfirmPasswordReset = (dontShowAgain: boolean) => {
-    console.log(
-      "Password reset confirmed for:",
-      selectedMember?.email,
-      "Don't show again:",
-      dontShowAgain
-    );
-    // TODO: API call to send password reset
+  const handleConfirmPasswordReset = async () => {
+    if (!selectedMember) return;
+    try {
+      await apiClient.api.adminV2MembersPasswordResetCreate(selectedMember.id);
+      toast.success(`Password reset sent to ${selectedMember.email}`);
+    } catch (error) {
+      console.error("Failed to send password reset:", error);
+      toast.error("Failed to send password reset");
+    }
     setIsPasswordResetModalOpen(false);
     setSelectedMember(null);
   };
 
-  const handleConfirmCreateMember = (memberData: MemberFormData) => {
-    console.log("Create member confirmed:", memberData);
-    // TODO: API call to create new member
+  const handleConfirmCreateMember = async (memberData: MemberFormData) => {
+    try {
+      await apiClient.api.adminV2MembersCreate({
+        name: `${memberData.firstName} ${memberData.lastName}`,
+        email: memberData.email,
+        role: memberData.role,
+        title: memberData.role || "Administrator", // Use role as title since modal doesn't have title field
+      });
+      toast.success("Member created successfully");
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+    } catch (error) {
+      console.error("Failed to create member:", error);
+      toast.error("Failed to create member");
+    }
     setIsCreateMemberModalOpen(false);
   };
 
-  const totalMembers = mockMembers.length;
+
 
   return (
     <main className="role-management-page">
@@ -298,7 +282,7 @@ export const RoleManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {mockMembers.map((member, index) => (
+              {members.map((member, index) => (
                 <React.Fragment key={member.id}>
                   <tr className="member-row">
                     {/* Full Name Column */}
@@ -384,7 +368,7 @@ export const RoleManagement: React.FC = () => {
                           {
                             label: "",
                             isDivider: true,
-                            onClick: () => {},
+                            onClick: () => { },
                           },
                           {
                             label: "Remove member",
@@ -398,7 +382,7 @@ export const RoleManagement: React.FC = () => {
                       />
                     </td>
                   </tr>
-                  {index < mockMembers.length - 1 && (
+                  {index < members.length - 1 && (
                     <tr className="member-divider-row">
                       <td colSpan={7}>
                         <Divider />
@@ -414,13 +398,14 @@ export const RoleManagement: React.FC = () => {
         {/* Pagination */}
         <div className="pagination-container">
           <p className="pagination-info">
-            Showing {totalMembers} of {totalMembers} entries
+            Showing {members.length} of {membersData?.data.total || 0} entries
           </p>
           <div className="pagination-controls">
             <button
               data-testid="pagination-prev-btn"
               className="pagination-button"
-              disabled
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             >
               Previous
             </button>
@@ -428,7 +413,8 @@ export const RoleManagement: React.FC = () => {
             <button
               data-testid="pagination-next-btn"
               className="pagination-button"
-              disabled
+              disabled={currentPage * entriesPerPage >= (membersData?.data.total || 0)}
+              onClick={() => setCurrentPage(prev => prev + 1)}
             >
               Next
             </button>

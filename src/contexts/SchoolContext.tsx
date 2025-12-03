@@ -7,15 +7,9 @@ import React, {
   ReactNode,
 } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { School } from "../services/schoolService";
 
-export interface School {
-  _id: string;
-  school_name: string;
-  display_name?: string;
-  email_domain?: string;
-  logo_url?: string;
-  is_active?: boolean;
-}
+export type { School };
 
 interface SchoolContextType {
   selectedSchool: School | null;

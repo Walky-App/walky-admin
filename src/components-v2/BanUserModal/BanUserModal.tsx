@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import React, { useState, useRef, useEffect } from "react";
 import { CModal, CModalBody, CButton } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";

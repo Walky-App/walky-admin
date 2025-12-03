@@ -17,7 +17,7 @@ import { useCampus, Campus } from "../../contexts/CampusContext";
 import { useTheme } from "../../hooks/useTheme";
 import { useAuth } from "../../hooks/useAuth";
 import { AssetIcon } from "../../components-v2";
-import API from "../../API";
+import { apiClient } from "../../API";
 import "./TopbarV2.css";
 
 interface TopbarV2Props {
@@ -70,49 +70,53 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     const fetchSchools = async () => {
       setIsLoadingSchools(true);
 
-      // Determine which API endpoint to call
-      const endpoint = isSuperAdmin()
-        ? "/admin/schools"
-        : `/admin/schools/${user.school_id}`;
-
-      const shouldFetch = isSuperAdmin() || user.school_id;
-
-      if (!shouldFetch) {
-        setIsLoadingSchools(false);
-        return;
-      }
-
       try {
-        const response = await API.get(endpoint);
-
-        // Process response with simple assignments only
-        let schools;
         const isSuper = isSuperAdmin();
+        let schools: any[] = [];
 
         if (isSuper) {
-          const data = response.data;
-          if (data) {
-            schools = data;
-          } else {
-            schools = [];
+          const response = await apiClient.api.adminV2SchoolsList() as any;
+          console.log('Schools API response:', response);
+
+          let rawSchools: any[] = [];
+
+          // Handle different response structures
+          if (Array.isArray(response)) {
+            rawSchools = response;
+          } else if (response && Array.isArray(response.data)) {
+            rawSchools = response.data;
+          } else if (response && response.data && Array.isArray(response.data.data)) {
+            rawSchools = response.data.data;
           }
+
+          schools = rawSchools.map((s: any) => ({
+            ...s,
+            school_name: s.school_name || s.name || "Unknown School",
+            _id: s._id || s.id,
+            id: s.id || s._id,
+          }));
+          console.log('Parsed schools:', schools);
         } else {
-          const data = response.data;
-          if (data) {
-            schools = [data];
-          } else {
-            schools = [];
-          }
+          const response = await apiClient.api.schoolDetail(user.school_id!) as any;
+          console.log('School detail API response:', response);
+          const data = response.data || response;
+          const rawSchools = data ? [data] : [];
+
+          schools = rawSchools.map((s: any) => ({
+            ...s,
+            school_name: s.school_name || s.name || "Unknown School",
+            _id: s._id || s.id,
+            id: s.id || s._id,
+          }));
         }
 
+        console.log('Setting available schools:', schools);
         setAvailableSchools(schools);
 
-        // Auto-select first school for non-super admins
+        // Auto-select first school if none selected
         const hasSchools = schools.length > 0;
-        if (!isSuper) {
-          if (hasSchools) {
-            setSelectedSchool(schools[0]);
-          }
+        if (hasSchools && !selectedSchool) {
+          setSelectedSchool(schools[0]);
         }
         setIsLoadingSchools(false);
         hasInitializedSchools.current = true;
@@ -124,93 +128,83 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     };
 
     fetchSchools();
-  }, [
-    user,
-    isSuperAdmin,
-    setIsLoadingSchools,
-    setAvailableSchools,
-    setSelectedSchool,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
-  // Fetch campuses on mount
+  // Fetch campuses when user or selectedSchool changes
   useEffect(() => {
-    if (hasInitializedCampuses.current) return;
     if (!user) return;
 
     const fetchCampuses = async () => {
       setIsLoadingCampuses(true);
 
-      // Determine which API endpoint to call
-      const endpoint = isSuperAdmin()
-        ? "/admin/campuses"
-        : `/admin/campuses/${user.campus_id}`;
-
-      const shouldFetch = isSuperAdmin() || user.campus_id;
-
-      if (!shouldFetch) {
-        setIsLoadingCampuses(false);
-        return;
-      }
-
       try {
-        const response = await API.get(endpoint);
-
-        // Process response with simple assignments only
-        let campuses;
         const isSuper = isSuperAdmin();
+        let campuses: any[] = [];
 
         if (isSuper) {
-          const responseData = response.data;
-          let dataData;
-          let dataCampuses;
-
-          if (responseData) {
-            dataData = responseData.data;
-            dataCampuses = responseData.campuses;
+          const query: any = {};
+          if (selectedSchool) {
+            query.school_id = selectedSchool._id || selectedSchool.id;
           }
 
-          if (dataData) {
-            campuses = dataData;
-          } else if (dataCampuses) {
-            campuses = dataCampuses;
-          } else {
-            campuses = [];
+          const response = await apiClient.api.adminV2CampusesList({ query } as any) as any;
+          const responseData = response.data || response;
+
+          let rawCampuses: any[] = [];
+          if (responseData && Array.isArray(responseData)) {
+            rawCampuses = responseData;
+          } else if (responseData && Array.isArray(responseData.data)) {
+            rawCampuses = responseData.data;
+          } else if (responseData && Array.isArray(responseData.campuses)) {
+            rawCampuses = responseData.campuses;
           }
+
+          campuses = rawCampuses.map((c: any) => ({
+            ...c,
+            campus_name: c.campus_name || c.name || "Unknown Campus",
+            _id: c._id || c.id,
+            id: c.id || c._id,
+            school_id: c.school_id || c.schoolId,
+            is_active: c.is_active ?? (c.status === 'Active'),
+            image_url: c.image_url || c.imageUrl,
+          }));
         } else {
-          const data = response.data;
-          let dataData;
-          let dataCampus;
+          const response = await apiClient.api.campusesDetail(user.campus_id!) as any;
+          const data = response.data || response;
+          let rawCampuses: any[] = [];
 
           if (data) {
-            dataData = data.data;
-            dataCampus = data.campus;
+            if (data.data) rawCampuses = [data.data];
+            else if (data.campus) rawCampuses = [data.campus];
+            else rawCampuses = [data];
           }
 
-          let campus;
-          if (data) {
-            campus = data;
-          } else if (dataData) {
-            campus = dataData;
-          } else if (dataCampus) {
-            campus = dataCampus;
-          }
-
-          if (campus) {
-            campuses = [campus];
-          } else {
-            campuses = [];
-          }
+          campuses = rawCampuses.map((c: any) => ({
+            ...c,
+            campus_name: c.campus_name || c.name || "Unknown Campus",
+            _id: c._id || c.id,
+            id: c.id || c._id,
+          }));
         }
 
         setAvailableCampuses(campuses);
 
-        // Auto-select first campus for non-super admins
+        // Auto-select first campus if current selection is invalid or empty
+        // Or if we just switched schools and need to reset
         const hasCampuses = campuses.length > 0;
-        if (!isSuper) {
+
+        // If we have a selected campus, check if it's in the new list
+        const isSelectedInList = selectedCampus && campuses.some(c => c._id === selectedCampus._id);
+
+        if (!isSelectedInList) {
           if (hasCampuses) {
             setSelectedCampus(campuses[0]);
+          } else {
+            setSelectedCampus(null);
           }
         }
+
         setIsLoadingCampuses(false);
         hasInitializedCampuses.current = true;
       } catch (error) {
@@ -221,21 +215,16 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     };
 
     fetchCampuses();
-  }, [
-    user,
-    isSuperAdmin,
-    setIsLoadingCampuses,
-    setAvailableCampuses,
-    setSelectedCampus,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, selectedSchool]);
 
   // Get user display name and avatar
   const userName = user ? `${user.first_name} ${user.last_name}` : "Admin Name";
   const userAvatar =
     user?.avatar_url ||
     "https://ui-avatars.com/api/?name=" +
-      encodeURIComponent(userName) +
-      "&background=4A5568&color=fff";
+    encodeURIComponent(userName) +
+    "&background=4A5568&color=fff";
 
   return (
     <div className="topbar-v2">
@@ -423,7 +412,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
               </CDropdownToggle>
               <CDropdownMenu>
                 <CDropdownItem
-                  onClick={() => navigate("/v2/admin/settings")}
+                  onClick={() => navigate("/admin/settings")}
                   className="user-dropdown-item settings-item"
                 >
                   <span>Administrator settings</span>
@@ -468,9 +457,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {availableSchools.map((school: School) => (
               <button
                 key={school._id}
-                className={`modal-list-item ${
-                  selectedSchool?._id === school._id ? "active" : ""
-                }`}
+                className={`modal-list-item ${selectedSchool?._id === school._id ? "active" : ""
+                  }`}
                 onClick={() => {
                   setSelectedSchool(school);
                   setSchoolModalOpen(false);
@@ -501,9 +489,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {availableCampuses.map((campus: Campus) => (
               <button
                 key={campus._id}
-                className={`modal-list-item ${
-                  selectedCampus?._id === campus._id ? "active" : ""
-                }`}
+                className={`modal-list-item ${selectedCampus?._id === campus._id ? "active" : ""
+                  }`}
                 onClick={() => {
                   setSelectedCampus(campus);
                   setCampusModalOpen(false);

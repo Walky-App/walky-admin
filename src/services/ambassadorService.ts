@@ -1,4 +1,4 @@
-import api from "../API";
+import { apiClient } from "../API";
 import {
   Ambassador,
   CreateAmbassadorRequest,
@@ -10,7 +10,7 @@ export const ambassadorService = {
   getAll: async (): Promise<Ambassador[]> => {
     try {
       console.log("🚀 Fetching all ambassadors...");
-      const response = await api.get("/ambassadors");
+      const response = await apiClient.ambassadors.ambassadorsList() as any;
       console.log("✅ Ambassadors response:", response.data);
 
       // Handle different response structures
@@ -41,7 +41,7 @@ export const ambassadorService = {
   getById: async (id: string): Promise<Ambassador> => {
     try {
       console.log("🚀 Fetching ambassador with ID:", id);
-      const response = await api.get(`/ambassadors/${id}`);
+      const response = await apiClient.ambassadors.ambassadorsDetail(id) as any;
       console.log("✅ Ambassador response:", response.data);
 
       // Handle different response structures
@@ -77,7 +77,7 @@ export const ambassadorService = {
       };
 
       console.log("📤 Sending ambassador data:", ambassadorData);
-      const response = await api.post("/ambassadors", ambassadorData);
+      const response = await apiClient.ambassadors.ambassadorsCreate(ambassadorData as any) as any;
       console.log("✅ Create ambassador response:", response.data);
 
       // Handle different response structures
@@ -102,7 +102,7 @@ export const ambassadorService = {
     try {
       console.log("🚀 Updating ambassador with ID:", id, "Data:", data);
 
-      const response = await api.patch(`/ambassadors/${id}`, data);
+      const response = await apiClient.ambassadors.ambassadorsUpdate(id, data as any) as any;
       console.log("✅ Update ambassador response:", response.data);
 
       // Handle different response structures
@@ -123,7 +123,7 @@ export const ambassadorService = {
   delete: async (id: string): Promise<void> => {
     try {
       console.log("🗑️ Deleting ambassador with ID:", id);
-      await api.delete(`/ambassadors/${id}`);
+      await apiClient.ambassadors.ambassadorsDelete(id);
       console.log("✅ Ambassador deleted successfully");
     } catch (error) {
       console.error("❌ Failed to delete ambassador:", error);
@@ -135,7 +135,7 @@ export const ambassadorService = {
   getByCampus: async (campusId: string): Promise<Ambassador[]> => {
     try {
       console.log("🚀 Fetching ambassadors for campus:", campusId);
-      const response = await api.get(`/ambassadors/campus/${campusId}`);
+      const response = await apiClient.ambassadors.campusDetail(campusId) as any;
       console.log("✅ Campus ambassadors response:", response.data);
 
       // Handle different response structures

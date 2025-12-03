@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { SearchInput } from "../SearchInput/SearchInput";
 import "./AddAmbassadorModal.css";
+import { apiClient } from "../../API";
+import { CSpinner } from "@coreui/react";
 
 interface Student {
   id: string;
@@ -25,40 +27,37 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
   const [searchResults, setSearchResults] = useState<Student[]>([]);
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSearch = () => {
-    // TODO: Replace with real API call
-    const mockResults: Student[] = [
-      {
-        id: "1",
-        name: "Anni Campbell",
-        email: "AnniC@FIU.edu.co",
-        avatar: "https://via.placeholder.com/48",
-      },
-      {
-        id: "2",
-        name: "Anni Smith",
-        email: "AnniS@FIU.edu.co",
-        avatar: "https://via.placeholder.com/48",
-      },
-      {
-        id: "3",
-        name: "Anni Thompson",
-        email: "AnniT@FIU.edu.co",
-        avatar: "https://via.placeholder.com/48",
-      },
-      {
-        id: "4",
-        name: "Anni Jones",
-        email: "AnniJ@FIU.edu.co",
-        avatar: "https://via.placeholder.com/48",
-      },
-    ];
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
 
-    setSearchResults(mockResults);
-    setHasSearched(true);
+    setIsLoading(true);
+    try {
+      const res = await apiClient.api.adminV2MembersList({
+        search: searchQuery,
+        role: "student",
+        limit: 20,
+      } as any) as any;
+
+      const data = res.data.data || [];
+      const students: Student[] = data.map((user: any) => ({
+        id: user.id || user._id,
+        name: user.name || `${user.first_name} ${user.last_name}`,
+        email: user.email,
+        avatar: user.avatar_url || user.avatar || "https://via.placeholder.com/48",
+      }));
+
+      setSearchResults(students);
+      setHasSearched(true);
+    } catch (error) {
+      console.error("Failed to search students:", error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCheckboxChange = (studentId: string) => {
@@ -142,30 +141,36 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
             ) : (
               // Results List
               <div className="add-ambassador-results-list">
-                {searchResults.map((student) => (
-                  <div key={student.id} className="add-ambassador-student-item">
-                    <input
-                      data-testid="add-ambassador-student-checkbox"
-                      type="checkbox"
-                      className="add-ambassador-checkbox"
-                      checked={selectedStudents.includes(student.id)}
-                      onChange={() => handleCheckboxChange(student.id)}
-                    />
-                    <img
-                      src={student.avatar}
-                      alt={student.name}
-                      className="add-ambassador-student-avatar"
-                    />
-                    <div className="add-ambassador-student-info">
-                      <p className="add-ambassador-student-name">
-                        {student.name}
-                      </p>
-                      <p className="add-ambassador-student-email">
-                        {student.email}
-                      </p>
-                    </div>
+                {isLoading ? (
+                  <div className="d-flex justify-content-center p-4">
+                    <CSpinner color="primary" />
                   </div>
-                ))}
+                ) : (
+                  searchResults.map((student) => (
+                    <div key={student.id} className="add-ambassador-student-item">
+                      <input
+                        data-testid="add-ambassador-student-checkbox"
+                        type="checkbox"
+                        className="add-ambassador-checkbox"
+                        checked={selectedStudents.includes(student.id)}
+                        onChange={() => handleCheckboxChange(student.id)}
+                      />
+                      <img
+                        src={student.avatar}
+                        alt={student.name}
+                        className="add-ambassador-student-avatar"
+                      />
+                      <div className="add-ambassador-student-info">
+                        <p className="add-ambassador-student-name">
+                          {student.name}
+                        </p>
+                        <p className="add-ambassador-student-email">
+                          {student.email}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </div>
@@ -182,9 +187,8 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
           </button>
           <button
             data-testid="add-ambassador-confirm-btn"
-            className={`add-ambassador-confirm-button ${
-              selectedStudents.length === 0 ? "disabled" : ""
-            }`}
+            className={`add-ambassador-confirm-button ${selectedStudents.length === 0 ? "disabled" : ""
+              }`}
             onClick={handleConfirm}
             disabled={selectedStudents.length === 0}
           >
