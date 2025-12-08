@@ -5,6 +5,7 @@ import { StatusBadge } from "../../pages-v2/Campus/components/StatusBadge";
 import { CustomToast } from "../CustomToast/CustomToast";
 import { BanUserModal } from "../BanUserModal/BanUserModal";
 import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
+import { CopyableId } from "../CopyableId/CopyableId";
 import "./StudentProfileModal.css";
 
 export interface StudentProfileData {
@@ -91,17 +92,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
     setShowToast(true);
   };
 
-  const handleCopyUserId = () => {
-    navigator.clipboard.writeText(student.userId);
-    setToastMessage("User ID copied to clipboard");
-    setShowToast(true);
-  };
 
-  const handleCopyReportId = (reportId: string) => {
-    navigator.clipboard.writeText(reportId);
-    setToastMessage("Report ID copied to clipboard");
-    setShowToast(true);
-  };
+
+
 
   const handleBanClick = () => {
     setIsTransitioning(true);
@@ -231,17 +224,12 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               <div className="report-history-row">
                 <span className="report-history-label">Report ID:</span>
                 <div className="report-id-container">
-                  <div className="report-id-badge">
-                    <span className="report-id-text">{report.reportId}</span>
-                  </div>
-                  <button
-                    data-testid="profile-copy-report-id-btn"
-                    className="profile-copy-btn"
-                    onClick={() => handleCopyReportId(report.reportId)}
-                    title="Copy report ID"
-                  >
-                    <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                  </button>
+                  <CopyableId
+                    id={report.reportId}
+                    collapsed={true}
+                    showToast={true}
+                    testId={`profile-report-id-${idx}`}
+                  />
                 </div>
               </div>
 
@@ -331,9 +319,8 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
         {/* View de Profile */}
         <div
-          className={`profile-container ${
-            currentView === "profile" ? "view-active" : "view-hidden"
-          } ${isTransitioning ? "view-transitioning" : ""}`}
+          className={`profile-container ${currentView === "profile" ? "view-active" : "view-hidden"
+            } ${isTransitioning ? "view-transitioning" : ""}`}
         >
           <div className="profile-header">
             <div className="profile-user-section">
@@ -369,20 +356,12 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 </div>
 
                 <div className="profile-userid-row">
-                  <div className="profile-userid-badge">
-                    <span className="profile-userid-text">
-                      {student.userId}
-                    </span>
-                  </div>
-                  <button
-                    data-testid="profile-copy-userid-btn"
-                    className="profile-copy-btn"
-                    onClick={handleCopyUserId}
-                    title="Copy user ID"
-                    aria-label="Copy user ID to clipboard"
-                  >
-                    <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                  </button>
+                  <CopyableId
+                    id={student.userId}
+                    collapsed={true}
+                    showToast={true}
+                    testId="profile-userid"
+                  />
                 </div>
               </div>
             </div>
@@ -529,9 +508,8 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
         {/* View de Ban User */}
         <div
-          className={`modal-view-container ${
-            currentView === "ban" ? "view-active" : "view-hidden"
-          } ${isTransitioning ? "view-transitioning" : ""}`}
+          className={`modal-view-container ${currentView === "ban" ? "view-active" : "view-hidden"
+            } ${isTransitioning ? "view-transitioning" : ""}`}
         >
           {currentView === "ban" && (
             <BanUserModal
@@ -546,9 +524,8 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
         {/* View de Deactivate User */}
         <div
-          className={`modal-view-container ${
-            currentView === "deactivate" ? "view-active" : "view-hidden"
-          } ${isTransitioning ? "view-transitioning" : ""}`}
+          className={`modal-view-container ${currentView === "deactivate" ? "view-active" : "view-hidden"
+            } ${isTransitioning ? "view-transitioning" : ""}`}
         >
           {currentView === "deactivate" && (
             <DeactivateUserModal
