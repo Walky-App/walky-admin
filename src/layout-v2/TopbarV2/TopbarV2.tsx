@@ -75,8 +75,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         let schools: any[] = [];
 
         if (isSuper) {
-          const response = await apiClient.api.adminV2SchoolsList() as any;
-          console.log('Schools API response:', response);
+          const response = (await apiClient.api.adminV2SchoolsList()) as any;
+          console.log("Schools API response:", response);
 
           let rawSchools: any[] = [];
 
@@ -85,7 +85,11 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             rawSchools = response;
           } else if (response && Array.isArray(response.data)) {
             rawSchools = response.data;
-          } else if (response && response.data && Array.isArray(response.data.data)) {
+          } else if (
+            response &&
+            response.data &&
+            Array.isArray(response.data.data)
+          ) {
             rawSchools = response.data.data;
           }
 
@@ -95,10 +99,12 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             _id: s._id || s.id,
             id: s.id || s._id,
           }));
-          console.log('Parsed schools:', schools);
+          console.log("Parsed schools:", schools);
         } else {
-          const response = await apiClient.api.schoolDetail(user.school_id!) as any;
-          console.log('School detail API response:', response);
+          const response = (await apiClient.api.schoolDetail(
+            user.school_id!
+          )) as any;
+          console.log("School detail API response:", response);
           const data = response.data || response;
           const rawSchools = data ? [data] : [];
 
@@ -110,7 +116,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           }));
         }
 
-        console.log('Setting available schools:', schools);
+        console.log("Setting available schools:", schools);
         setAvailableSchools(schools);
 
         // Auto-select first school if none selected
@@ -148,7 +154,9 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             query.school_id = selectedSchool._id || selectedSchool.id;
           }
 
-          const response = await apiClient.api.adminV2CampusesList({ query } as any) as any;
+          const response = (await apiClient.api.adminV2CampusesList({
+            query,
+          } as any)) as any;
           const responseData = response.data || response;
 
           let rawCampuses: any[] = [];
@@ -166,11 +174,13 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             _id: c._id || c.id,
             id: c.id || c._id,
             school_id: c.school_id || c.schoolId,
-            is_active: c.is_active ?? (c.status === 'Active'),
+            is_active: c.is_active ?? c.status === "Active",
             image_url: c.image_url || c.imageUrl,
           }));
         } else {
-          const response = await apiClient.api.campusesDetail(user.campus_id!) as any;
+          const response = (await apiClient.api.campusesDetail(
+            user.campus_id!
+          )) as any;
           const data = response.data || response;
           let rawCampuses: any[] = [];
 
@@ -195,7 +205,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         const hasCampuses = campuses.length > 0;
 
         // If we have a selected campus, check if it's in the new list
-        const isSelectedInList = selectedCampus && campuses.some(c => c._id === selectedCampus._id);
+        const isSelectedInList =
+          selectedCampus && campuses.some((c) => c._id === selectedCampus._id);
 
         if (!isSelectedInList) {
           if (hasCampuses) {
@@ -223,8 +234,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
   const userAvatar =
     user?.avatar_url ||
     "https://ui-avatars.com/api/?name=" +
-    encodeURIComponent(userName) +
-    "&background=4A5568&color=fff";
+      encodeURIComponent(userName) +
+      "&background=4A5568&color=fff";
 
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -265,7 +276,11 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                   <span className="selector-btn-text">
                     {selectedSchool?.school_name || "School"}
                   </span>
-                  <AssetIcon name="arrow-down" size={18} />
+                  <AssetIcon
+                    name="arrow-down"
+                    size={18}
+                    fill="var(--v2-neutral-black-main-500)"
+                  />
                 </button>
                 <button
                   className="selector-icon-btn"
@@ -282,7 +297,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                   <AssetIcon
                     name="arrow-down"
                     size={18}
-                    color={theme.colors.bodyColor}
+                    fill="var(--v2-neutral-black-main-500)"
                   />
                 </button>
               </>
@@ -310,7 +325,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                             <AssetIcon
                               name="arrow-down"
                               size={20}
-                              color={theme.colors.bodyColor}
+                              fill="var(--v2-neutral-black-main-500)"
                             />
                           </>
                         )}
@@ -356,7 +371,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                             <AssetIcon
                               name="arrow-down"
                               size={20}
-                              color={theme.colors.bodyColor}
+                              fill="var(--v2-neutral-black-main-500)"
                             />
                           </>
                         )}
@@ -406,7 +421,12 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             <CDropdown className="user-dropdown">
               <CDropdownToggle color="link" className="user-toggle">
                 <span className="user-name">{userName}</span>
-                <AssetIcon name="arrow-down" color={theme.colors.bodyColor} />
+                <AssetIcon
+                  name="arrow-down"
+                  size={20}
+                  fill="var(--v2-neutral-black-main-500)"
+                />
+
                 <div className="user-avatar-wrapper">
                   <img
                     src={userAvatar}
@@ -427,7 +447,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                   <AssetIcon
                     name="arrow-down"
                     size={24}
-                    color={theme.colors.bodyColor}
+                    fill="var(--v2-neutral-black-main-500)"
                   />
                 </CDropdownItem>
                 <CDropdownItem
@@ -466,8 +486,9 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {availableSchools.map((school: School) => (
               <button
                 key={school._id}
-                className={`modal-list-item ${selectedSchool?._id === school._id ? "active" : ""
-                  }`}
+                className={`modal-list-item ${
+                  selectedSchool?._id === school._id ? "active" : ""
+                }`}
                 onClick={() => {
                   setSelectedSchool(school);
                   setSchoolModalOpen(false);
@@ -498,8 +519,9 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             {availableCampuses.map((campus: Campus) => (
               <button
                 key={campus._id}
-                className={`modal-list-item ${selectedCampus?._id === campus._id ? "active" : ""
-                  }`}
+                className={`modal-list-item ${
+                  selectedCampus?._id === campus._id ? "active" : ""
+                }`}
                 onClick={() => {
                   setSelectedCampus(campus);
                   setCampusModalOpen(false);

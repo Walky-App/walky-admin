@@ -7,7 +7,7 @@
 }
 
 .last-updated-left {
-  padding: 20px 32px;
+  padding: 5px 32px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -22,14 +22,18 @@
 }
 
 .last-updated-text {
-  font-family: "Lato", sans-serif;
-  font-weight: 400;
+  font-family: Lato;
   font-size: 14px;
-  line-height: 1;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
   margin: 0;
 }
 
 .suggest-link {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  line-height: normal;
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;

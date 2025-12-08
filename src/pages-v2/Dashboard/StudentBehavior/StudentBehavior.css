@@ -205,7 +205,7 @@
   display: flex;
   align-items: center;
   gap: var(--v2-spacing-2);
-  margin-bottom: var(--v2-spacing-8);
+  margin-bottom: 30px;
 }
 
 .student-behavior-page .completion-title {
@@ -221,7 +221,8 @@
   background-color: var(--v2-bg-card);
   border: 1px solid var(--v2-border-light);
   border-radius: var(--v2-radius-lg);
-  padding: var(--v2-spacing-8);
+  padding: 32px var(--v2-spacing-24);
+  box-shadow: 6px 6px 54px 0px rgba(0, 0, 0, 0.05);
 }
 
 .student-behavior-page .completion-metrics-row {
