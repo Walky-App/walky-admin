@@ -336,7 +336,6 @@ const Engagement: React.FC = () => {
                 subLabels={retentionSubLabels}
                 color="#5e00b6"
                 backgroundColor="rgba(94, 0, 182, 0.2)"
-                maxValue={100000}
               />
             </CCol>
             <CCol xs={12} lg={6}>
