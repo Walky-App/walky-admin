@@ -64,8 +64,8 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
   const [toastMessage, setToastMessage] = useState("");
 
   const deleteMutation = useMutation({
-    mutationFn: (data: { id: string; reason: string }) =>
-      apiClient.api.adminV2SpacesDelete(data.id),
+    mutationFn: (data: { id: string; reason?: string }) =>
+      apiClient.api.adminV2SpacesDelete(data.id, { reason: data.reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setToastMessage(`Space deleted successfully`);
