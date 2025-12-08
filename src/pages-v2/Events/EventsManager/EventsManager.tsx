@@ -7,6 +7,7 @@ import {
   FilterDropdown,
   NoData,
 } from "../../../components-v2";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { EventTable } from "../components/EventTable/EventTable";
 import { EventTableSkeleton } from "../components/EventTableSkeleton/EventTableSkeleton";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
@@ -19,6 +20,7 @@ export const EventsManager: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,12 +38,12 @@ export const EventsManager: React.FC = () => {
   }, [searchInput]);
 
   const { data: eventsData, isLoading } = useQuery({
-    queryKey: ["events", currentPage, searchQuery, typeFilter, statusFilter, sortBy, sortOrder],
+    queryKey: ["events", currentPage, debouncedSearchQuery, typeFilter, statusFilter, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2EventsList({
         page: currentPage,
         limit: 10,
-        search: searchQuery,
+        search: debouncedSearchQuery,
         type: typeFilter,
         status: statusFilter as "all" | "upcoming" | "ongoing" | "finished" | undefined,
         sortBy,

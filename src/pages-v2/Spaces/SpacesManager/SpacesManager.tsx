@@ -7,6 +7,7 @@ import {
   Pagination,
   NoData,
 } from "../../../components-v2";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
 import "./SpacesManager.css";
@@ -21,6 +22,7 @@ export type SpaceSortField = "spaceName" | "members" | "creationDate";
 
 export const SpacesManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -79,12 +81,12 @@ export const SpacesManager: React.FC = () => {
   }, []);
 
   const { data: spacesData, isLoading } = useQuery({
-    queryKey: ["spaces", currentPage, searchQuery, categoryFilter, sortBy, sortOrder],
+    queryKey: ["spaces", currentPage, debouncedSearchQuery, categoryFilter, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2SpacesList({
         page: currentPage,
         limit: 10,
-        search: searchQuery,
+        search: debouncedSearchQuery,
         category: categoryFilter,
         sortBy,
         sortOrder,
