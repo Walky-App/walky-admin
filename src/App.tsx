@@ -68,6 +68,7 @@ import { apiClient } from "./API/index.ts";
 import LoginV2 from "./pages-v2/LoginV2/LoginV2";
 import { useSchool } from "./contexts/SchoolContext";
 import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2/RecoverPasswordV2.tsx";
+import ForcePasswordChange from "./pages-v2/ForcePasswordChange/ForcePasswordChange";
 
 type DashboardProps = {
   theme: AppTheme;
@@ -1220,6 +1221,7 @@ function App() {
 
       {/* V2 Auth Routes */}
       <Route path="/recover-password" element={<RecoverPasswordV2 />} />
+      <Route path="/force-password-change" element={<ForcePasswordChange />} />
 
       {/* Redirect old /v2/* paths to new root paths */}
       <Route path="/v2/*" element={<V2RedirectHandler />} />

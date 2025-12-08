@@ -346,18 +346,10 @@ export const ReportSafety: React.FC = () => {
                 const reasonColors = getReasonColor(report.reasonTag);
                 return (
                   <React.Fragment key={report.id}>
-                    <tr className={report.isFlagged ? "flagged-row" : ""}>
+                    <tr>
                       <td>
                         <div className="report-description-cell">
-                          {report.isFlagged && (
-                            <div className="flag-icon-wrapper">
-                              <AssetIcon
-                                name="flag-icon"
-                                size={16}
-                                color="#d32f2f"
-                              />
-                            </div>
-                          )}
+
                           <div className="report-content-wrapper">
                             <p
                               className="report-description"

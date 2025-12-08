@@ -61,8 +61,15 @@ const LoginV2: React.FC = () => {
           avatar_url: userData.avatar_url,
           campus_id: userData.campus_id,
           school_id: userData.school_id,
+          require_password_change: !!responseData.require_password_change,
         })
       );
+
+      // Check if password change is required
+      if (responseData.require_password_change) {
+        window.location.href = "/force-password-change";
+        return;
+      }
 
       // Reload to update auth state (since useAuth reads from localStorage on mount)
       window.location.href = "/";

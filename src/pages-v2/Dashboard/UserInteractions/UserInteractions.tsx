@@ -118,7 +118,6 @@ const UserInteractions: React.FC = () => {
             subLabels={chartSubLabels}
             color="#ebb129"
             backgroundColor="rgba(235, 177, 41, 0.2)"
-            maxValue={100000}
           />
         </CCol>
         <CCol xs={12} lg={6}>
@@ -129,7 +128,6 @@ const UserInteractions: React.FC = () => {
             subLabels={chartSubLabels}
             color="#ff8050"
             backgroundColor="rgba(255, 128, 80, 0.2)"
-            maxValue={100000}
           />
         </CCol>
       </CRow>

@@ -226,6 +226,14 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     encodeURIComponent(userName) +
     "&background=4A5568&color=fff";
 
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    // Reload/Redirect to login
+    window.location.href = "/login";
+  };
+
   return (
     <div className="topbar-v2">
       <CContainer fluid className="topbar-container">
@@ -423,7 +431,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                   />
                 </CDropdownItem>
                 <CDropdownItem
-                  href="/logout"
+                  href="#"
+                  onClick={handleLogout}
                   className="user-dropdown-item logout-item"
                 >
                   <span>Logout</span>

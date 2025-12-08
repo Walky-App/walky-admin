@@ -553,11 +553,11 @@ export const ReportHistory: React.FC = () => {
           reportType={selectedReport.type as ReportType}
           reportData={{
             associatedUser: {
-              name: reportDetails?.associatedUser?.name || "Unknown User",
+              name: reportDetails?.reportedUser?.name || "Unknown User",
               id: reportDetails?.studentId || selectedReport.studentId,
-              avatar: reportDetails?.associatedUser?.avatar || "",
-              isBanned: reportDetails?.associatedUser?.isBanned || false,
-              isDeactivated: reportDetails?.associatedUser?.isDeactivated || false,
+              avatar: reportDetails?.reportedUser?.avatar || "",
+              isBanned: reportDetails?.reportedUser?.isBanned || false,
+              isDeactivated: reportDetails?.reportedUser?.isDeactivated || false,
             },
             status: (reportDetails?.status || selectedReport.status) as ReportStatus,
             reason: reportDetails?.reason || selectedReport.reason,
@@ -566,9 +566,9 @@ export const ReportHistory: React.FC = () => {
             contentId: reportDetails?.contentId || reportDetails?.id || selectedReport.id,
             description: reportDetails?.description || selectedReport.description,
             reportingUser: {
-              name: reportDetails?.reportingUser?.name || "Unknown Reporter",
-              id: reportDetails?.reportingUser?.id || "N/A",
-              avatar: reportDetails?.reportingUser?.avatar || "",
+              name: reportDetails?.reporter?.name || "Unknown Reporter",
+              id: reportDetails?.reporter?.id || "N/A",
+              avatar: reportDetails?.reporter?.avatar || "",
             },
             content: reportDetails?.content || {},
             safetyRecord: reportDetails?.safetyRecord || {

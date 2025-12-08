@@ -132,7 +132,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     e.stopPropagation();
     try {
       const response = await apiClient.api.adminV2SpacesDetail(space.id);
-      const details = response.data;
+      const details = response.data as any;
       console.log("API Space Details Response:", details);
 
       // Map API response to SpaceDetailsData
@@ -147,10 +147,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         creationDate: details.createdAt ? new Date(details.createdAt).toLocaleDateString() : "N/A",
         creationTime: details.createdAt ? new Date(details.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A",
         category: details.category?.name || "Other",
-        chapter: "FIU Official", // Placeholder
-        contact: "fiuhonduras@gmail.com", // Placeholder
-        about: details.description || "No description provided.",
-        howWeUse: "We post events and offer general information about how to get involved.", // Placeholder
+        chapter: details.chapter || "N/A",
+        contact: details.contact || "N/A",
+        about: details.about || details.description || "No description provided.",
+        howWeUse: details.howWeUse || "N/A",
         description: details.description || "",
         events: (details.events || []).map((ev: any) => ({
           id: ev.id || "",
@@ -167,10 +167,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         })),
         spaceImage: details.cover_image_url,
         spaceLogo: details.logo_url,
-        memberRange: "1-10", // Placeholder or calculate
-        yearEstablished: details.createdAt ? new Date(details.createdAt).getFullYear().toString() : "N/A",
-        governingBody: "Interfraternity", // Placeholder
-        primaryFocus: "Social", // Placeholder
+        memberRange: details.memberRange || "1-10",
+        yearEstablished: details.yearEstablished ? details.yearEstablished.toString() : (details.createdAt ? new Date(details.createdAt).getFullYear().toString() : "N/A"),
+        governingBody: details.governingBody || "N/A",
+        primaryFocus: details.primaryFocus || "N/A",
         isFlagged: details.isFlagged,
         flagReason: details.flagReason,
       };
