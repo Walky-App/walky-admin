@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./EventsInsights.css";
-import { AssetIcon, ExportButton, EventDetailsModal, EventDetailsData } from "../../../components-v2";
+import {
+  AssetIcon,
+  ExportButton,
+  EventDetailsModal,
+  EventDetailsData,
+} from "../../../components-v2";
 import API, { apiClient } from "../../../API";
 
 interface Interest {
@@ -17,10 +22,7 @@ interface EventItem {
   image?: string;
 }
 
-import {
-  DonutChart,
-  DashboardSkeleton
-} from "../../Dashboard/components";
+import { DonutChart, DashboardSkeleton } from "../../Dashboard/components";
 import "./EventsInsights.css";
 
 import { useSchool } from "../../../contexts/SchoolContext";
@@ -45,20 +47,20 @@ export const EventsInsights: React.FC = () => {
 
   const handleExport = async () => {
     try {
-      const response = await API.get('/admin/v2/dashboard/events-insights', {
+      const response = await API.get("/admin/v2/dashboard/events-insights", {
         params: {
-          period: timePeriod === 'all' ? 'all-time' : timePeriod,
-          export: 'true',
+          period: timePeriod === "all" ? "all-time" : timePeriod,
+          export: "true",
           schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
+          campusId: selectedCampus?._id,
         },
-        responseType: 'blob',
+        responseType: "blob",
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `events_insights_stats_${timePeriod}.csv`);
+      link.setAttribute("download", `events_insights_stats_${timePeriod}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -76,7 +78,9 @@ export const EventsInsights: React.FC = () => {
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 
   // Modal state
-  const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleEventClick = async (eventId: string) => {
@@ -90,24 +94,30 @@ export const EventsInsights: React.FC = () => {
         eventName: event.name,
         eventImage: event.image_url,
         organizer: {
-          name: event.created_by ? `${event.created_by.first_name} ${event.created_by.last_name}` : 'Unknown',
-          studentId: event.created_by?._id || '',
-          avatar: event.created_by?.avatar_url
+          name: event.created_by
+            ? `${event.created_by.first_name} ${event.created_by.last_name}`
+            : "Unknown",
+          studentId: event.created_by?._id || "",
+          avatar: event.created_by?.avatar_url,
         },
         date: new Date(event.date_and_time).toLocaleDateString(),
-        time: new Date(event.date_and_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        place: event.location || event.address || 'Unknown location',
+        time: new Date(event.date_and_time).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        place: event.location || event.address || "Unknown location",
         type: event.visibility,
-        description: event.description || '',
+        description: event.description || "",
         attendees: (event.participants || []).map((p: any) => ({
-          id: p.user_id?._id || p._id,
-          name: p.user_id ? `${p.user_id.first_name} ${p.user_id.last_name}` : 'Unknown',
-          avatar: p.user_id?.avatar_url
+          id: p.user_id || p._id,
+          name: p.name || "Unknown",
+          avatar: p.avatar_url,
         })),
         maxAttendees: event.slots || 0,
-        isFlagged: false // Backend doesn't seem to provide this yet
+        isFlagged: false, // Backend doesn't seem to provide this yet
       };
 
+      console.log("Fetched event details:", eventDetails);
       setSelectedEvent(eventDetails);
       setIsModalOpen(true);
     } catch (error) {
@@ -120,9 +130,9 @@ export const EventsInsights: React.FC = () => {
       setLoading(true);
       try {
         const res = await apiClient.api.adminV2DashboardEventsInsightsList({
-          period: timePeriod === 'all' ? 'all-time' : timePeriod,
+          period: timePeriod === "all" ? "all-time" : timePeriod,
           schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
+          campusId: selectedCampus?._id,
         });
         const data = res.data as any;
 
@@ -173,7 +183,9 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="calendar-icon" size={27} color="#FF6B35" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.totalEvents.toLocaleString()}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.totalEvents.toLocaleString()}
+          </p>
         </div>
 
         <div className="stats-card">
@@ -183,7 +195,9 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.publicEvents.toLocaleString()}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.publicEvents.toLocaleString()}
+          </p>
         </div>
 
         <div className="stats-card">
@@ -195,7 +209,9 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.privateEvents.toLocaleString()}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.privateEvents.toLocaleString()}
+          </p>
         </div>
       </div>
 
@@ -222,7 +238,9 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.avgPublicAttendees}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.avgPublicAttendees}
+          </p>
         </div>
 
         <div className="stats-card">
@@ -234,7 +252,9 @@ export const EventsInsights: React.FC = () => {
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.avgPrivateAttendees}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.avgPrivateAttendees}
+          </p>
         </div>
       </div>
 
@@ -275,32 +295,34 @@ export const EventsInsights: React.FC = () => {
           </h2>
         </div>
         <div className="interests-list">
-          {interests.length > 0 ? interests.map((interest, index) => (
-            <div key={index} className="interest-item">
-              <div className="interest-icon">
-                <div className="icon-background">
-                  {/* Interest icon would go here */}
-                  <div className="icon-placeholder" />
+          {interests.length > 0 ? (
+            interests.map((interest, index) => (
+              <div key={index} className="interest-item">
+                <div className="interest-icon">
+                  <div className="icon-background">
+                    {/* Interest icon would go here */}
+                    <div className="icon-placeholder" />
+                  </div>
                 </div>
-              </div>
-              <div className="interest-info">
-                <div className="interest-details">
-                  <p className="interest-name">{interest.name}</p>
-                  <p className="interest-students">
-                    {interest.students} students ({interest.percentage}%)
-                  </p>
-                </div>
-                <div className="interest-progress">
-                  <div className="progress-bar-bg">
-                    <div
-                      className="progress-bar-fill"
-                      style={{ width: `${(interest.students / 19) * 19}%` }}
-                    />
+                <div className="interest-info">
+                  <div className="interest-details">
+                    <p className="interest-name">{interest.name}</p>
+                    <p className="interest-students">
+                      {interest.students} students ({interest.percentage}%)
+                    </p>
+                  </div>
+                  <div className="interest-progress">
+                    <div className="progress-bar-bg">
+                      <div
+                        className="progress-bar-fill"
+                        style={{ width: `${(interest.students / 19) * 19}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )) : (
+            ))
+          ) : (
             <div className="p-4 text-center text-muted">
               No interest data available
             </div>
@@ -326,12 +348,16 @@ export const EventsInsights: React.FC = () => {
                 key={event.rank}
                 className="event-list-item clickable"
                 onClick={() => handleEventClick(event.id)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
                   {event.image ? (
-                    <img src={event.image} alt={event.name} className="event-image" />
+                    <img
+                      src={event.image}
+                      alt={event.name}
+                      className="event-image"
+                    />
                   ) : (
                     <div className="event-image-placeholder" />
                   )}
@@ -359,12 +385,16 @@ export const EventsInsights: React.FC = () => {
                 key={event.rank}
                 className="event-list-item clickable"
                 onClick={() => handleEventClick(event.id)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 <div className="event-item-left">
                   <span className="event-rank">{event.rank}.</span>
                   {event.image ? (
-                    <img src={event.image} alt={event.name} className="event-image" />
+                    <img
+                      src={event.image}
+                      alt={event.name}
+                      className="event-image"
+                    />
                   ) : (
                     <div className="event-image-placeholder" />
                   )}
@@ -381,6 +411,6 @@ export const EventsInsights: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         eventData={selectedEvent}
       />
-    </main >
+    </main>
   );
 };
