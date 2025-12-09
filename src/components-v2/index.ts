@@ -39,6 +39,8 @@ export type { FlagUserModalProps } from "./FlagUserModal";
 export { IdeaDetailsModal } from "./IdeaDetailsModal";
 export type { IdeaDetailsData, IdeaCollaborator } from "./IdeaDetailsModal";
 export { LastUpdated } from "./LastUpdated";
+export { NoData } from "./NoData";
+export type { NoDataProps, NoDataType } from "./NoData";
 export { ReportDetailsModal } from "./ReportDetailsModal";
 export { ReportDetailModal } from "./ReportDetailModal";
 export type { ReportType, ReportStatus, SafetyTab } from "./ReportDetailModal";

@@ -5,6 +5,7 @@ import {
   ExportButton,
   EventDetailsModal,
   EventDetailsData,
+  NoData,
 } from "../../../components-v2";
 import API, { apiClient } from "../../../API";
 
@@ -83,6 +84,8 @@ export const EventsInsights: React.FC = () => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log("Selected School:", interests);
+
   const handleEventClick = async (eventId: string) => {
     try {
       const res = await apiClient.api.adminV2EventsDetail(eventId);
@@ -117,7 +120,6 @@ export const EventsInsights: React.FC = () => {
         isFlagged: false, // Backend doesn't seem to provide this yet
       };
 
-      console.log("Fetched event details:", eventDetails);
       setSelectedEvent(eventDetails);
       setIsModalOpen(true);
     } catch (error) {
@@ -135,6 +137,8 @@ export const EventsInsights: React.FC = () => {
           campusId: selectedCampus?._id,
         });
         const data = res.data as any;
+
+        console.log("Fetched events insights data:", data);
 
         if (data) {
           setStats({
@@ -323,9 +327,7 @@ export const EventsInsights: React.FC = () => {
               </div>
             ))
           ) : (
-            <div className="p-4 text-center text-muted">
-              No interest data available
-            </div>
+            <NoData type="primary" message="No data yet" />
           )}
         </div>
       </div>
