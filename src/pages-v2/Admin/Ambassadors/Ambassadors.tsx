@@ -5,6 +5,7 @@ import {
   AddAmbassadorModal,
   CustomToast,
   Divider,
+  Pagination,
 } from "../../../components-v2";
 import { CopyableId } from "../../../components-v2/CopyableId";
 import "./Ambassadors.css";
@@ -48,10 +49,10 @@ export const Ambassadors: React.FC = () => {
   const fetchAmbassadors = async () => {
     setLoading(true);
     try {
-      const res = await apiClient.ambassadors.ambassadorsList({
+      const res = (await apiClient.ambassadors.ambassadorsList({
         page: currentPage,
         limit: 10,
-      } as any) as any;
+      } as any)) as any;
 
       const data = res.data.data || [];
 
@@ -61,8 +62,20 @@ export const Ambassadors: React.FC = () => {
         name: a.name || "Unknown",
         avatar: a.avatar_url || "",
         major: a.major || "Unknown",
-        ambassadorSince: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown",
-        memberSince: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown",
+        ambassadorSince: a.createdAt
+          ? new Date(a.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
+          : "Unknown",
+        memberSince: a.createdAt
+          ? new Date(a.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
+          : "Unknown",
         status: a.is_active ? "Active" : "Inactive",
       }));
 
@@ -94,13 +107,18 @@ export const Ambassadors: React.FC = () => {
   const confirmAddAmbassadors = async (selectedStudents: Student[]) => {
     try {
       // Add each selected student as ambassador
-      await Promise.all(selectedStudents.map(student =>
-        apiClient.ambassadors.ambassadorsCreate({ user_id: student.id } as any)
-      ));
+      await Promise.all(
+        selectedStudents.map((student) =>
+          apiClient.ambassadors.ambassadorsCreate({
+            user_id: student.id,
+          } as any)
+        )
+      );
 
       console.log("Adding ambassadors:", selectedStudents);
       setToastMessage(
-        `${selectedStudents.length} ambassador${selectedStudents.length > 1 ? "s" : ""
+        `${selectedStudents.length} ambassador${
+          selectedStudents.length > 1 ? "s" : ""
         } added successfully`
       );
       setShowToast(true);
@@ -222,11 +240,21 @@ export const Ambassadors: React.FC = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
+                  <td
+                    colSpan={7}
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    Loading...
+                  </td>
                 </tr>
               ) : ambassadors.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>No ambassadors found</td>
+                  <td
+                    colSpan={7}
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    No ambassadors found
+                  </td>
                 </tr>
               ) : (
                 ambassadors.map((ambassador, index) => (
@@ -301,36 +329,20 @@ export const Ambassadors: React.FC = () => {
                       </tr>
                     )}
                   </React.Fragment>
-                )))}
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div className="pagination-container">
-          <p className="pagination-info">
-            Showing {ambassadors.length} entries
-          </p>
-          <div className="pagination-controls">
-            <button
-              data-testid="pagination-prev-btn"
-              className="pagination-button"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
-              Previous
-            </button>
-            <div className="page-number active">{currentPage}</div>
-            <button
-              data-testid="pagination-next-btn"
-              className="pagination-button"
-              disabled={ambassadors.length < 10} // Simple check for next page availability
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(ambassadors.length / 10)}
+          totalEntries={ambassadors.length}
+          entriesPerPage={10}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {/* Add Ambassador Modal */}

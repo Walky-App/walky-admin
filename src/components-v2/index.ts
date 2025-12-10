@@ -41,6 +41,7 @@ export type { IdeaDetailsData, IdeaCollaborator } from "./IdeaDetailsModal";
 export { LastUpdated } from "./LastUpdated";
 export { NoData } from "./NoData";
 export type { NoDataProps, NoDataType } from "./NoData";
+export { Pagination } from "./Pagination/Pagination";
 export { ReportDetailsModal } from "./ReportDetailsModal";
 export { ReportDetailModal } from "./ReportDetailModal";
 export type { ReportType, ReportStatus, SafetyTab } from "./ReportDetailModal";

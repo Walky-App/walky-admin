@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import { getFirstName } from "../../../lib/utils/nameUtils";
 import {
   AssetIcon,
   StudentProfileModal,
@@ -130,7 +131,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("Student deactivated successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -141,14 +142,15 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setToastMessage("Error deactivating student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const banMutation = useMutation({
     mutationFn: (data: { id: string; duration: number; reason: string }) =>
-      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, { isLocked: true, lockReason: data.reason }),
+      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, { isLocked: true, lockReason: data.reason,         lockDuration: data.duration,
+ } as any),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("Student banned successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -159,13 +161,14 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setToastMessage("Error banning student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const flagMutation = useMutation({
-    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2StudentsFlagCreate(data.id, { reason: data.reason }),
+    mutationFn: (data: { id: string; reason: string }) =>
+      apiClient.api.adminV2StudentsFlagCreate(data.id, { reason: data.reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("Student flagged successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -177,13 +180,13 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setToastMessage("Error flagging student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const unflagMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsUnflagCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("Student unflagged successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -193,19 +196,23 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setToastMessage("Error unflagging student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const handleViewProfile = async (student: StudentData) => {
     try {
-      const response = await apiClient.api.adminV2StudentsDetail(student.id) as any;
+      const response = (await apiClient.api.adminV2StudentsDetail(
+        student.id
+      )) as any;
       const details = response.data;
 
       // Merge details with existing student data or map completely
       const fullStudentData: StudentData = {
         ...student,
         areaOfStudy: details.areaOfStudy || "N/A",
-        lastLogin: details.lastLogin ? new Date(details.lastLogin).toLocaleDateString() : "N/A",
+        lastLogin: details.lastLogin
+          ? new Date(details.lastLogin).toLocaleDateString()
+          : "N/A",
         totalPeers: details.totalPeers || 0,
         bio: details.bio || "No bio provided",
         // Map other fields as needed
@@ -261,7 +268,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     // Use a default reason or capture it from the modal if FlagUserModal supports it
     // Assuming FlagUserModal might not pass reason back in onConfirm based on current usage
     // If FlagUserModal doesn't support reason, we might need to update it or just send a default
-    flagMutation.mutate({ id: studentToProcess.id, reason: "Flagged by admin" });
+    flagMutation.mutate({
+      id: studentToProcess.id,
+      reason: "Flagged by admin",
+    });
   };
 
   const handleUnflagUser = (student: StudentData) => {
@@ -296,7 +306,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const handleConfirmBan = (
     duration: string,
     reason: string,
-    _resolveReports: boolean,
+    _resolveReports: boolean
   ) => {
     if (!studentToBan) return;
 
@@ -391,7 +401,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                 </div>
               )}
             </div>
-            <span className="student-name">{student.name}</span>
+            <span className="student-name">{getFirstName(student.name)}</span>
           </div>
         </>
       ),
@@ -493,13 +503,13 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           </tr>
         </thead>
 
-
         <tbody>
           {sortedStudents.map((student, index) => (
             <React.Fragment key={student.id}>
               <tr
-                className={`student-table-row ${student.isFlagged ? "student-row-flagged" : ""
-                  }`}
+                className={`student-table-row ${
+                  student.isFlagged ? "student-row-flagged" : ""
+                }`}
                 onClick={() => onStudentClick?.(student)}
               >
                 {columns.map((column) => (
@@ -541,7 +551,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => { },
+                        onClick: () => {},
                       },
                       {
                         label: "Ban user",
@@ -586,7 +596,11 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           else if (duration.includes("30 days")) durationDays = 30;
           else if (duration.includes("Permanent")) durationDays = 36500;
 
-          banMutation.mutate({ id: student.id, duration: durationDays, reason });
+          banMutation.mutate({
+            id: student.id,
+            duration: durationDays,
+            reason,
+          });
           handleCloseProfile();
         }}
         onDeactivateUser={(student) => {

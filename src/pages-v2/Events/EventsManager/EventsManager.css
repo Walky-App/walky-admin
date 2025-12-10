@@ -99,6 +99,35 @@
   margin-bottom: 32px;
 }
 
+.events-filter-dropdown {
+  position: relative;
+}
+
+.events-filter-dropdown .filter-dropdown-menu,
+.events-filter-dropdown ul.dropdown-menu.show.filter-dropdown-menu {
+  padding: 16px 16px 16px 16px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  width: fit-content !important;
+  inset: 0px auto auto 0px !important;
+  transform: translate(0px, 42px) !important;
+}
+
+.events-filter-dropdown .filter-dropdown-menu .dropdown-item {
+  padding: 8px 0 !important;
+  margin: 0 0 8px 0 !important;
+  box-sizing: border-box !important;
+}
+
+.events-filter-dropdown .filter-dropdown-menu .dropdown-item:hover,
+.events-filter-dropdown .filter-dropdown-menu .dropdown-item.active {
+  padding: 8px 16px !important;
+  margin-left: -16px !important;
+  margin-right: -16px !important;
+  margin-bottom: 8px !important;
+  box-sizing: border-box !important;
+}
+
 .events-pagination {
   display: flex;
   align-items: center;
@@ -162,6 +191,18 @@
 .pagination-page-number.active {
   background-color: #ebf1ff;
   border-color: #321fdb;
+}
+
+.pagination-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 37px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5b6168;
 }
 
 .calendar-view-placeholder {
