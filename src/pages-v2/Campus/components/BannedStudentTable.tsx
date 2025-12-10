@@ -11,6 +11,7 @@ import {
   Divider,
   CopyableId,
 } from "../../../components-v2";
+import { getFirstName } from "../../../lib/utils/nameUtils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { StatusBadge } from "./StatusBadge";

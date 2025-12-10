@@ -46,13 +46,11 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   isOpen,
   onClose,
   eventData,
-  onDelete,
-  onFlag,
-  onUnflag,
+  onDelete: _onDelete,
+  onFlag: _onFlag,
+  onUnflag: _onUnflag,
   onCloseAll,
 }) => {
-  if (!eventData) return null;
-
   // Log event data when modal opens
   React.useEffect(() => {
     if (isOpen && eventData) {
@@ -63,6 +61,8 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   const handleBack = () => {
     onClose();
   };
+
+  if (!eventData) return null;
 
   const handleCloseAll = () => {
     if (onCloseAll) {
@@ -246,10 +246,10 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     {eventData.type === "private" && attendee.status && (
                       <div className="event-attendee-status">
                         {attendee.status === "confirmed" && (
-                          <AssetIcon name="check" size={16} />
+                          <AssetIcon name="check-icon" size={16} />
                         )}
                         {attendee.status === "declined" && (
-                          <AssetIcon name="x" size={16} />
+                          <AssetIcon name="x-icon" size={16} />
                         )}
                         {attendee.status === "pending" && (
                           <div className="status-pending-dot"></div>

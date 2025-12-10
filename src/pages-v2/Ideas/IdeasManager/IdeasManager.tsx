@@ -34,7 +34,6 @@ export const IdeasManager: React.FC = () => {
   }));
 
   const totalPages = Math.ceil((ideasData?.data.total || 0) / 10);
-  const startEntry = (currentPage - 1) * 10 + 1;
   const totalEntries = ideasData?.data.total || 0;
 
   return (
