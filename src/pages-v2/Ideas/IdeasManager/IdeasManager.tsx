@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import "./IdeasManager.css";
 import { IdeasTable } from "../components/IdeasTable/IdeasTable";
@@ -19,6 +19,7 @@ export const IdeasManager: React.FC = () => {
         limit: 10,
         search: searchQuery,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const filteredIdeas = (ideasData?.data.data || []).map((idea: any) => ({

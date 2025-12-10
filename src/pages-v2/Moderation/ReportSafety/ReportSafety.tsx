@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import "./ReportSafety.css";
 import {
@@ -21,7 +21,9 @@ import {
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import SkeletonLoader from "../../../components/SkeletonLoader";
 
+// ... (Interface definitions kept same, just adding Skeleton)
 interface ReportData {
   id: string;
   description: string;
@@ -31,13 +33,77 @@ interface ReportData {
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
   reasonTag:
-    | "Harmful / Unsafe Behavior"
-    | "Made Me Uncomfortable"
-    | "Spam"
-    | "Harassment";
+  | "Harmful / Unsafe Behavior"
+  | "Made Me Uncomfortable"
+  | "Spam"
+  | "Harassment";
   status: "Pending review" | "Under evaluation" | "Resolved" | "Dismissed";
   isFlagged?: boolean;
 }
+
+const ReportSafetySkeleton = () => (
+  <main className="report-safety-page">
+    <div className="info-banner">
+      <SkeletonLoader width="100%" height="80px" borderRadius="12px" />
+    </div>
+
+    <div className="stats-cards-row">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="stats-card">
+          <div className="stats-card-header">
+            <SkeletonLoader width="100px" height="20px" />
+            <SkeletonLoader width="40px" height="40px" borderRadius="12px" />
+          </div>
+          <SkeletonLoader width="60px" height="30px" className="mt-2" />
+        </div>
+      ))}
+    </div>
+
+    <div className="reports-container">
+      <div className="reports-header">
+        <div className="reports-title-section">
+          <SkeletonLoader width="250px" height="32px" />
+          <div className="reports-filters">
+            <SkeletonLoader width="200px" height="40px" borderRadius="12px" />
+            <SkeletonLoader width="150px" height="40px" borderRadius="12px" />
+            <SkeletonLoader width="150px" height="40px" borderRadius="12px" />
+          </div>
+        </div>
+        <SkeletonLoader width="100px" height="40px" borderRadius="12px" />
+      </div>
+
+      <div className="reports-table-wrapper">
+        <table className="reports-table">
+          <thead>
+            <tr>
+              <th><SkeletonLoader width="150px" height="20px" /></th>
+              <th><SkeletonLoader width="100px" height="20px" /></th>
+              <th><SkeletonLoader width="80px" height="20px" /></th>
+              <th><SkeletonLoader width="150px" height="20px" /></th>
+              <th><SkeletonLoader width="100px" height="20px" /></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <tr key={i}>
+                <td>
+                  <SkeletonLoader width="200px" height="20px" />
+                  <SkeletonLoader width="100px" height="16px" className="mt-1" />
+                </td>
+                <td><SkeletonLoader width="120px" height="20px" /></td>
+                <td><SkeletonLoader width="60px" height="24px" borderRadius="16px" /></td>
+                <td><SkeletonLoader width="180px" height="24px" borderRadius="16px" /></td>
+                <td><SkeletonLoader width="120px" height="32px" borderRadius="8px" /></td>
+                <td><SkeletonLoader width="24px" height="24px" /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+);
 
 export const ReportSafety: React.FC = () => {
   const { theme } = useTheme();
@@ -81,11 +147,15 @@ export const ReportSafety: React.FC = () => {
         type: selectedTypes.join(","),
         status: selectedStatus,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
     queryKey: ["reportStats"],
     queryFn: () => apiClient.api.adminV2ReportsStatsList(),
+    // Stats probably don't change as often with pagination, but might with filters.
+    // keepPreviousData is safer.
+    placeholderData: keepPreviousData,
   });
 
   const deleteStudentMutation = useMutation({
@@ -178,6 +248,8 @@ export const ReportSafety: React.FC = () => {
   const totalReports = statsData?.data.total || 0;
   const pendingReports = statsData?.data.pending || 0;
   const underEvaluationReports = statsData?.data.underEvaluation || 0;
+  const totalEntries = reportsData?.data.total || 0;
+  const totalPages = Math.ceil(totalEntries / 10);
 
   const handleStatusChange = async (reportId: string, newStatus: string) => {
     await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
@@ -241,7 +313,7 @@ export const ReportSafety: React.FC = () => {
   };
 
   if (isReportsLoading || isStatsLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <ReportSafetySkeleton />;
   }
 
   return (
@@ -483,8 +555,8 @@ export const ReportSafety: React.FC = () => {
 
         <Pagination
           currentPage={currentPage}
-          totalPages={Math.ceil(totalReports / 10)}
-          totalEntries={totalReports}
+          totalPages={totalPages}
+          totalEntries={totalEntries}
           entriesPerPage={10}
           onPageChange={setCurrentPage}
         />
@@ -529,32 +601,32 @@ export const ReportSafety: React.FC = () => {
               event:
                 selectedReport.type === "Event"
                   ? {
-                      image: selectedReportDetails.content?.image_url,
-                      date: selectedReportDetails.content?.date,
-                      title: selectedReportDetails.content?.name,
-                      location: selectedReportDetails.content?.location,
-                    }
+                    image: selectedReportDetails.content?.image_url,
+                    date: selectedReportDetails.content?.date,
+                    title: selectedReportDetails.content?.name,
+                    location: selectedReportDetails.content?.location,
+                  }
                   : undefined,
               idea:
                 selectedReport.type === "Idea"
                   ? {
-                      title: selectedReportDetails.content?.title,
-                      tag: selectedReportDetails.content?.looking_for || "N/A",
-                      description: selectedReportDetails.content?.description,
-                      ideaBy:
-                        selectedReportDetails.reportedUser?.name || "Unknown",
-                      avatar: selectedReportDetails.reportedUser?.avatar || "",
-                    }
+                    title: selectedReportDetails.content?.title,
+                    tag: selectedReportDetails.content?.looking_for || "N/A",
+                    description: selectedReportDetails.content?.description,
+                    ideaBy:
+                      selectedReportDetails.reportedUser?.name || "Unknown",
+                    avatar: selectedReportDetails.reportedUser?.avatar || "",
+                  }
                   : undefined,
               space:
                 selectedReport.type === "Space"
                   ? {
-                      title: selectedReportDetails.content?.name,
-                      description: selectedReportDetails.content?.description,
-                      image: selectedReportDetails.content?.image_url,
-                      category: "Other", // Placeholder
-                      memberCount: "0", // Placeholder
-                    }
+                    title: selectedReportDetails.content?.name,
+                    description: selectedReportDetails.content?.description,
+                    image: selectedReportDetails.content?.image_url,
+                    category: "Other", // Placeholder
+                    memberCount: "0", // Placeholder
+                  }
                   : undefined,
             },
             safetyRecord: {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { AssetIcon, Pagination, SearchInput } from "../../../components-v2";
 import SkeletonLoader from "../../../components/SkeletonLoader";
@@ -117,6 +117,7 @@ export const SpacesManager: React.FC = () => {
         search: searchQuery,
         category: categoryFilter,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const filteredSpaces = (spacesData?.data.data || []).map((space: any) => ({
@@ -174,31 +175,30 @@ export const SpacesManager: React.FC = () => {
                   {categoryFilter === "all"
                     ? "All categorys"
                     : categoryFilter === "clubs"
-                    ? "Clubs"
-                    : categoryFilter === "club-sports"
-                    ? "Club Sports"
-                    : categoryFilter === "im-teams"
-                    ? "IM Teams"
-                    : categoryFilter === "sororities"
-                    ? "Sororities"
-                    : categoryFilter === "fraternities"
-                    ? "Fraternities"
-                    : categoryFilter === "volunteer"
-                    ? "Volunteer"
-                    : categoryFilter === "academics"
-                    ? "Academics & Honors"
-                    : categoryFilter === "leadership"
-                    ? "Leadership & Government"
-                    : "Cultural & Diversity"}
+                      ? "Clubs"
+                      : categoryFilter === "club-sports"
+                        ? "Club Sports"
+                        : categoryFilter === "im-teams"
+                          ? "IM Teams"
+                          : categoryFilter === "sororities"
+                            ? "Sororities"
+                            : categoryFilter === "fraternities"
+                              ? "Fraternities"
+                              : categoryFilter === "volunteer"
+                                ? "Volunteer"
+                                : categoryFilter === "academics"
+                                  ? "Academics & Honors"
+                                  : categoryFilter === "leadership"
+                                    ? "Leadership & Government"
+                                    : "Cultural & Diversity"}
                 </span>
                 <AssetIcon name="arrow-down" size={10} color="#5B6168" />
               </button>
               {categoryDropdownOpen && (
                 <div className="category-dropdown-menu">
                   <div
-                    className={`category-dropdown-item ${
-                      categoryFilter === "all" ? "active" : ""
-                    }`}
+                    className={`category-dropdown-item ${categoryFilter === "all" ? "active" : ""
+                      }`}
                     onClick={() => {
                       setCategoryFilter("all");
                       setCategoryDropdownOpen(false);
@@ -207,95 +207,23 @@ export const SpacesManager: React.FC = () => {
                     All Categorys
                   </div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("clubs");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Clubs
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("clubs"); setCategoryDropdownOpen(false); }}>Clubs</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("club-sports");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Club Sports
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("club-sports"); setCategoryDropdownOpen(false); }}>Club Sports</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("im-teams");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    IM Teams
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("im-teams"); setCategoryDropdownOpen(false); }}>IM Teams</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("sororities");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Sororities
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("sororities"); setCategoryDropdownOpen(false); }}>Sororities</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("fraternities");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Fraternities
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("fraternities"); setCategoryDropdownOpen(false); }}>Fraternities</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("volunteer");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Volunteer
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("volunteer"); setCategoryDropdownOpen(false); }}>Volunteer</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("academics");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Academics & Honors
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("academics"); setCategoryDropdownOpen(false); }}>Academics & Honors</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("leadership");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Leadership & Government
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("leadership"); setCategoryDropdownOpen(false); }}>Leadership & Government</div>
                   <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("cultural");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Cultural & Diversity
-                  </div>
+                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("cultural"); setCategoryDropdownOpen(false); }}>Cultural & Diversity</div>
                 </div>
               )}
             </div>
