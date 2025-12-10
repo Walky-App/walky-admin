@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { SearchInput, FilterDropdown } from "../../../components-v2";
 import { EventTable } from "../components/EventTable/EventTable";
 import { EventTableSkeleton } from "../components/EventTableSkeleton/EventTableSkeleton";
 import { NoEventsFound } from "../components/NoEventsFound/NoEventsFound";
 import { Pagination } from "../components/Pagination";
-import "./EventsManager.css";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
+import "./EventsManager.css";
 
 type ViewMode = "list" | "calendar";
 
@@ -37,6 +37,7 @@ export const EventsManager: React.FC = () => {
         search: searchQuery,
         type: typeFilter,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const filteredEvents = (eventsData?.data.data || [])
@@ -53,7 +54,7 @@ export const EventsManager: React.FC = () => {
       isFlagged: event.isFlagged,
       flagReason: event.flagReason,
     }))
-    .filter((event) => {
+    .filter((event: any) => {
       if (statusFilter === "all") return true;
       return event.status === statusFilter;
     });
@@ -82,9 +83,8 @@ export const EventsManager: React.FC = () => {
         </button>
         <button
           data-testid="view-calendar-btn"
-          className={`view-toggle-btn ${
-            viewMode === "calendar" ? "active" : ""
-          }`}
+          className={`view-toggle-btn ${viewMode === "calendar" ? "active" : ""
+            }`}
           onClick={() => setViewMode("calendar")}
         >
           Calendar view
