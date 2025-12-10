@@ -13,13 +13,9 @@
 import { Ambassador } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
-export class Ambassadors<SecurityDataType = unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Ambassadors<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
@@ -30,7 +26,7 @@ export class Ambassadors<SecurityDataType = unknown> {
    * @secure
    */
   ambassadorsList = (params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;
@@ -80,7 +76,7 @@ export class Ambassadors<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;
@@ -116,7 +112,7 @@ export class Ambassadors<SecurityDataType = unknown> {
    * @secure
    */
   ambassadorsDetail = (id: string, params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;
@@ -161,7 +157,7 @@ export class Ambassadors<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;
@@ -199,7 +195,7 @@ export class Ambassadors<SecurityDataType = unknown> {
    * @secure
    */
   ambassadorsDelete = (id: string, params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;
@@ -233,7 +229,7 @@ export class Ambassadors<SecurityDataType = unknown> {
    * @secure
    */
   campusDetail = (campusId: string, params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;

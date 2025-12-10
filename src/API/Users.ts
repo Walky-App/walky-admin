@@ -12,13 +12,9 @@
 
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
-export class Users<SecurityDataType = unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Users<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * @description Allows authenticated users to change their password with validation for breached passwords and password history
    *
@@ -39,7 +35,7 @@ export class Users<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         /** @example "Password changed successfully" */
         message?: string;
@@ -73,7 +69,7 @@ export class Users<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         isValid?: boolean;
         errors?: string[];

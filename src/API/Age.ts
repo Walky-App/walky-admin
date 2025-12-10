@@ -12,13 +12,9 @@
 
 import { HttpClient, RequestParams } from "./http-client";
 
-export class Age<SecurityDataType = unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Age<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * @description Returns all users with names, birthday, and age
    *
@@ -29,7 +25,7 @@ export class Age<SecurityDataType = unknown> {
    * @secure
    */
   getAge = (params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         ages?: number[];
         data?: {
@@ -62,7 +58,7 @@ export class Age<SecurityDataType = unknown> {
    * @secure
    */
   under18List = (params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         data?: {
           id?: string;
@@ -94,7 +90,7 @@ export class Age<SecurityDataType = unknown> {
    * @secure
    */
   averageList = (params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         /** The average age of all users */
         averageAge?: number;
