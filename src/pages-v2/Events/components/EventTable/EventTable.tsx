@@ -13,7 +13,9 @@ import {
   UnflagModal,
   Divider,
 } from "../../../../components-v2";
-import { EventTypeChip, EventType } from "../EventTypeChip/EventTypeChip";
+import { EventType } from "../EventTypeChip/EventTypeChip";
+import { EventStatusChip } from "../EventStatusChip/EventStatusChip";
+import { getFirstName } from "../../../../lib/utils/nameUtils";
 import "./EventTable.css";
 
 export interface EventData {
@@ -27,6 +29,7 @@ export interface EventData {
   eventDate: string;
   eventTime: string;
   attendees: number;
+  status: "upcoming" | "finished";
   type: EventType;
   isFlagged?: boolean;
   flagReason?: string;
@@ -59,7 +62,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2EventsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       setToastMessage(`Event deleted successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -70,13 +73,14 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
       setToastMessage("Error deleting event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const flagMutation = useMutation({
-    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason }),
+    mutationFn: (data: { id: string; reason: string }) =>
+      apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       setToastMessage(`Event flagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -87,13 +91,13 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
       setToastMessage("Error flagging event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const unflagMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2EventsUnflagCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       setToastMessage(`Event unflagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -104,7 +108,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
       setToastMessage("Error unflagging event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const handleSort = (field: SortField) => {
@@ -130,32 +134,46 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
   const handleViewEvent = async (event: EventData, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await apiClient.api.adminV2EventsDetail(event.id) as any;
+      const response = (await apiClient.api.adminV2EventsDetail(
+        event.id
+      )) as any;
       const details = response.data;
 
       // Map API response to EventDetailsData
       const eventDetails: EventDetailsData = {
-        id: details.id,
+        id: details.id || details._id,
         eventName: details.name,
         eventImage: details.image_url,
         organizer: {
-          name: details.owner?.name || 'Unknown',
-          studentId: details.owner?.studentId || 'N/A', // Assuming backend returns this structure or similar
-          avatar: details.owner?.avatar,
+          name: details.organizer?.name || "Unknown",
+          studentId:
+            details.organizer?.id ||
+            details.organizer?._id ||
+            details.spaceId ||
+            "N/A",
+          avatar: details.organizer?.avatar || details.organizer?.avatar_url,
         },
         date: new Date(details.date_and_time).toLocaleDateString(),
-        time: new Date(details.date_and_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        place: details.location,
+        time: new Date(details.date_and_time).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        place: details.location || details.address || "Campus",
+        status:
+          new Date(details.date_and_time) < new Date()
+            ? "finished"
+            : "upcoming",
         type: details.visibility as "public" | "private",
         description: details.description,
         attendees: (details.participants || []).map((p: any) => ({
           id: p.user_id,
-          name: p.name || 'Unknown',
-          avatar: p.avatar_url
+          name: p.name || "Unknown",
+          avatar: p.avatar_url,
+          status: p.status,
         })),
         maxAttendees: details.slots,
-        isFlagged: details.isFlagged, // Placeholder from backend
-        flagReason: details.flagReason, // Placeholder from backend
+        isFlagged: details.isFlagged,
+        flagReason: details.flagReason,
       };
 
       setSelectedEvent(eventDetails);
@@ -166,6 +184,14 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     }
+  };
+
+  const handleCloseDetailsModal = () => {
+    setDetailsModalOpen(false);
+    // Close all other modals when details modal closes
+    setDeleteModalOpen(false);
+    setFlagModalOpen(false);
+    setUnflagModalOpen(false);
   };
 
   const handleFlagEvent = (event: EventData, e: React.MouseEvent) => {
@@ -269,12 +295,14 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
               </div>
             </th>
             <th>
+              <span>Status</span>
+            </th>
+            <th>
               <span>Type</span>
             </th>
             <th></th>
           </tr>
         </thead>
-
 
         <tbody>
           {sortedEvents.map((event, index) => (
@@ -308,7 +336,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                       )}
                     </div>
                     <span className="organizer-name">
-                      {event.organizer.name}
+                      {getFirstName(event.organizer.name)}
                     </span>
                   </div>
                 </td>
@@ -331,35 +359,36 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                   </div>
                 </td>
                 <td>
-                  <EventTypeChip type={event.type} />
+                  <EventStatusChip status={event.status} />
+                </td>
+                <td>
+                  <span className="event-type-text">
+                    {event.type === "public" ? "Public" : "Private"}
+                  </span>
                 </td>
                 <td>
                   <ActionDropdown
                     testId="event-dropdown"
+                    title="Event details"
                     items={[
                       {
-                        label: "View event",
-                        onClick: (e) => handleViewEvent(event, e),
+                        label: "Flag",
+                        icon: "flag-icon",
+                        onClick: (e) => {
+                          if (event.isFlagged) {
+                            handleUnflagEvent(event, e);
+                          } else {
+                            handleFlagEvent(event, e);
+                          }
+                        },
                       },
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => { },
+                        onClick: () => {},
                       },
-                      event.isFlagged
-                        ? {
-                          label: "Unflag",
-                          icon: "flag-icon",
-                          variant: "danger",
-                          onClick: (e) => handleUnflagEvent(event, e),
-                        }
-                        : {
-                          label: "Flag event",
-                          icon: "flag-icon",
-                          onClick: (e) => handleFlagEvent(event, e),
-                        },
                       {
-                        label: "Delete event",
+                        label: "Delete Event",
                         variant: "danger",
                         onClick: (e) => {
                           e.stopPropagation();
@@ -367,6 +396,9 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                         },
                       },
                     ]}
+                    onDropdownClick={(e) => {
+                      handleViewEvent(event, e);
+                    }}
                   />
                 </td>
               </tr>
@@ -417,6 +449,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
         <EventDetailsModal
           isOpen={detailsModalOpen}
           onClose={() => setDetailsModalOpen(false)}
+          onCloseAll={handleCloseDetailsModal}
           eventData={selectedEvent}
         />
       )}

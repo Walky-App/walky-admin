@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
+import { getFirstName } from "../../../../lib/utils/nameUtils";
 import {
   DeleteModal,
   CustomToast,
@@ -60,7 +61,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2SpacesDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setToastMessage(`Space deleted successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -71,13 +72,14 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
       setToastMessage("Error deleting space");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const flagMutation = useMutation({
-    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2SpacesFlagCreate(data.id, { reason: data.reason }),
+    mutationFn: (data: { id: string; reason: string }) =>
+      apiClient.api.adminV2SpacesFlagCreate(data.id, { reason: data.reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setToastMessage(`Space flagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -88,13 +90,13 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
       setToastMessage("Error flagging space");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const unflagMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2SpacesUnflagCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setToastMessage(`Space unflagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -105,7 +107,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
       setToastMessage("Error unflagging space");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const handleSort = (field: SortField) => {
@@ -128,7 +130,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     }
   };
 
-  const handleViewSpaceDetails = async (space: SpaceData, e: React.MouseEvent) => {
+  const handleViewSpaceDetails = async (
+    space: SpaceData,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation();
     try {
       const response = await apiClient.api.adminV2SpacesDetail(space.id);
@@ -140,35 +145,52 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         id: details.id || "",
         spaceName: details.name || "Unknown Space",
         owner: {
-          name: details.owner?.name || 'Unknown',
+          name: details.owner?.name || "Unknown",
           avatar: details.owner?.avatar,
-          studentId: details.owner?.studentId || 'N/A',
+          studentId: details.owner?.studentId || "N/A",
         },
-        creationDate: details.createdAt ? new Date(details.createdAt).toLocaleDateString() : "N/A",
-        creationTime: details.createdAt ? new Date(details.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A",
+        creationDate: details.createdAt
+          ? new Date(details.createdAt).toLocaleDateString()
+          : "N/A",
+        creationTime: details.createdAt
+          ? new Date(details.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "N/A",
         category: details.category?.name || "Other",
         chapter: details.chapter || "N/A",
         contact: details.contact || "N/A",
-        about: details.about || details.description || "No description provided.",
+        about:
+          details.about || details.description || "No description provided.",
         howWeUse: details.howWeUse || "N/A",
         description: details.description || "",
         events: (details.events || []).map((ev: any) => ({
           id: ev.id || "",
           title: ev.name || "Untitled Event",
           date: ev.date ? new Date(ev.date).toLocaleDateString() : "TBD",
-          time: ev.date ? new Date(ev.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "TBD",
+          time: ev.date
+            ? new Date(ev.date).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "TBD",
           location: ev.location || "TBD",
-          image: ev.image_url
+          image: ev.image_url,
         })),
         members: (details.members || []).map((m: any) => ({
           id: m.user_id || "",
-          name: m.name || 'Unknown',
-          avatar: m.avatar_url
+          name: m.name || "Unknown",
+          avatar: m.avatar_url,
         })),
         spaceImage: details.cover_image_url,
         spaceLogo: details.logo_url,
         memberRange: details.memberRange || "1-10",
-        yearEstablished: details.yearEstablished ? details.yearEstablished.toString() : (details.createdAt ? new Date(details.createdAt).getFullYear().toString() : "N/A"),
+        yearEstablished: details.yearEstablished
+          ? details.yearEstablished.toString()
+          : details.createdAt
+          ? new Date(details.createdAt).getFullYear().toString()
+          : "N/A",
         governingBody: details.governingBody || "N/A",
         primaryFocus: details.primaryFocus || "N/A",
         isFlagged: details.isFlagged,
@@ -334,7 +356,9 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
                         </div>
                       )}
                     </div>
-                    <span className="owner-name">{space.owner.name}</span>
+                    <span className="owner-name">
+                      {getFirstName(space.owner.name)}
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -374,20 +398,20 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => { },
+                        onClick: () => {},
                       },
                       space.isFlagged
                         ? {
-                          label: "Unflag",
-                          icon: "flag-icon",
-                          variant: "danger",
-                          onClick: (e) => handleUnflagSpace(space, e),
-                        }
+                            label: "Unflag",
+                            icon: "flag-icon",
+                            variant: "danger",
+                            onClick: (e) => handleUnflagSpace(space, e),
+                          }
                         : {
-                          label: "Flag",
-                          icon: "flag-icon",
-                          onClick: (e) => handleFlagSpace(space, e),
-                        },
+                            label: "Flag",
+                            icon: "flag-icon",
+                            onClick: (e) => handleFlagSpace(space, e),
+                          },
                       {
                         label: "Delete Space",
                         variant: "danger",

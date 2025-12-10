@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput } from "../../../components-v2";
+import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
-import { Pagination } from "../components/Pagination";
 import { StudentData } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
 import "./DeactivatedStudents.css";
@@ -16,17 +15,18 @@ export const DeactivatedStudents: React.FC = () => {
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ['students', currentPage, searchQuery, 'deactivated'],
-    queryFn: () => apiClient.api.adminV2StudentsList({
-      page: currentPage,
-      limit: entriesPerPage,
-      search: searchQuery,
-      status: 'deactivated'
-    }),
+    queryKey: ["students", currentPage, searchQuery, "deactivated"],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsList({
+        page: currentPage,
+        limit: entriesPerPage,
+        search: searchQuery,
+        status: "deactivated",
+      }),
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['studentStats'],
+    queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
@@ -46,7 +46,9 @@ export const DeactivatedStudents: React.FC = () => {
     avatar: student.avatar,
   }));
 
-  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const totalPages = Math.ceil(
+    (studentsData?.data.total || 0) / entriesPerPage
+  );
   const paginatedStudents = students;
 
   if (isLoading) {

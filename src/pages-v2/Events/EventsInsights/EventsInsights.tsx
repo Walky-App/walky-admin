@@ -93,31 +93,37 @@ export const EventsInsights: React.FC = () => {
 
       // Transform API data to EventDetailsData
       const eventDetails: EventDetailsData = {
-        id: event.id,
+        id: event.id || event._id,
         eventName: event.name,
         eventImage: event.image_url,
         organizer: {
-          name: event.created_by
-            ? `${event.created_by.first_name} ${event.created_by.last_name}`
-            : "Unknown",
-          studentId: event.created_by?._id || "",
-          avatar: event.created_by?.avatar_url,
+          name: event.organizer?.name || "Unknown",
+          studentId:
+            event.organizer?.id ||
+            event.organizer?._id ||
+            event.spaceId ||
+            "N/A",
+          avatar: event.organizer?.avatar || event.organizer?.avatar_url,
         },
         date: new Date(event.date_and_time).toLocaleDateString(),
         time: new Date(event.date_and_time).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
-        place: event.location || event.address || "Unknown location",
+        place: event.location || event.address || "Campus",
+        status:
+          new Date(event.date_and_time) < new Date() ? "finished" : "upcoming",
         type: event.visibility,
         description: event.description || "",
         attendees: (event.participants || []).map((p: any) => ({
           id: p.user_id || p._id,
           name: p.name || "Unknown",
           avatar: p.avatar_url,
+          status: p.status,
         })),
         maxAttendees: event.slots || 0,
-        isFlagged: false, // Backend doesn't seem to provide this yet
+        isFlagged: event.isFlagged || false,
+        flagReason: event.flagReason || "",
       };
 
       setSelectedEvent(eventDetails);

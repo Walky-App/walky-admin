@@ -1,9 +1,13 @@
- 
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import "./Campuses.css";
-import { AssetIcon, CopyableId, Divider } from "../../../components-v2";
+import {
+  AssetIcon,
+  CopyableId,
+  Divider,
+  Pagination,
+} from "../../../components-v2";
 import CampusBoundary from "../../../pages/CampusBoundary";
 import { useTheme } from "../../../hooks/useTheme";
 
@@ -39,20 +43,22 @@ export const Campuses: React.FC = () => {
   const [currentPage] = useState(1);
 
   const { data: campusesData, isLoading } = useQuery({
-    queryKey: ['campuses'],
+    queryKey: ["campuses"],
     queryFn: () => apiClient.api.adminV2CampusesList(),
   });
 
-  const campuses: CampusData[] = (campusesData?.data || []).map((campus: any) => ({
-    id: campus.id,
-    name: campus.name,
-    campusId: campus.id, // Using ID as campusId for display
-    location: campus.location,
-    address: campus.address,
-    status: campus.status as "Active" | "Inactive",
-    imageUrl: campus.imageUrl,
-    boundaryData: campus.boundaryData,
-  }));
+  const campuses: CampusData[] = (campusesData?.data || []).map(
+    (campus: any) => ({
+      id: campus.id,
+      name: campus.name,
+      campusId: campus.id, // Using ID as campusId for display
+      location: campus.location,
+      address: campus.address,
+      status: campus.status as "Active" | "Inactive",
+      imageUrl: campus.imageUrl,
+      boundaryData: campus.boundaryData,
+    })
+  );
 
   const filteredCampuses = campuses.filter((campus) => {
     const matchesSearch = campus.name
@@ -133,8 +139,9 @@ export const Campuses: React.FC = () => {
                             <AssetIcon
                               name="arrow-down"
                               size={10}
-                              className={`chevron-icon ${expandedCampusId === campus.id ? "expanded" : ""
-                                }`}
+                              className={`chevron-icon ${
+                                expandedCampusId === campus.id ? "expanded" : ""
+                              }`}
                             />
                             <span className="campus-name">{campus.name}</span>
                           </button>
@@ -210,28 +217,13 @@ export const Campuses: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <div className="pagination-container">
-          <p className="pagination-info">
-            Showing {filteredCampuses.length} of {totalCampuses} entries
-          </p>
-          <div className="pagination-controls">
-            <button
-              data-testid="pagination-prev-btn"
-              className="pagination-button"
-              disabled
-            >
-              Previous
-            </button>
-            <div className="page-number active">{currentPage}</div>
-            <button
-              data-testid="pagination-next-btn"
-              className="pagination-button"
-              disabled
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalCampuses / 10)}
+          totalEntries={totalCampuses}
+          entriesPerPage={10}
+          onPageChange={() => {}}
+        />
       </div>
     </main>
   );

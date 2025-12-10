@@ -6,6 +6,7 @@ import {
   StudentProfileData,
   CustomToast,
   Divider,
+  Pagination,
 } from "../../../components-v2";
 import { StatsCard } from "../components/StatsCard";
 import "./DisengagedStudents.css";
@@ -34,31 +35,34 @@ export const DisengagedStudents: React.FC = () => {
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ['students', currentPage, 'disengaged'],
-    queryFn: () => apiClient.api.adminV2StudentsList({
-      page: currentPage,
-      limit: entriesPerPage,
-      status: 'disengaged'
-    }),
+    queryKey: ["students", currentPage, "disengaged"],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsList({
+        page: currentPage,
+        limit: entriesPerPage,
+        status: "disengaged",
+      }),
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['studentStats'],
+    queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
   const isLoading = isStudentsLoading || isStatsLoading;
 
-  const students: DisengagedStudent[] = (studentsData?.data.data || []).map((student: any) => ({
-    id: student.id,
-    name: student.name,
-    avatar: student.avatar,
-    peers: student.peers || 0,
-    ignoredInvitations: student.ignoredInvitations || 0,
-    memberSince: student.memberSince,
-    email: student.email,
-    reported: student.isFlagged || false,
-  }));
+  const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
+    (student: any) => ({
+      id: student.id,
+      name: student.name,
+      avatar: student.avatar,
+      peers: student.peers || 0,
+      ignoredInvitations: student.ignoredInvitations || 0,
+      memberSince: student.memberSince,
+      email: student.email,
+      reported: student.isFlagged || false,
+    })
+  );
 
   if (isLoading) {
     return <div className="p-4">Loading...</div>;
@@ -89,20 +93,20 @@ export const DisengagedStudents: React.FC = () => {
   const handleExport = async () => {
     try {
       const response = await apiClient.http.request({
-        path: '/api/admin/v2/students',
-        method: 'GET',
+        path: "/api/admin/v2/students",
+        method: "GET",
         query: {
-          status: 'disengaged',
-          export: 'true'
+          status: "disengaged",
+          export: "true",
         },
-        format: 'blob',
+        format: "blob",
       });
 
       // @ts-ignore
       const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `disengaged_students.csv`);
+      link.setAttribute("download", `disengaged_students.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -180,7 +184,8 @@ export const DisengagedStudents: React.FC = () => {
                     <td>
                       <div className="disengaged-student-info">
                         <div className="disengaged-student-avatar">
-                          {student.avatar && student.avatar.match(/^https?:/) ? (
+                          {student.avatar &&
+                          student.avatar.match(/^https?:/) ? (
                             <img src={student.avatar} alt={student.name} />
                           ) : (
                             <div className="disengaged-student-avatar-placeholder">
@@ -250,6 +255,19 @@ export const DisengagedStudents: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        <div className="disengaged-students-pagination">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(
+              (studentsData?.data.total || 0) / entriesPerPage
+            )}
+            totalEntries={studentsData?.data.total || 0}
+            entriesPerPage={entriesPerPage}
+            onPageChange={() => {}}
+          />
+        </div>
       </div>
 
       <StudentProfileModal
@@ -257,15 +275,15 @@ export const DisengagedStudents: React.FC = () => {
         student={
           selectedStudent
             ? ({
-              userId: selectedStudent.id,
-              name: selectedStudent.name,
-              email: selectedStudent.email,
-              avatar: selectedStudent.avatar,
-              status: "disengaged" as const,
-              interests: [],
-              memberSince: selectedStudent.memberSince,
-              onlineLast: "-",
-            } as unknown as StudentProfileData)
+                userId: selectedStudent.id,
+                name: selectedStudent.name,
+                email: selectedStudent.email,
+                avatar: selectedStudent.avatar,
+                status: "disengaged" as const,
+                interests: [],
+                memberSince: selectedStudent.memberSince,
+                onlineLast: "-",
+              } as unknown as StudentProfileData)
             : null
         }
         onClose={handleCloseProfile}

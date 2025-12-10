@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   AssetIcon,
@@ -64,46 +63,48 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const deactivateMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User deactivated successfully");
       setShowToast(true);
     },
     onError: () => {
       setToastMessage("Failed to deactivate user");
       setShowToast(true);
-    }
+    },
   });
 
   const unbanMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsUnbanCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User unbanned successfully");
       setShowToast(true);
     },
     onError: () => {
       setToastMessage("Failed to unban user");
       setShowToast(true);
-    }
+    },
   });
 
   const flagMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User flagged successfully");
       setShowToast(true);
     },
     onError: () => {
       setToastMessage("Failed to flag user");
       setShowToast(true);
-    }
+    },
   });
 
   const handleViewProfile = async (student: StudentData) => {
     try {
-      const response = await apiClient.api.adminV2StudentsDetail(student.id) as any;
+      const response = (await apiClient.api.adminV2StudentsDetail(
+        student.id
+      )) as any;
       const details = response.data;
 
       // Merge details with existing student data
@@ -259,7 +260,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
               </div>
             )}
           </div>
-          <span className="student-name">{student.name}</span>
+          <span className="student-name">{getFirstName(student.name)}</span>
         </div>
       ),
     },
@@ -401,7 +402,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => { },
+                        onClick: () => {},
                       },
                       {
                         label: "Deactivate user",

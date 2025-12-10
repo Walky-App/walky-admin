@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
+import { getFirstName } from "../../../../lib/utils/nameUtils";
 import "./IdeasTable.css";
 import {
   AssetIcon,
@@ -61,7 +62,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2IdeasDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ["ideas"] });
       setToastMessage(`Idea deleted successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -72,13 +73,14 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
       setToastMessage("Error deleting idea");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const flagMutation = useMutation({
-    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2IdeasFlagCreate(data.id, { reason: data.reason }),
+    mutationFn: (data: { id: string; reason: string }) =>
+      apiClient.api.adminV2IdeasFlagCreate(data.id, { reason: data.reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ["ideas"] });
       setToastMessage(`Idea flagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -89,13 +91,13 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
       setToastMessage("Error flagging idea");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const unflagMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2IdeasUnflagCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ["ideas"] });
       setToastMessage(`Idea unflagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -106,7 +108,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
       setToastMessage("Error unflagging idea");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const handleSort = (field: SortField) => {
@@ -151,7 +153,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const handleViewIdeaDetails = async (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await apiClient.api.adminV2IdeasDetail(idea.id) as any;
+      const response = (await apiClient.api.adminV2IdeasDetail(idea.id)) as any;
       const details = response.data;
 
       // Map API response to IdeaData structure for the modal
@@ -159,19 +161,22 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
         id: details.id,
         ideaTitle: details.title,
         owner: {
-          name: details.creator?.name || 'Unknown',
+          name: details.creator?.name || "Unknown",
           avatar: details.creator?.avatar,
         },
-        studentId: details.creator?.studentId || 'N/A',
+        studentId: details.creator?.studentId || "N/A",
         collaborated: details.collaborators?.length || 0,
         creationDate: new Date(details.createdAt).toLocaleDateString(),
-        creationTime: new Date(details.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        creationTime: new Date(details.createdAt).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
         description: details.description,
         lookingFor: details.lookingFor || "N/A", // Assuming backend might return this
         collaborators: (details.collaborators || []).map((c: any) => ({
           id: c.user_id,
-          name: c.name || 'Unknown',
-          avatar: c.avatar_url
+          name: c.name || "Unknown",
+          avatar: c.avatar_url,
         })),
         isFlagged: details.isFlagged,
         flagReason: details.flagReason,
@@ -293,7 +298,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                       )}
                     </div>
                     <span className="ideas-table-owner-name">
-                      {idea.owner.name}
+                      {getFirstName(idea.owner.name)}
                     </span>
                   </div>
                 </td>
@@ -330,20 +335,20 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => { },
+                        onClick: () => {},
                       },
                       idea.isFlagged
                         ? {
-                          label: "Unflag",
-                          icon: "flag-icon",
-                          variant: "danger",
-                          onClick: (e) => handleUnflagIdea(idea, e),
-                        }
+                            label: "Unflag",
+                            icon: "flag-icon",
+                            variant: "danger",
+                            onClick: (e) => handleUnflagIdea(idea, e),
+                          }
                         : {
-                          label: "Flag",
-                          icon: "flag-icon",
-                          onClick: (e) => handleFlagIdea(idea, e),
-                        },
+                            label: "Flag",
+                            icon: "flag-icon",
+                            onClick: (e) => handleFlagIdea(idea, e),
+                          },
                       {
                         label: "Delete Idea",
                         variant: "danger",
@@ -398,21 +403,22 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
         ideaData={
           selectedIdea
             ? {
-              id: selectedIdea.id,
-              title: selectedIdea.ideaTitle,
-              owner: {
-                name: selectedIdea.owner.name,
-                studentId: selectedIdea.studentId,
-                avatar: selectedIdea.owner.avatar,
-              },
-              creationDate: selectedIdea.creationDate,
-              creationTime: selectedIdea.creationTime,
-              description: selectedIdea.description || "No description provided",
-              lookingFor: selectedIdea.lookingFor || "N/A",
-              collaborators: selectedIdea.collaborators || [],
-              isFlagged: selectedIdea.isFlagged,
-              flagReason: selectedIdea.flagReason,
-            }
+                id: selectedIdea.id,
+                title: selectedIdea.ideaTitle,
+                owner: {
+                  name: selectedIdea.owner.name,
+                  studentId: selectedIdea.studentId,
+                  avatar: selectedIdea.owner.avatar,
+                },
+                creationDate: selectedIdea.creationDate,
+                creationTime: selectedIdea.creationTime,
+                description:
+                  selectedIdea.description || "No description provided",
+                lookingFor: selectedIdea.lookingFor || "N/A",
+                collaborators: selectedIdea.collaborators || [],
+                isFlagged: selectedIdea.isFlagged,
+                flagReason: selectedIdea.flagReason,
+              }
             : null
         }
       />

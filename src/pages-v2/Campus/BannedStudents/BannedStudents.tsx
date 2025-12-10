@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { SearchInput } from "../../../components-v2";
+import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
-import { Pagination } from "../components/Pagination";
 import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData } from "../components/StudentTable";
 import "./BannedStudents.css";
@@ -17,19 +16,18 @@ export const BannedStudents: React.FC = () => {
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ['students', currentPage, searchQuery, 'banned'],
-    queryFn: () => apiClient.api.adminV2StudentsList({
-      page: currentPage,
-      limit: entriesPerPage,
-      search: searchQuery,
-      status: 'banned'
-    }),
+    queryKey: ["students", currentPage, searchQuery, "banned"],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsList({
+        page: currentPage,
+        limit: entriesPerPage,
+        search: searchQuery,
+        status: "banned",
+      }),
   });
 
-
-
   const { data: statsData } = useQuery({
-    queryKey: ['studentStats'],
+    queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
@@ -60,7 +58,9 @@ export const BannedStudents: React.FC = () => {
     reportHistory: student.reportHistory,
   }));
 
-  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const totalPages = Math.ceil(
+    (studentsData?.data.total || 0) / entriesPerPage
+  );
   const paginatedStudents = students;
 
   if (isLoading) {

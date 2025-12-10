@@ -13,6 +13,7 @@ import {
   ReportDetailModal,
   Divider,
   FlagModal,
+  Pagination,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
@@ -26,11 +27,11 @@ interface HistoryReportData {
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
   reasonTag:
-  | "Self-Injury / Harmful Behavior"
-  | "Inappropriate or offensive"
-  | "Harassment / Threats"
-  | "Spam"
-  | "Other";
+    | "Self-Injury / Harmful Behavior"
+    | "Inappropriate or offensive"
+    | "Harassment / Threats"
+    | "Spam"
+    | "Other";
   status: "Resolved" | "Dismissed" | "Pending review" | "Under evaluation";
 }
 
@@ -38,7 +39,8 @@ export const ReportHistory: React.FC = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string>("Resolved,Dismissed");
+  const [selectedStatus, setSelectedStatus] =
+    useState<string>("Resolved,Dismissed");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -68,7 +70,7 @@ export const ReportHistory: React.FC = () => {
     setLoading(true);
     try {
       // Fetch stats
-      const statsRes = await apiClient.api.adminV2ReportsStatsList() as any;
+      const statsRes = (await apiClient.api.adminV2ReportsStatsList()) as any;
       setStats({
         total: statsRes.data.total || 0,
         resolved: statsRes.data.resolved || 0,
@@ -76,13 +78,13 @@ export const ReportHistory: React.FC = () => {
       });
 
       // Fetch reports
-      const reportsRes = await apiClient.api.adminV2ReportsList({
+      const reportsRes = (await apiClient.api.adminV2ReportsList({
         page: currentPage,
         limit: itemsPerPage,
         search: searchQuery,
-        type: selectedTypes.length > 0 ? selectedTypes.join(',') : undefined,
-        status: selectedStatus !== 'all' ? selectedStatus : undefined,
-      } as any) as any;
+        type: selectedTypes.length > 0 ? selectedTypes.join(",") : undefined,
+        status: selectedStatus !== "all" ? selectedStatus : undefined,
+      } as any)) as any;
 
       const reports = reportsRes.data.data || [];
 
@@ -91,15 +93,18 @@ export const ReportHistory: React.FC = () => {
         id: r.id,
         description: r.description || "No description",
         studentId: r.studentId || "Unknown",
-        reportDate: new Date(r.reportDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        reportDate: new Date(r.reportDate).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
         type: r.type as any,
         reason: r.reason || "Unknown",
-        reasonTag: r.reasonTag as any || "Other",
+        reasonTag: (r.reasonTag as any) || "Other",
         status: r.status as any,
       }));
 
       setHistoryReports(transformedReports);
-
     } catch (error) {
       console.error("Failed to fetch reports:", error);
     } finally {
@@ -114,10 +119,11 @@ export const ReportHistory: React.FC = () => {
   const handleStatusChange = async (reportId: string, newStatus: string) => {
     try {
       // If reopening, change status to "Pending review" which will move it to Report & Safety
-      const statusToSend = newStatus === "Reopen" ? "Pending review" : newStatus;
+      const statusToSend =
+        newStatus === "Reopen" ? "Pending review" : newStatus;
 
       await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
-        status: statusToSend
+        status: statusToSend,
       });
 
       // Update local state
@@ -125,21 +131,20 @@ export const ReportHistory: React.FC = () => {
         prevReports.map((report) =>
           report.id === reportId
             ? {
-              ...report,
-              status: statusToSend as HistoryReportData["status"],
-            }
+                ...report,
+                status: statusToSend as HistoryReportData["status"],
+              }
             : report
         )
       );
 
       // Refresh stats
-      const statsRes = await apiClient.api.adminV2ReportsStatsList() as any;
+      const statsRes = (await apiClient.api.adminV2ReportsStatsList()) as any;
       setStats({
         total: statsRes.data.total || 0,
         resolved: statsRes.data.resolved || 0,
         dismissed: statsRes.data.dismissed || 0,
       });
-
     } catch (error) {
       console.error("Failed to update status:", error);
     }
@@ -154,7 +159,10 @@ export const ReportHistory: React.FC = () => {
     if (pendingStatusChange) {
       try {
         // Save note first
-        await apiClient.api.adminV2ReportsNoteCreate(pendingStatusChange.reportId, { note } as any);
+        await apiClient.api.adminV2ReportsNoteCreate(
+          pendingStatusChange.reportId,
+          { note } as any
+        );
 
         // Then update status
         await handleStatusChange(
@@ -182,7 +190,7 @@ export const ReportHistory: React.FC = () => {
     setReportDetails(null); // Reset previous details
 
     try {
-      const res = await apiClient.api.adminV2ReportsDetail(report.id) as any;
+      const res = (await apiClient.api.adminV2ReportsDetail(report.id)) as any;
       setReportDetails(res.data);
     } catch (error) {
       console.error("Failed to fetch report details:", error);
@@ -237,7 +245,11 @@ export const ReportHistory: React.FC = () => {
     }
   };
 
-  const handleBanUser = async (duration: string, reason: string, resolveReports: boolean) => {
+  const handleBanUser = async (
+    duration: string,
+    reason: string,
+    resolveReports: boolean
+  ) => {
     if (selectedReport) {
       try {
         // Parse duration
@@ -250,7 +262,7 @@ export const ReportHistory: React.FC = () => {
 
         await apiClient.api.adminV2ReportsBanUserCreate(selectedReport.id, {
           reason,
-          duration: durationDays
+          duration: durationDays,
         });
 
         if (resolveReports) {
@@ -320,7 +332,9 @@ export const ReportHistory: React.FC = () => {
               />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.dismissed}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.dismissed}
+          </p>
         </div>
       </div>
 
@@ -400,11 +414,21 @@ export const ReportHistory: React.FC = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
+                  <td
+                    colSpan={6}
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    Loading...
+                  </td>
                 </tr>
               ) : currentReports.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>No reports found</td>
+                  <td
+                    colSpan={6}
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    No reports found
+                  </td>
                 </tr>
               ) : (
                 currentReports.map((report, index) => {
@@ -503,36 +527,20 @@ export const ReportHistory: React.FC = () => {
                       )}
                     </React.Fragment>
                   );
-                }))}
+                })
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div className="pagination-container">
-          <p className="pagination-info">
-            Showing {(currentPage - 1) * itemsPerPage + 1} of {stats.total} entries
-          </p>
-          <div className="pagination-controls">
-            <button
-              data-testid="pagination-prev-btn"
-              className="pagination-button"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
-              Previous
-            </button>
-            <div className="pagination-page-number active">{currentPage}</div>
-            <button
-              data-testid="pagination-next-btn"
-              className="pagination-button"
-              disabled={currentPage >= totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalEntries={stats.total}
+          entriesPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       <WriteNoteModal
@@ -557,14 +565,22 @@ export const ReportHistory: React.FC = () => {
               id: reportDetails?.studentId || selectedReport.studentId,
               avatar: reportDetails?.reportedUser?.avatar || "",
               isBanned: reportDetails?.reportedUser?.isBanned || false,
-              isDeactivated: reportDetails?.reportedUser?.isDeactivated || false,
+              isDeactivated:
+                reportDetails?.reportedUser?.isDeactivated || false,
             },
-            status: (reportDetails?.status || selectedReport.status) as ReportStatus,
+            status: (reportDetails?.status ||
+              selectedReport.status) as ReportStatus,
             reason: reportDetails?.reason || selectedReport.reason,
             reasonColor: "red",
-            reportDate: reportDetails?.reportDate ? new Date(reportDetails.reportDate).toLocaleDateString() : selectedReport.reportDate,
-            contentId: reportDetails?.contentId || reportDetails?.id || selectedReport.id,
-            description: reportDetails?.description || selectedReport.description,
+            reportDate: reportDetails?.reportDate
+              ? new Date(reportDetails.reportDate).toLocaleDateString()
+              : selectedReport.reportDate,
+            contentId:
+              reportDetails?.contentId ||
+              reportDetails?.id ||
+              selectedReport.id,
+            description:
+              reportDetails?.description || selectedReport.description,
             reportingUser: {
               name: reportDetails?.reporter?.name || "Unknown Reporter",
               id: reportDetails?.reporter?.id || "N/A",
