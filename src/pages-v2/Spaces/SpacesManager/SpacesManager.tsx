@@ -1,7 +1,85 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { AssetIcon, SearchInput, Pagination } from "../../../components-v2";
+import { AssetIcon, SearchInput } from "../../../components-v2";
+import SkeletonLoader from "../../../components/SkeletonLoader";
+
+const SpacesManagerSkeleton = () => (
+  <main className="spaces-manager-container">
+    <div className="spaces-manager-header">
+      <div className="spaces-manager-title-section">
+        <SkeletonLoader width="250px" height="32px" />
+        <SkeletonLoader width="400px" height="18px" className="mt-2" />
+      </div>
+    </div>
+
+    <div className="spaces-manager-content">
+      <div className="spaces-list-header">
+        <h2 className="spaces-list-title">
+          <SkeletonLoader width="150px" height="24px" />
+        </h2>
+
+        <div className="spaces-filters">
+          <SkeletonLoader width="300px" height="40px" borderRadius="12px" />
+          <SkeletonLoader width="180px" height="40px" borderRadius="12px" />
+        </div>
+      </div>
+
+      <div className="space-table-wrapper">
+        <table className="space-table">
+          <thead>
+            <tr>
+              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <th key={i}>
+                  <SkeletonLoader width="80px" height="20px" />
+                </th>
+              ))}
+              <th></th>
+            </tr>
+          </thead>
+          <div className="content-space-divider" />
+          <tbody>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <tr key={i}>
+                <td>
+                  <SkeletonLoader width="120px" height="20px" />
+                </td>
+                <td>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <SkeletonLoader width="32px" height="32px" borderRadius="50%" />
+                    <SkeletonLoader width="100px" height="20px" />
+                  </div>
+                </td>
+                <td>
+                  <SkeletonLoader width="80px" height="20px" borderRadius="12px" />
+                </td>
+                <td>
+                  <SkeletonLoader width="40px" height="24px" borderRadius="16px" />
+                </td>
+                <td>
+                  <SkeletonLoader width="40px" height="24px" borderRadius="16px" />
+                </td>
+                <td>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <SkeletonLoader width="90px" height="16px" />
+                    <SkeletonLoader width="60px" height="14px" />
+                  </div>
+                </td>
+                <td>
+                  <SkeletonLoader width="100px" height="24px" borderRadius="16px" />
+                </td>
+                <td>
+                  <SkeletonLoader width="24px" height="24px" borderRadius="4px" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+);
+
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
 import { NoSpacesFound } from "../components/NoSpacesFound/NoSpacesFound";
@@ -57,6 +135,10 @@ export const SpacesManager: React.FC = () => {
 
   const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
   const totalEntries = spacesData?.data.total || 0;
+
+  if (isLoading) {
+    return <SpacesManagerSkeleton />;
+  }
 
   return (
     <main className="spaces-manager-container">
