@@ -158,6 +158,18 @@ export interface User {
   relationship_status?: "single" | "in_relationship" | "married" | "divorced";
   /** Primary user role */
   role:
+  | "super_admin"
+  | "campus_admin"
+  | "editor"
+  | "moderator"
+  | "staff"
+  | "viewer"
+  | "student"
+  | "faculty"
+  | "parent";
+  /** Array of roles with campus-specific assignments */
+  roles?: {
+    role?:
     | "super_admin"
     | "campus_admin"
     | "editor"
@@ -167,18 +179,6 @@ export interface User {
     | "student"
     | "faculty"
     | "parent";
-  /** Array of roles with campus-specific assignments */
-  roles?: {
-    role?:
-      | "super_admin"
-      | "campus_admin"
-      | "editor"
-      | "moderator"
-      | "staff"
-      | "viewer"
-      | "student"
-      | "faculty"
-      | "parent";
     /**
      * Campus this role applies to
      * @format objectId
@@ -550,13 +550,13 @@ export interface Space {
   category: string;
   /** Range of member count for the space */
   memberCountRange:
-    | "1-10"
-    | "11-25"
-    | "26-50"
-    | "51-100"
-    | "101-250"
-    | "251-500"
-    | "500+";
+  | "1-10"
+  | "11-25"
+  | "26-50"
+  | "51-100"
+  | "101-250"
+  | "251-500"
+  | "500+";
   /**
    * Primary focus or mission of the space
    * @maxLength 100
@@ -648,24 +648,24 @@ export interface PeerRequest {
   _id?: string;
   /** User who sent the peer request (can be populated or ObjectId) */
   sender_id:
-    | string
-    | {
-        /** @format objectId */
-        _id?: string;
-        first_name?: string;
-        last_name?: string;
-        avatar_url?: string;
-      };
+  | string
+  | {
+    /** @format objectId */
+    _id?: string;
+    first_name?: string;
+    last_name?: string;
+    avatar_url?: string;
+  };
   /** User who received the peer request (can be populated or ObjectId) */
   receiver_id:
-    | string
-    | {
-        /** @format objectId */
-        _id?: string;
-        first_name?: string;
-        last_name?: string;
-        avatar_url?: string;
-      };
+  | string
+  | {
+    /** @format objectId */
+    _id?: string;
+    first_name?: string;
+    last_name?: string;
+    avatar_url?: string;
+  };
   /**
    * Current status of the peer request (expired is computed dynamically after 7 days)
    * @default "pending"
@@ -729,24 +729,24 @@ export interface WalkInvite {
   _id?: string;
   /** User who sent the walk invitation (can be populated or ObjectId) */
   sender_id:
-    | string
-    | {
-        /** @format objectId */
-        _id?: string;
-        first_name?: string;
-        last_name?: string;
-        avatar_url?: string;
-      };
+  | string
+  | {
+    /** @format objectId */
+    _id?: string;
+    first_name?: string;
+    last_name?: string;
+    avatar_url?: string;
+  };
   /** User who received the walk invitation (can be populated or ObjectId) */
   receiver_id:
-    | string
-    | {
-        /** @format objectId */
-        _id?: string;
-        first_name?: string;
-        last_name?: string;
-        avatar_url?: string;
-      };
+  | string
+  | {
+    /** @format objectId */
+    _id?: string;
+    first_name?: string;
+    last_name?: string;
+    avatar_url?: string;
+  };
   /**
    * Current status of the walk invitation
    * @default "pending"
@@ -1102,7 +1102,7 @@ export class HttpClient<SecurityDataType = unknown> {
       headers: {
         ...((method &&
           this.instance.defaults.headers[
-            method.toLowerCase() as keyof HeadersDefaults
+          method.toLowerCase() as keyof HeadersDefaults
           ]) ||
           {}),
         ...(params1.headers || {}),
@@ -1481,15 +1481,15 @@ export class Api<SecurityDataType extends unknown> {
     ) =>
       this.http.request<
         | {
-            totalWalksCreated?: number;
-          }
+          totalWalksCreated?: number;
+        }
         | {
-            monthlyData?: {
-              month?: string;
-              year?: number;
-              count?: number;
-            }[];
-          },
+          monthlyData?: {
+            month?: string;
+            year?: number;
+            count?: number;
+          }[];
+        },
         void
       >({
         path: `/api/admin/analytics/walks/count`,
@@ -1612,14 +1612,14 @@ export class Api<SecurityDataType extends unknown> {
     ) =>
       this.http.request<
         | {
-            count?: number;
-          }
+          count?: number;
+        }
         | {
-            data?: {
-              month?: string;
-              totalCount?: number;
-            }[];
-          },
+          data?: {
+            month?: string;
+            totalCount?: number;
+          }[];
+        },
         void
       >({
         path: `/api/admin/analytics/events/count`,
@@ -1650,18 +1650,18 @@ export class Api<SecurityDataType extends unknown> {
     ) =>
       this.http.request<
         | {
-            totalIdeasCreated?: number;
-            activeIdeasCount?: number;
-            inactiveIdeasCount?: number;
-            collaboratedIdeasCount?: number;
-          }
+          totalIdeasCreated?: number;
+          activeIdeasCount?: number;
+          inactiveIdeasCount?: number;
+          collaboratedIdeasCount?: number;
+        }
         | {
-            monthlyData?: {
-              month?: string;
-              year?: string;
-              count?: number;
-            }[];
-          },
+          monthlyData?: {
+            month?: string;
+            year?: string;
+            count?: number;
+          }[];
+        },
         void
       >({
         path: `/api/admin/analytics/ideas/count`,
@@ -3321,10 +3321,11 @@ export class Api<SecurityDataType extends unknown> {
     ) =>
       this.http.request<
         {
-          totalEvents?: number;
+          totalSpaces?: number;
           totalMembers?: number;
           popularCategories?: {
             name?: string;
+            imageUrl?: string;
             emoji?: string;
             spaces?: number;
             percentage?: number;
@@ -4006,10 +4007,10 @@ export class Api<SecurityDataType extends unknown> {
     analyticsLogCreate: (
       data: {
         activityType?:
-          | "idea_viewed"
-          | "event_viewed"
-          | "space_viewed"
-          | "profile_viewed";
+        | "idea_viewed"
+        | "event_viewed"
+        | "space_viewed"
+        | "profile_viewed";
         entityId?: string;
         entityType?: "idea" | "event" | "space" | "user";
         details?: object;
@@ -4446,16 +4447,16 @@ export class Api<SecurityDataType extends unknown> {
           count?: number;
         },
         | {
-            success?: boolean;
-            message?: string;
-            data?: object[];
-            count?: number;
-          }
+          success?: boolean;
+          message?: string;
+          data?: object[];
+          count?: number;
+        }
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/api/campuses`,
         method: "GET",
@@ -4503,16 +4504,16 @@ export class Api<SecurityDataType extends unknown> {
           data?: Campus;
         },
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-            details?: object;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+          details?: object;
+        }
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/api/campuses`,
         method: "POST",
@@ -4558,17 +4559,17 @@ export class Api<SecurityDataType extends unknown> {
           updatedFields?: string[];
         },
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-            allowedFields?: string[];
-            details?: object;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+          allowedFields?: string[];
+          details?: object;
+        }
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/api/campuses/${id}`,
         method: "PUT",
@@ -4592,11 +4593,11 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         Campus,
         | {
-            error?: string;
-          }
+          error?: string;
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/campuses/${id}`,
         method: "GET",
@@ -4654,11 +4655,11 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         Campus,
         | {
-            error?: string;
-          }
+          error?: string;
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/campuses/${id}/disable`,
         method: "PATCH",
@@ -5379,15 +5380,15 @@ export class Api<SecurityDataType extends unknown> {
         limit?: number;
         /** Specific bucket type (returns all buckets if not specified) */
         type?:
-          | "walk"
-          | "classOf"
-          | "dogOwner"
-          | "areaOfStudy"
-          | "parent"
-          | "peers"
-          | "relationship"
-          | "spokenLanguage"
-          | "interests";
+        | "walk"
+        | "classOf"
+        | "dogOwner"
+        | "areaOfStudy"
+        | "parent"
+        | "peers"
+        | "relationship"
+        | "spokenLanguage"
+        | "interests";
         /** Two-digit graduation year suffix (e.g., 25) */
         classOf?: string;
       },
@@ -5516,17 +5517,17 @@ export class Api<SecurityDataType extends unknown> {
           data?: Event;
         },
         | {
-            message?: string;
-            /** Array of validation errors */
-            errors?: string[];
-          }
+          message?: string;
+          /** Array of validation errors */
+          errors?: string[];
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/events`,
         method: "POST",
@@ -5559,17 +5560,17 @@ export class Api<SecurityDataType extends unknown> {
           data?: (
             | Event
             | {
-                _id?: string;
+              _id?: string;
+              name?: string;
+              date_and_time?: string;
+              address?: string;
+              image_url?: string;
+              participants?: {
+                id?: string;
+                avatar_url?: string;
                 name?: string;
-                date_and_time?: string;
-                address?: string;
-                image_url?: string;
-                participants?: {
-                  id?: string;
-                  avatar_url?: string;
-                  name?: string;
-                }[];
-              }
+              }[];
+            }
           )[];
         },
         {
@@ -5607,35 +5608,35 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         (
           | {
-              timeFrame?: string;
+            timeFrame?: string;
+            totalEventEngagement?: number;
+            percentChange?: number | null;
+          }
+          | {
+            timeFrame?: string;
+            data?: {
+              /** @example "May 2025" */
+              month?: string;
+              totalCount?: number;
+            }[];
+          }
+          | {
+            day?: {
               totalEventEngagement?: number;
               percentChange?: number | null;
-            }
-          | {
-              timeFrame?: string;
-              data?: {
-                /** @example "May 2025" */
-                month?: string;
-                totalCount?: number;
-              }[];
-            }
-          | {
-              day?: {
-                totalEventEngagement?: number;
-                percentChange?: number | null;
-              };
-              week?: {
-                totalEventEngagement?: number;
-                percentChange?: number | null;
-              };
-              month?: {
-                totalEventEngagement?: number;
-                percentChange?: number | null;
-              };
-              allTime?: {
-                totalEventEngagement?: number;
-              };
-            }
+            };
+            week?: {
+              totalEventEngagement?: number;
+              percentChange?: number | null;
+            };
+            month?: {
+              totalEventEngagement?: number;
+              percentChange?: number | null;
+            };
+            allTime?: {
+              totalEventEngagement?: number;
+            };
+          }
         ) & {
           count?: number;
         },
@@ -5672,28 +5673,28 @@ export class Api<SecurityDataType extends unknown> {
     ) =>
       this.http.request<
         | {
-            filter?: string;
-            count?: number;
-          }
+          filter?: string;
+          count?: number;
+        }
         | {
-            totalEvents?: number;
-            outdoor?: number;
-            indoor?: number;
-            public?: number;
-            private?: number;
-          },
+          totalEvents?: number;
+          outdoor?: number;
+          indoor?: number;
+          public?: number;
+          private?: number;
+        },
         | {
-            message?: string;
-            /** Array of validation errors */
-            errors?: string[];
-          }
+          message?: string;
+          /** Array of validation errors */
+          errors?: string[];
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/events/EventType`,
         method: "GET",
@@ -5728,17 +5729,17 @@ export class Api<SecurityDataType extends unknown> {
           data?: Event;
         },
         | {
-            message?: string;
-            /** Array of validation errors */
-            errors?: string[];
-          }
+          message?: string;
+          /** Array of validation errors */
+          errors?: string[];
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/events/${eventId}`,
         method: "GET",
@@ -5781,18 +5782,18 @@ export class Api<SecurityDataType extends unknown> {
           data?: Event;
         },
         | {
-            message?: string;
-            /** Array of validation errors */
-            errors?: string[];
-          }
+          message?: string;
+          /** Array of validation errors */
+          errors?: string[];
+        }
         | void
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/events/${eventId}`,
         method: "PATCH",
@@ -5835,17 +5836,17 @@ export class Api<SecurityDataType extends unknown> {
           data?: Event;
         },
         | {
-            message?: string;
-            /** Array of validation errors */
-            errors?: string[];
-          }
+          message?: string;
+          /** Array of validation errors */
+          errors?: string[];
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/events/response/${eventId}`,
         method: "PATCH",
@@ -5926,17 +5927,17 @@ export class Api<SecurityDataType extends unknown> {
           data?: Event;
         },
         | {
-            message?: string;
-            /** Array of validation errors */
-            errors?: string[];
-          }
+          message?: string;
+          /** Array of validation errors */
+          errors?: string[];
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/events/invite/${eventId}`,
         method: "POST",
@@ -5970,18 +5971,18 @@ export class Api<SecurityDataType extends unknown> {
           };
         },
         | {
-            message?: string;
-            /** Array of validation errors */
-            errors?: string[];
-          }
+          message?: string;
+          /** Array of validation errors */
+          errors?: string[];
+        }
         | void
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/events/upload-image/${eventId}`,
         method: "POST",
@@ -6098,12 +6099,12 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         EventInvite,
         | {
-            message?: string;
-            errors?: object[];
-          }
+          message?: string;
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/event-invites`,
         method: "POST",
@@ -6161,11 +6162,11 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         EventInvite,
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/event-invites/${id}`,
         method: "GET",
@@ -6193,12 +6194,12 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         EventInvite,
         | {
-            message?: string;
-            errors?: object[];
-          }
+          message?: string;
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/event-invites/${id}`,
         method: "PUT",
@@ -6224,11 +6225,11 @@ export class Api<SecurityDataType extends unknown> {
           message?: string;
         },
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/event-invites/${id}`,
         method: "DELETE",
@@ -6285,16 +6286,16 @@ export class Api<SecurityDataType extends unknown> {
           };
         },
         | {
-            status?: string;
-            error?: string;
-            /** @format date-time */
-            timestamp?: string;
-          }
+          status?: string;
+          error?: string;
+          /** @format date-time */
+          timestamp?: string;
+        }
         | {
-            status?: "unhealthy";
-            /** @format date-time */
-            timestamp?: string;
-          }
+          status?: "unhealthy";
+          /** @format date-time */
+          timestamp?: string;
+        }
       >({
         path: `/api/health`,
         method: "GET",
@@ -6770,12 +6771,12 @@ export class Api<SecurityDataType extends unknown> {
           data?: Interest;
         },
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-            error?: string;
-          }
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/api/interests`,
         method: "POST",
@@ -6799,15 +6800,15 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         Interest,
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            error?: string;
-          }
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/api/interests/${interestId}`,
         method: "GET",
@@ -6841,15 +6842,15 @@ export class Api<SecurityDataType extends unknown> {
           data?: Interest;
         },
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            error?: string;
-          }
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/api/interests/${interestId}`,
         method: "PUT",
@@ -6875,15 +6876,15 @@ export class Api<SecurityDataType extends unknown> {
           message?: string;
         },
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            error?: string;
-          }
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/api/interests/${interestId}`,
         method: "DELETE",
@@ -7220,13 +7221,13 @@ export class Api<SecurityDataType extends unknown> {
           data?: object;
         },
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+        }
       >({
         path: `/api/invites/pending/${userId}`,
         method: "GET",
@@ -7315,15 +7316,15 @@ export class Api<SecurityDataType extends unknown> {
           data?: object;
         },
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-            /** Error type */
-            type?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+          /** Error type */
+          type?: string;
+        }
       >({
         path: `/api/invites`,
         method: "POST",
@@ -7358,13 +7359,13 @@ export class Api<SecurityDataType extends unknown> {
           data?: object[];
         },
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+        }
       >({
         path: `/api/invites/self`,
         method: "GET",
@@ -7392,13 +7393,13 @@ export class Api<SecurityDataType extends unknown> {
           data?: object;
         },
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+        }
       >({
         path: `/api/invites/${inviteId}`,
         method: "GET",
@@ -7435,13 +7436,13 @@ export class Api<SecurityDataType extends unknown> {
           walkId?: string;
         },
         | {
-            message?: string;
-          }
+          message?: string;
+        }
         | {
-            message?: string;
-            /** Error details (only in development mode) */
-            error?: string;
-          }
+          message?: string;
+          /** Error details (only in development mode) */
+          error?: string;
+        }
       >({
         path: `/api/invites/respond`,
         method: "PATCH",
@@ -7803,12 +7804,12 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         PeerRequest,
         | {
-            message?: string;
-            errors?: object[];
-          }
+          message?: string;
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/peer-requests`,
         method: "POST",
@@ -7864,11 +7865,11 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         PeerRequest,
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/peer-requests/${id}`,
         method: "GET",
@@ -7896,12 +7897,12 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         PeerRequest,
         | {
-            message?: string;
-            errors?: object[];
-          }
+          message?: string;
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/peer-requests/${id}`,
         method: "PUT",
@@ -7927,11 +7928,11 @@ export class Api<SecurityDataType extends unknown> {
           message?: string;
         },
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/peer-requests/${id}`,
         method: "DELETE",
@@ -8129,12 +8130,12 @@ export class Api<SecurityDataType extends unknown> {
           message?: string;
         },
         | {
-            /** @example "Peer ID is required" */
-            message?: string;
-          }
+          /** @example "Peer ID is required" */
+          message?: string;
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/users/peers/add`,
         method: "POST",
@@ -9243,16 +9244,16 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       data: {
         role:
-          | "super_admin"
-          | "school_admin"
-          | "campus_admin"
-          | "editor"
-          | "moderator"
-          | "staff"
-          | "viewer"
-          | "student"
-          | "faculty"
-          | "parent";
+        | "super_admin"
+        | "school_admin"
+        | "campus_admin"
+        | "editor"
+        | "moderator"
+        | "staff"
+        | "viewer"
+        | "student"
+        | "faculty"
+        | "parent";
         /** Required for campus-scoped roles */
         campus_id?: string;
         /** Required for school-scoped roles */
@@ -11139,11 +11140,11 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         WalkInvite,
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/walk-invites`,
         method: "POST",
@@ -11199,11 +11200,11 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         WalkInvite,
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/walk-invites/${id}`,
         method: "GET",
@@ -11231,12 +11232,12 @@ export class Api<SecurityDataType extends unknown> {
       this.http.request<
         WalkInvite,
         | {
-            message?: string;
-            errors?: object[];
-          }
+          message?: string;
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/walk-invites/${id}`,
         method: "PUT",
@@ -11262,11 +11263,11 @@ export class Api<SecurityDataType extends unknown> {
           message?: string;
         },
         | {
-            errors?: object[];
-          }
+          errors?: object[];
+        }
         | {
-            message?: string;
-          }
+          message?: string;
+        }
       >({
         path: `/api/walk-invites/${id}`,
         method: "DELETE",
@@ -12847,16 +12848,16 @@ export class Api<SecurityDataType extends unknown> {
           count?: number;
         },
         | {
-            success?: boolean;
-            message?: string;
-            data?: object[];
-            count?: number;
-          }
+          success?: boolean;
+          message?: string;
+          data?: object[];
+          count?: number;
+        }
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/ambassadors`,
         method: "GET",
@@ -12897,16 +12898,16 @@ export class Api<SecurityDataType extends unknown> {
           data?: Ambassador;
         },
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-            details?: object;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+          details?: object;
+        }
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/ambassadors`,
         method: "POST",
@@ -12981,17 +12982,17 @@ export class Api<SecurityDataType extends unknown> {
           updatedFields?: string[];
         },
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-            allowedFields?: string[];
-            details?: object;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+          allowedFields?: string[];
+          details?: object;
+        }
         | {
-            success?: boolean;
-            message?: string;
-            error?: string;
-          }
+          success?: boolean;
+          message?: string;
+          error?: string;
+        }
       >({
         path: `/ambassadors/${id}`,
         method: "PUT",
@@ -13095,14 +13096,14 @@ export class Api<SecurityDataType extends unknown> {
         success?: boolean;
         /** Filter by event type */
         eventType?:
-          | "LOGIN_SUCCESS"
-          | "LOGIN_FAILURE"
-          | "LOGOUT"
-          | "PASSWORD_CHANGE"
-          | "PASSWORD_RESET"
-          | "ACCOUNT_LOCKED"
-          | "ACCOUNT_UNLOCKED"
-          | "ACCOUNT_BANNED";
+        | "LOGIN_SUCCESS"
+        | "LOGIN_FAILURE"
+        | "LOGOUT"
+        | "PASSWORD_CHANGE"
+        | "PASSWORD_RESET"
+        | "ACCOUNT_LOCKED"
+        | "ACCOUNT_UNLOCKED"
+        | "ACCOUNT_BANNED";
         /**
          * Maximum number of logs to return
          * @max 1000

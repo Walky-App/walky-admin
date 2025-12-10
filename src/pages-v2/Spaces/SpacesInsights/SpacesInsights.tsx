@@ -5,6 +5,7 @@ import { AssetIcon, ExportButton } from "../../../components-v2";
 interface SpaceCategory {
   name: string;
   emoji: string;
+  imageUrl?: string;
   spaces: number;
   percentage: number;
 }
@@ -15,6 +16,75 @@ interface SpaceItem {
   logo: string;
   members: number;
 }
+
+import SkeletonLoader from "../../../components/SkeletonLoader";
+
+const SpacesInsightsSkeleton = () => (
+  <main className="spaces-insights-page">
+    <div className="insights-header">
+      <SkeletonLoader width="120px" height="40px" />
+    </div>
+
+    <div className="stats-cards-row">
+      {[1, 2].map((i) => (
+        <div key={i} className="stats-card">
+          <div className="stats-card-header" style={{ justifyContent: "space-between" }}>
+            <SkeletonLoader width="200px" height="20px" />
+            <SkeletonLoader width="60px" height="60px" borderRadius="23px" />
+          </div>
+          <SkeletonLoader width="80px" height="30px" className="mt-2" />
+        </div>
+      ))}
+    </div>
+
+    <div className="filter-section">
+      <div className="time-period-filter">
+        <SkeletonLoader width="100px" height="20px" />
+        <SkeletonLoader width="250px" height="36px" borderRadius="8px" />
+      </div>
+    </div>
+
+    <div className="insights-content-row">
+      <div className="insights-card">
+        <div className="insights-card-header">
+          <SkeletonLoader width="200px" height="20px" />
+        </div>
+        <div className="categories-list">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="category-item">
+              <SkeletonLoader width="40px" height="40px" borderRadius="50%" />
+              <div className="category-info">
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <SkeletonLoader width="150px" height="16px" />
+                  <SkeletonLoader width="100px" height="16px" />
+                </div>
+                <SkeletonLoader width="100%" height="14px" borderRadius="16px" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="insights-card">
+        <div className="insights-card-header">
+          <SkeletonLoader width="200px" height="20px" />
+        </div>
+        <div className="spaces-list">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="space-item">
+              <div className="space-info" style={{ gap: "16px" }}>
+                <SkeletonLoader width="20px" height="20px" />
+                <SkeletonLoader width="40px" height="40px" borderRadius="50%" />
+                <SkeletonLoader width="150px" height="16px" />
+              </div>
+              <SkeletonLoader width="100px" height="16px" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+);
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
@@ -32,6 +102,7 @@ export const SpacesInsights: React.FC = () => {
   const categories: SpaceCategory[] = (insightsData?.data.popularCategories || []).map((category: any) => ({
     name: category.name,
     emoji: category.emoji,
+    imageUrl: category.imageUrl,
     spaces: category.spaces,
     percentage: category.percentage,
   }));
@@ -44,7 +115,7 @@ export const SpacesInsights: React.FC = () => {
   }));
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <SpacesInsightsSkeleton />;
   }
 
   return (
@@ -59,13 +130,13 @@ export const SpacesInsights: React.FC = () => {
         <div className="stats-card">
           <div className="stats-card-header">
             <p className="stats-card-title">
-              Total Events created historically
+              Total Spaces created historically
             </p>
             <div className="stats-card-icon spaces-icon-bg">
               <AssetIcon name="space-icon" size={35} color="#4A4CD9" />
             </div>
           </div>
-          <p className="stats-card-value">{insightsData?.data.totalEvents || 0}</p>
+          <p className="stats-card-value">{insightsData?.data.totalSpaces || 0}</p>
         </div>
 
         <div className="stats-card">
@@ -126,7 +197,15 @@ export const SpacesInsights: React.FC = () => {
               <div key={index} className="category-item">
                 <div className="category-icon-container">
                   <div className="category-icon-bg">
-                    <span className="category-emoji">{category.emoji}</span>
+                    {category.imageUrl ? (
+                      <img
+                        src={category.imageUrl}
+                        alt={category.name}
+                        className="space-logo-img"
+                      />
+                    ) : (
+                      <span className="category-emoji">{category.emoji}</span>
+                    )}
                   </div>
                 </div>
                 <div className="category-info">
@@ -161,9 +240,17 @@ export const SpacesInsights: React.FC = () => {
                 <div className="space-info">
                   <span className="space-rank">{space.rank}.</span>
                   <div className="space-logo">
-                    <div className="space-logo-placeholder">
-                      <AssetIcon name="space-icon" size={20} color="#526AC9" />
-                    </div>
+                    {space.logo ? (
+                      <img
+                        src={space.logo}
+                        alt={space.name}
+                        className="space-logo-img"
+                      />
+                    ) : (
+                      <div className="space-logo-placeholder">
+                        <AssetIcon name="space-icon" size={20} color="#526AC9" />
+                      </div>
+                    )}
                   </div>
                   <p className="space-name">{space.name}</p>
                 </div>
