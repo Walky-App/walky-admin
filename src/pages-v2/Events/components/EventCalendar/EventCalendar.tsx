@@ -33,18 +33,22 @@ export const EventCalendar: React.FC = () => {
     useState<EventDetailsData | null>(null);
   const queryClient = useQueryClient();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [eventToDelete, setEventToDelete] = useState<EventDetailsData | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<EventDetailsData | null>(
+    null
+  );
   const [flagModalOpen, setFlagModalOpen] = useState(false);
   const [eventToFlag, setEventToFlag] = useState<EventDetailsData | null>(null);
   const [unflagModalOpen, setUnflagModalOpen] = useState(false);
-  const [eventToUnflag, setEventToUnflag] = useState<EventDetailsData | null>(null);
+  const [eventToUnflag, setEventToUnflag] = useState<EventDetailsData | null>(
+    null
+  );
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2EventsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+      queryClient.invalidateQueries({ queryKey: ["calendarEvents"] });
       setToastMessage(`Event deleted successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -56,13 +60,14 @@ export const EventCalendar: React.FC = () => {
       setToastMessage("Error deleting event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const flagMutation = useMutation({
-    mutationFn: (data: { id: string; reason: string }) => apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason }),
+    mutationFn: (data: { id: string; reason: string }) =>
+      apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+      queryClient.invalidateQueries({ queryKey: ["calendarEvents"] });
       setToastMessage(`Event flagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -74,13 +79,13 @@ export const EventCalendar: React.FC = () => {
       setToastMessage("Error flagging event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const unflagMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2EventsUnflagCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+      queryClient.invalidateQueries({ queryKey: ["calendarEvents"] });
       setToastMessage(`Event unflagged successfully`);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -92,7 +97,7 @@ export const EventCalendar: React.FC = () => {
       setToastMessage("Error unflagging event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const handleDeleteClick = (event: EventDetailsData) => {
@@ -128,6 +133,14 @@ export const EventCalendar: React.FC = () => {
     }
   };
 
+  const handleCloseAllModals = () => {
+    setEventDetailsModalOpen(false);
+    setScheduledEventsModalOpen(false);
+    setDeleteModalOpen(false);
+    setFlagModalOpen(false);
+    setUnflagModalOpen(false);
+  };
+
   // Close modals when view mode changes
   useEffect(() => {
     setEventDetailsModalOpen(false);
@@ -135,8 +148,18 @@ export const EventCalendar: React.FC = () => {
   }, [viewMode]);
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const dayHeaders = ["MON", "TUE", "WED", "THE", "FRI", "SAT", "SUN"];
@@ -160,42 +183,63 @@ export const EventCalendar: React.FC = () => {
 
   // Calculate start and end dates for the API call
   // We need to cover the previous month days and next month days shown in the grid
-  const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const startDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
   startDate.setDate(startDate.getDate() - firstDayOffset);
 
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + 35); // 5 weeks * 7 days
 
   const { data: eventsData } = useQuery({
-    queryKey: ['calendarEvents', currentDate.getMonth(), currentDate.getFullYear(), selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2EventsList({
-      limit: 1000, // Fetch enough events
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      campusId: selectedCampus?._id
-    }),
-    enabled: !!selectedCampus?._id
+    queryKey: [
+      "calendarEvents",
+      currentDate.getMonth(),
+      currentDate.getFullYear(),
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2EventsList({
+        limit: 1000, // Fetch enough events
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        campusId: selectedCampus?._id,
+      }),
+    enabled: !!selectedCampus?._id,
   });
 
   // Process events into a map by day
   const eventsByDay = new Map<number, ScheduledEventItem[]>();
 
   (eventsData?.data.data || []).forEach((event: any) => {
-    const eventDate = new Date(event.eventDate);
-    // Only care if it's in the current month for the main view counters
-    // But for the grid we might need to handle prev/next month days correctly if we want to show dots there too
-    // For simplicity, let's focus on the current month for now, or map by full date string
+    const eventDateStr = event.date_and_time || event.eventDate;
+    const eventDate = new Date(eventDateStr);
 
-    if (eventDate.getMonth() === currentDate.getMonth() && eventDate.getFullYear() === currentDate.getFullYear()) {
+    if (
+      eventDate.getMonth() === currentDate.getMonth() &&
+      eventDate.getFullYear() === currentDate.getFullYear()
+    ) {
       const day = eventDate.getDate();
       const existing = eventsByDay.get(day) || [];
+
+      // Format time properly from the UTC date
+      const hours = eventDate.getHours();
+      const minutes = eventDate.getMinutes();
+      const ampm = hours >= 12 ? "PM" : "AM";
+      const displayHours = hours % 12 || 12;
+      const formattedTime = `${displayHours
+        .toString()
+        .padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+
       existing.push({
-        id: event.id,
-        eventName: event.eventName,
-        date: new Date(event.eventDate).toLocaleDateString(),
-        time: event.eventTime,
-        location: "Campus", // API doesn't seem to return location in the list, might need details
-        eventImage: undefined,
+        id: event.id || event._id,
+        eventName: event.name || event.eventName,
+        date: eventDate.toLocaleDateString(),
+        time: formattedTime,
+        location: event.location || event.address || "Campus",
+        eventImage: event.image_url,
       });
       eventsByDay.set(day, existing);
     }
@@ -220,24 +264,42 @@ export const EventCalendar: React.FC = () => {
       if (event) {
         const eventDetails: EventDetailsData = {
           id: event.id || event._id || "",
-          eventName: event.eventName || "",
+          eventName: event.name || event.eventName || "",
           organizer: {
             name: event.organizer?.name || "Unknown",
-            studentId: "",
-            avatar: event.organizer?.avatar,
+            studentId:
+              event.organizer?.id ||
+              event.organizer?._id ||
+              event.spaceId ||
+              "N/A",
+            avatar: event.organizer?.avatar || event.organizer?.avatar_url,
           },
-          date: event.eventDate || "",
-          time: event.eventTime || "",
-          place: "Campus", // Missing in detail?
-          type: (event.type as any) || "public",
+          date: new Date(
+            event.date_and_time || event.eventDate
+          ).toLocaleDateString(),
+          time: new Date(
+            event.date_and_time || event.eventDate
+          ).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          place: event.location || event.address || "Campus",
+          status:
+            new Date(event.date_and_time || event.eventDate) < new Date()
+              ? "finished"
+              : "upcoming",
+          type: (event.visibility || event.type) as "public" | "private",
           description: event.description || "No description",
           attendees: (event.participants || []).map((p: any) => ({
             id: p.user_id,
-            name: p.name || 'Unknown',
-            avatar: p.avatar_url
+            name: p.name || "Unknown",
+            avatar: p.avatar_url,
+            status: p.status,
           })),
           maxAttendees: event.slots || 0,
           eventImage: event.image_url,
+          isFlagged: event.isFlagged || false,
+          flagReason: event.flagReason || "",
         };
         setSelectedEventDetails(eventDetails);
         setEventDetailsModalOpen(true);
@@ -250,6 +312,10 @@ export const EventCalendar: React.FC = () => {
   const handleMonthEventClick = (eventId: string) => {
     handleEventClick(eventId);
     setScheduledEventsModalOpen(false);
+  };
+
+  const handleTodayClick = () => {
+    setCurrentDate(new Date());
   };
 
   const getPreviousMonthDays = (date: Date, count: number) => {
@@ -274,6 +340,48 @@ export const EventCalendar: React.FC = () => {
     );
   };
 
+  const handlePrevWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() - 7);
+    setCurrentDate(newDate);
+  };
+
+  const handleNextWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + 7);
+    setCurrentDate(newDate);
+  };
+
+  const handlePrevDay = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() - 1);
+    setCurrentDate(newDate);
+  };
+
+  const handleNextDay = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + 1);
+    setCurrentDate(newDate);
+  };
+
+  const getWeekRange = (date: Date) => {
+    const dayOfWeek = date.getDay();
+    const monday = new Date(date);
+    monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const formatDate = (d: Date) => {
+      const month = monthNames[d.getMonth()].substring(0, 3);
+      return `${month} ${d.getDate()}`;
+    };
+
+    return `${formatDate(monday)} - ${formatDate(
+      sunday
+    )}, ${date.getFullYear()}`;
+  };
+
   const previousMonthDays = getPreviousMonthDays(currentDate, firstDayOffset);
   const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
@@ -290,7 +398,9 @@ export const EventCalendar: React.FC = () => {
     if (!startTime) return "12:00";
     const [hours, minutes] = startTime.split(":").map(Number);
     const endHour = (hours + 1) % 24;
-    return `${endHour.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+    return `${endHour.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const dayEvents = (eventsData?.data.data || [])
@@ -346,17 +456,19 @@ export const EventCalendar: React.FC = () => {
     return (
       <div className="event-calendar-container">
         <div className="calendar-header">
-          <div className="today-button-container">
-            <span className="today-label">Today</span>
+          <div className="today-section">
+            <div className="today-button-container" onClick={handleTodayClick}>
+              <span className="today-label">Today</span>
+            </div>
             <div className="today-badge">{today}</div>
           </div>
 
           <div className="month-navigation">
             <button
-              data-testid="calendar-prev-month-btn"
+              data-testid="calendar-prev-day-btn"
               className="nav-arrow"
-              onClick={handlePrevMonth}
-              aria-label="Previous month"
+              onClick={handlePrevDay}
+              aria-label="Previous day"
             >
               <AssetIcon
                 name="arrow-down"
@@ -366,13 +478,14 @@ export const EventCalendar: React.FC = () => {
               />
             </button>
             <h2 className="month-year">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+              {monthNames[currentDate.getMonth()]} {currentDate.getDate()},{" "}
+              {currentDate.getFullYear()}
             </h2>
             <button
-              data-testid="calendar-next-month-btn"
+              data-testid="calendar-next-day-btn"
               className="nav-arrow"
-              onClick={handleNextMonth}
-              aria-label="Next month"
+              onClick={handleNextDay}
+              aria-label="Next day"
             >
               <AssetIcon
                 name="arrow-down"
@@ -408,7 +521,11 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
         </div>
-        <EventCalendarDay date={currentDate} events={dayEvents} onEventClick={handleEventClick} />
+        <EventCalendarDay
+          date={currentDate}
+          events={dayEvents}
+          onEventClick={handleEventClick}
+        />
 
         {/* Event Details Modal */}
         {selectedEventDetails && (
@@ -460,17 +577,19 @@ export const EventCalendar: React.FC = () => {
     return (
       <div className="event-calendar-container">
         <div className="calendar-header">
-          <div className="today-button-container">
-            <span className="today-label">Today</span>
+          <div className="today-section">
+            <div className="today-button-container" onClick={handleTodayClick}>
+              <span className="today-label">Today</span>
+            </div>
             <div className="today-badge">{today}</div>
           </div>
 
           <div className="month-navigation">
             <button
-              data-testid="calendar-prev-btn"
+              data-testid="calendar-prev-week-btn"
               className="nav-arrow"
-              onClick={handlePrevMonth}
-              aria-label="Previous month"
+              onClick={handlePrevWeek}
+              aria-label="Previous week"
             >
               <AssetIcon
                 name="arrow-down"
@@ -479,14 +598,12 @@ export const EventCalendar: React.FC = () => {
                 style={{ transform: "rotate(90deg)" }}
               />
             </button>
-            <h2 className="month-year">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-            </h2>
+            <h2 className="month-year">{getWeekRange(currentDate)}</h2>
             <button
-              data-testid="calendar-next-btn"
+              data-testid="calendar-next-week-btn"
               className="nav-arrow"
-              onClick={handleNextMonth}
-              aria-label="Next month"
+              onClick={handleNextWeek}
+              aria-label="Next week"
             >
               <AssetIcon
                 name="arrow-down"
@@ -522,7 +639,11 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
         </div>
-        <EventCalendarWeek date={currentDate} events={weekEvents} onEventClick={handleEventClick} />
+        <EventCalendarWeek
+          date={currentDate}
+          events={weekEvents}
+          onEventClick={handleEventClick}
+        />
 
         {/* Event Details Modal */}
         {selectedEventDetails && (
@@ -571,10 +692,12 @@ export const EventCalendar: React.FC = () => {
   }
 
   return (
-    <div className="event-calendar">
+    <div className="event-calendar-container">
       <div className="calendar-header">
-        <div className="today-button-container">
-          <span className="today-label">Today</span>
+        <div className="today-section">
+          <div className="today-button-container" onClick={handleTodayClick}>
+            <span className="today-label">Today</span>
+          </div>
           <div className="today-badge">{today}</div>
         </div>
 
@@ -656,13 +779,26 @@ export const EventCalendar: React.FC = () => {
           {/* Current month days */}
           {currentMonthDays.map((day) => {
             const events = getEventsForDate(day);
-            const isToday = day === today && currentDate.getMonth() === new Date().getMonth() && currentDate.getFullYear() === new Date().getFullYear();
+            const now = new Date();
+            const isToday =
+              day === today &&
+              currentDate.getMonth() === now.getMonth() &&
+              currentDate.getFullYear() === now.getFullYear();
+
+            const isPast =
+              currentDate.getFullYear() < now.getFullYear() ||
+              (currentDate.getFullYear() === now.getFullYear() &&
+                currentDate.getMonth() < now.getMonth()) ||
+              (currentDate.getFullYear() === now.getFullYear() &&
+                currentDate.getMonth() === now.getMonth() &&
+                day < today);
 
             return (
               <div
                 key={day}
-                className={`calendar-day ${isToday ? "today" : ""} ${events.length > 0 ? "has-events" : ""
-                  }`}
+                className={`calendar-day ${isToday ? "today" : ""} ${
+                  isPast ? "past-day" : ""
+                } ${events.length > 0 ? "has-events" : ""}`}
                 onClick={() => handleDayClick(day)}
               >
                 {isToday ? (
@@ -712,6 +848,7 @@ export const EventCalendar: React.FC = () => {
             setEventDetailsModalOpen(false);
             setScheduledEventsModalOpen(true);
           }}
+          onCloseAll={handleCloseAllModals}
           eventData={selectedEventDetails}
           onDelete={handleDeleteClick}
           onFlag={handleFlagClick}

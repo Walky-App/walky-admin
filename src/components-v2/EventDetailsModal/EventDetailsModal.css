@@ -338,6 +338,21 @@
   gap: 8px;
 }
 
+.event-attendee-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-pending-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a9abac;
+  opacity: 0.5;
+}
+
 .event-attendee-avatar {
   width: 38px;
   height: 38px;
@@ -379,6 +394,46 @@
 .event-details-footer {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.event-details-footer-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.event-details-action-btn {
+  background: #1d1b20;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 32px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 40px;
+  white-space: nowrap;
+}
+
+.event-details-action-btn:hover {
+  background: #3a3840;
+}
+
+.event-details-action-btn.delete-btn:hover {
+  background: #d93636;
+}
+
+.event-details-action-btn.flag-btn {
+  background: #1d1b20;
+}
+
+.event-details-action-btn.unflag-btn {
+  background: #1d1b20;
 }
 
 .event-details-close-btn {
@@ -394,6 +449,7 @@
   cursor: pointer;
   transition: all 0.2s;
   height: 40px;
+  white-space: nowrap;
 }
 
 .event-details-close-btn:hover {

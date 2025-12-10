@@ -12,6 +12,7 @@ import {
 import { CopyableId } from "../../../components-v2/CopyableId";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import { getFirstName } from "../../../lib/utils/nameUtils";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import "./StudentTable.css";
@@ -50,28 +51,28 @@ export const DeactivatedStudentTable: React.FC<
   const activateMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User activated successfully");
       setShowToast(true);
     },
     onError: () => {
       setToastMessage("Failed to activate user");
       setShowToast(true);
-    }
+    },
   });
 
   const flagMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User flagged successfully");
       setShowToast(true);
     },
     onError: () => {
       setToastMessage("Failed to flag user");
       setShowToast(true);
-    }
+    },
   });
 
   const handleViewProfile = (student: StudentData) => {
@@ -188,7 +189,7 @@ export const DeactivatedStudentTable: React.FC<
               </div>
             )}
           </div>
-          <span>{student.name}</span>
+          <span>{getFirstName(student.name)}</span>
         </div>
       ),
     },
@@ -338,7 +339,7 @@ export const DeactivatedStudentTable: React.FC<
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => { },
+                        onClick: () => {},
                       },
                       {
                         label: "Activate user",

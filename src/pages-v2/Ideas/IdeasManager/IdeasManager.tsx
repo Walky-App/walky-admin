@@ -3,15 +3,22 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import "./IdeasManager.css";
 import { IdeasTable } from "../components/IdeasTable/IdeasTable";
-import { SearchInput } from "../../../components-v2";
+import { IdeasTableSkeleton } from "../components/IdeasTableSkeleton/IdeasTableSkeleton";
+import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
+import { SearchInput, Pagination } from "../../../components-v2";
 
 export const IdeasManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: ideasData, isLoading } = useQuery({
-    queryKey: ['ideas', currentPage, searchQuery],
-    queryFn: () => apiClient.api.adminV2IdeasList({ page: currentPage, limit: 10, search: searchQuery }),
+    queryKey: ["ideas", currentPage, searchQuery],
+    queryFn: () =>
+      apiClient.api.adminV2IdeasList({
+        page: currentPage,
+        limit: 10,
+        search: searchQuery,
+      }),
   });
 
   const filteredIdeas = (ideasData?.data.data || []).map((idea: any) => ({
@@ -27,12 +34,7 @@ export const IdeasManager: React.FC = () => {
   }));
 
   const totalPages = Math.ceil((ideasData?.data.total || 0) / 10);
-  const startEntry = (currentPage - 1) * 10 + 1;
   const totalEntries = ideasData?.data.total || 0;
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   return (
     <main className="ideas-manager-container">
@@ -63,38 +65,24 @@ export const IdeasManager: React.FC = () => {
           </div>
 
           <div className="ideas-manager-table-container">
-            <IdeasTable ideas={filteredIdeas} />
+            {isLoading ? (
+              <IdeasTableSkeleton />
+            ) : filteredIdeas.length === 0 ? (
+              <NoIdeasFound message="No ideas found" />
+            ) : (
+              <IdeasTable ideas={filteredIdeas} />
+            )}
           </div>
 
-          <div className="ideas-manager-pagination">
-            <p className="ideas-manager-pagination-info">
-              Showing {startEntry} of {totalEntries} entries
-            </p>
-            <div className="ideas-manager-pagination-controls">
-              <button
-                data-testid="pagination-prev-btn"
-                className="ideas-manager-pagination-button"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
-                Previous
-              </button>
-              <button
-                data-testid="pagination-page-btn"
-                className="ideas-manager-pagination-page active"
-              >
-                {currentPage}
-              </button>
-              <button
-                data-testid="pagination-next-btn"
-                className="ideas-manager-pagination-button"
-                disabled={currentPage >= totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
-                Next
-              </button>
-            </div>
-          </div>
+          {!isLoading && filteredIdeas.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={totalEntries}
+              entriesPerPage={10}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
       </div>
     </main>

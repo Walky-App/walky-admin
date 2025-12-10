@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { AssetIcon } from "../AssetIcon/AssetIcon";
 import { CustomToast } from "../CustomToast/CustomToast";
 import "./CopyableId.css";
@@ -31,10 +31,34 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
   collapsed = true,
 }) => {
   const [toastVisible, setToastVisible] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(id);
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    setIsCopied(true);
+    setIsHovering(false);
+
+    // Reset after 5 seconds
+    timeoutRef.current = setTimeout(() => {
+      setIsCopied(false);
+    }, 5000);
 
     if (showToast) {
       setToastVisible(true);
@@ -42,6 +66,16 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
         setToastVisible(false);
       }, 3000);
     }
+  };
+
+  const handleMouseEnter = () => {
+    if (!isCopied) {
+      setIsHovering(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
   };
 
   const formatId = (id: string): string => {
@@ -58,9 +92,14 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
       <div
         className={`copyable-id-container ${variant} ${size} ${className}`}
         data-testid={testId}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="copyable-id-badge">
-          <span className="copyable-id-text" style={{ fontFamily: "monospace" }}>
+          <span
+            className="copyable-id-text"
+            style={{ fontFamily: "monospace" }}
+          >
             {formatId(id)}
           </span>
         </div>
@@ -71,8 +110,23 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
           title={`Copy ${label}`}
           aria-label={`Copy ${label}`}
         >
-          <AssetIcon name="copy-icon" size={iconSize} color={iconColor} />
+          {isCopied ? (
+            <AssetIcon
+              name="check-copy-icon"
+              size={iconSize}
+              color={iconColor}
+            />
+          ) : (
+            <AssetIcon name="copy-icon" size={iconSize} color={iconColor} />
+          )}
         </button>
+
+        {/* Hover tooltip */}
+        {(isHovering || isCopied) && (
+          <div className="copyable-id-tooltip">
+            {isCopied ? "Copied!" : `Copy ${label}`}
+          </div>
+        )}
       </div>
 
       {showToast && toastVisible && (

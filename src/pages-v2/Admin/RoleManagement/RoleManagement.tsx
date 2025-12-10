@@ -5,6 +5,7 @@ import {
   Divider,
   ActionDropdown,
   FilterDropdown,
+  Pagination,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import {
@@ -66,26 +67,29 @@ export const RoleManagement: React.FC = () => {
   const [selectedMember, setSelectedMember] = useState<MemberData | null>(null);
 
   const { data: membersData, isLoading } = useQuery({
-    queryKey: ['members', currentPage, searchQuery, roleFilter],
-    queryFn: () => apiClient.api.adminV2MembersList({
-      page: currentPage,
-      limit: entriesPerPage,
-      search: searchQuery,
-      role: roleFilter
-    }),
+    queryKey: ["members", currentPage, searchQuery, roleFilter],
+    queryFn: () =>
+      apiClient.api.adminV2MembersList({
+        page: currentPage,
+        limit: entriesPerPage,
+        search: searchQuery,
+        role: roleFilter,
+      }),
   });
 
-  const members: MemberData[] = (membersData?.data.data || []).map((member: any) => ({
-    id: member.id,
-    name: member.name,
-    title: member.title,
-    email: member.email,
-    avatar: member.avatar,
-    role: member.role,
-    assignedBy: member.assignedBy,
-    invitationStatus: member.invitationStatus,
-    lastActive: member.lastActive,
-  }));
+  const members: MemberData[] = (membersData?.data.data || []).map(
+    (member: any) => ({
+      id: member.id,
+      name: member.name,
+      title: member.title,
+      email: member.email,
+      avatar: member.avatar,
+      role: member.role,
+      assignedBy: member.assignedBy,
+      invitationStatus: member.invitationStatus,
+      lastActive: member.lastActive,
+    })
+  );
 
   if (isLoading) {
     return <div className="p-4">Loading...</div>;
@@ -141,7 +145,7 @@ export const RoleManagement: React.FC = () => {
     try {
       await apiClient.api.adminV2MembersDelete(selectedMember.id);
       toast.success(`Member ${selectedMember.name} removed successfully`);
-      queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
       console.error("Failed to remove member:", error);
       toast.error("Failed to remove member");
@@ -155,9 +159,11 @@ export const RoleManagement: React.FC = () => {
   ) => {
     if (!selectedMember) return;
     try {
-      await apiClient.api.adminV2MembersRolePartialUpdate(selectedMember.id, { role: newRole });
+      await apiClient.api.adminV2MembersRolePartialUpdate(selectedMember.id, {
+        role: newRole,
+      });
       toast.success(`Role updated to ${newRole} for ${selectedMember.name}`);
-      queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
       console.error("Failed to update role:", error);
       toast.error("Failed to update role");
@@ -188,15 +194,13 @@ export const RoleManagement: React.FC = () => {
         title: memberData.role || "Administrator", // Use role as title since modal doesn't have title field
       });
       toast.success("Member created successfully");
-      queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
       console.error("Failed to create member:", error);
       toast.error("Failed to create member");
     }
     setIsCreateMemberModalOpen(false);
   };
-
-
 
   return (
     <main className="role-management-page">
@@ -368,7 +372,7 @@ export const RoleManagement: React.FC = () => {
                           {
                             label: "",
                             isDivider: true,
-                            onClick: () => { },
+                            onClick: () => {},
                           },
                           {
                             label: "Remove member",
@@ -396,30 +400,15 @@ export const RoleManagement: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <div className="pagination-container">
-          <p className="pagination-info">
-            Showing {members.length} of {membersData?.data.total || 0} entries
-          </p>
-          <div className="pagination-controls">
-            <button
-              data-testid="pagination-prev-btn"
-              className="pagination-button"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            >
-              Previous
-            </button>
-            <div className="page-number active">{currentPage}</div>
-            <button
-              data-testid="pagination-next-btn"
-              className="pagination-button"
-              disabled={currentPage * entriesPerPage >= (membersData?.data.total || 0)}
-              onClick={() => setCurrentPage(prev => prev + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(
+            (membersData?.data.total || 0) / entriesPerPage
+          )}
+          totalEntries={membersData?.data.total || 0}
+          entriesPerPage={entriesPerPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {/* Role Permissions Modal */}

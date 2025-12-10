@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput } from "../../../components-v2";
+import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
-import { Pagination } from "../components/Pagination";
 import { StudentData } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
+import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
+import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import "./DeactivatedStudents.css";
 
 export const DeactivatedStudents: React.FC = () => {
@@ -16,17 +17,18 @@ export const DeactivatedStudents: React.FC = () => {
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ['students', currentPage, searchQuery, 'deactivated'],
-    queryFn: () => apiClient.api.adminV2StudentsList({
-      page: currentPage,
-      limit: entriesPerPage,
-      search: searchQuery,
-      status: 'deactivated'
-    }),
+    queryKey: ["students", currentPage, searchQuery, "deactivated"],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsList({
+        page: currentPage,
+        limit: entriesPerPage,
+        search: searchQuery,
+        status: "deactivated",
+      }),
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['studentStats'],
+    queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
@@ -46,12 +48,10 @@ export const DeactivatedStudents: React.FC = () => {
     avatar: student.avatar,
   }));
 
-  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const totalPages = Math.ceil(
+    (studentsData?.data.total || 0) / entriesPerPage
+  );
   const paginatedStudents = students;
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   const handleStudentClick = (student: StudentData) => {
     console.log("Student clicked:", student);
@@ -106,29 +106,37 @@ export const DeactivatedStudents: React.FC = () => {
           <ExportButton onClick={handleExport} />
         </div>
 
-        <DeactivatedStudentTable
-          students={paginatedStudents}
-          columns={[
-            "userId",
-            "name",
-            "email",
-            "deactivatedBy",
-            "status",
-            "memberSince",
-            "deactivatedDate",
-          ]}
-          onStudentClick={handleStudentClick}
-        />
-
-        <div className="deactivated-students-pagination">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalEntries={studentsData?.data.total || 0}
-            entriesPerPage={entriesPerPage}
-            onPageChange={setCurrentPage}
+        {isLoading ? (
+          <StudentTableSkeleton />
+        ) : paginatedStudents.length === 0 ? (
+          <NoStudentsFound />
+        ) : (
+          <DeactivatedStudentTable
+            students={paginatedStudents}
+            columns={[
+              "userId",
+              "name",
+              "email",
+              "deactivatedBy",
+              "status",
+              "memberSince",
+              "deactivatedDate",
+            ]}
+            onStudentClick={handleStudentClick}
           />
-        </div>
+        )}
+
+        {!isLoading && paginatedStudents.length > 0 && (
+          <div className="deactivated-students-pagination">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={studentsData?.data.total || 0}
+              entriesPerPage={entriesPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
     </main>
   );

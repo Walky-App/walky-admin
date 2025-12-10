@@ -6,8 +6,11 @@ import {
   StudentProfileData,
   CustomToast,
   Divider,
+  Pagination,
 } from "../../../components-v2";
 import { StatsCard } from "../components/StatsCard";
+import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
+import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import "./DisengagedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -34,36 +37,34 @@ export const DisengagedStudents: React.FC = () => {
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ['students', currentPage, 'disengaged'],
-    queryFn: () => apiClient.api.adminV2StudentsList({
-      page: currentPage,
-      limit: entriesPerPage,
-      status: 'disengaged'
-    }),
+    queryKey: ["students", currentPage, "disengaged"],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsList({
+        page: currentPage,
+        limit: entriesPerPage,
+        status: "disengaged",
+      }),
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['studentStats'],
+    queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
   const isLoading = isStudentsLoading || isStatsLoading;
 
-  const students: DisengagedStudent[] = (studentsData?.data.data || []).map((student: any) => ({
-    id: student.id,
-    name: student.name,
-    avatar: student.avatar,
-    peers: student.peers || 0,
-    ignoredInvitations: student.ignoredInvitations || 0,
-    memberSince: student.memberSince,
-    email: student.email,
-    reported: student.isFlagged || false,
-  }));
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
+  const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
+    (student: any) => ({
+      id: student.id,
+      name: student.name,
+      avatar: student.avatar,
+      peers: student.peers || 0,
+      ignoredInvitations: student.ignoredInvitations || 0,
+      memberSince: student.memberSince,
+      email: student.email,
+      reported: student.isFlagged || false,
+    })
+  );
   const handleSendOutreach = async (student: DisengagedStudent) => {
     try {
       await navigator.clipboard.writeText(student.email);
@@ -89,20 +90,20 @@ export const DisengagedStudents: React.FC = () => {
   const handleExport = async () => {
     try {
       const response = await apiClient.http.request({
-        path: '/api/admin/v2/students',
-        method: 'GET',
+        path: "/api/admin/v2/students",
+        method: "GET",
         query: {
-          status: 'disengaged',
-          export: 'true'
+          status: "disengaged",
+          export: "true",
         },
-        format: 'blob',
+        format: "blob",
       });
 
       // @ts-ignore
       const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `disengaged_students.csv`);
+      link.setAttribute("download", `disengaged_students.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -160,96 +161,118 @@ export const DisengagedStudents: React.FC = () => {
         </div>
 
         {/* Custom Table */}
-        <div className="disengaged-table-wrapper">
-          <table className="disengaged-table">
-            <thead>
-              <tr className="disengaged-table-header">
-                <th>Student name</th>
-                <th>Peers</th>
-                <th>Ignored invitations</th>
-                <th>Member since</th>
-                <th>Email address</th>
-                <th>Reported</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student, index) => (
-                <React.Fragment key={student.id}>
-                  <tr className="disengaged-table-row">
-                    <td>
-                      <div className="disengaged-student-info">
-                        <div className="disengaged-student-avatar">
-                          {student.avatar && student.avatar.match(/^https?:/) ? (
-                            <img src={student.avatar} alt={student.name} />
-                          ) : (
-                            <div className="disengaged-student-avatar-placeholder">
-                              {student.avatar || student.name.charAt(0)}
-                            </div>
-                          )}
+        {isLoading ? (
+          <StudentTableSkeleton />
+        ) : students.length === 0 ? (
+          <NoStudentsFound />
+        ) : (
+          <div className="disengaged-table-wrapper">
+            <table className="disengaged-table">
+              <thead>
+                <tr className="disengaged-table-header">
+                  <th>Student name</th>
+                  <th>Peers</th>
+                  <th>Ignored invitations</th>
+                  <th>Member since</th>
+                  <th>Email address</th>
+                  <th>Reported</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((student, index) => (
+                  <React.Fragment key={student.id}>
+                    <tr className="disengaged-table-row">
+                      <td>
+                        <div className="disengaged-student-info">
+                          <div className="disengaged-student-avatar">
+                            {student.avatar &&
+                            student.avatar.match(/^https?:/) ? (
+                              <img src={student.avatar} alt={student.name} />
+                            ) : (
+                              <div className="disengaged-student-avatar-placeholder">
+                                {student.avatar || student.name.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                          <span
+                            className="disengaged-student-name"
+                            onClick={() => handleStudentClick(student)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {student.name}
+                          </span>
                         </div>
-                        <span
-                          className="disengaged-student-name"
-                          onClick={() => handleStudentClick(student)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {student.name}
+                      </td>
+                      <td>
+                        <span className="disengaged-cell-value">
+                          {student.peers}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="disengaged-cell-value">
-                        {student.peers}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="disengaged-cell-value">
-                        {student.ignoredInvitations}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="disengaged-cell-value">
-                        {student.memberSince}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="disengaged-cell-value">
-                        {student.email}
-                      </span>
-                    </td>
-                    <td>
-                      {student.reported ? (
-                        <div className="disengaged-status-badge reported">
-                          Reported
-                        </div>
-                      ) : (
-                        <div className="disengaged-status-badge not-reported">
-                          Not reported
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <button
-                        data-testid="send-outreach-btn"
-                        className="disengaged-send-outreach-button"
-                        onClick={() => handleSendOutreach(student)}
-                      >
-                        Send outreach
-                      </button>
-                    </td>
-                  </tr>
-                  {index < students.length - 1 && (
-                    <tr className="disengaged-divider-row">
-                      <td colSpan={7}>
-                        <Divider />
+                      </td>
+                      <td>
+                        <span className="disengaged-cell-value">
+                          {student.ignoredInvitations}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="disengaged-cell-value">
+                          {student.memberSince}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="disengaged-cell-value">
+                          {student.email}
+                        </span>
+                      </td>
+                      <td>
+                        {student.reported ? (
+                          <div className="disengaged-status-badge reported">
+                            Reported
+                          </div>
+                        ) : (
+                          <div className="disengaged-status-badge not-reported">
+                            Not reported
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <button
+                          data-testid="send-outreach-btn"
+                          className="disengaged-send-outreach-button"
+                          onClick={() => handleSendOutreach(student)}
+                        >
+                          Send outreach
+                        </button>
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    {index < students.length - 1 && (
+                      <tr className="disengaged-divider-row">
+                        <td colSpan={7}>
+                          <Divider />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && students.length > 0 && (
+          <div className="disengaged-students-pagination">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(
+                (studentsData?.data.total || 0) / entriesPerPage
+              )}
+              totalEntries={studentsData?.data.total || 0}
+              entriesPerPage={entriesPerPage}
+              onPageChange={() => {}}
+            />
+          </div>
+        )}
       </div>
 
       <StudentProfileModal
@@ -257,15 +280,15 @@ export const DisengagedStudents: React.FC = () => {
         student={
           selectedStudent
             ? ({
-              userId: selectedStudent.id,
-              name: selectedStudent.name,
-              email: selectedStudent.email,
-              avatar: selectedStudent.avatar,
-              status: "disengaged" as const,
-              interests: [],
-              memberSince: selectedStudent.memberSince,
-              onlineLast: "-",
-            } as unknown as StudentProfileData)
+                userId: selectedStudent.id,
+                name: selectedStudent.name,
+                email: selectedStudent.email,
+                avatar: selectedStudent.avatar,
+                status: "disengaged" as const,
+                interests: [],
+                memberSince: selectedStudent.memberSince,
+                onlineLast: "-",
+              } as unknown as StudentProfileData)
             : null
         }
         onClose={handleCloseProfile}

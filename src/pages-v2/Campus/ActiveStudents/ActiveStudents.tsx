@@ -6,6 +6,8 @@ import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { StudentTable, StudentData } from "../components/StudentTable";
 import { Pagination } from "../components/Pagination";
+import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
+import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import "./ActiveStudents.css";
 
 export const ActiveStudents: React.FC = () => {
@@ -15,12 +17,17 @@ export const ActiveStudents: React.FC = () => {
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ['students', currentPage, searchQuery],
-    queryFn: () => apiClient.api.adminV2StudentsList({ page: currentPage, limit: entriesPerPage, search: searchQuery }),
+    queryKey: ["students", currentPage, searchQuery],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsList({
+        page: currentPage,
+        limit: entriesPerPage,
+        search: searchQuery,
+      }),
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['studentStats'],
+    queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
@@ -39,12 +46,10 @@ export const ActiveStudents: React.FC = () => {
     isFlagged: student.isFlagged,
   }));
 
-  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const totalPages = Math.ceil(
+    (studentsData?.data.total || 0) / entriesPerPage
+  );
   const paginatedStudents = students; // API already returns paginated data
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   const handleExport = () => {
     console.log("Export clicked");
@@ -108,21 +113,29 @@ export const ActiveStudents: React.FC = () => {
           <ExportButton onClick={handleExport} />
         </div>
 
-        <StudentTable
-          students={paginatedStudents}
-          onStudentClick={handleStudentClick}
-          onActionClick={handleActionClick}
-        />
-
-        <div className="active-students-pagination">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalEntries={studentsData?.data.total || 0}
-            entriesPerPage={entriesPerPage}
-            onPageChange={setCurrentPage}
+        {isLoading ? (
+          <StudentTableSkeleton />
+        ) : paginatedStudents.length === 0 ? (
+          <NoStudentsFound />
+        ) : (
+          <StudentTable
+            students={paginatedStudents}
+            onStudentClick={handleStudentClick}
+            onActionClick={handleActionClick}
           />
-        </div>
+        )}
+
+        {!isLoading && paginatedStudents.length > 0 && (
+          <div className="active-students-pagination">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={studentsData?.data.total || 0}
+              entriesPerPage={entriesPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
     </main>
   );

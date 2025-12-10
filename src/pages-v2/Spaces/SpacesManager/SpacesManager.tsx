@@ -81,6 +81,8 @@ const SpacesManagerSkeleton = () => (
 );
 
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
+import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
+import { NoSpacesFound } from "../components/NoSpacesFound/NoSpacesFound";
 import "./SpacesManager.css";
 
 export const SpacesManager: React.FC = () => {
@@ -107,8 +109,14 @@ export const SpacesManager: React.FC = () => {
   }, []);
 
   const { data: spacesData, isLoading } = useQuery({
-    queryKey: ['spaces', currentPage, searchQuery, categoryFilter],
-    queryFn: () => apiClient.api.adminV2SpacesList({ page: currentPage, limit: 10, search: searchQuery, category: categoryFilter }),
+    queryKey: ["spaces", currentPage, searchQuery, categoryFilter],
+    queryFn: () =>
+      apiClient.api.adminV2SpacesList({
+        page: currentPage,
+        limit: 10,
+        search: searchQuery,
+        category: categoryFilter,
+      }),
   });
 
   const filteredSpaces = (spacesData?.data.data || []).map((space: any) => ({
@@ -166,30 +174,31 @@ export const SpacesManager: React.FC = () => {
                   {categoryFilter === "all"
                     ? "All categorys"
                     : categoryFilter === "clubs"
-                      ? "Clubs"
-                      : categoryFilter === "club-sports"
-                        ? "Club Sports"
-                        : categoryFilter === "im-teams"
-                          ? "IM Teams"
-                          : categoryFilter === "sororities"
-                            ? "Sororities"
-                            : categoryFilter === "fraternities"
-                              ? "Fraternities"
-                              : categoryFilter === "volunteer"
-                                ? "Volunteer"
-                                : categoryFilter === "academics"
-                                  ? "Academics & Honors"
-                                  : categoryFilter === "leadership"
-                                    ? "Leadership & Government"
-                                    : "Cultural & Diversity"}
+                    ? "Clubs"
+                    : categoryFilter === "club-sports"
+                    ? "Club Sports"
+                    : categoryFilter === "im-teams"
+                    ? "IM Teams"
+                    : categoryFilter === "sororities"
+                    ? "Sororities"
+                    : categoryFilter === "fraternities"
+                    ? "Fraternities"
+                    : categoryFilter === "volunteer"
+                    ? "Volunteer"
+                    : categoryFilter === "academics"
+                    ? "Academics & Honors"
+                    : categoryFilter === "leadership"
+                    ? "Leadership & Government"
+                    : "Cultural & Diversity"}
                 </span>
                 <AssetIcon name="arrow-down" size={10} color="#5B6168" />
               </button>
               {categoryDropdownOpen && (
                 <div className="category-dropdown-menu">
                   <div
-                    className={`category-dropdown-item ${categoryFilter === "all" ? "active" : ""
-                      }`}
+                    className={`category-dropdown-item ${
+                      categoryFilter === "all" ? "active" : ""
+                    }`}
                     onClick={() => {
                       setCategoryFilter("all");
                       setCategoryDropdownOpen(false);
@@ -293,37 +302,23 @@ export const SpacesManager: React.FC = () => {
           </div>
         </div>
 
-        <SpaceTable spaces={filteredSpaces} />
+        {isLoading ? (
+          <SpaceTableSkeleton />
+        ) : filteredSpaces.length === 0 ? (
+          <NoSpacesFound message="No spaces found" />
+        ) : (
+          <SpaceTable spaces={filteredSpaces} />
+        )}
 
-        <div className="spaces-pagination">
-          <p className="pagination-info">
-            Showing {filteredSpaces.length} of {totalEntries} entries
-          </p>
-
-          <div className="pagination-controls">
-            <button
-              data-testid="pagination-prev-btn"
-              className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-
-            <div className="pagination-page-number active">
-              <span>{currentPage}</span>
-            </div>
-
-            <button
-              data-testid="pagination-next-btn"
-              className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        {!isLoading && filteredSpaces.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalEntries={totalEntries}
+            entriesPerPage={10}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </main>
   );
