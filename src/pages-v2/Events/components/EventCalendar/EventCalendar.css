@@ -19,15 +19,31 @@
   padding: 0 35px;
 }
 
+.today-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .today-button-container {
   display: flex;
   align-items: center;
-  gap: 16px;
+  background: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.today-button-container:hover {
+  background: #f6f9ff;
+  border-color: #546fd9;
 }
 
 .today-label {
   font-family: "Lato", sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 16px;
   line-height: 100%;
   color: #1d1b20;
@@ -37,7 +53,7 @@
   background: #546fd9;
   color: #ffffff;
   font-family: "Lato", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
   line-height: 100%;
   padding: 7px;
@@ -163,8 +179,8 @@
   transition: background 0.2s;
 }
 
-.calendar-day.has-events:hover {
-  background: #f6f9ff;
+.calendar-day.has-events:hover .event-indicator {
+  background: rgba(84, 111, 217, 0.15);
 }
 
 .calendar-day:nth-child(7n) {
@@ -172,17 +188,30 @@
 }
 
 .calendar-day.other-month {
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 4px,
-    rgba(29, 27, 32, 0.02) 4px,
-    rgba(29, 27, 32, 0.02) 8px
-  );
+  background: #ffffff;
 }
 
 .calendar-day.other-month .day-number {
   color: #a9abac;
+  opacity: 0.4;
+}
+
+.calendar-day.past-day {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(29, 27, 32, 0.03) 4px,
+    rgba(29, 27, 32, 0.03) 8px
+  );
+}
+
+.calendar-day.past-day .day-number {
+  opacity: 0.5;
+}
+
+.calendar-day.past-day .event-indicator {
+  opacity: 0.5;
 }
 
 .day-number {
@@ -220,36 +249,43 @@
 
 .event-indicator {
   position: absolute;
-  bottom: 8px;
-  left: 8px;
-  right: 8px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: rgba(84, 111, 217, 0.08);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 3px,
+    rgba(255, 255, 255, 0.2) 3px,
+    rgba(255, 255, 255, 0.2) 4px
+  );
+  padding: 0;
+  border-radius: 0;
+  min-height: 30px;
+  border-left: 5px solid #546fd9;
 }
 
 .event-bar {
-  width: 4px;
-  height: 30px;
-  background: #546fd9;
-  border-radius: 2px;
-  margin-bottom: 4px;
+  display: none;
 }
 
 .event-count {
   font-family: "Lato", sans-serif;
-  font-weight: 400;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 12px;
   line-height: 100%;
   color: #546fd9;
-  display: block;
-  text-align: right;
-}
-
-/* Pattern background for days with events (from Figma) */
-.calendar-day:has(.event-indicator)::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(84, 111, 217, 0.08);
-  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 6px 8px;
+  flex: 1;
+  text-align: center;
 }
 
 /* Dark Mode Styles */
@@ -326,8 +362,4 @@
 
 [data-theme="dark"] .event-count {
   color: #7a8fff;
-}
-
-[data-theme="dark"] .calendar-day:has(.event-indicator)::before {
-  background: rgba(122, 143, 255, 0.12);
 }

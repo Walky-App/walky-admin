@@ -17,6 +17,7 @@ import {
   FlagModal,
   CustomToast,
   BanUserModal,
+  Pagination,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
@@ -30,10 +31,10 @@ interface ReportData {
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
   reasonTag:
-  | "Harmful / Unsafe Behavior"
-  | "Made Me Uncomfortable"
-  | "Spam"
-  | "Harassment";
+    | "Harmful / Unsafe Behavior"
+    | "Made Me Uncomfortable"
+    | "Spam"
+    | "Harassment";
   status: "Pending review" | "Under evaluation" | "Resolved" | "Dismissed";
   isFlagged?: boolean;
 }
@@ -43,7 +44,9 @@ export const ReportSafety: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string>("Pending review,Under evaluation");
+  const [selectedStatus, setSelectedStatus] = useState<string>(
+    "Pending review,Under evaluation"
+  );
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState<{
     reportId: string;
@@ -58,26 +61,37 @@ export const ReportSafety: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  const { data: reportsData, isLoading: isReportsLoading, refetch } = useQuery({
-    queryKey: ['reports', currentPage, searchQuery, selectedTypes, selectedStatus],
-    queryFn: () => apiClient.api.adminV2ReportsList({
-      page: currentPage,
-      limit: 10,
-      search: searchQuery,
-      type: selectedTypes.join(','),
-      status: selectedStatus
-    }),
+  const {
+    data: reportsData,
+    isLoading: isReportsLoading,
+    refetch,
+  } = useQuery({
+    queryKey: [
+      "reports",
+      currentPage,
+      searchQuery,
+      selectedTypes,
+      selectedStatus,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2ReportsList({
+        page: currentPage,
+        limit: 10,
+        search: searchQuery,
+        type: selectedTypes.join(","),
+        status: selectedStatus,
+      }),
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['reportStats'],
+    queryKey: ["reportStats"],
     queryFn: () => apiClient.api.adminV2ReportsStatsList(),
   });
 
   const deleteStudentMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       setToastMessage("User deactivated successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -87,14 +101,17 @@ export const ReportSafety: React.FC = () => {
       setToastMessage("Error deactivating user");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const banStudentMutation = useMutation({
     mutationFn: (data: { id: string; duration: number; reason: string }) =>
-      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, { lockDuration: data.duration, lockReason: data.reason } as any),
+      apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, {
+        lockDuration: data.duration,
+        lockReason: data.reason,
+      } as any),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       setToastMessage("User banned successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -104,21 +121,34 @@ export const ReportSafety: React.FC = () => {
       setToastMessage("Error banning user");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const flagMutation = useMutation({
     mutationFn: (data: { id: string; type: string; reason: string }) => {
       switch (data.type.toLowerCase()) {
-        case 'user': return apiClient.api.adminV2StudentsFlagCreate(data.id, { reason: data.reason });
-        case 'event': return apiClient.api.adminV2EventsFlagCreate(data.id, { reason: data.reason });
-        case 'idea': return apiClient.api.adminV2IdeasFlagCreate(data.id, { reason: data.reason });
-        case 'space': return apiClient.api.adminV2SpacesFlagCreate(data.id, { reason: data.reason });
-        default: throw new Error(`Cannot flag type: ${data.type}`);
+        case "user":
+          return apiClient.api.adminV2StudentsFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        case "event":
+          return apiClient.api.adminV2EventsFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        case "idea":
+          return apiClient.api.adminV2IdeasFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        case "space":
+          return apiClient.api.adminV2SpacesFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        default:
+          throw new Error(`Cannot flag type: ${data.type}`);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       setToastMessage("Item flagged successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -129,7 +159,7 @@ export const ReportSafety: React.FC = () => {
       setToastMessage("Error flagging item");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }
+    },
   });
 
   const reports = (reportsData?.data.data || []).map((report: any) => ({
@@ -150,7 +180,9 @@ export const ReportSafety: React.FC = () => {
   const underEvaluationReports = statsData?.data.underEvaluation || 0;
 
   const handleStatusChange = async (reportId: string, newStatus: string) => {
-    await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, { status: newStatus });
+    await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
+      status: newStatus,
+    });
     refetch();
   };
 
@@ -161,7 +193,10 @@ export const ReportSafety: React.FC = () => {
 
   const handleNoteConfirm = async (note: string) => {
     if (pendingStatusChange) {
-      await apiClient.api.adminV2ReportsNoteCreate(pendingStatusChange.reportId, { note });
+      await apiClient.api.adminV2ReportsNoteCreate(
+        pendingStatusChange.reportId,
+        { note }
+      );
       await handleStatusChange(
         pendingStatusChange.reportId,
         pendingStatusChange.newStatus
@@ -304,7 +339,10 @@ export const ReportSafety: React.FC = () => {
                 value={selectedStatus}
                 onChange={setSelectedStatus}
                 options={[
-                  { value: "Pending review,Under evaluation", label: "All active" },
+                  {
+                    value: "Pending review,Under evaluation",
+                    label: "All active",
+                  },
                   { value: "Pending review", label: "Pending review" },
                   { value: "Under evaluation", label: "Under evaluation" },
                 ]}
@@ -349,7 +387,6 @@ export const ReportSafety: React.FC = () => {
                     <tr>
                       <td>
                         <div className="report-description-cell">
-
                           <div className="report-content-wrapper">
                             <p
                               className="report-description"
@@ -377,12 +414,14 @@ export const ReportSafety: React.FC = () => {
                             color: reasonColors.text,
                           }}
                         >
-                          {report.reasonTag.split("/").map((line: string, idx: number) => (
-                            <span key={idx}>
-                              {line}
-                              {idx === 0 && "/"}
-                            </span>
-                          ))}
+                          {report.reasonTag
+                            .split("/")
+                            .map((line: string, idx: number) => (
+                              <span key={idx}>
+                                {line}
+                                {idx === 0 && "/"}
+                              </span>
+                            ))}
                         </div>
                       </td>
                       <td>
@@ -428,14 +467,13 @@ export const ReportSafety: React.FC = () => {
                         />
                       </td>
                     </tr>
-                    {index < reports.length - 1 &&
-                      !report.isFlagged && (
-                        <tr className="report-divider-row">
-                          <td colSpan={5}>
-                            <Divider />
-                          </td>
-                        </tr>
-                      )}
+                    {index < reports.length - 1 && !report.isFlagged && (
+                      <tr className="report-divider-row">
+                        <td colSpan={5}>
+                          <Divider />
+                        </td>
+                      </tr>
+                    )}
                   </React.Fragment>
                 );
               })}
@@ -443,34 +481,13 @@ export const ReportSafety: React.FC = () => {
           </table>
         </div>
 
-        <div className="reports-pagination" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p className="pagination-info">
-            Showing {reports.length} of {totalReports} entries
-          </p>
-          <div className="pagination-controls" style={{ display: 'flex', gap: '10px' }}>
-            <button
-              data-testid="report-safety-pagination-prev-btn"
-              className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: 'pointer' }}
-            >
-              Previous
-            </button>
-            <div className="pagination-page-number active" style={{ padding: '8px 16px', background: '#f0f0f0', borderRadius: '4px' }}>
-              <span>{currentPage}</span>
-            </div>
-            <button
-              data-testid="report-safety-pagination-next-btn"
-              className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={reports.length < 10}
-              style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: 'pointer' }}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalReports / 10)}
+          totalEntries={totalReports}
+          entriesPerPage={10}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       <WriteNoteModal
@@ -494,7 +511,8 @@ export const ReportSafety: React.FC = () => {
               id: selectedReportDetails.reportedUser?.id || "N/A",
               avatar: selectedReportDetails.reportedUser?.avatar,
               isBanned: selectedReportDetails.reportedUser?.isBanned || false,
-              isDeactivated: selectedReportDetails.reportedUser?.isDeactivated || false,
+              isDeactivated:
+                selectedReportDetails.reportedUser?.isDeactivated || false,
             },
             status: selectedReport.status as ReportStatus,
             reason: selectedReport.reason,
@@ -508,26 +526,36 @@ export const ReportSafety: React.FC = () => {
               avatar: selectedReportDetails.reporter?.avatar,
             },
             content: {
-              event: selectedReport.type === "Event" ? {
-                image: selectedReportDetails.content?.image_url,
-                date: selectedReportDetails.content?.date,
-                title: selectedReportDetails.content?.name,
-                location: selectedReportDetails.content?.location
-              } : undefined,
-              idea: selectedReport.type === "Idea" ? {
-                title: selectedReportDetails.content?.title,
-                tag: selectedReportDetails.content?.looking_for || "N/A",
-                description: selectedReportDetails.content?.description,
-                ideaBy: selectedReportDetails.reportedUser?.name || "Unknown",
-                avatar: selectedReportDetails.reportedUser?.avatar || "",
-              } : undefined,
-              space: selectedReport.type === "Space" ? {
-                title: selectedReportDetails.content?.name,
-                description: selectedReportDetails.content?.description,
-                image: selectedReportDetails.content?.image_url,
-                category: "Other", // Placeholder
-                memberCount: "0", // Placeholder
-              } : undefined,
+              event:
+                selectedReport.type === "Event"
+                  ? {
+                      image: selectedReportDetails.content?.image_url,
+                      date: selectedReportDetails.content?.date,
+                      title: selectedReportDetails.content?.name,
+                      location: selectedReportDetails.content?.location,
+                    }
+                  : undefined,
+              idea:
+                selectedReport.type === "Idea"
+                  ? {
+                      title: selectedReportDetails.content?.title,
+                      tag: selectedReportDetails.content?.looking_for || "N/A",
+                      description: selectedReportDetails.content?.description,
+                      ideaBy:
+                        selectedReportDetails.reportedUser?.name || "Unknown",
+                      avatar: selectedReportDetails.reportedUser?.avatar || "",
+                    }
+                  : undefined,
+              space:
+                selectedReport.type === "Space"
+                  ? {
+                      title: selectedReportDetails.content?.name,
+                      description: selectedReportDetails.content?.description,
+                      image: selectedReportDetails.content?.image_url,
+                      category: "Other", // Placeholder
+                      memberCount: "0", // Placeholder
+                    }
+                  : undefined,
             },
             safetyRecord: {
               banHistory: selectedReportDetails.reportedUser?.banHistory || [],
@@ -547,7 +575,9 @@ export const ReportSafety: React.FC = () => {
           }}
           onDeactivateUser={() => {
             if (selectedReportDetails?.reportedUser?.id) {
-              deleteStudentMutation.mutate(selectedReportDetails.reportedUser.id);
+              deleteStudentMutation.mutate(
+                selectedReportDetails.reportedUser.id
+              );
             }
           }}
           onBanUser={() => {
@@ -572,7 +602,7 @@ export const ReportSafety: React.FC = () => {
             banStudentMutation.mutate({
               id: selectedReportDetails.reportedUser.id,
               duration: durationDays,
-              reason
+              reason,
             });
             setIsBanModalOpen(false);
           }
@@ -588,7 +618,7 @@ export const ReportSafety: React.FC = () => {
             flagMutation.mutate({
               id: selectedReport.reportedItemId,
               type: selectedReport.type,
-              reason
+              reason,
             });
           }
         }}

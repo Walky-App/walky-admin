@@ -2,12 +2,13 @@ import React from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./EventDetailsModal.css";
 import { AssetIcon, CopyableId } from "../../components-v2";
-import { EventTypeChip } from "../../pages-v2/Events/components/EventTypeChip/EventTypeChip";
+import { EventStatusChip } from "../../pages-v2/Events/components/EventStatusChip/EventStatusChip";
 
 export interface EventAttendee {
   id: string;
   name: string;
   avatar?: string;
+  status?: "confirmed" | "pending" | "declined";
 }
 
 export interface EventDetailsData {
@@ -22,6 +23,7 @@ export interface EventDetailsData {
   date: string;
   time: string;
   place: string;
+  status: "upcoming" | "finished";
   type: "public" | "private";
   description: string;
   attendees: EventAttendee[];
@@ -37,26 +39,43 @@ interface EventDetailsModalProps {
   onDelete?: (event: EventDetailsData) => void;
   onFlag?: (event: EventDetailsData) => void;
   onUnflag?: (event: EventDetailsData) => void;
+  onCloseAll?: () => void;
 }
 
 export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   isOpen,
   onClose,
   eventData,
-  onDelete,
-  onFlag,
-  onUnflag,
+  onDelete: _onDelete,
+  onFlag: _onFlag,
+  onUnflag: _onUnflag,
+  onCloseAll,
 }) => {
-  if (!eventData) return null;
+  // Log event data when modal opens
+  React.useEffect(() => {
+    if (isOpen && eventData) {
+      console.log("Event Details Modal opened with data:", eventData);
+    }
+  }, [isOpen, eventData]);
 
   const handleBack = () => {
     onClose();
   };
 
+  if (!eventData) return null;
+
+  const handleCloseAll = () => {
+    if (onCloseAll) {
+      onCloseAll();
+    } else {
+      onClose();
+    }
+  };
+
   return (
     <CModal
       visible={isOpen}
-      onClose={onClose}
+      onClose={handleCloseAll}
       size="xl"
       alignment="center"
       backdrop="static"
@@ -66,7 +85,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
         <button
           data-testid="event-details-close-btn"
           className="event-details-close"
-          onClick={onClose}
+          onClick={handleCloseAll}
           aria-label="Close modal"
         >
           <AssetIcon name="close-button" size={16} color="#5b6168" />
@@ -162,8 +181,14 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     <span className="event-info-value">{eventData.place}</span>
                   </div>
                   <div className="event-info-row">
+                    <span className="event-info-label">Status:</span>
+                    <EventStatusChip status={eventData.status} />
+                  </div>
+                  <div className="event-info-row">
                     <span className="event-info-label">Type:</span>
-                    <EventTypeChip type={eventData.type} />
+                    <span className="event-info-value">
+                      {eventData.type === "public" ? "Public" : "Private"}
+                    </span>
                   </div>
                   <div className="event-info-description">
                     <span className="event-info-label">Description:</span>{" "}
@@ -193,12 +218,20 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                   Number of attendees
                 </span>
                 <span className="event-attendees-count">
-                  {eventData.attendees.length}/{eventData.maxAttendees}
+                  {eventData.type === "public"
+                    ? eventData.attendees.filter(
+                        (a) => a.status === "confirmed"
+                      ).length
+                    : eventData.attendees.length}
+                  /{eventData.maxAttendees}
                 </span>
               </div>
 
               <div className="event-attendees-list">
-                {eventData.attendees.map((attendee) => (
+                {(eventData.type === "public"
+                  ? eventData.attendees.filter((a) => a.status === "confirmed")
+                  : eventData.attendees
+                ).map((attendee) => (
                   <div key={attendee.id} className="event-attendee-item">
                     <div className="event-attendee-avatar">
                       {attendee.avatar ? (
@@ -210,6 +243,19 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                       )}
                     </div>
                     <p className="event-attendee-name">{attendee.name}</p>
+                    {eventData.type === "private" && attendee.status && (
+                      <div className="event-attendee-status">
+                        {attendee.status === "confirmed" && (
+                          <AssetIcon name="check-icon" size={16} />
+                        )}
+                        {attendee.status === "declined" && (
+                          <AssetIcon name="x-icon" size={16} />
+                        )}
+                        {attendee.status === "pending" && (
+                          <div className="status-pending-dot"></div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -218,38 +264,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
 
           {/* Footer */}
           <div className="event-details-footer">
-            <div className="event-details-footer-actions">
-              {onDelete && (
-                <button
-                  data-testid="event-details-delete-btn"
-                  className="event-details-action-btn delete-btn"
-                  onClick={() => onDelete(eventData)}
-                >
-                  Delete event
-                </button>
-              )}
-              {eventData.isFlagged ? (
-                onUnflag && (
-                  <button
-                    data-testid="event-details-unflag-btn"
-                    className="event-details-action-btn unflag-btn"
-                    onClick={() => onUnflag(eventData)}
-                  >
-                    Unflag event
-                  </button>
-                )
-              ) : (
-                onFlag && (
-                  <button
-                    data-testid="event-details-flag-btn"
-                    className="event-details-action-btn flag-btn"
-                    onClick={() => onFlag(eventData)}
-                  >
-                    Flag event
-                  </button>
-                )
-              )}
-            </div>
             <button
               data-testid="event-details-close-footer-btn"
               className="event-details-close-btn"

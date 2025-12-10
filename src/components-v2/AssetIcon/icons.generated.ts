@@ -6,6 +6,7 @@ import braannedStudentsIcon from '../../assets-v2/svg/braanned-students-icon.svg
 import calendarIcon from '../../assets-v2/svg/calendar-icon.svg?react';
 import campusIcon from '../../assets-v2/svg/campus-icon.svg?react';
 import chatIcon from '../../assets-v2/svg/chat-icon.svg?react';
+import checkCopyIcon from '../../assets-v2/svg/check-copy-icon.svg?react';
 import checkIcon from '../../assets-v2/svg/check-icon.svg?react';
 import closeButton from '../../assets-v2/svg/close-button.svg?react';
 import copyIcon from '../../assets-v2/svg/copy-icon.svg?react';
@@ -64,6 +65,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'calendar-icon': calendarIcon,
   'campus-icon': campusIcon,
   'chat-icon': chatIcon,
+  'check-copy-icon': checkCopyIcon,
   'check-icon': checkIcon,
   'close-button': closeButton,
   'copy-icon': copyIcon,

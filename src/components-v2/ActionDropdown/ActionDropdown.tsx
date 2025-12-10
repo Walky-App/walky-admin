@@ -21,11 +21,15 @@ export interface DropdownItem {
 interface ActionDropdownProps {
   items: DropdownItem[];
   testId?: string;
+  title?: string;
+  onDropdownClick?: (e: React.MouseEvent) => void;
 }
 
 export const ActionDropdown: React.FC<ActionDropdownProps> = ({
   items,
   testId = "action-dropdown",
+  title,
+  onDropdownClick,
 }) => {
   const handleItemClick = (item: DropdownItem, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -69,6 +73,11 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({
         <AssetIcon name="vertical-3-dots-icon" size={24} color={iconColor} />
       </CDropdownToggle>
       <CDropdownMenu className="action-dropdown-menu">
+        {title && (
+          <div className="action-dropdown-title" onClick={onDropdownClick}>
+            {title}
+          </div>
+        )}
         {items.map((item, index) => {
           if (item.isDivider) {
             return <div key={index} className="action-dropdown-divider" />;

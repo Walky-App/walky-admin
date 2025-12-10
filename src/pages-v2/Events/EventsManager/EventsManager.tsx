@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { SearchInput, FilterDropdown } from "../../../components-v2";
 import { EventTable } from "../components/EventTable/EventTable";
+import { EventTableSkeleton } from "../components/EventTableSkeleton/EventTableSkeleton";
+import { NoEventsFound } from "../components/NoEventsFound/NoEventsFound";
+import { Pagination } from "../components/Pagination";
 import "./EventsManager.css";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
 
@@ -10,34 +13,53 @@ type ViewMode = "list" | "calendar";
 
 export const EventsManager: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   const { data: eventsData, isLoading } = useQuery({
-    queryKey: ['events', currentPage, searchQuery, typeFilter],
-    queryFn: () => apiClient.api.adminV2EventsList({ page: currentPage, limit: 10, search: searchQuery, type: typeFilter }),
+    queryKey: ["events", currentPage, searchQuery, typeFilter, statusFilter],
+    queryFn: () =>
+      apiClient.api.adminV2EventsList({
+        page: currentPage,
+        limit: 10,
+        search: searchQuery,
+        type: typeFilter,
+      }),
   });
 
-  const filteredEvents = (eventsData?.data.data || []).map((event: any) => ({
-    id: event.id,
-    eventName: event.eventName,
-    organizer: event.organizer,
-    studentId: event.studentId,
-    eventDate: event.eventDate,
-    eventTime: event.eventTime,
-    attendees: event.attendeesCount,
-    type: event.type,
-    isFlagged: event.isFlagged,
-    flagReason: event.flagReason,
-  }));
+  const filteredEvents = (eventsData?.data.data || [])
+    .map((event: any) => ({
+      id: event.id,
+      eventName: event.eventName,
+      organizer: event.organizer,
+      studentId: event.studentId,
+      eventDate: event.eventDate,
+      eventTime: event.eventTime,
+      attendees: event.attendeesCount,
+      status: (new Date(event.eventDate) < new Date() ? "finished" : "upcoming") as "upcoming" | "finished",
+      type: event.type,
+      isFlagged: event.isFlagged,
+      flagReason: event.flagReason,
+    }))
+    .filter((event) => {
+      if (statusFilter === "all") return true;
+      return event.status === statusFilter;
+    });
 
   const totalPages = Math.ceil((eventsData?.data.total || 0) / 10);
   const totalEntries = eventsData?.data.total || 0;
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   return (
     <main className="events-manager-container">
@@ -60,8 +82,9 @@ export const EventsManager: React.FC = () => {
         </button>
         <button
           data-testid="view-calendar-btn"
-          className={`view-toggle-btn ${viewMode === "calendar" ? "active" : ""
-            }`}
+          className={`view-toggle-btn ${
+            viewMode === "calendar" ? "active" : ""
+          }`}
           onClick={() => setViewMode("calendar")}
         >
           Calendar view
@@ -76,60 +99,62 @@ export const EventsManager: React.FC = () => {
 
               <div className="events-filters">
                 <SearchInput
-                  value={searchQuery}
-                  onChange={setSearchQuery}
+                  value={searchInput}
+                  onChange={setSearchInput}
                   placeholder="Search"
                   variant="secondary"
                 />
 
-                <FilterDropdown
-                  value={typeFilter}
-                  onChange={setTypeFilter}
-                  options={[
-                    { value: "all", label: "All types" },
-                    { value: "public", label: "Public" },
-                    { value: "private", label: "Private" },
-                  ]}
-                  ariaLabel="Filter events by type"
-                  testId="event-type-filter"
-                />
+                <div className="events-filter-dropdown">
+                  <FilterDropdown
+                    value={typeFilter}
+                    onChange={setTypeFilter}
+                    options={[
+                      { value: "all", label: "All types" },
+                      { value: "public", label: "Public" },
+                      { value: "private", label: "Private" },
+                    ]}
+                    ariaLabel="Filter events by type"
+                    testId="event-type-filter"
+                  />
+                </div>
+
+                <div className="events-filter-dropdown">
+                  <FilterDropdown
+                    value={statusFilter}
+                    onChange={setStatusFilter}
+                    options={[
+                      { value: "all", label: "All status" },
+                      { value: "upcoming", label: "Upcoming" },
+                      { value: "finished", label: "Finished" },
+                    ]}
+                    ariaLabel="Filter events by status"
+                    testId="event-status-filter"
+                  />
+                </div>
               </div>
             </>
           )}
 
           {viewMode === "list" ? (
             <>
-              <EventTable events={filteredEvents} />
+              {isLoading ? (
+                <EventTableSkeleton />
+              ) : filteredEvents.length === 0 ? (
+                <NoEventsFound message="No events found" />
+              ) : (
+                <EventTable events={filteredEvents} />
+              )}
 
-              <div className="events-pagination">
-                <p className="pagination-info">
-                  Showing {filteredEvents.length} of {totalEntries} entries
-                </p>
-
-                <div className="pagination-controls">
-                  <button
-                    data-testid="pagination-prev-btn"
-                    className="pagination-btn"
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-
-                  <div className="pagination-page-number active">
-                    <span>{currentPage}</span>
-                  </div>
-
-                  <button
-                    data-testid="pagination-next-btn"
-                    className="pagination-btn"
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+              {!isLoading && filteredEvents.length > 0 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalEntries={totalEntries}
+                  entriesPerPage={10}
+                  onPageChange={setCurrentPage}
+                />
+              )}
             </>
           ) : (
             <EventCalendar />

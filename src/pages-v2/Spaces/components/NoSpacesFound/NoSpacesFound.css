@@ -1,0 +1,35 @@
+.no-spaces-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  width: 100%;
+}
+
+.no-spaces-icon-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #eff1fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+[data-theme="dark"] .no-spaces-icon-circle {
+  background-color: rgba(82, 106, 201, 0.15);
+}
+
+.no-spaces-text {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d1b20;
+  margin: 0;
+}
+
+[data-theme="dark"] .no-spaces-text {
+  color: #ffffff;
+}

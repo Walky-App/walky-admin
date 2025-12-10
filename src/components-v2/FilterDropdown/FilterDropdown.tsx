@@ -52,7 +52,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
           <AssetIcon name="arrow-down" size={24} color="#1D1B20" />
         </div>
       </CDropdownToggle>
-      <CDropdownMenu className="filter-dropdown-menu">
+      <CDropdownMenu>
         {options.map((option) => (
           <CDropdownItem
             key={option.value}
