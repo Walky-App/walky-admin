@@ -36,7 +36,6 @@ export const EventsManager: React.FC = () => {
         limit: 10,
         search: searchQuery,
         type: typeFilter,
-        status: statusFilter,
       }),
   });
 
@@ -49,12 +48,12 @@ export const EventsManager: React.FC = () => {
       eventDate: event.eventDate,
       eventTime: event.eventTime,
       attendees: event.attendeesCount,
-      status: new Date(event.eventDate) < new Date() ? "finished" : "upcoming",
+      status: (new Date(event.eventDate) < new Date() ? "finished" : "upcoming") as "upcoming" | "finished",
       type: event.type,
       isFlagged: event.isFlagged,
       flagReason: event.flagReason,
     }))
-    .filter((event: any) => {
+    .filter((event) => {
       if (statusFilter === "all") return true;
       return event.status === statusFilter;
     });

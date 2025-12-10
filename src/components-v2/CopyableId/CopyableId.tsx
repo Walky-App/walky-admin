@@ -33,7 +33,7 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
   const [toastVisible, setToastVisible] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {

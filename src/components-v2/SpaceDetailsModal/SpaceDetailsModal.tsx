@@ -93,6 +93,7 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
       date: event.date,
       time: event.time,
       place: event.location,
+      status: "upcoming",
       type: "public",
       description: `Join us for ${event.title} at ${event.location}`,
       attendees: [],

@@ -1,5 +1,5 @@
 import React from "react";
-import { AssetIcon } from "../../../components-v2";
+import { AssetIcon } from "../../../../components-v2";
 import "./NoStudentsFound.css";
 
 interface NoStudentsFoundProps {
