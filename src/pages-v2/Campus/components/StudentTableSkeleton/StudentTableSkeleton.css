@@ -99,3 +99,28 @@
 .event-divider-row td {
   padding: 0;
 }
+
+.skeleton-student {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-student-name {
+  width: 120px;
+}
+
+.skeleton-email {
+  width: 150px;
+}
+
+.skeleton-student-id {
+  width: 80px;
+}
+
+.skeleton-interests {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+

@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { AssetIcon, SearchInput, Pagination } from "../../../components-v2";
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
+import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
+import { NoSpacesFound } from "../components/NoSpacesFound/NoSpacesFound";
 import "./SpacesManager.css";
 
 export const SpacesManager: React.FC = () => {
@@ -55,10 +57,6 @@ export const SpacesManager: React.FC = () => {
 
   const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
   const totalEntries = spacesData?.data.total || 0;
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   return (
     <main className="spaces-manager-container">
@@ -222,15 +220,23 @@ export const SpacesManager: React.FC = () => {
           </div>
         </div>
 
-        <SpaceTable spaces={filteredSpaces} />
+        {isLoading ? (
+          <SpaceTableSkeleton />
+        ) : filteredSpaces.length === 0 ? (
+          <NoSpacesFound message="No spaces found" />
+        ) : (
+          <SpaceTable spaces={filteredSpaces} />
+        )}
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalEntries={totalEntries}
-          entriesPerPage={10}
-          onPageChange={setCurrentPage}
-        />
+        {!isLoading && filteredSpaces.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalEntries={totalEntries}
+            entriesPerPage={10}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </main>
   );
