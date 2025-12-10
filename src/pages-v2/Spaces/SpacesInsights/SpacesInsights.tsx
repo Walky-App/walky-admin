@@ -86,7 +86,7 @@ const SpacesInsightsSkeleton = () => (
   </main>
 );
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 
 export const SpacesInsights: React.FC = () => {
@@ -97,6 +97,7 @@ export const SpacesInsights: React.FC = () => {
   const { data: insightsData, isLoading } = useQuery({
     queryKey: ['spacesInsights', timePeriod],
     queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: timePeriod }),
+    placeholderData: keepPreviousData,
   });
 
   const categories: SpaceCategory[] = (insightsData?.data.popularCategories || []).map((category: any) => ({

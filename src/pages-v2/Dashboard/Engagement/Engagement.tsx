@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import API from "../../../API";
 import {
@@ -37,6 +37,7 @@ const Engagement: React.FC = () => {
       schoolId: selectedSchool?._id,
       campusId: selectedCampus?._id
     }),
+    placeholderData: keepPreviousData,
   });
 
   const { data: retentionData, isLoading: isRetentionLoading } = useQuery({
@@ -46,6 +47,7 @@ const Engagement: React.FC = () => {
       schoolId: selectedSchool?._id,
       campusId: selectedCampus?._id
     }),
+    placeholderData: keepPreviousData,
   });
 
   const { data: dashboardStats, isLoading: isStatsLoading } = useQuery({
@@ -54,6 +56,7 @@ const Engagement: React.FC = () => {
       schoolId: selectedSchool?._id,
       campusId: selectedCampus?._id
     }),
+    placeholderData: keepPreviousData,
   });
 
   const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
@@ -82,10 +85,6 @@ const Engagement: React.FC = () => {
   const avgAppOpensData = retentionData?.data.avgAppOpens || [];
   const retentionLabels = retentionData?.data.labels || [];
   const retentionSubLabels = retentionData?.data.subLabels;
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   const handleExport = async () => {
     try {
