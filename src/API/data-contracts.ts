@@ -464,6 +464,10 @@ export interface Event {
      * @format objectId
      */
     user_id?: string;
+    /** Full name of the participant */
+    name?: string;
+    /** URL to user avatar image */
+    avatar_url?: string;
     /** Participation status */
     status?: "confirmed" | "pending" | "notgoing";
   }[];
@@ -472,6 +476,11 @@ export interface Event {
    * @format objectId
    */
   school_id: string;
+  /**
+   * Campus ID that the event is associated with
+   * @format objectId
+   */
+  campusId?: string;
   /** Maximum number of participants allowed */
   slots: number;
   /** Type of event (outdoor or indoor) */
@@ -584,7 +593,7 @@ export interface Space {
    */
   howWeUseThisSpace?: string;
   /** URL to the space logo image */
-  logoUrl: string;
+  logoUrl?: string;
   /** URL to the space cover/banner image */
   coverImageUrl?: string;
   /**

@@ -12,13 +12,9 @@
 
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
-export class Admin<SecurityDataType = unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Admin<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
@@ -67,7 +63,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places`,
       method: "GET",
       query: query,
@@ -91,7 +87,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/${id}/categories`,
       method: "PUT",
       body: data,
@@ -119,7 +115,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/campus/${campusId}`,
       method: "POST",
       body: data,
@@ -148,7 +144,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/status`,
       method: "GET",
       query: query,
@@ -165,7 +161,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placesDelete = (id: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/${id}`,
       method: "DELETE",
       secure: true,
@@ -181,7 +177,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placesRestoreCreate = (id: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/${id}/restore`,
       method: "POST",
       secure: true,
@@ -197,7 +193,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placesPhotoSyncStatsList = (params: RequestParams = {}) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         data?: {
@@ -236,7 +232,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;
@@ -288,7 +284,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         success?: boolean;
         message?: string;
@@ -317,7 +313,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placesSystemInitCreate = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/system/init`,
       method: "POST",
       secure: true,
@@ -333,7 +329,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placesSystemStatusList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/system/status`,
       method: "GET",
       secure: true,
@@ -349,7 +345,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placesSystemRestartCreate = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/system/restart`,
       method: "POST",
       secure: true,
@@ -380,7 +376,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/${placeId}/nested`,
       method: "GET",
       query: query,
@@ -405,7 +401,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/popular`,
       method: "GET",
       query: query,
@@ -432,7 +428,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/popular`,
       method: "POST",
       body: data,
@@ -450,7 +446,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placesPopularDelete = (id: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/popular/${id}`,
       method: "DELETE",
       secure: true,
@@ -474,7 +470,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/places/popular/reorder`,
       method: "PATCH",
       body: data,
@@ -498,7 +494,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/app-categories`,
       method: "GET",
       query: query,
@@ -526,7 +522,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/app-categories`,
       method: "POST",
       body: data,
@@ -556,7 +552,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/app-categories/${id}`,
       method: "PUT",
       body: data,
@@ -574,7 +570,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   appCategoriesDelete = (id: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/app-categories/${id}`,
       method: "DELETE",
       secure: true,
@@ -590,7 +586,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   appCategoriesGoogleTypesList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/app-categories/google-types`,
       method: "GET",
       secure: true,
@@ -606,7 +602,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   monitoringDashboardList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/dashboard`,
       method: "GET",
       secure: true,
@@ -622,7 +618,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   monitoringHealthList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/health`,
       method: "GET",
       secure: true,
@@ -638,7 +634,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   monitoringApiUsageList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/api-usage`,
       method: "GET",
       secure: true,
@@ -654,7 +650,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   monitoringSyncPerformanceList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/sync-performance`,
       method: "GET",
       secure: true,
@@ -670,7 +666,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   monitoringDatabaseList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/database`,
       method: "GET",
       secure: true,
@@ -701,7 +697,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/alerts`,
       method: "GET",
       query: query,
@@ -721,7 +717,7 @@ export class Admin<SecurityDataType = unknown> {
     alertId: string,
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/alerts/${alertId}/acknowledge`,
       method: "POST",
       secure: true,
@@ -740,7 +736,7 @@ export class Admin<SecurityDataType = unknown> {
     alertId: string,
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/alerts/${alertId}/resolve`,
       method: "POST",
       secure: true,
@@ -770,7 +766,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/monitoring/errors`,
       method: "GET",
       query: query,
@@ -798,7 +794,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<string, void>({
+    this.request<string, void>({
       path: `/admin/monitoring/metrics/export`,
       method: "GET",
       query: query,
@@ -823,7 +819,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/place-types`,
       method: "GET",
       query: query,
@@ -854,7 +850,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/place-types`,
       method: "POST",
       body: data,
@@ -872,7 +868,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placeTypesDetail = (id: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/place-types/${id}`,
       method: "GET",
       secure: true,
@@ -903,7 +899,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/place-types/${id}`,
       method: "PUT",
       body: data,
@@ -921,7 +917,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placeTypesDelete = (id: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/place-types/${id}`,
       method: "DELETE",
       secure: true,
@@ -937,7 +933,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   placeTypesGoogleTypesList = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/place-types/google-types`,
       method: "GET",
       secure: true,
@@ -953,7 +949,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   regionsCampusDetail = (campusId: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/regions/campus/${campusId}`,
       method: "GET",
       secure: true,
@@ -969,7 +965,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   regionsCampusSummaryList = (campusId: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/regions/campus/${campusId}/summary`,
       method: "GET",
       secure: true,
@@ -1004,7 +1000,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/regions/campus/${campusId}/places`,
       method: "GET",
       query: query,
@@ -1034,7 +1030,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/regions/nearby`,
       method: "POST",
       body: data,
@@ -1052,7 +1048,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   regionsCampusStatsList = (campusId: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/regions/campus/${campusId}/stats`,
       method: "GET",
       secure: true,
@@ -1079,7 +1075,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/trigger`,
       method: "POST",
       body: data,
@@ -1097,7 +1093,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   syncRetryFailedCreate = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/retry-failed`,
       method: "POST",
       secure: true,
@@ -1131,7 +1127,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/logs`,
       method: "GET",
       query: query,
@@ -1148,7 +1144,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   syncStatsDetail = (regionId: string, params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/stats/${regionId}`,
       method: "GET",
       secure: true,
@@ -1164,7 +1160,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   syncSchedulerStartCreate = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/scheduler/start`,
       method: "POST",
       secure: true,
@@ -1180,7 +1176,7 @@ export class Admin<SecurityDataType = unknown> {
    * @secure
    */
   syncSchedulerStopCreate = (params: RequestParams = {}) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/scheduler/stop`,
       method: "POST",
       secure: true,
@@ -1206,7 +1202,7 @@ export class Admin<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/admin/sync/scheduler/config`,
       method: "PUT",
       body: data,

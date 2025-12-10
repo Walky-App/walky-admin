@@ -12,13 +12,9 @@
 
 import { HttpClient, RequestParams } from "./http-client";
 
-export class Auth<SecurityDataType = unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Auth<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * @description Intermediate landing page after SAML authentication that attempts to open mobile app or shows download options
    *
@@ -44,7 +40,7 @@ export class Auth<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<string, void>({
+    this.request<string, void>({
       path: `/auth/landing`,
       method: "GET",
       query: query,

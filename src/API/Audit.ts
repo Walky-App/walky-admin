@@ -12,13 +12,9 @@
 
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
-export class Audit<SecurityDataType = unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Audit<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * @description Retrieve login attempt logs for the authenticated user's school (admin only)
    *
@@ -68,7 +64,7 @@ export class Audit<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         logs?: object[];
         total?: number;
@@ -102,7 +98,7 @@ export class Audit<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/audit/security-events`,
       method: "GET",
       query: query,
@@ -129,7 +125,7 @@ export class Audit<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/audit/user-activity/${userId}`,
       method: "GET",
       query: query,
@@ -156,7 +152,7 @@ export class Audit<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<void, void>({
+    this.request<void, void>({
       path: `/audit/export`,
       method: "POST",
       body: data,

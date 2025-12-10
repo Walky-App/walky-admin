@@ -13,13 +13,9 @@
 import { Error } from "./data-contracts";
 import { HttpClient, RequestParams } from "./http-client";
 
-export class Analytics<SecurityDataType = unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Analytics<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * @description Retrieves the count of active users for a specified period (month, week, or day)
    *
@@ -39,7 +35,7 @@ export class Analytics<SecurityDataType = unknown> {
     },
     params: RequestParams = {},
   ) =>
-    this.http.request<
+    this.request<
       {
         /** Breakdown of active users */
         monthlyData?: {
