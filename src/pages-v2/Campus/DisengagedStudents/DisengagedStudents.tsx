@@ -49,7 +49,7 @@ export const DisengagedStudents: React.FC = () => {
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
     queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
-    });
+  });
 
   const isLoading = isStudentsLoading || isStatsLoading;
 
@@ -64,7 +64,8 @@ export const DisengagedStudents: React.FC = () => {
       email: student.email,
       reported: student.isFlagged || false,
     })
-  );  const handleSendOutreach = async (student: DisengagedStudent) => {
+  );
+  const handleSendOutreach = async (student: DisengagedStudent) => {
     try {
       await navigator.clipboard.writeText(student.email);
       setToastMessage("Email copied to clipboard");

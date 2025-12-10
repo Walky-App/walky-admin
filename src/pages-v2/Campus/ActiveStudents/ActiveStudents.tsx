@@ -17,12 +17,17 @@ export const ActiveStudents: React.FC = () => {
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ['students', currentPage, searchQuery],
-    queryFn: () => apiClient.api.adminV2StudentsList({ page: currentPage, limit: entriesPerPage, search: searchQuery }),
+    queryKey: ["students", currentPage, searchQuery],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsList({
+        page: currentPage,
+        limit: entriesPerPage,
+        search: searchQuery,
+      }),
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['studentStats'],
+    queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
@@ -41,7 +46,9 @@ export const ActiveStudents: React.FC = () => {
     isFlagged: student.isFlagged,
   }));
 
-  const totalPages = Math.ceil((studentsData?.data.total || 0) / entriesPerPage);
+  const totalPages = Math.ceil(
+    (studentsData?.data.total || 0) / entriesPerPage
+  );
   const paginatedStudents = students; // API already returns paginated data
 
   const handleExport = () => {
