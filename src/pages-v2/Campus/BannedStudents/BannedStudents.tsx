@@ -4,6 +4,8 @@ import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData } from "../components/StudentTable";
+import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
+import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import "./BannedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -63,10 +65,6 @@ export const BannedStudents: React.FC = () => {
   );
   const paginatedStudents = students;
 
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
   const handleExport = () => {
     console.log("Export banned students data");
   };
@@ -120,29 +118,37 @@ export const BannedStudents: React.FC = () => {
           <ExportButton onClick={handleExport} />
         </div>
 
-        <BannedStudentTable
-          students={paginatedStudents}
-          columns={[
-            "userId",
-            "name",
-            "bannedBy",
-            "duration",
-            "status",
-            "bannedDate",
-            "reason",
-          ]}
-          onStudentClick={handleStudentClick}
-        />
-
-        <div className="banned-students-pagination">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalEntries={studentsData?.data.total || 0}
-            entriesPerPage={entriesPerPage}
-            onPageChange={setCurrentPage}
+        {isLoading ? (
+          <StudentTableSkeleton />
+        ) : paginatedStudents.length === 0 ? (
+          <NoStudentsFound />
+        ) : (
+          <BannedStudentTable
+            students={paginatedStudents}
+            columns={[
+              "userId",
+              "name",
+              "bannedBy",
+              "duration",
+              "status",
+              "bannedDate",
+              "reason",
+            ]}
+            onStudentClick={handleStudentClick}
           />
-        </div>
+        )}
+
+        {!isLoading && paginatedStudents.length > 0 && (
+          <div className="banned-students-pagination">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={studentsData?.data.total || 0}
+              entriesPerPage={entriesPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
     </main>
   );

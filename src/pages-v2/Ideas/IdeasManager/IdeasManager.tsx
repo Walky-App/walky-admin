@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import "./IdeasManager.css";
 import { IdeasTable } from "../components/IdeasTable/IdeasTable";
+import { IdeasTableSkeleton } from "../components/IdeasTableSkeleton/IdeasTableSkeleton";
+import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
 import { SearchInput, Pagination } from "../../../components-v2";
 
 export const IdeasManager: React.FC = () => {
@@ -35,10 +37,6 @@ export const IdeasManager: React.FC = () => {
   const startEntry = (currentPage - 1) * 10 + 1;
   const totalEntries = ideasData?.data.total || 0;
 
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
   return (
     <main className="ideas-manager-container">
       <div className="ideas-manager-header">
@@ -68,16 +66,24 @@ export const IdeasManager: React.FC = () => {
           </div>
 
           <div className="ideas-manager-table-container">
-            <IdeasTable ideas={filteredIdeas} />
+            {isLoading ? (
+              <IdeasTableSkeleton />
+            ) : filteredIdeas.length === 0 ? (
+              <NoIdeasFound message="No ideas found" />
+            ) : (
+              <IdeasTable ideas={filteredIdeas} />
+            )}
           </div>
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalEntries={totalEntries}
-            entriesPerPage={10}
-            onPageChange={setCurrentPage}
-          />
+          {!isLoading && filteredIdeas.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={totalEntries}
+              entriesPerPage={10}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
       </div>
     </main>

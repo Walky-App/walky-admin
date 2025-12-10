@@ -6,6 +6,8 @@ import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { StudentData } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
+import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
+import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import "./DeactivatedStudents.css";
 
 export const DeactivatedStudents: React.FC = () => {
@@ -50,10 +52,6 @@ export const DeactivatedStudents: React.FC = () => {
     (studentsData?.data.total || 0) / entriesPerPage
   );
   const paginatedStudents = students;
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   const handleStudentClick = (student: StudentData) => {
     console.log("Student clicked:", student);
@@ -108,29 +106,37 @@ export const DeactivatedStudents: React.FC = () => {
           <ExportButton onClick={handleExport} />
         </div>
 
-        <DeactivatedStudentTable
-          students={paginatedStudents}
-          columns={[
-            "userId",
-            "name",
-            "email",
-            "deactivatedBy",
-            "status",
-            "memberSince",
-            "deactivatedDate",
-          ]}
-          onStudentClick={handleStudentClick}
-        />
-
-        <div className="deactivated-students-pagination">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalEntries={studentsData?.data.total || 0}
-            entriesPerPage={entriesPerPage}
-            onPageChange={setCurrentPage}
+        {isLoading ? (
+          <StudentTableSkeleton />
+        ) : paginatedStudents.length === 0 ? (
+          <NoStudentsFound />
+        ) : (
+          <DeactivatedStudentTable
+            students={paginatedStudents}
+            columns={[
+              "userId",
+              "name",
+              "email",
+              "deactivatedBy",
+              "status",
+              "memberSince",
+              "deactivatedDate",
+            ]}
+            onStudentClick={handleStudentClick}
           />
-        </div>
+        )}
+
+        {!isLoading && paginatedStudents.length > 0 && (
+          <div className="deactivated-students-pagination">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={studentsData?.data.total || 0}
+              entriesPerPage={entriesPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
     </main>
   );
