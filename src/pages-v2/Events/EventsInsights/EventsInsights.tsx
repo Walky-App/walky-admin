@@ -12,6 +12,7 @@ import API, { apiClient } from "../../../API";
 
 interface Interest {
   name: string;
+  icon?: string;
   students: number;
   percentage: number;
 }
@@ -311,32 +312,47 @@ export const EventsInsights: React.FC = () => {
         </div>
         <div className="interests-list">
           {interests.length > 0 ? (
-            interests.map((interest, index) => (
-              <div key={index} className="interest-item">
-                <div className="interest-icon">
-                  <div className="icon-background">
-                    {/* Interest icon would go here */}
-                    <div className="icon-placeholder" />
-                  </div>
-                </div>
-                <div className="interest-info">
-                  <div className="interest-details">
-                    <p className="interest-name">{interest.name}</p>
-                    <p className="interest-students">
-                      {interest.students} students ({interest.percentage}%)
-                    </p>
-                  </div>
-                  <div className="interest-progress">
-                    <div className="progress-bar-bg">
-                      <div
-                        className="progress-bar-fill"
-                        style={{ width: `${(interest.students / 19) * 19}%` }}
-                      />
+            (() => {
+              const maxPercentage = Math.max(...interests.map((i) => i.percentage || 0));
+              return interests.map((interest, index) => {
+                const barWidth = maxPercentage > 0 ? (interest.percentage / maxPercentage) * 100 : 0;
+                return (
+                  <div key={index} className="interest-item">
+                    <div className="interest-icon">
+                      <div className="icon-background">
+                        {interest.icon ? (
+                          <img
+                            src={interest.icon}
+                            alt={interest.name}
+                            className="interest-icon-image"
+                          />
+                        ) : (
+                          <div className="icon-placeholder">
+                            {interest.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="interest-info">
+                      <div className="interest-details">
+                        <p className="interest-name">{interest.name}</p>
+                        <p className="interest-students">
+                          {interest.students} students ({interest.percentage}%)
+                        </p>
+                      </div>
+                      <div className="interest-progress">
+                        <div className="progress-bar-bg">
+                          <div
+                            className="progress-bar-fill"
+                            style={{ width: `${barWidth}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))
+                );
+              });
+            })()
           ) : (
             <NoData type="primary" message="No data yet" />
           )}

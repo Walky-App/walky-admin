@@ -482,7 +482,7 @@ const SocialWellbeingStats = () => {
                                 color="primary"
                                 variant="ghost"
                                 onClick={() => {
-                                  /* TODO: Implement outreach action */
+                                  window.location.href = `mailto:${student.email}`;
                                 }}
                               >
                                 Send Outreach

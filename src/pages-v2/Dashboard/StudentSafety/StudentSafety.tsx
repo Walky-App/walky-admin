@@ -51,6 +51,7 @@ const StudentSafety: React.FC = () => {
 
   const [modalReports, setModalReports] = useState<any[]>([]);
   const [modalLoading, setModalLoading] = useState(false);
+  const [modalTotalCount, setModalTotalCount] = useState(0);
 
   const fetchModalReports = async (type: string) => {
     setModalLoading(true);
@@ -65,28 +66,33 @@ const StudentSafety: React.FC = () => {
 
       const res = await apiClient.api.adminV2ReportsList({
         type: apiType,
-        limit: 10,
+        limit: 100,
         schoolId: selectedSchool?._id,
-        campusId: selectedCampus?._id
-      }) as any;
+        campusId: selectedCampus?._id,
+        period: timePeriod,
+      } as any) as any;
 
       const reports = res.data.data || [];
+      const total = res.data.total || reports.length;
+      setModalTotalCount(total);
+
       const transformedReports = reports.map((r: any) => ({
         id: r.id,
-        reportedItemName: r.description || "Unknown Item", // Ideally backend provides item name
-        reportId: r.studentId || "Unknown",
-        reason: r.reason || "unknown",
-        reasonTag: r.reasonTag || "Other",
+        reportedItemName: r.description || "Unknown Item",
+        reportId: r.reportedItemId || r.id,
+        reason: r.reason || "Other",
+        reasonTag: r.reasonTag || r.reason || "Other",
         description: r.description || "",
-        reportedOn: new Date(r.reportDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-        reportedBy: "Unknown", // Backend might not provide this in list view
-        status: (r.status || "resolved").toLowerCase(),
+        reportedOn: r.reportDate ? new Date(r.reportDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A',
+        reportedBy: r.reporterName || "Unknown",
+        status: (r.status || "resolved").toLowerCase().replace(/ /g, "_"),
       }));
 
       setModalReports(transformedReports);
     } catch (error) {
       console.error("Failed to fetch modal reports:", error);
       setModalReports([]);
+      setModalTotalCount(0);
     } finally {
       setModalLoading(false);
     }
@@ -177,8 +183,8 @@ const StudentSafety: React.FC = () => {
         onClose={() => setModalVisible(false)}
         reportType={selectedReportType}
         reports={modalReports}
-        totalCount={modalReports.length}
-        period={timePeriod === "month" ? "Month" : timePeriod === "week" ? "Week" : "All Time"}
+        totalCount={modalTotalCount}
+        period={timePeriod === "month" ? "this month" : timePeriod === "week" ? "this week" : "all time"}
         loading={modalLoading}
       />
     </main>
