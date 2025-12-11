@@ -246,6 +246,10 @@
   margin-bottom: 32px;
 }
 
+.insights-footer {
+  margin-top: 24px;
+}
+
 .events-list-section {
   background: #ffffff;
   border: 1px solid #eef0f1;

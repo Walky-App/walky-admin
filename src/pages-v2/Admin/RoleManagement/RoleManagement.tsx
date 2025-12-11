@@ -91,10 +91,6 @@ export const RoleManagement: React.FC = () => {
     })
   );
 
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
   const handleCreateMember = () => {
     setIsCreateMemberModalOpen(true);
   };
@@ -202,6 +198,51 @@ export const RoleManagement: React.FC = () => {
     setIsCreateMemberModalOpen(false);
   };
 
+  const renderSkeletonRows = () =>
+    Array.from({ length: 6 }).map((_, index) => (
+      <React.Fragment key={`member-skeleton-${index}`}>
+        <tr className="member-row skeleton-row">
+          <td className="member-full-name">
+            <div className="member-info">
+              <div className="skeleton-block skeleton-avatar" />
+              <div className="skeleton-stack">
+                <div className="skeleton-block skeleton-line" />
+                <div className="skeleton-block skeleton-line short" />
+              </div>
+            </div>
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-line wide" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-badge" />
+          </td>
+          <td>
+            <div className="skeleton-stack">
+              <div className="skeleton-block skeleton-line" />
+              <div className="skeleton-block skeleton-line short" />
+            </div>
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-pill" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-line short" />
+          </td>
+          <td className="member-actions">
+            <div className="skeleton-block skeleton-action" />
+          </td>
+        </tr>
+        {index < 5 && (
+          <tr className="member-divider-row">
+            <td colSpan={7}>
+              <Divider />
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    ));
+
   return (
     <main className="role-management-page">
       {/* Page Header */}
@@ -286,115 +327,117 @@ export const RoleManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {members.map((member, index) => (
-                <React.Fragment key={member.id}>
-                  <tr className="member-row">
-                    {/* Full Name Column */}
-                    <td className="member-full-name">
-                      <div className="member-info">
-                        {member.avatar ? (
-                          <img
-                            src={member.avatar}
-                            alt={member.name}
-                            className="member-avatar"
-                          />
-                        ) : (
-                          <div className="member-avatar-placeholder">
-                            {getInitials(member.name)}
+              {isLoading
+                ? renderSkeletonRows()
+                : members.map((member, index) => (
+                    <React.Fragment key={member.id}>
+                      <tr className="member-row">
+                        {/* Full Name Column */}
+                        <td className="member-full-name">
+                          <div className="member-info">
+                            {member.avatar ? (
+                              <img
+                                src={member.avatar}
+                                alt={member.name}
+                                className="member-avatar"
+                              />
+                            ) : (
+                              <div className="member-avatar-placeholder">
+                                {getInitials(member.name)}
+                              </div>
+                            )}
+                            <div className="member-details">
+                              <p className="member-name">{member.name}</p>
+                              <p className="member-title">{member.title}</p>
+                            </div>
                           </div>
-                        )}
-                        <div className="member-details">
-                          <p className="member-name">{member.name}</p>
-                          <p className="member-title">{member.title}</p>
-                        </div>
-                      </div>
-                    </td>
+                        </td>
 
-                    {/* Email Column */}
-                    <td className="member-email">{member.email}</td>
+                        {/* Email Column */}
+                        <td className="member-email">{member.email}</td>
 
-                    {/* Role Column */}
-                    <td className="member-role">
-                      <button
-                        data-testid="role-badge-btn"
-                        className="role-badge"
-                        onClick={() => handleRoleClick(member.role)}
-                      >
-                        {member.role}
-                      </button>
-                    </td>
+                        {/* Role Column */}
+                        <td className="member-role">
+                          <button
+                            data-testid="role-badge-btn"
+                            className="role-badge"
+                            onClick={() => handleRoleClick(member.role)}
+                          >
+                            {member.role}
+                          </button>
+                        </td>
 
-                    {/* Assigned By Column */}
-                    <td className="member-assigned-by">
-                      <div className="assigned-by-info">
-                        <p className="assigned-by-name">
-                          {member.assignedBy.name}
-                        </p>
-                        <p className="assigned-by-email">
-                          {member.assignedBy.email}
-                        </p>
-                      </div>
-                    </td>
+                        {/* Assigned By Column */}
+                        <td className="member-assigned-by">
+                          <div className="assigned-by-info">
+                            <p className="assigned-by-name">
+                              {member.assignedBy.name}
+                            </p>
+                            <p className="assigned-by-email">
+                              {member.assignedBy.email}
+                            </p>
+                          </div>
+                        </td>
 
-                    {/* Invitation Status Column */}
-                    <td className="member-invitation-status">
-                      <span
-                        className={`status-badge ${member.invitationStatus.toLowerCase()}`}
-                      >
-                        {member.invitationStatus}
-                      </span>
-                    </td>
+                        {/* Invitation Status Column */}
+                        <td className="member-invitation-status">
+                          <span
+                            className={`status-badge ${member.invitationStatus.toLowerCase()}`}
+                          >
+                            {member.invitationStatus}
+                          </span>
+                        </td>
 
-                    {/* Last Active Column */}
-                    <td className="member-last-active">
-                      {member.lastActive || "--"}
-                    </td>
+                        {/* Last Active Column */}
+                        <td className="member-last-active">
+                          {member.lastActive || "--"}
+                        </td>
 
-                    {/* Actions Column */}
-                    <td className="member-actions">
-                      <ActionDropdown
-                        testId="member-actions"
-                        items={[
-                          {
-                            label: "Change role",
-                            onClick: (e) => {
-                              e.stopPropagation();
-                              handleChangeRole(member.id);
-                            },
-                          },
-                          {
-                            label: "Send a password reset",
-                            onClick: (e) => {
-                              e.stopPropagation();
-                              handleSendPasswordReset(member.id);
-                            },
-                          },
-                          {
-                            label: "",
-                            isDivider: true,
-                            onClick: () => {},
-                          },
-                          {
-                            label: "Remove member",
-                            variant: "danger",
-                            onClick: (e) => {
-                              e.stopPropagation();
-                              handleRemoveMember(member.id);
-                            },
-                          },
-                        ]}
-                      />
-                    </td>
-                  </tr>
-                  {index < members.length - 1 && (
-                    <tr className="member-divider-row">
-                      <td colSpan={7}>
-                        <Divider />
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              ))}
+                        {/* Actions Column */}
+                        <td className="member-actions">
+                          <ActionDropdown
+                            testId="member-actions"
+                            items={[
+                              {
+                                label: "Change role",
+                                onClick: (e) => {
+                                  e.stopPropagation();
+                                  handleChangeRole(member.id);
+                                },
+                              },
+                              {
+                                label: "Send a password reset",
+                                onClick: (e) => {
+                                  e.stopPropagation();
+                                  handleSendPasswordReset(member.id);
+                                },
+                              },
+                              {
+                                label: "",
+                                isDivider: true,
+                                onClick: () => {},
+                              },
+                              {
+                                label: "Remove member",
+                                variant: "danger",
+                                onClick: (e) => {
+                                  e.stopPropagation();
+                                  handleRemoveMember(member.id);
+                                },
+                              },
+                            ]}
+                          />
+                        </td>
+                      </tr>
+                      {index < members.length - 1 && (
+                        <tr className="member-divider-row">
+                          <td colSpan={7}>
+                            <Divider />
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
             </tbody>
           </table>
         </div>
