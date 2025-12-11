@@ -69,6 +69,45 @@ export const Campuses: React.FC = () => {
 
   const totalCampuses = campuses.length;
 
+  const renderSkeletonRows = () =>
+    Array.from({ length: 6 }).map((_, index) => (
+      <React.Fragment key={`campus-skeleton-${index}`}>
+        <tr className="campus-row skeleton-row">
+          <td className="campus-cell">
+            <div className="campus-info">
+              <div className="skeleton-block skeleton-avatar" />
+              <div className="skeleton-stack">
+                <div className="skeleton-block skeleton-line" />
+                <div className="skeleton-block skeleton-line short" />
+              </div>
+            </div>
+          </td>
+          <td className="campus-id-cell">
+            <div className="skeleton-block skeleton-pill" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-line" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-line wide" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-badge" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-action" />
+          </td>
+        </tr>
+        {index < 5 && (
+          <tr className="campus-divider-row">
+            <td colSpan={6}>
+              <Divider />
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    ));
+
   const handleToggleExpand = (campusId: string) => {
     if (expandedCampusId === campusId) {
       setExpandedCampusId(null);
@@ -76,10 +115,6 @@ export const Campuses: React.FC = () => {
       setExpandedCampusId(campusId);
     }
   };
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   return (
     <main className="campuses-page">
@@ -113,105 +148,111 @@ export const Campuses: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredCampuses.map((campus, index) => (
-                <React.Fragment key={campus.id}>
-                  <tr className="campus-row">
-                    {/* Campus Column with Avatar and Dropdown */}
-                    <td className="campus-cell">
-                      <div className="campus-info">
-                        {campus.imageUrl ? (
-                          <img
-                            src={campus.imageUrl}
-                            alt={campus.name}
-                            className="campus-avatar"
-                          />
-                        ) : (
-                          <div className="campus-avatar-placeholder">
-                            {getInitials(campus.name)}
+              {isLoading
+                ? renderSkeletonRows()
+                : filteredCampuses.map((campus, index) => (
+                    <React.Fragment key={campus.id}>
+                      <tr className="campus-row">
+                        {/* Campus Column with Avatar and Dropdown */}
+                        <td className="campus-cell">
+                          <div className="campus-info">
+                            {campus.imageUrl ? (
+                              <img
+                                src={campus.imageUrl}
+                                alt={campus.name}
+                                className="campus-avatar"
+                              />
+                            ) : (
+                              <div className="campus-avatar-placeholder">
+                                {getInitials(campus.name)}
+                              </div>
+                            )}
+                            <div className="campus-dropdown">
+                              <button
+                                data-testid="campus-dropdown-btn"
+                                className="dropdown-button"
+                                onClick={() => handleToggleExpand(campus.id)}
+                              >
+                                <AssetIcon
+                                  name="arrow-down"
+                                  size={10}
+                                  className={`chevron-icon ${
+                                    expandedCampusId === campus.id
+                                      ? "expanded"
+                                      : ""
+                                  }`}
+                                />
+                                <span className="campus-name">
+                                  {campus.name}
+                                </span>
+                              </button>
+                            </div>
                           </div>
-                        )}
-                        <div className="campus-dropdown">
-                          <button
-                            data-testid="campus-dropdown-btn"
-                            className="dropdown-button"
-                            onClick={() => handleToggleExpand(campus.id)}
-                          >
-                            <AssetIcon
-                              name="arrow-down"
-                              size={10}
-                              className={`chevron-icon ${
-                                expandedCampusId === campus.id ? "expanded" : ""
-                              }`}
-                            />
-                            <span className="campus-name">{campus.name}</span>
-                          </button>
-                        </div>
-                      </div>
-                    </td>
+                        </td>
 
-                    {/* ID Column */}
-                    <td className="campus-id-cell">
-                      <CopyableId
-                        id={campus.campusId}
-                        label="Campus ID"
-                        variant="primary"
-                        testId="copy-campus-id"
-                      />
-                    </td>
-
-                    {/* Location Column */}
-                    <td className="campus-location">{campus.location}</td>
-
-                    {/* Address Column */}
-                    <td className="campus-address">{campus.address}</td>
-
-                    {/* Status Column */}
-                    <td className="campus-status">
-                      <span
-                        className={`status-badge ${campus.status.toLowerCase()}`}
-                      >
-                        {campus.status}
-                      </span>
-                    </td>
-
-                    {/* Sync Column */}
-                    <td className="campus-sync">
-                      <button
-                        data-testid="sync-places-btn"
-                        className="sync-button"
-                        title="Sync places"
-                        aria-label="Sync places for campus"
-                      >
-                        <AssetIcon name="swap-arrows-icon" size={16} />
-                      </button>
-                    </td>
-                  </tr>
-
-                  {/* Expanded Boundary Row */}
-                  {expandedCampusId === campus.id && (
-                    <tr className="boundary-row">
-                      <td colSpan={6} className="boundary-cell">
-                        <div className="boundary-map">
-                          <CampusBoundary
-                            readOnly={true}
-                            initialBoundaryData={campus.boundaryData}
-                            onBoundaryChange={() => {
-                              // Read-only mode
-                            }}
+                        {/* ID Column */}
+                        <td className="campus-id-cell">
+                          <CopyableId
+                            id={campus.campusId}
+                            label="Campus ID"
+                            variant="primary"
+                            testId="copy-campus-id"
                           />
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  {index < filteredCampuses.length - 1 && (
-                    <tr className="campus-divider-row">
-                      <td colSpan={6}>
-                        <Divider />
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              ))}
+                        </td>
+
+                        {/* Location Column */}
+                        <td className="campus-location">{campus.location}</td>
+
+                        {/* Address Column */}
+                        <td className="campus-address">{campus.address}</td>
+
+                        {/* Status Column */}
+                        <td className="campus-status">
+                          <span
+                            className={`status-badge ${campus.status.toLowerCase()}`}
+                          >
+                            {campus.status}
+                          </span>
+                        </td>
+
+                        {/* Sync Column */}
+                        <td className="campus-sync">
+                          <button
+                            data-testid="sync-places-btn"
+                            className="sync-button"
+                            title="Sync places"
+                            aria-label="Sync places for campus"
+                          >
+                            <AssetIcon name="swap-arrows-icon" size={16} />
+                          </button>
+                        </td>
+                      </tr>
+
+                      {/* Expanded Boundary Row */}
+                      {expandedCampusId === campus.id && (
+                        <tr className="boundary-row">
+                          <td colSpan={6} className="boundary-cell">
+                            <div className="boundary-map">
+                              <CampusBoundary
+                                readOnly={true}
+                                initialBoundaryData={campus.boundaryData}
+                                onBoundaryChange={() => {
+                                  // Read-only mode
+                                }}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      {index < filteredCampuses.length - 1 && (
+                        <tr className="campus-divider-row">
+                          <td colSpan={6}>
+                            <Divider />
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
             </tbody>
           </table>
         </div>

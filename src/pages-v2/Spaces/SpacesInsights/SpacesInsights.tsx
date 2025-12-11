@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./SpacesInsights.css";
-import { AssetIcon, ExportButton } from "../../../components-v2";
+import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
 
 interface SpaceCategory {
   name: string;
@@ -28,7 +28,10 @@ const SpacesInsightsSkeleton = () => (
     <div className="stats-cards-row">
       {[1, 2].map((i) => (
         <div key={i} className="stats-card">
-          <div className="stats-card-header" style={{ justifyContent: "space-between" }}>
+          <div
+            className="stats-card-header"
+            style={{ justifyContent: "space-between" }}
+          >
             <SkeletonLoader width="200px" height="20px" />
             <SkeletonLoader width="60px" height="60px" borderRadius="23px" />
           </div>
@@ -54,11 +57,21 @@ const SpacesInsightsSkeleton = () => (
             <div key={i} className="category-item">
               <SkeletonLoader width="40px" height="40px" borderRadius="50%" />
               <div className="category-info">
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "8px",
+                  }}
+                >
                   <SkeletonLoader width="150px" height="16px" />
                   <SkeletonLoader width="100px" height="16px" />
                 </div>
-                <SkeletonLoader width="100%" height="14px" borderRadius="16px" />
+                <SkeletonLoader
+                  width="100%"
+                  height="14px"
+                  borderRadius="16px"
+                />
               </div>
             </div>
           ))}
@@ -95,12 +108,19 @@ export const SpacesInsights: React.FC = () => {
   );
 
   const { data: insightsData, isLoading } = useQuery({
-    queryKey: ['spacesInsights', timePeriod],
-    queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: timePeriod }),
+    queryKey: ["spacesInsights", timePeriod],
+    queryFn: () =>
+      apiClient.api.adminV2SpacesInsightsList({ period: timePeriod }),
     placeholderData: keepPreviousData,
   });
 
-  const categories: SpaceCategory[] = (insightsData?.data.popularCategories || []).map((category: any) => ({
+  const lastUpdated =
+    (insightsData as any)?.data?.lastUpdated ||
+    (insightsData as any)?.data?.updatedAt ||
+    (insightsData as any)?.data?.metadata?.lastUpdated;
+  const categories: SpaceCategory[] = (
+    insightsData?.data.popularCategories || []
+  ).map((category: any) => ({
     name: category.name,
     emoji: category.emoji,
     imageUrl: category.imageUrl,
@@ -108,12 +128,14 @@ export const SpacesInsights: React.FC = () => {
     percentage: category.percentage,
   }));
 
-  const topSpaces: SpaceItem[] = (insightsData?.data.topSpaces || []).map((space: any) => ({
-    rank: space.rank,
-    name: space.name,
-    logo: space.logo || "",
-    members: space.members,
-  }));
+  const topSpaces: SpaceItem[] = (insightsData?.data.topSpaces || []).map(
+    (space: any) => ({
+      rank: space.rank,
+      name: space.name,
+      logo: space.logo || "",
+      members: space.members,
+    })
+  );
 
   if (isLoading) {
     return <SpacesInsightsSkeleton />;
@@ -137,7 +159,9 @@ export const SpacesInsights: React.FC = () => {
               <AssetIcon name="space-icon" size={35} color="#4A4CD9" />
             </div>
           </div>
-          <p className="stats-card-value">{insightsData?.data.totalSpaces || 0}</p>
+          <p className="stats-card-value">
+            {insightsData?.data.totalSpaces || 0}
+          </p>
         </div>
 
         <div className="stats-card">
@@ -149,7 +173,9 @@ export const SpacesInsights: React.FC = () => {
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>
           </div>
-          <p className="stats-card-value">{insightsData?.data.totalMembers || 0}</p>
+          <p className="stats-card-value">
+            {insightsData?.data.totalMembers || 0}
+          </p>
         </div>
       </div>
 
@@ -160,8 +186,9 @@ export const SpacesInsights: React.FC = () => {
           <div className="time-selector">
             <button
               data-testid="time-all-btn"
-              className={`time-option first ${timePeriod === "all" ? "active" : ""
-                }`}
+              className={`time-option first ${
+                timePeriod === "all" ? "active" : ""
+              }`}
               onClick={() => setTimePeriod("all")}
             >
               All time
@@ -175,8 +202,9 @@ export const SpacesInsights: React.FC = () => {
             </button>
             <button
               data-testid="time-month-btn"
-              className={`time-option last ${timePeriod === "month" ? "active" : ""
-                }`}
+              className={`time-option last ${
+                timePeriod === "month" ? "active" : ""
+              }`}
               onClick={() => setTimePeriod("month")}
             >
               Month
@@ -220,7 +248,12 @@ export const SpacesInsights: React.FC = () => {
                     <div className="progress-bar-background" />
                     <div
                       className="progress-bar-fill"
-                      style={{ width: `${category.percentage * 12}px` }}
+                      style={{
+                        width: `${Math.min(
+                          Math.max(category.percentage || 0, 0),
+                          100
+                        )}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -249,7 +282,11 @@ export const SpacesInsights: React.FC = () => {
                       />
                     ) : (
                       <div className="space-logo-placeholder">
-                        <AssetIcon name="space-icon" size={20} color="#526AC9" />
+                        <AssetIcon
+                          name="space-icon"
+                          size={20}
+                          color="#526AC9"
+                        />
                       </div>
                     )}
                   </div>
@@ -261,6 +298,8 @@ export const SpacesInsights: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <LastUpdated className="insights-footer" lastUpdated={lastUpdated} />
     </main>
   );
 };
