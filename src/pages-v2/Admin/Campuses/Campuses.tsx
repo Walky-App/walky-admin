@@ -10,6 +10,7 @@ import {
 } from "../../../components-v2";
 import CampusBoundary from "../../../pages/CampusBoundary";
 import { useTheme } from "../../../hooks/useTheme";
+import SkeletonLoader from "../../../components/SkeletonLoader";
 
 interface CampusData {
   id: string;
@@ -78,7 +79,43 @@ export const Campuses: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <main className="campuses-page">
+        <div className="page-header">
+          <SkeletonLoader width="300px" height="40px" />
+          <SkeletonLoader width="400px" height="20px" className="mt-2" />
+        </div>
+        <div className={`campuses-container ${theme.isDark ? "dark-mode" : ""}`}>
+          <div className="directory-info">
+            <SkeletonLoader width="200px" height="28px" />
+            <SkeletonLoader width="150px" height="20px" className="mt-1" />
+          </div>
+          <div className="campuses-table-wrapper">
+            <table className="campuses-table">
+              <thead>
+                <tr className="table-header-row">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <th key={i}><SkeletonLoader width="80px" height="20px" /></th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i}>
+                    <td><SkeletonLoader width="150px" height="40px" /></td>
+                    <td><SkeletonLoader width="100px" height="24px" borderRadius="16px" /></td>
+                    <td><SkeletonLoader width="120px" height="20px" /></td>
+                    <td><SkeletonLoader width="150px" height="20px" /></td>
+                    <td><SkeletonLoader width="80px" height="24px" borderRadius="12px" /></td>
+                    <td><SkeletonLoader width="40px" height="20px" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   return (
@@ -139,9 +176,8 @@ export const Campuses: React.FC = () => {
                             <AssetIcon
                               name="arrow-down"
                               size={10}
-                              className={`chevron-icon ${
-                                expandedCampusId === campus.id ? "expanded" : ""
-                              }`}
+                              className={`chevron-icon ${expandedCampusId === campus.id ? "expanded" : ""
+                                }`}
                             />
                             <span className="campus-name">{campus.name}</span>
                           </button>
@@ -222,7 +258,7 @@ export const Campuses: React.FC = () => {
           totalPages={Math.ceil(totalCampuses / 10)}
           totalEntries={totalCampuses}
           entriesPerPage={10}
-          onPageChange={() => {}}
+          onPageChange={() => { }}
         />
       </div>
     </main>

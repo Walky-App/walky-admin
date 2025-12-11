@@ -11,6 +11,7 @@ import { CopyableId } from "../../../components-v2/CopyableId";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
 import { apiClient } from "../../../API";
+import SkeletonLoader from "../../../components/SkeletonLoader";
 
 interface AmbassadorData {
   id: string;
@@ -64,17 +65,17 @@ export const Ambassadors: React.FC = () => {
         major: a.major || "Unknown",
         ambassadorSince: a.createdAt
           ? new Date(a.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
           : "Unknown",
         memberSince: a.createdAt
           ? new Date(a.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
           : "Unknown",
         status: a.is_active ? "Active" : "Inactive",
       }));
@@ -117,8 +118,7 @@ export const Ambassadors: React.FC = () => {
 
       console.log("Adding ambassadors:", selectedStudents);
       setToastMessage(
-        `${selectedStudents.length} ambassador${
-          selectedStudents.length > 1 ? "s" : ""
+        `${selectedStudents.length} ambassador${selectedStudents.length > 1 ? "s" : ""
         } added successfully`
       );
       setShowToast(true);
@@ -239,14 +239,22 @@ export const Ambassadors: React.FC = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    style={{ textAlign: "center", padding: "20px" }}
-                  >
-                    Loading...
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, index) => (
+                  <tr key={`skeleton-${index}`}>
+                    <td><SkeletonLoader width="100px" height="20px" /></td>
+                    <td>
+                      <div className="ambassador-info">
+                        <SkeletonLoader width="32px" height="32px" borderRadius="50%" />
+                        <SkeletonLoader width="120px" height="20px" />
+                      </div>
+                    </td>
+                    <td><SkeletonLoader width="100px" height="20px" /></td>
+                    <td><SkeletonLoader width="100px" height="20px" /></td>
+                    <td><SkeletonLoader width="100px" height="20px" /></td>
+                    <td><SkeletonLoader width="80px" height="24px" borderRadius="12px" /></td>
+                    <td><SkeletonLoader width="24px" height="24px" /></td>
+                  </tr>
+                ))
               ) : ambassadors.length === 0 ? (
                 <tr>
                   <td

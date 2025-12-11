@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SkeletonLoader from "../../../components/SkeletonLoader";
 import AssetIcon from "../../../components-v2/AssetIcon/AssetIcon";
 import {
   SearchInput,
@@ -92,7 +93,63 @@ export const RoleManagement: React.FC = () => {
   );
 
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <main className="role-management-page">
+        <div className="page-header">
+          <SkeletonLoader width="250px" height="40px" />
+          <SkeletonLoader width="200px" height="20px" className="mt-2" />
+        </div>
+        <div className={`members-container ${theme.isDark ? "dark-mode" : ""}`}>
+          <div className="members-header">
+            <div className="members-header-left">
+              <SkeletonLoader width="150px" height="28px" />
+              <div className="members-filters">
+                <SkeletonLoader width="200px" height="40px" borderRadius="12px" />
+                <SkeletonLoader width="150px" height="40px" borderRadius="12px" />
+              </div>
+            </div>
+            <SkeletonLoader width="200px" height="40px" borderRadius="12px" />
+          </div>
+          <div className="members-table-wrapper">
+            <table className="members-table">
+              <thead>
+                <tr className="table-header-row">
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <th key={i}><SkeletonLoader width="80px" height="20px" /></th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i}>
+                    <td>
+                      <div className="member-info">
+                        <SkeletonLoader width="40px" height="40px" borderRadius="50%" />
+                        <div className="member-details">
+                          <SkeletonLoader width="120px" height="16px" />
+                          <SkeletonLoader width="80px" height="14px" className="mt-1" />
+                        </div>
+                      </div>
+                    </td>
+                    <td><SkeletonLoader width="150px" height="20px" /></td>
+                    <td><SkeletonLoader width="100px" height="24px" borderRadius="16px" /></td>
+                    <td>
+                      <div className="assigned-by-info">
+                        <SkeletonLoader width="100px" height="16px" />
+                        <SkeletonLoader width="120px" height="14px" className="mt-1" />
+                      </div>
+                    </td>
+                    <td><SkeletonLoader width="80px" height="24px" borderRadius="12px" /></td>
+                    <td><SkeletonLoader width="100px" height="20px" /></td>
+                    <td><SkeletonLoader width="24px" height="24px" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   const handleCreateMember = () => {
@@ -372,7 +429,7 @@ export const RoleManagement: React.FC = () => {
                           {
                             label: "",
                             isDivider: true,
-                            onClick: () => {},
+                            onClick: () => { },
                           },
                           {
                             label: "Remove member",

@@ -16,6 +16,7 @@ import {
   Pagination,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
+import SkeletonLoader from "../../../components/SkeletonLoader";
 import { useTheme } from "../../../hooks/useTheme";
 import { apiClient } from "../../../API";
 
@@ -27,11 +28,11 @@ interface HistoryReportData {
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
   reasonTag:
-    | "Self-Injury / Harmful Behavior"
-    | "Inappropriate or offensive"
-    | "Harassment / Threats"
-    | "Spam"
-    | "Other";
+  | "Self-Injury / Harmful Behavior"
+  | "Inappropriate or offensive"
+  | "Harassment / Threats"
+  | "Spam"
+  | "Other";
   status: "Resolved" | "Dismissed" | "Pending review" | "Under evaluation";
 }
 
@@ -131,9 +132,9 @@ export const ReportHistory: React.FC = () => {
         prevReports.map((report) =>
           report.id === reportId
             ? {
-                ...report,
-                status: statusToSend as HistoryReportData["status"],
-              }
+              ...report,
+              status: statusToSend as HistoryReportData["status"],
+            }
             : report
         )
       );
@@ -413,14 +414,23 @@ export const ReportHistory: React.FC = () => {
 
             <tbody>
               {loading ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    style={{ textAlign: "center", padding: "20px" }}
-                  >
-                    Loading...
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i}>
+                    <td>
+                      <div className="report-description-cell">
+                        <div className="report-content-wrapper">
+                          <SkeletonLoader width="200px" height="20px" />
+                          <SkeletonLoader width="100px" height="16px" className="mt-1" />
+                        </div>
+                      </div>
+                    </td>
+                    <td><SkeletonLoader width="100px" height="20px" /></td>
+                    <td><SkeletonLoader width="60px" height="24px" borderRadius="16px" /></td>
+                    <td><SkeletonLoader width="180px" height="24px" borderRadius="16px" /></td>
+                    <td><SkeletonLoader width="120px" height="32px" borderRadius="8px" /></td>
+                    <td><SkeletonLoader width="24px" height="24px" /></td>
+                  </tr>
+                ))
               ) : currentReports.length === 0 ? (
                 <tr>
                   <td
