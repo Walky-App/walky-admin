@@ -1569,6 +1569,8 @@ export class Api<
       limit?: number;
       search?: string;
       type?: string;
+      /** Filter by event status (upcoming=future, ongoing=today, finished=past) */
+      status?: "all" | "upcoming" | "ongoing" | "finished";
       /** @format date-time */
       startDate?: string;
       /** @format date-time */
@@ -2071,10 +2073,11 @@ export class Api<
   ) =>
     this.request<
       {
-        totalEvents?: number;
+        totalSpaces?: number;
         totalMembers?: number;
         popularCategories?: {
           name?: string;
+          imageUrl?: string;
           emoji?: string;
           spaces?: number;
           percentage?: number;
