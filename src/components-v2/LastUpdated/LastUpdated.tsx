@@ -4,10 +4,26 @@ import "./LastUpdated.css";
 
 interface LastUpdatedProps {
   className?: string;
+  lastUpdated?: string | Date;
 }
 
-export const LastUpdated: React.FC<LastUpdatedProps> = ({ className = "" }) => {
+const formatDate = (value: string | Date | undefined): string => {
+  if (!value) return "–";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "–";
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+export const LastUpdated: React.FC<LastUpdatedProps> = ({
+  className = "",
+  lastUpdated,
+}) => {
   const { theme } = useTheme();
+  const formattedDate = formatDate(lastUpdated ?? new Date());
 
   return (
     <div className={`footer-container ${className}`}>
@@ -34,7 +50,7 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({ className = "" }) => {
           className="last-updated-text"
           style={{ color: theme.colors.textMuted }}
         >
-          Last updated: Oct 25, 2025
+          Last updated: {formattedDate}
         </p>
       </div>
     </div>

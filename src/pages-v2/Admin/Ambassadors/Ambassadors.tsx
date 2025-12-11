@@ -169,6 +169,48 @@ export const Ambassadors: React.FC = () => {
     (a) => a.status === "Active"
   ).length;
 
+  const renderSkeletonRows = () =>
+    Array.from({ length: 6 }).map((_, index) => (
+      <React.Fragment key={`ambassador-skeleton-${index}`}>
+        <tr className="ambassador-row skeleton-row">
+          <td className="ambassador-student-id">
+            <div className="skeleton-block skeleton-pill" />
+          </td>
+          <td className="ambassador-name-cell">
+            <div className="ambassador-info">
+              <div className="skeleton-block skeleton-avatar" />
+              <div className="skeleton-stack">
+                <div className="skeleton-block skeleton-line" />
+                <div className="skeleton-block skeleton-line short" />
+              </div>
+            </div>
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-line" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-line" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-line" />
+          </td>
+          <td>
+            <div className="skeleton-block skeleton-badge" />
+          </td>
+          <td className="ambassador-actions">
+            <div className="skeleton-block skeleton-action" />
+          </td>
+        </tr>
+        {index < 5 && (
+          <tr className="ambassador-divider-row">
+            <td colSpan={7}>
+              <Divider />
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    ));
+
   return (
     <main className="ambassadors-page">
       {/* Page Header */}
@@ -239,14 +281,7 @@ export const Ambassadors: React.FC = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    style={{ textAlign: "center", padding: "20px" }}
-                  >
-                    Loading...
-                  </td>
-                </tr>
+                renderSkeletonRows()
               ) : ambassadors.length === 0 ? (
                 <tr>
                   <td

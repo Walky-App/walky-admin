@@ -229,6 +229,10 @@
   gap: 24px;
 }
 
+.insights-footer {
+  margin-top: 24px;
+}
+
 .popular-idea-item {
   display: flex;
   align-items: center;

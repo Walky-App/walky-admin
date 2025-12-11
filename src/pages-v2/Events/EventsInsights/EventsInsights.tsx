@@ -7,6 +7,7 @@ import {
   EventDetailsData,
   NoData,
 } from "../../../components-v2";
+import { LastUpdated } from "../../../components-v2";
 import API, { apiClient } from "../../../API";
 
 interface Interest {
@@ -36,6 +37,7 @@ export const EventsInsights: React.FC = () => {
     "month"
   );
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string | undefined>();
 
   // Stats state
   const [stats, setStats] = useState({
@@ -154,6 +156,9 @@ export const EventsInsights: React.FC = () => {
             avgPublicAttendees: data.stats?.avgPublicAttendees || 0,
             avgPrivateAttendees: data.stats?.avgPrivateAttendees || 0,
           });
+          setLastUpdated(
+            data?.lastUpdated || data?.updatedAt || data?.metadata?.lastUpdated
+          );
 
           setExpandReachData(data.expandReachData || []);
           setUsersVsSpacesData(data.usersVsSpacesData || []);
@@ -419,6 +424,7 @@ export const EventsInsights: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         eventData={selectedEvent}
       />
+      <LastUpdated className="insights-footer" lastUpdated={lastUpdated} />
     </main>
   );
 };

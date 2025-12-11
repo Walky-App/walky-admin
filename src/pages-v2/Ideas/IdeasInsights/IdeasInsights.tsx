@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./IdeasInsights.css";
-import { AssetIcon, ExportButton } from "../../../components-v2";
+import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
 import { apiClient } from "../../../API";
 
 interface PopularIdea {
@@ -18,6 +18,7 @@ export const IdeasInsights: React.FC = () => {
     "month"
   );
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string | undefined>();
 
   const [stats, setStats] = useState({
     totalIdeas: 0,
@@ -32,16 +33,22 @@ export const IdeasInsights: React.FC = () => {
       setLoading(true);
       try {
         // Fetch counts
-        const [totalRes, collaboratedRes] = await Promise.all([
-          apiClient.api.adminAnalyticsIdeasCountList({ type: "total" } as any) as any,
-          apiClient.api.adminAnalyticsIdeasCountList({ type: "collaborated" } as any) as any,
+        const [totalRes, collaboratedRes, ideasRes] = await Promise.all([
+          apiClient.api.adminAnalyticsIdeasCountList({
+            type: "total",
+          } as any) as any,
+          apiClient.api.adminAnalyticsIdeasCountList({
+            type: "collaborated",
+          } as any) as any,
+          apiClient.api.adminV2IdeasList({ limit: 100 } as any) as any,
         ]);
 
         const total = totalRes.data.count || 0;
         const collaborated = collaboratedRes.data.count || 0;
 
         // Calculate conversion rate (collaborated / total) * 100
-        const conversion = total > 0 ? Math.round((collaborated / total) * 100) : 0;
+        const conversion =
+          total > 0 ? Math.round((collaborated / total) * 100) : 0;
 
         setStats({
           totalIdeas: total,
@@ -49,13 +56,25 @@ export const IdeasInsights: React.FC = () => {
           conversionRate: conversion,
         });
 
+        setLastUpdated(
+          (totalRes as any)?.data?.lastUpdated ||
+            (totalRes as any)?.data?.updatedAt ||
+            (collaboratedRes as any)?.data?.lastUpdated ||
+            (collaboratedRes as any)?.data?.updatedAt ||
+            (ideasRes as any)?.data?.lastUpdated ||
+            (ideasRes as any)?.data?.updatedAt ||
+            (ideasRes as any)?.data?.metadata?.lastUpdated
+        );
+
         // Fetch popular ideas
-        const ideasRes = await apiClient.api.adminV2IdeasList({ limit: 100 } as any) as any;
         const allIdeas = ideasRes.data.data || [];
 
         // Sort by collaborations (assuming there is a field for it, or we use participants count)
         const sortedIdeas = allIdeas
-          .sort((a: any, b: any) => (b.participants_count || 0) - (a.participants_count || 0))
+          .sort(
+            (a: any, b: any) =>
+              (b.participants_count || 0) - (a.participants_count || 0)
+          )
           .slice(0, 4)
           .map((idea: any, index: number) => ({
             rank: index + 1,
@@ -68,7 +87,6 @@ export const IdeasInsights: React.FC = () => {
           }));
 
         setPopularIdeas(sortedIdeas);
-
       } catch (error) {
         console.error("Failed to fetch ideas insights:", error);
       } finally {
@@ -95,7 +113,9 @@ export const IdeasInsights: React.FC = () => {
               <AssetIcon name="ideia-icon" size={30} color="#FFB800" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.totalIdeas.toLocaleString()}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.totalIdeas.toLocaleString()}
+          </p>
         </div>
 
         <div className="stats-card">
@@ -107,7 +127,9 @@ export const IdeasInsights: React.FC = () => {
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : stats.totalCollaborations.toLocaleString()}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : stats.totalCollaborations.toLocaleString()}
+          </p>
         </div>
 
         <div className="stats-card">
@@ -117,7 +139,9 @@ export const IdeasInsights: React.FC = () => {
               <AssetIcon name="stats-icon" size={30} color="#00C943" />
             </div>
           </div>
-          <p className="stats-card-value">{loading ? "..." : `${stats.conversionRate}%`}</p>
+          <p className="stats-card-value">
+            {loading ? "..." : `${stats.conversionRate}%`}
+          </p>
         </div>
       </div>
 
@@ -128,8 +152,9 @@ export const IdeasInsights: React.FC = () => {
           <div className="time-selector">
             <button
               data-testid="time-all-btn"
-              className={`time-option first ${timePeriod === "all" ? "active" : ""
-                }`}
+              className={`time-option first ${
+                timePeriod === "all" ? "active" : ""
+              }`}
               onClick={() => setTimePeriod("all")}
             >
               All time
@@ -143,8 +168,9 @@ export const IdeasInsights: React.FC = () => {
             </button>
             <button
               data-testid="time-month-btn"
-              className={`time-option last ${timePeriod === "month" ? "active" : ""
-                }`}
+              className={`time-option last ${
+                timePeriod === "month" ? "active" : ""
+              }`}
               onClick={() => setTimePeriod("month")}
             >
               Month
@@ -217,6 +243,8 @@ export const IdeasInsights: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <LastUpdated className="insights-footer" lastUpdated={lastUpdated} />
     </main>
   );
 };
