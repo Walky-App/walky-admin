@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  margin-top: 16px;
 }
 
 .pagination-info {
@@ -40,6 +41,15 @@
 .pagination-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  padding: 0 6px;
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5b6168;
+  user-select: none;
 }
 
 .pagination-number {

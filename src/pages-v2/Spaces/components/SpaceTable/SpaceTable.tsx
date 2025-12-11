@@ -150,12 +150,17 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
           studentId: details.owner?.studentId || "N/A",
         },
         creationDate: details.createdAt
-          ? new Date(details.createdAt).toLocaleDateString()
+          ? new Date(details.createdAt).toLocaleDateString(undefined, {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })
           : "N/A",
         creationTime: details.createdAt
           ? new Date(details.createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
+              hour: "numeric",
               minute: "2-digit",
+              hour12: true,
             })
           : "N/A",
         category: details.category?.name || "Other",
@@ -255,8 +260,8 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         bValue = b.members;
         break;
       case "creationDate":
-        aValue = new Date(a.creationDate).getTime();
-        bValue = new Date(b.creationDate).getTime();
+        aValue = Date.parse(a.creationDate) || 0;
+        bValue = Date.parse(b.creationDate) || 0;
         break;
       default:
         return 0;

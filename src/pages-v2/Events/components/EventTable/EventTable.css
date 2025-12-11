@@ -2,7 +2,8 @@
   background-color: #ffffff;
   border: none;
   border-radius: 0;
-  overflow: hidden;
+  overflow: visible;
+  padding: 0 12px 8px;
 }
 
 .event-table {
@@ -72,17 +73,22 @@
 
 .event-table tbody tr.event-row-flagged {
   background-color: #fff3f2;
-  border-bottom: none;
+  border-bottom: 1px solid #f1f4f9;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06), inset 0 1px 0 #f1f4f9,
+    inset 0 -1px 0 #f1f4f9;
 }
 
 .event-table tbody tr.event-row-flagged td {
   background-color: #fff3f2;
   border-bottom: none;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .event-table tbody tr.event-row-flagged td:first-child {
   border-top-left-radius: 16px;
   border-bottom-left-radius: 16px;
+  padding-left: 35px;
   position: relative;
 }
 

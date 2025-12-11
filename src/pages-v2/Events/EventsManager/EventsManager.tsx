@@ -42,21 +42,53 @@ export const EventsManager: React.FC = () => {
   });
 
   const filteredEvents = (eventsData?.data.data || [])
-    .map((event: any) => ({
-      id: event.id,
-      eventName: event.eventName,
-      organizer: event.organizer,
-      studentId: event.studentId,
-      eventDate: event.eventDate,
-      eventTime: event.eventTime,
-      attendees: event.attendeesCount,
-      status: (new Date(event.eventDate) < new Date()
-        ? "finished"
-        : "upcoming") as "upcoming" | "finished",
-      type: event.type,
-      isFlagged: event.isFlagged,
-      flagReason: event.flagReason,
-    }))
+    .map((event: any) => {
+      const rawDateTime = event.date_and_time || event.dateAndTime || "";
+      const parsed = rawDateTime ? Date.parse(rawDateTime) : NaN;
+      const dateObj = Number.isNaN(parsed) ? null : new Date(parsed);
+
+      const hasDateTime = Boolean(dateObj);
+
+      const eventDate = hasDateTime
+        ? new Intl.DateTimeFormat(undefined, {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }).format(dateObj as Date)
+        : event.eventDate || "";
+
+      const eventTime = hasDateTime
+        ? new Intl.DateTimeFormat(undefined, {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          }).format(dateObj as Date)
+        : event.eventTime || "";
+
+      const statusDate =
+        dateObj || (event.eventDate ? new Date(event.eventDate) : null);
+      const status =
+        statusDate && !Number.isNaN(statusDate.getTime())
+          ? statusDate < new Date()
+            ? "finished"
+            : "upcoming"
+          : "upcoming";
+
+      return {
+        id: event.id,
+        eventName: event.eventName,
+        organizer: event.organizer,
+        studentId: event.studentId,
+        eventDate,
+        eventTime,
+        eventDateRaw: dateObj ? dateObj.toISOString() : rawDateTime,
+        attendees: event.attendeesCount,
+        status: status as "upcoming" | "finished",
+        type: event.type,
+        isFlagged: event.isFlagged,
+        flagReason: event.flagReason,
+      };
+    })
     .filter((event: any) => {
       if (statusFilter === "all") return true;
       return event.status === statusFilter;

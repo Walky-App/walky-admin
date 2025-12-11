@@ -28,6 +28,7 @@ export interface EventData {
   studentId: string;
   eventDate: string;
   eventTime: string;
+  eventDateRaw?: string;
   attendees: number;
   status: "upcoming" | "finished";
   type: EventType;
@@ -139,6 +140,27 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
       )) as any;
       const details = response.data;
 
+      const hasDateTime = Boolean(details.date_and_time);
+      const dateObj = hasDateTime ? new Date(details.date_and_time) : null;
+
+      const displayDate = hasDateTime
+        ? new Intl.DateTimeFormat(undefined, {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            timeZone: "UTC",
+          }).format(dateObj as Date)
+        : details.eventDate || "";
+
+      const displayTime = hasDateTime
+        ? new Intl.DateTimeFormat(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "UTC",
+          }).format(dateObj as Date)
+        : details.eventTime || details.event_time || "";
+
       // Map API response to EventDetailsData
       const eventDetails: EventDetailsData = {
         id: details.id || details._id,
@@ -153,11 +175,8 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
             "N/A",
           avatar: details.organizer?.avatar || details.organizer?.avatar_url,
         },
-        date: new Date(details.date_and_time).toLocaleDateString(),
-        time: new Date(details.date_and_time).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        date: displayDate,
+        time: displayTime,
         place: details.location || details.address || "Campus",
         status:
           new Date(details.date_and_time) < new Date()
@@ -234,8 +253,8 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
         bValue = b.organizer.name.toLowerCase();
         break;
       case "eventDate":
-        aValue = new Date(a.eventDate).getTime();
-        bValue = new Date(b.eventDate).getTime();
+        aValue = Date.parse(a.eventDateRaw || a.eventDate) || 0;
+        bValue = Date.parse(b.eventDateRaw || b.eventDate) || 0;
         break;
       case "attendees":
         aValue = a.attendees;
