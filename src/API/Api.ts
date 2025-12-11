@@ -1571,6 +1571,11 @@ export class Api<
       type?: string;
       /** Filter by event status (upcoming=future, ongoing=today, finished=past) */
       status?: "all" | "upcoming" | "ongoing" | "finished";
+      /**
+       * IANA timezone name (e.g., America/New_York, Europe/London) for status filtering
+       * @default "UTC"
+       */
+      timezone?: string;
       /** @format date-time */
       startDate?: string;
       /** @format date-time */
@@ -1740,6 +1745,8 @@ export class Api<
       status?: string;
       schoolId?: string;
       campusId?: string;
+      /** Filter by time period */
+      period?: "all" | "week" | "month" | "year";
     },
     params: RequestParams = {},
   ) =>

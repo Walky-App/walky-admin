@@ -186,6 +186,19 @@
   height: 28px;
   background: #c1d0f5;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #546fd9;
+}
+
+.interest-icon-image {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 .interest-info {
@@ -229,11 +242,12 @@
   background: #eef0f1;
   border-radius: 16px;
   overflow: hidden;
+  position: relative;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: #526ac9;
+  background-color: #526ac9;
   border-radius: 16px 0 0 16px;
   transition: width 0.3s ease;
 }

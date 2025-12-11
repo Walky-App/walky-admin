@@ -55,10 +55,10 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
     setIsCopied(true);
     setIsHovering(false);
 
-    // Reset after 5 seconds
+    // Reset after 4 seconds
     timeoutRef.current = setTimeout(() => {
       setIsCopied(false);
-    }, 5000);
+    }, 4000);
 
     if (showToast) {
       setToastVisible(true);

@@ -65,16 +65,8 @@ export const DisengagedStudents: React.FC = () => {
       reported: student.isFlagged || false,
     })
   );
-  const handleSendOutreach = async (student: DisengagedStudent) => {
-    try {
-      await navigator.clipboard.writeText(student.email);
-      setToastMessage("Email copied to clipboard");
-      setShowToast(true);
-    } catch (error) {
-      console.error("Failed to copy email:", error);
-      setToastMessage("Failed to copy email");
-      setShowToast(true);
-    }
+  const handleSendOutreach = (student: DisengagedStudent) => {
+    window.location.href = `mailto:${student.email}`;
   };
 
   const handleStudentClick = (student: DisengagedStudent) => {

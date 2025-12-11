@@ -155,7 +155,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                       variant="secondary"
                       size="small"
                       iconSize={14}
-                      iconColor="#acb6ba"
+                      iconColor="#321FDB"
                       testId="copy-report-id"
                     />
                   </div>
