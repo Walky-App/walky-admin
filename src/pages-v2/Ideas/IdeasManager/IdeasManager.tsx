@@ -22,17 +22,43 @@ export const IdeasManager: React.FC = () => {
     placeholderData: keepPreviousData,
   });
 
-  const filteredIdeas = (ideasData?.data.data || []).map((idea: any) => ({
-    id: idea.id,
-    ideaTitle: idea.ideaTitle,
-    owner: idea.owner,
-    studentId: idea.studentId,
-    collaborated: idea.collaborated,
-    creationDate: idea.creationDate,
-    creationTime: idea.creationTime,
-    isFlagged: idea.isFlagged,
-    flagReason: idea.flagReason,
-  }));
+  const filteredIdeas = (ideasData?.data.data || []).map((idea: any) => {
+    const rawTimestamp =
+      idea.createdAt ||
+      `${idea.creationDate} ${idea.creationTime}` ||
+      idea.creationDate;
+    const parsed = rawTimestamp ? Date.parse(rawTimestamp) : NaN;
+    const dateObj = Number.isNaN(parsed) ? null : new Date(parsed);
+
+    const creationDate = dateObj
+      ? dateObj.toLocaleDateString(undefined, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : idea.creationDate;
+
+    const creationTime = dateObj
+      ? dateObj.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : idea.creationTime;
+
+    return {
+      id: idea.id,
+      ideaTitle: idea.ideaTitle,
+      owner: idea.owner,
+      studentId: idea.studentId,
+      collaborated: idea.collaborated,
+      creationDate,
+      creationTime,
+      createdAt: dateObj ? dateObj.toISOString() : idea.createdAt,
+      isFlagged: idea.isFlagged,
+      flagReason: idea.flagReason,
+    };
+  });
 
   const totalPages = Math.ceil((ideasData?.data.total || 0) / 10);
   const totalEntries = ideasData?.data.total || 0;

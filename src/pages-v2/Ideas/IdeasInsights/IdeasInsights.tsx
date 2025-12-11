@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./IdeasInsights.css";
 import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
+import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
 import { apiClient } from "../../../API";
 
 interface PopularIdea {
@@ -70,20 +71,44 @@ export const IdeasInsights: React.FC = () => {
         const allIdeas = ideasRes.data.data || [];
 
         // Sort by collaborations (assuming there is a field for it, or we use participants count)
-        const sortedIdeas = allIdeas
-          .sort(
-            (a: any, b: any) =>
-              (b.participants_count || 0) - (a.participants_count || 0)
-          )
+        const normalizedIdeas = allIdeas
+          .map((idea: any) => {
+            const collaborations =
+              (Array.isArray(idea.participants)
+                ? idea.participants.length
+                : 0) ||
+              idea.participants_count ||
+              0;
+
+            return {
+              ...idea,
+              collaborations,
+              ownerName:
+                idea.user?.name ||
+                idea.created_by?.name ||
+                idea.owner?.name ||
+                "Unknown",
+              ownerAvatar:
+                idea.user?.avatar ||
+                idea.user?.avatar_url ||
+                idea.created_by?.avatar_url ||
+                idea.owner?.avatar ||
+                "",
+            };
+          })
+          .filter((idea: any) => idea.collaborations > 0);
+
+        const sortedIdeas = normalizedIdeas
+          .sort((a: any, b: any) => b.collaborations - a.collaborations)
           .slice(0, 4)
           .map((idea: any, index: number) => ({
             rank: index + 1,
             title: idea.title,
             owner: {
-              name: idea.user?.name || "Unknown",
-              avatar: idea.user?.avatar || "",
+              name: idea.ownerName,
+              avatar: idea.ownerAvatar,
             },
-            collaborations: idea.participants_count || 0,
+            collaborations: idea.collaborations,
           }));
 
         setPopularIdeas(sortedIdeas);
@@ -224,22 +249,32 @@ export const IdeasInsights: React.FC = () => {
         <div className="popular-ideas-card">
           <h2 className="popular-ideas-title">Popular Ideas</h2>
           <div className="popular-ideas-list">
-            {popularIdeas.map((idea) => (
-              <div key={idea.rank} className="popular-idea-item">
-                <div className="idea-item-left">
-                  <span className="idea-rank">{idea.rank}.</span>
-                  <img
-                    src={idea.owner.avatar}
-                    alt={idea.owner.name}
-                    className="idea-owner-avatar"
-                  />
-                  <p className="idea-title">{idea.title}</p>
+            {popularIdeas.length === 0 && !loading ? (
+              <NoIdeasFound message="No popular ideas yet" />
+            ) : (
+              popularIdeas.map((idea) => (
+                <div key={idea.rank} className="popular-idea-item">
+                  <div className="idea-item-left">
+                    <span className="idea-rank">{idea.rank}.</span>
+                    {idea.owner.avatar ? (
+                      <img
+                        src={idea.owner.avatar}
+                        alt={idea.owner.name}
+                        className="idea-owner-avatar"
+                      />
+                    ) : (
+                      <div className="idea-owner-avatar placeholder">
+                        <AssetIcon name="double-users-icon" size={24} />
+                      </div>
+                    )}
+                    <p className="idea-title">{idea.title}</p>
+                  </div>
+                  <p className="idea-collaborations">
+                    {idea.collaborations} Collaborations
+                  </p>
                 </div>
-                <p className="idea-collaborations">
-                  {idea.collaborations} Collaborations
-                </p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

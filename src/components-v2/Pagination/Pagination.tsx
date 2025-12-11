@@ -20,31 +20,61 @@ export const Pagination: React.FC<PaginationProps> = ({
   const endEntry = Math.min(currentPage * entriesPerPage, totalEntries);
 
   const renderPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    const pages: Array<number | "ellipsis"> = [];
 
-    if (endPage - startPage < maxVisiblePages - 1) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      const lastPage = totalPages;
+      pages.push(1);
+
+      if (currentPage <= 3) {
+        pages.push(2, 3, 4, "ellipsis", lastPage);
+      } else if (currentPage === 4) {
+        pages.push(2, 3, 4, 5, "ellipsis", lastPage);
+      } else if (currentPage >= lastPage - 2) {
+        pages.push(
+          "ellipsis",
+          lastPage - 3,
+          lastPage - 2,
+          lastPage - 1,
+          lastPage
+        );
+      } else {
+        pages.push(
+          "ellipsis",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "ellipsis",
+          lastPage
+        );
+      }
     }
 
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(
+    return pages.map((page, idx) => {
+      if (page === "ellipsis") {
+        return (
+          <span key={`ellipsis-${idx}`} className="pagination-ellipsis">
+            ...
+          </span>
+        );
+      }
+
+      return (
         <button
           data-testid="pagination-page-btn"
-          key={i}
+          key={page}
           className={`pagination-button pagination-number ${
-            i === currentPage ? "active" : ""
+            page === currentPage ? "active" : ""
           }`}
-          onClick={() => onPageChange(i)}
+          onClick={() => onPageChange(page)}
+          disabled={page === currentPage}
         >
-          {i}
+          {page}
         </button>
       );
-    }
-
-    return pages;
+    });
   };
 
   return (

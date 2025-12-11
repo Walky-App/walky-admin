@@ -26,6 +26,7 @@ export interface IdeaData {
   collaborated: number;
   creationDate: string;
   creationTime: string;
+  createdAt?: string;
   description?: string;
   lookingFor?: string;
   collaborators?: Array<{
@@ -58,6 +59,21 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState<IdeaData | null>(null);
+
+  const getCreationTimestamp = (idea: IdeaData) => {
+    if (idea.createdAt) {
+      const ts = Date.parse(idea.createdAt);
+      if (!Number.isNaN(ts)) return ts;
+    }
+
+    const combined = Date.parse(`${idea.creationDate} ${idea.creationTime}`);
+    if (!Number.isNaN(combined)) return combined;
+
+    const dateOnly = Date.parse(idea.creationDate);
+    if (!Number.isNaN(dateOnly)) return dateOnly;
+
+    return 0;
+  };
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2IdeasDelete(id),
@@ -126,23 +142,34 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
     switch (sortField) {
       case "ideaTitle":
-        aValue = a.ideaTitle;
-        bValue = b.ideaTitle;
+        aValue = a.ideaTitle.trim();
+        bValue = b.ideaTitle.trim();
         break;
       case "owner":
-        aValue = a.owner.name;
-        bValue = b.owner.name;
+        aValue = a.owner.name.trim();
+        bValue = b.owner.name.trim();
         break;
       case "collaborated":
         aValue = a.collaborated;
         bValue = b.collaborated;
         break;
       case "creationDate":
-        aValue = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
-        bValue = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
+        aValue = getCreationTimestamp(a);
+        bValue = getCreationTimestamp(b);
         break;
       default:
         return 0;
+    }
+
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      const comparison = aValue.localeCompare(bValue, undefined, {
+        sensitivity: "base",
+        numeric: true,
+      });
+      if (comparison !== 0) {
+        return sortDirection === "asc" ? comparison : -comparison;
+      }
+      return 0;
     }
 
     if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
@@ -156,21 +183,33 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
       const response = (await apiClient.api.adminV2IdeasDetail(idea.id)) as any;
       const details = response.data;
 
+      const created = new Date(details.createdAt);
+      const creationDate = created.toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+      const creationTime = created.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "UTC",
+      });
+      const ownerName = getFirstName(details.creator?.name || "Unknown");
+
       // Map API response to IdeaData structure for the modal
       const ideaDetails: IdeaData = {
         id: details.id,
         ideaTitle: details.title,
         owner: {
-          name: details.creator?.name || "Unknown",
+          name: ownerName,
           avatar: details.creator?.avatar,
         },
         studentId: details.creator?.studentId || "N/A",
         collaborated: details.collaborators?.length || 0,
-        creationDate: new Date(details.createdAt).toLocaleDateString(),
-        creationTime: new Date(details.createdAt).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        creationDate,
+        creationTime,
         description: details.description,
         lookingFor: details.lookingFor || "N/A", // Assuming backend might return this
         collaborators: (details.collaborators || []).map((c: any) => ({

@@ -39,6 +39,8 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
 }) => {
   if (!ideaData) return null;
 
+  const getFirstName = (name: string) => name?.trim().split(" ")[0] || name;
+
   return (
     <CModal
       visible={isOpen}
@@ -85,12 +87,12 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
                     )}
                   </div>
                   <div className="idea-owner-info">
-                    <p className="idea-owner-name">{ideaData.owner.name}</p>
+                    <p className="idea-owner-name">
+                      {getFirstName(ideaData.owner.name)}
+                    </p>
                     <CopyableId
                       id={ideaData.owner.studentId}
                       label="Student ID"
-                      variant="secondary"
-                      iconColor="#ACB6BA"
                       testId="idea-owner-copy"
                     />
                   </div>

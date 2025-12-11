@@ -14,6 +14,14 @@
   line-height: 100%;
 }
 
+.space-type-chip-default {
+  background-color: #eef0f1;
+}
+
+.space-type-chip-default span {
+  color: #5b6168;
+}
+
 .space-type-chip-clubs {
   background-color: #e2e0f2;
 }
@@ -36,4 +44,45 @@
 
 .space-type-chip-sororities span {
   color: #816651;
+}
+
+.space-type-chip-club-sports {
+  background-color: #e6f1ff;
+}
+
+.space-type-chip-club-sports span {
+  color: #2b6abf;
+}
+
+/* Academics & Honors */
+.space-type-chip-academics-honors,
+.space-type-chip-academics-and-honors {
+  background-color: #e6f3ff;
+}
+
+.space-type-chip-academics-honors span,
+.space-type-chip-academics-and-honors span {
+  color: #2a6fb0;
+}
+
+/* Leadership & Government */
+.space-type-chip-leadership-government,
+.space-type-chip-leadership-and-government {
+  background-color: #f0ecff;
+}
+
+.space-type-chip-leadership-government span,
+.space-type-chip-leadership-and-government span {
+  color: #5a46c6;
+}
+
+/* Cultural & Diversity */
+.space-type-chip-cultural-diversity,
+.space-type-chip-cultural-and-diversity {
+  background-color: #e8f7f1;
+}
+
+.space-type-chip-cultural-diversity span,
+.space-type-chip-cultural-and-diversity span {
+  color: #2f8a64;
 }

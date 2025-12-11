@@ -1,5 +1,7 @@
+.ideas-table-skeleton,
 .event-table-skeleton {
   width: 100%;
+  padding: 8px 0;
 }
 
 .skeleton {
@@ -24,7 +26,7 @@
 }
 
 .skeleton-row td {
-  padding: 16px;
+  padding: 16px 16px 12px;
   vertical-align: middle;
 }
 
@@ -43,6 +45,12 @@
   gap: 12px;
 }
 
+.skeleton-owner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .skeleton-avatar {
   width: 38px;
   height: 38px;
@@ -51,6 +59,10 @@
 }
 
 .skeleton-organizer-name {
+  width: 100px;
+}
+
+.skeleton-owner-name {
   width: 100px;
 }
 

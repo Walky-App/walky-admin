@@ -8,6 +8,12 @@
   box-shadow: 6px 6px 54px 0px rgba(0, 0, 0, 0.05);
 }
 
+.space-details-modal-wrapper.space-details-hidden .modal-content {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .space-details-modal-body {
   padding: 32px;
   background: #ffffff;
