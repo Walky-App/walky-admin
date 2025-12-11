@@ -1,7 +1,7 @@
 import React from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./IdeaDetailsModal.css";
-import { AssetIcon, CopyableId } from "../../components-v2";
+import { AssetIcon, CopyableId, NoData } from "../../components-v2";
 
 export interface IdeaCollaborator {
   id: string;
@@ -146,25 +146,32 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
                 <h3 className="idea-collaborators-title">Collaborators</h3>
               </div>
               <div className="idea-collaborators-list">
-                {ideaData.collaborators.map((collaborator) => (
-                  <div key={collaborator.id} className="idea-collaborator-item">
-                    <div className="idea-collaborator-avatar">
-                      {collaborator.avatar ? (
-                        <img
-                          src={collaborator.avatar}
-                          alt={collaborator.name}
-                        />
-                      ) : (
-                        <div className="idea-collaborator-avatar-placeholder">
-                          {collaborator.name.charAt(0)}
-                        </div>
-                      )}
+                {ideaData.collaborators.length === 0 ? (
+                  <NoData message="This idea has no collaborators yet" />
+                ) : (
+                  ideaData.collaborators.map((collaborator) => (
+                    <div
+                      key={collaborator.id}
+                      className="idea-collaborator-item"
+                    >
+                      <div className="idea-collaborator-avatar">
+                        {collaborator.avatar ? (
+                          <img
+                            src={collaborator.avatar}
+                            alt={collaborator.name}
+                          />
+                        ) : (
+                          <div className="idea-collaborator-avatar-placeholder">
+                            {collaborator.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <p className="idea-collaborator-name">
+                        {collaborator.name}
+                      </p>
                     </div>
-                    <p className="idea-collaborator-name">
-                      {collaborator.name}
-                    </p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>

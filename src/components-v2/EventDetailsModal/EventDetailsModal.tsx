@@ -58,11 +58,15 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
     }
   }, [isOpen, eventData]);
 
+  const getFirstName = (name: string) => name?.trim().split(" ")[0] || name;
+
   const handleBack = () => {
     onClose();
   };
 
   if (!eventData) return null;
+
+  const organizerFirstName = getFirstName(eventData.organizer.name);
 
   const handleCloseAll = () => {
     if (onCloseAll) {
@@ -139,18 +143,16 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     {eventData.organizer.avatar ? (
                       <img
                         src={eventData.organizer.avatar}
-                        alt={eventData.organizer.name}
+                        alt={organizerFirstName}
                       />
                     ) : (
                       <div className="event-organizer-avatar-placeholder">
-                        {eventData.organizer.name.charAt(0)}
+                        {organizerFirstName.charAt(0)}
                       </div>
                     )}
                   </div>
                   <div className="event-organizer-info">
-                    <p className="event-organizer-name">
-                      {eventData.organizer.name}
-                    </p>
+                    <p className="event-organizer-name">{organizerFirstName}</p>
                     <CopyableId
                       id={eventData.organizer.studentId}
                       label="Student ID"
@@ -231,33 +233,36 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                 {(eventData.type === "public"
                   ? eventData.attendees.filter((a) => a.status === "confirmed")
                   : eventData.attendees
-                ).map((attendee) => (
-                  <div key={attendee.id} className="event-attendee-item">
-                    <div className="event-attendee-avatar">
-                      {attendee.avatar ? (
-                        <img src={attendee.avatar} alt={attendee.name} />
-                      ) : (
-                        <div className="event-attendee-avatar-placeholder">
-                          {attendee.name.charAt(0)}
+                ).map((attendee) => {
+                  const attendeeFirstName = getFirstName(attendee.name);
+                  return (
+                    <div key={attendee.id} className="event-attendee-item">
+                      <div className="event-attendee-avatar">
+                        {attendee.avatar ? (
+                          <img src={attendee.avatar} alt={attendee.name} />
+                        ) : (
+                          <div className="event-attendee-avatar-placeholder">
+                            {attendeeFirstName.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <p className="event-attendee-name">{attendeeFirstName}</p>
+                      {eventData.type === "private" && attendee.status && (
+                        <div className="event-attendee-status">
+                          {attendee.status === "confirmed" && (
+                            <AssetIcon name="check-icon" size={16} />
+                          )}
+                          {attendee.status === "declined" && (
+                            <AssetIcon name="x-icon" size={16} />
+                          )}
+                          {attendee.status === "pending" && (
+                            <div className="status-pending-dot"></div>
+                          )}
                         </div>
                       )}
                     </div>
-                    <p className="event-attendee-name">{attendee.name}</p>
-                    {eventData.type === "private" && attendee.status && (
-                      <div className="event-attendee-status">
-                        {attendee.status === "confirmed" && (
-                          <AssetIcon name="check-icon" size={16} />
-                        )}
-                        {attendee.status === "declined" && (
-                          <AssetIcon name="x-icon" size={16} />
-                        )}
-                        {attendee.status === "pending" && (
-                          <div className="status-pending-dot"></div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

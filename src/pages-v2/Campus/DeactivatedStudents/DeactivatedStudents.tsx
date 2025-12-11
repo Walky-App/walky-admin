@@ -109,7 +109,7 @@ export const DeactivatedStudents: React.FC = () => {
         {isLoading ? (
           <StudentTableSkeleton />
         ) : paginatedStudents.length === 0 ? (
-          <NoStudentsFound />
+          <NoStudentsFound message="No deactivated users" />
         ) : (
           <DeactivatedStudentTable
             students={paginatedStudents}

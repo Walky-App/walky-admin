@@ -36,6 +36,7 @@ export const EventsManager: React.FC = () => {
         limit: 10,
         search: searchQuery,
         type: typeFilter,
+        status: statusFilter,
       }),
     placeholderData: keepPreviousData,
   });
@@ -49,7 +50,9 @@ export const EventsManager: React.FC = () => {
       eventDate: event.eventDate,
       eventTime: event.eventTime,
       attendees: event.attendeesCount,
-      status: (new Date(event.eventDate) < new Date() ? "finished" : "upcoming") as "upcoming" | "finished",
+      status: (new Date(event.eventDate) < new Date()
+        ? "finished"
+        : "upcoming") as "upcoming" | "finished",
       type: event.type,
       isFlagged: event.isFlagged,
       flagReason: event.flagReason,
@@ -83,8 +86,9 @@ export const EventsManager: React.FC = () => {
         </button>
         <button
           data-testid="view-calendar-btn"
-          className={`view-toggle-btn ${viewMode === "calendar" ? "active" : ""
-            }`}
+          className={`view-toggle-btn ${
+            viewMode === "calendar" ? "active" : ""
+          }`}
           onClick={() => setViewMode("calendar")}
         >
           Calendar view
