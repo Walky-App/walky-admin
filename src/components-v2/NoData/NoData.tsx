@@ -16,7 +16,7 @@ export const NoData: React.FC<NoDataProps> = ({
   return (
     <div className={`no-data no-data-${type}`}>
       <div className="no-data-icon">
-        <AssetIcon name="nd-grafs-empty" size={40} color="#546FD9" />
+        <AssetIcon name="double-users-icon" size={40} color="#526AC9" />
       </div>
       <p className="no-data-text">{message}</p>
     </div>
