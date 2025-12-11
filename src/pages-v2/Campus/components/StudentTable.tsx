@@ -150,6 +150,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, {
         lockDuration: data.duration,
         lockReason: data.reason,
+        isLocked: true,
       } as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -509,9 +510,8 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           {sortedStudents.map((student, index) => (
             <React.Fragment key={student.id}>
               <tr
-                className={`student-table-row ${
-                  student.isFlagged ? "student-row-flagged" : ""
-                }`}
+                className={`student-table-row ${student.isFlagged ? "student-row-flagged" : ""
+                  }`}
                 onClick={() => onStudentClick?.(student)}
               >
                 {columns.map((column) => (
@@ -553,7 +553,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                       {
                         isDivider: true,
                         label: "",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                       {
                         label: "Ban user",
