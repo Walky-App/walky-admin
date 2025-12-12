@@ -59,7 +59,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
   const [toastMessage, setToastMessage] = useState("");
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => apiClient.api.adminV2SpacesDelete(id),
+    mutationFn: (data: { id: string; reason: string }) =>
+      apiClient.api.adminV2SpacesDelete(data.id, {
+        body: { reason: data.reason },
+      } as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setToastMessage(`Space deleted successfully`);
@@ -124,9 +127,9 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = (_reason: string) => {
+  const handleDeleteConfirm = (reason: string) => {
     if (spaceToDelete) {
-      deleteMutation.mutate(spaceToDelete.id);
+      deleteMutation.mutate({ id: spaceToDelete.id, reason });
     }
   };
 
