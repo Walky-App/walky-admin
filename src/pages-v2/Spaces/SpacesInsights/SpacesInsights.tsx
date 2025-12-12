@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "./SpacesInsights.css";
 import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
 
@@ -106,7 +106,9 @@ export const SpacesInsights: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
+  const exportRef = useRef<HTMLElement | null>(null);
 
+  // Filtered data for categories/top spaces
   const { data: insightsData, isLoading } = useQuery({
     queryKey: ["spacesInsights", timePeriod],
     queryFn: () =>
@@ -114,10 +116,19 @@ export const SpacesInsights: React.FC = () => {
     placeholderData: keepPreviousData,
   });
 
+  // All-time totals should remain constant regardless of filter selection
+  const { data: allTimeInsights, isLoading: isAllTimeLoading } = useQuery({
+    queryKey: ["spacesInsights", "all"],
+    queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: "all" }),
+  });
+
   const lastUpdated =
     (insightsData as any)?.data?.lastUpdated ||
     (insightsData as any)?.data?.updatedAt ||
-    (insightsData as any)?.data?.metadata?.lastUpdated;
+    (insightsData as any)?.data?.metadata?.lastUpdated ||
+    (allTimeInsights as any)?.data?.lastUpdated ||
+    (allTimeInsights as any)?.data?.updatedAt ||
+    (allTimeInsights as any)?.data?.metadata?.lastUpdated;
   const categories: SpaceCategory[] = (
     insightsData?.data.popularCategories || []
   ).map((category: any) => ({
@@ -137,15 +148,15 @@ export const SpacesInsights: React.FC = () => {
     })
   );
 
-  if (isLoading) {
+  if (isLoading || isAllTimeLoading) {
     return <SpacesInsightsSkeleton />;
   }
 
   return (
-    <main className="spaces-insights-page">
+    <main className="spaces-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton />
+        <ExportButton captureRef={exportRef} filename="spaces_insights" />
       </div>
 
       {/* Top 2 Stats Cards */}
@@ -160,7 +171,7 @@ export const SpacesInsights: React.FC = () => {
             </div>
           </div>
           <p className="stats-card-value">
-            {insightsData?.data.totalSpaces || 0}
+            {allTimeInsights?.data.totalSpaces || 0}
           </p>
         </div>
 
@@ -174,7 +185,7 @@ export const SpacesInsights: React.FC = () => {
             </div>
           </div>
           <p className="stats-card-value">
-            {insightsData?.data.totalMembers || 0}
+            {allTimeInsights?.data.totalMembers || 0}
           </p>
         </div>
       </div>

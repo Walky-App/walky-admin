@@ -269,145 +269,163 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
   return (
     <>
-      <table className="ideas-table">
-        <thead>
-          <tr>
-            <th onClick={() => handleSort("ideaTitle")}>
-              <div className="ideas-table-header-cell">
-                <span>Idea title</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th onClick={() => handleSort("owner")}>
-              <div className="ideas-table-header-cell">
-                <span>Owner</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th>
-              <div className="ideas-table-header-cell">
-                <span>Student ID</span>
-              </div>
-            </th>
-            <th onClick={() => handleSort("collaborated")}>
-              <div className="ideas-table-header-cell">
-                <span>Collaborated</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th onClick={() => handleSort("creationDate")}>
-              <div className="ideas-table-header-cell">
-                <span>Creation date</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <div className="content-space-divider" />
+      <div className="ideas-table-wrapper">
+        <table className="ideas-table">
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("ideaTitle")}>
+                <div className="ideas-table-header-cell">
+                  <span>Idea title</span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color="#1D1B20"
+                  />
+                </div>
+              </th>
+              <th onClick={() => handleSort("owner")}>
+                <div className="ideas-table-header-cell">
+                  <span>Owner</span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color="#1D1B20"
+                  />
+                </div>
+              </th>
+              <th>
+                <div className="ideas-table-header-cell">
+                  <span>Student ID</span>
+                </div>
+              </th>
+              <th onClick={() => handleSort("collaborated")}>
+                <div className="ideas-table-header-cell">
+                  <span>Collaborated</span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color="#1D1B20"
+                  />
+                </div>
+              </th>
+              <th onClick={() => handleSort("creationDate")}>
+                <div className="ideas-table-header-cell">
+                  <span>Creation date</span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color="#1D1B20"
+                  />
+                </div>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <div className="content-space-divider" />
 
-        <tbody>
-          {sortedIdeas.map((idea, index) => (
-            <React.Fragment key={idea.id}>
-              <tr className={idea.isFlagged ? "idea-row-flagged" : ""}>
-                <td>
-                  {idea.isFlagged && (
-                    <AssetIcon
-                      name="flag-icon"
-                      size={16}
-                      color="#D53425"
-                      className="idea-flag-icon"
-                    />
-                  )}
-                  <div className="idea-title-cell">
-                    <span className="ideas-table-idea-title">
-                      {idea.ideaTitle}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div className="ideas-table-owner">
-                    <div className="ideas-table-owner-avatar">
-                      {idea.owner.avatar ? (
-                        <img src={idea.owner.avatar} alt={idea.owner.name} />
-                      ) : (
-                        <div className="ideas-table-owner-avatar-placeholder">
-                          {idea.owner.name.charAt(0)}
-                        </div>
-                      )}
+          <tbody>
+            {sortedIdeas.map((idea, index) => (
+              <React.Fragment key={idea.id}>
+                <tr className={idea.isFlagged ? "idea-row-flagged" : ""}>
+                  <td>
+                    {idea.isFlagged && (
+                      <AssetIcon
+                        name="flag-icon"
+                        size={16}
+                        color="#D53425"
+                        className="idea-flag-icon"
+                      />
+                    )}
+                    <div className="idea-title-cell">
+                      <span className="ideas-table-idea-title">
+                        {idea.ideaTitle}
+                      </span>
                     </div>
-                    <span className="ideas-table-owner-name">
-                      {getFirstName(idea.owner.name)}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <CopyableId
-                    id={idea.studentId}
-                    label="Student ID"
-                    testId="copy-student-id"
-                  />
-                </td>
-                <td>
-                  <div className="ideas-table-collaborated-badge">
-                    {idea.collaborated}
-                  </div>
-                </td>
-                <td>
-                  <div className="ideas-table-date">
-                    <span className="ideas-table-date-main">
-                      {idea.creationDate}
-                    </span>
-                    <span className="ideas-table-date-time">
-                      {idea.creationTime}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <ActionDropdown
-                    testId="idea-dropdown"
-                    items={[
-                      {
-                        label: "Idea Details",
-                        onClick: (e) => handleViewIdeaDetails(idea, e),
-                      },
-                      {
-                        isDivider: true,
-                        label: "",
-                        onClick: () => {},
-                      },
-                      idea.isFlagged
-                        ? {
-                            label: "Unflag",
-                            icon: "flag-icon",
-                            variant: "danger",
-                            onClick: (e) => handleUnflagIdea(idea, e),
-                          }
-                        : {
-                            label: "Flag",
-                            icon: "flag-icon",
-                            onClick: (e) => handleFlagIdea(idea, e),
-                          },
-                      {
-                        label: "Delete Idea",
-                        variant: "danger",
-                        onClick: (e) => handleDeleteClick(idea, e),
-                      },
-                    ]}
-                  />
-                </td>
-              </tr>
-              {index < sortedIdeas.length - 1 && !idea.isFlagged && (
-                <tr className="idea-divider-row">
-                  <td colSpan={7}>
-                    <Divider />
+                  </td>
+                  <td>
+                    <div className="ideas-table-owner">
+                      <div className="ideas-table-owner-avatar">
+                        {idea.owner.avatar ? (
+                          <img src={idea.owner.avatar} alt={idea.owner.name} />
+                        ) : (
+                          <div className="ideas-table-owner-avatar-placeholder">
+                            {idea.owner.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <span className="ideas-table-owner-name">
+                        {getFirstName(idea.owner.name)}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <CopyableId
+                      id={idea.studentId}
+                      label="Student ID"
+                      testId="copy-student-id"
+                    />
+                  </td>
+                  <td>
+                    <div className="ideas-table-collaborated-badge">
+                      {idea.collaborated}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="ideas-table-date">
+                      <span className="ideas-table-date-main">
+                        {idea.creationDate}
+                      </span>
+                      <span className="ideas-table-date-time">
+                        {idea.creationTime}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <ActionDropdown
+                      testId="idea-dropdown"
+                      items={[
+                        {
+                          label: "Idea Details",
+                          onClick: (e) => handleViewIdeaDetails(idea, e),
+                        },
+                        {
+                          isDivider: true,
+                          label: "",
+                          onClick: () => {},
+                        },
+                        idea.isFlagged
+                          ? {
+                              label: "Unflag",
+                              icon: "flag-icon",
+                              variant: "danger",
+                              onClick: (e) => handleUnflagIdea(idea, e),
+                            }
+                          : {
+                              label: "Flag",
+                              icon: "flag-icon",
+                              onClick: (e) => handleFlagIdea(idea, e),
+                            },
+                        {
+                          label: "Delete Idea",
+                          variant: "danger",
+                          onClick: (e) => handleDeleteClick(idea, e),
+                        },
+                      ]}
+                    />
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+                {index < sortedIdeas.length - 1 && !idea.isFlagged && (
+                  <tr className="idea-divider-row">
+                    <td colSpan={7}>
+                      <Divider />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <UnflagModal
         isOpen={unflagModalOpen}

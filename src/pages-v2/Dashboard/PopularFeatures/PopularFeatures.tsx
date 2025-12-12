@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import API from "../../../API";
 import { CRow, CCol } from "@coreui/react";
 import {
   AssetIcon,
@@ -36,8 +35,9 @@ const PopularFeatures: React.FC = () => {
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
   const [modalData, setModalData] = useState<{ title: string; items: any[] }>({
     title: "Top interests",
-    items: []
+    items: [],
   });
+  const exportRef = useRef<HTMLElement | null>(null);
 
   console.log(
     "PopularFeatures - interestsModalVisible:",
@@ -45,13 +45,20 @@ const PopularFeatures: React.FC = () => {
   );
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['popularFeatures', timePeriod, selectedSchool?._id, selectedCampus?._id, popularity],
-    queryFn: () => apiClient.api.adminV2DashboardPopularFeaturesList({
-      period: timePeriod,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id,
-      sortBy: popularity === 'most' ? 'most_popular' : 'least_popular'
-    }),
+    queryKey: [
+      "popularFeatures",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+      popularity,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardPopularFeaturesList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+        sortBy: popularity === "most" ? "most_popular" : "least_popular",
+      }),
   });
 
   const data = (apiData?.data || {}) as any;
@@ -64,48 +71,25 @@ const PopularFeatures: React.FC = () => {
   const commonInterests = data.commonInterests || [];
   const topFieldsOfStudy = data.topFieldsOfStudy || [];
 
-  console.log('Visited Places data:', visitedPlaces);
+  console.log("Visited Places data:", visitedPlaces);
 
   if (isLoading) {
     return <DashboardSkeleton />;
   }
 
-  const handleExport = async () => {
-    try {
-      const response = await API.get('/admin/v2/dashboard/popular-features', {
-        params: {
-          period: timePeriod,
-          export: 'true',
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id,
-          sortBy: popularity === 'most' ? 'most_popular' : 'least_popular'
-        },
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `popular_features_stats_${timePeriod}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
-
   return (
     <main
       className="popular-features-page"
       aria-label="Popular Features Dashboard"
+      ref={exportRef}
     >
       {/* Filter Bar - single row with export button */}
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
         dateRange="October 1 – October 31"
-        onExport={handleExport}
+        exportTargetRef={exportRef}
+        exportFileName={`popular_features_${timePeriod}`}
       />
 
       {/* Header Section - title, popularity selector, and view toggle in one row */}
@@ -152,7 +136,7 @@ const PopularFeatures: React.FC = () => {
                   console.log("See all Top interests clicked!");
                   setModalData({
                     title: "Top interests",
-                    items: topInterests
+                    items: topInterests,
                   });
                   setInterestsModalVisible(true);
                 }}
@@ -173,7 +157,7 @@ const PopularFeatures: React.FC = () => {
                   console.log("See all ways clicked!");
                   setModalData({
                     title: "Popular ways to connect",
-                    items: popularWaysToConnect
+                    items: popularWaysToConnect,
                   });
                   setInterestsModalVisible(true);
                 }}
@@ -195,7 +179,7 @@ const PopularFeatures: React.FC = () => {
                   console.log("See all places clicked!");
                   setModalData({
                     title: "Visited places",
-                    items: visitedPlaces
+                    items: visitedPlaces,
                   });
                   setInterestsModalVisible(true);
                 }}
@@ -220,7 +204,7 @@ const PopularFeatures: React.FC = () => {
                   console.log("See all categories clicked!");
                   setModalData({
                     title: "Top invitation categories",
-                    items: topInvitationCategories
+                    items: topInvitationCategories,
                   });
                   setInterestsModalVisible(true);
                 }}
@@ -241,7 +225,7 @@ const PopularFeatures: React.FC = () => {
                   console.log("See all engaged clicked!");
                   setModalData({
                     title: "Most Engaged",
-                    items: mostEngaged
+                    items: mostEngaged,
                   });
                   setInterestsModalVisible(true);
                 }}

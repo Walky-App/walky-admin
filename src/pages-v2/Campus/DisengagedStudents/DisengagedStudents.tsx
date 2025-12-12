@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import {
   StudentProfileModal,
@@ -11,6 +11,7 @@ import {
 import { StatsCard } from "../components/StatsCard";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
+import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./DisengagedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -25,6 +26,11 @@ interface DisengagedStudent {
   memberSince: string;
   email: string;
   reported: boolean;
+  status?: string;
+  bio?: string;
+  lastLogin?: string;
+  areaOfStudy?: string;
+  totalPeers?: number;
 }
 
 export const DisengagedStudents: React.FC = () => {
@@ -32,10 +38,11 @@ export const DisengagedStudents: React.FC = () => {
     useState<DisengagedStudent | null>(null);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessage] = useState("");
   const [currentPage] = useState(1);
   const entriesPerPage = 10;
 
+  const exportRef = useRef<HTMLElement | null>(null);
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
     queryKey: ["students", currentPage, "disengaged"],
     queryFn: () =>
@@ -60,9 +67,14 @@ export const DisengagedStudents: React.FC = () => {
       avatar: student.avatar,
       peers: student.peers || 0,
       ignoredInvitations: student.ignoredInvitations || 0,
-      memberSince: student.memberSince,
+      memberSince: formatMemberSince(student.memberSince),
       email: student.email,
       reported: student.isFlagged || false,
+      status: student.status,
+      bio: student.bio,
+      lastLogin: student.lastLogin,
+      areaOfStudy: student.areaOfStudy,
+      totalPeers: student.totalPeers,
     })
   );
   const handleSendOutreach = (student: DisengagedStudent) => {
@@ -79,35 +91,8 @@ export const DisengagedStudents: React.FC = () => {
     setSelectedStudent(null);
   };
 
-  const handleExport = async () => {
-    try {
-      const response = await apiClient.http.request({
-        path: "/api/admin/v2/students",
-        method: "GET",
-        query: {
-          status: "disengaged",
-          export: "true",
-        },
-        format: "blob",
-      });
-
-      // @ts-ignore
-      const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `disengaged_students.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-      setToastMessage("Export failed");
-      setShowToast(true);
-    }
-  };
-
   return (
-    <main className="disengaged-students-page">
+    <main className="disengaged-students-page" ref={exportRef}>
       {/* Stats Cards */}
       <div className="disengaged-students-stats">
         <StatsCard
@@ -149,7 +134,7 @@ export const DisengagedStudents: React.FC = () => {
               and the number of ignored invitations.
             </p>
           </div>
-          <ExportButton onClick={handleExport} />
+          <ExportButton captureRef={exportRef} filename="disengaged_students" />
         </div>
 
         {/* Custom Table */}
@@ -276,10 +261,14 @@ export const DisengagedStudents: React.FC = () => {
                 name: selectedStudent.name,
                 email: selectedStudent.email,
                 avatar: selectedStudent.avatar,
-                status: "disengaged" as const,
+                status: (selectedStudent.status as any) || "disengaged",
                 interests: [],
                 memberSince: selectedStudent.memberSince,
-                onlineLast: "-",
+                lastLogin: selectedStudent.lastLogin || "N/A",
+                totalPeers:
+                  selectedStudent.totalPeers ?? selectedStudent.peers ?? 0,
+                bio: selectedStudent.bio,
+                areaOfStudy: selectedStudent.areaOfStudy,
               } as unknown as StudentProfileData)
             : null
         }

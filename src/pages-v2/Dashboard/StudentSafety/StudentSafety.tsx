@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardSkeleton } from "../components";
 import { apiClient } from "../../../API";
-import API from "../../../API";
 import {
   AssetIcon,
   FilterBar,
@@ -22,32 +21,9 @@ const StudentSafety: React.FC = () => {
   const { timePeriod, setTimePeriod } = useDashboard();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReportType, setSelectedReportType] = useState("");
+  const exportRef = useRef<HTMLElement | null>(null);
 
   // ... (inside component)
-
-  const handleExport = async () => {
-    try {
-      const response = await API.get('/admin/v2/dashboard/student-safety', {
-        params: {
-          period: timePeriod,
-          export: 'true',
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
-        },
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `student_safety_stats_${timePeriod}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
 
   const [modalReports, setModalReports] = useState<any[]>([]);
   const [modalLoading, setModalLoading] = useState(false);
@@ -64,13 +40,13 @@ const StudentSafety: React.FC = () => {
       else if (type.includes("Events")) apiType = "event";
       else if (type.includes("People")) apiType = "user";
 
-      const res = await apiClient.api.adminV2ReportsList({
+      const res = (await apiClient.api.adminV2ReportsList({
         type: apiType,
         limit: 100,
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
         period: timePeriod,
-      } as any) as any;
+      } as any)) as any;
 
       const reports = res.data.data || [];
       const total = res.data.total || reports.length;
@@ -83,7 +59,13 @@ const StudentSafety: React.FC = () => {
         reason: r.reason || "Other",
         reasonTag: r.reasonTag || r.reason || "Other",
         description: r.description || "",
-        reportedOn: r.reportDate ? new Date(r.reportDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A',
+        reportedOn: r.reportDate
+          ? new Date(r.reportDate).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })
+          : "N/A",
         reportedBy: r.reporterName || "Unknown",
         status: (r.status || "resolved").toLowerCase().replace(/ /g, "_"),
       }));
@@ -106,12 +88,18 @@ const StudentSafety: React.FC = () => {
   };
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['studentSafety', timePeriod, selectedSchool?._id, selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2DashboardStudentSafetyList({
-      period: timePeriod,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
-    }),
+    queryKey: [
+      "studentSafety",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardStudentSafetyList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
 
   const data = (apiData?.data || {}) as any;
@@ -145,12 +133,17 @@ const StudentSafety: React.FC = () => {
   };
 
   return (
-    <main className="student-safety-page" aria-label="Student Safety Dashboard">
+    <main
+      className="student-safety-page"
+      aria-label="Student Safety Dashboard"
+      ref={exportRef}
+    >
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
-        onExport={handleExport}
+        exportTargetRef={exportRef}
+        exportFileName={`student_safety_${timePeriod}`}
       />
 
       {/* Header Section */}
@@ -184,7 +177,13 @@ const StudentSafety: React.FC = () => {
         reportType={selectedReportType}
         reports={modalReports}
         totalCount={modalTotalCount}
-        period={timePeriod === "month" ? "this month" : timePeriod === "week" ? "this week" : "all time"}
+        period={
+          timePeriod === "month"
+            ? "this month"
+            : timePeriod === "week"
+            ? "this week"
+            : "all time"
+        }
         loading={modalLoading}
       />
     </main>

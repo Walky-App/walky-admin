@@ -16,8 +16,13 @@ export const Pagination: React.FC<PaginationProps> = ({
   entriesPerPage,
   onPageChange,
 }) => {
-  const startEntry = (currentPage - 1) * entriesPerPage + 1;
-  const endEntry = Math.min(currentPage * entriesPerPage, totalEntries);
+  const isEmpty = totalEntries === 0 || totalPages === 0;
+
+  // Keep bounds sane when there is no data
+  const startEntry = isEmpty ? 0 : (currentPage - 1) * entriesPerPage + 1;
+  const endEntry = isEmpty
+    ? 0
+    : Math.min(currentPage * entriesPerPage, totalEntries);
 
   const renderPageNumbers = () => {
     const pages: Array<number | "ellipsis"> = [];
@@ -80,23 +85,23 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="pagination-container">
       <div className="pagination-info">
-        Showing {startEntry}-{endEntry} of {totalEntries} entries
+        {`Showing ${startEntry}-${endEntry} of ${totalEntries} entries`}
       </div>
       <div className="pagination-controls">
         <button
           data-testid="pagination-prev-btn"
           className="pagination-button pagination-prev"
           onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
+          disabled={isEmpty || currentPage === 1}
         >
           Previous
         </button>
-        {renderPageNumbers()}
+        {!isEmpty && renderPageNumbers()}
         <button
           data-testid="pagination-next-btn"
           className="pagination-button pagination-next"
           onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          disabled={isEmpty || currentPage === totalPages}
         >
           Next
         </button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./EventsInsights.css";
 import {
   AssetIcon,
@@ -8,7 +8,7 @@ import {
   NoData,
 } from "../../../components-v2";
 import { LastUpdated } from "../../../components-v2";
-import API, { apiClient } from "../../../API";
+import { apiClient } from "../../../API";
 
 interface Interest {
   name: string;
@@ -39,6 +39,7 @@ export const EventsInsights: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
+  const exportRef = useRef<HTMLElement | null>(null);
 
   // Stats state
   const [stats, setStats] = useState({
@@ -48,30 +49,6 @@ export const EventsInsights: React.FC = () => {
     avgPublicAttendees: 0,
     avgPrivateAttendees: 0,
   });
-
-  const handleExport = async () => {
-    try {
-      const response = await API.get("/admin/v2/dashboard/events-insights", {
-        params: {
-          period: timePeriod === "all" ? "all-time" : timePeriod,
-          export: "true",
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id,
-        },
-        responseType: "blob",
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `events_insights_stats_${timePeriod}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
 
   // Data for donut charts
   const [expandReachData, setExpandReachData] = useState<any[]>([]);
@@ -182,10 +159,10 @@ export const EventsInsights: React.FC = () => {
   }
 
   return (
-    <main className="events-insights-page">
+    <main className="events-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton onClick={handleExport} />
+        <ExportButton captureRef={exportRef} filename="events_insights" />
       </div>
 
       {/* Top 3 Stats Cards */}
@@ -313,9 +290,14 @@ export const EventsInsights: React.FC = () => {
         <div className="interests-list">
           {interests.length > 0 ? (
             (() => {
-              const maxPercentage = Math.max(...interests.map((i) => i.percentage || 0));
+              const maxPercentage = Math.max(
+                ...interests.map((i) => i.percentage || 0)
+              );
               return interests.map((interest, index) => {
-                const barWidth = maxPercentage > 0 ? (interest.percentage / maxPercentage) * 100 : 0;
+                const barWidth =
+                  maxPercentage > 0
+                    ? (interest.percentage / maxPercentage) * 100
+                    : 0;
                 return (
                   <div key={index} className="interest-item">
                     <div className="interest-icon">

@@ -1,13 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import API from "../../../API";
 import { CRow, CCol } from "@coreui/react";
-import {
-  AssetIcon,
-  FilterBar,
-  LastUpdated,
-} from "../../../components-v2";
+import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import { DashboardSkeleton, LineChart } from "../components";
 import { BarChart } from "./components/BarChart";
 import "./UserInteractions.css";
@@ -23,37 +18,19 @@ const UserInteractions: React.FC = () => {
 
   // ... (inside component)
 
-  const handleExport = async () => {
-    try {
-      const response = await API.get('/admin/v2/dashboard/user-interactions', {
-        params: {
-          period: timePeriod,
-          export: 'true',
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
-        },
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `user_interactions_stats_${timePeriod}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
-
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['userInteractions', timePeriod, selectedSchool?._id, selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2DashboardUserInteractionsList({
-      period: timePeriod,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
-    }),
+    queryKey: [
+      "userInteractions",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardUserInteractionsList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
 
   const data = (apiData?.data || {}) as any;
@@ -62,6 +39,9 @@ const UserInteractions: React.FC = () => {
   const invitationsData = data.invitationsData || [];
   const ideasClicksData = data.ideasClicksData || [];
   const eventsClicksData = data.eventsClicksData || [];
+
+  // Keep hooks before any early returns to preserve hook order
+  const exportRef = useRef<HTMLElement | null>(null);
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -77,12 +57,14 @@ const UserInteractions: React.FC = () => {
     <main
       className="user-interactions-page"
       aria-label="User Interactions Dashboard"
+      ref={exportRef}
     >
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
-        onExport={handleExport}
+        exportTargetRef={exportRef}
+        exportFileName={`user_interactions_${timePeriod}`}
       />
 
       {/* Header Section */}

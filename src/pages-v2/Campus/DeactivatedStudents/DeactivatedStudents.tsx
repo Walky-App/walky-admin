@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { SearchInput, Pagination } from "../../../components-v2";
@@ -8,12 +8,14 @@ import { StudentData } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
+import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./DeactivatedStudents.css";
 
 export const DeactivatedStudents: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
+  const exportRef = useRef<HTMLElement | null>(null);
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
@@ -27,12 +29,12 @@ export const DeactivatedStudents: React.FC = () => {
       }),
   });
 
-  const { data: statsData, isLoading: isStatsLoading } = useQuery({
+  const { data: statsData } = useQuery({
     queryKey: ["studentStats"],
     queryFn: () => apiClient.api.adminV2StudentsStatsList(),
   });
 
-  const isLoading = isStudentsLoading || isStatsLoading;
+  const isListLoading = isStudentsLoading;
 
   const students = (studentsData?.data.data || []).map((student: any) => ({
     id: student.id,
@@ -43,7 +45,7 @@ export const DeactivatedStudents: React.FC = () => {
     interests: student.interests || [],
     deactivatedDate: student.deactivatedDate,
     deactivatedBy: student.deactivatedBy,
-    memberSince: student.memberSince,
+    memberSince: formatMemberSince(student.memberSince),
     onlineLast: student.onlineLast,
     avatar: student.avatar,
   }));
@@ -57,12 +59,8 @@ export const DeactivatedStudents: React.FC = () => {
     console.log("Student clicked:", student);
   };
 
-  const handleExport = () => {
-    console.log("Export clicked");
-  };
-
   return (
-    <main className="deactivated-students-page">
+    <main className="deactivated-students-page" ref={exportRef}>
       <div className="deactivated-students-stats">
         <StatsCard
           title="Total deactivated students"
@@ -103,10 +101,13 @@ export const DeactivatedStudents: React.FC = () => {
               variant="primary"
             />
           </div>
-          <ExportButton onClick={handleExport} />
+          <ExportButton
+            captureRef={exportRef}
+            filename="deactivated_students"
+          />
         </div>
 
-        {isLoading ? (
+        {isListLoading ? (
           <StudentTableSkeleton />
         ) : paginatedStudents.length === 0 ? (
           <NoStudentsFound message="No deactivated users" />
@@ -126,7 +127,7 @@ export const DeactivatedStudents: React.FC = () => {
           />
         )}
 
-        {!isLoading && paginatedStudents.length > 0 && (
+        {!isListLoading && paginatedStudents.length > 0 && (
           <div className="deactivated-students-pagination">
             <Pagination
               currentPage={currentPage}

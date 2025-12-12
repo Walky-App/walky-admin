@@ -232,6 +232,37 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     );
   };
 
+  const formatBanDateParts = (student: StudentData) => {
+    const { bannedDate, bannedTime } = student;
+    if (!bannedDate && !bannedTime) {
+      return { date: "-", time: null as string | null };
+    }
+
+    const combined = [bannedDate, bannedTime].filter(Boolean).join(" ");
+    const parsed = new Date(combined);
+
+    if (!Number.isNaN(parsed.getTime())) {
+      return {
+        date: new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }).format(parsed),
+        time: bannedTime
+          ? new Intl.DateTimeFormat("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+            }).format(parsed)
+          : null,
+      };
+    }
+
+    return {
+      date: bannedDate || "-",
+      time: bannedTime || null,
+    };
+  };
+
   const columnConfig: Record<
     StudentTableColumn,
     {
@@ -297,11 +328,18 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       ),
     },
     bannedDate: {
-      label: "Banned date",
+      label: "Ban date",
       sortable: true,
-      render: (student) => (
-        <span className="student-date">{student.bannedDate || "-"}</span>
-      ),
+      render: (student) =>
+        (() => {
+          const { date, time } = formatBanDateParts(student);
+          return (
+            <div className="student-date ban-date-cell">
+              <div>{date}</div>
+              {time && <div className="student-time">{time}</div>}
+            </div>
+          );
+        })(),
     },
     bannedBy: {
       label: "Banned by",
@@ -309,7 +347,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       render: (student) => <span>{student.bannedBy || "-"}</span>,
     },
     reason: {
-      label: "Reason",
+      label: "Reported content",
       sortable: false,
       render: (student) => <span>{student.reason || "-"}</span>,
     },

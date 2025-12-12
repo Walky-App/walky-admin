@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput, FilterDropdown } from "../../../components-v2";
+import { SearchInput, FilterDropdown, NoData } from "../../../components-v2";
 import { EventTable } from "../components/EventTable/EventTable";
 import { EventTableSkeleton } from "../components/EventTableSkeleton/EventTableSkeleton";
-import { NoEventsFound } from "../components/NoEventsFound/NoEventsFound";
 import { Pagination } from "../components/Pagination";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
 import "./EventsManager.css";
@@ -44,29 +43,48 @@ export const EventsManager: React.FC = () => {
   const filteredEvents = (eventsData?.data.data || [])
     .map((event: any) => {
       const rawDateTime = event.date_and_time || event.dateAndTime || "";
-      const parsed = rawDateTime ? Date.parse(rawDateTime) : NaN;
-      const dateObj = Number.isNaN(parsed) ? null : new Date(parsed);
 
-      const hasDateTime = Boolean(dateObj);
+      const formatEventDateTime = (
+        primary?: string,
+        fallbackDate?: string,
+        fallbackTime?: string
+      ) => {
+        const candidates = [primary, fallbackDate].filter(Boolean) as string[];
 
-      const eventDate = hasDateTime
-        ? new Intl.DateTimeFormat(undefined, {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          }).format(dateObj as Date)
-        : event.eventDate || "";
+        for (const candidate of candidates) {
+          const parsed = Date.parse(candidate);
+          if (!Number.isNaN(parsed)) {
+            const dt = new Date(parsed);
+            return {
+              date: new Intl.DateTimeFormat("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }).format(dt),
+              time: new Intl.DateTimeFormat("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              }).format(dt),
+              raw: dt.toISOString(),
+            };
+          }
+        }
 
-      const eventTime = hasDateTime
-        ? new Intl.DateTimeFormat(undefined, {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          }).format(dateObj as Date)
-        : event.eventTime || "";
+        return {
+          date: fallbackDate || "-",
+          time: fallbackTime || "",
+          raw: fallbackDate || primary || "",
+        };
+      };
 
-      const statusDate =
-        dateObj || (event.eventDate ? new Date(event.eventDate) : null);
+      const {
+        date: eventDate,
+        time: eventTime,
+        raw: eventDateRaw,
+      } = formatEventDateTime(rawDateTime, event.eventDate, event.eventTime);
+
+      const statusDate = eventDateRaw ? new Date(eventDateRaw) : null;
       const status =
         statusDate && !Number.isNaN(statusDate.getTime())
           ? statusDate < new Date()
@@ -81,7 +99,7 @@ export const EventsManager: React.FC = () => {
         studentId: event.studentId,
         eventDate,
         eventTime,
-        eventDateRaw: dateObj ? dateObj.toISOString() : rawDateTime,
+        eventDateRaw,
         attendees: event.attendeesCount,
         status: status as "upcoming" | "finished",
         type: event.type,
@@ -96,6 +114,7 @@ export const EventsManager: React.FC = () => {
 
   const totalPages = Math.ceil((eventsData?.data.total || 0) / 10);
   const totalEntries = eventsData?.data.total || 0;
+  const isEmpty = !isLoading && filteredEvents.length === 0;
 
   return (
     <main className="events-manager-container">
@@ -176,10 +195,20 @@ export const EventsManager: React.FC = () => {
             <>
               {isLoading ? (
                 <EventTableSkeleton />
-              ) : filteredEvents.length === 0 ? (
-                <NoEventsFound message="No events found" />
               ) : (
-                <EventTable events={filteredEvents} />
+                <>
+                  <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
+                    <EventTable events={filteredEvents} />
+                  </div>
+                  {isEmpty && (
+                    <NoData
+                      iconName="public-event-icon"
+                      iconColor="#526AC9"
+                      iconSize={40}
+                      message="No events found"
+                    />
+                  )}
+                </>
               )}
 
               {!isLoading && filteredEvents.length > 0 && (

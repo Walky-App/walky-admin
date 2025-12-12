@@ -45,6 +45,30 @@
   gap: 8px;
 }
 
+.search-input-container.bounce-search {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input-container.bounce-search:focus-within {
+  animation: search-bounce 0.35s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes search-bounce {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-2px) scale(1.02);
+  }
+  60% {
+    transform: translateY(1px) scale(0.995);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
 .search-input-field {
   flex: 1;
   border: none;

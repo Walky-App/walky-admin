@@ -186,7 +186,8 @@
 .members-table-wrapper {
   background: #ffffff;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
   margin-bottom: 32px;
 }
 

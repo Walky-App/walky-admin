@@ -47,42 +47,60 @@
 }
 
 .space-type-chip-club-sports {
-  background-color: #e6f1ff;
+  background-color: #f9d9be;
 }
 
 .space-type-chip-club-sports span {
-  color: #2b6abf;
+  color: #873511;
 }
 
 /* Academics & Honors */
 .space-type-chip-academics-honors,
 .space-type-chip-academics-and-honors {
-  background-color: #e6f3ff;
+  background-color: #ffe3de;
 }
 
 .space-type-chip-academics-honors span,
 .space-type-chip-academics-and-honors span {
-  color: #2a6fb0;
+  color: #ad411e;
 }
 
 /* Leadership & Government */
 .space-type-chip-leadership-government,
 .space-type-chip-leadership-and-government {
-  background-color: #f0ecff;
+  background-color: #d5c0ab;
 }
 
 .space-type-chip-leadership-government span,
 .space-type-chip-leadership-and-government span {
-  color: #5a46c6;
+  color: #502c11;
 }
 
 /* Cultural & Diversity */
 .space-type-chip-cultural-diversity,
 .space-type-chip-cultural-and-diversity {
-  background-color: #e8f7f1;
+  background-color: #c1e5ff;
 }
 
 .space-type-chip-cultural-diversity span,
 .space-type-chip-cultural-and-diversity span {
-  color: #2f8a64;
+  color: #234798;
+}
+
+/* IM Teams */
+.space-type-chip-im-teams {
+  background-color: #e0e1e2;
+}
+
+.space-type-chip-im-teams span {
+  color: #464a51;
+}
+
+/* Volunteer */
+.space-type-chip-volunteer {
+  background-color: #fce3bd;
+}
+
+.space-type-chip-volunteer span {
+  color: #a34007;
 }
